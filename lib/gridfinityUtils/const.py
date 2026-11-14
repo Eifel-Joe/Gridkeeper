@@ -66,3 +66,27 @@ BIN_CREASE_MIN_LENGTH = 2.85
 BIN_CREASE_MAX_PANEL_LENGTH = 4.75
 # in height units, 70 mm with 7 mm units
 BIN_CREASE_MIN_HEIGHT = 10
+
+# Cullenect labels by CullenJWebb (MIT), https://github.com/CullenJWebb/Cullenect-Labels, Cullenect.scad d6dc0bb
+# insert: 42 mm x units - 6 mm wide, 11 mm high, 1.2 mm thick
+CULLENECT_LABEL_HEIGHT = 1.1
+CULLENECT_LABEL_THICKNESS = 0.12
+CULLENECT_WIDTH_REDUCTION = 0.6
+# play of the insert in its socket, in X and Y
+CULLENECT_SOCKET_OFFSET = 0.03
+# latch around the insert, set in 0.2 mm from 0.2 mm to 0.8 mm height
+CULLENECT_LATCH_INSET = 0.02
+CULLENECT_LATCH_BOTTOM = 0.02
+CULLENECT_LATCH_HEIGHT = 0.06
+# ribs along both long sides of the socket, 0.2 mm above its floor
+CULLENECT_RIB_WIDTH = 0.02
+CULLENECT_RIB_HEIGHT = 0.04
+CULLENECT_RIB_BOTTOM = 0.02
+CULLENECT_CORNER_RADIUS = 0.05
+# text and icons are one layer
+CULLENECT_LAYER = 0.02
+# least material left around the socket on the tab top
+CULLENECT_POCKET_MARGIN = 0.1
+CULLENECT_MIN_TAB_WIDTH = 1.4
+# sockets come in standard label widths, in steps of half a unit
+CULLENECT_UNIT_STEP = 0.5
