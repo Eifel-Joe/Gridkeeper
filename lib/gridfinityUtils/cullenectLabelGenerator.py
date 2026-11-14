@@ -140,7 +140,7 @@ def createCullenectLabel(
     latchTop = const.CULLENECT_LATCH_BOTTOM + const.CULLENECT_LATCH_HEIGHT
 
     lines = [line for line in input.lines if len(line.strip()) > 0]
-    size = cullenectLabelLayout.iconSize(input.iconPath, width.value, height) if input.iconPath is not None else None
+    size = cullenectLabelLayout.iconSize(input.iconPath, width.value, height, input.isScrew) if input.iconPath is not None else None
     layout = cullenectLabelLayout.labelLayout(width.value, height, size, input.isScrew, len(lines))
     problem = cullenectLabelLayout.layoutProblem(layout)
     if problem is not None:
