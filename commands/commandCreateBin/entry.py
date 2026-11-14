@@ -20,6 +20,7 @@ from ...lib.gridfinityUtils import compartmentLayout
 from ...lib.gridfinityUtils import binShape
 from ...lib.gridfinityUtils import binGrid
 from ...lib.gridfinityUtils import wallCreases
+from ...lib.gridfinityUtils import raisedDividers
 from .inputState import InputState
 from . import binBuilder
 from .binBuilder import BIN_TYPE_HOLLOW, BIN_TYPE_SHELLED, BIN_TYPE_SOLID
@@ -503,13 +504,16 @@ def normalizeCompartmentPockets():
         commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID),
     )
 
-def hasSingleCompartment() -> bool:
-    """Merged cells of a custom grid make one compartment"""
+def compartmentCount() -> int:
+    """Merged cells of a custom grid count as one compartment, as built: only while the layout is shown"""
     return len(compartmentLayout.normalizePockets(
-        compartmentPockets,
+        compartmentPockets if commandUIState.getState(BIN_COMPARTMENTS_SHOW_LAYOUT_ID) else [],
         commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID),
         commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID),
-    )) == 1
+    ))
+
+def hasSingleCompartment() -> bool:
+    return compartmentCount() == 1
 
 def updateTabHollowSidesInput(isTabEnabled: bool):
     """Side walls are only opened for a hollow tab of a single compartment, the option is cleared when it can't apply"""
@@ -778,11 +782,6 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     hasLipNotches = binFeaturesGroup.children.addBoolValueInput(BIN_WITH_LIP_NOTCHES_INPUT_ID, 'Generate lip notches', True, '', commandUIState.getState(BIN_WITH_LIP_NOTCHES_INPUT_ID))
     hasLipNotches.isEnabled = commandUIState.getState(BIN_WITH_LIP_INPUT_ID)
     commandUIState.registerCommandInput(hasLipNotches)
-    dividersToTopInput = binFeaturesGroup.children.addBoolValueInput(BIN_DIVIDERS_TO_TOP_INPUT_ID, 'Dividers up to the top on grid lines', True, '', commandUIState.getState(BIN_DIVIDERS_TO_TOP_INPUT_ID))
-    dividersToTopInput.tooltip = ('Compartment dividers lying on a grid line go up to the top of the lip and run out in its profile, '
-        'the feet of a bin stacked on top have a groove there. Dividers between grid lines stay below the lip. '
-        'Hollow bins with a lip only')
-    commandUIState.registerCommandInput(dividersToTopInput)
     creasesInput = binFeaturesGroup.children.addBoolValueInput(BIN_CREASES_INPUT_ID, 'Fold long walls for stiffness', True, '', commandUIState.getState(BIN_CREASES_INPUT_ID))
     creasesInput.tooltip = ('Folds walls of hollow and shelled bins in along shallow creases, origami style, so tall long walls bow less. '
         'Bins from the min height with a wall from the min length get them. Walls are split into even panels up to the max panel length, '
@@ -813,6 +812,12 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     compartmentsBrowser.isFullWidth = True
     compartmentsBrowser.isVisible = commandUIState.getState(BIN_COMPARTMENTS_SHOW_LAYOUT_ID)
     commandUIState.registerCommandInput(compartmentsBrowser)
+    # with the compartments it divides, the id stays so saved defaults keep the setting
+    dividersToTopInput = compartmentsGroup.children.addBoolValueInput(BIN_DIVIDERS_TO_TOP_INPUT_ID, 'Dividers up to the top on grid lines', True, '', commandUIState.getState(BIN_DIVIDERS_TO_TOP_INPUT_ID))
+    dividersToTopInput.tooltip = ('Compartment dividers lying on a grid line go up to the top of the lip and run out in its profile, '
+        'the feet of a bin stacked on top have a groove there. Dividers between grid lines stay below the lip. '
+        'Hollow bins with a lip and more than one compartment only')
+    commandUIState.registerCommandInput(dividersToTopInput)
 
     binScoopGroup = compartmentsGroup.children.addGroupCommandInput(BIN_SCOOP_GROUP_ID, 'Scoop')
     binScoopGroup.isExpanded = commandUIState.getState(BIN_SCOOP_GROUP_ID)
@@ -1114,7 +1119,10 @@ def onChangeValidate():
 
     generateLip: bool = commandUIState.getState(BIN_WITH_LIP_INPUT_ID)
     commandUIState.getInput(BIN_WITH_LIP_NOTCHES_INPUT_ID).isEnabled = generateLip
-    commandUIState.getInput(BIN_DIVIDERS_TO_TOP_INPUT_ID).isEnabled = generateBody and generateLip and binType == BIN_TYPE_HOLLOW and not shaped
+    commandUIState.getInput(BIN_DIVIDERS_TO_TOP_INPUT_ID).isEnabled = raisedDividers.optionEnabled(
+        generateBody, generateLip, binType == BIN_TYPE_HOLLOW, shaped, creased,
+        compartmentCount(),
+    )
 
     canCrease = generateBody and not binType == BIN_TYPE_SOLID
     commandUIState.getInput(BIN_CREASES_INPUT_ID).isEnabled = canCrease

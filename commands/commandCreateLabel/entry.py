@@ -291,9 +291,16 @@ def symbolText(state: InputState) -> str:
         return 'None' if not state.showScrew and state.hardware == NO_HARDWARE else 'No svg for this symbol'
     return os.path.basename(path)
 
+# the small notice after a part design was switched to hybrid for the insert, see designIntent.componentPlan
+HYBRID_SWITCH_MESSAGE = ('This document was a part design. It has been switched to a hybrid design, so the insert is a '
+    'component of its own. A design holding components can no longer be switched back to a part design.')
+
 def command_execute(args: adsk.core.CommandEventArgs):
     futil.log(f'{CMD_NAME} Command Execute Event')
-    generateLabel(args)
+    des = adsk.fusion.Design.cast(app.activeProduct)
+    wasPart = des is not None and des.designIntent == adsk.fusion.DesignIntentTypes.PartDesignIntentType
+    if generateLabel(args) is not False and wasPart and des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
+        ui.messageBox(HYBRID_SWITCH_MESSAGE, CMD_NAME)
 
 def command_preview(args: adsk.core.CommandEventArgs):
     futil.log(f'{CMD_NAME} Command Preview Event')
@@ -301,7 +308,8 @@ def command_preview(args: adsk.core.CommandEventArgs):
     if inputs.itemById(SHOW_PREVIEW_INPUT).value:
         if INPUTS_VALID:
             startTime = time.perf_counter()
-            isGenerated = generateLabel(args) is not False
+            # a preview leaves a part design as it is, only OK switches it to hybrid
+            isGenerated = generateLabel(args, mayChangeDocument=False) is not False
             seconds = time.perf_counter() - startTime
             inputs.itemById(PREVIEW_TIME_INPUT).text = f'{seconds:.2f} s' if isGenerated else f'failed after {seconds:.2f} s'
         else:
@@ -352,14 +360,14 @@ def command_destroy(args: adsk.core.CommandEventArgs):
 def snapshotSettings(inputs: adsk.core.CommandInputs) -> list[dict]:
     return settingsUtils.snapshotInputs(inputs, [INFO_GROUP, INPUT_CHANGES_GROUP, PREVIEW_GROUP], CMD_NAME)
 
-def generateLabel(args: adsk.core.CommandEventArgs):
+def generateLabel(args: adsk.core.CommandEventArgs, mayChangeDocument: bool = True):
     startTime = time.perf_counter()
     settings = snapshotSettings(args.command.commandInputs)
     commonUtils.fileLog(f'{CMD_NAME} Generating label with settings:\n{settingsUtils.settingsText(settings)}')
     state = getInputsState()
     try:
         des = adsk.fusion.Design.cast(app.activeProduct)
-        buildLabel(des, state, settings)
+        buildLabel(des, state, settings, mayChangeDocument)
         futil.log(f'{CMD_NAME} {labelName(state)} generated in {time.perf_counter() - startTime:.3f}s')
     except UnsupportedDesignTypeException:
         args.executeFailed = True
