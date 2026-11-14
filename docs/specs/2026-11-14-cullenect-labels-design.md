@@ -193,6 +193,42 @@ seiner gedruckten Einleger bereit — Passungs-Referenz zum Gegenprüfen.
   Verschieben-Feature steuern, dessen Distanz an der Label-Breite hängt. So bleibt jede Skizze
   bestimmt, und das Symbol wandert bei Breitenänderung mit.
 - Text-Skizzen: Textposition an bemaßte Konstruktion gebunden.
+- **Befund Spike 2026-11-14 (Runde 4, Plan Task 8, Fusion-API, Wegwerf-Skripte):**
+  - SVG: `importSVG`, danach alle `sketchCurves` `isFixed = True` ⇒ Skizze `isFullyConstrained`
+    (Schraube `screw_socket_machine_full_hex_noflange_nosec.svg`, 38 Kurven, alle Punkte bestimmt).
+  - Live-Text (`SketchText`, mehrzeilig): `isFullyConstrained` bleibt `False`, auch wenn alle vier
+    Rahmenlinien und alle Punkte bestimmt sind (Lage, Breite, Höhe bemaßt, Rahmen waagrecht) oder
+    fixiert werden. `SketchText.isFixed` lässt sich nicht setzen, `boundaryLines` wirft
+    `InternalValidationError`, `Sketch.autoConstrain` ist gesperrt („user is restricted“). Eine Skizze
+    mit Live-Text ist über die API also nie vollständig bestimmt — darum sind auch die Bestands-Labels
+    rot (p08-Befund).
+  - Explodierter Text (`SketchText.explode()`), danach Kurven und übrige Punkte `isFixed` ⇒ Skizze
+    `isFullyConstrained`. Preis: der Text hängt nicht mehr an einem Text-Parameter.
+  - **Umsetzung (Runde 4, überholt):** Einleger-Text wurde explodiert und fixiert, Text ändern = neu
+    generieren (Abweichung von der Spec, Punkt p50).
+  - **Entscheidung Jörg 14.11.2026 (p50): „Live-Text“.** Der Einleger-Text bleibt echter `SketchText`,
+    je Zeile an einen Text-User-Parameter gebunden (`gfLabelN_text1`, `gfLabelN_text2`, Mechanismus wie
+    die Bin-Labels: `sketchText.textParameter.expression = <Parameter>`), also nachträglich änderbar.
+    Textrahmen und alle übrigen Punkte und Kurven der Textskizze sind fixiert. **Einzige Ausnahme** von
+    „jede Skizze `isFullyConstrained`“: die Textskizze des Einlegers, weil Fusion Skizzen mit Live-Text nie
+    als bestimmt meldet. Der Constraint-Check der Shape-Tests lässt eine Skizze mit Live-Text nur dann
+    durch, wenn alles außer dem Text selbst bestimmt ist; alle anderen Skizzen (Symbol, Grundkörper,
+    Bin-Skizzen) bleiben Pflicht. Die Schriftgröße wird beim Erzeugen eingepasst; ein später längerer
+    Text wird nicht neu eingepasst, sondern bricht im Textrahmen um (wie bei den Bin-Labels).
+  - **Befunde Runde 6 (Fusion, 14.11.2026):** Mit fixierten Textrahmen meldet Fusion die Textskizze des
+    Einlegers doch als `isFullyConstrained` (vier Label-Fälle und Live-Test, auch nach Textänderung); die
+    Ausnahme im Constraint-Check bleibt als Absicherung. Ein geänderter Text ändert die Zahl der
+    Buchstabenkörper, darum darf kein Feature an den Buchstabenkörpern hängen: Der Einleger wird an
+    seiner Stelle gezeichnet statt dorthin verschoben (sonst bleiben neue Buchstaben am Ursprung liegen),
+    und vertiefter/bündiger Text wird mit einem deckungsgleichen zweiten Text am selben Parameter
+    geschnitten statt mit den Füllkörpern (Kombinieren verliert sonst Werkzeugkörper; denselben Text
+    zweimal zu extrudieren lehnt Fusion im selben Lauf ab). Ein deutlich längerer Text bricht im Rahmen um
+    und ragt dann über den Einleger hinaus (offener Punkt).
+  - Texthöhe: Fusions Texthöhe ist die Höhe der Großbuchstaben („H“ bei 1,0 cm: 1,000 cm hoch,
+    Arial normal und fett). Cullenects `text(size = 5)` in Open Sans ergibt ≈ 4,96 mm Großbuchstaben
+    (gemessen mit OpenSCAD in Liberation Sans 4,78 mm, Open Sans hat 1462/1409 dieser Versalhöhe;
+    Open Sans ist hier nicht installiert). ⇒ eine Zeile 5,0 mm, zwei Zeilen je 3,5 mm, kleiner,
+    wenn der Text sonst nicht in die Breite passt.
 
 ## Prüfung (Akzeptanzkriterien)
 

@@ -1,0 +1,24 @@
+{
+    "bodies": [
+        {
+            "name": "Gridfinity bin 2x4x3",
+            "file": "body1.smt",
+            "volume": 88313.625957,
+            "area": 57604.468574,
+            "bboxMin": [
+                -0.0,
+                0.0,
+                -5.0
+            ],
+            "bboxMax": [
+                159.5,
+                83.5,
+                19.8
+            ],
+            "lumps": 1,
+            "faces": 344,
+            "edges": 772,
+            "vertices": 432
+        }
+    ]
+}

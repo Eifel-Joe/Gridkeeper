@@ -90,3 +90,10 @@ CULLENECT_POCKET_MARGIN = 0.1
 CULLENECT_MIN_TAB_WIDTH = 1.4
 # sockets come in standard label widths, in steps of half a unit
 CULLENECT_UNIT_STEP = 0.5
+# insert of the label command: text from the left margin to a gap before the symbol. Fusion's text height is the
+# height of the capitals, one line as tall as Cullenect's text(size = 5) in Open Sans, two lines stacked
+CULLENECT_TEXT_MARGIN = 0.1
+CULLENECT_ICON_GAP = 0.1
+CULLENECT_TEXT_HEIGHT = 0.5
+CULLENECT_TWO_LINE_TEXT_HEIGHT = 0.35
+CULLENECT_LINE_GAP = 0.15

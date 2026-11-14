@@ -76,10 +76,15 @@ def _curveBounds(curves) -> tuple[float, float, float, float] | None:
     """Min and max x and y over sampled points of the given geometry curves"""
     bounds = None
     for curve in curves:
-        evaluator = curve.evaluator
-        (_, start, end) = evaluator.getParameterExtents()
-        parameters = [start + (end - start) * i / 16 for i in range(17)]
-        (_, points) = evaluator.getPointsAtParameters(parameters)
+        line = adsk.core.Line3D.cast(curve)
+        if line is not None:
+            # the ends are its extremes, svg symbols are mostly lines, a thousand of them for a round one
+            points = [line.startPoint, line.endPoint]
+        else:
+            evaluator = curve.evaluator
+            (_, start, end) = evaluator.getParameterExtents()
+            parameters = [start + (end - start) * i / 16 for i in range(17)]
+            (_, points) = evaluator.getPointsAtParameters(parameters)
         for point in points:
             if bounds is None:
                 bounds = [point.x, point.y, point.x, point.y]
@@ -133,13 +138,14 @@ def _iconProfiles(sketch: adsk.fusion.Sketch) -> list[adsk.fusion.Profile]:
     return [profile for profile in profiles if sum(1 for other in profiles if contains(other, profile)) % 2 == 0]
 
 def _importMeasured(sketch: adsk.fusion.Sketch, path: str, x: float, y: float, scale: float, keep: bool = False) -> tuple[float, float, float, float] | None:
-    """Bounds of the svg imported at the given position and scale, removed again unless kept"""
-    sketch.importSVG(path, x, y, scale)
-    bounds = _sketchCurvesBounds(sketch)
+    """Bounds of the svg imported at the given position and scale into the sketch when kept, else into a throwaway
+    sketch on the same plane. Deleting the sketch is quick, deleting curves one by one took 0.3 s each, minutes for the
+    thousand curves of a Cullenect hardware symbol"""
+    target = sketch if keep else sketch.parentComponent.sketches.add(sketch.referencePlane)
+    target.importSVG(path, x, y, scale)
+    bounds = _sketchCurvesBounds(target)
     if not keep:
-        for curve in list(sketch.sketchCurves):
-            if curve.isValid:
-                curve.deleteMe()
+        target.deleteMe()
     return bounds
 
 def _iconAspect(sketch: adsk.fusion.Sketch, path: str) -> float | None:

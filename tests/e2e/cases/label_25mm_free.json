@@ -1,0 +1,24 @@
+{
+    "description": "Insert 25 mm wide given in mm with a width correction of -0.1 mm, a flanged pan head screw, flush, bold text",
+    "generator": "label",
+    "settings": {
+        "baseWidth": 42.0,
+        "useUnits": false,
+        "widthUnits": 1,
+        "freeWidth": 25.0,
+        "offsetX": -0.1,
+        "offsetY": 0.0,
+        "line1": "M3",
+        "line2": "",
+        "isBold": true,
+        "showScrew": true,
+        "head": "pan",
+        "shaft": "tapping",
+        "threads": "partial",
+        "driver": "phillips",
+        "flange": true,
+        "security": false,
+        "hardware": "none",
+        "surface": "Flush"
+    }
+}

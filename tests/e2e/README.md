@@ -73,6 +73,8 @@ This page is written from the case files, run `python3 tests/e2e/write_readme.py
 | <img src="snapshots/bin_3x3x4_l_shape_wall_1_9/preview.png" width="120" alt="bin_3x3x4_l_shape_wall_1_9"> | [bin_3x3x4_l_shape_wall_1_9](cases/bin_3x3x4_l_shape_wall_1_9.json) | 3x3x4 L shaped bin with 1.9 mm walls, flush with the inside of the lip, its chamfer under the lip follows the shape |
 | <img src="snapshots/bin_3x3x4_l_shape_wall_3/preview.png" width="120" alt="bin_3x3x4_l_shape_wall_3"> | [bin_3x3x4_l_shape_wall_3](cases/bin_3x3x4_l_shape_wall_3.json) | 3x3x4 L shaped bin with 3 mm walls, thicker than the lip |
 |  | [bin_4x2x3_cullenect_mixed](cases/bin_4x2x3_cullenect_mixed.json) | 4x2x3 bin, a compartment over 4 cells in front, one over 2 cells and two single ones behind, 4 units long tabs with 4U, 2U and 1U Cullenect sockets |
+|  | [bin_4x2x3_cullenect_mixed_dividers_to_top](cases/bin_4x2x3_cullenect_mixed_dividers_to_top.json) | Jörg's 4x2x3 bin with dividers up to the top on grid lines: a compartment over 4 cells in front, one over 2 cells and two single ones behind, every divider on a grid line, 4U, 2U and 1U Cullenect sockets |
+|  | [bin_4x2x3_dividers_to_top_3x2_params_base_40](cases/bin_4x2x3_dividers_to_top_3x2_params_base_40.json) | 4x2x3 bin with dividers up to the top on grid lines and 3x2 compartments, no label tabs: the row divider rises, the two column dividers between grid lines stay below the lip. Base width changed to 40 mm after building, the raised divider follows. Sets `gfBaseWidth` 40 mm once built, a run compares that with a build using those values from the start |
 | <img src="snapshots/bin_4x3x3_compartments_4x3/preview.png" width="120" alt="bin_4x3x3_compartments_4x3"> | [bin_4x3x3_compartments_4x3](cases/bin_4x3x3_compartments_4x3.json) | 4x3x3 bin with a 4x3 compartment grid, a scoop and a label tab along each row of compartments |
 |  | [bin_6x4x12_cullenect](cases/bin_6x4x12_cullenect.json) | 6x4x12 bin with a 6 units long tab and a 6U Cullenect socket, the largest case |
 
@@ -85,3 +87,12 @@ This page is written from the case files, run `python3 tests/e2e/write_readme.py
 | <img src="snapshots/baseplate_2x2_skeletonized_padding/preview.png" width="120" alt="baseplate_2x2_skeletonized_padding"> | [baseplate_2x2_skeletonized_padding](cases/baseplate_2x2_skeletonized_padding.json) | 2x2 skeletonized baseplate with magnet sockets and uneven padding |
 | <img src="snapshots/baseplate_3x2_full/preview.png" width="120" alt="baseplate_3x2_full"> | [baseplate_3x2_full](cases/baseplate_3x2_full.json) | 3x2 full baseplate with magnet sockets, screw holes and connection holes |
 | <img src="snapshots/baseplate_fill_area_pieces/preview.png" width="120" alt="baseplate_fill_area_pieces"> | [baseplate_fill_area_pieces](cases/baseplate_fill_area_pieces.json) | 300x200 mm area filled with a light baseplate, cut into pieces for a 180 mm print bed, half cells, aligned left and back |
+
+## Labels
+
+| Preview | Case | Description |
+| --- | --- | --- |
+|  | [label_1u_screw_text](cases/label_1u_screw_text.json) | 1U Cullenect insert with a socket head screw and one line of text, raised, the baseline the other label cases change things of |
+|  | [label_25mm_free](cases/label_25mm_free.json) | Insert 25 mm wide given in mm with a width correction of -0.1 mm, a flanged pan head screw, flush, bold text |
+|  | [label_2u_hardware](cases/label_2u_hardware.json) | 2U insert with a nylon lock nut and two lines of text, set in, the filling kept as a hidden body |
+|  | [label_6u_text](cases/label_6u_text.json) | 6U insert with text only, built on 42 mm units and set to a 40 mm base width after, the insert has to shrink with it. Sets `gfBaseWidth` 40 mm once built, a run compares that with a build using those values from the start |

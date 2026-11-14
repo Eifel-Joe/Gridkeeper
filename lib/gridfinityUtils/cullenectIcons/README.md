@@ -16,6 +16,11 @@ from the original OpenSCAD code:
 `hardware/` one file per hardware symbol. The add-in reads what is in these folders, so another symbol
 is another svg file. The hardware symbols are copied to `../labelIcons/<type>/cullenect-*.svg` as well.
 
+The label command puts a symbol on the insert at the size its svg says, like Cullenect does: give
+`width` and `height` with a unit (`mm`, `cm`, `in`, `pt`, `pc`, `px`). A number without a unit counts as
+CSS pixels (1/96 in) as in the svg standard, an svg with only a `viewBox` as mm, the way OpenSCAD writes
+it. A symbol taller than the insert is scaled down to fit.
+
 ## License
 
 The symbols are derived from Cullenect-Labels, MIT License, Copyright (c) 2024 Cullen J Webb. The full
