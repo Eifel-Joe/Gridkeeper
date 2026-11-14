@@ -49,6 +49,16 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
   order, new svg files come after them.
 - The svg size of a symbol honours the units of `width` and `height`; a number without unit counts as CSS pixels as
   in the svg standard (was read as mm).
+- „Dividers up to the top on grid lines“ moved to the „Bin compartments“ section and is only offered for a bin with
+  more than one compartment. Saved defaults keep the setting.
+- The shape tests fail on a body left in a case's document that the generator didn't return, and a case can be built
+  in a part design (`"designIntent": "part"`). Two new bin cases.
+
+### Fixed
+
+- **Dividers up to the top:** with dividers that don't meet (3 compartments side by side), only the first went into
+  the bin; the others stayed below the lip and their raised part lay loose in the design. Fusion doesn't join bodies
+  that don't touch, so each raised divider is now joined to the bin on its own.
 
 ## Credits
 
