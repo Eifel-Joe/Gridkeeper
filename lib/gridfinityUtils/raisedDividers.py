@@ -111,6 +111,44 @@ def filletCorners(segments: list[DividerSegment], columns: int, rows: int) -> li
     return corners
 
 
+def isCornerChainEdge(
+    corner: FilletCorner,
+    cornerAt: tuple[float, float],
+    columns: int,
+    rows: int,
+    *,
+    wall: float,
+    lipOverhang: float,
+    bottomZ: float,
+    start: tuple[float, float, float],
+    end: tuple[float, float, float],
+    tolerance: float = 1e-3,
+) -> bool:
+    """
+    Whether a straight edge of the finished bin, start to end x, y, z, belongs to the chain the corner is filleted
+    along: from the top of the corner fillet below, bottomZ, up the outer wall, the chamfer under the lip and the lip
+    to the top, or up a crossing. It lies in the face of the raised divider, which meets the cell at cornerAt, and
+    stays within the wall behind the corner and the lip's overhang into the cell in front of it. Edges along the
+    divider or the wall, and level ones, are none of it
+    """
+    lineX = corner.column if corner.sideX == -1 else corner.column + 1
+    # a raised side across x stands in the plane of x, a corner against an outer wall across x has its divider across y
+    acrossX = lineX not in (0, columns)
+    (planeAxis, otherAxis, side) = (0, 1, corner.sideY) if acrossX else (1, 0, corner.sideX)
+    plane = cornerAt[planeAxis]
+    other = cornerAt[otherAxis]
+    # the wall lies on the corner's side of it, the lip reaches into the cell
+    (low, high) = (other - wall, other + lipOverhang) if side == -1 else (other - lipOverhang, other + wall)
+    for point in (start, end):
+        if abs(point[planeAxis] - plane) > tolerance:
+            return False
+        if not low - tolerance <= point[otherAxis] <= high + tolerance:
+            return False
+        if point[2] < bottomZ - tolerance:
+            return False
+    return abs(start[2] - end[2]) > tolerance
+
+
 def segmentsForBin(
     isEnabled: bool,
     hasLip: bool,
