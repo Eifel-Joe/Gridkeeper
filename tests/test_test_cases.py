@@ -254,3 +254,110 @@ def test_ledges_reports_the_sickles_of_joergs_bin():
 
 def test_ledges_ignore_slivers_of_tangent_seams_and_big_faces():
     assert cases.raisedCornerLedges([(0.0001, 2.55, 2.55), (0.0, 0.0, 1.2), (12.0, 4.0, 3.0)]) == []
+
+
+# Text of an insert stays one line per text line on the insert (p84, p70): letter bodies as (min x, min y, max x,
+# max y) in mm, the insert 36 x 11 mm at the origin, the middle of each text line
+INSERT_BOX = (0.0, 0.0, 36.0, 11.0)
+ONE_LINE = [5.5]
+TWO_LINES = [8.0, 3.0]
+
+
+def test_text_on_one_line_inside_the_insert_passes():
+    letters = [(1.0, 3.0, 4.5, 8.0), (5.0, 3.0, 8.0, 8.0), (9.0, 2.0, 12.0, 8.0)]
+    assert cases.insertTextProblems(INSERT_BOX, letters, ONE_LINE) == []
+
+
+def test_joergs_wrapped_welle_6mm_fails():
+    # p84, measured in Joerg's document: "Welle" y 6.8 to 11.9 mm, "6mm" y -0.9 to 4.1 mm
+    letters = [(1.0, 6.8, 6.0, 11.9), (6.5, 6.8, 18.1, 11.9), (1.0, -0.9, 13.0, 4.1)]
+    notes = cases.insertTextProblems(INSERT_BOX, letters, ONE_LINE)
+    assert any('line 1 in 2 bands' in note for note in notes)
+    assert any('off the insert' in note for note in notes)
+
+
+def test_text_past_the_right_edge_fails_unless_it_may_run_on():
+    letters = [(1.0, 3.0, 20.0, 8.0), (21.0, 3.0, 37.5, 8.0)]
+    assert any('off the insert' in note for note in cases.insertTextProblems(INSERT_BOX, letters, ONE_LINE))
+    # a text made longer after building runs on to the right, still one line on the insert's height
+    assert cases.insertTextProblems(INSERT_BOX, letters, ONE_LINE, mayRunOnRight=True) == []
+
+
+def test_two_lines_are_two_bands():
+    letters = [(1.0, 6.0, 10.0, 9.5), (1.0, 1.5, 8.0, 5.0)]
+    assert cases.insertTextProblems(INSERT_BOX, letters, TWO_LINES) == []
+    assert any('line 2 has no text' in note for note in cases.insertTextProblems(INSERT_BOX, letters[:1], TWO_LINES))
+
+
+def test_text_parameters_are_set_after_building_and_listed(tmp_path):
+    data = {"description": "a case", "generator": "label", "settings": label_settings(),
+            "texts": {"gfLabel1_text1": "Welle 6mm h6 geschliffen"}}
+    case = cases.loadCase(write_case_data(tmp_path, data), STATE_CLASSES)
+    assert case.texts == {"gfLabel1_text1": "Welle 6mm h6 geschliffen"}
+    assert json.loads(cases.caseJson(case))["texts"] == {"gfLabel1_text1": "Welle 6mm h6 geschliffen"}
+    assert any(section["title"] == "Texts set after building" for section in cases.caseSettings(case))
+
+
+def test_a_case_without_texts_has_none():
+    case = cases.loadCase(os.path.join(CASES_FOLDER, "label_1u_screw_text.json"), STATE_CLASSES)
+    assert case.texts == {}
+    assert "texts" not in json.loads(cases.caseJson(case))
+
+
+@pytest.mark.parametrize("texts", [{"gfLabel1_width": "x"}, {"gfLabel1_text1": 3}, {"gfBaseWidth": "x"}])
+def test_texts_have_to_be_text_parameters_of_an_insert(tmp_path, texts):
+    data = {"description": "a case", "generator": "label", "settings": label_settings(), "texts": texts}
+    with pytest.raises(cases.TestCaseError, match="text"):
+        cases.loadCase(write_case_data(tmp_path, data), STATE_CLASSES)
+
+
+def test_only_label_cases_set_texts(tmp_path):
+    data = {"description": "a case", "generator": "bin", "settings": sample_settings(), "texts": {"gfLabel1_text1": "x"}}
+    with pytest.raises(cases.TestCaseError, match="text"):
+        cases.loadCase(write_case_data(tmp_path, data), STATE_CLASSES)
+
+
+def test_joergs_welle_6mm_cases_are_there():
+    loaded = {case.name: case for case in cases.loadCases(CASES_FOLDER, STATE_CLASSES)}
+    joerg = loaded["label_1u_welle_6mm"]
+    assert (joerg.state.line1, joerg.state.line2, joerg.state.showScrew, joerg.state.hardware, joerg.state.surface, joerg.state.isBold) ==         ("Welle 6mm", "", False, "none", "Flush", False)
+    assert loaded["label_1u_welle_6mm_text_edited"].texts["gfLabel1_text1"].startswith("Welle 6mm")
+
+
+def label_settings():
+    with open(os.path.join(CASES_FOLDER, "label_1u_screw_text.json")) as file:
+        return json.load(file)["settings"]
+
+
+def test_a_descender_over_an_umlaut_of_the_next_line_is_still_two_lines():
+    # review of round 9: "y" of line 1 reaches down to 5.2 mm, the dots of a capital U umlaut of line 2 up to 5.6 mm,
+    # they overlap in height and are still two lines
+    letters = [(1.0, 6.25, 3.0, 9.75), (3.2, 5.22, 5.0, 8.8), (1.0, 1.25, 3.0, 4.75), (1.3, 5.0, 2.7, 5.55)]
+    assert cases.insertTextProblems(INSERT_BOX, letters, TWO_LINES) == []
+
+
+def test_a_wrapped_line_is_found_among_others_close_to_it():
+    # one line broken in two, its second row overlaps a letter hanging down from the first
+    letters = [(1.0, 6.25, 10.0, 9.75), (1.0, 0.5, 8.0, 3.9), (1.0, 1.25, 8.0, 4.75)]
+    notes = cases.insertTextProblems(INSERT_BOX, letters, ONE_LINE)
+    assert any('in 2 bands' in note for note in notes)
+
+
+def test_texts_and_parameters_in_one_case_are_an_error(tmp_path):
+    # a build with the parameters from the start can't have the edited text, see editedState
+    data = {"description": "a case", "generator": "label", "settings": label_settings(),
+            "parameters": {"gfBaseWidth": 40.0}, "texts": {"gfLabel1_text1": "x"}}
+    with pytest.raises(cases.TestCaseError, match="texts"):
+        cases.loadCase(write_case_data(tmp_path, data), STATE_CLASSES)
+
+
+def test_letters_added_by_a_text_edit_get_names_in_reading_order():
+    # Fusion names them after the user's language and its body count ("Körper12"), the snapshot pairs bodies by name
+    names = cases.addedLetterNames("Gridfinity label 1U Welle 6mm", [(46.6, 3.1), (36.2, 3.1), (45.3, 3.1)])
+    assert names == ["Gridfinity label 1U Welle 6mm text +3", "Gridfinity label 1U Welle 6mm text +1", "Gridfinity label 1U Welle 6mm text +2"]
+
+
+def test_dots_above_their_letter_stay_in_its_band():
+    # the dots of an i or an umlaut are bodies of their own, a little above the letter
+    letters = [(1.0, 3.25, 2.0, 6.85), (2.2, 3.25, 2.7, 5.9), (2.2, 6.2, 2.7, 6.7), (3.0, 3.25, 6.0, 7.75)]
+    assert cases.insertTextProblems(INSERT_BOX, letters, ONE_LINE) == []

@@ -9,6 +9,7 @@ from typing import Callable
 
 from ...lib import fusion360utils as futil
 from ...lib.ui import viewportPictures
+from ...lib.gridfinityUtils import parameterUtils, cullenectLabelLayout
 from ... import config
 from ..commandCreateBin import binBuilder
 from ..commandCreateBin.inputState import InputState as BinInputState
@@ -233,6 +234,17 @@ def buildCase(case: testCases.TestCase) -> tuple[adsk.core.Document, list[adsk.f
         setParameters(design, case.parameters)
         if not all(body.isValid for body in bodies):
             raise ValueError('a body is gone after setting the parameters')
+    if case.texts:
+        setTexts(design, case.texts)
+        # a longer text has more letters, Fusion makes bodies of them the generator never returned and names them
+        # after the user's language, they get names of their own so the snapshot finds them
+        insert = bodies[0]
+        parts = labelPartBodies(insert)
+        added = [body for body in parts if not body.name.startswith(f'{insert.name} ')]
+        names = testCases.addedLetterNames(insert.name, [(body.boundingBox.minPoint.x, body.boundingBox.minPoint.y) for body in added])
+        for (body, name) in zip(added, names):
+            body.name = name
+        bodies = [insert] + parts
     for body in bodies:
         tagTestBody(body, case.name, ROLE_RECEIVED)
     return (document, bodies, unhealthyFeatures(design.timeline))
@@ -292,6 +304,21 @@ def setParameters(design: adsk.fusion.Design, parameters: dict[str, float]):
             raise ValueError(f'the design has no user parameter {name}')
         parameter.expression = f'{round(value * 10, 6):g} mm'
     adsk.doEvents()
+
+def setTexts(design: adsk.fusion.Design, texts: dict[str, str]):
+    """Text parameters of an insert set as a user would in Change Parameters, Fusion recomputes the design"""
+    for (name, text) in texts.items():
+        parameter = design.userParameters.itemByName(name)
+        if parameter is None:
+            raise ValueError(f'the design has no user parameter {name}')
+        parameter.expression = parameterUtils.textExpression(text)
+    adsk.doEvents()
+
+def labelPartBodies(insert: adsk.fusion.BRepBody) -> list[adsk.fusion.BRepBody]:
+    """The text and symbol bodies beside an insert in its component of its own, letters a longer text added have
+    names Fusion gave them, see cullenectLabelGenerator. Every label case builds the insert in a component of its own
+    (a part design is switched to hybrid), in the root this would take every other body too"""
+    return [body for body in insert.parentComponent.bRepBodies if body != insert]
 
 # what Fusion found wrong with a timeline feature. Groups and some other items are of unknown health, nothing to report
 HEALTH_NAMES = {
@@ -538,6 +565,7 @@ def runCase(case: testCases.TestCase, keepOpen: bool) -> dict:
         notes += designIntentNotes(case, document)
         notes += sketchConstraintNotes(case, document)
         notes += raisedCornerLedgeNotes(case, bodies)
+        notes += insertTextNotes(case, bodies)
     except Exception as err:
         results = [snapshots.BodyResult('', snapshots.STATUS_FAIL, [f'build failed, {buildFailure(case, err)}'])]
     if document is not None and case.parameters:
@@ -621,6 +649,26 @@ def raisedCornerLedgeNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BR
                 continue
             faces.append((face.area * 100, (box.maxPoint.x - box.minPoint.x) * 10, (box.maxPoint.y - box.minPoint.y) * 10))
     return testCases.raisedCornerLedges(faces)
+
+def insertTextNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BRepBody]) -> list[str]:
+    """
+    Why an insert fails for its text: a line broken in two or text off the insert (p84), see
+    testCases.insertTextProblems. A text made longer after building may run on to the right (p70)
+    """
+    if case.generator != testCases.GENERATOR_LABEL or len(bodies) == 0:
+        return []
+    def box(body: adsk.fusion.BRepBody) -> tuple[float, float, float, float]:
+        bounds = body.boundingBox
+        return (bounds.minPoint.x * 10, bounds.minPoint.y * 10, bounds.maxPoint.x * 10, bounds.maxPoint.y * 10)
+    insert = bodies[0]
+    letters = [box(body) for body in bodies[1:] if not body.name.startswith(f'{insert.name} symbol ')]
+    insertBox = box(insert)
+    lineCount = len([line for line in (case.state.line1, case.state.line2) if len(line.strip()) > 0])
+    # where the generator put the middles of the lines, from the bottom of the insert
+    layout = cullenectLabelLayout.labelLayout(1, (insertBox[3] - insertBox[1]) / 10, None, False, lineCount)
+    lineCenters = [insertBox[1] + center * 10 for center in layout.lineCenters]
+    # an edited line may run on to the right, the case doesn't say which, every line may
+    return testCases.insertTextProblems(insertBox, letters, lineCenters, mayRunOnRight=len(case.texts) > 0)
 
 def listedCase(case: testCases.TestCase, status: str) -> dict:
     """A case waiting to be run or refreshed, or being run"""

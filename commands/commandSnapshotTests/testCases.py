@@ -2,6 +2,7 @@ import dataclasses
 import json
 import math
 import os
+import re
 
 # Shape test cases, one JSON file each, holding every setting of a bin, baseplate or label InputState by its field name.
 # Lengths are in mm and angles in degrees to read easily, the state keeps Fusion's cm and radians.
@@ -67,6 +68,9 @@ class TestCase:
     designIntent: str = DESIGN_INTENT_HYBRID
     # the design intent the document has to have once built, None for any, a generator may switch it
     designIntentAfter: str | None = None
+    # text parameters of an insert set after building, as a user edits its text (p70). Not compared with a build
+    # from the start, that fits the text anew, see insertTextProblems
+    texts: dict[str, str] = dataclasses.field(default_factory=dict)
 
 def stateFromJson(generator: str, stateClass: type, settings: dict) -> object:
     """Every field of the state has to be there and nothing else, so a case never falls back to a default"""
@@ -107,6 +111,18 @@ def parametersFromJson(generator: str, parameters: dict) -> dict[str, float]:
             raise TestCaseError(f'parameter {name} has to be a length in mm, not {value!r}')
     return {name: value / 10 for (name, value) in parameters.items()}
 
+# the text parameters of an insert, see commandCreateLabel/labelBuilder.py
+TEXT_PARAMETER_PATTERN = re.compile(r'gfLabel\d+_text[12]')
+
+def textsFromJson(generator: str, texts: dict) -> dict[str, str]:
+    """Text parameters of an insert to set after building"""
+    if texts and generator != GENERATOR_LABEL:
+        raise TestCaseError(f'only a label sets texts after building, not a {generator}')
+    for (name, value) in texts.items():
+        if not TEXT_PARAMETER_PATTERN.fullmatch(name) or not isinstance(value, str):
+            raise TestCaseError(f'texts set an insert text parameter gfLabel<n>_text1 or _text2 to a string, not {name} to {value!r}')
+    return dict(texts)
+
 def editedState(case: TestCase) -> object:
     """The settings the case would have built with its parameters set from the start"""
     fields = PARAMETER_FIELDS[case.generator]
@@ -123,6 +139,10 @@ def loadCase(path: str, stateClasses: dict[str, type]) -> TestCase:
             raise TestCaseError(f'unknown generator {generator!r}')
         state = stateFromJson(generator, stateClasses[generator], data['settings'])
         parameters = parametersFromJson(generator, data.get('parameters', {}))
+        texts = textsFromJson(generator, data.get('texts', {}))
+        if texts and parameters:
+            # the build with the parameters from the start it is compared with can't have the edited text
+            raise TestCaseError('a case sets either parameters or texts after building, not both')
         designIntent = data.get('designIntent', DESIGN_INTENT_HYBRID)
         if designIntent not in DESIGN_INTENTS:
             raise TestCaseError(f'unknown design intent {designIntent!r}')
@@ -131,7 +151,7 @@ def loadCase(path: str, stateClasses: dict[str, type]) -> TestCase:
             raise TestCaseError(f'unknown design intent after building {designIntentAfter!r}')
     except (OSError, ValueError, KeyError, TypeError, AttributeError, TestCaseError) as err:
         raise TestCaseError(f'case {name}: {err}') from err
-    return TestCase(name, data.get('description', ''), generator, state, parameters, designIntent, designIntentAfter)
+    return TestCase(name, data.get('description', ''), generator, state, parameters, designIntent, designIntentAfter, texts)
 
 def loadCases(folder: str, stateClasses: dict[str, type]) -> list[TestCase]:
     """Cases of the folder by name"""
@@ -160,6 +180,8 @@ def caseJson(case: TestCase) -> str:
     data['settings'] = stateToJson(case.generator, case.state)
     if case.parameters:
         data['parameters'] = parametersToJson(case)
+    if case.texts:
+        data['texts'] = dict(case.texts)
     return json.dumps(data, indent=4, ensure_ascii=False) + '\n'
 
 # the case list in tests/e2e/README.md, see tests/e2e/write_readme.py
@@ -201,6 +223,9 @@ def casesMarkdown(folder: str) -> str:
         if data.get('parameters'):
             edits = ', '.join(f'`{name}` {value:g} mm' for (name, value) in data['parameters'].items())
             description += f'. Sets {edits} once built, a run compares that with a build using those values from the start'
+        if data.get('texts'):
+            edits = ', '.join(f'`{name}` "{value}"' for (name, value) in data['texts'].items())
+            description += f'. Sets {edits} once built'
         cases.append((os.path.splitext(fileName)[0], fileName, data.get('generator', ''), description))
     lines = [README_INTRO]
     for (generator, title) in GENERATOR_TITLES.items():
@@ -223,7 +248,10 @@ def caseSettings(case: TestCase) -> list[dict]:
     ] + ([{
         'title': 'Parameters set after building, mm',
         'items': [[name, json.dumps(value)] for (name, value) in parametersToJson(case).items()],
-    }] if case.parameters else [])
+    }] if case.parameters else []) + ([{
+        'title': 'Texts set after building',
+        'items': [[name, json.dumps(value, ensure_ascii=False)] for (name, value) in case.texts.items()],
+    }] if case.texts else [])
 
 # A raised divider corner carries on from the compartment corner below without a ledge (p83): an upward face left
 # where they meet is a sickle Joerg found by hand, 0.36 mm2 where the fillet couldn't follow a short wall under the
@@ -239,3 +267,61 @@ def raisedCornerLedges(faces: list[tuple[float, float, float]]) -> list[str]:
         for (area, width, length) in faces
         if area >= LEDGE_MIN_AREA and width <= LEDGE_MAX_SIZE and length <= LEDGE_MAX_SIZE
     ]
+
+# A text line of an insert stays one line on the insert (p84, p70): Fusion broke a line it took for longer than its box
+# in two, the second row hung off the insert. Each letter body belongs to the text line whose middle is nearest its
+# own, the letters of a line form one band in height. Assigning them first keeps a descender of the upper line over
+# the dots of an umlaut of the lower one from joining the lines (review of round 9). Dots are bodies of their own a
+# little above their letter, a gap of up to TEXT_BAND_GAP of the line's tallest letter stays in the band; a line
+# broken in two leaves a gap of half a capital and more (Joerg's "Welle 6mm": 2.7 mm at 5 mm)
+TEXT_TOLERANCE = 0.01
+TEXT_BAND_GAP = 0.2
+
+def insertTextProblems(insert: tuple[float, float, float, float], letters: list[tuple[float, float, float, float]], lineCenters: list[float], mayRunOnRight: bool = False) -> list[str]:
+    """
+    Notes on the text of an insert, its box and those of its letter bodies as (min x, min y, max x, max y) in mm, the
+    middles of its text lines in mm: each line one band of letters, all on the insert. A text made longer after building
+    may run on past the right edge, `mayRunOnRight`
+    """
+    notes = []
+    lines = [[] for _ in lineCenters]
+    for box in letters:
+        middle = (box[1] + box[3]) / 2
+        nearest = min(range(len(lineCenters)), key=lambda index: abs(lineCenters[index] - middle)) if lineCenters else None
+        if nearest is not None:
+            lines[nearest].append(box)
+    if not lineCenters and letters:
+        notes.append(f'{len(letters)} text bodies on an insert without text')
+    for (index, lineLetters) in enumerate(lines):
+        bands = []
+        gap = max(TEXT_TOLERANCE, TEXT_BAND_GAP * max((box[3] - box[1] for box in lineLetters), default=0))
+        for (_, minY, _, maxY) in sorted(lineLetters, key=lambda box: box[1]):
+            if bands and minY <= bands[-1][1] + gap:
+                bands[-1][1] = max(bands[-1][1], maxY)
+            else:
+                bands.append([minY, maxY])
+        if len(bands) == 0:
+            notes.append(f'line {index + 1} has no text')
+        elif len(bands) > 1:
+            notes.append(f'line {index + 1} in {len(bands)} bands, y ' + ', '.join(f'{minY:.2f} to {maxY:.2f}' for (minY, maxY) in bands) + ' mm')
+    (insertMinX, insertMinY, insertMaxX, insertMaxY) = insert
+    off = [
+        box for box in letters
+        if box[0] < insertMinX - TEXT_TOLERANCE or box[1] < insertMinY - TEXT_TOLERANCE or box[3] > insertMaxY + TEXT_TOLERANCE
+        or (not mayRunOnRight and box[2] > insertMaxX + TEXT_TOLERANCE)
+    ]
+    if off:
+        (minX, minY, maxX, maxY) = (min(box[0] for box in off), min(box[1] for box in off), max(box[2] for box in off), max(box[3] for box in off))
+        notes.append(f'{len(off)} text bodies off the insert, x {minX:.2f} to {maxX:.2f} mm, y {minY:.2f} to {maxY:.2f} mm')
+    return notes
+
+def addedLetterNames(insertName: str, corners: list[tuple[float, float]]) -> list[str]:
+    """
+    Names for the letter bodies a text edit added, by their (min x, min y), numbered in reading order. Fusion names
+    them after the user's language and its body count ("Körper12"), the snapshot pairs bodies by name
+    """
+    order = sorted(range(len(corners)), key=lambda index: (round(corners[index][0], 3), round(corners[index][1], 3)))
+    names = [''] * len(corners)
+    for (number, index) in enumerate(order):
+        names[index] = f'{insertName} text +{number + 1}'
+    return names
