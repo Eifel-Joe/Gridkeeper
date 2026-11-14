@@ -23,6 +23,7 @@
         "magnetCutoutDepth": 2.4,
         "hasLip": true,
         "hasLipNotches": false,
+        "hasDividersToTop": false,
         "hasScoop": true,
         "scoopMaxRadius": 10.0,
         "hasTab": false,

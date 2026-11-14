@@ -26,13 +26,37 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
   the folders, svg size).
 - The hardware symbols are also in the label icon dropdown (`Cullenect washer`, ...), with the new
   icon types inserts, magnets and crimps.
+- **Command „Gridfinity label“** in the Create menu beside bin and baseplate: a Cullenect insert (`42 mm × n − 6 mm` ×
+  11 mm × 1.2 mm with the latch set in 0.2 mm all around, as `cullenect_base_v2`) with up to two lines of text and a
+  screw put together from head, shaft, threads, driver, flange and security pin, or a hardware symbol. Width in base
+  units (following `gfBaseWidth`) or free in mm, a width and height correction like Cullenect's `offset_xy`. Text and
+  symbol are one layer (0.2 mm), raised, set in or flush, and bodies of their own to print them in another colour.
+  The width is a user parameter (`gfLabel1_width`), the symbol stays at the right edge when it changes. Each text line
+  is a user parameter too (`gfLabel1_text1`, `gfLabel1_text2`) and stays live text, so it can be changed later like
+  the bin labels; the font size is fitted when the insert is generated, a much longer text wraps in its box. All other
+  sketches are fully constrained.
+  Settings can be saved as defaults and shown with „Gridfinity settings“. Four label shape test cases.
+- **Dividers up to the top on grid lines** (bin dialog, off by default): compartment dividers lying on a grid line go
+  up to the top of the stacking lip. The feet of a bin stacked on top have a groove on every grid line, so a bin of any
+  size still stacks on it, like a 4x2 on two 2x2. The dividers are cut by the feet of a stacked bin with clearance, so
+  a divider a little off its line (dividers over many units are) or a thick one only keeps what fits. Dividers between
+  grid lines (3 compartments on 4 units, half cells) stay below the lip. Hollow bins with a lip only; follows parameter
+  changes. Two new bin cases.
+
+### Changed
+
+- The screw and hardware choices carry Cullenect's names („Round“, „T-Nut Side“, „Torx/Star“, ...) in Cullenect's
+  order, new svg files come after them.
+- The svg size of a symbol honours the units of `width` and `height`; a number without unit counts as CSS pixels as
+  in the svg standard (was read as mm).
 
 ## Credits
 
 - **Le0Michine** — [FusionGridfinityGenerator](https://github.com/Le0Michine/FusionGridfinityGenerator), the add-in
   this fork builds on, CC BY-NC-SA 4.0.
 - **CullenJWebb** — [Cullenect Labels](https://github.com/CullenJWebb/Cullenect-Labels), insert and socket dimensions
-  from `OpenSCAD/Cullenect.scad` (commit `d6dc0bb`) and the symbols, MIT.
+  from `OpenSCAD/Cullenect.scad` (commit `d6dc0bb`), the symbols and the insert geometry and layout
+  (`cullenect_base_v2`, `cullenect_label_generate`), MIT.
 - **ostat / Chris Heazlewood** — [gridfinity_extended_openscad](https://github.com/ostat/gridfinity_extended_openscad),
   reference for the Cullenect tab.
 - **Zack Freedman** — [Gridfinity](https://gridfinity.xyz).

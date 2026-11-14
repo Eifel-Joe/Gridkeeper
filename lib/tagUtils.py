@@ -6,6 +6,8 @@ import os
 TAG_GROUP = 'LevMishin.GridfinityGenerator'
 TAG_BIN = 'bin'
 TAG_BASEPLATE = 'baseplate'
+# Cullenect inserts of the label command
+TAG_LABEL = 'label'
 TAG_HEIGHT_UNIT_PARAMETER = 'heightUnitParameter'
 TAG_BASE_WIDTH_PARAMETER = 'baseWidthParameter'
 TAG_BASE_LENGTH_PARAMETER = 'baseLengthParameter'
@@ -53,7 +55,7 @@ def tagBody(body: adsk.fusion.BRepBody, tagName: str, settings: list[dict] = Non
 
 def readBodyTag(body: adsk.fusion.BRepBody) -> tuple[str, dict] | None:
     """Which generator tagged the body and the tag value, none for bodies it didn't generate"""
-    for tagName in (TAG_BIN, TAG_BASEPLATE):
+    for tagName in (TAG_BIN, TAG_BASEPLATE, TAG_LABEL):
         attribute = body.attributes.itemByName(TAG_GROUP, tagName)
         if attribute is not None:
             return (tagName, parseTagValue(attribute.value))

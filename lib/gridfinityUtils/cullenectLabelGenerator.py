@@ -1,0 +1,230 @@
+import adsk.core, adsk.fusion
+
+from . import const, commonUtils, combineUtils, filletUtils, sketchUtils, cullenectLabelLayout, cullenectCatalog
+from .labelGenerator import _addText, _measureText, _iconProfiles, _importIcon
+from .dim import Dim, valueInput
+
+# Insert for the Cullenect label system, after cullenect_base_v2 and cullenect_label_generate in Cullenect.scad by
+# CullenJWebb (MIT), https://github.com/CullenJWebb/Cullenect-Labels: a 1.2 mm plate with rounded corners whose middle
+# layer is set in all around as the latch, text at the left and a symbol at the right, one layer high
+
+SURFACE_EMBOSSED = 'Embossed'
+SURFACE_DEBOSSED = 'Debossed'
+SURFACE_FLUSH = 'Flush'
+SURFACES = [SURFACE_EMBOSSED, SURFACE_DEBOSSED, SURFACE_FLUSH]
+
+
+class CullenectLabelInput():
+    def __init__(self):
+        # width as a dim, so the insert follows the width parameter, height in cm
+        self.width: Dim = None
+        self.height: float = const.CULLENECT_LABEL_HEIGHT
+        self.lines: list[str] = []
+        # one text parameter per line, drives that line so it can be edited later like the bin labels
+        self.textParameters: list[adsk.fusion.UserParameter] = []
+        self.iconPath: str | None = None
+        self.isScrew: bool = False
+        self.surface: str = SURFACE_EMBOSSED
+        self.isBold: bool = False
+
+
+def _offsetPlane(offset: float, targetComponent: adsk.fusion.Component, name: str) -> adsk.fusion.ConstructionPlane:
+    planeInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
+    planeInput.setByOffset(targetComponent.xYConstructionPlane, adsk.core.ValueInput.createByReal(offset))
+    plane = targetComponent.constructionPlanes.add(planeInput)
+    plane.name = name
+    plane.isLightBulbOn = False
+    return plane
+
+
+def _extrude(profiles: list, distance: float, isUp: bool, targetComponent: adsk.fusion.Component, name: str) -> adsk.fusion.ExtrudeFeature:
+    extrudeFeatures = targetComponent.features.extrudeFeatures
+    extrudeInput = extrudeFeatures.createInput(commonUtils.objectCollectionFromList(profiles), adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
+    extrudeInput.setOneSideExtent(
+        adsk.fusion.DistanceExtentDefinition.create(adsk.core.ValueInput.createByReal(distance)),
+        adsk.fusion.ExtentDirections.PositiveExtentDirection if isUp else adsk.fusion.ExtentDirections.NegativeExtentDirection,
+    )
+    extrude = extrudeFeatures.add(extrudeInput)
+    extrude.name = name
+    return extrude
+
+
+def _cutExtrude(profiles: list, distance: float, targetBody: adsk.fusion.BRepBody, targetComponent: adsk.fusion.Component, name: str) -> adsk.fusion.ExtrudeFeature:
+    """Cuts the profiles down into the target body only"""
+    extrudeFeatures = targetComponent.features.extrudeFeatures
+    extrudeInput = extrudeFeatures.createInput(commonUtils.objectCollectionFromList(profiles), adsk.fusion.FeatureOperations.CutFeatureOperation)
+    extrudeInput.setOneSideExtent(
+        adsk.fusion.DistanceExtentDefinition.create(adsk.core.ValueInput.createByReal(distance)),
+        adsk.fusion.ExtentDirections.NegativeExtentDirection,
+    )
+    extrudeInput.participantBodies = [targetBody]
+    extrude = extrudeFeatures.add(extrudeInput)
+    extrude.name = name
+    return extrude
+
+
+def _roundedSlab(width: Dim, height: float, inset: float, bottom: float, thickness: float, origin: tuple[float, float], targetComponent: adsk.fusion.Component, name: str) -> adsk.fusion.BRepBody:
+    """Plate of the insert outline set in by `inset` all around, from `bottom` up by `thickness`, corners rounded, the
+    outline's bottom left corner at `origin`"""
+    plane = _offsetPlane(bottom, targetComponent, f'{name} plane')
+    sketch: adsk.fusion.Sketch = targetComponent.sketches.add(plane)
+    sketch.name = f'{name} sketch'
+    insetDim = Dim.length(inset)
+    (originX, originY) = origin
+    isAtOrigin = inset == 0 and originX == 0 and originY == 0
+    sketchUtils.createRectangle(
+        width - insetDim * 2 if inset > 0 else width,
+        height - inset * 2,
+        adsk.core.Point3D.create(originX + inset, originY + inset, 0),
+        sketch,
+        None if isAtOrigin else Dim.length(originX + inset),
+        None if isAtOrigin else Dim.length(originY + inset),
+    )
+    extrude = _extrude([sketch.profiles.item(0)], thickness, True, targetComponent, name)
+    body = extrude.bodies.item(0)
+    body.name = name
+    verticalEdges = [
+        edge for edge in body.edges
+        if abs(edge.boundingBox.maxPoint.z - edge.boundingBox.minPoint.z - thickness) < const.DEFAULT_FILTER_TOLERANCE
+    ]
+    filletUtils.createFillet(verticalEdges, const.CULLENECT_CORNER_RADIUS, False, targetComponent, name=f'{name} corners')
+    return body
+
+
+def _fixSketch(sketch: adsk.fusion.Sketch):
+    """Fixes everything drawn in the sketch where it is, imported curves and the box of a text have no constraints of
+    their own. Deferred, an imported symbol has hundreds of points and the sketch would be solved again for each"""
+    with sketchUtils.deferSketchCompute(sketch):
+        for curve in list(sketch.sketchCurves):
+            curve.isFixed = True
+        origin = sketch.originPoint
+        for point in list(sketch.sketchPoints):
+            if point != origin:
+                point.isFixed = True
+
+
+def _texts(sketch: adsk.fusion.Sketch, layout: cullenectLabelLayout.LabelLayout, lines: list[str], textParameters: list, isBold: bool, withTwins: bool, timer: commonUtils.StepTimer) -> tuple[list, list]:
+    """The text lines at the left, each shrunk to fit in front of the symbol, as live text driven by its text parameter
+    so it can be edited later, and with twins a second text on top of each, driven by the same parameter. The text
+    boxes are fixed; Fusion may not report a sketch with live text as fully constrained, the one exception Nutzer allowed
+    on 14.11.2026 (p50, see the spec). Exploding the text into fixed curves kept it from changing, that was round 4.
+    The twins are there for a second extrusion: Fusion refuses to extrude the same text twice in one run ("invalid
+    input argument"), and cutting with the bodies of the first instead loses letters a later text adds.
+    Returns the texts and their twins, no twins without"""
+    available = layout.textMaxX - layout.textMinX
+    texts = []
+    twins = []
+    for (index, (text, lineHeight, center)) in enumerate(zip(lines, layout.lineHeights, layout.lineCenters)):
+        measured = _measureText(sketch, text, lineHeight, isBold)
+        textHeight = cullenectLabelLayout.fittedLineHeight(lineHeight, measured[0] if measured is not None else 0, available)
+        # the box is taller than the letters, the middle alignment puts the capitals in its middle
+        corner = adsk.core.Point3D.create(layout.textMinX, center - lineHeight * 1.5, 0)
+        diagonal = adsk.core.Point3D.create(layout.textMaxX, center + lineHeight * 1.5, 0)
+        lineTexts = [_addText(sketch, text, textHeight, corner, diagonal, isBold, False) for _ in range(2 if withTwins else 1)]
+        if index < len(textParameters) and textParameters[index] is not None:
+            for sketchText in lineTexts:
+                sketchText.textParameter.expression = textParameters[index].name
+        texts.append(lineTexts[0])
+        twins += lineTexts[1:]
+        timer.step(f'text line {len(text)} characters')
+    _fixSketch(sketch)
+    timer.step('text box fixed')
+    return (texts, twins)
+
+
+def _iconProfilesPlaced(sketch: adsk.fusion.Sketch, iconPath: str, layout: cullenectLabelLayout.LabelLayout, iconSize: tuple[float, float], timer: commonUtils.StepTimer) -> list:
+    (iconWidth, iconHeight) = iconSize
+    _importIcon(sketch, iconPath, layout.iconMaxX - iconWidth, layout.iconCenterY - iconHeight / 2, iconHeight)
+    timer.step('icon imported')
+    _fixSketch(sketch)
+    timer.step('icon fixed')
+    profiles = _iconProfiles(sketch)
+    timer.step(f'{len(profiles)} icon profiles')
+    return profiles
+
+
+def createCullenectLabel(
+    input: CullenectLabelInput,
+    targetComponent: adsk.fusion.Component,
+    *,
+    name: str,
+    origin: tuple[float, float] = (0, 0),
+) -> tuple[adsk.fusion.BRepBody, list[adsk.fusion.BRepBody]]:
+    """The insert with its bottom left corner at `origin`, and the text and symbol as bodies of their own so they can
+    be printed in another colour: on top of the insert when embossed, set into it when debossed or flush. Debossed keeps
+    the filling but hides it, flush shows it. The outline follows the width dim, the symbol is moved along with it.
+    Returns the insert and the text and symbol bodies, one per letter or symbol part, none without text and symbol"""
+    timer = commonUtils.StepTimer(name)
+    width = input.width
+    height = input.height
+    thickness = const.CULLENECT_LABEL_THICKNESS
+    latchBottom = const.CULLENECT_LATCH_BOTTOM
+    latchTop = const.CULLENECT_LATCH_BOTTOM + const.CULLENECT_LATCH_HEIGHT
+
+    lines = [line for line in input.lines if len(line.strip()) > 0]
+    size = cullenectLabelLayout.iconSize(input.iconPath, width.value, height, input.isScrew) if input.iconPath is not None else None
+    layout = cullenectLabelLayout.labelLayout(width.value, height, size, input.isScrew, len(lines))
+    problem = cullenectLabelLayout.layoutProblem(layout)
+    if problem is not None:
+        raise ValueError(problem)
+    # drawn where the insert goes rather than moved there afterwards: a move takes the letter bodies there are, and
+    # letters a later text adds would stay behind at the origin
+    layout = cullenectLabelLayout.movedLayout(layout, *origin)
+
+    base = _roundedSlab(width, height, 0, 0, latchBottom, origin, targetComponent, f'{name} bottom')
+    latch = _roundedSlab(width, height, const.CULLENECT_LATCH_INSET, latchBottom, latchTop - latchBottom, origin, targetComponent, f'{name} latch')
+    top = _roundedSlab(width, height, 0, latchTop, thickness - latchTop, origin, targetComponent, f'{name} top')
+    combineUtils.joinBodies(base, commonUtils.objectCollectionFromList([latch, top]), targetComponent, name=f'{name} join')
+    base.name = name
+    timer.step('insert')
+
+    isEmbossed = input.surface == SURFACE_EMBOSSED
+    plane = _offsetPlane(thickness, targetComponent, f'{name} text plane')
+    depth = const.CULLENECT_LAYER
+    textBodies = []
+    iconBodies = []
+    if len(lines) > 0:
+        textSketch: adsk.fusion.Sketch = targetComponent.sketches.add(plane)
+        textSketch.name = f'{name} text sketch'
+        (texts, twins) = _texts(textSketch, layout, lines, input.textParameters, input.isBold, not isEmbossed, timer)
+        if len(texts) > 0:
+            if not isEmbossed:
+                # cut by the twin texts, not by the bodies of the filling: a combine takes the letter bodies there
+                # are, a later text with more letters would lose them as tools
+                _cutExtrude(twins, depth, base, targetComponent, f'{name} text cut')
+            textBodies = list(_extrude(texts, depth, isEmbossed, targetComponent, f'{name} text').bodies)
+            timer.step('text extruded')
+    if size is not None:
+        iconSketch: adsk.fusion.Sketch = targetComponent.sketches.add(plane)
+        iconSketch.name = f'{name} icon sketch'
+        profiles = _iconProfilesPlaced(iconSketch, input.iconPath, layout, size, timer)
+        if len(profiles) > 0:
+            iconBodies = list(_extrude(profiles, depth, isEmbossed, targetComponent, f'{name} icon').bodies)
+            # the symbol stays at the right edge when the width parameter changes
+            shiftX = width - Dim.length(width.value)
+            if shiftX.isExpression:
+                moveInput = targetComponent.features.moveFeatures.createInput2(commonUtils.objectCollectionFromList(iconBodies))
+                moveInput.defineAsTranslateXYZ(valueInput(shiftX), valueInput(Dim.length(0)), valueInput(Dim.length(0)), True)
+                targetComponent.features.moveFeatures.add(moveInput).name = f'{name} icon placement'
+            timer.step('icon extruded and placed')
+
+    parts = textBodies + iconBodies
+    if len(parts) == 0:
+        commonUtils.debugLog(f'{name}: empty insert {width.value * 10:.2f} x {height * 10:.2f} mm')
+        return (base, [])
+    # Fusion keeps letters and symbol that don't touch as bodies of their own, a join doesn't merge them
+    for (index, body) in enumerate(textBodies):
+        body.name = f'{name} text {index + 1}'
+    for (index, body) in enumerate(iconBodies):
+        body.name = f'{name} symbol {index + 1}'
+    if not isEmbossed:
+        if len(iconBodies) > 0:
+            # the symbol is fixed, its bodies stay the same
+            combineUtils.cutBody(base, commonUtils.objectCollectionFromList(iconBodies), targetComponent, True, name=f'{name} symbol cut')
+        if input.surface == SURFACE_DEBOSSED:
+            for part in parts:
+                part.isLightBulbOn = False
+        timer.step('text cut')
+    timer.total()
+    commonUtils.debugLog(f'{name}: insert {width.value * 10:.2f} x {height * 10:.2f} mm, {input.surface.lower()}, {len(lines)} lines, icon {input.iconPath}')
+    return (base, parts)

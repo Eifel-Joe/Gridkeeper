@@ -61,6 +61,8 @@ class BinBodyGeneratorInput():
         self.isSolid = False
         self.hasLip = False
         self.hasLipNotches = False
+        # divider walls going up into the lip, see raisedDividers.DividerSegment
+        self.raisedDividers = []
         self.hasScoop = False
         self.scoopMaxRadius = const.BIN_SCOOP_MAX_RADIUS
         self.tabOverhangAngle = const.BIN_TAB_OVERHANG_ANGLE

@@ -1,0 +1,24 @@
+{
+    "description": "2U insert with a nylon lock nut and two lines of text, set in, the filling kept as a hidden body",
+    "generator": "label",
+    "settings": {
+        "baseWidth": 42.0,
+        "useUnits": true,
+        "widthUnits": 2,
+        "freeWidth": 25.0,
+        "offsetX": 0.0,
+        "offsetY": 0.0,
+        "line1": "M4",
+        "line2": "Nylon lock nut",
+        "isBold": false,
+        "showScrew": false,
+        "head": "socket",
+        "shaft": "machine",
+        "threads": "full",
+        "driver": "hex",
+        "flange": false,
+        "security": false,
+        "hardware": "nut_nylon",
+        "surface": "Debossed"
+    }
+}

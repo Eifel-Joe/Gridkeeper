@@ -15,7 +15,8 @@ from .labelGenerator import BinLabelDefinition, BinLabelInput, createLabel, LABE
 from . import cullenect
 from .cullenectSocketGenerator import createCullenectSocket
 from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput
-from .binBodyLipGenerator import createGridfinityBinBodyLip
+from .binBodyLipGenerator import createGridfinityBinBodyLip, createStackedFootCutters
+from .raisedDividers import DividerSegment
 from .dim import Dim, valueInput
 from ... import config
 
@@ -280,6 +281,18 @@ def createGridfinityBinBody(
             )
             bodiesToSubtract.append(compartmentsTopClearance)
 
+        if input.hasLip and len(input.raisedDividers) > 0:
+            bodiesToMerge.append(createRaisedDividers(
+                input.raisedDividers,
+                (compartmentsMinX, compartmentsMinY),
+                (compartmentWidthUnit + wall, compartmentLengthUnit + wall),
+                (input.compartmentsByX, input.compartmentsByY),
+                wall,
+                binBodyTotalHeight,
+                lipInput,
+                targetComponent,
+            ))
+
     if len(bodiesToSubtract) > 0:
         combineUtils.cutBody(
             binBody,
@@ -352,6 +365,55 @@ def createGridfinityBinBody(
             )
 
     return binBody
+
+def createRaisedDividers(
+    segments: list[DividerSegment],
+    compartmentsMin: tuple[Dim, Dim],
+    pitch: tuple[Dim, Dim],
+    counts: tuple[int, int],
+    wall: Dim,
+    binBodyTotalHeight: Dim,
+    lipInput: BinBodyLipGeneratorInput,
+    targetComponent: adsk.fusion.Component,
+) -> adsk.fusion.BRepBody:
+    """
+    Divider walls on grid lines from below the compartments top clearance up to the top of the lip, cut by the feet of
+    a bin stacked on top like a notched lip, so they run out in the lip's profile. A wall a little off its grid line,
+    as dividers over more units are, gets the part that fits. Segments reach a wall further where they meet a
+    crossing divider, and half a wall into the outer walls, which keeps every box corner off the sketch axes
+    """
+    boxes: list[adsk.fusion.BRepBody] = []
+    bottomZ = binBodyTotalHeight - Dim.length(const.BIN_TAB_TOP_CLEARANCE)
+    height = const.BIN_TAB_TOP_CLEARANCE + const.BIN_LIP_EXTRA_HEIGHT - const.BIN_LIP_TOP_RECESS_HEIGHT
+    for (index, segment) in enumerate(segments):
+        # across is the axis the wall stands on, along the one it runs on
+        (across, along) = (0, 1) if segment.axis == 'x' else (1, 0)
+        wallStart = compartmentsMin[across] + pitch[across] * segment.line - wall
+        startReach = wall / 2 if segment.start == 0 else wall
+        endReach = wall / 2 if segment.end == counts[along] else wall
+        # the first cavity starts at the min, the last one ends a wall short of the next pitch
+        runStart = compartmentsMin[along] + pitch[along] * segment.start - startReach
+        runLength = pitch[along] * (segment.end - segment.start) - wall + startReach + endReach
+        (originX, originY, width, length) = (wallStart, runStart, wall, runLength) if segment.axis == 'x' else (runStart, wallStart, runLength, wall)
+        box = extrudeUtils.createBoxAtPoint(
+            width,
+            length,
+            height,
+            targetComponent,
+            adsk.core.Point3D.create(originX.value, originY.value, bottomZ.value),
+            bottomZ,
+            originX=originX,
+            originY=originY,
+            name=f'Raised divider {index + 1}',
+        )
+        boxes.append(box.bodies.item(0))
+    dividers = boxes[0]
+    dividers.name = 'Raised dividers'
+    if len(boxes) > 1:
+        combineUtils.joinBodies(dividers, commonUtils.objectCollectionFromList(boxes[1:]), targetComponent, name='Raised dividers join')
+    cutters = createStackedFootCutters(lipInput, targetComponent, name='Raised divider foot cutout')
+    combineUtils.cutBody(dividers, commonUtils.objectCollectionFromList(cutters), targetComponent, name='Raised dividers foot cut')
+    return dividers
 
 def tabTopClearance(labelStyle: str) -> float:
     """Embossed labels stand on a tab lowered by their depth, so they keep the tab's clearance"""

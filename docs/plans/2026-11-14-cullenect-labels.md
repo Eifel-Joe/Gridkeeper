@@ -37,6 +37,10 @@
 | Schaft „keiner“, Gewinde „keins“ | nicht angeboten | Spec listet nur Maschine/Holz und voll/teil; Cullenect kennt zusätzlich `none`. |
 | Lage des Symbols | aus den SVG-Abmessungen: senkrecht mittig; Schraube mit rechter Kante bündig am Einleger-Rand (wie Cullenect, Kopf bei `labelX − driverX/2` ± 3 mm), Hardware mit rechter Kante bei `Breite − max(0, (Höhe − Symbolhöhe)/2)` (Cullenect `marginRight`) | neue SVGs brauchen so keine Katalog-Einträge. Abweichung: Schraube ohne Kopf liegt mit dem Schaft am Rand, bei Cullenect bliebe dort der Platz des Kopfes leer. |
 | `offsetX`/`offsetY` bei freier mm-Breite | wirkt auch dort | Korrekturwert für Druckerabweichung (Spec), soll unabhängig von der Breitenangabe gelten; Cullenect ignoriert ihn bei `labelXmm`. |
+| Schraube und Hardware zugleich (Runde 4) | nein: Schraube an ⇒ Hardware gesperrt | Cullenect zeichnet beide an dieselbe Stelle rechts, sie würden sich überlagern. |
+| Text bei nachträglich kleinerer Breite (Runde 4) | Text bleibt, wie er gebaut wurde; das Symbol wandert mit | Text ist explodiert (Spike Task 8) und kann nicht neu umbrechen; wer die Breite deutlich verkleinert, erzeugt den Einleger neu. |
+| Text-/Symbol-Körper (Runde 4) | ein Körper je Buchstabe bzw. Symbolteil (`… text N`, `… symbol N`) | Fusion vereint sich nicht berührende Körper nicht (Kombinieren und Extrusion „Verbinden“ geprüft). |
+| Korrekturwerte (Runde 4) | höchstens ±1 mm | darüber ist es kein Druckerausgleich mehr; −10 mm Höhe würde die Ecken-Verrundung brechen. |
 
 ## Review Focus
 
