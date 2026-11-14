@@ -73,6 +73,44 @@ def gridLineSegments(pockets: list[dict], columns: int, rows: int, binWidth: flo
     return segments
 
 
+@dataclass(frozen=True, order=True)
+class FilletCorner:
+    """
+    A corner of compartment grid cell column, row whose two sides go up to the top, filleted like the corners below.
+    Side x -1 is the cell's low x side, 1 its high one, side y likewise
+    """
+    column: int
+    row: int
+    sideX: int
+    sideY: int
+
+
+def _isRaised(segments: list[DividerSegment], axis: str, line: int, cell: int) -> bool:
+    """Whether a raised divider on this line of the axis covers the cell"""
+    return any(s.axis == axis and s.line == line and s.start <= cell < s.end for s in segments)
+
+
+def filletCorners(segments: list[DividerSegment], columns: int, rows: int) -> list[FilletCorner]:
+    """
+    Cell corners the raised dividers make, where both sides of the corner go up to the top, a raised divider or an
+    outer wall. Corners of two outer walls are left out, the bin's own corners are round already
+    """
+    corners = []
+    for column in range(columns):
+        for row in range(rows):
+            for sideX in (-1, 1):
+                for sideY in (-1, 1):
+                    lineX = column if sideX == -1 else column + 1
+                    lineY = row if sideY == -1 else row + 1
+                    outerX = lineX in (0, columns)
+                    outerY = lineY in (0, rows)
+                    upX = outerX or _isRaised(segments, 'x', lineX, row)
+                    upY = outerY or _isRaised(segments, 'y', lineY, column)
+                    if upX and upY and not (outerX and outerY):
+                        corners.append(FilletCorner(column, row, sideX, sideY))
+    return corners
+
+
 def segmentsForBin(
     isEnabled: bool,
     hasLip: bool,
