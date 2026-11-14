@@ -4,7 +4,7 @@ import adsk.core, adsk.fusion
 from ...lib import tagUtils
 from ...lib import placementUtils
 from ...lib.gridfinityUtils import cullenectLabelGenerator, cullenectLabelLayout
-from ...lib.gridfinityUtils import commonUtils, designIntent
+from ...lib.gridfinityUtils import commonUtils, designIntent, labelColors, appearanceUtils
 from ...lib.gridfinityUtils import parameterUtils
 from ...lib.gridfinityUtils import sharedParameters
 from ...lib.gridfinityUtils.dim import Dim
@@ -56,6 +56,8 @@ def labelSymbol(state: InputState) -> tuple[str | None, bool]:
 
 def labelProblem(state: InputState) -> str | None:
     """Why the insert can't be built with these settings, none if it can"""
+    if not labelColors.isColor(state.textColor):
+        return labelColors.colorProblem(labelColors.CUSTOM_CHOICE, state.textColor)
     if state.useUnits and state.baseWidth < sharedParameters.BASE_UNIT_MIN:
         return f'The base width unit is at least {sharedParameters.BASE_UNIT_MIN * 10:g} mm'
     (width, height) = labelSize(state)
@@ -197,6 +199,7 @@ def _buildLabel(
     # drawn at its spot, not moved there: a move would leave behind letters a later text adds
     (base, marking) = cullenectLabelGenerator.createCullenectLabel(labelInput, labelComponent, name=name, origin=placement)
     bodies = [base] + marking
+    appearanceUtils.colorBodies(marking, state.textColor)
 
     # mark generated geometry so it can be told apart from the rest of the design
     for body in bodies:

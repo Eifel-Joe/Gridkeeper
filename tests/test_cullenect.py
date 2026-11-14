@@ -139,9 +139,9 @@ def test_socket_summary_names_tabs_too_short():
 
 
 @pytest.mark.parametrize("style, enabled", [
-    ("Cullenect", {"text": False, "icon": False, "bold": False, "topAngle": False, "socketOffset": True}),
-    ("Outline", {"text": True, "icon": True, "bold": True, "topAngle": True, "socketOffset": False}),
-    ("Engraved", {"text": True, "icon": True, "bold": True, "topAngle": True, "socketOffset": False}),
+    ("Cullenect", {"text": False, "icon": False, "bold": False, "color": False, "topAngle": False, "socketOffset": True}),
+    ("Outline", {"text": True, "icon": True, "bold": True, "color": True, "topAngle": True, "socketOffset": False}),
+    ("Engraved", {"text": True, "icon": True, "bold": True, "color": True, "topAngle": True, "socketOffset": False}),
 ])
 def test_label_inputs_follow_the_style(style, enabled):
     assert cullenect.labelInputsEnabled(style) == enabled

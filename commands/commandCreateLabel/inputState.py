@@ -29,3 +29,5 @@ class InputState:
 
     # one of cullenectLabelGenerator.SURFACES
     surface: str
+    # color of the text and symbol bodies, '#RRGGBB', empty for none, see labelColors
+    textColor: str

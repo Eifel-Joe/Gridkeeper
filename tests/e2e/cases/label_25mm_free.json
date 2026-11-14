@@ -19,6 +19,7 @@
         "flange": true,
         "security": false,
         "hardware": "none",
-        "surface": "Flush"
+        "surface": "Flush",
+        "textColor": ""
     }
 }

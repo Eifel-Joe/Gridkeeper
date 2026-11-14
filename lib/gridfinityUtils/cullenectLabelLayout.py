@@ -196,6 +196,6 @@ def insertProblem(
     if not validWidth(width):
         return f'An insert is {MIN_WIDTH * 10:g} to {MAX_WIDTH * 10:g} mm wide'
     if isSymbolMissing:
-        return 'No svg for this symbol, see tools/cullenectIcons.py'
+        return 'No svg for this symbol, see tools/cullenectIcons.py and tools/setScrewIcons.py'
     size = iconSize(iconPath, width, height, isScrew) if iconPath is not None else None
     return layoutProblem(labelLayout(width, height, size, isScrew, lineCount))

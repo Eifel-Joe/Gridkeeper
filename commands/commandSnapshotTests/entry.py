@@ -9,7 +9,7 @@ from typing import Callable
 
 from ...lib import fusion360utils as futil
 from ...lib.ui import viewportPictures
-from ...lib.gridfinityUtils import parameterUtils, cullenectLabelLayout
+from ...lib.gridfinityUtils import parameterUtils, cullenectLabelLayout, labelColors
 from ... import config
 from ..commandCreateBin import binBuilder
 from ..commandCreateBin.inputState import InputState as BinInputState
@@ -566,6 +566,7 @@ def runCase(case: testCases.TestCase, keepOpen: bool) -> dict:
         notes += sketchConstraintNotes(case, document)
         notes += raisedCornerLedgeNotes(case, bodies)
         notes += insertTextNotes(case, bodies)
+        notes += colorNotes(case, bodies)
     except Exception as err:
         results = [snapshots.BodyResult('', snapshots.STATUS_FAIL, [f'build failed, {buildFailure(case, err)}'])]
     if document is not None and case.parameters:
@@ -649,6 +650,16 @@ def raisedCornerLedgeNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BR
                 continue
             faces.append((face.area * 100, (box.maxPoint.x - box.minPoint.x) * 10, (box.maxPoint.y - box.minPoint.y) * 10))
     return testCases.raisedCornerLedges(faces)
+
+def colorNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BRepBody]) -> list[str]:
+    """Why a colored case fails for the look of its bodies (p86), see testCases.colorProblems. The first body is the
+    insert or bin, the others its text and symbol bodies"""
+    color = getattr(case.state, 'textColor' if case.generator == testCases.GENERATOR_LABEL else 'labelColor', '')
+    if not color or len(bodies) == 0:
+        return []
+    def look(body: adsk.fusion.BRepBody) -> tuple[str, str | None]:
+        return (body.name, body.appearance.name if body.appearance is not None else None)
+    return testCases.colorProblems(labelColors.appearanceName(color), look(bodies[0]), [look(body) for body in bodies[1:]])
 
 def insertTextNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BRepBody]) -> list[str]:
     """

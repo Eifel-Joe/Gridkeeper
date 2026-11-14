@@ -19,7 +19,8 @@
         "flange": false,
         "security": false,
         "hardware": "none",
-        "surface": "Flush"
+        "surface": "Flush",
+        "textColor": ""
     },
     "texts": {
         "gfLabel1_text1": "Welle 6mm h6 lang"
