@@ -1,0 +1,304 @@
+{
+    "bodies": [
+        {
+            "name": "Gridfinity label 1U Welle 6mm",
+            "file": "body1.smt",
+            "volume": 454.177317,
+            "area": 976.183081,
+            "bboxMin": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "bboxMax": [
+                36.0,
+                11.0,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 190,
+            "edges": 525,
+            "vertices": 350
+        },
+        {
+            "name": "Körper12",
+            "file": "body2.smt",
+            "volume": 1.142774,
+            "area": 15.790601,
+            "bboxMin": [
+                46.606153,
+                3.066329,
+                1.0
+            ],
+            "bboxMax": [
+                49.750296,
+                6.634835,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 39,
+            "edges": 111,
+            "vertices": 74
+        },
+        {
+            "name": "Gridfinity label 1U Welle 6mm text 8",
+            "file": "body3.smt",
+            "volume": 1.445691,
+            "area": 19.978354,
+            "bboxMin": [
+                28.872927,
+                3.143486,
+                1.0
+            ],
+            "bboxMax": [
+                33.499125,
+                6.634835,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 30,
+            "edges": 84,
+            "vertices": 56
+        },
+        {
+            "name": "Gridfinity label 1U Welle 6mm text 7",
+            "file": "body4.smt",
+            "volume": 0.545461,
+            "area": 7.571277,
+            "bboxMin": [
+                12.759996,
+                3.143486,
+                1.0
+            ],
+            "bboxMax": [
+                13.338673,
+                7.856486,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 6,
+            "edges": 12,
+            "vertices": 8
+        },
+        {
+            "name": "Gridfinity label 1U Welle 6mm text 6",
+            "file": "body5.smt",
+            "volume": 1.995601,
+            "area": 27.622792,
+            "bboxMin": [
+                1.080372,
+                3.143486,
+                1.0
+            ],
+            "bboxMax": [
+                7.140403,
+                7.856486,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 21,
+            "edges": 57,
+            "vertices": 38
+        },
+        {
+            "name": "Gridfinity label 1U Welle 6mm text 5",
+            "file": "body6.smt",
+            "volume": 1.122849,
+            "area": 15.4981,
+            "bboxMin": [
+                14.042729,
+                3.066329,
+                1.0
+            ],
+            "bboxMax": [
+                17.190088,
+                6.634835,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 22,
+            "edges": 60,
+            "vertices": 40
+        },
+        {
+            "name": "Körper13",
+            "file": "body7.smt",
+            "volume": 1.087834,
+            "area": 14.968157,
+            "bboxMin": [
+                36.186757,
+                3.143486,
+                1.0
+            ],
+            "bboxMax": [
+                38.96762,
+                7.856486,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 19,
+            "edges": 51,
+            "vertices": 34
+        },
+        {
+            "name": "Körper14",
+            "file": "body8.smt",
+            "volume": 0.933053,
+            "area": 12.928135,
+            "bboxMin": [
+                50.463997,
+                3.143486,
+                1.0
+            ],
+            "bboxMax": [
+                53.23843,
+                6.634835,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 20,
+            "edges": 54,
+            "vertices": 36
+        },
+        {
+            "name": "Körper15",
+            "file": "body9.smt",
+            "volume": 0.545461,
+            "area": 7.571277,
+            "bboxMin": [
+                45.326634,
+                3.143486,
+                1.0
+            ],
+            "bboxMax": [
+                45.905311,
+                7.856486,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 6,
+            "edges": 12,
+            "vertices": 8
+        },
+        {
+            "name": "Gridfinity label 1U Welle 6mm text 4",
+            "file": "body10.smt",
+            "volume": 1.445691,
+            "area": 19.978354,
+            "bboxMin": [
+                23.388358,
+                3.143486,
+                1.0
+            ],
+            "bboxMax": [
+                28.014556,
+                6.634835,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 30,
+            "edges": 84,
+            "vertices": 56
+        },
+        {
+            "name": "Gridfinity label 1U Welle 6mm text 3",
+            "file": "body11.smt",
+            "volume": 0.545461,
+            "area": 7.571277,
+            "bboxMin": [
+                11.29723,
+                3.143486,
+                1.0
+            ],
+            "bboxMax": [
+                11.875907,
+                7.856486,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 6,
+            "edges": 12,
+            "vertices": 8
+        },
+        {
+            "name": "Gridfinity label 1U Welle 6mm text 2",
+            "file": "body12.smt",
+            "volume": 1.122849,
+            "area": 15.4981,
+            "bboxMin": [
+                7.45546,
+                3.066329,
+                1.0
+            ],
+            "bboxMax": [
+                10.602818,
+                6.634835,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 22,
+            "edges": 60,
+            "vertices": 40
+        },
+        {
+            "name": "Gridfinity label 1U Welle 6mm text 1",
+            "file": "body13.smt",
+            "volume": 1.35756,
+            "area": 18.615732,
+            "bboxMin": [
+                19.540158,
+                3.063114,
+                1.0
+            ],
+            "bboxMax": [
+                22.652152,
+                7.875775,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 30,
+            "edges": 84,
+            "vertices": 56
+        },
+        {
+            "name": "Körper16",
+            "file": "body14.smt",
+            "volume": 1.35756,
+            "area": 18.615732,
+            "bboxMin": [
+                39.662032,
+                3.063114,
+                1.0
+            ],
+            "bboxMax": [
+                42.774027,
+                7.875775,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 30,
+            "edges": 84,
+            "vertices": 56
+        },
+        {
+            "name": "Körper17",
+            "file": "body15.smt",
+            "volume": 1.425058,
+            "area": 19.594225,
+            "bboxMin": [
+                53.903908,
+                1.757876,
+                1.0
+            ],
+            "bboxMax": [
+                56.913027,
+                6.634835,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 31,
+            "edges": 87,
+            "vertices": 58
+        }
+    ]
+}

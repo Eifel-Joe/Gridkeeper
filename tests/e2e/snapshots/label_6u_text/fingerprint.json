@@ -23,55 +23,55 @@
         {
             "name": "Gridfinity label 6U Assorted screws text 1",
             "file": "body2.smt",
-            "volume": 0.642139,
-            "area": 9.703398,
+            "volume": 0.554142,
+            "area": 8.257224,
             "bboxMin": [
-                4.857735,
-                1.25,
+                10.671555,
+                1.192701,
                 1.2
             ],
             "bboxMax": [
-                7.171555,
-                4.764325,
+                13.047067,
+                3.842769,
                 1.4
             ],
             "lumps": 1,
-            "faces": 24,
-            "edges": 66,
-            "vertices": 44
+            "faces": 19,
+            "edges": 51,
+            "vertices": 34
         },
         {
             "name": "Gridfinity label 6U Assorted screws text 2",
             "file": "body3.smt",
-            "volume": 0.680429,
-            "area": 10.312192,
+            "volume": 1.136715,
+            "area": 16.989453,
             "bboxMin": [
-                18.5,
-                1.190314,
+                1.362892,
+                1.25,
                 1.2
             ],
             "bboxMax": [
-                20.820599,
-                4.702251,
+                4.702933,
+                4.75,
                 1.4
             ],
             "lumps": 1,
-            "faces": 24,
-            "edges": 66,
-            "vertices": 44
+            "faces": 17,
+            "edges": 45,
+            "vertices": 30
         },
         {
             "name": "Gridfinity label 6U Assorted screws text 3",
             "file": "body4.smt",
             "volume": 1.136715,
-            "area": 16.989455,
+            "area": 16.989453,
             "bboxMin": [
-                14.58697,
+                14.949864,
                 1.25,
                 1.2
             ],
             "bboxMax": [
-                17.927011,
+                18.289904,
                 4.75,
                 1.4
             ],
@@ -83,35 +83,55 @@
         {
             "name": "Gridfinity label 6U Assorted screws text 4",
             "file": "body5.smt",
-            "volume": 0.534862,
-            "area": 8.159622,
+            "volume": 0.619245,
+            "area": 9.363177,
             "bboxMin": [
-                4.418827,
-                6.192702,
+                28.498635,
+                6.192701,
                 1.2
             ],
             "bboxMax": [
-                6.524557,
+                30.835948,
                 8.842769,
                 1.4
             ],
             "lumps": 1,
-            "faces": 35,
-            "edges": 99,
-            "vertices": 66
+            "faces": 22,
+            "edges": 60,
+            "vertices": 40
         },
         {
             "name": "Gridfinity label 6U Assorted screws text 5",
             "file": "body6.smt",
-            "volume": 0.554142,
-            "area": 8.257224,
+            "volume": 0.664709,
+            "area": 9.991977,
             "bboxMin": [
-                9.320259,
-                6.192702,
+                17.824352,
+                6.192701,
                 1.2
             ],
             "bboxMax": [
-                11.69577,
+                20.023192,
+                9.75,
+                1.4
+            ],
+            "lumps": 1,
+            "faces": 24,
+            "edges": 66,
+            "vertices": 44
+        },
+        {
+            "name": "Gridfinity label 6U Assorted screws text 6",
+            "file": "body7.smt",
+            "volume": 0.554142,
+            "area": 8.257224,
+            "bboxMin": [
+                9.327421,
+                6.192701,
+                1.2
+            ],
+            "bboxMax": [
+                11.702933,
                 8.842769,
                 1.4
             ],
@@ -121,77 +141,37 @@
             "vertices": 34
         },
         {
-            "name": "Gridfinity label 6U Assorted screws text 6",
-            "file": "body7.smt",
-            "volume": 0.361939,
-            "area": 5.555448,
-            "bboxMin": [
-                13.591405,
-                6.216576,
-                1.2
-            ],
-            "bboxMax": [
-                14.828104,
-                9.671214,
-                1.4
-            ],
-            "lumps": 1,
-            "faces": 22,
-            "edges": 60,
-            "vertices": 40
-        },
-        {
             "name": "Gridfinity label 6U Assorted screws text 7",
             "file": "body8.smt",
-            "volume": 0.534862,
-            "area": 8.15962,
+            "volume": 0.736475,
+            "area": 10.876274,
             "bboxMin": [
-                34.579467,
-                6.192702,
-                1.2
-            ],
-            "bboxMax": [
-                36.685196,
-                8.842769,
-                1.4
-            ],
-            "lumps": 1,
-            "faces": 35,
-            "edges": 99,
-            "vertices": 66
-        },
-        {
-            "name": "Gridfinity label 6U Assorted screws text 8",
-            "file": "body9.smt",
-            "volume": 0.534862,
-            "area": 8.159619,
-            "bboxMin": [
-                21.811391,
-                6.192702,
-                1.2
-            ],
-            "bboxMax": [
-                23.917121,
-                8.842769,
-                1.4
-            ],
-            "lumps": 1,
-            "faces": 35,
-            "edges": 99,
-            "vertices": 66
-        },
-        {
-            "name": "Gridfinity label 6U Assorted screws text 9",
-            "file": "body10.smt",
-            "volume": 0.296606,
-            "area": 4.587158,
-            "bboxMin": [
-                26.868008,
+                0.992838,
                 6.25,
                 1.2
             ],
             "bboxMax": [
-                28.245567,
+                4.268417,
+                9.75,
+                1.4
+            ],
+            "lumps": 1,
+            "faces": 15,
+            "edges": 39,
+            "vertices": 26
+        },
+        {
+            "name": "Gridfinity label 6U Assorted screws text 8",
+            "file": "body9.smt",
+            "volume": 0.296606,
+            "area": 4.587161,
+            "bboxMin": [
+                12.20191,
+                6.25,
+                1.2
+            ],
+            "bboxMax": [
+                13.579468,
                 8.842769,
                 1.4
             ],
@@ -201,17 +181,37 @@
             "vertices": 26
         },
         {
+            "name": "Gridfinity label 6U Assorted screws text 9",
+            "file": "body10.smt",
+            "volume": 0.534863,
+            "area": 8.159623,
+            "bboxMin": [
+                21.885402,
+                6.192701,
+                1.2
+            ],
+            "bboxMax": [
+                23.991132,
+                8.842769,
+                1.4
+            ],
+            "lumps": 1,
+            "faces": 35,
+            "edges": 99,
+            "vertices": 66
+        },
+        {
             "name": "Gridfinity label 6U Assorted screws text 10",
             "file": "body11.smt",
             "volume": 0.741171,
-            "area": 11.363327,
+            "area": 11.363326,
             "bboxMin": [
-                30.912346,
+                31.053206,
                 6.25,
                 1.2
             ],
             "bboxMax": [
-                34.390858,
+                34.531719,
                 8.785471,
                 1.4
             ],
@@ -223,95 +223,15 @@
         {
             "name": "Gridfinity label 6U Assorted screws text 11",
             "file": "body12.smt",
-            "volume": 0.619245,
-            "area": 9.363176,
-            "bboxMin": [
-                28.357776,
-                6.192702,
-                1.2
-            ],
-            "bboxMax": [
-                30.695089,
-                8.842769,
-                1.4
-            ],
-            "lumps": 1,
-            "faces": 22,
-            "edges": 60,
-            "vertices": 40
-        },
-        {
-            "name": "Gridfinity label 6U Assorted screws text 12",
-            "file": "body13.smt",
-            "volume": 0.459295,
-            "area": 7.067631,
-            "bboxMin": [
-                24.296724,
-                6.192702,
-                1.2
-            ],
-            "bboxMax": [
-                26.505114,
-                8.842769,
-                1.4
-            ],
-            "lumps": 1,
-            "faces": 21,
-            "edges": 57,
-            "vertices": 38
-        },
-        {
-            "name": "Gridfinity label 6U Assorted screws text 13",
-            "file": "body14.smt",
-            "volume": 0.664709,
-            "area": 9.991976,
-            "bboxMin": [
-                17.750341,
-                6.192702,
-                1.2
-            ],
-            "bboxMax": [
-                19.949181,
-                9.75,
-                1.4
-            ],
-            "lumps": 1,
-            "faces": 24,
-            "edges": 66,
-            "vertices": 44
-        },
-        {
-            "name": "Gridfinity label 6U Assorted screws text 14",
-            "file": "body15.smt",
-            "volume": 0.619245,
-            "area": 9.363174,
-            "bboxMin": [
-                15.042974,
-                6.192702,
-                1.2
-            ],
-            "bboxMax": [
-                17.380286,
-                8.842769,
-                1.4
-            ],
-            "lumps": 1,
-            "faces": 22,
-            "edges": 60,
-            "vertices": 40
-        },
-        {
-            "name": "Gridfinity label 6U Assorted screws text 15",
-            "file": "body16.smt",
             "volume": 0.296606,
             "area": 4.587161,
             "bboxMin": [
-                12.194747,
+                26.942019,
                 6.25,
                 1.2
             ],
             "bboxMax": [
-                13.572304,
+                28.319577,
                 8.842769,
                 1.4
             ],
@@ -321,17 +241,37 @@
             "vertices": 26
         },
         {
-            "name": "Gridfinity label 6U Assorted screws text 16",
-            "file": "body17.smt",
-            "volume": 0.534862,
-            "area": 8.159623,
+            "name": "Gridfinity label 6U Assorted screws text 12",
+            "file": "body13.smt",
+            "volume": 0.619245,
+            "area": 9.363177,
             "bboxMin": [
-                6.863574,
-                6.192702,
+                15.116985,
+                6.192701,
                 1.2
             ],
             "bboxMax": [
-                8.969305,
+                17.454297,
+                8.842769,
+                1.4
+            ],
+            "lumps": 1,
+            "faces": 22,
+            "edges": 60,
+            "vertices": 40
+        },
+        {
+            "name": "Gridfinity label 6U Assorted screws text 13",
+            "file": "body14.smt",
+            "volume": 0.534863,
+            "area": 8.159623,
+            "bboxMin": [
+                6.870737,
+                6.192701,
+                1.2
+            ],
+            "bboxMax": [
+                8.976467,
                 8.842769,
                 1.4
             ],
@@ -341,57 +281,97 @@
             "vertices": 66
         },
         {
-            "name": "Gridfinity label 6U Assorted screws text 17",
-            "file": "body18.smt",
-            "volume": 0.736475,
-            "area": 10.876273,
+            "name": "Gridfinity label 6U Assorted screws text 14",
+            "file": "body15.smt",
+            "volume": 0.534863,
+            "area": 8.159623,
             "bboxMin": [
-                1.0,
-                6.25,
+                4.425989,
+                6.192701,
                 1.2
             ],
             "bboxMax": [
-                4.27558,
-                9.75,
+                6.531719,
+                8.842769,
                 1.4
             ],
             "lumps": 1,
-            "faces": 15,
-            "edges": 39,
-            "vertices": 26
+            "faces": 35,
+            "edges": 99,
+            "vertices": 66
+        },
+        {
+            "name": "Gridfinity label 6U Assorted screws text 15",
+            "file": "body16.smt",
+            "volume": 0.361939,
+            "area": 5.555447,
+            "bboxMin": [
+                13.665416,
+                6.216576,
+                1.2
+            ],
+            "bboxMax": [
+                14.902114,
+                9.671214,
+                1.4
+            ],
+            "lumps": 1,
+            "faces": 22,
+            "edges": 60,
+            "vertices": 40
+        },
+        {
+            "name": "Gridfinity label 6U Assorted screws text 16",
+            "file": "body17.smt",
+            "volume": 0.459295,
+            "area": 7.067632,
+            "bboxMin": [
+                24.370737,
+                6.192701,
+                1.2
+            ],
+            "bboxMax": [
+                26.579127,
+                8.842769,
+                1.4
+            ],
+            "lumps": 1,
+            "faces": 21,
+            "edges": 57,
+            "vertices": 38
+        },
+        {
+            "name": "Gridfinity label 6U Assorted screws text 17",
+            "file": "body18.smt",
+            "volume": 0.534863,
+            "area": 8.159623,
+            "bboxMin": [
+                34.720327,
+                6.192701,
+                1.2
+            ],
+            "bboxMax": [
+                36.826057,
+                8.842769,
+                1.4
+            ],
+            "lumps": 1,
+            "faces": 35,
+            "edges": 99,
+            "vertices": 66
         },
         {
             "name": "Gridfinity label 6U Assorted screws text 18",
             "file": "body19.smt",
-            "volume": 0.554142,
-            "area": 8.257224,
-            "bboxMin": [
-                10.308662,
-                1.192702,
-                1.2
-            ],
-            "bboxMax": [
-                12.684174,
-                3.842769,
-                1.4
-            ],
-            "lumps": 1,
-            "faces": 19,
-            "edges": 51,
-            "vertices": 34
-        },
-        {
-            "name": "Gridfinity label 6U Assorted screws text 19",
-            "file": "body20.smt",
             "volume": 0.361939,
-            "area": 5.555445,
+            "area": 5.555447,
             "bboxMin": [
-                8.873806,
+                9.236699,
                 1.216576,
                 1.2
             ],
             "bboxMax": [
-                10.110504,
+                10.473397,
                 4.671214,
                 1.4
             ],
@@ -401,24 +381,44 @@
             "vertices": 40
         },
         {
-            "name": "Gridfinity label 6U Assorted screws text 20",
-            "file": "body21.smt",
-            "volume": 1.136715,
-            "area": 16.989454,
+            "name": "Gridfinity label 6U Assorted screws text 19",
+            "file": "body20.smt",
+            "volume": 0.642139,
+            "area": 9.703397,
             "bboxMin": [
-                1.0,
+                5.220628,
                 1.25,
                 1.2
             ],
             "bboxMax": [
-                4.340041,
-                4.75,
+                7.534447,
+                4.764325,
                 1.4
             ],
             "lumps": 1,
-            "faces": 17,
-            "edges": 45,
-            "vertices": 30
+            "faces": 24,
+            "edges": 66,
+            "vertices": 44
+        },
+        {
+            "name": "Gridfinity label 6U Assorted screws text 20",
+            "file": "body21.smt",
+            "volume": 0.68043,
+            "area": 10.312197,
+            "bboxMin": [
+                18.862892,
+                1.190314,
+                1.2
+            ],
+            "bboxMax": [
+                21.183493,
+                4.702251,
+                1.4
+            ],
+            "lumps": 1,
+            "faces": 24,
+            "edges": 66,
+            "vertices": 44
         }
     ]
 }
