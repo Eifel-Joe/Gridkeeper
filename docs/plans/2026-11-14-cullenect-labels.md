@@ -6,7 +6,7 @@
 
 **Architecture:** Reine Rechenlogik (Maße, Katalog, Layout) in Fusion-freien Modulen mit pytest-Tests; Fusion-Geometrie in Generator-Modulen nach dem Muster von `labelGenerator.createLabel` (Skizzen auf einer Ebene in aktueller Höhe, Parameteränderungen nur über ein Verschieben-Feature bzw. Ausdrücke auf `gfBaseWidth`). Symbole werden einmalig mit OpenSCAD aus Cullenects eigenem Code als SVG gerendert und eingecheckt.
 
-**Tech Stack:** Python 3.13 (Fusion-API `adsk`), pytest mit Stubs in `tests/stubs`, Fusion-Snapshot-Tests (`tests/e2e`), OpenSCAD (`C:\Program Files\OpenSCAD`) nur für das Symbol-Werkzeug.
+**Tech Stack:** Python 3.14 in Fusion, Tests auf 3.13 und 3.14 (Fusion-API `adsk`), pytest mit Stubs in `tests/stubs`, Fusion-Snapshot-Tests (`tests/e2e`), OpenSCAD (`C:\Program Files\OpenSCAD`) nur für das Symbol-Werkzeug.
 
 **Spec:** `docs/specs/2026-11-14-cullenect-labels-design.md` (freigegeben). Bei Widerspruch gilt die Spec; Maße aus `Cullenect.scad` (CullenJWebb/Cullenect-Labels, Commit `d6dc0bb2a6491f53c27e5f9db2dfc38ebb07f8db`, MIT).
 
@@ -26,12 +26,16 @@
 | Punkt | Festlegung | Begründung |
 |---|---|---|
 | Randmaß Tasche | `CULLENECT_POCKET_MARGIN = 0.1` (1,0 mm) je Seite, in X und Y | 1U-Lasche hat 39,1 mm nutzbar (42 − 2·0,25 Spiel − 2·1,2 Wand) ⇒ Rand max. 1,4 mm; 2,65 mm (Gridfinity Extended) passt nicht. 1,0 mm lässt Luft für dickere Wände bis 1,4 mm. |
-| Taschenbreite | Größtes Cullenect-Standardmaß `gfBaseWidth·n − 6 mm + 0,3 mm` in Schritten n = 0,5, das mit Rand in die verfügbare Laschenlänge passt | Auch Fach-Laschen bekommen Standardbreiten ⇒ Original-Einleger passen überall. 4x2-Bin, 1x1-Fach (40,375 mm): 1U = 36,3 + 2,0 ≤ 40,375 ✓; Fach über 2 Zellen (81,95 mm): 2U ✓; über 4 Zellen (165,1 mm): 4U ✓. **Wahl für Jörg, siehe unten.** |
+| Taschenbreite | Größtes Cullenect-Standardmaß `gfBaseWidth·n − 6 mm + 0,3 mm` in Schritten n = 0,5, das mit Rand in die verfügbare Laschenlänge passt | Auch Fach-Laschen bekommen Standardbreiten ⇒ Original-Einleger passen überall. 4x2-Bin, 1x1-Fach (40,375 mm): 1U = 36,3 + 2,0 ≤ 40,375 ✓; Fach über 2 Zellen (81,95 mm): 2U ✓; über 4 Zellen (165,1 mm): 4U ✓ (jeweils mit `tabLength` ≥ Fachbreite). **Entschieden, siehe unten.** |
 | Laschenbreite | `max(Nutzerwert, 14 mm, 11,3 + 2·Vorderrand)`; der Nutzerwert im Dialog wird nicht überschrieben | Spec-Vorgabe 14 mm; Formel deckt steile Unterschneidungen ab. |
 | Lage in Y | mittig auf der Laschen-Oberseite, aber Vorderrand ≥ `socketFrontInset` | Unter der Tasche bleibt bei 45°-Unterschneidung genug Material (Taschenboden + 0,4 mm Haut, `BIN_TAB_HOLLOW_MIN_SKIN`). |
 | Geneigte Laschen-Oberseite | bei Cullenect gesperrt (Winkel 0, Eingabe deaktiviert) | Tasche braucht ebene Auflage. |
 | Hohle Lasche | Deckenstärke `max(Wand, 1,2 + 0,4 mm)` | wie Engraved, nur mit Taschentiefe. |
 | Breite des Einlegers nachträglich | User-Parameter in mm | eine Zahl, die der Nutzer direkt mit der Taschenanzeige vergleicht. |
+| Korrekturwert `offset_xy` | zwei Felder `offsetX`, `offsetY` (Default 0), wirken wie in Cullenect auf Breite und Höhe des Einlegers | Cullenect hat ein Paar `[x, y]` (`labelY = 11 + offset_xy.y`). |
+| Laschenlänge bei Fächern | unverändert `tabLength` des Nutzers; Fach-Laschen werden nicht automatisch aufs Fach verlängert | Bestandsverhalten; wer eine 2U-/4U-Tasche im Fach will, setzt `tabLength` entsprechend. Default `tabLength` = 1 ⇒ jedes Fach bekommt 1U. |
+| Schaft „keiner“, Gewinde „keins“ | nicht angeboten | Spec listet nur Maschine/Holz und voll/teil; Cullenect kennt zusätzlich `none`. |
+| Lage des Symbols | aus den SVG-Abmessungen: senkrecht mittig, rechte Kante bei `Breite − max(0, (1,1 − Symbolhöhe)/2)` | Cullenects Hardware-Regel (`marginRight = (labelY − hardX)/2`) auf alle Symbole verallgemeinert; neue SVGs brauchen so keine Katalog-Einträge. |
 
 ## Review Focus
 
@@ -55,14 +59,14 @@
 **Interfaces:**
 - Produces (const, cm): `CULLENECT_LABEL_HEIGHT = 1.1`, `CULLENECT_LABEL_THICKNESS = 0.12`, `CULLENECT_WIDTH_REDUCTION = 0.6`, `CULLENECT_SOCKET_OFFSET = 0.03`, `CULLENECT_LATCH_INSET = 0.02`, `CULLENECT_LATCH_BOTTOM = 0.02`, `CULLENECT_LATCH_HEIGHT = 0.06`, `CULLENECT_RIB_WIDTH = 0.02`, `CULLENECT_RIB_HEIGHT = 0.04`, `CULLENECT_RIB_BOTTOM = 0.02`, `CULLENECT_CORNER_RADIUS = 0.05`, `CULLENECT_LAYER = 0.02`, `CULLENECT_POCKET_MARGIN = 0.1`, `CULLENECT_MIN_TAB_WIDTH = 1.4`, `CULLENECT_UNIT_STEP = 0.5`.
 - Produces (`cullenect.py`):
-  - `labelWidth(units: float, baseWidth: float = 4.2, offsetXY: float = 0) -> float`
+  - `labelWidth(units: float, baseWidth: float = 4.2, offsetX: float = 0) -> float`
   - `socketWidth(units: float, baseWidth: float, socketOffset: float) -> float`
   - `socketHeight(socketOffset: float) -> float`
   - `socketUnits(availableLength: float, baseWidth: float, socketOffset: float, margin: float = const.CULLENECT_POCKET_MARGIN) -> float | None`
   - `socketFrontInset(overhangAngle: float, filletAllowance: float) -> float` — `max(margin, (CULLENECT_LABEL_THICKNESS + BIN_TAB_HOLLOW_MIN_SKIN)·tan(a) − filletAllowance)`; Aufrufer übergibt `binBodyTabGenerator.tabFilletAllowance(a, 0)`.
   - `effectiveTabWidth(userTabWidth: float, overhangAngle: float, filletAllowance: float, socketOffset: float) -> float`
   - `tabSpanInCompartment(compartmentWidth: float, tabStart: float, tabLength: float) -> float` — Länge der Lasche innerhalb des Fachs (Lasche wird aufs Fach getrimmt).
-  - `describeSocket(units: float | None, baseWidth: float, socketOffset: float) -> str` — z. B. `"1U: pocket 36.3 mm, insert 36 mm"`, bei `None` `"too short for a Cullenect pocket"`.
+  - `describeSocket(units: float | None, baseWidth: float, socketOffset: float) -> str` — z. B. `"1U: pocket 36.3 mm, insert 36 mm"`, bei `None` `"too short for a Cullenect pocket"`; Zahlen auf 0,01 mm gerundet und mit `:g` formatiert (kein `36.300000000000004`).
 
 - [ ] **Step 1: Failing tests schreiben** (`tests/test_cullenect.py`, Modul per `importlib` laden wie `tests/test_compartment_layout.py`)
 
@@ -141,7 +145,7 @@ def test_describe_socket():
 **Files:**
 - Create: `lib/gridfinityUtils/cullenectSocketGenerator.py`
 - Modify: `lib/gridfinityUtils/binBodyGenerator.py` (Label-Schleife ab Zeile 303, `createTabLabel`)
-- Modify: `commands/commandCreateBin/binBuilder.py` (Schwester-Pfad „shelled“ ab Zeile 433: Laschenbreite, Neigung, Tasche statt `createTabLabel`; bei Cullenect keine Text-Parameter `createLabelDefinition`)
+- Modify: `commands/commandCreateBin/binBuilder.py` (Fach-Labels Zeile 305–320 **und** Schwester-Pfad „shelled“ ab Zeile 433: bei Cullenect keine Text-Parameter per `createLabelDefinition`; im shelled-Pfad zusätzlich Laschenbreite, Neigung, Tasche statt `createTabLabel`)
 
 **Interfaces:**
 - Consumes: Task 1 (`socketUnits`, `socketFrontInset`, `effectiveTabWidth`), Task 2.
@@ -159,19 +163,19 @@ Bei Cullenect im Bin: `tabWidth = effectiveTabWidth(...)`, `tabTopAngle = 0`, ke
 ### Task 4: Bin-Dialog — Sichtbarkeit, Taschen-Toleranz, Breitenanzeige
 
 **Files:**
-- Modify: `commands/commandCreateBin/entry.py` (neue IDs `BIN_TAB_CULLENECT_OFFSET_INPUT_ID`, `BIN_TAB_CULLENECT_INFO_INPUT_ID`; `initDefaultUiState`, `command_created`, `onChangeValidate`, `getInputsState`, `snapshotSettings`)
+- Modify: `commands/commandCreateBin/entry.py` (neue ID `BIN_TAB_CULLENECT_OFFSET_INPUT_ID`, neue Zeile `BIN_REAL_DIMENSIONS_TABLE_CULLENECT` in der Maß-Tabelle `render_actual_bin_dimensions_table`/`update_actual_bin_dimensions`; `initDefaultUiState`, `command_created`, `onChangeValidate`, `getInputsState`, `snapshotSettings`)
 - Modify: `lib/gridfinityUtils/cullenect.py` (`socketSummary(...)`)
 - Test: `tests/test_cullenect.py`, `tests/test_command_ui_state.py`
 
 **Interfaces:**
 - Produces: `socketSummary(compartmentWidths: list[float], tabStart: float, tabLength: float, baseWidth: float, socketOffset: float) -> list[str]` — je verschiedener Breite eine Zeile `describeSocket`, sortiert, ohne Dubletten.
 
-Verhalten: Bei Stil Cullenect sind Text, Icon, Fett und Neigung deaktiviert (Werte bleiben im Zustand), Toleranz-Eingabe (mm, Default 0,3, 0–1 mm) und Info-Zeile sichtbar. Info-Zeile und „Gridfinity settings“ (eigener Abschnitt „Cullenect“ in `snapshotSettings`, weil die Maß-Tabelle dort ausgeschlossen ist) zeigen `socketSummary`. Fachbreiten aus `compartmentCellSize()` und den Fach-Pockets.
+Verhalten: Bei Stil Cullenect sind Text, Icon, Fett und Neigung deaktiviert (Werte bleiben im Zustand), Toleranz-Eingabe (mm, Default 0,3, 0–1 mm) sichtbar. Die Maß-Tabelle bekommt bei Cullenect eine zweite Zeile mit `socketSummary` (Spec: „in der Maß-Tabelle“); „Gridfinity settings“ bekommt einen eigenen Abschnitt „Cullenect“ in `snapshotSettings`, weil die Maß-Tabelle dort ausgeschlossen ist. Fachbreiten aus `compartmentCellSize()` und den Fach-Pockets.
 
-- [ ] **Step 1: Failing tests:** `test_socket_summary_lists_each_width_once` (4x2-Bin gemischt: Zellen 40,375 mm, Fächer 1/1/2/4 Zellen ⇒ `["1U: …", "2U: …", "4U: …"]`); `test_missing_saved_value_falls_back_to_default` (UI-Zustand ohne Toleranz-Schlüssel lädt Default — gegen `CommandUiState`, wie bestehende Tests); `test_switching_back_from_cullenect_keeps_user_values` (Zustand mit `tabWidth` 13 mm, Stil hin und zurück ⇒ 13 mm, Text unverändert — prüft, dass `onChangeValidate` keine Werte schreibt; falls `entry.py` ohne Fusion nicht ladbar, die Logik als reine Funktion `cullenectDisabledInputs(style) -> set[str]` in `cullenect.py` testen).
+- [ ] **Step 1: Failing tests:** `test_socket_summary_lists_each_width_once` (4x2-Bin gemischt mit `tabLength` 4, also Laschenlänge 16,8 cm: Zellen 40,375 mm, Fächer 1/1/2/4 Zellen ⇒ `["1U: …", "2U: …", "4U: …"]`; dieselbe Bin mit `tabLength` 1 ⇒ nur `["1U: …"]`); `test_missing_saved_value_falls_back_to_default` (UI-Zustand ohne Toleranz-Schlüssel lädt Default — gegen `CommandUiState`, wie bestehende Tests); `test_switching_back_from_cullenect_keeps_user_values` (Zustand mit `tabWidth` 13 mm, Stil hin und zurück ⇒ 13 mm, Text unverändert — prüft, dass `onChangeValidate` keine Werte schreibt; falls `entry.py` ohne Fusion nicht ladbar, die Logik als reine Funktion `cullenectDisabledInputs(style) -> set[str]` in `cullenect.py` testen).
 - [ ] **Step 2:** FAIL.
 - [ ] **Step 3:** Umsetzen.
-- [ ] **Step 4:** pytest grün; in Fusion: Dialog zeigt bei 4x2 gemischt die drei Zeilen, Umschalten auf Outline stellt Text/Icon wieder her (Screenshot).
+- [ ] **Step 4:** pytest grün; in Fusion: Maß-Tabelle zeigt bei 4x2 gemischt (`tabLength` 4) die drei Breiten, Umschalten auf Outline stellt Text/Icon wieder her (Screenshot).
 - [ ] **Step 5:** Commit.
 
 ### Task 5: Snapshot-Fälle und Constraint-Check
@@ -179,13 +183,13 @@ Verhalten: Bei Stil Cullenect sind Text, Icon, Fett und Neigung deaktiviert (Wer
 **Files:**
 - Create: `commands/commandSnapshotTests/constraints.py` (Fusion-frei)
 - Modify: `commands/commandSnapshotTests/entry.py` (`runCase`: nach dem Bauen Skizzen aller Komponenten prüfen)
-- Create: `tests/e2e/cases/bin_1x1x3_cullenect.json`, `bin_2x1x3_cullenect_params_base_40.json` (`parameters: {"gfBaseWidth": 40}`), `bin_3x1x3_cullenect_compartments.json`, `bin_4x2x3_cullenect_mixed.json` (vorn ein Fach über 4 Zellen, hinten ein Fach über 2 Zellen + zwei Einzelfächer), `bin_2x1x4_cullenect_hollow_tab.json`, `bin_1x4x10_cullenect_creases.json` (Schwester-Pfad shelled), `bin_1x1x2_cullenect.json`, `bin_6x4x12_cullenect.json`
+- Create: `tests/e2e/cases/bin_1x1x3_cullenect.json`, `bin_2x1x3_cullenect_params_base_40.json` (`parameters: {"gfBaseWidth": 40}`), `bin_1x1x3_cullenect_params_length_50_height_10.json` (`parameters: {"gfBaseLength": 50, "gfHeightUnit": 10}`), `bin_3x1x3_cullenect_compartments.json`, `bin_4x2x3_cullenect_mixed.json` (`tabLength` 4; vorn ein Fach über 4 Zellen, hinten ein Fach über 2 Zellen + zwei Einzelfächer), `bin_2x1x4_cullenect_hollow_tab.json`, `bin_2x1x3_cullenect_shelled.json` (`binType` `Shelled`, Schwester-Pfad in `binBuilder.py`), `bin_1x4x10_cullenect_creases.json` (gefaltete Wände, feste Lasche), `bin_1x1x2_cullenect.json`, `bin_6x4x12_cullenect.json`
 - Test: `tests/test_snapshot_constraints.py`
 
 **Interfaces:**
-- Produces: `unconstrainedSketches(sketches) -> list[str]` (Duck-Typing: `.name`, `.isFullyConstrained`); `constraintFailure(caseName: str, names: list[str]) -> str | None` — Fehler nur, wenn der Fallname `cullenect` enthält; sonst werden Namen nur gemeldet (Spec: Bestand nicht ungefragt beheben).
+- Produces: `unconstrainedSketches(sketches) -> list[str]` (Duck-Typing: `.name`, `.isFullyConstrained`); `constraintFailure(generator: str, caseName: str, names: list[str]) -> str | None` — Fehler bei Generator `label` (ab Task 11) oder Fallname mit `cullenect`; sonst werden Namen nur gemeldet (Spec: Bestand nicht ungefragt beheben).
 
-- [ ] **Step 1: Failing tests:** zwei Fake-Skizzen, eine unbestimmt ⇒ Liste mit ihrem Namen; `constraintFailure('bin_1x1x3_cullenect', ['x'])` ist Text, `constraintFailure('bin_1x1x3_plain', ['x'])` ist `None`; `test_every_case_in_the_repo_loads` lädt die neuen Fälle.
+- [ ] **Step 1: Failing tests:** zwei Fake-Skizzen, eine unbestimmt ⇒ Liste mit ihrem Namen; `constraintFailure('bin', 'bin_1x1x3_cullenect', ['x'])` ist Text, `constraintFailure('label', 'label_1u_screw_text', ['x'])` ist Text, `constraintFailure('bin', 'bin_1x1x3_plain', ['x'])` ist `None`; `test_every_case_in_the_repo_loads` lädt die neuen Fälle.
 - [ ] **Step 2:** FAIL. **Step 3:** Umsetzen.
 - [ ] **Step 4:** pytest grün. In Fusion „Gridfinity tests: update snapshots“ nur für die neuen Fälle, dann „run“ für alle: alle grün, Constraint-Meldungen der Bestandsfälle an Jörg (Liste im PR-Text).
 - [ ] **Step 5:** Commit. **Live-Test (Jörg):** Probedruck 1x1-Bin + Original-Cullenect-Einleger klickt, hält, löst sich.
@@ -201,26 +205,28 @@ Verhalten: Bei Stil Cullenect sind Text, Icon, Fett und Neigung deaktiviert (Wer
 - Test: `tests/test_cullenect_catalog.py`
 
 **Interfaces:**
-- Produces: Listen `HEADS = ['none','socket','countersunk','roundh','pan']`, `SHAFTS = ['machine','tapping']`, `THREADS = ['full','partial']`, `DRIVERS = ['none','slot','phillips','phillips_slot','phillips_square','torx','hex','square','triangle']`, `HARDWARE` (19 Cullenect-Schlüssel aus `Select_Hardware`) — je mit Anzeigenamen (`displayName(key) -> str`); `isValidScrew(head, shaft, threads, driver, flange, security) -> bool`; `screwIconFileName(...) -> str` (`screw_<head>_<shaft>_<threads>_<driver>_<flange|noflange>_<sec|nosec>.svg`); `allScrewCombinations() -> list[tuple]`; `hardwareIconFileName(key) -> str`; `HARDWARE_LABEL_ICON_TYPE: dict[str, str]` (washer*→`washers`, nut*/tnut*→`nuts`, `threaded_insert`→`inserts`, `magnet`→`magnets`, crimp*→`crimps`); `loadCatalog(folder) -> dict` (liest `catalog.json`).
+- Produces: Baukasten-Listen für das Render-Werkzeug `HEADS = ['none','socket','countersunk','roundh','pan']`, `SHAFTS = ['machine','tapping']`, `THREADS = ['full','partial']`, `DRIVERS = ['none','slot','phillips','phillips_slot','phillips_square','torx','hex','square','triangle']`, `CULLENECT_HARDWARE` (19 Cullenect-Schlüssel aus `Select_Hardware`, nur für das Werkzeug); `displayName(key) -> str`; `isValidScrew(head, shaft, threads, driver, flange, security) -> bool`; `screwIconFileName(...) -> str` (`screw_<head>_<shaft>_<threads>_<driver>_<flange|noflange>_<sec|nosec>.svg`); `allScrewCombinations() -> list[tuple]`; `HARDWARE_LABEL_ICON_TYPE: dict[str, str]` (washer*→`washers`, nut*/tnut*→`nuts`, `threaded_insert`→`inserts`, `magnet`→`magnets`, crimp*→`crimps`).
+- Produces (zur Laufzeit, **aus den Ordnern abgeleitet** — Spec: neues Symbol = neue SVG, keine Code-Änderung): `listHardwareIcons(folder) -> list[tuple[str, str]]` (Anzeigename, Pfad; jede SVG in `cullenectIcons/hardware/`); `screwOptions(folder) -> dict[str, list[str]]` (Werte je Baukasten-Feld, gelesen aus den Dateinamen in `cullenectIcons/screws/`); `screwIconPath(folder, head, shaft, threads, driver, flange, security) -> str | None` (`None` = Kombination nicht vorhanden ⇒ im Dialog gesperrt).
+- Modify: `lib/gridfinityUtils/labelGenerator.py` `LABEL_ICON_TYPE_ORDER` um `inserts`, `magnets`, `crimps` erweitern.
 
 Ungültig: Flansch bei `countersunk` oder `none`; Antrieb ≠ `none` bei Kopf `none`; Sicherheits-Pin bei Antrieb `none`.
 
-- [ ] **Step 1: Failing tests:** `len(allScrewCombinations()) == 480`; `isValidScrew('countersunk', …, flange=True, …) is False`; Dateiname-Beispiel `screw_socket_machine_full_hex_noflange_nosec.svg`; `len(HARDWARE) == 19`; jeder Hardware-Schlüssel hat einen Icon-Typ.
+- [ ] **Step 1: Failing tests:** `len(allScrewCombinations()) == 480`; `isValidScrew('countersunk', …, flange=True, …) is False`; Dateiname-Beispiel `screw_socket_machine_full_hex_noflange_nosec.svg`; `len(CULLENECT_HARDWARE) == 19`; jeder Hardware-Schlüssel hat einen Icon-Typ; mit `tmp_path`: eine zusätzliche `dowel.svg` im Hardware-Ordner erscheint in `listHardwareIcons` als „Dowel“; zwei Schrauben-Dateien ⇒ `screwOptions` liefert genau deren Werte, `screwIconPath` für eine fehlende Kombination `None`.
 - [ ] **Step 2:** FAIL. **Step 3:** Umsetzen. **Step 4:** grün. **Step 5:** Commit.
 
 ### Task 7: Konvertierungswerkzeug und gerenderte Symbole
 
 **Files:**
 - Create: `tools/cullenect/Cullenect.scad` (Kopie Commit `d6dc0bb`, unverändert), `tools/cullenect/LICENSE` (MIT von CullenJWebb), `tools/cullenectIcons.py`
-- Create (generiert): `lib/gridfinityUtils/cullenectIcons/screws/*.svg`, `…/hardware/*.svg`, `…/catalog.json`, `…/README.md` (Quelle, MIT, Credits); Hardware-Kopien in `lib/gridfinityUtils/labelIcons/<typ>/` samt Vorschaubildern per `tools/labelIcons.py`
+- Create (generiert): `lib/gridfinityUtils/cullenectIcons/screws/*.svg`, `…/hardware/*.svg`, `…/README.md` (Quelle, MIT, Credits); Hardware-Kopien in `lib/gridfinityUtils/labelIcons/<typ>/` samt Vorschaubildern per `tools/labelIcons.py`
 - Test: `tests/test_cullenect_icons_tool.py`
 
 **Interfaces:**
-- Produces: `wrapperScad(kind: str, combination) -> str` (Text einer `.scad`, die `use <Cullenect.scad>` lädt und `projection()` von Kopf−Antrieb ∪ Schaft ∪ Pin bzw. `cullenect_hardware(key)` rendert — Zusammensetzung wie `fastener()` in `cullenect_label_generate`); `openscadCommand(exe, scadPath, svgPath) -> list[str]`; `svgSize(path) -> tuple[float, float]` (mm aus `width`/`height`/`viewBox`); `catalog.json` je Datei: Größe in mm und Abstand der Symbolmitte zur rechten Einleger-Kante (Schraube: `driverX/2 = 3 mm`; Hardware: `hardX/2 + (11 − hardX)/2`, `hardX` aus `Cullenect.scad`).
+- Produces: `wrapperScad(kind: str, combination) -> str` (Text einer `.scad`, die `use <Cullenect.scad>` lädt und `projection()` von Kopf−Antrieb ∪ Schaft ∪ Pin bzw. `cullenect_hardware(key)` rendert — Zusammensetzung wie `fastener()` in `cullenect_label_generate`); `openscadCommand(exe, scadPath, svgPath) -> list[str]`; `svgSize(path) -> tuple[float, float]` (mm aus `width`/`height`/`viewBox`, liegt in `cullenectCatalog.py`, weil der Label-Befehl es zur Laufzeit braucht). Kein Katalog-JSON: Größe und Lage ergeben sich aus der SVG selbst (siehe Festlegung „Lage des Symbols“). Die Schraube ist breit: Kopf 6 mm + Schaft 8,56 mm (`shaftX = headY·0,856`) ≈ 14,6 mm.
 
 - [ ] **Step 1: Failing tests** für `wrapperScad` (enthält `use <Cullenect.scad>`, `cullenect_head(head="socket"`), `openscadCommand` (`[exe, '-o', svg, scad]`), `svgSize` an einer kleinen Beispiel-SVG in `tmp_path`.
 - [ ] **Step 2:** FAIL. **Step 3:** Umsetzen.
-- [ ] **Step 4:** pytest grün; Werkzeug lokal laufen lassen (`python tools/cullenectIcons.py --openscad "C:\Program Files\OpenSCAD\openscad.exe"`, im Hintergrund, Dauer messen): 480 + 19 SVGs, `catalog.json` vollständig; Stichprobe von 5 SVGs gegen OpenSCAD-Vorschau.
+- [ ] **Step 4:** pytest grün; Werkzeug lokal laufen lassen (`python tools/cullenectIcons.py --openscad "C:\Program Files\OpenSCAD\openscad.exe"`, im Hintergrund, Dauer messen): 480 + 19 SVGs; Stichprobe von 5 SVGs gegen OpenSCAD-Vorschau.
 - [ ] **Step 5:** Commit (Werkzeug und generierte Dateien getrennt).
 
 ---
@@ -231,7 +237,7 @@ Ungültig: Flansch bei `countersunk` oder `none`; Antrieb ≠ `none` bei Kopf `n
 
 Klärt vor dem Generator, wie `SketchText` und importierte SVG-Kurven in Fusion `isFullyConstrained` werden (Spec: SVG `isFixed`, Text an bemaßte Konstruktion). Ergebnis: kurze Notiz in `docs/specs/2026-11-14-cullenect-labels-design.md` (Abschnitt „Vollständig bestimmte Skizzen“, Befund mit Datum) und ein Wegwerf-Skript im Scratchpad. Kein Produktionscode. Gleichzeitig Befund zu den bestehenden Text/Icon-Labels (Outline/Engraved/Embossed) für Jörg.
 
-- [ ] **Step 1:** In Fusion: Skizze mit Mehrzeilen-Text, Eckpunkte des Textrahmens bemaßen/fixieren ⇒ `isFullyConstrained`? SVG importieren, alle Kurven `isFixed = True` ⇒ `isFullyConstrained`?
+- [ ] **Step 1:** In Fusion: Skizze mit Mehrzeilen-Text, Eckpunkte des Textrahmens bemaßen/fixieren ⇒ `isFullyConstrained`? SVG importieren, alle Kurven `isFixed = True` ⇒ `isFullyConstrained`? Außerdem messen: welche Fusion-Texthöhe ergibt Großbuchstaben so hoch wie Cullenects `text(size = 5)` in Open Sans (OpenSCAD-`size` ist nicht die Fusion-Texthöhe) — Ergebnis legt `CULLENECT_TEXT_HEIGHT` in Task 9 fest.
 - [ ] **Step 2:** Befund notieren, Commit (nur Spec-Notiz).
 
 ### Task 9: Einleger-Layout als reine Logik
@@ -240,9 +246,9 @@ Klärt vor dem Generator, wie `SketchText` und importierte SVG-Kurven in Fusion 
 - Create: `lib/gridfinityUtils/cullenectLabelLayout.py` (Fusion-frei); Test: `tests/test_cullenect_label_layout.py`
 
 **Interfaces:**
-- Produces: `LabelLayout` (dataclass, cm): `width, textMinX, textMaxX, iconCenterX, iconCenterY, lineHeights: list[float]`; `labelLayout(width: float, iconSize: tuple[float, float] | None, iconCenterFromRight: float, lineCount: int) -> LabelLayout`; `widthFromInput(units: float | None, widthMm: float | None, baseWidth: float, offsetXY: float) -> float`; `validWidth(width: float) -> bool` (1,0–30,0 cm). Text links ab `CULLENECT_TEXT_MARGIN = 0.1`, endet 0,1 cm vor dem Symbol; eine Zeile 0,5 cm hoch (Cullenect `Text1_Font_Size` 5), zwei Zeilen je 0,4 cm übereinander. **Zeilen-Layout: Wahl für Jörg, siehe unten.**
+- Produces: `LabelLayout` (dataclass, cm): `width, height, textMinX, textMaxX, iconMaxX, iconCenterY, lineHeights: list[float]`; `labelLayout(width: float, height: float, iconSize: tuple[float, float] | None, lineCount: int) -> LabelLayout`; `labelSize(units: float | None, widthMm: float | None, baseWidth: float, offsetX: float, offsetY: float) -> tuple[float, float]`; `validWidth(width: float) -> bool` (1,0–30,0 cm). Symbol: rechte Kante `iconMaxX = width − max(0, (height − iconHeight)/2)`, senkrecht mittig. Text links ab `CULLENECT_TEXT_MARGIN = 0.1`, endet `CULLENECT_ICON_GAP = 0.1` vor der linken Symbolkante; Zeilenhöhen nach Task 8.
 
-- [ ] **Step 1: Failing tests:** 1U mit Schraube: `width == 3.6`, `iconCenterX == 3.3`, `textMaxX == 3.6 - 0.6 - 0.1`; ohne Symbol: `textMaxX == 3.5`; `widthFromInput(1, None, 4.2, 0) == 3.6`, `widthFromInput(None, 25, 4.2, 0) == 2.5`; `validWidth(0.9) is False`, `validWidth(30.1) is False`.
+- [ ] **Step 1: Failing tests:** 1U mit Schraube der Größe (1,46 × 1,0): `width == 3.6`, `iconMaxX == approx(3.55)`, `textMaxX == approx(3.55 - 1.46 - 0.1)` (≈ 1,99 cm); Hardware 0,8 × 0,8: `iconMaxX == approx(3.45)`; ohne Symbol: `textMaxX == approx(3.5)`; `labelSize(1, None, 4.2, 0, 0) == (3.6, 1.1)`, `labelSize(None, 25, 4.2, 0, 0) == (2.5, 1.1)`, `labelSize(1, None, 4.2, -0.01, 0.01) == approx((3.59, 1.11))`; `validWidth(0.9) is False`, `validWidth(30.1) is False`; leerer Einleger (`lineCount` 0, kein Symbol) ist gültig.
 - [ ] **Step 2:** FAIL. **Step 3:** Umsetzen. **Step 4:** grün. **Step 5:** Commit.
 
 ### Task 10: Einleger-Generator
@@ -252,11 +258,11 @@ Klärt vor dem Generator, wie `SketchText` und importierte SVG-Kurven in Fusion 
 
 **Interfaces:**
 - Consumes: Task 1 (Maße), 6 (Katalog), 8 (Befund), 9 (Layout), `labelGenerator._addText`/`_importIcon`.
-- Produces: `CullenectLabelInput` (width: Dim, lines: list[UserParameter], iconPath: str | None, iconCenterFromRight: float, surface: `'Embossed'|'Debossed'|'Flush'`, isBold: bool); `createCullenectLabel(input, targetComponent, *, name) -> tuple[BRepBody, BRepBody | None]` (Grundkörper, Text/Symbol-Körper).
+- Produces: `CullenectLabelInput` (width: Dim, height: float, lines: list[UserParameter], iconPath: str | None, surface: `'Embossed'|'Debossed'|'Flush'`, isBold: bool); `createCullenectLabel(input, targetComponent, *, name) -> tuple[BRepBody, BRepBody | None]` (Grundkörper, Text/Symbol-Körper).
 
 Geometrie: Grundkörper aus drei Extrusionen (0–0,2 voll, 0,2–0,8 Einzug 0,2, 0,8–1,2 voll), Ecken r 0,5, Breiten-Bemaßung als Ausdruck auf den Breiten-Parameter. Text/Symbol 0,2 mm: erhaben auf 1,2–1,4; vertieft/bündig 1,0–1,2 aus dem Grundkörper geschnitten, Körper bleibt erhalten. Symbol-Kurven `isFixed`, Lage per Verschieben-Feature abhängig von der Breite (Spec).
 
-- [ ] **Step 1:** Akzeptanzkriterium vorab: 1U-Einleger mit Text „M3x10“ + Schraube: Außenmaß 36,00 × 11,00 × 1,20 mm, Einzug 0,20 mm zwischen 0,2 und 0,8 mm Höhe (±0,01); zwei Körper; alle Skizzen bestimmt; Breiten-Parameter auf 78 mm ⇒ Symbol bleibt rechts, keine Timeline-Fehler. Vergleich mit Jörgs Einleger-STEP.
+- [ ] **Step 1:** Akzeptanzkriterium vorab: 1U-Einleger mit Text „M3x10“ + Schraube: Außenmaß 36,00 × 11,00 × 1,20 mm, Einzug 0,20 mm zwischen 0,2 und 0,8 mm Höhe (±0,01); zwei Körper; alle Skizzen bestimmt; Breiten-Parameter auf 78 mm ⇒ Symbol bleibt rechts, keine Timeline-Fehler. Vergleich mit Jörgs gedruckten Einlegern (f3z, in Fusion geöffnet).
 - [ ] **Step 2:** Umsetzen. **Step 3:** Prüfung in Fusion, Messwerte protokollieren. **Step 4:** Commit.
 
 ### Task 11: Befehl, Dialog, Snapshot-Fälle
@@ -268,19 +274,22 @@ Geometrie: Grundkörper aus drei Extrusionen (0–0,2 voll, 0,2–0,8 Einzug 0,2
 - Test: `tests/test_test_cases.py`
 
 **Interfaces:**
-- Produces: `InputState` (Label): `baseWidth, widthUnits, widthMm, useUnits, line1, line2, showScrew, head, shaft, threads, driver, flange, security, hardware, surface, offsetXY, isBold`; `buildLabel(state) -> list[BRepBody]`.
+- Produces: `InputState` (Label): `baseWidth, widthUnits, widthMm, useUnits, line1, line2, showScrew, head, shaft, threads, driver, flange, security, hardware, surface, offsetX, offsetY, isBold`; `buildLabel(state) -> list[BRepBody]`.
 
 Dialog: Auswahllisten aus `cullenectCatalog`, ungültige Kombinationen gesperrt (`isValidScrew`), Rasterbreite aus `gfBaseWidth` des Designs falls vorhanden; Defaults speicherbar; „Gridfinity settings“ per Tag wie Bin/Baseplate; Platzierung nahe Ursprung mit `placementUtils`; Dokumenttyp wie Bin (Bauteil- oder Hybrid-Konstruktion).
 
-- [ ] **Step 1: Failing tests:** neuer Generator lädt (`test_every_case_in_the_repo_loads` mit `STATE_CLASSES` inkl. Label), `offsetXY`/`widthMm` werden mm→cm umgerechnet.
+- [ ] **Step 1: Failing tests:** neuer Generator lädt (`test_every_case_in_the_repo_loads` mit `STATE_CLASSES` inkl. Label), `offsetX`/`offsetY`/`widthMm` werden mm→cm umgerechnet; der Constraint-Check ist für Generator `label` streng (Task 5).
 - [ ] **Step 2:** FAIL. **Step 3:** Umsetzen.
 - [ ] **Step 4:** pytest grün; in Fusion Snapshots der vier Label-Fälle anlegen, alle Fälle „run“ grün, Constraint-Check grün.
 - [ ] **Step 5:** Commit. **Live-Test (Jörg):** Einleger 1U zweifarbig drucken, klickt in die neue Tasche und in eine Original-Cullenect-Bin.
 
 ---
 
-## Offene Wahl für Jörg (bei Planfreigabe)
+## Entschieden und offen
 
-1. **Taschenbreite (Randmaß):** (A, empfohlen) Standardbreiten in 0,5U-Schritten mit 1,0 mm Mindestrand — Original-Einleger passen in jede Tasche, auch in Fach-Laschen; (B) freie Breite = Laschenlänge − 2 × 1,4 mm — 1U-Bin exakt 36,3 mm, ein 1x1-Fach der 4x2-Bin aber 37,6 mm (Original-Einleger hätte 1,3 mm Spiel).
-2. **Oberfläche „vertieft“ vs. „bündig“:** Laut Spec bleibt bei „vertieft“ der Füllkörper erhalten — dann sind beide gleich. Vorschlag: bei „vertieft“ Füllkörper ausgeblendet (wird nicht exportiert, kann eingeblendet werden), bei „bündig“ sichtbar.
-3. **Zwei Textzeilen:** Vorschlag übereinander (je 4 mm), statt Cullenects zweitem Text auf derselben Zeile rechts.
+**Entschieden (Runde 1, nach Plan, Dauerfreigabe):** Taschenbreite (A) — Standardbreiten in 0,5U-Schritten mit 1,0 mm Mindestrand; Original-Einleger passen in jede Tasche, auch in Fach-Laschen. Verworfen (B): freie Breite = Laschenlänge − 2 × 1,4 mm — 1U-Bin exakt 36,3 mm, ein 1x1-Fach der 4x2-Bin aber 37,6 mm (Original-Einleger hätte 1,3 mm Spiel).
+
+**Offen für Jörg, vor Runde 4 klären** (Auslegung der Spec, keine Abweichung):
+1. **Oberfläche „vertieft“ vs. „bündig“:** Laut Spec bleibt bei „vertieft“ der Füllkörper erhalten — dann sind beide gleich. Vorschlag: bei „vertieft“ Füllkörper ausgeblendet (wird nicht exportiert, kann eingeblendet werden), bei „bündig“ sichtbar.
+2. **Zwei Textzeilen:** Vorschlag übereinander, statt Cullenects zweitem Text auf derselben Zeile rechts.
+3. **Fach-Laschen automatisch aufs Fach verlängern** (statt `tabLength` von Hand)? Plan: nein, Bestandsverhalten.
