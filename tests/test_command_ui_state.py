@@ -218,3 +218,14 @@ class TestManualPreviewStateBug:
         # updateValue on a non-existent key is a no-op — entry still absent
         state.updateValue("show_preview_manual", False)
         assert "show_preview_manual" not in state.inputState
+
+
+class TestSavedDefaults:
+    def test_missing_saved_value_falls_back_to_default(self):
+        # defaults saved before the Cullenect socket offset existed don't have it
+        state = CommandUiState("test")
+        state.initValue("bin_tab_cullenect_offset", 0.03, core.ValueCommandInput.classType())
+        state.initValue("bin_tab_width", 1.3, core.ValueCommandInput.classType())
+        state.initValues({"bin_tab_width": {"id": "bin_tab_width", "value": 1.5, "type": core.ValueCommandInput.classType()}})
+        assert state.getState("bin_tab_cullenect_offset") == 0.03
+        assert state.getState("bin_tab_width") == 1.5

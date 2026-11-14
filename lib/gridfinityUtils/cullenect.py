@@ -10,6 +10,9 @@ import math
 
 from . import const
 
+# the label style of labelGenerator.LABEL_STYLE_CULLENECT, kept here so this module needs no Fusion
+LABEL_STYLE = 'Cullenect'
+
 
 def labelWidth(units: float, baseWidth: float = const.DIMENSION_DEFAULT_WIDTH_UNIT, offsetX: float = 0) -> float:
     """Insert width for a label of `units` grid units, `offsetX` corrects for the printer"""
@@ -64,3 +67,30 @@ def describeSocket(units: float | None, baseWidth: float, socketOffset: float) -
     if units is None:
         return "too short for a Cullenect pocket"
     return f"{units:g}U: pocket {_mm(socketWidth(units, baseWidth, socketOffset))} mm, insert {_mm(labelWidth(units, baseWidth))} mm"
+
+def socketSummary(
+    compartmentWidths: list[float],
+    tabStart: float,
+    tabLength: float,
+    baseWidth: float,
+    socketOffset: float,
+) -> list[str]:
+    """Each socket size of the bin once, smallest first, for the tabs of compartments of the given widths. The tab starts
+    `tabStart` into each compartment and is trimmed to it"""
+    units = {
+        socketUnits(tabSpanInCompartment(width, tabStart, tabLength), baseWidth, socketOffset)
+        for width in compartmentWidths
+    }
+    return [describeSocket(item, baseWidth, socketOffset) for item in sorted(units, key=lambda item: -1 if item is None else item)]
+
+def labelInputsEnabled(labelStyle: str) -> dict[str, bool]:
+    """Which label tab inputs of the bin dialog apply to the style, a socket takes no text, icon or tilted top but its
+    play. Inputs are only switched off, the values typed in stay for when the style changes back"""
+    isCullenect = labelStyle == LABEL_STYLE
+    return {
+        'text': not isCullenect,
+        'icon': not isCullenect,
+        'bold': not isCullenect,
+        'topAngle': not isCullenect,
+        'socketOffset': isCullenect,
+    }
