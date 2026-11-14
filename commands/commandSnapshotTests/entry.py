@@ -227,7 +227,7 @@ def buildCase(case: testCases.TestCase) -> tuple[adsk.core.Document, list[adsk.f
     The case built in a new document, so nothing else in a design moves it or lends it parameters, its parameters set
     after, with its unhealthy timeline features
     """
-    (document, design) = newCaseDocument(case.name, f'{DOCUMENT_PREFIX} {case.name}')
+    (document, design) = newCaseDocument(case.name, f'{DOCUMENT_PREFIX} {case.name}', case.designIntent)
     bodies = buildBodies(design, case, case.state)
     if case.parameters:
         setParameters(design, case.parameters)
@@ -242,7 +242,7 @@ def buildWithParameters(case: testCases.TestCase) -> tuple[list[adsk.fusion.BRep
     Shapes in memory of the case built with its parameters from the start, what setting them has to come to, with the
     unhealthy timeline features of their document, closed after
     """
-    (document, design) = newCaseDocument(case.name, f'{DOCUMENT_PREFIX} {case.name} with parameters')
+    (document, design) = newCaseDocument(case.name, f'{DOCUMENT_PREFIX} {case.name} with parameters', case.designIntent)
     try:
         bodies = buildBodies(design, case, testCases.editedState(case))
         tbm = adsk.fusion.TemporaryBRepManager.get()
@@ -250,17 +250,25 @@ def buildWithParameters(case: testCases.TestCase) -> tuple[list[adsk.fusion.BRep
     finally:
         document.close(False)
 
-def newCaseDocument(caseName: str, title: str) -> tuple[adsk.core.Document, adsk.fusion.Design]:
+# the design intent of a case's document, see testCases.DESIGN_INTENTS
+DESIGN_INTENT_TYPES = {
+    testCases.DESIGN_INTENT_HYBRID: adsk.fusion.DesignIntentTypes.HybridDesignIntentType,
+    testCases.DESIGN_INTENT_PART: adsk.fusion.DesignIntentTypes.PartDesignIntentType,
+}
+
+def newCaseDocument(caseName: str, title: str, designIntent: str) -> tuple[adsk.core.Document, adsk.fusion.Design]:
     global building
     document = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
     building = (caseName, document)
     nameDocument(document, title)
     design = adsk.fusion.Design.cast(document.products.itemByProductType('DesignProductType'))
     design.designType = adsk.fusion.DesignTypes.ParametricDesignType
-    # a new document takes the design intent of the preferences, only hybrid has room for a body and components side by side
-    if design.designIntent != adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
+    # a new document takes the design intent of the preferences, only hybrid has room for a body and components side
+    # by side. A part design case builds into the root as for a user whose documents are parts
+    intentType = DESIGN_INTENT_TYPES[designIntent]
+    if design.designIntent != intentType:
         try:
-            design.designIntent = adsk.fusion.DesignIntentTypes.HybridDesignIntentType
+            design.designIntent = intentType
         except Exception as err:
             futil.log(f'{reportPalette.PALETTE_TITLE} test document stays {design.designIntent} design intent, {err}', force_console=True)
     return (document, design)
@@ -523,6 +531,7 @@ def runCase(case: testCases.TestCase, keepOpen: bool) -> dict:
         results = snapshots.compareSnapshot(os.path.join(SNAPSHOTS_FOLDER, case.name), bodies)
         # the shape may match all the same, the case fails for what Fusion found wrong in building it
         notes += unhealthy
+        notes += looseBodyNotes(document, bodies)
         notes += sketchConstraintNotes(case, document)
     except Exception as err:
         results = [snapshots.BodyResult('', snapshots.STATUS_FAIL, [f'build failed, {buildFailure(case, err)}'])]
@@ -552,6 +561,14 @@ def runCase(case: testCases.TestCase, keepOpen: bool) -> dict:
             except Exception as err:
                 notes.append(f'differences not shown, {err}')
     return report.case(case.name, case.description, status, bodyReports(results), notes, view, snapshotPreviews(case.name))
+
+def looseBodyNotes(document: adsk.core.Document, bodies: list[adsk.fusion.BRepBody]) -> list[str]:
+    """Why the case fails for bodies in its document the generator didn't return, a join that couldn't merge them"""
+    design = adsk.fusion.Design.cast(document.products.itemByProductType('DesignProductType'))
+    designBodies = [body for component in design.allComponents for body in component.bRepBodies]
+    builtKeys = {str(index) for (index, body) in enumerate(designBodies) if any(body == built for built in bodies)}
+    names = testCases.looseBodyNames([(str(index), body.name) for (index, body) in enumerate(designBodies)], builtKeys)
+    return [f'loose body {name}, not part of what was built' for name in names]
 
 def sketchConstraintNotes(case: testCases.TestCase, document: adsk.core.Document) -> list[str]:
     """Why the case fails for sketches that aren't fully constrained, those of older code only go to the log"""
@@ -900,7 +917,7 @@ def stageSnapshots(cases: list[testCases.TestCase], stagingFolder: str, showProg
             stagedFolder = os.path.join(stagingFolder, case.name)
             snapshots.saveSnapshot(stagedFolder, bodies)
             # saved all the same, the warning is for whoever reviews the change
-            notes = [f'warning, {note}' for note in unhealthy]
+            notes = [f'warning, {note}' for note in unhealthy + looseBodyNotes(document, bodies)]
             try:
                 notes += [f'preview, {warning}' for warning in takePreview(document, bodies, case.name, stagedFolder)]
             except Exception as err:

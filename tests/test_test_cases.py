@@ -201,3 +201,26 @@ def test_dividers_to_top_defaults_off_in_every_bin_case():
     for case in loaded:
         if case.generator == cases.GENERATOR_BIN and "dividers_to_top" not in case.name:
             assert case.state.hasDividersToTop is False, case.name
+
+
+def test_a_case_is_built_in_a_hybrid_design_unless_it_says_part(tmp_path):
+    hybrid = cases.loadCase(write_case_data(tmp_path, {"description": "a case", "generator": "bin", "settings": sample_settings()}), STATE_CLASSES)
+    assert hybrid.designIntent == cases.DESIGN_INTENT_HYBRID
+    assert "designIntent" not in json.loads(cases.caseJson(hybrid))
+    data = {"description": "a case", "generator": "bin", "designIntent": "part", "settings": sample_settings()}
+    part = cases.loadCase(write_case_data(tmp_path, data, name="part"), STATE_CLASSES)
+    assert part.designIntent == cases.DESIGN_INTENT_PART
+    assert json.loads(cases.caseJson(part))["designIntent"] == "part"
+
+
+def test_an_unknown_design_intent_is_an_error(tmp_path):
+    data = {"description": "a case", "generator": "bin", "designIntent": "assembly-ish", "settings": sample_settings()}
+    with pytest.raises(cases.TestCaseError, match="design intent"):
+        cases.loadCase(write_case_data(tmp_path, data), STATE_CLASSES)
+
+
+def test_bodies_the_generator_did_not_return_are_loose():
+    # (key, name) of every body in the case document, the keys of those the generator returned
+    design = [("a", "Bin 3x2x3"), ("b", "Raised dividers (1)"), ("c", "Bin 3x2x3 (1)")]
+    assert cases.looseBodyNames(design, {"a", "c"}) == ["Raised dividers (1)"]
+    assert cases.looseBodyNames(design, {"a", "b", "c"}) == []
