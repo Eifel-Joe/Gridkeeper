@@ -23,9 +23,12 @@ CHOICES = [NO_COLOR_CHOICE] + list(NAMED_COLORS) + [CUSTOM_CHOICE]
 
 _COLOR = re.compile(r'^#[0-9A-Fa-f]{6}$')
 
-# library appearances the color is copied from, by the start of their name, best first. The libraries come in the
-# user's language (p31: a German Fusion has no "Plastic"), a name not listed still serves when it has a color to set
-BASE_PREFIXES = ['Plastic - Matte', 'Kunststoff - Matt', 'Plastic', 'Kunststoff']
+# library appearances the color is copied from, by the start of their name, best first, in any case. The libraries
+# come in the user's language (p31: a German Fusion has no "Plastic", it has "Kunststoff - matt (Rot)"), a name not
+# listed still serves when it has a color
+BASE_PREFIXES = ['plastic - matte', 'kunststoff - matt', 'plastic', 'kunststoff']
+# Fusion's appearance library, by its id, its name is in the user's language too ("Fusion-Darstellungsbibliothek")
+APPEARANCE_LIBRARY_ID = 'BA5EE55E-9982-449B-9D66-9F036540E140'
 
 
 def isColor(color: str) -> bool:
@@ -70,4 +73,19 @@ def rgb(color: str) -> tuple[int, int, int]:
 
 def baseRank(appearanceName: str) -> int:
     """Lower is a better appearance to copy the color from, any other name ranks last"""
-    return next((index for (index, prefix) in enumerate(BASE_PREFIXES) if appearanceName.startswith(prefix)), len(BASE_PREFIXES))
+    name = appearanceName.lower()
+    return next((index for (index, prefix) in enumerate(BASE_PREFIXES) if name.startswith(prefix)), len(BASE_PREFIXES))
+
+
+def baseCandidates(libraries: list[tuple[str, list[str]]]) -> list[tuple[int, int]]:
+    """
+    (library, appearance) indexes of the appearances to copy the color from, best first: by baseRank, then Fusion's
+    appearance library before the others, then as listed. libraries as (library id, appearance names). A favorites
+    library may hold a wood ("3D Esche") that ranks no better than a plastic name in another language would
+    """
+    candidates = []
+    for (libraryIndex, (libraryId, names)) in enumerate(libraries):
+        isAppearanceLibrary = libraryId.upper() == APPEARANCE_LIBRARY_ID
+        for (index, name) in enumerate(names):
+            candidates.append(((baseRank(name), 0 if isAppearanceLibrary else 1, libraryIndex, index), (libraryIndex, index)))
+    return [position for (_, position) in sorted(candidates)]
