@@ -129,11 +129,26 @@ class TestFittedLineHeight:
         assert layout.fittedLineHeight(0.5, 1.8, 1.944) == approx(0.5)
 
     def test_wide_text_shrinks_to_the_space(self):
-        assert layout.fittedLineHeight(0.5, 2.0, 1.0) == approx(0.25)
+        assert layout.fittedLineHeight(0.5, 2.0, 1.0) == approx(0.25 * (1 - layout.TEXT_WIDTH_RESERVE))
 
     def test_no_space_keeps_the_height(self):
         # nothing sensible to shrink to, the generator leaves the text as it is
         assert layout.fittedLineHeight(0.5, 2.0, 0) == approx(0.5)
+
+    def test_text_as_wide_as_the_space_keeps_a_reserve(self):
+        # Fusion lays text out by the advance of its letters, wider than their outlines that were measured: a line
+        # fitted exactly ran out of its box (p84), it keeps a reserve
+        assert layout.fittedLineHeight(0.5, 3.4, 3.4) * 3.4 / 0.5 <= 3.4 * (1 - layout.TEXT_WIDTH_RESERVE) + 1e-9
+
+    def test_welle_6mm_fits_with_the_reserve(self):
+        # p84: the user's 1U insert, "Welle 6mm" measured 34.27 mm wide at 5 mm, 34 mm of room, fitted to 4.96 mm and
+        # broken in two by Fusion. Fitted now it leaves the reserve free
+        height = layout.fittedLineHeight(0.5, 3.427, 3.4)
+        assert 3.427 * height / 0.5 <= 3.4 * (1 - layout.TEXT_WIDTH_RESERVE) + 1e-9
+        assert layout.TEXT_WIDTH_RESERVE >= 0.03
+
+    def test_text_well_inside_the_reserve_keeps_its_height(self):
+        assert layout.fittedLineHeight(0.5, 1.8, 3.4) == approx(0.5)
 
 
 class TestWidthExpression:

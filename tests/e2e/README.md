@@ -98,6 +98,8 @@ This page is written from the case files, run `python3 tests/e2e/write_readme.py
 | --- | --- | --- |
 |  | [label_1u_screw_text](cases/label_1u_screw_text.json) | 1U Cullenect insert with a socket head screw and one line of text, raised, the baseline the other label cases change things of |
 |  | [label_1u_screw_text_part](cases/label_1u_screw_text_part.json) | 1U insert with a screw and text built in a part design: the document turns hybrid and the insert is a component of its own, as the bodies of label_1u_screw_text |
+|  | [label_1u_welle_6mm](cases/label_1u_welle_6mm.json) | the user's 1U insert "Welle 6mm", flush, no symbol: Fusion broke the line in two and hung it off the insert (p84), the text stays one line on it |
+|  | [label_1u_welle_6mm_text_edited](cases/label_1u_welle_6mm_text_edited.json) | the user's 1U insert "Welle 6mm" with its text made longer once built (p70): the line isn't fitted again and stays one line, it runs on to the right past the insert. Sets `gfLabel1_text1` "Welle 6mm h6 lang" once built |
 |  | [label_25mm_free](cases/label_25mm_free.json) | Insert 25 mm wide given in mm with a width correction of -0.1 mm, a flanged pan head screw, flush, bold text |
 |  | [label_2u_hardware](cases/label_2u_hardware.json) | 2U insert with a nylon lock nut and two lines of text, set in, the filling kept as a hidden body |
 |  | [label_6u_text](cases/label_6u_text.json) | 6U insert with text only, built on 42 mm units and set to a 40 mm base width after, the insert has to shrink with it. Sets `gfBaseWidth` 40 mm once built, a run compares that with a build using those values from the start |

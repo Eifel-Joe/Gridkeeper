@@ -254,3 +254,74 @@ def test_ledges_reports_the_sickles_of_bin():
 
 def test_ledges_ignore_slivers_of_tangent_seams_and_big_faces():
     assert cases.raisedCornerLedges([(0.0001, 2.55, 2.55), (0.0, 0.0, 1.2), (12.0, 4.0, 3.0)]) == []
+
+
+# Text of an insert stays one line per text line on the insert (p84, p70): letter bodies as (min x, min y, max x,
+# max y) in mm, the insert 36 x 11 mm at the origin
+INSERT_BOX = (0.0, 0.0, 36.0, 11.0)
+
+
+def test_text_on_one_line_inside_the_insert_passes():
+    letters = [(1.0, 3.0, 4.5, 8.0), (5.0, 3.0, 8.0, 8.0), (9.0, 2.0, 12.0, 8.0)]
+    assert cases.insertTextProblems(INSERT_BOX, letters, 1) == []
+
+
+def test_wrapped_welle_6mm_fails():
+    # p84, measured in the user's document: "Welle" y 6.8 to 11.9 mm, "6mm" y -0.9 to 4.1 mm
+    letters = [(1.0, 6.8, 6.0, 11.9), (6.5, 6.8, 18.1, 11.9), (1.0, -0.9, 13.0, 4.1)]
+    notes = cases.insertTextProblems(INSERT_BOX, letters, 1)
+    assert any('2 lines of text, expected 1' in note for note in notes)
+    assert any('off the insert' in note for note in notes)
+
+
+def test_text_past_the_right_edge_fails_unless_it_may_run_on():
+    letters = [(1.0, 3.0, 20.0, 8.0), (21.0, 3.0, 37.5, 8.0)]
+    assert any('off the insert' in note for note in cases.insertTextProblems(INSERT_BOX, letters, 1))
+    # a text made longer after building runs on to the right, still one line on the insert's height
+    assert cases.insertTextProblems(INSERT_BOX, letters, 1, mayRunOnRight=True) == []
+
+
+def test_two_lines_are_two_bands():
+    letters = [(1.0, 6.0, 10.0, 9.5), (1.0, 1.5, 8.0, 5.0)]
+    assert cases.insertTextProblems(INSERT_BOX, letters, 2) == []
+    assert any('1 lines of text, expected 2' in note for note in cases.insertTextProblems(INSERT_BOX, letters[:1], 2))
+
+
+def test_text_parameters_are_set_after_building_and_listed(tmp_path):
+    data = {"description": "a case", "generator": "label", "settings": label_settings(),
+            "texts": {"gfLabel1_text1": "Welle 6mm h6 geschliffen"}}
+    case = cases.loadCase(write_case_data(tmp_path, data), STATE_CLASSES)
+    assert case.texts == {"gfLabel1_text1": "Welle 6mm h6 geschliffen"}
+    assert json.loads(cases.caseJson(case))["texts"] == {"gfLabel1_text1": "Welle 6mm h6 geschliffen"}
+    assert any(section["title"] == "Texts set after building" for section in cases.caseSettings(case))
+
+
+def test_a_case_without_texts_has_none():
+    case = cases.loadCase(os.path.join(CASES_FOLDER, "label_1u_screw_text.json"), STATE_CLASSES)
+    assert case.texts == {}
+    assert "texts" not in json.loads(cases.caseJson(case))
+
+
+@pytest.mark.parametrize("texts", [{"gfLabel1_width": "x"}, {"gfLabel1_text1": 3}, {"gfBaseWidth": "x"}])
+def test_texts_have_to_be_text_parameters_of_an_insert(tmp_path, texts):
+    data = {"description": "a case", "generator": "label", "settings": label_settings(), "texts": texts}
+    with pytest.raises(cases.TestCaseError, match="text"):
+        cases.loadCase(write_case_data(tmp_path, data), STATE_CLASSES)
+
+
+def test_only_label_cases_set_texts(tmp_path):
+    data = {"description": "a case", "generator": "bin", "settings": sample_settings(), "texts": {"gfLabel1_text1": "x"}}
+    with pytest.raises(cases.TestCaseError, match="text"):
+        cases.loadCase(write_case_data(tmp_path, data), STATE_CLASSES)
+
+
+def test_welle_6mm_cases_are_there():
+    loaded = {case.name: case for case in cases.loadCases(CASES_FOLDER, STATE_CLASSES)}
+    nutzer = loaded["label_1u_welle_6mm"]
+    assert (nutzer.state.line1, nutzer.state.line2, nutzer.state.showScrew, nutzer.state.hardware, nutzer.state.surface, nutzer.state.isBold) ==         ("Welle 6mm", "", False, "none", "Flush", False)
+    assert loaded["label_1u_welle_6mm_text_edited"].texts["gfLabel1_text1"].startswith("Welle 6mm")
+
+
+def label_settings():
+    with open(os.path.join(CASES_FOLDER, "label_1u_screw_text.json")) as file:
+        return json.load(file)["settings"]
