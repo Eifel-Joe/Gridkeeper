@@ -15,6 +15,7 @@ import concurrent.futures
 import importlib.util
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -24,6 +25,7 @@ TOOLS_FOLDER = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(TOOLS_FOLDER)
 CULLENECT_FOLDER = os.path.join(TOOLS_FOLDER, 'cullenect')
 ICONS_FOLDER = os.path.join(PROJECT_ROOT, 'lib', 'gridfinityUtils', 'cullenectIcons')
+LABEL_ICONS_FOLDER = os.path.join(PROJECT_ROOT, 'lib', 'gridfinityUtils', 'labelIcons')
 
 # Cullenect.scad sets $fs and $fa in its own top level, which `use` does not run: coarser than the
 # 0.01 mm of the original, a symbol is only about 15 mm wide
@@ -91,6 +93,26 @@ def tightenSvg(svg: str) -> str:
     return re.sub(r'<svg width="[^"]*" height="[^"]*" viewBox="[^"]*"', lambda _: header, svg, count=1)
 
 
+def labelIconPath(key: str, labelIconsFolder: str) -> str:
+    """Where the hardware symbol is copied to so bin labels can pick it too: labelIcons/<type>/cullenect-<key>.svg.
+    The prefix keeps it apart from the icons of tools/labelIcons.py (washer.svg) and shows in the dropdown"""
+    return os.path.join(labelIconsFolder, catalog.HARDWARE_LABEL_ICON_TYPE[key], f"cullenect-{key.replace('_', '-')}.svg")
+
+
+def copyHardwareToLabelIcons(iconsFolder: str, labelIconsFolder: str) -> list[str]:
+    """Copies every rendered hardware svg to the label icons, returns the new paths"""
+    copied = []
+    for key in catalog.CULLENECT_HARDWARE:
+        source = os.path.join(iconsFolder, catalog.HARDWARE_FOLDER, f'{key}.svg')
+        if not os.path.isfile(source):
+            continue
+        target = labelIconPath(key, labelIconsFolder)
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        shutil.copyfile(source, target)
+        copied.append(target)
+    return copied
+
+
 def render(exe: str, job: tuple[str, object, str], workFolder: str) -> str | None:
     """Renders one symbol, returns an error text or None"""
     (kind, combination, svgPath) = job
@@ -128,6 +150,8 @@ def main() -> int:
                 errors.append(error)
             if index % 50 == 0:
                 print(f'{index}/{len(jobs)} after {time.time() - started:.0f} s', flush=True)
+    copied = copyHardwareToLabelIcons(args.out, LABEL_ICONS_FOLDER) if args.out == ICONS_FOLDER else []
+    print(f'{len(copied)} hardware svgs copied to the label icons, run tools/labelIcons.py for their previews')
     print(f'done in {time.time() - started:.0f} s, {len(jobs) - len(errors)} rendered, {len(errors)} failed')
     for error in errors:
         print('FAILED', error, file=sys.stderr)

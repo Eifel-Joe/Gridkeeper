@@ -80,3 +80,19 @@ def test_tighten_svg_rejects_empty():
     except ValueError:
         return
     raise AssertionError('expected ValueError')
+
+
+def test_label_icon_path_avoids_existing_icons(tmp_path):
+    path = tool.labelIconPath('washer_locking', str(tmp_path))
+    assert path == str(tmp_path / 'washers' / 'cullenect-washer-locking.svg')
+    assert tool.labelIconPath('washer', str(tmp_path)) != str(tmp_path / 'washers' / 'washer.svg')
+
+
+def test_copy_hardware_to_label_icons(tmp_path):
+    hardware = tmp_path / 'icons' / 'hardware'
+    hardware.mkdir(parents=True)
+    (hardware / 'magnet.svg').write_text('<svg/>')
+    (hardware / 'dowel.svg').write_text('<svg/>')
+    copied = tool.copyHardwareToLabelIcons(str(tmp_path / 'icons'), str(tmp_path / 'label'))
+    assert copied == [str(tmp_path / 'label' / 'magnets' / 'cullenect-magnet.svg')]
+    assert os.path.isfile(copied[0])
