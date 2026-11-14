@@ -48,6 +48,10 @@ def effectiveTabWidth(userTabWidth: float, overhangAngle: float, filletAllowance
     inset = socketFrontInset(overhangAngle, filletAllowance)
     return max(userTabWidth, const.CULLENECT_MIN_TAB_WIDTH, socketHeight(socketOffset) + 2 * inset)
 
+def hollowTabWallThickness(wallThickness: float) -> float:
+    """Top of a hollow tab with a socket, thick enough for the socket not to cut through"""
+    return max(wallThickness, const.CULLENECT_LABEL_THICKNESS + const.BIN_TAB_HOLLOW_MIN_SKIN)
+
 def tabSpanInCompartment(compartmentWidth: float, tabStart: float, tabLength: float) -> float:
     """Length of a tab inside its compartment, the tab is trimmed to the compartment"""
     return max(0, min(tabLength, compartmentWidth - tabStart))

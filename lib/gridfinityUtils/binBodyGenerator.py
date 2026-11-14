@@ -11,7 +11,8 @@ from .baseGeneratorInput import BaseGeneratorInput
 from .binBodyGeneratorInput import BinBodyGeneratorInput, BinBodyCompartmentDefinition
 from .binBodyTabGeneratorInput import BinBodyTabGeneratorInput
 from .binBodyTabGenerator import createGridfinityBinBodyTab, createTabHollowCuts, TabCavity, TabWallOpenings, TabHollowCuts
-from .labelGenerator import BinLabelDefinition, BinLabelInput, createLabel, LABEL_STYLE_EMBOSSED, LABEL_STYLE_ENGRAVED
+from .labelGenerator import BinLabelDefinition, BinLabelInput, createLabel, LABEL_STYLE_EMBOSSED, LABEL_STYLE_ENGRAVED, LABEL_STYLE_CULLENECT
+from . import cullenect
 from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput
 from .binBodyLipGenerator import createGridfinityBinBodyLip
 from .dim import Dim, valueInput
@@ -334,9 +335,11 @@ def tabTopClearance(labelStyle: str) -> float:
     return const.BIN_TAB_TOP_CLEARANCE + (const.BIN_LABEL_DEPTH if labelStyle == LABEL_STYLE_EMBOSSED else 0)
 
 def hollowTabWallThickness(wallThickness: float, labelStyle: str) -> float:
-    """Hollow tabs take the wall thickness, thick enough for an engraved label not to cut through"""
+    """Hollow tabs take the wall thickness, thick enough for an engraved label or a socket not to cut through"""
     if labelStyle == LABEL_STYLE_ENGRAVED:
         return max(wallThickness, const.BIN_LABEL_DEPTH + const.BIN_TAB_HOLLOW_MIN_SKIN)
+    if labelStyle == LABEL_STYLE_CULLENECT:
+        return cullenect.hollowTabWallThickness(wallThickness)
     return wallThickness
 
 def createTabLabel(

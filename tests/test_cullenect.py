@@ -83,3 +83,32 @@ def test_describe_socket():
     assert cullenect.describeSocket(1.0, 4.2, 0.03) == "1U: pocket 36.3 mm, insert 36 mm"
     assert cullenect.describeSocket(0.5, 4.2, 0.03) == "0.5U: pocket 15.3 mm, insert 15 mm"
     assert cullenect.describeSocket(None, 4.2, 0.03) == "too short for a Cullenect pocket"
+
+
+def _labelGeneratorConstants():
+    # labelGenerator needs Fusion to load, its module constants are read from the source instead
+    import ast
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    path = os.path.join(project_root, "lib", "gridfinityUtils", "labelGenerator.py")
+    with open(path, encoding="utf-8") as file:
+        tree = ast.parse(file.read())
+    names = {}
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+            value = node.value
+            if isinstance(value, ast.Constant):
+                names[node.targets[0].id] = value.value
+            elif isinstance(value, ast.List) and all(isinstance(item, ast.Name) for item in value.elts):
+                names[node.targets[0].id] = [names[item.id] for item in value.elts]
+    return names
+
+
+def test_cullenect_is_a_label_style():
+    names = _labelGeneratorConstants()
+    assert names["LABEL_STYLE_CULLENECT"] == "Cullenect"
+    assert names["LABEL_STYLES"] == ["Outline", "Engraved", "Embossed", "Cullenect"]
+
+
+def test_hollow_cullenect_tab_keeps_a_skin_under_the_socket():
+    assert cullenect.hollowTabWallThickness(0.12) == approx(0.16)
+    assert cullenect.hollowTabWallThickness(0.2) == approx(0.2)

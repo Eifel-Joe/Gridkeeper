@@ -51,6 +51,7 @@ def test_lengths_come_in_mm_and_angles_in_degrees():
     assert case.state.baseWidth == pytest.approx(4.2)
     assert case.state.wallThickness == pytest.approx(0.12)
     assert case.state.tabOverhangAngle == pytest.approx(math.radians(45))
+    assert case.state.cullenectSocketOffset == pytest.approx(0.03)
     # units of the grid stay as they are
     assert case.state.binWidth == 2
     assert case.state.creaseMinHeight == 10

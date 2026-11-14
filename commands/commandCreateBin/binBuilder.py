@@ -278,6 +278,7 @@ def buildBin(
     binBodyInput.tabTopAngle = state.tabTopAngle
     binBodyInput.labelStyle = state.labelStyle
     binBodyInput.isLabelBold = state.isLabelBold
+    binBodyInput.cullenectSocketOffset = state.cullenectSocketOffset
     binBodyInput.compartmentsByX = compartmentsX
     binBodyInput.compartmentsByY = compartmentsY
 

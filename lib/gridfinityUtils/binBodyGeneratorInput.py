@@ -72,6 +72,7 @@ class BinBodyGeneratorInput():
         self.tabTopAngle = const.BIN_TAB_LABEL_ANGLE
         self.labelStyle = LABEL_STYLE_OUTLINE
         self.isLabelBold = True
+        self.cullenectSocketOffset = const.CULLENECT_SOCKET_OFFSET
         self.compartments = [BinBodyCompartmentDefinition()]
         self.isUniformCompartments = False
         self.compartmentsByX = 1
@@ -202,6 +203,15 @@ class BinBodyGeneratorInput():
     @isLabelBold.setter
     def isLabelBold(self, value: bool):
         self._isLabelBold = value
+
+    @property
+    def cullenectSocketOffset(self) -> float:
+        """Play of a Cullenect insert in its socket, in X and Y"""
+        return self._cullenectSocketOffset
+
+    @cullenectSocketOffset.setter
+    def cullenectSocketOffset(self, value: float):
+        self._cullenectSocketOffset = value
 
     @property
     def labelStyle(self) -> str:
