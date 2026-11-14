@@ -84,6 +84,40 @@ def createShapeLipMiddleCutout(
     )
     return cutout.bodies.item(0)
 
+def createStackedFootCutters(
+    input: BinBodyLipGeneratorInput,
+    targetComponent: adsk.fusion.Component,
+    *,
+    name: str,
+) -> list[adsk.fusion.BRepBody]:
+    """
+    The space the feet of a bin stacked on top take in the lip, with clearance, one body per foot, half ones included.
+    Notched lips and dividers raised into the lip are cut with them, so between two feet on a grid line a ridge is
+    left that fits the groove between the feet
+    """
+    lipCutoutInput = BaseGeneratorInput()
+    lipCutoutInput.originPoint = geometryUtils.createOffsetPoint(
+        input.origin,
+        byX=-input.xyClearance * 2,
+        byY=-input.xyClearance * 2,
+        byZ=const.BIN_BASE_HEIGHT
+    )
+    lipCutoutInput.originZ = input.originZ + Dim.length(const.BIN_BASE_HEIGHT)
+    lipCutoutInput.baseWidth = input.baseWidth + Dim.length(input.xyClearance * 2)
+    lipCutoutInput.baseLength = input.baseLength + Dim.length(input.xyClearance * 2)
+    lipCutoutInput.xyClearance = input.xyClearance
+    lipCutoutInput.hasBottomChamfer = False
+    lipCutoutInput.cornerFilletRadius = input.binCornerFilletRadius + input.xyClearance * 2
+    return baseGenerator.createFootGrid(
+        lipCutoutInput,
+        input.binWidth,
+        input.binLength,
+        targetComponent,
+        input.baseWidth,
+        input.baseLength,
+        name=name,
+    )
+
 def createGridfinityBinBodyLip(
     input: BinBodyLipGeneratorInput,
     targetComponent: adsk.fusion.Component,
@@ -124,29 +158,7 @@ def createGridfinityBinBodyLip(
     )
 
     if input.hasLipNotches:
-        lipCutoutInput = BaseGeneratorInput()
-        lipCutoutInput.originPoint = geometryUtils.createOffsetPoint(
-            input.origin,
-            byX=-input.xyClearance * 2,
-            byY=-input.xyClearance * 2,
-            byZ=const.BIN_BASE_HEIGHT
-        )
-        lipCutoutInput.originZ = input.originZ + Dim.length(const.BIN_BASE_HEIGHT)
-        lipCutoutInput.baseWidth = input.baseWidth + Dim.length(input.xyClearance * 2)
-        lipCutoutInput.baseLength = input.baseLength + Dim.length(input.xyClearance * 2)
-        lipCutoutInput.xyClearance = input.xyClearance
-        lipCutoutInput.hasBottomChamfer = False
-        lipCutoutInput.cornerFilletRadius = input.binCornerFilletRadius + input.xyClearance * 2
-        # one per foot of a bin stacked on top, half ones included
-        lipCutoutBodies = baseGenerator.createFootGrid(
-            lipCutoutInput,
-            input.binWidth,
-            input.binLength,
-            targetComponent,
-            input.baseWidth,
-            input.baseLength,
-            name='Lip notch cutout',
-        )
+        lipCutoutBodies = createStackedFootCutters(input, targetComponent, name='Lip notch cutout')
 
     if input.hasLipNotches and input.shapeCells is not None:
         # notches go by feet, the outline may be in half cells
