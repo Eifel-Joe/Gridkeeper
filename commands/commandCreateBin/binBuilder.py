@@ -9,6 +9,7 @@ from ...lib.gridfinityUtils import faceUtils
 from ...lib.gridfinityUtils import shellUtils
 from ...lib.gridfinityUtils import commonUtils
 from ...lib.gridfinityUtils import const
+from ...lib.gridfinityUtils import raisedDividers
 from ...lib.gridfinityUtils import parameterUtils
 from ...lib.gridfinityUtils import sharedParameters
 from ...lib.gridfinityUtils.dim import Dim
@@ -307,6 +308,11 @@ def buildBin(
         if item['depth'] is not None:
             compartment.depth = item['depth'] / 10
         binBodyInput.compartments.append(compartment)
+    # grid lines are whole grid units also on a half grid, the feet of any bin stacked on top have a groove there
+    binBodyInput.raisedDividers = raisedDividers.segmentsForBin(
+        state.hasDividersToTop, state.hasLip, isHollow, shaped,
+        pockets, compartmentsX, compartmentsY, state.binWidth, state.binLength,
+    )
 
     binBody: adsk.fusion.BRepBody
 

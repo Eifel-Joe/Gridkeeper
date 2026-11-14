@@ -126,6 +126,7 @@ BIN_TAB_LABEL_BOLD_INPUT_ID = 'bin_tab_label_bold'
 BIN_TAB_CULLENECT_OFFSET_INPUT_ID = 'bin_tab_cullenect_offset'
 BIN_WITH_LIP_INPUT_ID = 'with_lip'
 BIN_WITH_LIP_NOTCHES_INPUT_ID = 'with_lip_notches'
+BIN_DIVIDERS_TO_TOP_INPUT_ID = 'dividers_to_top'
 # long walls folded in to stiffen them, see wallCreases
 BIN_CREASES_INPUT_ID = 'wall_creases'
 BIN_CREASE_DEPTH_INPUT_ID = 'wall_crease_depth'
@@ -227,6 +228,7 @@ def initDefaultUiState():
     commandUIState.initValue(BIN_WALL_THICKNESS_INPUT_ID, const.BIN_WALL_THICKNESS, adsk.core.ValueCommandInput.classType())
     commandUIState.initValue(BIN_WITH_LIP_INPUT_ID, True, adsk.core.BoolValueCommandInput.classType())
     commandUIState.initValue(BIN_WITH_LIP_NOTCHES_INPUT_ID, False, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_DIVIDERS_TO_TOP_INPUT_ID, False, adsk.core.BoolValueCommandInput.classType())
     commandUIState.initValue(BIN_CREASES_INPUT_ID, True, adsk.core.BoolValueCommandInput.classType())
     commandUIState.initValue(BIN_CREASE_DEPTH_INPUT_ID, const.BIN_CREASE_DEPTH, adsk.core.ValueCommandInput.classType())
     commandUIState.initValue(BIN_CREASE_MIN_LENGTH_INPUT_ID, const.BIN_CREASE_MIN_LENGTH, adsk.core.ValueCommandInput.classType())
@@ -776,6 +778,11 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     hasLipNotches = binFeaturesGroup.children.addBoolValueInput(BIN_WITH_LIP_NOTCHES_INPUT_ID, 'Generate lip notches', True, '', commandUIState.getState(BIN_WITH_LIP_NOTCHES_INPUT_ID))
     hasLipNotches.isEnabled = commandUIState.getState(BIN_WITH_LIP_INPUT_ID)
     commandUIState.registerCommandInput(hasLipNotches)
+    dividersToTopInput = binFeaturesGroup.children.addBoolValueInput(BIN_DIVIDERS_TO_TOP_INPUT_ID, 'Dividers up to the top on grid lines', True, '', commandUIState.getState(BIN_DIVIDERS_TO_TOP_INPUT_ID))
+    dividersToTopInput.tooltip = ('Compartment dividers lying on a grid line go up to the top of the lip and run out in its profile, '
+        'the feet of a bin stacked on top have a groove there. Dividers between grid lines stay below the lip. '
+        'Hollow bins with a lip only')
+    commandUIState.registerCommandInput(dividersToTopInput)
     creasesInput = binFeaturesGroup.children.addBoolValueInput(BIN_CREASES_INPUT_ID, 'Fold long walls for stiffness', True, '', commandUIState.getState(BIN_CREASES_INPUT_ID))
     creasesInput.tooltip = ('Folds walls of hollow and shelled bins in along shallow creases, origami style, so tall long walls bow less. '
         'Bins from the min height with a wall from the min length get them. Walls are split into even panels up to the max panel length, '
@@ -1107,6 +1114,7 @@ def onChangeValidate():
 
     generateLip: bool = commandUIState.getState(BIN_WITH_LIP_INPUT_ID)
     commandUIState.getInput(BIN_WITH_LIP_NOTCHES_INPUT_ID).isEnabled = generateLip
+    commandUIState.getInput(BIN_DIVIDERS_TO_TOP_INPUT_ID).isEnabled = generateBody and generateLip and binType == BIN_TYPE_HOLLOW and not shaped
 
     canCrease = generateBody and not binType == BIN_TYPE_SOLID
     commandUIState.getInput(BIN_CREASES_INPUT_ID).isEnabled = canCrease
@@ -1195,6 +1203,7 @@ def getInputsState() -> InputState:
         magnetCutoutDepth=commandUIState.getState(BIN_MAGNET_HEIGHT_INPUT),
         hasLip=commandUIState.getState(BIN_WITH_LIP_INPUT_ID),
         hasLipNotches=commandUIState.getState(BIN_WITH_LIP_NOTCHES_INPUT_ID),
+        hasDividersToTop=commandUIState.getState(BIN_DIVIDERS_TO_TOP_INPUT_ID),
         hasScoop=commandUIState.getState(BIN_HAS_SCOOP_INPUT_ID),
         scoopMaxRadius=commandUIState.getState(BIN_SCOOP_MAX_RADIUS_INPUT_ID),
         hasTab=commandUIState.getState(BIN_HAS_TAB_INPUT_ID),
