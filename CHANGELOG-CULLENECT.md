@@ -33,7 +33,7 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
   symbol are one layer (0.2 mm), raised, set in or flush, and bodies of their own to print them in another colour.
   The width is a user parameter (`gfLabel1_width`), the symbol stays at the right edge when it changes. Each text line
   is a user parameter too (`gfLabel1_text1`, `gfLabel1_text2`) and stays live text, so it can be changed later like
-  the bin labels; the font size is fitted when the insert is generated, a much longer text wraps in its box. All other
+  the bin labels; the font size is fitted when the insert is generated, a longer text stays on one line. All other
   sketches are fully constrained.
   Settings can be saved as defaults and shown with „Gridfinity settings“. Four label shape test cases.
 - **Dividers up to the top on grid lines** (bin dialog, off by default): compartment dividers lying on a grid line go
@@ -67,6 +67,14 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
 
 ### Fixed
 
+- **Insert text on one line:** Joerg's 1U insert „Welle 6mm“ came out as two lines hanging over the insert. The text
+  was fitted to exactly the width of its box by the outlines of its letters, Fusion breaks a box by their advance,
+  which is wider. Each text line now stands on a fixed line of its own instead of in a box, so it never breaks, and
+  fitting leaves 5 % of the width free. A text made longer later (`gfLabel1_text1`, `_text2`) is not fitted again: it
+  stays one line and runs on to the right, towards the symbol and past the insert's edge, shorten it or generate the
+  insert anew. Letters start after their side bearing, up to 0.5 mm further right than before. Shape tests check that
+  an insert's text stays one band per line on the insert, and a case can set the text parameters after building; two
+  new label cases.
 - **Dividers up to the top:** with dividers that don't meet (3 compartments side by side), only the first went into
   the bin; the others stayed below the lip and their raised part lay loose in the design. Fusion doesn't join bodies
   that don't touch, so each raised divider is now joined to the bin on its own.
