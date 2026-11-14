@@ -43,6 +43,20 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
   grid lines (3 compartments on 4 units, half cells) stay below the lip. Hollow bins with a lip only; follows parameter
   changes. Two new bin cases.
 
+- **Set screws as screw symbols:** head „None“ with a slot, hex or torx driver is a set screw (grub screw): the thread
+  as Cullenect draws it and, a gap beside it, its end with the driver, with or without a security pin (hex, torx),
+  shaft „Machine“ with a flat end, „Tapping“ with a point. Ten svgs in `cullenectIcons/setscrews/`, rendered by
+  `tools/setScrewIcons.py` from `tools/setscrew/SetScrew.scad`. Own work of this fork under MIT, not Cullenect code;
+  it uses Cullenect's thread and driver shapes. 15.56 mm wide, 1 mm wider than the other screws. New label case.
+- **Text color (inserts and bin labels):** „Text color“ in the label dialog and „Label color“ in the bin dialog,
+  None (as before), eight named colors or a custom `#rrggbb`. The text and symbol bodies of an insert get a label
+  appearance (`Gridfinity label RRGGBB`); a colored bin label stays bodies of its own, raised letters aren't joined to
+  the bin, engraved and outline ones fill their cut flush. An exported 3MF has each of them as an object of its own in
+  its color, ready to assign a filament in the slicer. The appearance is a library plastic copied and recolored,
+  found by name in English or German (`Plastic - Matte`, `Kunststoff - matt`). Letters Fusion adds when a text is
+  made longer later keep the default look, color them by hand or generate anew. Three new cases, colored cases check
+  the look of their bodies.
+
 ### Changed
 
 - The screw and hardware choices carry Cullenect's names („Round“, „T-Nut Side“, „Torx/Star“, ...) in Cullenect's
@@ -67,6 +81,10 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
 
 ### Fixed
 
+- **Screw choices without a symbol:** the label dialog offered every head, shaft, thread and driver together, head
+  None with driver Hex had no svg and locked OK. Each dropdown now offers only what makes a symbol with the choices
+  above it, a choice that doesn't moves to the first one that does; flange and security pin are locked where none
+  exists.
 - **Insert text on one line:** Joerg's 1U insert „Welle 6mm“ came out as two lines hanging over the insert. The text
   was fitted to exactly the width of its box by the outlines of its letters, Fusion breaks a box by their advance,
   which is wider. Each text line now stands on a fixed line of its own instead of in a box, so it never breaks, and
@@ -86,6 +104,8 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
 - **CullenJWebb** — [Cullenect Labels](https://github.com/CullenJWebb/Cullenect-Labels), insert and socket dimensions
   from `OpenSCAD/Cullenect.scad` (commit `d6dc0bb`), the symbols and the insert geometry and layout
   (`cullenect_base_v2`, `cullenect_label_generate`), MIT.
+- **Set screw symbols** (`cullenectIcons/setscrews/`, `tools/setscrew/`) — own work of this fork, MIT, using
+  Cullenect's thread and driver shapes (CullenJWebb, MIT).
 - **ostat / Chris Heazlewood** — [gridfinity_extended_openscad](https://github.com/ostat/gridfinity_extended_openscad),
   reference for the Cullenect tab.
 - **Zack Freedman** — [Gridfinity](https://gridfinity.xyz).
