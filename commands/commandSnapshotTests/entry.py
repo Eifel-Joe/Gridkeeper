@@ -537,6 +537,7 @@ def runCase(case: testCases.TestCase, keepOpen: bool) -> dict:
         notes += looseBodyNotes(document, bodies)
         notes += designIntentNotes(case, document)
         notes += sketchConstraintNotes(case, document)
+        notes += raisedCornerLedgeNotes(case, bodies)
     except Exception as err:
         results = [snapshots.BodyResult('', snapshots.STATUS_FAIL, [f'build failed, {buildFailure(case, err)}'])]
     if document is not None and case.parameters:
@@ -595,6 +596,30 @@ def sketchConstraintNotes(case: testCases.TestCase, document: adsk.core.Document
     if len(names) > 0:
         log(f'{case.name}: {len(names)} of {len(sketches)} sketches not fully constrained, reported only: {", ".join(names)}')
     return []
+
+# raised dividers start this far under the top of the lip, their corners carry on from there
+RAISED_DIVIDERS_REACH = 0.6
+
+def raisedCornerLedgeNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BRepBody]) -> list[str]:
+    """
+    Why a bin with dividers up to the top fails for a ledge where a raised divider's corner meets the compartment
+    corner below it: the small upward faces in the reach of the raised dividers, under the top of the lip, see
+    testCases.raisedCornerLedges
+    """
+    if case.generator != testCases.GENERATOR_BIN or not getattr(case.state, 'hasDividersToTop', False):
+        return []
+    faces = []
+    for body in bodies:
+        top = body.boundingBox.maxPoint.z
+        for face in body.faces:
+            if face.geometry.surfaceType != adsk.core.SurfaceTypes.PlaneSurfaceType:
+                continue
+            (ok, normal) = face.evaluator.getNormalAtPoint(face.pointOnFace)
+            box = face.boundingBox
+            if not ok or normal.z < 0.999 or box.minPoint.z < top - RAISED_DIVIDERS_REACH or box.maxPoint.z > top - 1e-4:
+                continue
+            faces.append((face.area * 100, (box.maxPoint.x - box.minPoint.x) * 10, (box.maxPoint.y - box.minPoint.y) * 10))
+    return testCases.raisedCornerLedges(faces)
 
 def listedCase(case: testCases.TestCase, status: str) -> dict:
     """A case waiting to be run or refreshed, or being run"""

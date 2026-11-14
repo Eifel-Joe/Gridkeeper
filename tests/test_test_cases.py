@@ -241,3 +241,16 @@ def test_an_unknown_design_intent_after_is_an_error(tmp_path):
     data = {"description": "a case", "generator": "bin", "designIntentAfter": "assembly-ish", "settings": sample_settings()}
     with pytest.raises(cases.TestCaseError, match="design intent"):
         cases.loadCase(write_case_data(tmp_path, data), STATE_CLASSES)
+
+
+# A raised divider corner carries on from the compartment corner below without a ledge (p83, Joerg's hand test): small
+# upward faces left where the two meet are reported. Faces as (area mm2, width mm, length mm), from Fusion
+def test_ledges_reports_the_sickles_of_joergs_bin():
+    faces = [(0.3635, 2.24, 1.33), (0.0542, 2.55, 2.55), (484.99, 125.5, 83.5)]
+    notes = cases.raisedCornerLedges(faces)
+    assert len(notes) == 2
+    assert notes[0].startswith('ledge of 0.36 mm2')
+
+
+def test_ledges_ignore_slivers_of_tangent_seams_and_big_faces():
+    assert cases.raisedCornerLedges([(0.0001, 2.55, 2.55), (0.0, 0.0, 1.2), (12.0, 4.0, 3.0)]) == []

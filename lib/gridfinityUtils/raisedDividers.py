@@ -149,6 +149,31 @@ def isCornerChainEdge(
     return abs(start[2] - end[2]) > tolerance
 
 
+def chainPath(edges: list[tuple[tuple[float, float], tuple[float, float]]], tolerance: float = 1e-3) -> list[int] | None:
+    """
+    The order of a corner's chain edges, each a start and end in its plane, so they make one path from the lowest
+    point up, the path its section is swept along. None where they don't join up into one, as above a wall thicker
+    than the lip, which leaves a level ledge between them
+    """
+    def same(a, b):
+        return abs(a[0] - b[0]) <= tolerance and abs(a[1] - b[1]) <= tolerance
+
+    if len(edges) == 0:
+        return None
+    first = min(range(len(edges)), key=lambda index: min(edges[index][0][1], edges[index][1][1]))
+    (start, end) = edges[first]
+    point = start if start[1] > end[1] else end
+    order = [first]
+    while len(order) < len(edges):
+        following = [index for index in range(len(edges)) if index not in order and (same(edges[index][0], point) or same(edges[index][1], point))]
+        if len(following) != 1:
+            return None
+        (start, end) = edges[following[0]]
+        point = end if same(start, point) else start
+        order.append(following[0])
+    return order
+
+
 def segmentsForBin(
     isEnabled: bool,
     hasLip: bool,
