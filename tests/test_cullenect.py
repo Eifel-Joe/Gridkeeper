@@ -155,3 +155,23 @@ def test_switching_back_from_cullenect_keeps_user_values():
         state["labelStyle"] = style
         cullenect.labelInputsEnabled(style)
     assert {key: value for key, value in state.items() if key != "labelStyle"} == {key: value for key, value in before.items() if key != "labelStyle"}
+
+
+def test_compartment_widths_split_the_interior_like_the_bin():
+    interior = 4.2 * 4 - 2 * (0.12 + 0.025)
+    widths = cullenect.compartmentWidths(interior, 4, [4, 2, 1, 1], WALL)
+    assert widths == [approx(CELL * 4 + WALL * 3), approx(CELL * 2 + WALL), approx(CELL), approx(CELL)]
+
+
+def test_a_single_cavity_is_one_compartment_over_the_interior():
+    # creased bins build one cavity whatever compartment grid the dialog keeps
+    assert cullenect.compartmentWidths(12.31, 1, [1], WALL) == [approx(12.31)]
+
+
+@pytest.mark.parametrize("compartmentLength, fits", [
+    (3.91, True),     # 1x1 bin
+    (2.62, True),     # three rows on a two units long bin
+    (1.22, False),    # three rows on a one unit long bin, the 14 mm tab fills it
+])
+def test_socket_needs_room_in_front_of_it_inside_the_compartment(compartmentLength, fits):
+    assert cullenect.socketFitsDepth(compartmentLength, 1.4, 0.03) is fits

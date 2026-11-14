@@ -318,6 +318,10 @@ def createGridfinityBinBody(
             labelMaxX = tabMaxX if tabMaxX.value <= compartmentMaxX.value else compartmentMaxX
             labelName = 'Label' if len(input.compartments) == 1 else f'Compartment {compartmentIndex + 1} label'
             if isCullenect:
+                if not cullenect.socketFitsDepth(compartmentLength.value, input.tabWidth, input.cullenectSocketOffset):
+                    # the tab fills the compartment, the socket would cut into the divider in front
+                    commonUtils.debugLog(f'{labelName}: compartment {compartmentLength.value * 10:.2f} mm long, too short for a Cullenect socket')
+                    continue
                 createCullenectSocket(
                     labelMinX,
                     labelMaxX,
