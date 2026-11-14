@@ -88,3 +88,16 @@ def test_half_grid_bin_counts_whole_units_not_feet():
     # a half grid bin 1.5 units wide has 3 feet, with 3 compartments only the line at 1 unit is a grid line. The
     # builder passes the size in units, passed in feet every line would rise
     assert raised.gridLineSegments(single_cells(3, 1), 3, 1, 1.5, 1) == [Segment('x', 2, 0, 1)]
+
+
+def test_option_needs_compartments_besides_a_hollow_bin_with_a_lip():
+    enabled = dict(generateBody=True, hasLip=True, isHollow=True, isShaped=False, isCreased=False, compartmentsX=3, compartmentsY=1)
+    assert raised.optionEnabled(**enabled) is True
+    assert raised.optionEnabled(**dict(enabled, compartmentsX=1, compartmentsY=2)) is True
+    for (key, value) in [
+        ('generateBody', False), ('hasLip', False), ('isHollow', False), ('isShaped', True),
+        # a creased bin has a single compartment, see binBuilder.creaseLayout
+        ('isCreased', True),
+    ]:
+        assert raised.optionEnabled(**dict(enabled, **{key: value})) is False, key
+    assert raised.optionEnabled(**dict(enabled, compartmentsX=1, compartmentsY=1)) is False
