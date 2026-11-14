@@ -73,6 +73,82 @@ def gridLineSegments(pockets: list[dict], columns: int, rows: int, binWidth: flo
     return segments
 
 
+@dataclass(frozen=True, order=True)
+class FilletCorner:
+    """
+    A corner of compartment grid cell column, row whose two sides go up to the top, filleted like the corners below.
+    Side x -1 is the cell's low x side, 1 its high one, side y likewise
+    """
+    column: int
+    row: int
+    sideX: int
+    sideY: int
+
+
+def _isRaised(segments: list[DividerSegment], axis: str, line: int, cell: int) -> bool:
+    """Whether a raised divider on this line of the axis covers the cell"""
+    return any(s.axis == axis and s.line == line and s.start <= cell < s.end for s in segments)
+
+
+def filletCorners(segments: list[DividerSegment], columns: int, rows: int) -> list[FilletCorner]:
+    """
+    Cell corners the raised dividers make, where both sides of the corner go up to the top, a raised divider or an
+    outer wall. Corners of two outer walls are left out, the bin's own corners are round already
+    """
+    corners = []
+    for column in range(columns):
+        for row in range(rows):
+            for sideX in (-1, 1):
+                for sideY in (-1, 1):
+                    lineX = column if sideX == -1 else column + 1
+                    lineY = row if sideY == -1 else row + 1
+                    outerX = lineX in (0, columns)
+                    outerY = lineY in (0, rows)
+                    upX = outerX or _isRaised(segments, 'x', lineX, row)
+                    upY = outerY or _isRaised(segments, 'y', lineY, column)
+                    if upX and upY and not (outerX and outerY):
+                        corners.append(FilletCorner(column, row, sideX, sideY))
+    return corners
+
+
+def isCornerChainEdge(
+    corner: FilletCorner,
+    cornerAt: tuple[float, float],
+    columns: int,
+    rows: int,
+    *,
+    wall: float,
+    lipOverhang: float,
+    bottomZ: float,
+    start: tuple[float, float, float],
+    end: tuple[float, float, float],
+    tolerance: float = 1e-3,
+) -> bool:
+    """
+    Whether a straight edge of the finished bin, start to end x, y, z, belongs to the chain the corner is filleted
+    along: from the top of the corner fillet below, bottomZ, up the outer wall, the chamfer under the lip and the lip
+    to the top, or up a crossing. It lies in the face of the raised divider, which meets the cell at cornerAt, and
+    stays within the wall behind the corner and the lip's overhang into the cell in front of it. Edges along the
+    divider or the wall, and level ones, are none of it
+    """
+    lineX = corner.column if corner.sideX == -1 else corner.column + 1
+    # a raised side across x stands in the plane of x, a corner against an outer wall across x has its divider across y
+    acrossX = lineX not in (0, columns)
+    (planeAxis, otherAxis, side) = (0, 1, corner.sideY) if acrossX else (1, 0, corner.sideX)
+    plane = cornerAt[planeAxis]
+    other = cornerAt[otherAxis]
+    # the wall lies on the corner's side of it, the lip reaches into the cell
+    (low, high) = (other - wall, other + lipOverhang) if side == -1 else (other - lipOverhang, other + wall)
+    for point in (start, end):
+        if abs(point[planeAxis] - plane) > tolerance:
+            return False
+        if not low - tolerance <= point[otherAxis] <= high + tolerance:
+            return False
+        if point[2] < bottomZ - tolerance:
+            return False
+    return abs(start[2] - end[2]) > tolerance
+
+
 def segmentsForBin(
     isEnabled: bool,
     hasLip: bool,

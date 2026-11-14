@@ -101,3 +101,84 @@ def test_option_needs_compartments_besides_a_hollow_bin_with_a_lip():
         ('compartmentCount', 1),
     ]:
         assert raised.optionEnabled(**dict(enabled, **{key: value})) is False, key
+
+
+# Fillets up to the top (p83): a compartment corner gets one where both its sides go up to the top, a raised divider
+# or an outer wall, but not both outer walls, the bin's own corner is round already
+Corner = raised.FilletCorner
+
+
+def test_three_columns_fillet_where_the_dividers_meet_the_outer_walls():
+    segments = [Segment('x', 1, 0, 1), Segment('x', 2, 0, 1)]
+    assert sorted(raised.filletCorners(segments, 3, 1)) == sorted([
+        Corner(0, 0, 1, -1), Corner(0, 0, 1, 1),
+        Corner(1, 0, -1, -1), Corner(1, 0, -1, 1), Corner(1, 0, 1, -1), Corner(1, 0, 1, 1),
+        Corner(2, 0, -1, -1), Corner(2, 0, -1, 1),
+    ])
+
+
+def test_crossing_dividers_fillet_all_four_corners():
+    segments = [Segment('x', 1, 0, 2), Segment('y', 1, 0, 2)]
+    corners = raised.filletCorners(segments, 2, 2)
+    # the crossing in the middle, one per cell
+    assert {Corner(0, 0, 1, 1), Corner(1, 0, -1, 1), Corner(0, 1, 1, -1), Corner(1, 1, -1, -1)} <= set(corners)
+    # and the four ends against the outer walls, two each
+    assert len(corners) == 4 + 8
+
+
+def test_no_fillet_where_a_raised_divider_meets_one_that_stays_down():
+    # 2x2, only the column divider at line 1 rises, over both rows, the row divider at line 1 stays down
+    segments = [Segment('x', 1, 0, 2)]
+    corners = raised.filletCorners(segments, 2, 2)
+    # so the crossing gets nothing, only the ends against the front and back walls
+    assert all(not (corner.column in (0, 1) and corner.row == 0 and corner.sideY == 1) for corner in corners)
+    assert all(not (corner.row == 1 and corner.sideY == -1) for corner in corners)
+    assert len(corners) == 4
+
+
+def test_no_fillet_without_raised_dividers():
+    assert raised.filletCorners([], 3, 2) == []
+
+
+# Which edges of the finished bin make up the chain a corner is filleted along (p83, variant C). Lengths in mm here,
+# the code is unit free. Taken from Fusion: 3x2 bin, 3 columns, wall 1.2, divider 1 low x face at 41.433, front wall
+# inner face y 1.2, lip face 1.9, corner fillet tops at 15.5, top 19.8
+CORNER = Corner(0, 0, 1, -1)  # cell 0, its high x side against divider 1, low y side against the front wall
+CORNER_AT = (41.433, 1.2)
+
+
+# the generator passes the lip's top section, 2.4 mm, as the reach of the lip into the cell
+def chain(start, end, corner=CORNER, at=CORNER_AT):
+    return raised.isCornerChainEdge(corner, at, 3, 1, wall=1.2, lipOverhang=2.4, bottomZ=15.5, start=start, end=end)
+
+
+def test_chain_takes_the_edges_up_the_wall_chamfer_and_lip():
+    assert chain((41.433, 1.2, 15.5), (41.433, 1.2, 16.0))
+    assert chain((41.433, 1.2, 16.0), (41.433, 1.9, 16.7))
+    assert chain((41.433, 1.9, 16.7), (41.433, 1.9, 18.6))
+    assert chain((41.433, 0.7, 19.8), (41.433, 1.9, 18.6))
+
+
+def test_chain_leaves_edges_along_the_divider_or_the_wall():
+    # the top of the divider, the top of the corner fillet below, the lip's chamfer along the wall
+    assert not chain((41.433, 82.8, 19.8), (41.433, 0.7, 19.8))
+    assert not chain((41.433, 1.2, 15.5), (41.433, 3.75, 15.5))
+    assert not chain((41.433, 1.9, 16.7), (3.75, 1.9, 16.7))
+
+
+def test_chain_starts_at_the_top_of_the_corner_fillet():
+    assert not chain((41.433, 1.2, 3.55), (41.433, 1.2, 15.5))
+
+
+def test_chain_on_the_other_side_of_the_divider_and_at_the_back_wall():
+    assert chain((42.633, 1.9, 15.5), (42.633, 1.9, 18.6), Corner(1, 0, -1, -1), (42.633, 1.2))
+    assert not chain((41.433, 1.9, 15.5), (41.433, 1.9, 18.6), Corner(1, 0, -1, -1), (42.633, 1.2))
+    assert chain((41.433, 81.6, 16.7), (41.433, 81.6, 18.6), Corner(0, 0, 1, 1), (41.433, 82.3))
+    assert not chain((41.433, 1.9, 16.7), (41.433, 1.9, 18.6), Corner(0, 0, 1, 1), (41.433, 82.3))
+
+
+def test_chain_of_a_crossing_is_its_vertical_edge():
+    crossing = Corner(0, 0, 1, 1)
+    at = (40.0, 30.0)
+    assert raised.isCornerChainEdge(crossing, at, 2, 2, wall=1.2, lipOverhang=0.71, bottomZ=15.5, start=(40.0, 30.0, 15.5), end=(40.0, 30.0, 19.8))
+    assert not raised.isCornerChainEdge(crossing, at, 2, 2, wall=1.2, lipOverhang=0.71, bottomZ=15.5, start=(40.0, 30.0, 19.8), end=(40.0, 40.0, 19.8))
