@@ -48,6 +48,8 @@ class InputState:
     labelIcon: str
     labelStyle: str
     isLabelBold: bool
+    # play of a Cullenect insert in its socket, see cullenect
+    cullenectSocketOffset: float
 
     compartmentsX: int
     compartmentsY: int

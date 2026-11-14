@@ -72,6 +72,9 @@ class BinBodyGeneratorInput():
         self.tabTopAngle = const.BIN_TAB_LABEL_ANGLE
         self.labelStyle = LABEL_STYLE_OUTLINE
         self.isLabelBold = True
+        self.cullenectSocketOffset = const.CULLENECT_SOCKET_OFFSET
+        # Cullenect labels count in whole grid units, also on a half grid bin whose base width is a foot
+        self.cullenectUnitWidth = Dim.length(const.DIMENSION_DEFAULT_WIDTH_UNIT)
         self.compartments = [BinBodyCompartmentDefinition()]
         self.isUniformCompartments = False
         self.compartmentsByX = 1
@@ -202,6 +205,24 @@ class BinBodyGeneratorInput():
     @isLabelBold.setter
     def isLabelBold(self, value: bool):
         self._isLabelBold = value
+
+    @property
+    def cullenectSocketOffset(self) -> float:
+        """Play of a Cullenect insert in its socket, in X and Y"""
+        return self._cullenectSocketOffset
+
+    @cullenectSocketOffset.setter
+    def cullenectSocketOffset(self, value: float):
+        self._cullenectSocketOffset = value
+
+    @property
+    def cullenectUnitWidth(self) -> Dim:
+        """Width of a grid unit that Cullenect label widths count in"""
+        return self._cullenectUnitWidth
+
+    @cullenectUnitWidth.setter
+    def cullenectUnitWidth(self, value: Dim):
+        self._cullenectUnitWidth = value
 
     @property
     def labelStyle(self) -> str:

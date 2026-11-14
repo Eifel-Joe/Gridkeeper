@@ -37,6 +37,7 @@
         "labelIcon": "None",
         "labelStyle": "Outline",
         "isLabelBold": true,
+        "cullenectSocketOffset": 0.3,
         "compartmentsX": 3,
         "compartmentsY": 2,
         "showCompartmentsLayout": true,
