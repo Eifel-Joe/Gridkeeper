@@ -194,3 +194,10 @@ def test_label_lengths_come_in_mm():
 
 def test_label_cases_may_change_the_base_width():
     assert cases.PARAMETER_FIELDS[cases.GENERATOR_LABEL] == {'gfBaseWidth': 'baseWidth'}
+
+
+def test_dividers_to_top_defaults_off_in_every_bin_case():
+    loaded = cases.loadCases(CASES_FOLDER, STATE_CLASSES)
+    for case in loaded:
+        if case.generator == cases.GENERATOR_BIN and "dividers_to_top" not in case.name:
+            assert case.state.hasDividersToTop is False, case.name
