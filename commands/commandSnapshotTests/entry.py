@@ -597,8 +597,9 @@ def sketchConstraintNotes(case: testCases.TestCase, document: adsk.core.Document
         log(f'{case.name}: {len(names)} of {len(sketches)} sketches not fully constrained, reported only: {", ".join(names)}')
     return []
 
-# raised dividers start this far under the top of the lip, their corners carry on from there
-RAISED_DIVIDERS_REACH = 0.6
+# the raised dividers' corners go up from under the lip's height and the tab's top clearance, the check looks a little
+# further down, 5 mm under the top of the bin
+RAISED_DIVIDERS_REACH = 0.5
 
 def raisedCornerLedgeNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BRepBody]) -> list[str]:
     """

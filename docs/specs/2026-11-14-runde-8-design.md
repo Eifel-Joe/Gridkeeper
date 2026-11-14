@@ -33,8 +33,8 @@ den Füßen (Hinterschnitte oben); Fusion-Verrundung als Hauptweg (des Nutzers H
 weil die Kugel dem 0,5 mm kurzen Wandstück unter der Fase nicht folgen kann).
 
 ## Prüfung
-- Unit-Tests: Auswahl der Ecken (`filletCorners`), Kanten einer Ecke (`isCornerChainEdge`) mit in Fusion gemessenen
-  Koordinaten.
+- Unit-Tests: Auswahl der Ecken (`filletCorners`), Kanten einer Ecke (`isCornerChainEdge`, `cornerPlaneAxes`) mit in
+  Fusion gemessenen Koordinaten, Reihenfolge der Kanten als Pfad (`chainPath`), Absatz-Prüfung (`raisedCornerLedges`).
 - Fusion: alle Trennwand-bis-oben-Fälle gesund, alle Ecken verrundet (8/8/8/12/4), Parameterfall (`gfBaseWidth` 40 mm)
   gesund. Stapeltest 4×2 und 2×2 auf jeder Lage: 0 mm³, Gegenprobe 0,3 mm tiefer > 0.
 - Ohne Fall, einmal in Fusion (des Nutzers Bin mit Tab abgewandelt): Wand 0,4 mm und Notches ohne Absatz, alle Ecken per

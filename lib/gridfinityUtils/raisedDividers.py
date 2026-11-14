@@ -111,6 +111,16 @@ def filletCorners(segments: list[DividerSegment], columns: int, rows: int) -> li
     return corners
 
 
+def cornerPlaneAxes(corner: FilletCorner, columns: int) -> tuple[int, int]:
+    """
+    The axis of the plane a corner's raised divider face lies in, and the other one across which its edges go up: a
+    raised side across x stands in the plane of x, a corner against an outer wall across x has its divider across y.
+    A crossing takes the plane of x
+    """
+    lineX = corner.column if corner.sideX == -1 else corner.column + 1
+    return (0, 1) if lineX not in (0, columns) else (1, 0)
+
+
 def isCornerChainEdge(
     corner: FilletCorner,
     cornerAt: tuple[float, float],
@@ -131,10 +141,8 @@ def isCornerChainEdge(
     stays within the wall behind the corner and the lip's overhang into the cell in front of it. Edges along the
     divider or the wall, and level ones, are none of it
     """
-    lineX = corner.column if corner.sideX == -1 else corner.column + 1
-    # a raised side across x stands in the plane of x, a corner against an outer wall across x has its divider across y
-    acrossX = lineX not in (0, columns)
-    (planeAxis, otherAxis, side) = (0, 1, corner.sideY) if acrossX else (1, 0, corner.sideX)
+    (planeAxis, otherAxis) = cornerPlaneAxes(corner, columns)
+    side = corner.sideY if planeAxis == 0 else corner.sideX
     plane = cornerAt[planeAxis]
     other = cornerAt[otherAxis]
     # the wall lies on the corner's side of it, the lip reaches into the cell

@@ -199,3 +199,12 @@ def test_chain_path_of_a_broken_chain_is_none():
 
 def test_chain_path_of_a_crossing_is_its_edge():
     assert raised.chainPath([((30.0, 19.8), (30.0, 15.5))]) == [0]
+
+
+def test_corner_plane_axes_follow_the_raised_side():
+    # against an outer wall across y, the divider stands across x: plane x, path across y
+    assert raised.cornerPlaneAxes(Corner(0, 0, 1, -1), 3) == (0, 1)
+    # a corner at the outer wall across x has its raised divider across y
+    assert raised.cornerPlaneAxes(Corner(0, 0, -1, 1), 1) == (1, 0)
+    # a crossing takes the plane of x
+    assert raised.cornerPlaneAxes(Corner(0, 0, 1, 1), 2) == (0, 1)
