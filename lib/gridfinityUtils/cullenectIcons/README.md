@@ -11,6 +11,8 @@ from the original OpenSCAD code:
 - Generator: the add-in itself is based on FusionGridfinityGenerator by Le0Michine (CC BY-NC-SA 4.0).
   Gridfinity is by Zack Freedman.
 
+`setscrews/` is not Cullenect's: set screws drawn for this fork, with a license of their own, see its README.
+
 `screws/` holds one file per valid combination, named
 `screw_<head>_<shaft>_<threads>_<driver>_<flange|noflange>_<sec|nosec>.svg`,
 `hardware/` one file per hardware symbol. The add-in reads what is in these folders, so another symbol

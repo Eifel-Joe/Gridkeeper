@@ -126,11 +126,16 @@ def render(exe: str, job: tuple[str, object, str], workFolder: str) -> str | Non
 
 def _render(exe: str, job: tuple[str, object, str], workFolder: str) -> str | None:
     (kind, combination, svgPath) = job
+    return renderScad(exe, wrapperScad(kind, combination), svgPath, workFolder, CULLENECT_FOLDER)
+
+
+def renderScad(exe: str, scad: str, svgPath: str, workFolder: str, libraryFolder: str) -> str | None:
+    """Renders the .scad text to the tightened svg, its `use` found in the library folder, returns an error text or None"""
     os.makedirs(os.path.dirname(svgPath), exist_ok=True)
     scadPath = os.path.join(workFolder, os.path.splitext(os.path.basename(svgPath))[0] + '.scad')
     with open(scadPath, 'w', encoding='utf-8') as file:
-        file.write(wrapperScad(kind, combination))
-    environment = dict(os.environ, OPENSCADPATH=CULLENECT_FOLDER)
+        file.write(scad)
+    environment = dict(os.environ, OPENSCADPATH=libraryFolder)
     partial = os.path.join(workFolder, os.path.basename(svgPath))  # in the work folder, a stop leaves nothing in the repo
     result = subprocess.run(openscadCommand(exe, scadPath, partial), capture_output=True, text=True, errors='replace', env=environment)
     if result.returncode != 0 or not os.path.isfile(partial):
