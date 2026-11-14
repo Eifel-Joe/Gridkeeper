@@ -215,6 +215,15 @@ seiner gedruckten Einleger bereit — Passungs-Referenz zum Gegenprüfen.
     durch, wenn alles außer dem Text selbst bestimmt ist; alle anderen Skizzen (Symbol, Grundkörper,
     Bin-Skizzen) bleiben Pflicht. Die Schriftgröße wird beim Erzeugen eingepasst; ein später längerer
     Text wird nicht neu eingepasst, sondern bricht im Textrahmen um (wie bei den Bin-Labels).
+  - **Befunde Runde 6 (Fusion, 14.11.2026):** Mit fixierten Textrahmen meldet Fusion die Textskizze des
+    Einlegers doch als `isFullyConstrained` (vier Label-Fälle und Live-Test, auch nach Textänderung); die
+    Ausnahme im Constraint-Check bleibt als Absicherung. Ein geänderter Text ändert die Zahl der
+    Buchstabenkörper, darum darf kein Feature an den Buchstabenkörpern hängen: Der Einleger wird an
+    seiner Stelle gezeichnet statt dorthin verschoben (sonst bleiben neue Buchstaben am Ursprung liegen),
+    und vertiefter/bündiger Text wird mit einem deckungsgleichen zweiten Text am selben Parameter
+    geschnitten statt mit den Füllkörpern (Kombinieren verliert sonst Werkzeugkörper; denselben Text
+    zweimal zu extrudieren lehnt Fusion im selben Lauf ab). Ein deutlich längerer Text bricht im Rahmen um
+    und ragt dann über den Einleger hinaus (offener Punkt).
   - Texthöhe: Fusions Texthöhe ist die Höhe der Großbuchstaben („H“ bei 1,0 cm: 1,000 cm hoch,
     Arial normal und fett). Cullenects `text(size = 5)` in Open Sans ergibt ≈ 4,96 mm Großbuchstaben
     (gemessen mit OpenSCAD in Liberation Sans 4,78 mm, Open Sans hat 1462/1409 dieser Versalhöhe;

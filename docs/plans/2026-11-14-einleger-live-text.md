@@ -26,28 +26,36 @@ Live-Text als bestimmt, wenn alle ihre Kurven und Punkte bestimmt oder fixiert s
 
 **Files:** `tests/test_snapshot_constraints.py`, `commands/commandSnapshotTests/constraints.py`
 
-- [ ] RED: Skizze mit Text, alle Kurven/Punkte fixiert oder bestimmt ⇒ nicht gelistet; Skizze mit Text und einem
+- [x] RED: Skizze mit Text, alle Kurven/Punkte fixiert oder bestimmt ⇒ nicht gelistet; Skizze mit Text und einem
   losen Punkt bzw. einer losen Kurve ⇒ gelistet; Skizze ohne Text, nicht bestimmt ⇒ gelistet.
-- [ ] GREEN: `unconstrainedSketches` prüft bei Skizzen mit `sketchTexts` die Kurven und Punkte einzeln.
+- [x] GREEN: `unconstrainedSketches` prüft bei Skizzen mit `sketchTexts` die Kurven und Punkte einzeln.
 
 ### Task 2: Live-Text im Einleger-Generator
 
 **Files:** `lib/gridfinityUtils/cullenectLabelGenerator.py`, `commands/commandCreateLabel/labelBuilder.py`
 
-- [ ] Builder: Text-Parameter je Zeile (`text1`, `text2`), in `LABEL_PARAMETERS` für die Präfixwahl, in die
+- [x] Builder: Text-Parameter je Zeile (`text1`, `text2`), in `LABEL_PARAMETERS` für die Präfixwahl, in die
   Einstellungs-Parameterliste („Text line 1/2“).
-- [ ] Generator: `CullenectLabelInput.textParameters`; `SketchText` nicht mehr explodieren, an Parameter binden,
+- [x] Generator: `CullenectLabelInput.textParameters`; `SketchText` nicht mehr explodieren, an Parameter binden,
   Skizze fixieren, `SketchText`-Objekte extrudieren.
 - Nicht automatisiert testbar (Fusion-API). Prüfkriterium: Fusion-Lauf der vier Label-Fälle mit Constraint-Check
   pass; Live-Test unten.
 
 ### Task 3: Fusion-Live-Test
 
-- [ ] Add-in neu laden, neues Dokument, Einleger 1U mit zwei Zeilen + Schraube erzeugen.
-- [ ] `gfLabel1_text1` ändern ⇒ Text im Modell geändert, Timeline gesund; Fall „vertieft“ ebenso (Schnitt folgt).
-- [ ] `gfLabel1_width` ändern ⇒ Symbol bleibt rechts, Text bleibt links.
-- [ ] Snapshot-Fälle `label_*`: pass bzw. nur durch Live-Text bedingte Änderungen erneuern; Bin-Fälle unverändert.
+- [x] Add-in neu laden, neues Dokument, Einleger 1U mit zwei Zeilen + Schraube erzeugen.
+- [x] `gfLabel1_text1` ändern ⇒ Text im Modell geändert, Timeline gesund; Fall „vertieft“ ebenso (Schnitt folgt).
+- [x] `gfLabel1_width` ändern ⇒ Symbol bleibt rechts, Text bleibt links.
+- [x] Snapshot-Fälle `label_*`: pass bzw. nur durch Live-Text bedingte Änderungen erneuern; Bin-Fälle unverändert.
 
 ### Task 4: CHANGELOG-CULLENECT.md
 
-- [ ] Satz „fixed curves … generating the insert again“ durch Live-Text-Beschreibung ersetzen.
+- [x] Satz „fixed curves … generating the insert again“ durch Live-Text-Beschreibung ersetzen.
+
+## Umsetzung, abweichend vom Plan (Befunde im Live-Test)
+
+- Platzierung eines weiteren Einlegers wird in die Skizzen eingerechnet (`cullenectLabelLayout.movedLayout`, Test
+  `TestMovedLayout`), statt die Körper zu verschieben: neue Buchstaben blieben sonst am Ursprung.
+- Vertiefter/bündiger Text: Schnitt per Extrusion eines deckungsgleichen Zwillingstextes am selben Parameter, statt
+  Kombinieren mit den Füllkörpern (verlor Werkzeugkörper bei mehr Buchstaben).
+- Snapshots der vier Label-Fälle: nur die Nummerierung der Buchstabenkörper geändert, Fingerabdrücke identisch.
