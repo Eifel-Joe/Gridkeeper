@@ -255,3 +255,22 @@ class TestNarrowHardware:
     def test_a_symbol_off_the_insert_is_a_problem(self):
         result = layout.labelLayout(1.0, 1.1, (1.2, 0.5), False, 0)
         assert 'symbol' in layout.layoutProblem(result)
+
+
+class TestMovedLayout:
+    """The insert is drawn where it goes, so letters a later text adds go there too"""
+
+    def test_text_and_symbol_move_by_the_offset(self):
+        original = layout.labelLayout(3.6, 1.1, SCREW, True, 2)
+        moved = layout.movedLayout(original, 0.5, 1.5)
+        assert moved.textMinX == approx(original.textMinX + 0.5)
+        assert moved.textMaxX == approx(original.textMaxX + 0.5)
+        assert moved.iconMaxX == approx(original.iconMaxX + 0.5)
+        assert moved.iconCenterY == approx(original.iconCenterY + 1.5)
+        assert moved.lineCenters == approx([center + 1.5 for center in original.lineCenters])
+        assert moved.lineHeights == original.lineHeights
+        assert (moved.width, moved.height, moved.iconWidth) == (original.width, original.height, original.iconWidth)
+
+    def test_without_symbol_stays_without(self):
+        moved = layout.movedLayout(layout.labelLayout(3.6, 1.1, None, False, 1), 0, 1.5)
+        assert moved.iconMaxX is None

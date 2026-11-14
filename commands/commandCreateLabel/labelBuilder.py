@@ -23,7 +23,8 @@ ICONS_FOLDER = os.path.join(
 # User parameter names are stored in user documents, keep these literal
 LABEL_PARAMETER_BASE_NAME = 'gfLabel'
 LABEL_WIDTH_PARAMETER = 'width'
-LABEL_PARAMETERS = [sharedParameters.BASE_WIDTH_FALLBACK_PARAMETER, LABEL_WIDTH_PARAMETER]
+LABEL_TEXT_PARAMETERS = ['text1', 'text2']
+LABEL_PARAMETERS = [sharedParameters.BASE_WIDTH_FALLBACK_PARAMETER, LABEL_WIDTH_PARAMETER] + LABEL_TEXT_PARAMETERS
 
 # name the inserts start with, so ones without a tag still count when placing new ones
 LABEL_NAME_PREFIX = 'Gridfinity label'
@@ -136,21 +137,33 @@ def buildLabel(
         f'{name} width',
     )
     labelParameters.append(['Insert width', widthParameter.name])
+    # each line drives its text, so it can be edited later like the bin labels
+    lines = labelLines(state)
+    textParameters = []
+    for (index, line) in enumerate(lines):
+        textParameter = parameterUtils.addTextParameter(
+            des,
+            parameterUtils.parameterName(prefix, LABEL_TEXT_PARAMETERS[index]),
+            line,
+            f'{name} text line {index + 1}',
+        )
+        textParameters.append(textParameter)
+        labelParameters.append([f'Text line {index + 1}', textParameter.name])
 
     (iconPath, isScrew) = labelSymbol(state)
     labelInput = cullenectLabelGenerator.CullenectLabelInput()
     labelInput.width = Dim.parameter(widthParameter)
     labelInput.height = height
-    labelInput.lines = labelLines(state)
+    labelInput.lines = lines
+    labelInput.textParameters = textParameters
     labelInput.iconPath = iconPath
     labelInput.isScrew = isScrew
     labelInput.surface = state.surface
     labelInput.isBold = state.isBold
-    (base, marking) = cullenectLabelGenerator.createCullenectLabel(labelInput, labelComponent, name=name)
+    # drawn at its spot, not moved there: a move would leave behind letters a later text adds
+    (base, marking) = cullenectLabelGenerator.createCullenectLabel(labelInput, labelComponent, name=name, origin=placement)
     bodies = [base] + marking
 
-    if placement != (0, 0):
-        placementUtils.moveBodies(bodies, *placement, labelComponent, name='Label placement')
     # mark generated geometry so it can be told apart from the rest of the design
     for body in bodies:
         tagUtils.tagBody(body, tagUtils.TAG_LABEL, settings, labelParameters)

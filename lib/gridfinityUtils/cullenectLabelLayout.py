@@ -7,7 +7,7 @@ text at the left, a screw at the right edge, a hardware symbol at the right with
 """
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from . import const, cullenectCatalog
 
@@ -49,6 +49,18 @@ def labelSize(units: float | None, freeWidth: float | None, baseWidth: float, of
 
 def validWidth(width: float) -> bool:
     return MIN_WIDTH - 1e-9 <= width <= MAX_WIDTH + 1e-9
+
+
+def movedLayout(layout: LabelLayout, offsetX: float, offsetY: float) -> LabelLayout:
+    """The layout of an insert whose bottom left corner is at the offset instead of the origin"""
+    return replace(
+        layout,
+        textMinX=layout.textMinX + offsetX,
+        textMaxX=layout.textMaxX + offsetX,
+        iconMaxX=layout.iconMaxX + offsetX if layout.iconMaxX is not None else None,
+        iconCenterY=layout.iconCenterY + offsetY,
+        lineCenters=[center + offsetY for center in layout.lineCenters],
+    )
 
 
 def labelLayout(width: float, height: float, iconSize: tuple[float, float] | None, isScrew: bool, lineCount: int) -> LabelLayout:
