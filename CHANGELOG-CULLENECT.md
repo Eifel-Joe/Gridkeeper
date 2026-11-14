@@ -18,13 +18,21 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
   insert width that fits it, and the bin's „Gridfinity settings“ keep the same list under „Cullenect“.
 - **Sketch constraint check** in the shape tests: Cullenect cases fail on a sketch that is not fully constrained,
   other cases log such sketches. Eleven new Cullenect bin cases.
+- **Cullenect symbols as svg files:** 480 screw combinations (head, shaft, threads, driver, flange,
+  security pin) and 18 hardware symbols in `lib/gridfinityUtils/cullenectIcons/`, rendered once from
+  Cullenect's own OpenSCAD code by `tools/cullenectIcons.py`. The add-in reads the folders, so a new symbol is a new
+  svg file.
+- Symbol catalog `lib/gridfinityUtils/cullenectCatalog.py` (building blocks, file names, lookup from
+  the folders, svg size).
+- The hardware symbols are also in the label icon dropdown (`Cullenect washer`, ...), with the new
+  icon types inserts, magnets and crimps.
 
 ## Credits
 
 - **Le0Michine** — [FusionGridfinityGenerator](https://github.com/Le0Michine/FusionGridfinityGenerator), the add-in
   this fork builds on, CC BY-NC-SA 4.0.
 - **CullenJWebb** — [Cullenect Labels](https://github.com/CullenJWebb/Cullenect-Labels), insert and socket dimensions
-  from `OpenSCAD/Cullenect.scad` (commit `d6dc0bb`), MIT.
+  from `OpenSCAD/Cullenect.scad` (commit `d6dc0bb`) and the symbols, MIT.
 - **ostat / Chris Heazlewood** — [gridfinity_extended_openscad](https://github.com/ostat/gridfinity_extended_openscad),
   reference for the Cullenect tab.
 - **Zack Freedman** — [Gridfinity](https://gridfinity.xyz).
