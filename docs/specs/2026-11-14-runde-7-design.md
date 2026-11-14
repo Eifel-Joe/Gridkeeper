@@ -31,7 +31,13 @@ Fach). Die Input-ID bleibt `dividers_to_top`, gespeicherte Defaults und Snapshot
 Befund: Bin, Baseplate und Label legen nur in der hybriden Konstruktion eine Komponente an, sonst einen
 Körper in der Wurzel (auch in der Baugruppe). Bauteilkonstruktion erlaubt keine zweite Komponente
 (Fusion-Meldung in einem Testdokument belegt). Per API lässt sich ein Bauteil-Dokument auf hybrid umstellen,
-auch mit vorhandenen Körpern. Optionen sind Jörg vorgelegt, **Entscheidung offen** – Umsetzung erst nach seiner Wahl.
+auch mit vorhandenen Körpern; Körper, Timeline und Parameter bleiben (in Fusion belegt), zurück auf Bauteil geht dann
+nicht mehr.
+
+**Entscheidung Jörg (14.11.):** „Label stellt automatisch auf Hybridkonstruktion um. Gerne mit kleinem Hinweisfenster.“
+Umsetzung: `designIntent.componentPlan` – Bauteil wird beim OK auf hybrid umgestellt, Einleger als Komponente, danach
+ein Hinweisfenster. Die Vorschau ändert das Dokument nicht (baut in die Wurzel). Baugruppe: Komponente ohne Umstellung.
+Bin und Baseplate bleiben unverändert. Neuer Fall `label_1u_screw_text_part`.
 
 ## Nicht-Ziele
 - Keine Änderung der Form der Trennwände, keine Änderung bestehender Snapshots außer wo der Fix es erzwingt.
