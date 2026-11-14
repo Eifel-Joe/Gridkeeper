@@ -82,3 +82,9 @@ def test_disabled_without_lip_or_hollow_body():
     for (key, value) in [('isEnabled', False), ('hasLip', False), ('isHollow', False), ('isShaped', True)]:
         flags = dict(enabled, **{key: value})
         assert raised.segmentsForBin(**flags, pockets=pockets, columns=2, rows=1, binWidth=2, binLength=1) == [], key
+
+
+def test_half_grid_bin_counts_whole_units_not_feet():
+    # a half grid bin 1.5 units wide has 3 feet, with 3 compartments only the line at 1 unit is a grid line. The
+    # builder passes the size in units, passed in feet every line would rise
+    assert raised.gridLineSegments(single_cells(3, 1), 3, 1, 1.5, 1) == [Segment('x', 2, 0, 1)]

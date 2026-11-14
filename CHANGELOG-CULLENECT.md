@@ -34,6 +34,12 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
   The width is a user parameter (`gfLabel1_width`), the symbol stays at the right edge when it changes. Every sketch is
   fully constrained, so the text is drawn as fixed curves: changing it means generating the insert again.
   Settings can be saved as defaults and shown with „Gridfinity settings“. Four label shape test cases.
+- **Dividers up to the top on grid lines** (bin dialog, off by default): compartment dividers lying on a grid line go
+  up to the top of the stacking lip. The feet of a bin stacked on top have a groove on every grid line, so a bin of any
+  size still stacks on it, like a 4x2 on two 2x2. The dividers are cut by the feet of a stacked bin with clearance, so
+  a divider a little off its line (dividers over many units are) or a thick one only keeps what fits. Dividers between
+  grid lines (3 compartments on 4 units, half cells) stay below the lip. Hollow bins with a lip only; follows parameter
+  changes. Two new bin cases.
 
 ### Changed
 
