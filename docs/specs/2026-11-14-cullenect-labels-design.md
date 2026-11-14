@@ -204,11 +204,17 @@ seiner gedruckten Einleger bereit — Passungs-Referenz zum Gegenprüfen.
     rot (p08-Befund).
   - Explodierter Text (`SketchText.explode()`), danach Kurven und übrige Punkte `isFixed` ⇒ Skizze
     `isFullyConstrained`. Preis: der Text hängt nicht mehr an einem Text-Parameter.
-  - **Umsetzung (Runde 4):** Einleger-Text wird explodiert und fixiert — Jörgs harte Anforderung
-    (Anti-Ziel) geht vor „Texte als User-Parameter nachträglich änderbar“; Text ändern = neu
-    generieren. Das ist eine Abweichung von der Spec und liegt Jörg als offener Punkt vor (Runde 4,
-    p50); die Alternative (Live-Text mit voll bemaßtem Rahmen, editierbar, aber `isFullyConstrained`
-    bleibt `False`) ließe sich im Generator mit wenigen Zeilen umstellen.
+  - **Umsetzung (Runde 4, überholt):** Einleger-Text wurde explodiert und fixiert, Text ändern = neu
+    generieren (Abweichung von der Spec, Punkt p50).
+  - **Entscheidung Jörg 14.11.2026 (p50): „Live-Text“.** Der Einleger-Text bleibt echter `SketchText`,
+    je Zeile an einen Text-User-Parameter gebunden (`gfLabelN_text1`, `gfLabelN_text2`, Mechanismus wie
+    die Bin-Labels: `sketchText.textParameter.expression = <Parameter>`), also nachträglich änderbar.
+    Textrahmen und alle übrigen Punkte und Kurven der Textskizze sind fixiert. **Einzige Ausnahme** von
+    „jede Skizze `isFullyConstrained`“: die Textskizze des Einlegers, weil Fusion Skizzen mit Live-Text nie
+    als bestimmt meldet. Der Constraint-Check der Shape-Tests lässt eine Skizze mit Live-Text nur dann
+    durch, wenn alles außer dem Text selbst bestimmt ist; alle anderen Skizzen (Symbol, Grundkörper,
+    Bin-Skizzen) bleiben Pflicht. Die Schriftgröße wird beim Erzeugen eingepasst; ein später längerer
+    Text wird nicht neu eingepasst, sondern bricht im Textrahmen um (wie bei den Bin-Labels).
   - Texthöhe: Fusions Texthöhe ist die Höhe der Großbuchstaben („H“ bei 1,0 cm: 1,000 cm hoch,
     Arial normal und fett). Cullenects `text(size = 5)` in Open Sans ergibt ≈ 4,96 mm Großbuchstaben
     (gemessen mit OpenSCAD in Liberation Sans 4,78 mm, Open Sans hat 1462/1409 dieser Versalhöhe;
