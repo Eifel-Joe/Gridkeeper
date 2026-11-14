@@ -4,6 +4,7 @@ import adsk.core, adsk.fusion
 from ...lib import tagUtils
 from ...lib import placementUtils
 from ...lib.gridfinityUtils import cullenectLabelGenerator, cullenectLabelLayout
+from ...lib.gridfinityUtils import commonUtils, designIntent
 from ...lib.gridfinityUtils import parameterUtils
 from ...lib.gridfinityUtils import sharedParameters
 from ...lib.gridfinityUtils.dim import Dim
@@ -73,10 +74,12 @@ def buildLabel(
     des: adsk.fusion.Design,
     state: InputState,
     settings: list[dict],
+    mayChangeDocument: bool = True,
 ) -> list[adsk.fusion.BRepBody]:
     """
     Builds the insert into the design, tagged with the settings to show later, see settingsUtils.snapshotInputs.
-    Returns the insert body first, then the text and symbol bodies
+    Returns the insert body first, then the text and symbol bodies. The insert is a component of its own, a part design
+    is switched to hybrid for it unless the document may not change (a preview), see designIntent.componentPlan
     """
     if des.designType == 0:
         raise UnsupportedDesignTypeException('Timeline must be enabled for the generator to work, projects with disabled design history currently are not supported')
@@ -87,9 +90,40 @@ def buildLabel(
     root = adsk.fusion.Component.cast(des.rootComponent)
     name = labelName(state)
 
+    plan = designIntent.componentPlan(des.designIntent, mayChangeDocument)
+    if not plan.switchToHybrid:
+        return _buildLabel(des, state, settings, root, name, width, height, plan.isComponent)
+    occurrenceCount = root.occurrences.count
+    des.designIntent = adsk.fusion.DesignIntentTypes.HybridDesignIntentType
+    try:
+        return _buildLabel(des, state, settings, root, name, width, height, True)
+    except Exception:
+        # a part design left hybrid without an insert couldn't go back to a part, its new component is taken out and
+        # the document switched back, the error goes on
+        _undoHybridSwitch(des, occurrenceCount)
+        raise
+
+def _undoHybridSwitch(des: adsk.fusion.Design, occurrenceCount: int):
+    root = des.rootComponent
+    try:
+        while root.occurrences.count > occurrenceCount:
+            root.occurrences.item(root.occurrences.count - 1).deleteMe()
+        des.designIntent = adsk.fusion.DesignIntentTypes.PartDesignIntentType
+    except Exception as err:
+        commonUtils.debugLog(f'{LOG_PREFIX} document stays hybrid after a failed insert, {err}')
+
+def _buildLabel(
+    des: adsk.fusion.Design,
+    state: InputState,
+    settings: list[dict],
+    root: adsk.fusion.Component,
+    name: str,
+    width: float,
+    height: float,
+    isComponent: bool,
+) -> list[adsk.fusion.BRepBody]:
     originalTimelineCount = des.timeline.count
-    if des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
-        # create new component, only allowed in hybrid intent type
+    if isComponent:
         occurrence = adsk.fusion.Occurrences.cast(root.occurrences).addNewComponent(adsk.core.Matrix3D.create())
         occurrence.component.name = name
         occurrence.activate()

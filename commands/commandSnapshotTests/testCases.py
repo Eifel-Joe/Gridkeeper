@@ -46,6 +46,12 @@ PARAMETER_FIELDS = {
     GENERATOR_LABEL: {'gfBaseWidth': 'baseWidth'},
 }
 
+# the design intent of the document a case is built in, hybrid unless the case says otherwise. In part design the
+# generators build into the root component, as for a user whose documents are parts
+DESIGN_INTENT_HYBRID = 'hybrid'
+DESIGN_INTENT_PART = 'part'
+DESIGN_INTENTS = (DESIGN_INTENT_HYBRID, DESIGN_INTENT_PART)
+
 class TestCaseError(Exception):
     pass
 
@@ -58,6 +64,9 @@ class TestCase:
     state: object
     # shared parameters set after building, in cm, the result has to be the same as built with them, see editedState
     parameters: dict[str, float] = dataclasses.field(default_factory=dict)
+    designIntent: str = DESIGN_INTENT_HYBRID
+    # the design intent the document has to have once built, None for any, a generator may switch it
+    designIntentAfter: str | None = None
 
 def stateFromJson(generator: str, stateClass: type, settings: dict) -> object:
     """Every field of the state has to be there and nothing else, so a case never falls back to a default"""
@@ -114,14 +123,27 @@ def loadCase(path: str, stateClasses: dict[str, type]) -> TestCase:
             raise TestCaseError(f'unknown generator {generator!r}')
         state = stateFromJson(generator, stateClasses[generator], data['settings'])
         parameters = parametersFromJson(generator, data.get('parameters', {}))
+        designIntent = data.get('designIntent', DESIGN_INTENT_HYBRID)
+        if designIntent not in DESIGN_INTENTS:
+            raise TestCaseError(f'unknown design intent {designIntent!r}')
+        designIntentAfter = data.get('designIntentAfter')
+        if designIntentAfter is not None and designIntentAfter not in DESIGN_INTENTS:
+            raise TestCaseError(f'unknown design intent after building {designIntentAfter!r}')
     except (OSError, ValueError, KeyError, TypeError, AttributeError, TestCaseError) as err:
         raise TestCaseError(f'case {name}: {err}') from err
-    return TestCase(name, data.get('description', ''), generator, state, parameters)
+    return TestCase(name, data.get('description', ''), generator, state, parameters, designIntent, designIntentAfter)
 
 def loadCases(folder: str, stateClasses: dict[str, type]) -> list[TestCase]:
     """Cases of the folder by name"""
     paths = sorted(os.path.join(folder, fileName) for fileName in os.listdir(folder) if fileName.endswith('.json'))
     return [loadCase(path, stateClasses) for path in paths]
+
+def looseBodyNames(designBodies: list[tuple[str, str]], builtKeys: set[str]) -> list[str]:
+    """
+    Names of the bodies in a case's document the generator didn't return, by (key, name) of every body there. A body
+    left over from a join that couldn't merge it stays out of the snapshot, it has to fail the case all the same
+    """
+    return [name for (key, name) in designBodies if key not in builtKeys]
 
 def parametersToJson(case: TestCase) -> dict:
     return {name: round(value * 10, 6) for (name, value) in case.parameters.items()}
@@ -130,8 +152,12 @@ def caseJson(case: TestCase) -> str:
     data = {
         'description': case.description,
         'generator': case.generator,
-        'settings': stateToJson(case.generator, case.state),
     }
+    if case.designIntent != DESIGN_INTENT_HYBRID:
+        data['designIntent'] = case.designIntent
+    if case.designIntentAfter is not None:
+        data['designIntentAfter'] = case.designIntentAfter
+    data['settings'] = stateToJson(case.generator, case.state)
     if case.parameters:
         data['parameters'] = parametersToJson(case)
     return json.dumps(data, indent=4, ensure_ascii=False) + '\n'
