@@ -158,6 +158,29 @@ class StringValueCommandInput(CommandInput):
         self._value = v
 
 
+class BrowserCommandInput(CommandInput):
+    """Placeholder: only used in type annotations of lib/ui/browserPages.py."""
+
+
+class TableCommandInput(CommandInput):
+    """Placeholder: only used in type annotations of lib/settingsUtils.py."""
+
+
+class BoundingBox3D:
+    """Placeholder: only used in type annotations of geometryUtils.py.
+
+    Tests build their own box fakes (minPoint/maxPoint), see test_geometry_utils.py.
+    """
+
+
+class CommandInputs:
+    """Placeholder: only used in type annotations of lib/settingsUtils.py."""
+
+
+class HTMLEventArgs:
+    """Placeholder: only used in type annotations of lib/ui/browserPages.py."""
+
+
 # ---------------------------------------------------------------------------
 # Application stub — satisfies `adsk.core.Application.get()` at import time
 # ---------------------------------------------------------------------------
