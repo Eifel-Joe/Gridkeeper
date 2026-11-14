@@ -37,6 +37,7 @@
         "labelIcon": "Hex nut",
         "labelStyle": "Outline",
         "isLabelBold": true,
+        "cullenectSocketOffset": 0.3,
         "compartmentsX": 4,
         "compartmentsY": 3,
         "showCompartmentsLayout": false,

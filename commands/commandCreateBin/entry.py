@@ -1114,6 +1114,7 @@ def getInputsState() -> InputState:
         labelIcon=commandUIState.getState(BIN_TAB_LABEL_ICON_INPUT_ID),
         labelStyle=commandUIState.getState(BIN_TAB_LABEL_STYLE_INPUT_ID),
         isLabelBold=commandUIState.getState(BIN_TAB_LABEL_BOLD_INPUT_ID),
+        cullenectSocketOffset=const.CULLENECT_SOCKET_OFFSET,
         compartmentsX=commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID),
         compartmentsY=commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID),
         showCompartmentsLayout=commandUIState.getState(BIN_COMPARTMENTS_SHOW_LAYOUT_ID),

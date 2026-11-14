@@ -37,6 +37,7 @@
         "labelIcon": "None",
         "labelStyle": "Engraved",
         "isLabelBold": true,
+        "cullenectSocketOffset": 0.3,
         "compartmentsX": 1,
         "compartmentsY": 1,
         "showCompartmentsLayout": false,
