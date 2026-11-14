@@ -23,8 +23,13 @@ def _load(name, *path):
 cases = _load("testCases", "commands", "commandSnapshotTests", "testCases.py")
 binState = _load("binInputState", "commands", "commandCreateBin", "inputState.py")
 baseplateState = _load("baseplateInputState", "commands", "commandCreateBaseplate", "inputState.py")
+labelState = _load("labelInputState", "commands", "commandCreateLabel", "inputState.py")
 
-STATE_CLASSES = {cases.GENERATOR_BIN: binState.InputState, cases.GENERATOR_BASEPLATE: baseplateState.InputState}
+STATE_CLASSES = {
+    cases.GENERATOR_BIN: binState.InputState,
+    cases.GENERATOR_BASEPLATE: baseplateState.InputState,
+    cases.GENERATOR_LABEL: labelState.InputState,
+}
 
 
 def write_case(tmp_path, settings, generator="bin", name="case"):
@@ -168,3 +173,24 @@ def test_written_parameters_read_back_and_are_listed_in_the_settings(tmp_path):
     assert json.loads(cases.caseJson(case))["parameters"] == {"gfBaseLength": 50.5}
     settings = cases.caseSettings(case)
     assert dict(settings[2]["items"]) == {"gfBaseLength": "50.5"}
+
+
+def test_label_cases_are_there_and_load():
+    loaded = {case.name: case for case in cases.loadCases(CASES_FOLDER, STATE_CLASSES)}
+    for name in ("label_1u_screw_text", "label_2u_hardware", "label_25mm_free", "label_6u_text"):
+        assert loaded[name].generator == cases.GENERATOR_LABEL
+
+
+def test_label_lengths_come_in_mm():
+    case = cases.loadCase(os.path.join(CASES_FOLDER, "label_25mm_free.json"), STATE_CLASSES)
+    assert case.state.freeWidth == pytest.approx(2.5)
+    assert case.state.baseWidth == pytest.approx(4.2)
+    assert case.state.offsetX == pytest.approx(-0.01)
+    assert case.state.offsetY == pytest.approx(0)
+    # units of the grid stay as they are
+    case = cases.loadCase(os.path.join(CASES_FOLDER, "label_2u_hardware.json"), STATE_CLASSES)
+    assert case.state.widthUnits == 2
+
+
+def test_label_cases_may_change_the_base_width():
+    assert cases.PARAMETER_FIELDS[cases.GENERATOR_LABEL] == {'gfBaseWidth': 'baseWidth'}

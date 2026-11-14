@@ -186,3 +186,10 @@ def test_svg_size_percent_falls_back_to_the_view_box(tmp_path):
     path = tmp_path / 'p.svg'
     path.write_text('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 13 7.5"><path d="M0,0"/></svg>')
     assert catalog.svgSize(str(path)) == (13.0, 7.5)
+
+
+def test_shown_names_are_unique_per_choice():
+    # the label dialog maps a shown name back to its key, two keys with one name would be mixed up
+    for keys in (catalog.HEADS, catalog.SHAFTS, catalog.THREADS, catalog.DRIVERS, catalog.CULLENECT_HARDWARE):
+        names = [catalog.displayName(key) for key in keys]
+        assert len(set(names)) == len(names)

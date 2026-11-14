@@ -10,12 +10,13 @@ ui = app.userInterface
 
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdShowSettings'
 CMD_NAME = 'Gridfinity settings'
-CMD_Description = 'Show the settings this bin or baseplate was generated with'
+CMD_Description = 'Show the settings this bin, baseplate or label was generated with'
 
 SETTINGS_TEXT_INPUT = 'settings_text'
 TAG_TITLES = {
     tagUtils.TAG_BIN: 'Gridfinity bin',
     tagUtils.TAG_BASEPLATE: 'Gridfinity baseplate',
+    tagUtils.TAG_LABEL: 'Gridfinity label',
 }
 # rows of the settings text box before it scrolls
 MAX_VISIBLE_ROWS = 30

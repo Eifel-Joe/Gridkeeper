@@ -6,13 +6,19 @@ Layout after cullenect_label_generate in Cullenect.scad by CullenJWebb (MIT), ht
 text at the left, a screw at the right edge, a hardware symbol at the right with the margin it has to top and bottom.
 """
 
+import os
 from dataclasses import dataclass, field
 
-from . import const
+from . import const, cullenectCatalog
 
 MIN_WIDTH = 1.0
 MAX_WIDTH = 30.0
 MAX_LINES = 2
+# least height, the latch and the rounded corners need it, and least room left for text beside a symbol
+MIN_HEIGHT = 0.5
+MIN_TEXT_SPACE = 0.3
+# largest correction of width and height, like a printer is off
+MAX_OFFSET = 0.1
 
 
 @dataclass
@@ -78,8 +84,90 @@ def labelLayout(width: float, height: float, iconSize: tuple[float, float] | Non
     )
 
 
+def iconSize(iconPath: str, width: float, height: float) -> tuple[float, float]:
+    """Size of the symbol on the insert, as large as its svg says like in Cullenect, scaled down to fit the height of
+    the insert and its width without the margins"""
+    (widthMm, heightMm) = cullenectCatalog.svgSize(iconPath)
+    (iconWidth, iconHeight) = (widthMm / 10, heightMm / 10)
+    scale = min(1, height / iconHeight, (width - 2 * const.CULLENECT_TEXT_MARGIN) / iconWidth)
+    return (iconWidth * scale, iconHeight * scale)
+
+
+def layoutProblem(layout: LabelLayout) -> str | None:
+    """Why the insert can't be built like this, none if it can"""
+    if layout.height < MIN_HEIGHT - 1e-9:
+        return f'An insert is at least {MIN_HEIGHT * 10:g} mm high'
+    if len(layout.lineHeights) > 0 and layout.textMaxX - layout.textMinX < MIN_TEXT_SPACE - 1e-9:
+        return 'No room for text beside the symbol, make the insert wider'
+    return None
+
+
 def fittedLineHeight(lineHeight: float, measuredWidth: float, availableWidth: float) -> float:
     """Text height for a line measured `measuredWidth` wide at `lineHeight` to fit the available width"""
     if measuredWidth <= 0 or availableWidth <= 0:
         return lineHeight
     return lineHeight * min(1, availableWidth / measuredWidth)
+
+
+def _mm(value: float) -> str:
+    return f'{round(value * 10, 4):g} mm'
+
+
+def _withOffset(expression: str, offset: float) -> str:
+    if offset > 0:
+        return f'{expression} + {_mm(offset)}'
+    if offset < 0:
+        return f'{expression} - {_mm(-offset)}'
+    return expression
+
+
+def widthExpression(units: float | None, freeWidth: float | None, baseWidthName: str | None, offsetX: float) -> str:
+    """Expression of the width parameter of an insert: grid units follow the base width parameter like the bins do"""
+    if units is not None:
+        expression = f'{baseWidthName} * {units:g} - {_mm(const.CULLENECT_WIDTH_REDUCTION)}'
+    else:
+        expression = _mm(freeWidth)
+    return _withOffset(expression, offsetX)
+
+
+TITLE_TEXT_LENGTH = 20
+
+
+def labelTitle(units: float | None, freeWidth: float | None, lines: list[str]) -> str:
+    """Name of the component and timeline group of an insert, with the start of its first line"""
+    size = f'{units:g}U' if units is not None else _mm(freeWidth)
+    texts = [line.strip() for line in lines if len(line.strip()) > 0]
+    text = ''
+    if len(texts) > 0:
+        text = ' ' + (texts[0] if len(texts[0]) <= TITLE_TEXT_LENGTH else texts[0][:TITLE_TEXT_LENGTH] + '…')
+    return f'Gridfinity label {size}{text}'
+
+
+def symbolChoice(folder: str, showScrew: bool, screw: tuple, hardware: str) -> tuple[str | None, bool]:
+    """The svg of the chosen symbol and whether it's a screw. A screw goes first, a combination without a file gives
+    no symbol, the hardware is the name of its svg without extension, 'none' for none"""
+    if showScrew:
+        return (cullenectCatalog.screwIconPath(folder, *screw), True)
+    path = os.path.join(folder, cullenectCatalog.HARDWARE_FOLDER, f'{hardware}.svg')
+    return (path if hardware != 'none' and os.path.isfile(path) else None, False)
+
+
+def insertProblem(
+    width: float,
+    height: float,
+    iconPath: str | None,
+    isScrew: bool,
+    isSymbolMissing: bool,
+    lineCount: int,
+    offsetX: float,
+    offsetY: float,
+) -> str | None:
+    """Why the dialog can't build the insert, none if it can. `isSymbolMissing`: a symbol was chosen but has no svg"""
+    if abs(offsetX) > MAX_OFFSET + 1e-9 or abs(offsetY) > MAX_OFFSET + 1e-9:
+        return f'Corrections are at most {MAX_OFFSET * 10:g} mm either way'
+    if not validWidth(width):
+        return f'An insert is {MIN_WIDTH * 10:g} to {MAX_WIDTH * 10:g} mm wide'
+    if isSymbolMissing:
+        return 'No svg for this symbol, see tools/cullenectIcons.py'
+    size = iconSize(iconPath, width, height) if iconPath is not None else None
+    return layoutProblem(labelLayout(width, height, size, isScrew, lineCount))
