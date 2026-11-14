@@ -111,6 +111,16 @@ def filletCorners(segments: list[DividerSegment], columns: int, rows: int) -> li
     return corners
 
 
+def cornerPlaneAxes(corner: FilletCorner, columns: int) -> tuple[int, int]:
+    """
+    The axis of the plane a corner's raised divider face lies in, and the other one across which its edges go up: a
+    raised side across x stands in the plane of x, a corner against an outer wall across x has its divider across y.
+    A crossing takes the plane of x
+    """
+    lineX = corner.column if corner.sideX == -1 else corner.column + 1
+    return (0, 1) if lineX not in (0, columns) else (1, 0)
+
+
 def isCornerChainEdge(
     corner: FilletCorner,
     cornerAt: tuple[float, float],
@@ -131,10 +141,8 @@ def isCornerChainEdge(
     stays within the wall behind the corner and the lip's overhang into the cell in front of it. Edges along the
     divider or the wall, and level ones, are none of it
     """
-    lineX = corner.column if corner.sideX == -1 else corner.column + 1
-    # a raised side across x stands in the plane of x, a corner against an outer wall across x has its divider across y
-    acrossX = lineX not in (0, columns)
-    (planeAxis, otherAxis, side) = (0, 1, corner.sideY) if acrossX else (1, 0, corner.sideX)
+    (planeAxis, otherAxis) = cornerPlaneAxes(corner, columns)
+    side = corner.sideY if planeAxis == 0 else corner.sideX
     plane = cornerAt[planeAxis]
     other = cornerAt[otherAxis]
     # the wall lies on the corner's side of it, the lip reaches into the cell
@@ -147,6 +155,31 @@ def isCornerChainEdge(
         if point[2] < bottomZ - tolerance:
             return False
     return abs(start[2] - end[2]) > tolerance
+
+
+def chainPath(edges: list[tuple[tuple[float, float], tuple[float, float]]], tolerance: float = 1e-3) -> list[int] | None:
+    """
+    The order of a corner's chain edges, each a start and end in its plane, so they make one path from the lowest
+    point up, the path its section is swept along. None where they don't join up into one, as above a wall thicker
+    than the lip, which leaves a level ledge between them
+    """
+    def same(a, b):
+        return abs(a[0] - b[0]) <= tolerance and abs(a[1] - b[1]) <= tolerance
+
+    if len(edges) == 0:
+        return None
+    first = min(range(len(edges)), key=lambda index: min(edges[index][0][1], edges[index][1][1]))
+    (start, end) = edges[first]
+    point = start if start[1] > end[1] else end
+    order = [first]
+    while len(order) < len(edges):
+        following = [index for index in range(len(edges)) if index not in order and (same(edges[index][0], point) or same(edges[index][1], point))]
+        if len(following) != 1:
+            return None
+        (start, end) = edges[following[0]]
+        point = end if same(start, point) else start
+        order.append(following[0])
+    return order
 
 
 def segmentsForBin(

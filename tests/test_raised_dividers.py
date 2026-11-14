@@ -182,3 +182,29 @@ def test_chain_of_a_crossing_is_its_vertical_edge():
     at = (40.0, 30.0)
     assert raised.isCornerChainEdge(crossing, at, 2, 2, wall=1.2, lipOverhang=0.71, bottomZ=15.5, start=(40.0, 30.0, 15.5), end=(40.0, 30.0, 19.8))
     assert not raised.isCornerChainEdge(crossing, at, 2, 2, wall=1.2, lipOverhang=0.71, bottomZ=15.5, start=(40.0, 30.0, 19.8), end=(40.0, 40.0, 19.8))
+
+
+# The chain of a corner as a path to sweep its section along (p83, hand test): from the top of the corner below up,
+# edges as start and end (y, z) in its plane, mm
+def test_chain_path_runs_bottom_up_whatever_order_and_direction():
+    edges = [((1.2, 16.0), (1.2, 15.5)), ((1.9, 18.6), (1.9, 16.7)), ((1.9, 16.7), (1.2, 16.0)), ((0.7, 19.8), (1.9, 18.6))]
+    assert raised.chainPath(edges) == [0, 2, 1, 3]
+
+
+def test_chain_path_of_a_broken_chain_is_none():
+    # a wall thicker than the lip leaves a level ledge between wall and lip, which is no part of the chain
+    edges = [((2.0, 15.5), (2.0, 16.0)), ((1.9, 16.0), (1.9, 18.6))]
+    assert raised.chainPath(edges) is None
+
+
+def test_chain_path_of_a_crossing_is_its_edge():
+    assert raised.chainPath([((30.0, 19.8), (30.0, 15.5))]) == [0]
+
+
+def test_corner_plane_axes_follow_the_raised_side():
+    # against an outer wall across y, the divider stands across x: plane x, path across y
+    assert raised.cornerPlaneAxes(Corner(0, 0, 1, -1), 3) == (0, 1)
+    # a corner at the outer wall across x has its raised divider across y
+    assert raised.cornerPlaneAxes(Corner(0, 0, -1, 1), 1) == (1, 0)
+    # a crossing takes the plane of x
+    assert raised.cornerPlaneAxes(Corner(0, 0, 1, 1), 2) == (0, 1)

@@ -224,3 +224,18 @@ def caseSettings(case: TestCase) -> list[dict]:
         'title': 'Parameters set after building, mm',
         'items': [[name, json.dumps(value)] for (name, value) in parametersToJson(case).items()],
     }] if case.parameters else [])
+
+# A raised divider corner carries on from the compartment corner below without a ledge (p83): an upward face left
+# where they meet is a sickle Joerg found by hand, 0.36 mm2 where the fillet couldn't follow a short wall under the
+# lip's chamfer. Tangent seams leave slivers of no area, which are no ledge, a corner's ledge is no wider than its
+# fillet
+LEDGE_MIN_AREA = 0.01
+LEDGE_MAX_SIZE = 3.0
+
+def raisedCornerLedges(faces: list[tuple[float, float, float]]) -> list[str]:
+    """Notes on the ledges among the upward faces of a bin with raised dividers, each as area mm2, width and length mm"""
+    return [
+        f'ledge of {area:.2f} mm2 at a raised divider corner'
+        for (area, width, length) in faces
+        if area >= LEDGE_MIN_AREA and width <= LEDGE_MAX_SIZE and length <= LEDGE_MAX_SIZE
+    ]
