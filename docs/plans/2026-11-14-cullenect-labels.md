@@ -151,7 +151,7 @@ Geometrie (Muster `labelGenerator.createLabel`): Ebene in aktueller Laschen-Ober
 
 Bei Cullenect im Bin: `tabWidth = effectiveTabWidth(...)`, `tabTopAngle = 0`, keine Text-/Icon-Labels, Tasche für **jedes** Fach mit Lasche (nicht nur nicht-leere Labels).
 
-- [ ] **Step 1:** Akzeptanzkriterium vorab festhalten (nicht per pytest testbar): In Fusion (Hybrid-Konstruktion) eine 1x1x3-Bin „Cullenect“ erzeugen; Messung ergibt Tasche 36,30 × 11,30 × 1,20 mm (±0,01), Rippen 0,20 × 0,40 mm ab 0,20 über Boden; alle Skizzen `isFullyConstrained`; Timeline ohne Fehler; danach `gfBaseWidth` = 40 mm ⇒ Tasche 34,30 mm und mittig.
+- [ ] **Step 1:** Akzeptanzkriterium vorab festhalten (nicht per pytest testbar): In Fusion eine 1x1x3-Bin „Cullenect“ erzeugen; Messung ergibt Tasche 36,30 × 11,30 × 1,20 mm (±0,01), Rippen 0,20 × 0,40 mm ab 0,20 über Boden; alle Skizzen `isFullyConstrained`; Timeline ohne Fehler; danach `gfBaseWidth` = 40 mm ⇒ Tasche 34,30 mm und mittig.
 - [ ] **Step 2:** Umsetzen.
 - [ ] **Step 3:** Prüfung nach Step 1 in Fusion (Fusion-MCP `fusion_mcp_execute` oder Nutzer), Messwerte und Constraint-Liste ins Protokoll; `python -m pytest -q` grün.
 - [ ] **Step 4:** Commit.
@@ -270,7 +270,7 @@ Geometrie: Grundkörper aus drei Extrusionen (0–0,2 voll, 0,2–0,8 Einzug 0,2
 **Interfaces:**
 - Produces: `InputState` (Label): `baseWidth, widthUnits, widthMm, useUnits, line1, line2, showScrew, head, shaft, threads, driver, flange, security, hardware, surface, offsetXY, isBold`; `buildLabel(state) -> list[BRepBody]`.
 
-Dialog: Auswahllisten aus `cullenectCatalog`, ungültige Kombinationen gesperrt (`isValidScrew`), Rasterbreite aus `gfBaseWidth` des Designs falls vorhanden; Defaults speicherbar; „Gridfinity settings“ per Tag wie Bin/Baseplate; Platzierung nahe Ursprung mit `placementUtils`; Hybrid-Konstruktion wie Bin.
+Dialog: Auswahllisten aus `cullenectCatalog`, ungültige Kombinationen gesperrt (`isValidScrew`), Rasterbreite aus `gfBaseWidth` des Designs falls vorhanden; Defaults speicherbar; „Gridfinity settings“ per Tag wie Bin/Baseplate; Platzierung nahe Ursprung mit `placementUtils`; Dokumenttyp wie Bin (Bauteil- oder Hybrid-Konstruktion).
 
 - [ ] **Step 1: Failing tests:** neuer Generator lädt (`test_every_case_in_the_repo_loads` mit `STATE_CLASSES` inkl. Label), `offsetXY`/`widthMm` werden mm→cm umgerechnet.
 - [ ] **Step 2:** FAIL. **Step 3:** Umsetzen.
