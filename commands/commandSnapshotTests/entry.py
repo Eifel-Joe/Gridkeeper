@@ -270,6 +270,9 @@ def newCaseDocument(caseName: str, title: str, designIntent: str) -> tuple[adsk.
         try:
             design.designIntent = intentType
         except Exception as err:
+            # a part design case built in hybrid would pass whatever the generator does with a part
+            if designIntent != testCases.DESIGN_INTENT_HYBRID:
+                raise
             futil.log(f'{reportPalette.PALETTE_TITLE} test document stays {design.designIntent} design intent, {err}', force_console=True)
     return (document, design)
 
@@ -532,6 +535,7 @@ def runCase(case: testCases.TestCase, keepOpen: bool) -> dict:
         # the shape may match all the same, the case fails for what Fusion found wrong in building it
         notes += unhealthy
         notes += looseBodyNotes(document, bodies)
+        notes += designIntentNotes(case, document)
         notes += sketchConstraintNotes(case, document)
     except Exception as err:
         results = [snapshots.BodyResult('', snapshots.STATUS_FAIL, [f'build failed, {buildFailure(case, err)}'])]
@@ -561,6 +565,16 @@ def runCase(case: testCases.TestCase, keepOpen: bool) -> dict:
             except Exception as err:
                 notes.append(f'differences not shown, {err}')
     return report.case(case.name, case.description, status, bodyReports(results), notes, view, snapshotPreviews(case.name))
+
+def designIntentNotes(case: testCases.TestCase, document: adsk.core.Document) -> list[str]:
+    """Why the case fails for a document left in another design intent than the case expects"""
+    if case.designIntentAfter is None:
+        return []
+    design = adsk.fusion.Design.cast(document.products.itemByProductType('DesignProductType'))
+    expected = DESIGN_INTENT_TYPES[case.designIntentAfter]
+    if design.designIntent == expected:
+        return []
+    return [f'design intent {design.designIntent} once built, expected {expected} ({case.designIntentAfter})']
 
 def looseBodyNotes(document: adsk.core.Document, bodies: list[adsk.fusion.BRepBody]) -> list[str]:
     """Why the case fails for bodies in its document the generator didn't return, a join that couldn't merge them"""

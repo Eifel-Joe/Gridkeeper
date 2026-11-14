@@ -224,3 +224,20 @@ def test_bodies_the_generator_did_not_return_are_loose():
     design = [("a", "Bin 3x2x3"), ("b", "Raised dividers (1)"), ("c", "Bin 3x2x3 (1)")]
     assert cases.looseBodyNames(design, {"a", "c"}) == ["Raised dividers (1)"]
     assert cases.looseBodyNames(design, {"a", "b", "c"}) == []
+
+
+def test_a_case_may_name_the_design_intent_it_leaves(tmp_path):
+    data = {"description": "a case", "generator": "label", "designIntent": "part", "designIntentAfter": "hybrid",
+            "settings": json.load(open(os.path.join(CASES_FOLDER, "label_1u_screw_text.json")))["settings"]}
+    case = cases.loadCase(write_case_data(tmp_path, data), STATE_CLASSES)
+    assert case.designIntentAfter == cases.DESIGN_INTENT_HYBRID
+    assert json.loads(cases.caseJson(case))["designIntentAfter"] == "hybrid"
+    plain = cases.loadCase(os.path.join(CASES_FOLDER, "label_1u_screw_text.json"), STATE_CLASSES)
+    assert plain.designIntentAfter is None
+    assert "designIntentAfter" not in json.loads(cases.caseJson(plain))
+
+
+def test_an_unknown_design_intent_after_is_an_error(tmp_path):
+    data = {"description": "a case", "generator": "bin", "designIntentAfter": "assembly-ish", "settings": sample_settings()}
+    with pytest.raises(cases.TestCaseError, match="design intent"):
+        cases.loadCase(write_case_data(tmp_path, data), STATE_CLASSES)

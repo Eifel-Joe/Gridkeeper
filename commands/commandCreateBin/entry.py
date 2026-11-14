@@ -505,9 +505,9 @@ def normalizeCompartmentPockets():
     )
 
 def compartmentCount() -> int:
-    """Merged cells of a custom grid count as one compartment"""
+    """Merged cells of a custom grid count as one compartment, as built: only while the layout is shown"""
     return len(compartmentLayout.normalizePockets(
-        compartmentPockets,
+        compartmentPockets if commandUIState.getState(BIN_COMPARTMENTS_SHOW_LAYOUT_ID) else [],
         commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID),
         commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID),
     ))

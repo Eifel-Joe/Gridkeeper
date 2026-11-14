@@ -2,6 +2,7 @@
     "description": "1U insert with a screw and text built in a part design: the document turns hybrid and the insert is a component of its own, as the bodies of label_1u_screw_text",
     "generator": "label",
     "designIntent": "part",
+    "designIntentAfter": "hybrid",
     "settings": {
         "baseWidth": 42.0,
         "useUnits": true,
