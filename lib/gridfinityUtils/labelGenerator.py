@@ -15,7 +15,7 @@ LABEL_ICON_NONE = 'None'
 LABEL_ICONS_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'labelIcons')
 
 # icons are grouped by type in folders, these types come first in this order, any others after them
-LABEL_ICON_TYPE_ORDER = ['screws', 'nuts', 'washers']
+LABEL_ICON_TYPE_ORDER = ['screws', 'nuts', 'washers', 'inserts', 'magnets', 'crimps']
 
 def iconName(fileName: str) -> str:
     """hex-nut.svg shows as Hex nut"""
