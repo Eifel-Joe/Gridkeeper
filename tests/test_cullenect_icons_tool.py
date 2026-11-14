@@ -96,3 +96,17 @@ def test_copy_hardware_to_label_icons(tmp_path):
     copied = tool.copyHardwareToLabelIcons(str(tmp_path / 'icons'), str(tmp_path / 'label'))
     assert copied == [str(tmp_path / 'label' / 'magnets' / 'cullenect-magnet.svg')]
     assert os.path.isfile(copied[0])
+
+
+def test_tighten_svg_rejects_unknown_header():
+    try:
+        tool.tightenSvg('<svg viewBox="0 0 1 1" width="1mm" height="1mm"><path d="M 0,0 L 1,1"/></svg>')
+    except ValueError:
+        return
+    raise AssertionError('expected ValueError')
+
+
+def test_render_reports_errors_instead_of_raising(tmp_path):
+    job = ('screw', ('socket', 'machine', 'full', 'hex', False, False), str(tmp_path / 'a.svg'))
+    error = tool.render(str(tmp_path / 'no-such-openscad.exe'), job, str(tmp_path))
+    assert error is not None and 'a.svg' in error

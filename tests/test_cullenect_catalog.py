@@ -122,3 +122,9 @@ def test_svg_size_from_view_box_only(tmp_path):
     path = tmp_path / 'b.svg'
     path.write_text('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -2 13 7.5"><path d="M0,0"/></svg>')
     assert catalog.svgSize(str(path)) == (13.0, 7.5)
+
+
+def test_svg_size_single_quotes_and_long_header(tmp_path):
+    path = tmp_path / 'c.svg'
+    path.write_text('<?xml version="1.0"?>\n<!-- ' + 'x' * 10000 + ' -->\n<svg xmlns="http://www.w3.org/2000/svg" width=\'12mm\' height=\'8mm\'><path d="M0,0"/></svg>')
+    assert catalog.svgSize(str(path)) == (12.0, 8.0)

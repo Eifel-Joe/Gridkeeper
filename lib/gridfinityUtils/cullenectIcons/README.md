@@ -16,14 +16,7 @@ from the original OpenSCAD code:
 `hardware/` one file per hardware symbol. The add-in reads what is in these folders, so another symbol
 is another svg file. The hardware symbols are copied to `../labelIcons/<type>/cullenect-*.svg` as well.
 
-## MIT License (Cullenect-Labels)
+## License
 
-Copyright (c) 2024 Cullen J Webb
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
-associated documentation files (the "Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
-following conditions: The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software. The Software is provided "as is", without warranty of
-any kind. The full text is in `tools/cullenect/LICENSE`.
+The symbols are derived from Cullenect-Labels, MIT License, Copyright (c) 2024 Cullen J Webb. The full
+license text is in `LICENSE-Cullenect` in this folder (it ships with the add-in).

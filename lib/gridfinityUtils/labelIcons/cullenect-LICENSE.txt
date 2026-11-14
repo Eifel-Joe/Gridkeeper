@@ -1,0 +1,3 @@
+The icons named cullenect-*.svg in the folders next to this file are symbols of Cullenect-Labels by
+CullenJWebb (https://github.com/CullenJWebb/Cullenect-Labels, MIT License). The license text is in
+../cullenectIcons/LICENSE-Cullenect, the origin in ../cullenectIcons/README.md.
