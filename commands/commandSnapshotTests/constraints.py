@@ -11,7 +11,8 @@ def _isBound(entity) -> bool:
 def _isBoundButForLiveText(sketch) -> bool:
     """Fusion never reports a sketch with live text as fully constrained, however its box is dimensioned or fixed
     (spike in the Cullenect label spec). Jörg chose live text for the insert on 14.11.2026 (p50), so such a sketch
-    counts as constrained when every curve and point in it, the text box included, is bound and only the text isn't"""
+    counts as constrained when every curve and point in it, the text box or baseline included, is bound and only the
+    text isn't"""
     if not any(True for _ in sketch.sketchTexts):
         return False
     return all(_isBound(curve) for curve in sketch.sketchCurves) and all(_isBound(point) for point in sketch.sketchPoints)
