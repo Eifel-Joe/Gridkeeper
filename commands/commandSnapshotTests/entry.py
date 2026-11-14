@@ -15,6 +15,7 @@ from ..commandCreateBin.inputState import InputState as BinInputState
 from ..commandCreateBaseplate import baseplateBuilder
 from ..commandCreateBaseplate.inputState import InputState as BaseplateInputState
 from . import testCases
+from . import constraints
 from . import snapshots
 from . import report
 from . import reportPalette
@@ -514,6 +515,7 @@ def runCase(case: testCases.TestCase, keepOpen: bool) -> dict:
         results = snapshots.compareSnapshot(os.path.join(SNAPSHOTS_FOLDER, case.name), bodies)
         # the shape may match all the same, the case fails for what Fusion found wrong in building it
         notes += unhealthy
+        notes += sketchConstraintNotes(case, document)
     except Exception as err:
         results = [snapshots.BodyResult('', snapshots.STATUS_FAIL, [f'build failed, {buildFailure(case, err)}'])]
     if document is not None and case.parameters:
@@ -542,6 +544,18 @@ def runCase(case: testCases.TestCase, keepOpen: bool) -> dict:
             except Exception as err:
                 notes.append(f'differences not shown, {err}')
     return report.case(case.name, case.description, status, bodyReports(results), notes, view, snapshotPreviews(case.name))
+
+def sketchConstraintNotes(case: testCases.TestCase, document: adsk.core.Document) -> list[str]:
+    """Why the case fails for sketches that aren't fully constrained, those of older code only go to the log"""
+    design = adsk.fusion.Design.cast(document.products.itemByProductType('DesignProductType'))
+    sketches = [sketch for component in design.allComponents for sketch in component.sketches]
+    names = constraints.unconstrainedSketches(sketches)
+    failure = constraints.constraintFailure(case.generator, case.name, names)
+    if failure is not None:
+        return [failure]
+    if len(names) > 0:
+        log(f'{case.name}: {len(names)} of {len(sketches)} sketches not fully constrained, reported only: {", ".join(names)}')
+    return []
 
 def listedCase(case: testCases.TestCase, status: str) -> dict:
     """A case waiting to be run or refreshed, or being run"""
