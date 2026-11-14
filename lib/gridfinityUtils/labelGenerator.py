@@ -183,7 +183,7 @@ def createLabel(
     name: str,
 ) -> list[adsk.fusion.BRepBody]:
     """Icon at the left as tall as the letters of the text after it, standing on their bottom, text alone is centered. Built as a separate body at the current label spot and
-    moved by how far the parametric spot is from it, then cut from or joined to the target body. Its sketches lie on a plane
+    moved by how far the parametric spot is from it, then cut from or joined to the target body (a colored label: see below). Its sketches lie on a plane
     at the current height, so a change of the parameters only changes the move: a sketch that moves is recomputed, its
     text with new curves, and the extrusion of the text loses them. A tilted label is laid out flat and turned about its
     back edge before that move.

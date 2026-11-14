@@ -89,3 +89,18 @@ def baseCandidates(libraries: list[tuple[str, list[str]]]) -> list[tuple[int, in
         for (index, name) in enumerate(names):
             candidates.append(((baseRank(name), 0 if isAppearanceLibrary else 1, libraryIndex, index), (libraryIndex, index)))
     return [position for (_, position) in sorted(candidates)]
+
+
+def dialogColor(choice: str, custom: str) -> str:
+    """The color of a dialog choice for the state: the color, '' for none, a custom text that is no color as it is
+    ('Custom' for an empty one), so isColor fails and the dialog locks OK with colorProblem"""
+    color = colorOf(choice, custom)
+    if color is not None:
+        return color
+    return custom.strip() or CUSTOM_CHOICE
+
+
+def labelColorFor(color: str, hasLabel: bool, isCullenect: bool) -> str:
+    """The color a bin's state keeps: none where there is no label to color, without a tab or with a Cullenect socket,
+    so a remembered color doesn't go into the bin's settings"""
+    return color if hasLabel and not isCullenect else ''

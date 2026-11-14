@@ -96,6 +96,7 @@ def isSetScrew(head: str, shaft: str, threads: str, driver: str, flange: bool, s
 
 
 def isValidScrew(head: str, shaft: str, threads: str, driver: str, flange: bool, security: bool) -> bool:
+    """A screw there is a symbol of: one of Cullenect's or a set screw of this fork"""
     return isCullenectScrew(head, shaft, threads, driver, flange, security) or isSetScrew(head, shaft, threads, driver, flange, security)
 
 
@@ -170,7 +171,7 @@ def screwOptions(folder: str) -> dict[str, list]:
 
 
 def screwIconPath(folder: str, head: str, shaft: str, threads: str, driver: str, flange: bool, security: bool) -> str | None:
-    """None when there is no file for this combination, the dialog locks such a choice"""
+    """None when there is no file for this combination, the dialog doesn't offer it (screwChoices)"""
     for subfolder in (SCREWS_FOLDER, SETSCREWS_FOLDER):
         path = os.path.join(folder, subfolder, screwIconFileName(head, shaft, threads, driver, flange, security))
         if os.path.isfile(path):
