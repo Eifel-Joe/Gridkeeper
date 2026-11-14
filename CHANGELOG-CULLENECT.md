@@ -31,8 +31,10 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
   screw put together from head, shaft, threads, driver, flange and security pin, or a hardware symbol. Width in base
   units (following `gfBaseWidth`) or free in mm, a width and height correction like Cullenect's `offset_xy`. Text and
   symbol are one layer (0.2 mm), raised, set in or flush, and bodies of their own to print them in another colour.
-  The width is a user parameter (`gfLabel1_width`), the symbol stays at the right edge when it changes. Every sketch is
-  fully constrained, so the text is drawn as fixed curves: changing it means generating the insert again.
+  The width is a user parameter (`gfLabel1_width`), the symbol stays at the right edge when it changes. Each text line
+  is a user parameter too (`gfLabel1_text1`, `gfLabel1_text2`) and stays live text, so it can be changed later like
+  the bin labels; the font size is fitted when the insert is generated, a much longer text wraps in its box. All other
+  sketches are fully constrained.
   Settings can be saved as defaults and shown with „Gridfinity settings“. Four label shape test cases.
 - **Dividers up to the top on grid lines** (bin dialog, off by default): compartment dividers lying on a grid line go
   up to the top of the stacking lip. The feet of a bin stacked on top have a groove on every grid line, so a bin of any
