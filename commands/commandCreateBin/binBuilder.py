@@ -281,6 +281,7 @@ def buildBin(
     binBodyInput.labelStyle = state.labelStyle
     binBodyInput.isLabelBold = state.isLabelBold
     binBodyInput.cullenectSocketOffset = state.cullenectSocketOffset
+    binBodyInput.cullenectUnitWidth = baseWidth
     isCullenect = state.labelStyle == labelGenerator.LABEL_STYLE_CULLENECT
     if isCullenect:
         # the socket needs a flat tab top wide enough for it, a wider tab of the user stays
@@ -524,7 +525,7 @@ def buildBin(
                     tabOriginY,
                     binBodyInput.tabWidth,
                     tabOriginZ - Dim.length(tabTopClearance(binBodyInput.labelStyle)),
-                    binBodyInput.baseWidth,
+                    binBodyInput.cullenectUnitWidth,
                     binBodyInput.cullenectSocketOffset,
                     binBodyInput.tabOverhangAngle,
                     binBody,
