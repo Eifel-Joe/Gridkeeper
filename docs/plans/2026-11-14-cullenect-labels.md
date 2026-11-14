@@ -35,7 +35,8 @@
 | Korrekturwert `offset_xy` | zwei Felder `offsetX`, `offsetY` (Default 0), wirken wie in Cullenect auf Breite und Höhe des Einlegers | Cullenect hat ein Paar `[x, y]` (`labelY = 11 + offset_xy.y`). |
 | Laschenlänge bei Fächern | unverändert `tabLength` des Nutzers; Fach-Laschen werden nicht automatisch aufs Fach verlängert | Bestandsverhalten; wer eine 2U-/4U-Tasche im Fach will, setzt `tabLength` entsprechend. Default `tabLength` = 1 ⇒ jedes Fach bekommt 1U. |
 | Schaft „keiner“, Gewinde „keins“ | nicht angeboten | Spec listet nur Maschine/Holz und voll/teil; Cullenect kennt zusätzlich `none`. |
-| Lage des Symbols | aus den SVG-Abmessungen: senkrecht mittig, rechte Kante bei `Breite − max(0, (1,1 − Symbolhöhe)/2)` | Cullenects Hardware-Regel (`marginRight = (labelY − hardX)/2`) auf alle Symbole verallgemeinert; neue SVGs brauchen so keine Katalog-Einträge. |
+| Lage des Symbols | aus den SVG-Abmessungen: senkrecht mittig; Schraube mit rechter Kante bündig am Einleger-Rand (wie Cullenect, Kopf bei `labelX − driverX/2` ± 3 mm), Hardware mit rechter Kante bei `Breite − max(0, (Höhe − Symbolhöhe)/2)` (Cullenect `marginRight`) | neue SVGs brauchen so keine Katalog-Einträge. Abweichung: Schraube ohne Kopf liegt mit dem Schaft am Rand, bei Cullenect bliebe dort der Platz des Kopfes leer. |
+| `offsetX`/`offsetY` bei freier mm-Breite | wirkt auch dort | Korrekturwert für Druckerabweichung (Spec), soll unabhängig von der Breitenangabe gelten; Cullenect ignoriert ihn bei `labelXmm`. |
 
 ## Review Focus
 
@@ -246,9 +247,9 @@ Klärt vor dem Generator, wie `SketchText` und importierte SVG-Kurven in Fusion 
 - Create: `lib/gridfinityUtils/cullenectLabelLayout.py` (Fusion-frei); Test: `tests/test_cullenect_label_layout.py`
 
 **Interfaces:**
-- Produces: `LabelLayout` (dataclass, cm): `width, height, textMinX, textMaxX, iconMaxX, iconCenterY, lineHeights: list[float]`; `labelLayout(width: float, height: float, iconSize: tuple[float, float] | None, lineCount: int) -> LabelLayout`; `labelSize(units: float | None, widthMm: float | None, baseWidth: float, offsetX: float, offsetY: float) -> tuple[float, float]`; `validWidth(width: float) -> bool` (1,0–30,0 cm). Symbol: rechte Kante `iconMaxX = width − max(0, (height − iconHeight)/2)`, senkrecht mittig. Text links ab `CULLENECT_TEXT_MARGIN = 0.1`, endet `CULLENECT_ICON_GAP = 0.1` vor der linken Symbolkante; Zeilenhöhen nach Task 8.
+- Produces: `LabelLayout` (dataclass, cm): `width, height, textMinX, textMaxX, iconMaxX, iconCenterY, lineHeights: list[float]`; `labelLayout(width: float, height: float, iconSize: tuple[float, float] | None, isScrew: bool, lineCount: int) -> LabelLayout`; `labelSize(units: float | None, widthMm: float | None, baseWidth: float, offsetX: float, offsetY: float) -> tuple[float, float]`; `validWidth(width: float) -> bool` (1,0–30,0 cm). Symbol: rechte Kante `iconMaxX = width` bei Schrauben, sonst `width − max(0, (height − iconHeight)/2)`; senkrecht mittig. Text links ab `CULLENECT_TEXT_MARGIN = 0.1`, endet `CULLENECT_ICON_GAP = 0.1` vor der linken Symbolkante; Zeilenhöhen nach Task 8.
 
-- [ ] **Step 1: Failing tests:** 1U mit Schraube der Größe (1,46 × 1,0): `width == 3.6`, `iconMaxX == approx(3.55)`, `textMaxX == approx(3.55 - 1.46 - 0.1)` (≈ 1,99 cm); Hardware 0,8 × 0,8: `iconMaxX == approx(3.45)`; ohne Symbol: `textMaxX == approx(3.5)`; `labelSize(1, None, 4.2, 0, 0) == (3.6, 1.1)`, `labelSize(None, 25, 4.2, 0, 0) == (2.5, 1.1)`, `labelSize(1, None, 4.2, -0.01, 0.01) == approx((3.59, 1.11))`; `validWidth(0.9) is False`, `validWidth(30.1) is False`; leerer Einleger (`lineCount` 0, kein Symbol) ist gültig.
+- [ ] **Step 1: Failing tests:** 1U mit Schraube der Größe (1,46 × 1,0): `width == 3.6`, `iconMaxX == approx(3.6)`, `textMaxX == approx(3.6 - 1.46 - 0.1)` (≈ 2,04 cm); Hardware 0,8 × 0,8: `iconMaxX == approx(3.45)`; ohne Symbol: `textMaxX == approx(3.5)`; `labelSize(1, None, 4.2, 0, 0) == (3.6, 1.1)`, `labelSize(None, 25, 4.2, 0, 0) == (2.5, 1.1)`, `labelSize(1, None, 4.2, -0.01, 0.01) == approx((3.59, 1.11))`, `labelSize(None, 25, 4.2, -0.01, 0) == approx((2.49, 1.1))`; `validWidth(0.9) is False`, `validWidth(30.1) is False`; leerer Einleger (`lineCount` 0, kein Symbol) ist gültig.
 - [ ] **Step 2:** FAIL. **Step 3:** Umsetzen. **Step 4:** grün. **Step 5:** Commit.
 
 ### Task 10: Einleger-Generator
@@ -276,7 +277,7 @@ Geometrie: Grundkörper aus drei Extrusionen (0–0,2 voll, 0,2–0,8 Einzug 0,2
 **Interfaces:**
 - Produces: `InputState` (Label): `baseWidth, widthUnits, widthMm, useUnits, line1, line2, showScrew, head, shaft, threads, driver, flange, security, hardware, surface, offsetX, offsetY, isBold`; `buildLabel(state) -> list[BRepBody]`.
 
-Dialog: Auswahllisten aus `cullenectCatalog`, ungültige Kombinationen gesperrt (`isValidScrew`), Rasterbreite aus `gfBaseWidth` des Designs falls vorhanden; Defaults speicherbar; „Gridfinity settings“ per Tag wie Bin/Baseplate; Platzierung nahe Ursprung mit `placementUtils`; Dokumenttyp wie Bin (Bauteil- oder Hybrid-Konstruktion).
+Dialog: Auswahllisten aus `cullenectCatalog.screwOptions`/`listHardwareIcons`, Kombinationen ohne Datei gesperrt (`screwIconPath` gibt `None`; `isValidScrew` dient nur dem Render-Werkzeug), Rasterbreite aus `gfBaseWidth` des Designs falls vorhanden; Defaults speicherbar; „Gridfinity settings“ per Tag wie Bin/Baseplate; Platzierung nahe Ursprung mit `placementUtils`; Dokumenttyp wie Bin (Bauteil- oder Hybrid-Konstruktion).
 
 - [ ] **Step 1: Failing tests:** neuer Generator lädt (`test_every_case_in_the_repo_loads` mit `STATE_CLASSES` inkl. Label), `offsetX`/`offsetY`/`widthMm` werden mm→cm umgerechnet; der Constraint-Check ist für Generator `label` streng (Task 5).
 - [ ] **Step 2:** FAIL. **Step 3:** Umsetzen.
