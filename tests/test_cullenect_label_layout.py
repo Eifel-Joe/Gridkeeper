@@ -202,20 +202,21 @@ class TestIconSize:
         assert layout.iconSize(_svg(tmp_path, 20, 22), 3.6, 1.1) == approx((1.0, 1.1))
 
     def test_at_most_as_wide_as_the_insert_without_its_margins(self, tmp_path):
-        # a screw on a 10 mm insert is scaled down to 8 mm
-        assert layout.iconSize(_svg(tmp_path, 14.56, 10), 1.0, 1.1) == approx((0.8, 0.8 / 1.456))
+        # a screw on a 10 mm insert is scaled down to 9 mm, it ends at the right edge
+        assert layout.iconSize(_svg(tmp_path, 14.56, 10), 1.0, 1.1) == approx((0.9, 0.9 / 1.456))
 
 
 class TestLayoutProblem:
     def test_a_1u_insert_with_screw_and_text_is_fine(self):
         assert layout.layoutProblem(layout.labelLayout(3.6, 1.1, SCREW, True, 1)) is None
 
-    def test_half_unit_with_screw_leaves_no_room_for_text(self):
-        result = layout.labelLayout(1.5, 1.1, SCREW, True, 1)
-        assert 'text' in layout.layoutProblem(result)
+    def test_half_unit_with_screw_leaves_no_room_for_text(self, tmp_path):
+        size = layout.iconSize(_svg(tmp_path, 14.56, 10), 1.5, 1.1, True)
+        assert 'text' in layout.layoutProblem(layout.labelLayout(1.5, 1.1, size, True, 1))
 
-    def test_half_unit_with_screw_and_no_text_is_fine(self):
-        assert layout.layoutProblem(layout.labelLayout(1.5, 1.1, SCREW, True, 0)) is None
+    def test_half_unit_with_screw_and_no_text_is_fine(self, tmp_path):
+        size = layout.iconSize(_svg(tmp_path, 14.56, 10), 1.5, 1.1, True)
+        assert layout.layoutProblem(layout.labelLayout(1.5, 1.1, size, True, 0)) is None
 
     def test_too_low(self):
         assert layout.layoutProblem(layout.labelLayout(3.6, 0.09, None, False, 0)) is not None
@@ -237,3 +238,20 @@ class TestInsertProblem:
 
     def test_no_room_for_text(self, tmp_path):
         assert 'text' in layout.insertProblem(1.5, 1.1, _svg(tmp_path, 14.56, 10), True, False, 1, 0, 0)
+
+
+class TestNarrowHardware:
+    # crimp_butt_splice: 14.56 x 5.76 mm, keeps a right margin like its gap to top and bottom
+    def test_wide_hardware_stays_on_a_narrow_insert(self, tmp_path):
+        size = layout.iconSize(_svg(tmp_path, 14.56, 5.76), 1.0, 1.1, False)
+        result = layout.labelLayout(1.0, 1.1, size, False, 0)
+        assert result.iconMaxX - size[0] >= 0.1 - 1e-9
+        assert result.iconMaxX <= 1.0 + 1e-9
+        assert layout.layoutProblem(result) is None
+
+    def test_hardware_that_fits_keeps_its_size(self, tmp_path):
+        assert layout.iconSize(_svg(tmp_path, 10, 8.66), 3.6, 1.1, False) == approx((1.0, 0.866))
+
+    def test_a_symbol_off_the_insert_is_a_problem(self):
+        result = layout.labelLayout(1.0, 1.1, (1.2, 0.5), False, 0)
+        assert 'symbol' in layout.layoutProblem(result)

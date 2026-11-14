@@ -30,6 +30,7 @@ class LabelLayout:
     # right edge of the symbol, None without one
     iconMaxX: float | None
     iconCenterY: float
+    iconWidth: float = 0
     # cap heights of the text lines from the top, before they shrink to fit the width
     lineHeights: list[float] = field(default_factory=list)
     lineCenters: list[float] = field(default_factory=list)
@@ -79,17 +80,23 @@ def labelLayout(width: float, height: float, iconSize: tuple[float, float] | Non
         textMaxX=textMaxX,
         iconMaxX=iconMaxX,
         iconCenterY=middle,
+        iconWidth=iconSize[0] if iconSize is not None else 0,
         lineHeights=lineHeights,
         lineCenters=lineCenters,
     )
 
 
-def iconSize(iconPath: str, width: float, height: float) -> tuple[float, float]:
+def iconSize(iconPath: str, width: float, height: float, isScrew: bool = True) -> tuple[float, float]:
     """Size of the symbol on the insert, as large as its svg says like in Cullenect, scaled down to fit the height of
-    the insert and its width without the margins"""
+    the insert and its width. A screw ends at the right edge and keeps the margin at the left, other symbols keep the
+    right margin of their gap to top and bottom too, which grows as they get smaller, see labelLayout"""
     (widthMm, heightMm) = cullenectCatalog.svgSize(iconPath)
     (iconWidth, iconHeight) = (widthMm / 10, heightMm / 10)
-    scale = min(1, height / iconHeight, (width - 2 * const.CULLENECT_TEXT_MARGIN) / iconWidth)
+    margin = const.CULLENECT_TEXT_MARGIN
+    scale = min(1, height / iconHeight, (width - margin) / iconWidth)
+    if not isScrew and iconWidth > iconHeight / 2:
+        # width - (height - scale * iconHeight) / 2 - scale * iconWidth >= margin
+        scale = min(scale, (width - margin - height / 2) / (iconWidth - iconHeight / 2))
     return (iconWidth * scale, iconHeight * scale)
 
 
@@ -97,6 +104,8 @@ def layoutProblem(layout: LabelLayout) -> str | None:
     """Why the insert can't be built like this, none if it can"""
     if layout.height < MIN_HEIGHT - 1e-9:
         return f'An insert is at least {MIN_HEIGHT * 10:g} mm high'
+    if layout.iconMaxX is not None and layout.iconMaxX - layout.iconWidth < const.CULLENECT_TEXT_MARGIN - 1e-9:
+        return 'No room for the symbol, make the insert wider'
     if len(layout.lineHeights) > 0 and layout.textMaxX - layout.textMinX < MIN_TEXT_SPACE - 1e-9:
         return 'No room for text beside the symbol, make the insert wider'
     return None
@@ -169,5 +178,5 @@ def insertProblem(
         return f'An insert is {MIN_WIDTH * 10:g} to {MAX_WIDTH * 10:g} mm wide'
     if isSymbolMissing:
         return 'No svg for this symbol, see tools/cullenectIcons.py'
-    size = iconSize(iconPath, width, height) if iconPath is not None else None
+    size = iconSize(iconPath, width, height, isScrew) if iconPath is not None else None
     return layoutProblem(labelLayout(width, height, size, isScrew, lineCount))
