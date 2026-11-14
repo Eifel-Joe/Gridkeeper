@@ -88,3 +88,17 @@ def segmentsForBin(
     if not (isEnabled and hasLip and isHollow and not isShaped):
         return []
     return gridLineSegments(pockets, columns, rows, binWidth, binLength)
+
+
+def optionEnabled(
+    generateBody: bool,
+    hasLip: bool,
+    isHollow: bool,
+    isShaped: bool,
+    isCreased: bool,
+    compartmentsX: int,
+    compartmentsY: int,
+) -> bool:
+    """Whether the dialog offers raising the dividers: a hollow bin body with a lip and more than one compartment"""
+    hasCompartments = not isCreased and compartmentsX * compartmentsY > 1
+    return generateBody and hasLip and isHollow and not isShaped and hasCompartments
