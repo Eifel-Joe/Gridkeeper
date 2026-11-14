@@ -74,6 +74,8 @@ class BinBodyGeneratorInput():
         self.tabTopAngle = const.BIN_TAB_LABEL_ANGLE
         self.labelStyle = LABEL_STYLE_OUTLINE
         self.isLabelBold = True
+        # '#RRGGBB' or empty, the labels in this color as bodies of their own, see labelGenerator.createLabel
+        self.labelColor = ''
         self.cullenectSocketOffset = const.CULLENECT_SOCKET_OFFSET
         # Cullenect labels count in whole grid units, also on a half grid bin whose base width is a foot
         self.cullenectUnitWidth = Dim.length(const.DIMENSION_DEFAULT_WIDTH_UNIT)

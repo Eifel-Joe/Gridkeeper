@@ -14,6 +14,7 @@ from ...lib.gridfinityUtils import commonUtils
 from ...lib.gridfinityUtils import const
 from ...lib.gridfinityUtils import sharedParameters
 from ...lib.gridfinityUtils import labelGenerator
+from ...lib.gridfinityUtils import labelColors
 from ...lib.gridfinityUtils import cullenect
 from ...lib.gridfinityUtils.binBodyTabGenerator import tabFilletAllowance
 from ...lib.gridfinityUtils import compartmentLayout
@@ -124,6 +125,8 @@ BIN_TAB_LABEL_TEXT_INPUT_ID = 'bin_tab_label_text'
 BIN_TAB_LABEL_ICON_INPUT_ID = 'bin_tab_label_icon'
 BIN_TAB_LABEL_STYLE_INPUT_ID = 'bin_tab_label_style'
 BIN_TAB_LABEL_BOLD_INPUT_ID = 'bin_tab_label_bold'
+BIN_TAB_LABEL_COLOR_INPUT_ID = 'bin_tab_label_color'
+BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID = 'bin_tab_label_color_custom'
 BIN_TAB_CULLENECT_OFFSET_INPUT_ID = 'bin_tab_cullenect_offset'
 BIN_WITH_LIP_INPUT_ID = 'with_lip'
 BIN_WITH_LIP_NOTCHES_INPUT_ID = 'with_lip_notches'
@@ -255,6 +258,8 @@ def initDefaultUiState():
     commandUIState.initValue(BIN_TAB_LABEL_ICON_INPUT_ID, labelGenerator.LABEL_ICON_NONE, adsk.core.DropDownCommandInput.classType())
     commandUIState.initValue(BIN_TAB_LABEL_STYLE_INPUT_ID, labelGenerator.LABEL_STYLE_OUTLINE, adsk.core.DropDownCommandInput.classType())
     commandUIState.initValue(BIN_TAB_LABEL_BOLD_INPUT_ID, True, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_TAB_LABEL_COLOR_INPUT_ID, labelColors.NO_COLOR_CHOICE, adsk.core.DropDownCommandInput.classType())
+    commandUIState.initValue(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID, '', adsk.core.StringValueCommandInput.classType())
     commandUIState.initValue(BIN_TAB_CULLENECT_OFFSET_INPUT_ID, const.CULLENECT_SOCKET_OFFSET, adsk.core.ValueCommandInput.classType())
 
     commandUIState.initValue(BIN_GENERATE_BASE_INPUT_ID, True, adsk.core.BoolValueCommandInput.classType())
@@ -623,6 +628,14 @@ def shapeDrawingData() -> dict:
 def refreshShapeDrawing():
     browserPages.sendUpdate(commandUIState.commandInputs.get(BIN_SHAPE_BROWSER_ID), shapeDrawingData())
 
+def labelColorOf(inputs: adsk.core.CommandInputs) -> str | None:
+    """The label color chosen, '' for none, None for a custom text that is no color, it locks OK. A Cullenect socket
+    has no label to color"""
+    if inputs.itemById(BIN_TAB_LABEL_STYLE_INPUT_ID).selectedItem.name == labelGenerator.LABEL_STYLE_CULLENECT:
+        return ''
+    choice = inputs.itemById(BIN_TAB_LABEL_COLOR_INPUT_ID).selectedItem.name
+    return labelColors.colorOf(choice, inputs.itemById(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID).value)
+
 def is_all_input_valid(inputs: adsk.core.CommandInputs):
     result = True
     base_width_unit: adsk.core.ValueCommandInput = inputs.itemById(BIN_BASE_WIDTH_UNIT_INPUT_ID)
@@ -681,6 +694,7 @@ def is_all_input_valid(inputs: adsk.core.CommandInputs):
             result = result and binTabTopAngle.value >= 0 and binTabTopAngle.value <= math.radians(45)
             socketOffset: adsk.core.ValueCommandInput = inputs.itemById(BIN_TAB_CULLENECT_OFFSET_INPUT_ID)
             result = result and socketOffset.value >= 0 and socketOffset.value <= 0.1
+            result = result and labelColorOf(inputs) is not None
 
     return result
 
@@ -873,6 +887,18 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     commandUIState.registerCommandInput(labelStyleInput)
     labelBoldInput = binTabFeaturesGroup.children.addBoolValueInput(BIN_TAB_LABEL_BOLD_INPUT_ID, 'Bold label text', True, '', commandUIState.getState(BIN_TAB_LABEL_BOLD_INPUT_ID))
     commandUIState.registerCommandInput(labelBoldInput)
+    labelColorInput = binTabFeaturesGroup.children.addDropDownCommandInput(BIN_TAB_LABEL_COLOR_INPUT_ID, 'Label color', adsk.core.DropDownStyles.TextListDropDownStyle)
+    labelColorInput.tooltip = 'Keeps the label as bodies of its own in this color, for printing it in another filament: raised letters are not joined to the bin, engraved and outline ones fill their cut flush. None joins or cuts them as before'
+    labelColorChoice = commandUIState.getState(BIN_TAB_LABEL_COLOR_INPUT_ID)
+    if labelColorChoice not in labelColors.CHOICES:
+        labelColorChoice = labelColors.NO_COLOR_CHOICE
+        commandUIState.updateValue(BIN_TAB_LABEL_COLOR_INPUT_ID, labelColorChoice)
+    for choice in labelColors.CHOICES:
+        labelColorInput.listItems.add(choice, choice == labelColorChoice)
+    commandUIState.registerCommandInput(labelColorInput)
+    labelCustomColorInput = binTabFeaturesGroup.children.addStringValueInput(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID, 'Custom label color', commandUIState.getState(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID))
+    labelCustomColorInput.tooltip = '#rrggbb, e.g. #D02020'
+    commandUIState.registerCommandInput(labelCustomColorInput)
     cullenectOffsetInput = binTabFeaturesGroup.children.addValueInput(BIN_TAB_CULLENECT_OFFSET_INPUT_ID, 'Socket play (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_TAB_CULLENECT_OFFSET_INPUT_ID)))
     cullenectOffsetInput.tooltip = 'How much larger the Cullenect socket is than the insert, in width and height. 0.3 mm like Cullenect, the inserts themselves are made to size'
     cullenectOffsetInput.minimumValue = 0
@@ -1104,12 +1130,15 @@ def onChangeValidate():
         ('text', BIN_TAB_LABEL_TEXT_INPUT_ID),
         ('icon', BIN_TAB_LABEL_ICON_INPUT_ID),
         ('bold', BIN_TAB_LABEL_BOLD_INPUT_ID),
+        ('color', BIN_TAB_LABEL_COLOR_INPUT_ID),
+        ('color', BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID),
         ('topAngle', BIN_TAB_TOP_ANGLE_INPUT_ID),
         ('socketOffset', BIN_TAB_CULLENECT_OFFSET_INPUT_ID),
     ]:
         if not labelInputs[key]:
             commandUIState.getInput(inputId).isEnabled = False
     commandUIState.getInput(BIN_TAB_CULLENECT_OFFSET_INPUT_ID).isVisible = labelInputs['socketOffset']
+    commandUIState.getInput(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID).isVisible = commandUIState.getState(BIN_TAB_LABEL_COLOR_INPUT_ID) == labelColors.CUSTOM_CHOICE
     creased = len(creaseLayout()) > 0
     if creased:
         # the folds would run into the hollow of the tab on the back wall
@@ -1226,6 +1255,7 @@ def getInputsState() -> InputState:
         labelIcon=commandUIState.getState(BIN_TAB_LABEL_ICON_INPUT_ID),
         labelStyle=commandUIState.getState(BIN_TAB_LABEL_STYLE_INPUT_ID),
         isLabelBold=commandUIState.getState(BIN_TAB_LABEL_BOLD_INPUT_ID),
+        labelColor=labelColors.colorOf(commandUIState.getState(BIN_TAB_LABEL_COLOR_INPUT_ID), commandUIState.getState(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID)) or '',
         cullenectSocketOffset=commandUIState.getState(BIN_TAB_CULLENECT_OFFSET_INPUT_ID),
         compartmentsX=commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID),
         compartmentsY=commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID),

@@ -44,7 +44,9 @@ This page is written from the case files, run `python3 tests/e2e/write_readme.py
 | <img src="snapshots/bin_2x1x3_holes_large/preview.png" width="120" alt="bin_2x1x3_holes_large"> | [bin_2x1x3_holes_large](cases/bin_2x1x3_holes_large.json) | 2x1x3 bin with 10 mm by 4 mm magnet holes and 6 mm screw holes, wider than the printability groove |
 | <img src="snapshots/bin_2x1x3_holes_small/preview.png" width="120" alt="bin_2x1x3_holes_small"> | [bin_2x1x3_holes_small](cases/bin_2x1x3_holes_small.json) | 2x1x3 bin with 3 mm by 1 mm magnet holes and 1.5 mm screw holes |
 | <img src="snapshots/bin_2x1x3_label_icon_text_embossed/preview.png" width="120" alt="bin_2x1x3_label_icon_text_embossed"> | [bin_2x1x3_label_icon_text_embossed](cases/bin_2x1x3_label_icon_text_embossed.json) | 2x1x3 bin with an embossed label of an icon and text |
+|  | [bin_2x1x3_label_icon_text_embossed_colored](cases/bin_2x1x3_label_icon_text_embossed_colored.json) | 2x1x3 bin with a raised icon and text label in red (p86), the label bodies not joined to the bin |
 | <img src="snapshots/bin_2x1x3_label_text_engraved/preview.png" width="120" alt="bin_2x1x3_label_text_engraved"> | [bin_2x1x3_label_text_engraved](cases/bin_2x1x3_label_text_engraved.json) | 2x1x3 bin with an engraved text label |
+|  | [bin_2x1x3_label_text_engraved_colored](cases/bin_2x1x3_label_text_engraved_colored.json) | 2x1x3 bin with an engraved text label in blue (p86), the cut filled flush by label bodies of their own |
 | <img src="snapshots/bin_2x1x3_magnets/preview.png" width="120" alt="bin_2x1x3_magnets"> | [bin_2x1x3_magnets](cases/bin_2x1x3_magnets.json) | 2x1x3 bin with magnet holes only |
 | <img src="snapshots/bin_2x1x3_magnets_pull_tabs/preview.png" width="120" alt="bin_2x1x3_magnets_pull_tabs"> | [bin_2x1x3_magnets_pull_tabs](cases/bin_2x1x3_magnets_pull_tabs.json) | 2x1x3 bin with magnet holes opened to the side for pulling magnets out |
 | <img src="snapshots/bin_2x1x3_magnets_pull_tabs_screws_grooves/preview.png" width="120" alt="bin_2x1x3_magnets_pull_tabs_screws_grooves"> | [bin_2x1x3_magnets_pull_tabs_screws_grooves](cases/bin_2x1x3_magnets_pull_tabs_screws_grooves.json) | 2x1x3 bin with magnet holes opened to the side, screw holes and printability grooves |
@@ -97,7 +99,9 @@ This page is written from the case files, run `python3 tests/e2e/write_readme.py
 | Preview | Case | Description |
 | --- | --- | --- |
 |  | [label_1u_screw_text](cases/label_1u_screw_text.json) | 1U Cullenect insert with a socket head screw and one line of text, raised, the baseline the other label cases change things of |
+|  | [label_1u_screw_text_colored](cases/label_1u_screw_text_colored.json) | The baseline insert with its text and symbol in red (p86), the bodies carry the label appearance |
 |  | [label_1u_screw_text_part](cases/label_1u_screw_text_part.json) | 1U insert with a screw and text built in a part design: the document turns hybrid and the insert is a component of its own, as the bodies of label_1u_screw_text |
+|  | [label_1u_set_screw_hex](cases/label_1u_set_screw_hex.json) | 1U insert with a hex set screw (p85), headless, and one line of text, raised |
 |  | [label_1u_welle_6mm](cases/label_1u_welle_6mm.json) | Joerg's 1U insert "Welle 6mm", flush, no symbol: Fusion broke the line in two and hung it off the insert (p84), the text stays one line on it |
 |  | [label_1u_welle_6mm_text_edited](cases/label_1u_welle_6mm_text_edited.json) | Joerg's 1U insert "Welle 6mm" with its text made longer once built (p70): the line isn't fitted again and stays one line, it runs on to the right past the insert. Sets `gfLabel1_text1` "Welle 6mm h6 lang" once built |
 |  | [label_25mm_free](cases/label_25mm_free.json) | Insert 25 mm wide given in mm with a width correction of -0.1 mm, a flanged pan head screw, flush, bold text |

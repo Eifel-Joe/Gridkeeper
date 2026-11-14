@@ -58,8 +58,8 @@ def binBodyTopHeight(input: BinBodyGeneratorInput) -> Dim:
 def createGridfinityBinBody(
     input: BinBodyGeneratorInput,
     targetComponent: adsk.fusion.Component,
-) -> tuple[adsk.fusion.BRepBody, adsk.fusion.BRepBody]:
-
+) -> tuple[adsk.fusion.BRepBody, list[adsk.fusion.BRepBody]]:
+    """The bin body and the bodies of its colored labels, see createLabel"""
     bodyWidth = input.baseWidth * input.binWidth - Dim.length(input.xyClearance * 2)
     bodyLength = input.baseLength * input.binLength - Dim.length(input.xyClearance * 2)
     wall = Dim.length(input.wallThickness)
@@ -338,6 +338,7 @@ def createGridfinityBinBody(
             targetComponent,
         )
 
+    labelBodies: list[adsk.fusion.BRepBody] = []
     if not input.isSolid and input.hasTab:
         # every compartment gets its own label, also where the tabs come from a pattern. A Cullenect socket goes into
         # every tab, the inserts carry the labels
@@ -372,7 +373,7 @@ def createGridfinityBinBody(
                     name=labelName,
                 )
                 continue
-            createTabLabel(
+            labelBodies += createTabLabel(
                 compartment.label,
                 input.labelStyle,
                 input.isLabelBold,
@@ -384,10 +385,11 @@ def createGridfinityBinBody(
                 binBody,
                 targetComponent,
                 input.tabTopAngle,
+                input.labelColor,
                 name=labelName,
             )
 
-    return binBody
+    return (binBody, labelBodies)
 
 def createRaisedDividers(
     segments: list[DividerSegment],
@@ -728,11 +730,13 @@ def createTabLabel(
         targetBody: adsk.fusion.BRepBody,
         targetComponent: adsk.fusion.Component,
         tabTopAngle: float = 0,
+        color: str = '',
         *,
         name: str,
-    ):
+    ) -> list[adsk.fusion.BRepBody]:
     """Label on the top face of a tab with its back top corner at the tab origin y and z, between the given x.
-    On a tilted top the label is as long as the slope, so it still covers the tab width once turned down"""
+    On a tilted top the label is as long as the slope, so it still covers the tab width once turned down. The bodies
+    of a colored label, see createLabel"""
     labelLength = tabWidth / math.cos(tabTopAngle)
     labelInput = BinLabelInput()
     labelInput.style = style
@@ -744,6 +748,7 @@ def createTabLabel(
     labelInput.width = maxX - minX
     labelInput.length = labelLength
     labelInput.tiltAngle = tabTopAngle
+    labelInput.color = color
     return createLabel(labelInput, targetBody, targetComponent, name=name)
 
 

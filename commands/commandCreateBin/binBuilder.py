@@ -281,6 +281,7 @@ def buildBin(
     binBodyInput.tabTopAngle = state.tabTopAngle
     binBodyInput.labelStyle = state.labelStyle
     binBodyInput.isLabelBold = state.isLabelBold
+    binBodyInput.labelColor = state.labelColor
     binBodyInput.cullenectSocketOffset = state.cullenectSocketOffset
     binBodyInput.cullenectUnitWidth = baseWidth
     isCullenect = state.labelStyle == labelGenerator.LABEL_STYLE_CULLENECT
@@ -315,6 +316,8 @@ def buildBin(
     )
 
     binBody: adsk.fusion.BRepBody
+    # colored labels, bodies of their own beside the bin body, see labelGenerator.createLabel
+    labelBodies: list[adsk.fusion.BRepBody] = []
 
     if state.generateBody:
         binBodyInput.binHeight = Dim.parameter(parameterUtils.addUnitlessParameter(
@@ -352,7 +355,7 @@ def buildBin(
             LOG_PREFIX,
         ))
         binParameters.append(['Height unit', binBodyInput.heightUnit.expression])
-        binBody = createGridfinityBinBody(
+        (binBody, labelBodies) = createGridfinityBinBody(
             binBodyInput,
             gridfinityBinComponent,
         )
@@ -542,7 +545,7 @@ def buildBin(
             if shelledLabel is not None and shelledLabel.textParameter is not None:
                 binParameters.append(['Label', shelledLabel.textParameter.name])
             if shelledLabel is not None:
-                createTabLabel(
+                labelBodies += createTabLabel(
                     shelledLabel,
                     binBodyInput.labelStyle,
                     binBodyInput.isLabelBold,
@@ -554,18 +557,22 @@ def buildBin(
                     binBody,
                     gridfinityBinComponent,
                     binBodyInput.tabTopAngle,
+                    binBodyInput.labelColor,
                     name='Label',
                 )
 
     generatedBodies: list[adsk.fusion.BRepBody] = []
     if state.generateBody or state.generateBase:
         generatedBodies = [binBody] if state.generateBody else baseBodies
+        # colored labels stand apart from the bin body, they move with it and are part of what was built
+        movedBodies = generatedBodies + labelBodies
         if binPlacement != (0, 0):
-            placementUtils.moveBodies(generatedBodies, *binPlacement, gridfinityBinComponent, name='Bin placement')
+            placementUtils.moveBodies(movedBodies, *binPlacement, gridfinityBinComponent, name='Bin placement')
         # mark generated geometry so later bins can tell it apart from the rest of the design,
-        # with the settings it was generated with to show later
+        # with the settings it was generated with to show later. Labels aren't bins, they'd count as bins of their own
         for body in generatedBodies:
             tagUtils.tagBody(body, tagUtils.TAG_BIN, settings, binParameters)
+        generatedBodies = movedBodies
 
     if state.generateBase and state.hasJointOrigins:
         # last, after the placement, joint origins sit on sketches which don't follow body moves

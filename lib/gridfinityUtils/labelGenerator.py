@@ -1,7 +1,7 @@
 import os
 import adsk.core, adsk.fusion
 
-from . import const, commonUtils, combineUtils
+from . import const, commonUtils, combineUtils, appearanceUtils
 from .dim import Dim, valueInput
 
 LABEL_STYLE_OUTLINE = 'Outline'
@@ -71,6 +71,8 @@ class BinLabelInput():
         self.length: float = 0
         # turns the label down towards the front about its back edge, for tilted tab tops
         self.tiltAngle: float = 0
+        # '#RRGGBB' keeps the letters as bodies of their own in this color, empty joins or cuts them, see labelColors
+        self.color: str = ''
 
 def _curveBounds(curves) -> tuple[float, float, float, float] | None:
     """Min and max x and y over sampled points of the given geometry curves"""
@@ -179,13 +181,16 @@ def createLabel(
     targetComponent: adsk.fusion.Component,
     *,
     name: str,
-) -> adsk.fusion.BRepBody:
+) -> list[adsk.fusion.BRepBody]:
     """Icon at the left as tall as the letters of the text after it, standing on their bottom, text alone is centered. Built as a separate body at the current label spot and
     moved by how far the parametric spot is from it, then cut from or joined to the target body. Its sketches lie on a plane
     at the current height, so a change of the parameters only changes the move: a sketch that moves is recomputed, its
     text with new curves, and the extrusion of the text loses them. A tilted label is laid out flat and turned about its
     back edge before that move.
-    Planes, sketches and features are named after the given name"""
+    Planes, sketches and features are named after the given name.
+    With a color the label stays bodies of their own in that color, for printing in another filament (p86): raised
+    ones aren't joined, the tools of an engraved or outline cut stay as a flush inlay. Those bodies are returned, named
+    '<name> text N' from left to right, without a color none"""
     features = targetComponent.features
     isTilted = input.tiltAngle != 0
     labelPlaneInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
@@ -261,7 +266,7 @@ def createLabel(
             profiles.add(profile)
 
     if profiles.count == 0:
-        return None
+        return []
 
     isEmbossed = input.style == LABEL_STYLE_EMBOSSED
     def extrudeLabel(isThin: bool) -> adsk.fusion.ExtrudeFeature:
@@ -288,6 +293,11 @@ def createLabel(
     labelBodies = list(labelExtrude.bodies)
     for body in labelBodies:
         body.name = name
+    if input.color:
+        # names a snapshot pairs them by, Fusion keeps letters that don't touch as bodies of their own
+        labelBodies.sort(key=lambda body: (round(body.boundingBox.minPoint.x, 4), body.boundingBox.minPoint.y))
+        for (index, body) in enumerate(labelBodies):
+            body.name = f'{name} text {index + 1}'
 
     if isTilted:
         # turning about +x takes the front edge down
@@ -317,8 +327,12 @@ def createLabel(
         moveFeature.name = f'{name} placement'
 
     if isEmbossed:
-        combineUtils.joinBodies(targetBody, commonUtils.objectCollectionFromList(labelBodies), targetComponent, name=f'{name} join')
+        if not input.color:
+            combineUtils.joinBodies(targetBody, commonUtils.objectCollectionFromList(labelBodies), targetComponent, name=f'{name} join')
     else:
-        combineUtils.cutBody(targetBody, commonUtils.objectCollectionFromList(labelBodies), targetComponent, name=f'{name} cut')
-    commonUtils.debugLog(f'{name}: {input.style.lower()}, text parameter {textParameter.name if textParameter is not None else None}, icon {input.definition.iconPath}')
-    return targetBody
+        combineUtils.cutBody(targetBody, commonUtils.objectCollectionFromList(labelBodies), targetComponent, bool(input.color), name=f'{name} cut')
+    commonUtils.debugLog(f'{name}: {input.style.lower()}, text parameter {textParameter.name if textParameter is not None else None}, icon {input.definition.iconPath}, color {input.color or None}')
+    if not input.color:
+        return []
+    appearanceUtils.colorBodies(labelBodies, input.color)
+    return labelBodies

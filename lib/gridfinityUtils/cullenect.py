@@ -106,6 +106,7 @@ def labelInputsEnabled(labelStyle: str) -> dict[str, bool]:
         'text': not isCullenect,
         'icon': not isCullenect,
         'bold': not isCullenect,
+        'color': not isCullenect,
         'topAngle': not isCullenect,
         'socketOffset': isCullenect,
     }

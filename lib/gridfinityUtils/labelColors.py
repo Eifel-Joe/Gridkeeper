@@ -1,0 +1,73 @@
+"""
+Colors of the label text and symbols, of the Cullenect inserts and the bin labels (p86). A color is '#RRGGBB', an empty
+text for none: the text keeps the look of its body as before. The dialogs offer a few named colors and a custom one.
+No Fusion imports, so it is testable, the appearance itself is made by appearanceUtils.
+"""
+
+import re
+
+NO_COLOR_CHOICE = 'None'
+CUSTOM_CHOICE = 'Custom'
+# named colors, about the filaments one has
+NAMED_COLORS = {
+    'Black': '#000000',
+    'White': '#FFFFFF',
+    'Red': '#D02020',
+    'Orange': '#FF8000',
+    'Yellow': '#FFD700',
+    'Green': '#20A040',
+    'Blue': '#2060D0',
+    'Gray': '#808080',
+}
+CHOICES = [NO_COLOR_CHOICE] + list(NAMED_COLORS) + [CUSTOM_CHOICE]
+
+_COLOR = re.compile(r'^#[0-9A-Fa-f]{6}$')
+
+# library appearances the color is copied from, by the start of their name, best first. The libraries come in the
+# user's language (p31: a German Fusion has no "Plastic"), a name not listed still serves when it has a color to set
+BASE_PREFIXES = ['Plastic - Matte', 'Kunststoff - Matt', 'Plastic', 'Kunststoff']
+
+
+def isColor(color: str) -> bool:
+    """'#RRGGBB' or empty for none"""
+    return color == '' or _COLOR.match(color) is not None
+
+
+def colorOf(choice: str, custom: str) -> str | None:
+    """The color of a dialog choice, '' for none, None when the custom color isn't one. An unknown choice, from saved
+    defaults of another version, counts as none"""
+    if choice == CUSTOM_CHOICE:
+        text = custom.strip()
+        if not text.startswith('#'):
+            text = '#' + text
+        return text.upper() if _COLOR.match(text) else None
+    return NAMED_COLORS.get(choice, '')
+
+
+def colorProblem(choice: str, custom: str) -> str | None:
+    """Why the color can't be used, none if it can"""
+    if colorOf(choice, custom) is None:
+        return f"The custom color is #rrggbb, e.g. {NAMED_COLORS['Red']}"
+    return None
+
+
+def choiceOf(color: str) -> tuple[str, str]:
+    """The dialog choice and custom text of a color, the way back of colorOf"""
+    if color == '':
+        return (NO_COLOR_CHOICE, '')
+    named = next((name for (name, value) in NAMED_COLORS.items() if value == color.upper()), None)
+    return (named, '') if named is not None else (CUSTOM_CHOICE, color.upper())
+
+
+def appearanceName(color: str) -> str:
+    """Name of the appearance in the document, Fusion refuses some characters in names, # among them"""
+    return f'Gridfinity label {color.lstrip("#").upper()}'
+
+
+def rgb(color: str) -> tuple[int, int, int]:
+    return (int(color[1:3], 16), int(color[3:5], 16), int(color[5:7], 16))
+
+
+def baseRank(appearanceName: str) -> int:
+    """Lower is a better appearance to copy the color from, any other name ranks last"""
+    return next((index for (index, prefix) in enumerate(BASE_PREFIXES) if appearanceName.startswith(prefix)), len(BASE_PREFIXES))

@@ -38,6 +38,7 @@
         "labelIcon": "None",
         "labelStyle": "Outline",
         "isLabelBold": true,
+        "labelColor": "",
         "cullenectSocketOffset": 0.3,
         "compartmentsX": 2,
         "compartmentsY": 1,
