@@ -628,13 +628,14 @@ def shapeDrawingData() -> dict:
 def refreshShapeDrawing():
     browserPages.sendUpdate(commandUIState.commandInputs.get(BIN_SHAPE_BROWSER_ID), shapeDrawingData())
 
-def labelColorOf(inputs: adsk.core.CommandInputs) -> str | None:
-    """The label color chosen, '' for none, None for a custom text that is no color, it locks OK. A Cullenect socket
-    has no label to color"""
-    if inputs.itemById(BIN_TAB_LABEL_STYLE_INPUT_ID).selectedItem.name == labelGenerator.LABEL_STYLE_CULLENECT:
-        return ''
-    choice = inputs.itemById(BIN_TAB_LABEL_COLOR_INPUT_ID).selectedItem.name
-    return labelColors.colorOf(choice, inputs.itemById(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID).value)
+def binLabelColor() -> str:
+    """The label color of the bin's state, '' where there is no label to color, a custom text that is no color as it
+    is (see labelColors.dialogColor). Hollow and shelled bins both have labels on their tab (review round 10: a
+    shelled bin let an invalid color through)"""
+    hasLabel = bool(commandUIState.getState(BIN_GENERATE_BODY_INPUT_ID) and commandUIState.getState(BIN_HAS_TAB_INPUT_ID))
+    isCullenect = commandUIState.getState(BIN_TAB_LABEL_STYLE_INPUT_ID) == labelGenerator.LABEL_STYLE_CULLENECT
+    color = labelColors.dialogColor(commandUIState.getState(BIN_TAB_LABEL_COLOR_INPUT_ID), commandUIState.getState(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID))
+    return labelColors.labelColorFor(color, hasLabel, isCullenect)
 
 def is_all_input_valid(inputs: adsk.core.CommandInputs):
     result = True
@@ -678,6 +679,7 @@ def is_all_input_valid(inputs: adsk.core.CommandInputs):
         result = result and bin_magnet_cutout_depth.value > 0
 
     result = result and shapeError() is None
+    result = result and labelColors.isColor(binLabelColor())
     if inputs.itemById(BIN_CREASES_INPUT_ID).value:
         result = result and inputs.itemById(BIN_CREASE_DEPTH_INPUT_ID).value > 0
         result = result and inputs.itemById(BIN_CREASE_MAX_PANEL_LENGTH_INPUT_ID).value > 0
@@ -694,7 +696,6 @@ def is_all_input_valid(inputs: adsk.core.CommandInputs):
             result = result and binTabTopAngle.value >= 0 and binTabTopAngle.value <= math.radians(45)
             socketOffset: adsk.core.ValueCommandInput = inputs.itemById(BIN_TAB_CULLENECT_OFFSET_INPUT_ID)
             result = result and socketOffset.value >= 0 and socketOffset.value <= 0.1
-            result = result and labelColorOf(inputs) is not None
 
     return result
 
@@ -1255,7 +1256,7 @@ def getInputsState() -> InputState:
         labelIcon=commandUIState.getState(BIN_TAB_LABEL_ICON_INPUT_ID),
         labelStyle=commandUIState.getState(BIN_TAB_LABEL_STYLE_INPUT_ID),
         isLabelBold=commandUIState.getState(BIN_TAB_LABEL_BOLD_INPUT_ID),
-        labelColor=labelColors.colorOf(commandUIState.getState(BIN_TAB_LABEL_COLOR_INPUT_ID), commandUIState.getState(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID)) or '',
+        labelColor=binLabelColor(),
         cullenectSocketOffset=commandUIState.getState(BIN_TAB_CULLENECT_OFFSET_INPUT_ID),
         compartmentsX=commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID),
         compartmentsY=commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID),

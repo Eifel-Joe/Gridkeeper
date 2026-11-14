@@ -5,7 +5,7 @@ from . import labelColors, commonUtils
 # The appearance label text and symbols are colored with (p86), see labelColors. It is a library appearance copied
 # into the document and recolored, as Fusion does when one is dragged onto a body and recolored, and found again by
 # its name next time. Library names are in the user's language (p31), so none is looked up by its full name: the
-# best ranked one with a color to set is taken, see labelColors.baseRank
+# best ranked one with a main color is taken, see labelColors.baseCandidates
 
 # ids of the main color of Fusion's appearances, generic plastics, paints and metals
 COLOR_PROPERTY_IDS = ['opaque_albedo', 'generic_diffuse', 'metal_f0']
@@ -49,8 +49,9 @@ def labelAppearance(design: adsk.fusion.Design, color: str) -> adsk.core.Appeara
     base = baseAppearance()
     appearance = design.appearances.addByCopy(base, name)
     property = colorProperty(appearance)
-    if property is None:
-        raise AppearanceError(f'the copy of {base.name} has no color to set')
+    if property is None or property.id not in COLOR_PROPERTY_IDS:
+        # another color of it (a tint, a reflection) wouldn't color the body, the snapshot check only sees the name
+        raise AppearanceError(f'the copy of {base.name} has no main color to set')
     if property.hasConnectedTexture:
         property.hasConnectedTexture = False
     property.value = adsk.core.Color.create(*labelColors.rgb(color), 255)

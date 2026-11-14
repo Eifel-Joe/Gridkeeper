@@ -30,7 +30,7 @@ und p86 „Beschriftung wahlweise direkt einfärben (Einleger und Bin-Labels)“
 ## p86 Beschriftung einfärben
 
 ### Entscheidung
-- Dialog Einleger und Bin: Dropdown „Text color“: None (wie bisher), Black, White, Red, Orange, Yellow, Green, Blue,
+- Dialog Einleger und Bin: Dropdown „Text color“ (im Bin-Dialog „Label color“ wie die übrigen Label-Felder): None (wie bisher), Black, White, Red, Orange, Yellow, Green, Blue,
   Gray, Custom. Bei Custom ein Feld `#rrggbb`; ungültige Eingabe sperrt OK mit Hinweis.
 - Im Zustand steht die Farbe als `#rrggbb`, leer = keine (`textColor` beim Einleger, `labelColor` bei der Bin).
 - Darstellung sprachunabhängig: Aus den Bibliotheken die erste Darstellung mit änderbarer Grundfarbe, deren Name mit

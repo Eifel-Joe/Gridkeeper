@@ -458,11 +458,6 @@ def saveUIInputsAsDefaults():
     futil.log(f'{CMD_NAME} Saving UI state to file')
     configUtils.dumpJsonConfig(UI_INPUT_DEFAULTS_CONFIG_PATH, uiState.toDict())
 
-def dialogColor(choice: str, custom: str) -> str:
-    """The color of the dialog's choice, a custom text that is no color as it is, so labelProblem names it"""
-    color = labelColors.colorOf(choice, custom)
-    return custom if color is None else color
-
 def keyOf(name: str, keys: list[str]) -> str:
     """The Cullenect name of a shown name"""
     return next((key for key in keys if cullenectCatalog.displayName(key) == name), name)
@@ -491,5 +486,5 @@ def getInputsState() -> InputState:
         security=uiState.getState(SECURITY_INPUT),
         hardware=NO_HARDWARE if hardwareName == 'None' else keyOf(hardwareName, hardwareKeys),
         surface=next((key for (key, name) in SURFACE_NAMES.items() if name == surfaceName), cullenectLabelGenerator.SURFACE_EMBOSSED),
-        textColor=dialogColor(uiState.getState(TEXT_COLOR_DROPDOWN), uiState.getState(CUSTOM_COLOR_INPUT)),
+        textColor=labelColors.dialogColor(uiState.getState(TEXT_COLOR_DROPDOWN), uiState.getState(CUSTOM_COLOR_INPUT)),
     )

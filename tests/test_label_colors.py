@@ -85,3 +85,19 @@ def test_base_candidates_prefer_the_appearance_library():
     assert order[0] == (1, 2)
     assert order[1] == (1, 1)
     assert order.index((0, 0)) > order.index((1, 0))
+
+
+def test_dialog_color_keeps_an_invalid_custom_text_so_it_locks_ok():
+    # review round 10: Custom with an empty field passed as no color in the label dialog, the bin dialog locked OK
+    assert colors.dialogColor('Red', '') == '#D02020'
+    assert colors.dialogColor('None', 'xyz') == ''
+    assert colors.dialogColor('Custom', 'd02020') == '#D02020'
+    assert colors.isColor(colors.dialogColor('Custom', '')) is False
+    assert colors.isColor(colors.dialogColor('Custom', 'xyz')) is False
+
+
+def test_label_color_applies_only_to_a_label_there_is():
+    # review round 10: a remembered color went into the settings of a bin with a Cullenect socket or without tab
+    assert colors.labelColorFor('#D02020', True, False) == '#D02020'
+    assert colors.labelColorFor('#D02020', False, False) == ''
+    assert colors.labelColorFor('#D02020', True, True) == ''
