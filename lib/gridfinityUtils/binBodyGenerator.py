@@ -449,6 +449,11 @@ def createRaisedDividers(
         dividers.extend(body for body in cut.bodies if all(body != cutter for cutter in cutters))
     return dividers
 
+# Parts of the corner fillet radius tried in turn where Fusion can't close a fillet of the full one (ASM_BL_CAP_COMPLEX,
+# shown in Fusion): walls of 2 and 3 mm stick out past the grid line and are cut by the feet of a stacked bin at the
+# top, a 0.4 mm wall leaves too little divider for a 3.3 mm fillet. 80 % rounds those of 0.4 and 2 mm, 40 % 3 mm walls
+RAISED_CORNER_FILLET_FALLBACKS = (1.0, 0.8, 0.6, 0.4)
+
 def raisedDividerCorners(
     segments: list[DividerSegment],
     compartmentsMin: tuple[Dim, Dim],
@@ -488,8 +493,8 @@ def filletRaisedDividerCorners(
     corner left in the lip) or by the feet of a stacked bin (undercuts at the top).
     The radius is a hair under the corner fillet's: of the same radius both fillets lie on one cylinder and Fusion
     fails on one side (ASM_INCONS_FACE, shown in Fusion), 0.05 mm less leaves a step nobody sees. One fillet per corner,
-    its edges looked up again on the body each time, the previous fillets change the edges, and one that fails leaves
-    the others
+    its edges looked up again on the body each time, the previous fillets change the edges. One Fusion can't close
+    gets a smaller radius, see RAISED_CORNER_FILLET_FALLBACKS
     """
     radius = cornerFilletRadius - 0.005
     # the lip reaches into the compartment by less than its top section
@@ -511,18 +516,22 @@ def filletRaisedDividerCorners(
         if len(edges) == 0:
             commonUtils.debugLog(f'{name}: no edges found')
             continue
-        filletInput = targetComponent.features.filletFeatures.createInput()
-        filletInput.isRollingBallCorner = True
-        filletInput.addConstantRadiusEdgeSet(
-            commonUtils.objectCollectionFromList(edges),
-            adsk.core.ValueInput.createByReal(radius),
-            False,
-        )
-        try:
-            fillet = targetComponent.features.filletFeatures.add(filletInput)
-        except RuntimeError as error:
-            # a corner Fusion can't round stays sharp, the bin is still good to print and stack
-            commonUtils.debugLog(f'{name}: fillet failed, {error}')
+        fillet = None
+        for factor in RAISED_CORNER_FILLET_FALLBACKS:
+            filletInput = targetComponent.features.filletFeatures.createInput()
+            filletInput.isRollingBallCorner = True
+            filletInput.addConstantRadiusEdgeSet(
+                commonUtils.objectCollectionFromList(edges),
+                adsk.core.ValueInput.createByReal(radius * factor),
+                False,
+            )
+            try:
+                fillet = targetComponent.features.filletFeatures.add(filletInput)
+                break
+            except RuntimeError as error:
+                commonUtils.debugLog(f'{name}: fillet of {radius * factor * 10:.2f} mm failed, {error}')
+        if fillet is None:
+            # a corner Fusion can't round at all stays sharp, the bin is still good to print and stack
             continue
         fillet.name = name
 

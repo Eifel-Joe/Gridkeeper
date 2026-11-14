@@ -22,8 +22,9 @@ und zum Ende der Verrundung ausläuft.“
 Jede Ecke, deren beide Seiten bis oben gehen (hochgezogene Trennwand oder Außenwand, nicht zwei Außenwände), bekommt
 nach dem Zusammenfügen der Bin eine Fusion-Verrundung entlang der Kantenkette von der Oberseite der Fach-Verrundung bis
 zur Oberkante: Wand, Fase, Rand. Die Fase läuft so um die Verrundung herum und endet mit ihr. Radius 0,05 mm unter dem
-der Fach-Verrundung (gleich groß lässt Fusion scheitern, ASM_INCONS_FACE). Eine Verrundung, die Fusion nicht schafft,
-bleibt scharf und wird geloggt, die Bin bleibt gültig.
+der Fach-Verrundung (gleich groß lässt Fusion scheitern, ASM_INCONS_FACE). Schafft Fusion den vollen Radius nicht
+(ASM_BL_CAP_COMPLEX: Wand 2 / 3 mm wird oben von den Füßen angeschnitten, Wand 0,4 mm zu dünn für 3,3 mm), werden 80 /
+60 / 40 % versucht; gelingt keiner, bleibt die Ecke scharf und es wird geloggt, die Bin bleibt gültig.
 
 Verworfen (Jörg gezeigt): Eckstücke vom Radius, beschnitten vom Rand (Ecke im Rand bleibt scharf) bzw. von den Füßen
 (Hinterschnitte oben).
@@ -33,6 +34,8 @@ Verworfen (Jörg gezeigt): Eckstücke vom Radius, beschnitten vom Rand (Ecke im 
   Koordinaten.
 - Fusion: alle Trennwand-bis-oben-Fälle gesund, alle Ecken verrundet (8/8/8/12/4), Parameterfall (`gfBaseWidth` 40 mm)
   gesund. Stapeltest 4×2 und 2×2 auf jeder Lage: 0 mm³, Gegenprobe 0,3 mm tiefer > 0.
+- Ohne Fall, einmal in Fusion: Wand 0,4 / 2,0 / 3,0 mm und Stapelrand mit Notches – je 8 von 8 Ecken verrundet
+  (Radien 3,3/2,64, 1,8/1,44, 1,8/0,72, 2,5 mm), Stapeltest 0 mm³.
 - Neuer Fall `bin_3x2x3_dividers_to_top_3_columns_tab_scoop_part` (Jörgs Bin). Snapshots der Trennwand-bis-oben-Fälle
   ändern sich (Volumen +), sonst keine.
 
