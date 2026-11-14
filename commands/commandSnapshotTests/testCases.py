@@ -140,6 +140,9 @@ def loadCase(path: str, stateClasses: dict[str, type]) -> TestCase:
         state = stateFromJson(generator, stateClasses[generator], data['settings'])
         parameters = parametersFromJson(generator, data.get('parameters', {}))
         texts = textsFromJson(generator, data.get('texts', {}))
+        if texts and parameters:
+            # the build with the parameters from the start it is compared with can't have the edited text
+            raise TestCaseError('a case sets either parameters or texts after building, not both')
         designIntent = data.get('designIntent', DESIGN_INTENT_HYBRID)
         if designIntent not in DESIGN_INTENTS:
             raise TestCaseError(f'unknown design intent {designIntent!r}')
@@ -266,24 +269,41 @@ def raisedCornerLedges(faces: list[tuple[float, float, float]]) -> list[str]:
     ]
 
 # A text line of an insert stays one line on the insert (p84, p70): Fusion broke a line it took for longer than its box
-# in two, the second line hung off the insert. Letters of a line overlap in height, lines are apart by their gap
+# in two, the second row hung off the insert. Each letter body belongs to the text line whose middle is nearest its
+# own, the letters of a line form one band in height. Assigning them first keeps a descender of the upper line over
+# the dots of an umlaut of the lower one from joining the lines (review of round 9). Dots are bodies of their own a
+# little above their letter, a gap of up to TEXT_BAND_GAP of the line's tallest letter stays in the band; a line
+# broken in two leaves a gap of half a capital and more (the user's "Welle 6mm": 2.7 mm at 5 mm)
 TEXT_TOLERANCE = 0.01
+TEXT_BAND_GAP = 0.2
 
-def insertTextProblems(insert: tuple[float, float, float, float], letters: list[tuple[float, float, float, float]], lineCount: int, mayRunOnRight: bool = False) -> list[str]:
+def insertTextProblems(insert: tuple[float, float, float, float], letters: list[tuple[float, float, float, float]], lineCenters: list[float], mayRunOnRight: bool = False) -> list[str]:
     """
-    Notes on the text of an insert, its box and those of its letter bodies as (min x, min y, max x, max y) in mm: as
-    many bands of letters one above the other as it has lines, all on the insert. A text made longer after building
+    Notes on the text of an insert, its box and those of its letter bodies as (min x, min y, max x, max y) in mm, the
+    middles of its text lines in mm: each line one band of letters, all on the insert. A text made longer after building
     may run on past the right edge, `mayRunOnRight`
     """
     notes = []
-    bands = []
-    for (_, minY, _, maxY) in sorted(letters, key=lambda box: box[1]):
-        if bands and minY <= bands[-1][1] + TEXT_TOLERANCE:
-            bands[-1][1] = max(bands[-1][1], maxY)
-        else:
-            bands.append([minY, maxY])
-    if len(bands) != lineCount:
-        notes.append(f'{len(bands)} lines of text, expected {lineCount}')
+    lines = [[] for _ in lineCenters]
+    for box in letters:
+        middle = (box[1] + box[3]) / 2
+        nearest = min(range(len(lineCenters)), key=lambda index: abs(lineCenters[index] - middle)) if lineCenters else None
+        if nearest is not None:
+            lines[nearest].append(box)
+    if not lineCenters and letters:
+        notes.append(f'{len(letters)} text bodies on an insert without text')
+    for (index, lineLetters) in enumerate(lines):
+        bands = []
+        gap = max(TEXT_TOLERANCE, TEXT_BAND_GAP * max((box[3] - box[1] for box in lineLetters), default=0))
+        for (_, minY, _, maxY) in sorted(lineLetters, key=lambda box: box[1]):
+            if bands and minY <= bands[-1][1] + gap:
+                bands[-1][1] = max(bands[-1][1], maxY)
+            else:
+                bands.append([minY, maxY])
+        if len(bands) == 0:
+            notes.append(f'line {index + 1} has no text')
+        elif len(bands) > 1:
+            notes.append(f'line {index + 1} in {len(bands)} bands, y ' + ', '.join(f'{minY:.2f} to {maxY:.2f}' for (minY, maxY) in bands) + ' mm')
     (insertMinX, insertMinY, insertMaxX, insertMaxY) = insert
     off = [
         box for box in letters
@@ -294,3 +314,14 @@ def insertTextProblems(insert: tuple[float, float, float, float], letters: list[
         (minX, minY, maxX, maxY) = (min(box[0] for box in off), min(box[1] for box in off), max(box[2] for box in off), max(box[3] for box in off))
         notes.append(f'{len(off)} text bodies off the insert, x {minX:.2f} to {maxX:.2f} mm, y {minY:.2f} to {maxY:.2f} mm')
     return notes
+
+def addedLetterNames(insertName: str, corners: list[tuple[float, float]]) -> list[str]:
+    """
+    Names for the letter bodies a text edit added, by their (min x, min y), numbered in reading order. Fusion names
+    them after the user's language and its body count ("Körper12"), the snapshot pairs bodies by name
+    """
+    order = sorted(range(len(corners)), key=lambda index: (round(corners[index][0], 3), round(corners[index][1], 3)))
+    names = [''] * len(corners)
+    for (number, index) in enumerate(order):
+        names[index] = f'{insertName} text +{number + 1}'
+    return names

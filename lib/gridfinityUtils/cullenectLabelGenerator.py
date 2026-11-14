@@ -96,7 +96,7 @@ def _fixSketch(sketch: adsk.fusion.Sketch):
     their own. Deferred, an imported symbol has hundreds of points and the sketch would be solved again for each"""
     with sketchUtils.deferSketchCompute(sketch):
         for curve in list(sketch.sketchCurves):
-            # a text's baseline is fixed already, fixing it again could change the text on it, see _texts
+            # a text's baseline was fixed before its text went on it and is left as it is, see _texts
             if not curve.isFixed:
                 curve.isFixed = True
         origin = sketch.originPoint
