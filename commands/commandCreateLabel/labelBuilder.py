@@ -4,7 +4,7 @@ import adsk.core, adsk.fusion
 from ...lib import tagUtils
 from ...lib import placementUtils
 from ...lib.gridfinityUtils import cullenectLabelGenerator, cullenectLabelLayout
-from ...lib.gridfinityUtils import designIntent
+from ...lib.gridfinityUtils import commonUtils, designIntent
 from ...lib.gridfinityUtils import parameterUtils
 from ...lib.gridfinityUtils import sharedParameters
 from ...lib.gridfinityUtils.dim import Dim
@@ -91,10 +91,39 @@ def buildLabel(
     name = labelName(state)
 
     plan = designIntent.componentPlan(des.designIntent, mayChangeDocument)
-    if plan.switchToHybrid:
-        des.designIntent = adsk.fusion.DesignIntentTypes.HybridDesignIntentType
+    if not plan.switchToHybrid:
+        return _buildLabel(des, state, settings, root, name, width, height, plan.isComponent)
+    occurrenceCount = root.occurrences.count
+    des.designIntent = adsk.fusion.DesignIntentTypes.HybridDesignIntentType
+    try:
+        return _buildLabel(des, state, settings, root, name, width, height, True)
+    except Exception:
+        # a part design left hybrid without an insert couldn't go back to a part, its new component is taken out and
+        # the document switched back, the error goes on
+        _undoHybridSwitch(des, occurrenceCount)
+        raise
+
+def _undoHybridSwitch(des: adsk.fusion.Design, occurrenceCount: int):
+    root = des.rootComponent
+    try:
+        while root.occurrences.count > occurrenceCount:
+            root.occurrences.item(root.occurrences.count - 1).deleteMe()
+        des.designIntent = adsk.fusion.DesignIntentTypes.PartDesignIntentType
+    except Exception as err:
+        commonUtils.debugLog(f'{LOG_PREFIX} document stays hybrid after a failed insert, {err}')
+
+def _buildLabel(
+    des: adsk.fusion.Design,
+    state: InputState,
+    settings: list[dict],
+    root: adsk.fusion.Component,
+    name: str,
+    width: float,
+    height: float,
+    isComponent: bool,
+) -> list[adsk.fusion.BRepBody]:
     originalTimelineCount = des.timeline.count
-    if plan.isComponent:
+    if isComponent:
         occurrence = adsk.fusion.Occurrences.cast(root.occurrences).addNewComponent(adsk.core.Matrix3D.create())
         occurrence.component.name = name
         occurrence.activate()

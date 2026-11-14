@@ -65,6 +65,8 @@ class TestCase:
     # shared parameters set after building, in cm, the result has to be the same as built with them, see editedState
     parameters: dict[str, float] = dataclasses.field(default_factory=dict)
     designIntent: str = DESIGN_INTENT_HYBRID
+    # the design intent the document has to have once built, None for any, a generator may switch it
+    designIntentAfter: str | None = None
 
 def stateFromJson(generator: str, stateClass: type, settings: dict) -> object:
     """Every field of the state has to be there and nothing else, so a case never falls back to a default"""
@@ -124,9 +126,12 @@ def loadCase(path: str, stateClasses: dict[str, type]) -> TestCase:
         designIntent = data.get('designIntent', DESIGN_INTENT_HYBRID)
         if designIntent not in DESIGN_INTENTS:
             raise TestCaseError(f'unknown design intent {designIntent!r}')
+        designIntentAfter = data.get('designIntentAfter')
+        if designIntentAfter is not None and designIntentAfter not in DESIGN_INTENTS:
+            raise TestCaseError(f'unknown design intent after building {designIntentAfter!r}')
     except (OSError, ValueError, KeyError, TypeError, AttributeError, TestCaseError) as err:
         raise TestCaseError(f'case {name}: {err}') from err
-    return TestCase(name, data.get('description', ''), generator, state, parameters, designIntent)
+    return TestCase(name, data.get('description', ''), generator, state, parameters, designIntent, designIntentAfter)
 
 def loadCases(folder: str, stateClasses: dict[str, type]) -> list[TestCase]:
     """Cases of the folder by name"""
@@ -150,6 +155,8 @@ def caseJson(case: TestCase) -> str:
     }
     if case.designIntent != DESIGN_INTENT_HYBRID:
         data['designIntent'] = case.designIntent
+    if case.designIntentAfter is not None:
+        data['designIntentAfter'] = case.designIntentAfter
     data['settings'] = stateToJson(case.generator, case.state)
     if case.parameters:
         data['parameters'] = parametersToJson(case)
