@@ -101,3 +101,12 @@ def test_label_color_applies_only_to_a_label_there_is():
     assert colors.labelColorFor('#D02020', True, False) == '#D02020'
     assert colors.labelColorFor('#D02020', False, False) == ''
     assert colors.labelColorFor('#D02020', True, True) == ''
+
+
+def test_a_bin_has_a_label_as_the_builder_makes_one():
+    # review round 10: a shaped bin locks the label inputs, a remembered invalid color must not lock OK there
+    assert colors.binHasLabel(True, True, False, False) is True
+    assert colors.binHasLabel(True, True, True, False) is False
+    assert colors.binHasLabel(True, True, False, True) is False
+    assert colors.binHasLabel(False, True, False, False) is False
+    assert colors.binHasLabel(True, False, False, False) is False

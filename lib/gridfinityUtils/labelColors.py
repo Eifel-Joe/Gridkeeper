@@ -104,3 +104,9 @@ def labelColorFor(color: str, hasLabel: bool, isCullenect: bool) -> str:
     """The color a bin's state keeps: none where there is no label to color, without a tab or with a Cullenect socket,
     so a remembered color doesn't go into the bin's settings"""
     return color if hasLabel and not isCullenect else ''
+
+
+def binHasLabel(generateBody: bool, hasTab: bool, isShaped: bool, isSolid: bool) -> bool:
+    """Whether a bin gets a label tab label, as binBuilder makes one: a hollow or shelled bin body with a tab, not
+    shaped. The dialog locks the label inputs otherwise, so their color mustn't lock OK there"""
+    return bool(generateBody and hasTab and not isShaped and not isSolid)
