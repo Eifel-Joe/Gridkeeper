@@ -49,9 +49,10 @@ und passt auch in Bins/Einleger aus dem originalen Cullenect-Ökosystem.
 - **Upstream-tauglich bauen:** Code-Stil, Struktur, Testart und Namensgebung des Projekts
   übernehmen, damit ein späterer PR an Le0Michine möglich bleibt. Diese Spec liegt in `docs/specs/`
   als eigener Commit, der bei einem PR weggelassen werden kann.
-- **Fusion-Dokumenttyp:** Der Generator braucht eine Hybrid-/Baugruppen-Konstruktion (in einer
-  Bauteil-Konstruktion schlägt das Anlegen von Komponenten fehl). Der Label-Befehl verhält sich wie
-  Bin/Baseplate.
+- **Fusion-Dokumenttyp:** Ab Generator 2.x funktioniert auch eine Bauteil-Konstruktion (Jörg, 14.11.:
+  „Mit der aktuellen Version des Generator muss man nichts mehr umstellen auf Hybrid. Es geht jetzt
+  auch in Bauteilkonstruktion.“); nur die alte App-Store-Version 1.2.7 brauchte Hybrid. Der
+  Label-Befehl verhält sich wie Bin/Baseplate.
 - **Installation zum Testen:** Fusion lädt den Fork per Shift+S → „+“ direkt aus
   `D:\Entwicklung\Gridfinity\FusionGridfinityGenerator`; die bisher geladene Kopie
   (`D:\Entwicklung\Gridfinity\GridfinityGenerator`, v2.2-Release) wird dafür deaktiviert, sonst
