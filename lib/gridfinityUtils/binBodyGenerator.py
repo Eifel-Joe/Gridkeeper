@@ -13,6 +13,7 @@ from .binBodyTabGeneratorInput import BinBodyTabGeneratorInput
 from .binBodyTabGenerator import createGridfinityBinBodyTab, createTabHollowCuts, TabCavity, TabWallOpenings, TabHollowCuts
 from .labelGenerator import BinLabelDefinition, BinLabelInput, createLabel, LABEL_STYLE_EMBOSSED, LABEL_STYLE_ENGRAVED, LABEL_STYLE_CULLENECT
 from . import cullenect
+from .cullenectSocketGenerator import createCullenectSocket
 from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput
 from .binBodyLipGenerator import createGridfinityBinBodyLip
 from .dim import Dim, valueInput
@@ -302,9 +303,11 @@ def createGridfinityBinBody(
         )
 
     if not input.isSolid and input.hasTab:
-        # every compartment gets its own label, also where the tabs come from a pattern
+        # every compartment gets its own label, also where the tabs come from a pattern. A Cullenect socket goes into
+        # every tab, the inserts carry the labels
+        isCullenect = input.labelStyle == LABEL_STYLE_CULLENECT
         for compartmentIndex, compartment in enumerate(input.compartments):
-            if compartment.label is None or compartment.label.isEmpty:
+            if not isCullenect and (compartment.label is None or compartment.label.isEmpty):
                 continue
             (compartmentX, compartmentY, compartmentWidth, compartmentLength) = compartmentPlacement(compartment)
             (tabOriginX, tabOriginY, tabLength) = tabPlacement(compartmentX, compartmentY, compartmentLength)
@@ -313,6 +316,22 @@ def createGridfinityBinBody(
             tabMaxX = tabOriginX + tabLength
             compartmentMaxX = compartmentX + compartmentWidth
             labelMaxX = tabMaxX if tabMaxX.value <= compartmentMaxX.value else compartmentMaxX
+            labelName = 'Label' if len(input.compartments) == 1 else f'Compartment {compartmentIndex + 1} label'
+            if isCullenect:
+                createCullenectSocket(
+                    labelMinX,
+                    labelMaxX,
+                    tabOriginY,
+                    input.tabWidth,
+                    binBodyTotalHeight - Dim.length(tabTopClearance(input.labelStyle)),
+                    input.baseWidth,
+                    input.cullenectSocketOffset,
+                    input.tabOverhangAngle,
+                    binBody,
+                    targetComponent,
+                    name=labelName,
+                )
+                continue
             createTabLabel(
                 compartment.label,
                 input.labelStyle,
@@ -325,7 +344,7 @@ def createGridfinityBinBody(
                 binBody,
                 targetComponent,
                 input.tabTopAngle,
-                name='Label' if len(input.compartments) == 1 else f'Compartment {compartmentIndex + 1} label',
+                name=labelName,
             )
 
     return binBody

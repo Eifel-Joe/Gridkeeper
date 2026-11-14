@@ -77,6 +77,71 @@ def createRectangle(
             rectangleLines.item(1).endSketchPoint.geometry), length)
         return rectangleLines
 
+def createCenteredRectangle(
+    width: Dim | float,
+    length: Dim | float,
+    center: adsk.core.Point3D,
+    sketch: adsk.fusion.Sketch,
+) -> tuple[adsk.fusion.SketchLineList, adsk.fusion.SketchPoint]:
+    """Constrained rectangle around a center point dimensioned from the sketch origin, a change of its size keeps the
+    center. The center has to lie right of and above the origin, sketch distance dimensions are unsigned"""
+    def applyDim(dimension: adsk.fusion.SketchDimension, value: Dim | float):
+        applyTo(dimension.parameter, value)
+
+    with deferSketchCompute(sketch):
+        constraints: adsk.fusion.GeometricConstraints = sketch.geometricConstraints
+        dimensions: adsk.fusion.SketchDimensions = sketch.sketchDimensions
+        lines: adsk.fusion.SketchLines = sketch.sketchCurves.sketchLines
+        halfWidth = valueOf(width) / 2
+        halfLength = valueOf(length) / 2
+        rectangleLines = lines.addTwoPointRectangle(
+            adsk.core.Point3D.create(center.x - halfWidth, center.y - halfLength, 0),
+            adsk.core.Point3D.create(center.x + halfWidth, center.y + halfLength, 0),
+        )
+        for line in rectangleLines:
+            if isHorizontal(line):
+                constraints.addHorizontal(line)
+            else:
+                constraints.addVertical(line)
+        # the center is the middle of a construction diagonal through two opposite corners
+        corners = [line.startSketchPoint for line in rectangleLines]
+        diagonal = lines.addByTwoPoints(
+            min(corners, key=lambda point: point.geometry.x + point.geometry.y),
+            max(corners, key=lambda point: point.geometry.x + point.geometry.y),
+        )
+        diagonal.isConstruction = True
+        centerPoint = sketch.sketchPoints.add(adsk.core.Point3D.create(center.x, center.y, 0))
+        constraints.addMidPoint(centerPoint, diagonal)
+        horizontalLine = rectangleLines.item(0) if isHorizontal(rectangleLines.item(0)) else rectangleLines.item(1)
+        verticalLine = rectangleLines.item(1) if isHorizontal(rectangleLines.item(0)) else rectangleLines.item(0)
+        applyDim(dimensions.addDistanceDimension(
+            horizontalLine.startSketchPoint,
+            horizontalLine.endSketchPoint,
+            adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation,
+            horizontalLine.endSketchPoint.geometry,
+        ), width)
+        applyDim(dimensions.addDistanceDimension(
+            verticalLine.startSketchPoint,
+            verticalLine.endSketchPoint,
+            adsk.fusion.DimensionOrientations.VerticalDimensionOrientation,
+            verticalLine.endSketchPoint.geometry,
+        ), length)
+        dimensions.addDistanceDimension(
+            sketch.originPoint,
+            centerPoint,
+            adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation,
+            centerPoint.geometry,
+            True,
+        )
+        dimensions.addDistanceDimension(
+            sketch.originPoint,
+            centerPoint,
+            adsk.fusion.DimensionOrientations.VerticalDimensionOrientation,
+            centerPoint.geometry,
+            True,
+        )
+        return (rectangleLines, centerPoint)
+
 def filterCirclesByRadius(
     radius: float,
     tolerance: float,

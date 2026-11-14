@@ -23,7 +23,9 @@ from ...lib.gridfinityUtils import wallCreases
 from ...lib.gridfinityUtils.wallCreaseGenerator import createCreaseFolds
 from ...lib.gridfinityUtils.binBodyGeneratorInput import BinBodyGeneratorInput, BinBodyCompartmentDefinition
 from ...lib.gridfinityUtils.binBodyTabGeneratorInput import BinBodyTabGeneratorInput
-from ...lib.gridfinityUtils.binBodyTabGenerator import createGridfinityBinBodyTab, createTabHollowCuts, TabCavity, TabWallOpenings
+from ...lib.gridfinityUtils.binBodyTabGenerator import createGridfinityBinBodyTab, createTabHollowCuts, TabCavity, TabWallOpenings, tabFilletAllowance
+from ...lib.gridfinityUtils.cullenectSocketGenerator import createCullenectSocket
+from ...lib.gridfinityUtils import cullenect
 from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
 from .inputState import InputState
 
@@ -279,6 +281,16 @@ def buildBin(
     binBodyInput.labelStyle = state.labelStyle
     binBodyInput.isLabelBold = state.isLabelBold
     binBodyInput.cullenectSocketOffset = state.cullenectSocketOffset
+    isCullenect = state.labelStyle == labelGenerator.LABEL_STYLE_CULLENECT
+    if isCullenect:
+        # the socket needs a flat tab top wide enough for it, a wider tab of the user stays
+        binBodyInput.tabTopAngle = 0
+        binBodyInput.tabWidth = cullenect.effectiveTabWidth(
+            state.tabWidth,
+            state.tabOverhangAngle,
+            tabFilletAllowance(state.tabOverhangAngle, 0),
+            state.cullenectSocketOffset,
+        )
     binBodyInput.compartmentsByX = compartmentsX
     binBodyInput.compartmentsByY = compartmentsY
 
@@ -305,7 +317,8 @@ def buildBin(
             'Gridfinity bin height, in height units',
         ))
         binParameters.append(['Bin height (u)', binBodyInput.binHeight.expression])
-        if binBodyInput.hasTab:
+        # Cullenect tabs get a socket, the text goes on the inserts
+        if binBodyInput.hasTab and not isCullenect:
             for compartmentIndex, compartment in enumerate(binBodyInput.compartments):
                 (compartmentText, compartmentIcon) = compartmentLabels[compartmentIndex] if compartmentIndex < len(compartmentLabels) else ('', compartmentLayout.DEFAULT_ICON)
                 compartment.label = createLabelDefinition(
@@ -504,7 +517,21 @@ def buildBin(
             if len(tabHollowCuts) > 0:
                 combineUtils.cutBody(binBody, commonUtils.objectCollectionFromList(tabHollowCuts), gridfinityBinComponent, name='Label tab hollow cut')
 
-            shelledLabel = createLabelDefinition(des, binParameterPrefix, BIN_LABEL_PARAMETER, state.labelText, state.labelIcon)
+            if isCullenect:
+                createCullenectSocket(
+                    tabOriginX,
+                    tabOriginX + compartmentTabInput.length,
+                    tabOriginY,
+                    binBodyInput.tabWidth,
+                    tabOriginZ - Dim.length(tabTopClearance(binBodyInput.labelStyle)),
+                    binBodyInput.baseWidth,
+                    binBodyInput.cullenectSocketOffset,
+                    binBodyInput.tabOverhangAngle,
+                    binBody,
+                    gridfinityBinComponent,
+                    name='Label',
+                )
+            shelledLabel = None if isCullenect else createLabelDefinition(des, binParameterPrefix, BIN_LABEL_PARAMETER, state.labelText, state.labelIcon)
             if shelledLabel is not None and shelledLabel.textParameter is not None:
                 binParameters.append(['Label', shelledLabel.textParameter.name])
             if shelledLabel is not None:
