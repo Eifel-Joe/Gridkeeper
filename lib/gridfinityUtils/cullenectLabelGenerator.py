@@ -1,7 +1,7 @@
 import adsk.core, adsk.fusion
 
 from . import const, commonUtils, combineUtils, filletUtils, sketchUtils, cullenectLabelLayout, cullenectCatalog
-from .labelGenerator import _addText, _measureText, _iconProfiles, _importIcon
+from .labelGenerator import _measureText, _iconProfiles, _importIcon
 from .dim import Dim, valueInput
 
 # Insert for the Cullenect label system, after cullenect_base_v2 and cullenect_label_generate in Cullenect.scad by
@@ -92,21 +92,32 @@ def _roundedSlab(width: Dim, height: float, inset: float, bottom: float, thickne
 
 
 def _fixSketch(sketch: adsk.fusion.Sketch):
-    """Fixes everything drawn in the sketch where it is, imported curves and the box of a text have no constraints of
+    """Fixes everything drawn in the sketch where it is, imported curves and the baseline of a text have no constraints of
     their own. Deferred, an imported symbol has hundreds of points and the sketch would be solved again for each"""
     with sketchUtils.deferSketchCompute(sketch):
         for curve in list(sketch.sketchCurves):
-            curve.isFixed = True
+            # a text's baseline was fixed before its text went on it and is left as it is, see _texts
+            if not curve.isFixed:
+                curve.isFixed = True
         origin = sketch.originPoint
         for point in list(sketch.sketchPoints):
             if point != origin:
                 point.isFixed = True
 
 
+def _addLineText(sketch: adsk.fusion.Sketch, text: str, height: float, baseline: adsk.fusion.SketchLine, isBold: bool) -> adsk.fusion.SketchText:
+    """Text standing on the baseline from its start, on one line however long it gets, see _texts"""
+    textInput = sketch.sketchTexts.createInput2(text, height)
+    textInput.setAsAlongPath(baseline, True, adsk.core.HorizontalAlignments.LeftHorizontalAlignment, 0)
+    if isBold:
+        textInput.textStyle = adsk.fusion.TextStyles.TextStyleBold
+    return sketch.sketchTexts.add(textInput)
+
+
 def _texts(sketch: adsk.fusion.Sketch, layout: cullenectLabelLayout.LabelLayout, lines: list[str], textParameters: list, isBold: bool, withTwins: bool, timer: commonUtils.StepTimer) -> tuple[list, list]:
     """The text lines at the left, each shrunk to fit in front of the symbol, as live text driven by its text parameter
-    so it can be edited later, and with twins a second text on top of each, driven by the same parameter. The text
-    boxes are fixed; Fusion may not report a sketch with live text as fully constrained, the one exception Nutzer allowed
+    so it can be edited later, and with twins a second text on top of each, driven by the same parameter. Each line
+    stands on a fixed baseline; Fusion may not report a sketch with live text as fully constrained, the one exception Nutzer allowed
     on 14.11.2026 (p50, see the spec). Exploding the text into fixed curves kept it from changing, that was round 4.
     The twins are there for a second extrusion: Fusion refuses to extrude the same text twice in one run ("invalid
     input argument"), and cutting with the bodies of the first instead loses letters a later text adds.
@@ -117,10 +128,21 @@ def _texts(sketch: adsk.fusion.Sketch, layout: cullenectLabelLayout.LabelLayout,
     for (index, (text, lineHeight, center)) in enumerate(zip(lines, layout.lineHeights, layout.lineCenters)):
         measured = _measureText(sketch, text, lineHeight, isBold)
         textHeight = cullenectLabelLayout.fittedLineHeight(lineHeight, measured[0] if measured is not None else 0, available)
-        # the box is taller than the letters, the middle alignment puts the capitals in its middle
-        corner = adsk.core.Point3D.create(layout.textMinX, center - lineHeight * 1.5, 0)
-        diagonal = adsk.core.Point3D.create(layout.textMaxX, center + lineHeight * 1.5, 0)
-        lineTexts = [_addText(sketch, text, textHeight, corner, diagonal, isBold, False) for _ in range(2 if withTwins else 1)]
+        # Each line stands on a line of its own instead of in a box (p84, p70): Fusion breaks text in a box where it
+        # takes it for longer than the box, by the advance of the letters, wider than their outlines that were
+        # measured. the user's "Welle 6mm", fitted to exactly 34 mm, came out as two lines hanging off the insert, and a
+        # text made longer later broke the same way. Text along a line never breaks, a longer text runs on to the
+        # right, towards the symbol. Tried in Fusion 14.11.2026: one band of letters up to 170 mm long, the extrusion
+        # takes the letters a longer text adds. Its baseline goes under the middle by half the capitals' height, as
+        # the middle alignment of the box did. Rejected: a box wider to the right, it would reach over the symbol
+        start = adsk.core.Point3D.create(layout.textMinX, center - textHeight / 2, 0)
+        end = adsk.core.Point3D.create(layout.textMaxX, center - textHeight / 2, 0)
+        baseline = sketch.sketchCurves.sketchLines.addByTwoPoints(start, end)
+        baseline.isConstruction = True
+        # fixed before the text goes on it: fixing a path that carries text leaves the text invalid for an extrusion
+        # ("invalid input argument", tried in Fusion 14.11.2026), see _fixSketch
+        baseline.isFixed = True
+        lineTexts = [_addLineText(sketch, text, textHeight, baseline, isBold) for _ in range(2 if withTwins else 1)]
         if index < len(textParameters) and textParameters[index] is not None:
             for sketchText in lineTexts:
                 sketchText.textParameter.expression = textParameters[index].name
@@ -128,7 +150,7 @@ def _texts(sketch: adsk.fusion.Sketch, layout: cullenectLabelLayout.LabelLayout,
         twins += lineTexts[1:]
         timer.step(f'text line {len(text)} characters')
     _fixSketch(sketch)
-    timer.step('text box fixed')
+    timer.step('text baselines fixed')
     return (texts, twins)
 
 

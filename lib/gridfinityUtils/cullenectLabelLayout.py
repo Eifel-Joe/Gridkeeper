@@ -123,11 +123,18 @@ def layoutProblem(layout: LabelLayout) -> str | None:
     return None
 
 
+# share of the room for a line that stays free when its text is fitted (p84). The width is measured on the outlines of
+# the letters, Fusion lays a text out by their advance, wider by the side bearings: the user's "Welle 6mm" was fitted to
+# exactly 34 mm of outline and Fusion took it for longer than its box
+TEXT_WIDTH_RESERVE = 0.05
+
+
 def fittedLineHeight(lineHeight: float, measuredWidth: float, availableWidth: float) -> float:
-    """Text height for a line measured `measuredWidth` wide at `lineHeight` to fit the available width"""
+    """Text height for a line measured `measuredWidth` wide at `lineHeight` to fit the available width, keeping
+    TEXT_WIDTH_RESERVE of it free"""
     if measuredWidth <= 0 or availableWidth <= 0:
         return lineHeight
-    return lineHeight * min(1, availableWidth / measuredWidth)
+    return lineHeight * min(1, availableWidth * (1 - TEXT_WIDTH_RESERVE) / measuredWidth)
 
 
 def _mm(value: float) -> str:
