@@ -21,7 +21,7 @@
             "vertices": 350
         },
         {
-            "name": "Körper12",
+            "name": "Gridfinity label 1U Welle 6mm text +4",
             "file": "body2.smt",
             "volume": 1.142774,
             "area": 15.790601,
@@ -121,7 +121,7 @@
             "vertices": 40
         },
         {
-            "name": "Körper13",
+            "name": "Gridfinity label 1U Welle 6mm text +1",
             "file": "body7.smt",
             "volume": 1.087834,
             "area": 14.968157,
@@ -141,7 +141,7 @@
             "vertices": 34
         },
         {
-            "name": "Körper14",
+            "name": "Gridfinity label 1U Welle 6mm text +5",
             "file": "body8.smt",
             "volume": 0.933053,
             "area": 12.928135,
@@ -161,7 +161,7 @@
             "vertices": 36
         },
         {
-            "name": "Körper15",
+            "name": "Gridfinity label 1U Welle 6mm text +3",
             "file": "body9.smt",
             "volume": 0.545461,
             "area": 7.571277,
@@ -261,7 +261,7 @@
             "vertices": 56
         },
         {
-            "name": "Körper16",
+            "name": "Gridfinity label 1U Welle 6mm text +2",
             "file": "body14.smt",
             "volume": 1.35756,
             "area": 18.615732,
@@ -281,7 +281,7 @@
             "vertices": 56
         },
         {
-            "name": "Körper17",
+            "name": "Gridfinity label 1U Welle 6mm text +6",
             "file": "body15.smt",
             "volume": 1.425058,
             "area": 19.594225,
