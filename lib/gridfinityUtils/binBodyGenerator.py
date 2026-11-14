@@ -282,7 +282,7 @@ def createGridfinityBinBody(
             bodiesToSubtract.append(compartmentsTopClearance)
 
         if input.hasLip and len(input.raisedDividers) > 0:
-            bodiesToMerge.append(createRaisedDividers(
+            bodiesToMerge.extend(createRaisedDividers(
                 input.raisedDividers,
                 (compartmentsMinX, compartmentsMinY),
                 (compartmentWidthUnit + wall, compartmentLengthUnit + wall),
@@ -375,7 +375,7 @@ def createRaisedDividers(
     binBodyTotalHeight: Dim,
     lipInput: BinBodyLipGeneratorInput,
     targetComponent: adsk.fusion.Component,
-) -> adsk.fusion.BRepBody:
+) -> list[adsk.fusion.BRepBody]:
     """
     Divider walls on grid lines from below the compartments top clearance up to the top of the lip, cut by the feet of
     a bin stacked on top like a notched lip, so they run out in the lip's profile. A wall a little off its grid line,
@@ -407,12 +407,24 @@ def createRaisedDividers(
             name=f'Raised divider {index + 1}',
         )
         boxes.append(box.bodies.item(0))
-    dividers = boxes[0]
-    dividers.name = 'Raised dividers'
-    if len(boxes) > 1:
-        combineUtils.joinBodies(dividers, commonUtils.objectCollectionFromList(boxes[1:]), targetComponent, name='Raised dividers join')
+    # Each box is cut on its own and every body is returned, the bin joins them all. Root cause of p82: the boxes were
+    # joined into one body first, but Fusion's join leaves bodies that don't touch apart, so parallel walls came back
+    # as one body, the others stayed loose in the design (two boxes 3 cm apart, joined: two bodies, shown in Fusion).
+    # Each box stands on a compartment wall and so touches the bin. The cutters are kept until the last cut takes them
     cutters = createStackedFootCutters(lipInput, targetComponent, name='Raised divider foot cutout')
-    combineUtils.cutBody(dividers, commonUtils.objectCollectionFromList(cutters), targetComponent, name='Raised dividers foot cut')
+    dividers: list[adsk.fusion.BRepBody] = []
+    for (index, box) in enumerate(boxes):
+        isLast = index == len(boxes) - 1
+        cut = combineUtils.cutBody(
+            box,
+            commonUtils.objectCollectionFromList(cutters),
+            targetComponent,
+            isKeepToolBodies=not isLast,
+            name=f'Raised divider {index + 1} foot cut',
+        )
+        # a cut keeping its tools lists them among its bodies too (shown in Fusion), the last cut takes them, so a
+        # join of them later would lose its tools
+        dividers.extend(body for body in cut.bodies if all(body != cutter for cutter in cutters))
     return dividers
 
 def tabTopClearance(labelStyle: str) -> float:
