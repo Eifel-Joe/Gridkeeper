@@ -1,6 +1,6 @@
 # Trennwände bis oben (auf Rasterlinien) Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Haken im Bin-Dialog, mit dem Trennwände, die genau auf einer Rasterlinie liegen, bis zur Oberkante gehen und dort im Profil des Stapelrands auslaufen (p17).
 
@@ -47,11 +47,11 @@ Einheiten ist um bis zu (Wand/2 + Spiel) versetzt).
   - `gridLineSegments(pockets: list[dict], columns: int, rows: int, binWidth: float, binLength: float) -> list[DividerSegment]` — pockets wie `compartmentLayout.normalizePockets` (dicts mit x, y, width, length), binWidth/binLength in ganzen Rastereinheiten (darf auf .5 enden). Linie k ist Rasterlinie, wenn `k * binWidth / columns` ganzzahlig ist (Toleranz 1e-6). Abschnitt = maximaler Lauf von Zellen, an denen links/rechts (bzw. vorn/hinten) verschiedene Pockets liegen. Sortiert: erst `'x'`, dann `'y'`, dann line, start.
   - `segmentsForBin(isEnabled: bool, hasLip: bool, isHollow: bool, isShaped: bool, pockets, columns, rows, binWidth, binLength) -> list[DividerSegment]` — leere Liste, wenn eine Bedingung fehlt.
 
-- [ ] Step 1: Tests schreiben: `test_uniform_4x2_rises_everywhere` (pockets 4×2 Einzelzellen, binWidth 4, binLength 2 → x-Linien 1,2,3 je 0–2, y-Linie 1 von 0–4), `test_three_on_four_units_has_none`, `test_half_cells_rise_only_on_whole_lines` (8×2 Fächer auf 4×2 → x-Linien 2,4,6), `test_merged_cells_have_no_divider_on_their_inner_line` (des Nutzers 4x2: vorn 4×1, hinten 2×1 + 1×1 + 1×1 → `x` Linie 2 [1,2), Linie 3 [1,2), `y` Linie 1 [0,4)), `test_half_unit_bin_width` (5 Fächer, binWidth 2.5 → x-Linien 2, 4), `test_single_compartment_has_none`, `test_disabled_without_lip_or_hollow_body`.
-- [ ] Step 2: `python -m pytest tests/test_raised_dividers.py -q` → FAIL (Modul fehlt).
-- [ ] Step 3: Implementieren.
-- [ ] Step 4: Test → PASS; volle Suite grün.
-- [ ] Step 5: Commit.
+- [x] Step 1: Tests schreiben: `test_uniform_4x2_rises_everywhere` (pockets 4×2 Einzelzellen, binWidth 4, binLength 2 → x-Linien 1,2,3 je 0–2, y-Linie 1 von 0–4), `test_three_on_four_units_has_none`, `test_half_cells_rise_only_on_whole_lines` (8×2 Fächer auf 4×2 → x-Linien 2,4,6), `test_merged_cells_have_no_divider_on_their_inner_line` (des Nutzers 4x2: vorn 4×1, hinten 2×1 + 1×1 + 1×1 → `x` Linie 2 [1,2), Linie 3 [1,2), `y` Linie 1 [0,4)), `test_half_unit_bin_width` (5 Fächer, binWidth 2.5 → x-Linien 2, 4), `test_single_compartment_has_none`, `test_disabled_without_lip_or_hollow_body`.
+- [x] Step 2: `python -m pytest tests/test_raised_dividers.py -q` → FAIL (Modul fehlt).
+- [x] Step 3: Implementieren.
+- [x] Step 4: Test → PASS; volle Suite grün.
+- [x] Step 5: Commit.
 
 ### Task 2: Option durchreichen (InputState, Fälle, Dialog)
 
@@ -63,11 +63,11 @@ Einheiten ist um bis zu (Wand/2 + Spiel) versetzt).
 - Modify: `commands/commandCreateBin/binBuilder.py` (`binBodyInput.raisedDividers = raisedDividers.segmentsForBin(...)` mit den normalisierten pockets, `compartmentsX/Y`, `state.binWidth/binLength`)
 - Test: `tests/test_test_cases.py`
 
-- [ ] Step 1: Test `test_dividers_to_top_defaults_off_in_every_bin_case` (jeder Bin-Fall außer `*_dividers_to_top*` hat `hasDividersToTop == False`).
-- [ ] Step 2: → FAIL (Feld unbekannt).
-- [ ] Step 3: Feld, Fälle, Dialog, Builder.
-- [ ] Step 4: volle Suite grün.
-- [ ] Step 5: Commit.
+- [x] Step 1: Test `test_dividers_to_top_defaults_off_in_every_bin_case` (jeder Bin-Fall außer `*_dividers_to_top*` hat `hasDividersToTop == False`).
+- [x] Step 2: → FAIL (Feld unbekannt).
+- [x] Step 3: Feld, Fälle, Dialog, Builder.
+- [x] Step 4: volle Suite grün.
+- [x] Step 5: Commit.
 
 ### Task 3: Geometrie der hochgezogenen Trennwände
 
@@ -81,24 +81,24 @@ Geometrie je Abschnitt (Dims aus `compartmentWidthUnit`, `compartmentLengthUnit`
 - z: von `binBodyTotalHeight - BIN_TAB_TOP_CLEARANCE` bis `binBodyTotalHeight + BIN_LIP_EXTRA_HEIGHT - BIN_LIP_TOP_RECESS_HEIGHT`.
 - Alle Quader per `extrudeUtils.createBoxAtPoint(..., originX=, originY=, originZ=)` (Skizzen bestimmt), zu einem Körper vereint, mit `createStackedFootCutters` geschnitten.
 
-- [ ] Step 1: Prüfkriterium vorab (kein Unit-Test möglich, Fusion-Geometrie): neuer Snapshot-Fall aus Task 4 baut fehlerfrei, Constraint-Check streng ohne Befund, Timeline gesund; Höhe der Trennwand-Spitze = Stapelrand-Oberkante; bestehender Fall `bin_4x2x3_cullenect_mixed` pass.
-- [ ] Step 2: Implementieren, volle Suite grün, Add-in neu laden, Kriterium prüfen.
-- [ ] Step 3: Commit.
+- [x] Step 1: Prüfkriterium vorab (kein Unit-Test möglich, Fusion-Geometrie): neuer Snapshot-Fall aus Task 4 baut fehlerfrei, Constraint-Check streng ohne Befund, Timeline gesund; Höhe der Trennwand-Spitze = Stapelrand-Oberkante; bestehender Fall `bin_4x2x3_cullenect_mixed` pass.
+- [x] Step 2: Implementieren, volle Suite grün, Add-in neu laden, Kriterium prüfen.
+- [x] Step 3: Commit.
 
 ### Task 4: Snapshot-Fall, Stapeltest
 
 **Files:**
 - Create: `tests/e2e/cases/bin_4x2x3_cullenect_mixed_dividers_to_top.json` (Kopie von `bin_4x2x3_cullenect_mixed` mit Haken)
-- Create: `tests/e2e/cases/bin_4x2x3_dividers_to_top_params_base_40.json` (gleich, Parameter `gfBaseWidth` → 40 mm: Wände folgen)
+- Create: `tests/e2e/cases/bin_4x2x3_dividers_to_top_3x2_params_base_40.json` (3x2 Fächer ohne Laschen, `gfBaseWidth` → 40 mm; mit Cullenect-Laschen scheitert der Parametervergleich auch ohne Haken, p60)
 - Create: `tests/e2e/snapshots/<beide>/` (aufgenommen in Fusion)
 
-- [ ] Step 1: Fälle anlegen, `python -m pytest` grün (Fälle laden).
-- [ ] Step 2: In Fusion (neues Dokument) beide Fälle laufen lassen und aufnehmen; Bestandsfälle laufen: nur p30-Fälle rot.
-- [ ] Step 3: Stapeltest: 4x2x3-Bin ohne Fächer in dasselbe Dokument, um die Bin-Höhe nach oben versetzt; Interferenz-Analyse → keine Überschneidung. Gegenprobe: Quader ungeschnitten → Interferenz vorhanden.
-- [ ] Step 4: Commit (Fälle + Snapshots + README).
+- [x] Step 1: Fälle anlegen, `python -m pytest` grün (Fälle laden).
+- [x] Step 2: In Fusion (neues Dokument) beide Fälle laufen lassen und aufnehmen; Bestandsfälle laufen: nur p30-Fälle rot.
+- [x] Step 3: Stapeltest: 4x2x3-Bin ohne Fächer in dasselbe Dokument, um die Bin-Höhe nach oben versetzt; Interferenz-Analyse → keine Überschneidung. Gegenprobe: Quader ungeschnitten → Interferenz vorhanden.
+- [x] Step 4: Commit (Fälle + Snapshots + README).
 
 ### Task 5: Abschluss
 
-- [ ] `CHANGELOG-CULLENECT.md` unter „Unreleased“, Credits.
-- [ ] Opus-Review des Branch-Diffs, Funde abarbeiten.
-- [ ] Add-in neu laden, Übergabe-Notiz, Meldung an die Hauptsitzung.
+- [x] `CHANGELOG-CULLENECT.md` unter „Unreleased“, Credits.
+- [x] Opus-Review des Branch-Diffs, Funde abarbeiten.
+- [x] Add-in neu laden, Übergabe-Notiz, Meldung an die Hauptsitzung.
