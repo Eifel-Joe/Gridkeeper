@@ -1,0 +1,84 @@
+{
+    "bodies": [
+        {
+            "name": "Gridfinity label 25 mm M3",
+            "file": "body1.smt",
+            "volume": 297.652073,
+            "area": 681.782595,
+            "bboxMin": [
+                0.0,
+                -0.0,
+                0.0
+            ],
+            "bboxMax": [
+                24.9,
+                11.0,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 288,
+            "edges": 843,
+            "vertices": 562
+        },
+        {
+            "name": "Gridfinity label 25 mm M3 text 1",
+            "file": "body2.smt",
+            "volume": 3.00996,
+            "area": 37.386623,
+            "bboxMin": [
+                1.0,
+                3.159501,
+                1.0
+            ],
+            "bboxMax": [
+                5.521348,
+                7.840501,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 15,
+            "edges": 39,
+            "vertices": 26
+        },
+        {
+            "name": "Gridfinity label 25 mm M3 text 2",
+            "file": "body3.smt",
+            "volume": 1.4821,
+            "area": 18.940143,
+            "bboxMin": [
+                6.230204,
+                3.079675,
+                1.0
+            ],
+            "bboxMax": [
+                9.340227,
+                7.859659,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 30,
+            "edges": 84,
+            "vertices": 56
+        },
+        {
+            "name": "Gridfinity label 25 mm M3 symbol 1",
+            "file": "body4.smt",
+            "volume": 17.758346,
+            "area": 191.619168,
+            "bboxMin": [
+                10.34,
+                -0.0,
+                1.0
+            ],
+            "bboxMax": [
+                24.9,
+                11.0,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 218,
+            "edges": 648,
+            "vertices": 432
+        }
+    ]
+}
