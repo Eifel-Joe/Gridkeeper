@@ -58,10 +58,12 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
 - The shape tests fail on a body left in a case's document that the generator didn't return, and a case can be built
   in a part design (`"designIntent": "part"`). Two new bin cases.
 - **Dividers up to the top, rounded corners:** where a raised divider meets an outer wall or another raised divider,
-  the corner is filleted up to the top like the compartment corners below: up the wall, round the chamfer under the
-  lip and over the lip, so the chamfer runs on round the fillet and ends with it. Before, the corner fillets stopped
-  at the old top of the dividers and the rest of the corner was sharp. Bins of any size still stack on it. New case:
-  3x2 bin with 3 compartments, scoop and a Cullenect tab.
+  the corner is rounded up to the top like the compartment corners below: the corner's own rounding carries on, with
+  the same radius and without a step, up the wall, round the chamfer under the lip and over the lip, so the chamfer
+  runs on round it and ends at the divider. Before, the corner rounding stopped at the old top of the dividers and the
+  rest of the corner was sharp. Bins of any size still stack on it. The shape tests fail on a ledge left where the
+  rounding meets the corner below. New cases: 3x2 bin with 3 compartments and a Cullenect tab, with and without a
+  scoop.
 
 ### Fixed
 
