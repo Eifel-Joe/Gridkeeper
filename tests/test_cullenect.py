@@ -106,9 +106,52 @@ def _labelGeneratorConstants():
 def test_cullenect_is_a_label_style():
     names = _labelGeneratorConstants()
     assert names["LABEL_STYLE_CULLENECT"] == "Cullenect"
+    assert cullenect.LABEL_STYLE == names["LABEL_STYLE_CULLENECT"]
     assert names["LABEL_STYLES"] == ["Outline", "Engraved", "Embossed", "Cullenect"]
 
 
 def test_hollow_cullenect_tab_keeps_a_skin_under_the_socket():
     assert cullenect.hollowTabWallThickness(0.12) == approx(0.16)
     assert cullenect.hollowTabWallThickness(0.2) == approx(0.2)
+
+
+CELL = 4.0375   # compartment grid cell of a 4x2 bin with four columns, 1.2 mm walls
+WALL = 0.12
+
+
+def test_socket_summary_lists_each_width_once():
+    # mixed 4x2 bin: one compartment over 4 cells, one over 2 and two single ones
+    widths = [CELL * 4 + WALL * 3, CELL * 2 + WALL, CELL, CELL]
+    assert cullenect.socketSummary(widths, 0, 16.8, 4.2, 0.03) == [
+        "1U: pocket 36.3 mm, insert 36 mm",
+        "2U: pocket 78.3 mm, insert 78 mm",
+        "4U: pocket 162.3 mm, insert 162 mm",
+    ]
+    # tabs one unit long give every compartment a 1U socket
+    assert cullenect.socketSummary(widths, 0, 4.2, 4.2, 0.03) == ["1U: pocket 36.3 mm, insert 36 mm"]
+
+
+def test_socket_summary_names_tabs_too_short():
+    assert cullenect.socketSummary([1.5, CELL], 0, 4.2, 4.2, 0.03) == [
+        "too short for a Cullenect pocket",
+        "1U: pocket 36.3 mm, insert 36 mm",
+    ]
+
+
+@pytest.mark.parametrize("style, enabled", [
+    ("Cullenect", {"text": False, "icon": False, "bold": False, "topAngle": False, "socketOffset": True}),
+    ("Outline", {"text": True, "icon": True, "bold": True, "topAngle": True, "socketOffset": False}),
+    ("Engraved", {"text": True, "icon": True, "bold": True, "topAngle": True, "socketOffset": False}),
+])
+def test_label_inputs_follow_the_style(style, enabled):
+    assert cullenect.labelInputsEnabled(style) == enabled
+
+
+def test_switching_back_from_cullenect_keeps_user_values():
+    # the dialog only enables and disables inputs, the values the user typed stay in the state
+    state = {"labelStyle": "Outline", "tabWidth": 1.3, "labelText": "M3", "tabTopAngle": 0.3}
+    before = dict(state)
+    for style in ("Cullenect", "Outline"):
+        state["labelStyle"] = style
+        cullenect.labelInputsEnabled(style)
+    assert {key: value for key, value in state.items() if key != "labelStyle"} == {key: value for key, value in before.items() if key != "labelStyle"}

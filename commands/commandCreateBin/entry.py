@@ -14,6 +14,7 @@ from ...lib.gridfinityUtils import commonUtils
 from ...lib.gridfinityUtils import const
 from ...lib.gridfinityUtils import sharedParameters
 from ...lib.gridfinityUtils import labelGenerator
+from ...lib.gridfinityUtils import cullenect
 from ...lib.gridfinityUtils import compartmentLayout
 from ...lib.gridfinityUtils import binShape
 from ...lib.gridfinityUtils import binGrid
@@ -96,6 +97,7 @@ BIN_REAL_DIMENSIONS_TABLE = "real_dimensions"
 BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH = "total_real_width"
 BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH = "total_real_length"
 BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT = "total_real_height"
+BIN_REAL_DIMENSIONS_TABLE_CULLENECT = "cullenect_sockets"
 BIN_WALL_THICKNESS_INPUT_ID = 'bin_wall_thickness'
 BIN_GENERATE_BASE_INPUT_ID = 'bin_generate_base'
 BIN_GENERATE_BODY_INPUT_ID = 'bin_generate_body'
@@ -120,6 +122,7 @@ BIN_TAB_LABEL_TEXT_INPUT_ID = 'bin_tab_label_text'
 BIN_TAB_LABEL_ICON_INPUT_ID = 'bin_tab_label_icon'
 BIN_TAB_LABEL_STYLE_INPUT_ID = 'bin_tab_label_style'
 BIN_TAB_LABEL_BOLD_INPUT_ID = 'bin_tab_label_bold'
+BIN_TAB_CULLENECT_OFFSET_INPUT_ID = 'bin_tab_cullenect_offset'
 BIN_WITH_LIP_INPUT_ID = 'with_lip'
 BIN_WITH_LIP_NOTCHES_INPUT_ID = 'with_lip_notches'
 # long walls folded in to stiffen them, see wallCreases
@@ -187,6 +190,7 @@ def refreshUi():
     normalizeShapeCells()
     onChangeValidate()
     normalizeCompartmentPockets()
+    updateCullenectSockets()
     refreshCompartmentsDrawing()
     refreshShapeDrawing()
 
@@ -247,6 +251,7 @@ def initDefaultUiState():
     commandUIState.initValue(BIN_TAB_LABEL_ICON_INPUT_ID, labelGenerator.LABEL_ICON_NONE, adsk.core.DropDownCommandInput.classType())
     commandUIState.initValue(BIN_TAB_LABEL_STYLE_INPUT_ID, labelGenerator.LABEL_STYLE_OUTLINE, adsk.core.DropDownCommandInput.classType())
     commandUIState.initValue(BIN_TAB_LABEL_BOLD_INPUT_ID, True, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_TAB_CULLENECT_OFFSET_INPUT_ID, const.CULLENECT_SOCKET_OFFSET, adsk.core.ValueCommandInput.classType())
 
     commandUIState.initValue(BIN_GENERATE_BASE_INPUT_ID, True, adsk.core.BoolValueCommandInput.classType())
     commandUIState.initValue(BIN_JOINT_ORIGINS_INPUT_ID, False, adsk.core.BoolValueCommandInput.classType())
@@ -368,6 +373,12 @@ def render_actual_bin_dimensions_table(inputs: adsk.core.CommandInputs):
     actualDimensionsTable.addCommandInput(totalWidth, 0, 0)
     actualDimensionsTable.addCommandInput(totalLength, 0, 1)
     actualDimensionsTable.addCommandInput(totalHeight, 0, 2)
+    cullenectSockets = actualDimensionsTable.commandInputs.addStringValueInput(BIN_REAL_DIMENSIONS_TABLE_CULLENECT, "", "")
+    cullenectSockets.isReadOnly = True
+    actualDimensionsTableUiState.registerCommandInput(cullenectSockets)
+    actualDimensionsTableUiState.initValue(cullenectSockets.id, "", cullenectSockets.objectType)
+    # the Cullenect sockets of the bin across the whole row, see updateCullenectSockets
+    actualDimensionsTable.addCommandInput(cullenectSockets, 1, 0, 0, 2)
     actualDimensionsTable.tooltip = 'Actual bin dimensions'
     actualDimensionsTable.tablePresentationStyle = adsk.core.TablePresentationStyles.transparentBackgroundTablePresentationStyle
     actualDimensionsTable.hasGrid = False
@@ -402,6 +413,52 @@ def update_actual_bin_dimensions():
         actualDimensionsTableUiState.getInput(BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH).tooltip = f'Total bin length: {totalLengthValue}mm'
         actualDimensionsTableUiState.updateValue(BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT, f'Height: {totalHeightValue}mm')
         actualDimensionsTableUiState.getInput(BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT).tooltip = f'Total bin height: {totalHeightValue}mm'
+    except:
+        showErrorInMessageBox()
+
+def cullenectSockets() -> list[str]:
+    """Socket and insert width of each Cullenect socket the bin gets, the same way binBuilder lays out the tabs"""
+    baseWidth: float = commandUIState.getState(BIN_BASE_WIDTH_UNIT_INPUT_ID)
+    binWidth: float = commandUIState.getState(BIN_WIDTH_INPUT_ID)
+    wallThickness: float = commandUIState.getState(BIN_WALL_THICKNESS_INPUT_ID)
+    xyClearance: float = commandUIState.getState(BIN_XY_CLEARANCE_INPUT_ID)
+    tabLengthUnits: float = commandUIState.getState(BIN_TAB_LENGTH_INPUT_ID)
+    socketOffset: float = commandUIState.getState(BIN_TAB_CULLENECT_OFFSET_INPUT_ID)
+    tabLength = baseWidth * max(0, min(tabLengthUnits, binWidth))
+    if commandUIState.getState(BIN_TYPE_DROPDOWN_ID) == BIN_TYPE_SHELLED:
+        # one tab along the back wall inside the shell
+        interiorWidth = baseWidth * binWidth - (wallThickness + xyClearance) * 2
+        return cullenect.socketSummary([interiorWidth], 0, tabLength - (wallThickness + xyClearance) * 2, baseWidth, socketOffset)
+    pockets = compartmentLayout.normalizePockets(
+        compartmentPockets if commandUIState.getState(BIN_COMPARTMENTS_SHOW_LAYOUT_ID) and len(creaseLayout()) == 0 else [],
+        commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID),
+        commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID),
+    )
+    cellWidth = compartmentCellSize()[0] / 10
+    widths = [cellWidth * item['width'] + wallThickness * (item['width'] - 1) for item in pockets]
+    tabStart = baseWidth * max(0, min(commandUIState.getState(BIN_TAB_POSITION_INPUT_ID), binWidth - tabLengthUnits))
+    return cullenect.socketSummary(widths, tabStart, tabLength, baseWidth, socketOffset)
+
+def hasCullenectSockets() -> bool:
+    return (
+        commandUIState.getState(BIN_TAB_LABEL_STYLE_INPUT_ID) == labelGenerator.LABEL_STYLE_CULLENECT
+        and commandUIState.getState(BIN_HAS_TAB_INPUT_ID)
+        and commandUIState.getState(BIN_GENERATE_BODY_INPUT_ID)
+        and commandUIState.getState(BIN_TYPE_DROPDOWN_ID) != BIN_TYPE_SOLID
+        and not isShaped()
+    )
+
+def updateCullenectSockets():
+    """Second row of the dimensions table, which inserts fit the sockets"""
+    try:
+        text = f'Cullenect: {"; ".join(cullenectSockets())}' if hasCullenectSockets() else ''
+        socketsInput = actualDimensionsTableUiState.getInput(BIN_REAL_DIMENSIONS_TABLE_CULLENECT)
+        actualDimensionsTableUiState.updateValue(BIN_REAL_DIMENSIONS_TABLE_CULLENECT, text)
+        socketsInput.tooltip = 'Socket width of the label tabs and the width of the Cullenect insert that fits them'
+        socketsInput.isVisible = len(text) > 0
+        table = socketsInput.parentCommandInput
+        if isinstance(table, adsk.core.TableCommandInput):
+            table.maximumVisibleRows = 2 if len(text) > 0 else 1
     except:
         showErrorInMessageBox()
 
@@ -605,6 +662,8 @@ def is_all_input_valid(inputs: adsk.core.CommandInputs):
             result = result and binTabAngle.value >= math.radians(30) and binTabAngle.value <= math.radians(65)
             binTabTopAngle: adsk.core.ValueCommandInput = inputs.itemById(BIN_TAB_TOP_ANGLE_INPUT_ID)
             result = result and binTabTopAngle.value >= 0 and binTabTopAngle.value <= math.radians(45)
+            socketOffset: adsk.core.ValueCommandInput = inputs.itemById(BIN_TAB_CULLENECT_OFFSET_INPUT_ID)
+            result = result and socketOffset.value >= 0 and socketOffset.value <= 0.1
 
     return result
 
@@ -785,12 +844,19 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     addIconItems(labelIconInput, [labelGenerator.LABEL_ICON_NONE], commandUIState.getState(BIN_TAB_LABEL_ICON_INPUT_ID))
     commandUIState.registerCommandInput(labelIconInput)
     labelStyleInput = binTabFeaturesGroup.children.addDropDownCommandInput(BIN_TAB_LABEL_STYLE_INPUT_ID, 'Label style', adsk.core.DropDownStyles.TextListDropDownStyle)
-    labelStyleInput.tooltip = 'Outline splits the tab face along the label so a slicer can color it, engraved cuts it in, embossed raises it from a lowered tab'
+    labelStyleInput.tooltip = 'Outline splits the tab face along the label so a slicer can color it, engraved cuts it in, embossed raises it from a lowered tab. Cullenect cuts a socket for exchangeable Cullenect label inserts (CullenJWebb) instead, the tab is widened to at least 14 mm and kept flat'
     for style in labelGenerator.LABEL_STYLES:
         labelStyleInput.listItems.add(style, style == commandUIState.getState(BIN_TAB_LABEL_STYLE_INPUT_ID))
     commandUIState.registerCommandInput(labelStyleInput)
     labelBoldInput = binTabFeaturesGroup.children.addBoolValueInput(BIN_TAB_LABEL_BOLD_INPUT_ID, 'Bold label text', True, '', commandUIState.getState(BIN_TAB_LABEL_BOLD_INPUT_ID))
     commandUIState.registerCommandInput(labelBoldInput)
+    cullenectOffsetInput = binTabFeaturesGroup.children.addValueInput(BIN_TAB_CULLENECT_OFFSET_INPUT_ID, 'Socket play (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_TAB_CULLENECT_OFFSET_INPUT_ID)))
+    cullenectOffsetInput.tooltip = 'How much larger the Cullenect socket is than the insert, in width and height. 0.3 mm like Cullenect, the inserts themselves are made to size'
+    cullenectOffsetInput.minimumValue = 0
+    cullenectOffsetInput.isMinimumInclusive = True
+    cullenectOffsetInput.maximumValue = 0.1
+    cullenectOffsetInput.isMaximumInclusive = True
+    commandUIState.registerCommandInput(cullenectOffsetInput)
     for input in binTabFeaturesGroup.children:
         if not input.id == BIN_HAS_TAB_INPUT_ID:
             input.isEnabled = commandUIState.getState(BIN_HAS_TAB_INPUT_ID)
@@ -1006,6 +1072,18 @@ def onChangeValidate():
     for input in commandUIState.getInput(BIN_TAB_FEATURES_GROUP_ID).children:
         if not input.id == BIN_HAS_TAB_INPUT_ID:
             input.isEnabled = generateBody and generateTab and not shaped
+    # a Cullenect socket takes no text, icon or tilted top, the values stay for when the style changes back
+    labelInputs = cullenect.labelInputsEnabled(commandUIState.getState(BIN_TAB_LABEL_STYLE_INPUT_ID))
+    for (key, inputId) in [
+        ('text', BIN_TAB_LABEL_TEXT_INPUT_ID),
+        ('icon', BIN_TAB_LABEL_ICON_INPUT_ID),
+        ('bold', BIN_TAB_LABEL_BOLD_INPUT_ID),
+        ('topAngle', BIN_TAB_TOP_ANGLE_INPUT_ID),
+        ('socketOffset', BIN_TAB_CULLENECT_OFFSET_INPUT_ID),
+    ]:
+        if not labelInputs[key]:
+            commandUIState.getInput(inputId).isEnabled = False
+    commandUIState.getInput(BIN_TAB_CULLENECT_OFFSET_INPUT_ID).isVisible = labelInputs['socketOffset']
     creased = len(creaseLayout()) > 0
     if creased:
         # the folds would run into the hollow of the tab on the back wall
@@ -1063,6 +1141,9 @@ def snapshotSettings(inputs: adsk.core.CommandInputs) -> list[dict]:
     if commandUIState.getState(BIN_COMPARTMENTS_SHOW_LAYOUT_ID) and compartmentLayout.isCustomized(compartmentPockets):
         items.extend([f'Compartment {index}', compartmentLayout.describe(item)] for (index, item) in enumerate(compartmentPockets, 1))
     settings.append({'title': 'Compartments', 'items': items})
+    if hasCullenectSockets():
+        # the dimensions table isn't kept, the insert widths are needed later to make inserts that fit
+        settings.append({'title': 'Cullenect', 'items': [[f'Socket {index}', text] for (index, text) in enumerate(cullenectSockets(), 1)]})
     if isShaped():
         # the drawing as text, front row last like it's shown
         cells = set(shapeCells())
@@ -1114,7 +1195,7 @@ def getInputsState() -> InputState:
         labelIcon=commandUIState.getState(BIN_TAB_LABEL_ICON_INPUT_ID),
         labelStyle=commandUIState.getState(BIN_TAB_LABEL_STYLE_INPUT_ID),
         isLabelBold=commandUIState.getState(BIN_TAB_LABEL_BOLD_INPUT_ID),
-        cullenectSocketOffset=const.CULLENECT_SOCKET_OFFSET,
+        cullenectSocketOffset=commandUIState.getState(BIN_TAB_CULLENECT_OFFSET_INPUT_ID),
         compartmentsX=commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID),
         compartmentsY=commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID),
         showCompartmentsLayout=commandUIState.getState(BIN_COMPARTMENTS_SHOW_LAYOUT_ID),
