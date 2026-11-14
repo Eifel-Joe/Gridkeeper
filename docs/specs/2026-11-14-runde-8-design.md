@@ -35,7 +35,8 @@ Verworfen (Nutzer gezeigt): Eckstücke vom Radius, beschnitten vom Rand (Ecke im
 - Fusion: alle Trennwand-bis-oben-Fälle gesund, alle Ecken verrundet (8/8/8/12/4), Parameterfall (`gfBaseWidth` 40 mm)
   gesund. Stapeltest 4×2 und 2×2 auf jeder Lage: 0 mm³, Gegenprobe 0,3 mm tiefer > 0.
 - Ohne Fall, einmal in Fusion: Wand 0,4 / 2,0 / 3,0 mm und Stapelrand mit Notches – je 8 von 8 Ecken verrundet
-  (Radien 3,3/2,64, 1,8/1,44, 1,8/0,72, 2,5 mm), Stapeltest 0 mm³.
+  (voller Radius / Rückfall: 0,4 mm Wand 3,3 / 2,64 mm, 2 mm Wand 1,8 / 1,44 mm,
+  3 mm Wand 1,8 / 0,72 mm; Notches 2,5 mm ohne Rückfall), Stapeltest 0 mm³.
 - Neuer Fall `bin_3x2x3_dividers_to_top_3_columns_tab_scoop_part` (des Nutzers Bin). Snapshots der Trennwand-bis-oben-Fälle
   ändern sich (Volumen +), sonst keine.
 
