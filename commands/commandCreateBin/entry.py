@@ -632,7 +632,12 @@ def binLabelColor() -> str:
     """The label color of the bin's state, '' where there is no label to color, a custom text that is no color as it
     is (see labelColors.dialogColor). Hollow and shelled bins both have labels on their tab (review round 10: a
     shelled bin let an invalid color through)"""
-    hasLabel = bool(commandUIState.getState(BIN_GENERATE_BODY_INPUT_ID) and commandUIState.getState(BIN_HAS_TAB_INPUT_ID))
+    hasLabel = labelColors.binHasLabel(
+        commandUIState.getState(BIN_GENERATE_BODY_INPUT_ID),
+        commandUIState.getState(BIN_HAS_TAB_INPUT_ID),
+        isShaped(),
+        commandUIState.getState(BIN_TYPE_DROPDOWN_ID) == BIN_TYPE_SOLID,
+    )
     isCullenect = commandUIState.getState(BIN_TAB_LABEL_STYLE_INPUT_ID) == labelGenerator.LABEL_STYLE_CULLENECT
     color = labelColors.dialogColor(commandUIState.getState(BIN_TAB_LABEL_COLOR_INPUT_ID), commandUIState.getState(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID))
     return labelColors.labelColorFor(color, hasLabel, isCullenect)
