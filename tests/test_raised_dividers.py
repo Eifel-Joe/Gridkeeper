@@ -101,3 +101,40 @@ def test_option_needs_compartments_besides_a_hollow_bin_with_a_lip():
         ('compartmentCount', 1),
     ]:
         assert raised.optionEnabled(**dict(enabled, **{key: value})) is False, key
+
+
+# Fillets up to the top (p83): a compartment corner gets one where both its sides go up to the top, a raised divider
+# or an outer wall, but not both outer walls, the bin's own corner is round already
+Corner = raised.FilletCorner
+
+
+def test_three_columns_fillet_where_the_dividers_meet_the_outer_walls():
+    segments = [Segment('x', 1, 0, 1), Segment('x', 2, 0, 1)]
+    assert sorted(raised.filletCorners(segments, 3, 1)) == sorted([
+        Corner(0, 0, 1, -1), Corner(0, 0, 1, 1),
+        Corner(1, 0, -1, -1), Corner(1, 0, -1, 1), Corner(1, 0, 1, -1), Corner(1, 0, 1, 1),
+        Corner(2, 0, -1, -1), Corner(2, 0, -1, 1),
+    ])
+
+
+def test_crossing_dividers_fillet_all_four_corners():
+    segments = [Segment('x', 1, 0, 2), Segment('y', 1, 0, 2)]
+    corners = raised.filletCorners(segments, 2, 2)
+    # the crossing in the middle, one per cell
+    assert {Corner(0, 0, 1, 1), Corner(1, 0, -1, 1), Corner(0, 1, 1, -1), Corner(1, 1, -1, -1)} <= set(corners)
+    # and the four ends against the outer walls, two each
+    assert len(corners) == 4 + 8
+
+
+def test_no_fillet_where_a_raised_divider_meets_one_that_stays_down():
+    # 4x2, the row divider spans only columns 0..2 on the grid, the column divider at line 1 rises over both rows
+    segments = [Segment('x', 1, 0, 2)]
+    corners = raised.filletCorners(segments, 2, 2)
+    # the row divider at line 1 stays down, the crossing gets nothing
+    assert all(not (corner.column in (0, 1) and corner.row == 0 and corner.sideY == 1) for corner in corners)
+    assert all(not (corner.row == 1 and corner.sideY == -1) for corner in corners)
+    assert len(corners) == 4
+
+
+def test_no_fillet_without_raised_dividers():
+    assert raised.filletCorners([], 3, 2) == []
