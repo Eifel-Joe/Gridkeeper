@@ -324,7 +324,7 @@ def createGridfinityBinBody(
                     tabOriginY,
                     input.tabWidth,
                     binBodyTotalHeight - Dim.length(tabTopClearance(input.labelStyle)),
-                    input.baseWidth,
+                    input.cullenectUnitWidth,
                     input.cullenectSocketOffset,
                     input.tabOverhangAngle,
                     binBody,
