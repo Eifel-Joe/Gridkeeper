@@ -3,12 +3,13 @@ import json
 import math
 import os
 
-# Shape test cases, one JSON file each, holding every setting of a bin or baseplate InputState by its field name.
+# Shape test cases, one JSON file each, holding every setting of a bin, baseplate or label InputState by its field name.
 # Lengths are in mm and angles in degrees to read easily, the state keeps Fusion's cm and radians.
 # Kept free of Fusion imports so it can be unit tested, the state classes come in as an argument
 
 GENERATOR_BIN = 'bin'
 GENERATOR_BASEPLATE = 'baseplate'
+GENERATOR_LABEL = 'label'
 
 # the rest are counts, base or height units, flags and names, kept as they are
 MM_FIELDS = {
@@ -23,15 +24,18 @@ MM_FIELDS = {
         'verticalClearance', 'connectionHoleSize', 'areaWidth', 'areaLength', 'fitTolerance', 'bedWidth',
         'bedLength', 'bedMargin',
     },
+    GENERATOR_LABEL: {'baseWidth', 'freeWidth', 'offsetX', 'offsetY'},
 }
 DEGREE_FIELDS = {
     GENERATOR_BIN: {'tabOverhangAngle', 'tabTopAngle'},
     GENERATOR_BASEPLATE: set(),
+    GENERATOR_LABEL: set(),
 }
 # lists of cells, JSON has no tuples
 CELL_LIST_FIELDS = {
     GENERATOR_BIN: {'shapeCells'},
     GENERATOR_BASEPLATE: set(),
+    GENERATOR_LABEL: set(),
 }
 
 # the shared user parameters a case may change after building, see lib/gridfinityUtils/sharedParameters.py, with the
@@ -39,6 +43,7 @@ CELL_LIST_FIELDS = {
 PARAMETER_FIELDS = {
     GENERATOR_BIN: {'gfBaseWidth': 'baseWidth', 'gfBaseLength': 'baseLength', 'gfHeightUnit': 'heightUnit'},
     GENERATOR_BASEPLATE: {'gfBaseWidth': 'baseWidth', 'gfBaseLength': 'baseLength'},
+    GENERATOR_LABEL: {'gfBaseWidth': 'baseWidth'},
 }
 
 class TestCaseError(Exception):
@@ -132,7 +137,7 @@ def caseJson(case: TestCase) -> str:
     return json.dumps(data, indent=4, ensure_ascii=False) + '\n'
 
 # the case list in tests/e2e/README.md, see tests/e2e/write_readme.py
-GENERATOR_TITLES = {GENERATOR_BIN: 'Bins', GENERATOR_BASEPLATE: 'Baseplates'}
+GENERATOR_TITLES = {GENERATOR_BIN: 'Bins', GENERATOR_BASEPLATE: 'Baseplates', GENERATOR_LABEL: 'Labels'}
 README_INTRO = """# Shape snapshot tests
 
 Each case is a JSON file in [cases](cases) holding every setting of a bin or baseplate, lengths in mm and angles in

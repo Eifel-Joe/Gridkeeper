@@ -84,7 +84,7 @@ def _fixSketch(sketch: adsk.fusion.Sketch):
                 point.isFixed = True
 
 
-def _textProfiles(sketch: adsk.fusion.Sketch, layout: cullenectLabelLayout.LabelLayout, lines: list[str], isBold: bool) -> list:
+def _textProfiles(sketch: adsk.fusion.Sketch, layout: cullenectLabelLayout.LabelLayout, lines: list[str], isBold: bool, timer: commonUtils.StepTimer) -> list:
     """The text lines at the left, each shrunk to fit in front of the symbol, exploded into curves and fixed: live
     sketch text never counts as fully constrained, see the spec"""
     available = layout.textMaxX - layout.textMinX
@@ -101,25 +101,25 @@ def _textProfiles(sketch: adsk.fusion.Sketch, layout: cullenectLabelLayout.Label
             isBold,
             False,
         )
+        timer.step(f'text line {len(text)} characters')
         sketchText.explode()
+        timer.step('text exploded')
     _fixSketch(sketch)
-    return _iconProfiles(sketch)
+    timer.step('text fixed')
+    profiles = _iconProfiles(sketch)
+    timer.step(f'{len(profiles)} text profiles')
+    return profiles
 
 
-def _iconProfilesPlaced(sketch: adsk.fusion.Sketch, iconPath: str, layout: cullenectLabelLayout.LabelLayout, iconSize: tuple[float, float]) -> list:
+def _iconProfilesPlaced(sketch: adsk.fusion.Sketch, iconPath: str, layout: cullenectLabelLayout.LabelLayout, iconSize: tuple[float, float], timer: commonUtils.StepTimer) -> list:
     (iconWidth, iconHeight) = iconSize
     _importIcon(sketch, iconPath, layout.iconMaxX - iconWidth, layout.iconCenterY - iconHeight / 2, iconHeight)
+    timer.step('icon imported')
     _fixSketch(sketch)
-    return _iconProfiles(sketch)
-
-
-def iconSize(iconPath: str, labelHeight: float) -> tuple[float, float]:
-    """Size of the symbol on the insert in cm, as large as its svg says like in Cullenect, at most as tall as the insert"""
-    (widthMm, heightMm) = cullenectCatalog.svgSize(iconPath)
-    (width, height) = (widthMm / 10, heightMm / 10)
-    if height > labelHeight:
-        (width, height) = (width * labelHeight / height, labelHeight)
-    return (width, height)
+    timer.step('icon fixed')
+    profiles = _iconProfiles(sketch)
+    timer.step(f'{len(profiles)} icon profiles')
+    return profiles
 
 
 def createCullenectLabel(
@@ -132,36 +132,43 @@ def createCullenectLabel(
     be printed in another colour: on top of the insert when embossed, set into it when debossed or flush. Debossed keeps
     the filling but hides it, flush shows it. The outline follows the width dim, the symbol is moved along with it.
     Returns the insert and the text and symbol bodies, one per letter or symbol part, none without text and symbol"""
+    timer = commonUtils.StepTimer(name)
     width = input.width
     height = input.height
     thickness = const.CULLENECT_LABEL_THICKNESS
     latchBottom = const.CULLENECT_LATCH_BOTTOM
     latchTop = const.CULLENECT_LATCH_BOTTOM + const.CULLENECT_LATCH_HEIGHT
 
+    lines = [line for line in input.lines if len(line.strip()) > 0]
+    size = cullenectLabelLayout.iconSize(input.iconPath, width.value, height) if input.iconPath is not None else None
+    layout = cullenectLabelLayout.labelLayout(width.value, height, size, input.isScrew, len(lines))
+    problem = cullenectLabelLayout.layoutProblem(layout)
+    if problem is not None:
+        raise ValueError(problem)
+
     base = _roundedSlab(width, height, 0, 0, latchBottom, targetComponent, f'{name} bottom')
     latch = _roundedSlab(width, height, const.CULLENECT_LATCH_INSET, latchBottom, latchTop - latchBottom, targetComponent, f'{name} latch')
     top = _roundedSlab(width, height, 0, latchTop, thickness - latchTop, targetComponent, f'{name} top')
     combineUtils.joinBodies(base, commonUtils.objectCollectionFromList([latch, top]), targetComponent, name=f'{name} join')
     base.name = name
-
-    lines = [line for line in input.lines if len(line.strip()) > 0]
-    size = iconSize(input.iconPath, height) if input.iconPath is not None else None
-    layout = cullenectLabelLayout.labelLayout(width.value, height, size, input.isScrew, len(lines))
+    timer.step('insert')
 
     isEmbossed = input.surface == SURFACE_EMBOSSED
     plane = _offsetPlane(thickness, targetComponent, f'{name} text plane')
     depth = const.CULLENECT_LAYER
-    parts = []
+    textBodies = []
+    iconBodies = []
     if len(lines) > 0:
         textSketch: adsk.fusion.Sketch = targetComponent.sketches.add(plane)
         textSketch.name = f'{name} text sketch'
-        profiles = _textProfiles(textSketch, layout, lines, input.isBold)
+        profiles = _textProfiles(textSketch, layout, lines, input.isBold, timer)
         if len(profiles) > 0:
-            parts.extend(_extrude(profiles, depth, isEmbossed, targetComponent, f'{name} text').bodies)
+            textBodies = list(_extrude(profiles, depth, isEmbossed, targetComponent, f'{name} text').bodies)
+            timer.step('text extruded')
     if size is not None:
         iconSketch: adsk.fusion.Sketch = targetComponent.sketches.add(plane)
         iconSketch.name = f'{name} icon sketch'
-        profiles = _iconProfilesPlaced(iconSketch, input.iconPath, layout, size)
+        profiles = _iconProfilesPlaced(iconSketch, input.iconPath, layout, size, timer)
         if len(profiles) > 0:
             iconBodies = list(_extrude(profiles, depth, isEmbossed, targetComponent, f'{name} icon').bodies)
             # the symbol stays at the right edge when the width parameter changes
@@ -170,18 +177,23 @@ def createCullenectLabel(
                 moveInput = targetComponent.features.moveFeatures.createInput2(commonUtils.objectCollectionFromList(iconBodies))
                 moveInput.defineAsTranslateXYZ(valueInput(shiftX), valueInput(Dim.length(0)), valueInput(Dim.length(0)), True)
                 targetComponent.features.moveFeatures.add(moveInput).name = f'{name} icon placement'
-            parts.extend(iconBodies)
+            timer.step('icon extruded and placed')
 
+    parts = textBodies + iconBodies
     if len(parts) == 0:
         commonUtils.debugLog(f'{name}: empty insert {width.value * 10:.2f} x {height * 10:.2f} mm')
         return (base, [])
     # Fusion keeps letters and symbol that don't touch as bodies of their own, a join doesn't merge them
-    for (index, part) in enumerate(parts):
-        part.name = f'{name} text {index + 1}'
+    for (index, body) in enumerate(textBodies):
+        body.name = f'{name} text {index + 1}'
+    for (index, body) in enumerate(iconBodies):
+        body.name = f'{name} symbol {index + 1}'
     if not isEmbossed:
         combineUtils.cutBody(base, commonUtils.objectCollectionFromList(parts), targetComponent, True, name=f'{name} text cut')
         if input.surface == SURFACE_DEBOSSED:
             for part in parts:
                 part.isLightBulbOn = False
+        timer.step('text cut')
+    timer.total()
     commonUtils.debugLog(f'{name}: insert {width.value * 10:.2f} x {height * 10:.2f} mm, {input.surface.lower()}, {len(lines)} lines, icon {input.iconPath}')
     return (base, parts)

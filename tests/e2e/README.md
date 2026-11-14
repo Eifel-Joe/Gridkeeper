@@ -85,3 +85,12 @@ This page is written from the case files, run `python3 tests/e2e/write_readme.py
 | <img src="snapshots/baseplate_2x2_skeletonized_padding/preview.png" width="120" alt="baseplate_2x2_skeletonized_padding"> | [baseplate_2x2_skeletonized_padding](cases/baseplate_2x2_skeletonized_padding.json) | 2x2 skeletonized baseplate with magnet sockets and uneven padding |
 | <img src="snapshots/baseplate_3x2_full/preview.png" width="120" alt="baseplate_3x2_full"> | [baseplate_3x2_full](cases/baseplate_3x2_full.json) | 3x2 full baseplate with magnet sockets, screw holes and connection holes |
 | <img src="snapshots/baseplate_fill_area_pieces/preview.png" width="120" alt="baseplate_fill_area_pieces"> | [baseplate_fill_area_pieces](cases/baseplate_fill_area_pieces.json) | 300x200 mm area filled with a light baseplate, cut into pieces for a 180 mm print bed, half cells, aligned left and back |
+
+## Labels
+
+| Preview | Case | Description |
+| --- | --- | --- |
+|  | [label_1u_screw_text](cases/label_1u_screw_text.json) | 1U Cullenect insert with a socket head screw and one line of text, raised, the baseline the other label cases change things of |
+|  | [label_25mm_free](cases/label_25mm_free.json) | Insert 25 mm wide given in mm with a width correction of -0.1 mm, a flanged pan head screw, flush, bold text |
+|  | [label_2u_hardware](cases/label_2u_hardware.json) | 2U insert with a nylon lock nut and two lines of text, set in, the filling kept as a hidden body |
+|  | [label_6u_text](cases/label_6u_text.json) | 6U insert with text only, built on 42 mm units and set to a 40 mm base width after, the insert has to shrink with it. Sets `gfBaseWidth` 40 mm once built, a run compares that with a build using those values from the start |

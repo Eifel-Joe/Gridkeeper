@@ -14,6 +14,8 @@ from ..commandCreateBin import binBuilder
 from ..commandCreateBin.inputState import InputState as BinInputState
 from ..commandCreateBaseplate import baseplateBuilder
 from ..commandCreateBaseplate.inputState import InputState as BaseplateInputState
+from ..commandCreateLabel import labelBuilder
+from ..commandCreateLabel.inputState import InputState as LabelInputState
 from . import testCases
 from . import constraints
 from . import snapshots
@@ -30,7 +32,7 @@ ui = app.userInterface
 RUN_CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdRunSnapshotTests'
 RUN_CMD_NAME = 'Gridfinity tests: run'
 # shown on hover over the button, the first paragraph says what it does, the second how, like the generator commands
-RUN_CMD_Description = ('Checks generated bins and baseplates against their snapshots.\n\n'
+RUN_CMD_Description = ('Checks generated bins, baseplates and labels against their snapshots.\n\n'
     'Opens the test window listing the cases of tests/e2e/cases, run them all or one at a time. Each builds in a new '
     'document and is compared with its snapshot, documents of cases that didn\'t pass are left open.')
 UPDATE_CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdUpdateSnapshots'
@@ -50,7 +52,11 @@ CASES_FOLDER = os.path.join(E2E_FOLDER, 'cases')
 SNAPSHOTS_FOLDER = os.path.join(E2E_FOLDER, 'snapshots')
 README_PATH = os.path.join(E2E_FOLDER, 'README.md')
 RESOURCES_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources')
-STATE_CLASSES = {testCases.GENERATOR_BIN: BinInputState, testCases.GENERATOR_BASEPLATE: BaseplateInputState}
+STATE_CLASSES = {
+    testCases.GENERATOR_BIN: BinInputState,
+    testCases.GENERATOR_BASEPLATE: BaseplateInputState,
+    testCases.GENERATOR_LABEL: LabelInputState,
+}
 
 # bodies the tests add are tagged with their role and case, apart from the generator's own tag, see tagUtils
 TEST_TAG_GROUP = 'LevMishin.GridfinityGenerator.Tests'
@@ -263,6 +269,8 @@ def buildBodies(design: adsk.fusion.Design, case: testCases.TestCase, state: obj
     settings = testCases.caseSettings(case)
     if case.generator == testCases.GENERATOR_BIN:
         return binBuilder.buildBin(design, state, settings)
+    if case.generator == testCases.GENERATOR_LABEL:
+        return labelBuilder.buildLabel(design, state, settings)
     return baseplateBuilder.buildBaseplate(design, state, settings)
 
 def setParameters(design: adsk.fusion.Design, parameters: dict[str, float]):

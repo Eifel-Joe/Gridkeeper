@@ -208,7 +208,7 @@ seiner gedruckten Einleger bereit — Passungs-Referenz zum Gegenprüfen.
     (Anti-Ziel) geht vor „Texte als User-Parameter nachträglich änderbar“; Text ändern = neu
     generieren. Das ist eine Abweichung von der Spec und liegt Nutzer als offener Punkt vor (Runde 4,
     p50); die Alternative (Live-Text mit voll bemaßtem Rahmen, editierbar, aber `isFullyConstrained`
-    bleibt `False`) ist ein Schalter im Generator.
+    bleibt `False`) ließe sich im Generator mit wenigen Zeilen umstellen.
   - Texthöhe: Fusions Texthöhe ist die Höhe der Großbuchstaben („H“ bei 1,0 cm: 1,000 cm hoch,
     Arial normal und fett). Cullenects `text(size = 5)` in Open Sans ergibt ≈ 4,96 mm Großbuchstaben
     (gemessen mit OpenSCAD in Liberation Sans 4,78 mm, Open Sans hat 1462/1409 dieser Versalhöhe;
