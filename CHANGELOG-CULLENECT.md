@@ -51,6 +51,10 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
   in the svg standard (was read as mm).
 - „Dividers up to the top on grid lines“ moved to the „Bin compartments“ section and is only offered for a bin with
   more than one compartment. Saved defaults keep the setting.
+- **Label command in a part design:** the document is switched to a hybrid design when the insert is generated (OK,
+  not the preview), so the insert is a component of its own, and a small message says so. A part design takes a single
+  component only; switching keeps its bodies, timeline and parameters, but a design with components can't go back to a
+  part design. In an assembly design the insert is a component too (was a body in the root). New label case.
 - The shape tests fail on a body left in a case's document that the generator didn't return, and a case can be built
   in a part design (`"designIntent": "part"`). Two new bin cases.
 

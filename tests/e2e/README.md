@@ -95,6 +95,7 @@ This page is written from the case files, run `python3 tests/e2e/write_readme.py
 | Preview | Case | Description |
 | --- | --- | --- |
 |  | [label_1u_screw_text](cases/label_1u_screw_text.json) | 1U Cullenect insert with a socket head screw and one line of text, raised, the baseline the other label cases change things of |
+|  | [label_1u_screw_text_part](cases/label_1u_screw_text_part.json) | 1U insert with a screw and text built in a part design: the document turns hybrid and the insert is a component of its own, as the bodies of label_1u_screw_text |
 |  | [label_25mm_free](cases/label_25mm_free.json) | Insert 25 mm wide given in mm with a width correction of -0.1 mm, a flanged pan head screw, flush, bold text |
 |  | [label_2u_hardware](cases/label_2u_hardware.json) | 2U insert with a nylon lock nut and two lines of text, set in, the filling kept as a hidden body |
 |  | [label_6u_text](cases/label_6u_text.json) | 6U insert with text only, built on 42 mm units and set to a 40 mm base width after, the insert has to shrink with it. Sets `gfBaseWidth` 40 mm once built, a run compares that with a build using those values from the start |

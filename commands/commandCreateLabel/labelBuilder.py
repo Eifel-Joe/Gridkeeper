@@ -4,6 +4,7 @@ import adsk.core, adsk.fusion
 from ...lib import tagUtils
 from ...lib import placementUtils
 from ...lib.gridfinityUtils import cullenectLabelGenerator, cullenectLabelLayout
+from ...lib.gridfinityUtils import designIntent
 from ...lib.gridfinityUtils import parameterUtils
 from ...lib.gridfinityUtils import sharedParameters
 from ...lib.gridfinityUtils.dim import Dim
@@ -73,10 +74,12 @@ def buildLabel(
     des: adsk.fusion.Design,
     state: InputState,
     settings: list[dict],
+    mayChangeDocument: bool = True,
 ) -> list[adsk.fusion.BRepBody]:
     """
     Builds the insert into the design, tagged with the settings to show later, see settingsUtils.snapshotInputs.
-    Returns the insert body first, then the text and symbol bodies
+    Returns the insert body first, then the text and symbol bodies. The insert is a component of its own, a part design
+    is switched to hybrid for it unless the document may not change (a preview), see designIntent.componentPlan
     """
     if des.designType == 0:
         raise UnsupportedDesignTypeException('Timeline must be enabled for the generator to work, projects with disabled design history currently are not supported')
@@ -87,9 +90,11 @@ def buildLabel(
     root = adsk.fusion.Component.cast(des.rootComponent)
     name = labelName(state)
 
+    plan = designIntent.componentPlan(des.designIntent, mayChangeDocument)
+    if plan.switchToHybrid:
+        des.designIntent = adsk.fusion.DesignIntentTypes.HybridDesignIntentType
     originalTimelineCount = des.timeline.count
-    if des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
-        # create new component, only allowed in hybrid intent type
+    if plan.isComponent:
         occurrence = adsk.fusion.Occurrences.cast(root.occurrences).addNewComponent(adsk.core.Matrix3D.create())
         occurrence.component.name = name
         occurrence.activate()
