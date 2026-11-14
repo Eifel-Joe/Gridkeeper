@@ -1,5 +1,5 @@
 {
-    "description": "4x2x3 bin with dividers up to the top on grid lines and 3x2 compartments: the row divider rises, the two column dividers between grid lines stay below the lip. Base width changed to 40 mm after building, the raised divider follows",
+    "description": "4x2x3 bin with dividers up to the top on grid lines and 3x2 compartments, no label tabs: the row divider rises, the two column dividers between grid lines stay below the lip. Base width changed to 40 mm after building, the raised divider follows",
     "generator": "bin",
     "settings": {
         "baseWidth": 42.0,
@@ -26,7 +26,7 @@
         "hasDividersToTop": true,
         "hasScoop": false,
         "scoopMaxRadius": 25.0,
-        "hasTab": true,
+        "hasTab": false,
         "tabLength": 4,
         "tabWidth": 13.0,
         "tabPosition": 0,
