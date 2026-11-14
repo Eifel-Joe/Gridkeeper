@@ -59,6 +59,21 @@ def tabSpanInCompartment(compartmentWidth: float, tabStart: float, tabLength: fl
     """Length of a tab inside its compartment, the tab is trimmed to the compartment"""
     return max(0, min(tabLength, compartmentWidth - tabStart))
 
+def compartmentWidths(interiorWidth: float, columns: int, pocketWidths: list[int], wallThickness: float) -> list[float]:
+    """Widths of compartments spanning the given numbers of grid columns, the interior split like the bin body does"""
+    cell = (interiorWidth - wallThickness * (columns - 1)) / columns
+    return [cell * width + wallThickness * (width - 1) for width in pocketWidths]
+
+def socketFitsDepth(
+    compartmentLength: float,
+    tabWidth: float,
+    socketOffset: float,
+    margin: float = const.CULLENECT_POCKET_MARGIN,
+) -> bool:
+    """Whether the socket, in the middle of a tab along the back wall, keeps the margin to the compartment front. A tab
+    wider than a short compartment would put the socket into the divider in front"""
+    return tabWidth / 2 + socketHeight(socketOffset) / 2 + margin <= compartmentLength + 1e-9
+
 def _mm(value: float) -> str:
     return f"{round(value * 10, 2):g}"
 

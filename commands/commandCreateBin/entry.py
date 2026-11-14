@@ -15,6 +15,7 @@ from ...lib.gridfinityUtils import const
 from ...lib.gridfinityUtils import sharedParameters
 from ...lib.gridfinityUtils import labelGenerator
 from ...lib.gridfinityUtils import cullenect
+from ...lib.gridfinityUtils.binBodyTabGenerator import tabFilletAllowance
 from ...lib.gridfinityUtils import compartmentLayout
 from ...lib.gridfinityUtils import binShape
 from ...lib.gridfinityUtils import binGrid
@@ -429,13 +430,23 @@ def cullenectSockets() -> list[str]:
         # one tab along the back wall inside the shell
         interiorWidth = baseWidth * binWidth - (wallThickness + xyClearance) * 2
         return cullenect.socketSummary([interiorWidth], 0, tabLength - (wallThickness + xyClearance) * 2, baseWidth, socketOffset)
+    # creased bins are built with a single cavity whatever grid the dialog keeps, see binBuilder.buildBin
+    creased = len(creaseLayout()) > 0
+    columns = 1 if creased else commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID)
+    rows = 1 if creased else commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID)
     pockets = compartmentLayout.normalizePockets(
-        compartmentPockets if commandUIState.getState(BIN_COMPARTMENTS_SHOW_LAYOUT_ID) and len(creaseLayout()) == 0 else [],
-        commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID),
-        commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID),
+        compartmentPockets if commandUIState.getState(BIN_COMPARTMENTS_SHOW_LAYOUT_ID) and not creased else [],
+        columns,
+        rows,
     )
-    cellWidth = compartmentCellSize()[0] / 10
-    widths = [cellWidth * item['width'] + wallThickness * (item['width'] - 1) for item in pockets]
+    interiorWidth = baseWidth * binWidth - (wallThickness + xyClearance) * 2
+    interiorLength = commandUIState.getState(BIN_BASE_LENGTH_UNIT_INPUT_ID) * commandUIState.getState(BIN_LENGTH_INPUT_ID) - (wallThickness + xyClearance) * 2
+    widths = cullenect.compartmentWidths(interiorWidth, columns, [item['width'] for item in pockets], wallThickness)
+    lengths = cullenect.compartmentWidths(interiorLength, rows, [item['length'] for item in pockets], wallThickness)
+    overhangAngle = app.activeProduct.unitsManager.evaluateExpression(str(commandUIState.getState(BIN_TAB_ANGLE_INPUT_ID)), 'deg')
+    tabWidth = cullenect.effectiveTabWidth(commandUIState.getState(BIN_TAB_WIDTH_INPUT_ID), overhangAngle, tabFilletAllowance(overhangAngle, 0), socketOffset)
+    # a compartment too short from front to back gets no socket, like one too narrow
+    widths = [width if cullenect.socketFitsDepth(length, tabWidth, socketOffset) else 0 for (width, length) in zip(widths, lengths)]
     tabStart = baseWidth * max(0, min(commandUIState.getState(BIN_TAB_POSITION_INPUT_ID), binWidth - tabLengthUnits))
     return cullenect.socketSummary(widths, tabStart, tabLength, baseWidth, socketOffset)
 
@@ -1011,6 +1022,7 @@ def pageHandlers(browserId: str, command: adsk.core.Command) -> dict[str, browse
         normalizeShapeCells()
         # scoop, tab and compartments inputs depend on the shape
         onChangeValidate()
+        updateCullenectSockets()
         preview()
         # the page redraws from the answer, with the error of the shape it sent
         return shapeDrawingData()
@@ -1021,6 +1033,7 @@ def pageHandlers(browserId: str, command: adsk.core.Command) -> dict[str, browse
         normalizeCompartmentPockets()
         # merging cells changes how many compartments there are, which some inputs depend on
         onChangeValidate()
+        updateCullenectSockets()
         preview()
 
     def onGrid(grid):
@@ -1031,6 +1044,7 @@ def pageHandlers(browserId: str, command: adsk.core.Command) -> dict[str, browse
             futil.log(f'{CMD_NAME} Ignoring grid size from the drawing, {err}')
         normalizeCompartmentPockets()
         onChangeValidate()
+        updateCullenectSockets()
         # the page that changed it redraws from the answer
         refreshCompartmentsDrawing(browserId)
         preview()
