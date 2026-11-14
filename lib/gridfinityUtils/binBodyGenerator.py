@@ -11,7 +11,9 @@ from .baseGeneratorInput import BaseGeneratorInput
 from .binBodyGeneratorInput import BinBodyGeneratorInput, BinBodyCompartmentDefinition
 from .binBodyTabGeneratorInput import BinBodyTabGeneratorInput
 from .binBodyTabGenerator import createGridfinityBinBodyTab, createTabHollowCuts, TabCavity, TabWallOpenings, TabHollowCuts
-from .labelGenerator import BinLabelDefinition, BinLabelInput, createLabel, LABEL_STYLE_EMBOSSED, LABEL_STYLE_ENGRAVED
+from .labelGenerator import BinLabelDefinition, BinLabelInput, createLabel, LABEL_STYLE_EMBOSSED, LABEL_STYLE_ENGRAVED, LABEL_STYLE_CULLENECT
+from . import cullenect
+from .cullenectSocketGenerator import createCullenectSocket
 from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput
 from .binBodyLipGenerator import createGridfinityBinBodyLip
 from .dim import Dim, valueInput
@@ -301,9 +303,11 @@ def createGridfinityBinBody(
         )
 
     if not input.isSolid and input.hasTab:
-        # every compartment gets its own label, also where the tabs come from a pattern
+        # every compartment gets its own label, also where the tabs come from a pattern. A Cullenect socket goes into
+        # every tab, the inserts carry the labels
+        isCullenect = input.labelStyle == LABEL_STYLE_CULLENECT
         for compartmentIndex, compartment in enumerate(input.compartments):
-            if compartment.label is None or compartment.label.isEmpty:
+            if not isCullenect and (compartment.label is None or compartment.label.isEmpty):
                 continue
             (compartmentX, compartmentY, compartmentWidth, compartmentLength) = compartmentPlacement(compartment)
             (tabOriginX, tabOriginY, tabLength) = tabPlacement(compartmentX, compartmentY, compartmentLength)
@@ -312,6 +316,26 @@ def createGridfinityBinBody(
             tabMaxX = tabOriginX + tabLength
             compartmentMaxX = compartmentX + compartmentWidth
             labelMaxX = tabMaxX if tabMaxX.value <= compartmentMaxX.value else compartmentMaxX
+            labelName = 'Label' if len(input.compartments) == 1 else f'Compartment {compartmentIndex + 1} label'
+            if isCullenect:
+                if not cullenect.socketFitsDepth(compartmentLength.value, input.tabWidth, input.cullenectSocketOffset):
+                    # the tab fills the compartment, the socket would cut into the divider in front
+                    commonUtils.debugLog(f'{labelName}: compartment {compartmentLength.value * 10:.2f} mm long, too short for a Cullenect socket')
+                    continue
+                createCullenectSocket(
+                    labelMinX,
+                    labelMaxX,
+                    tabOriginY,
+                    input.tabWidth,
+                    binBodyTotalHeight - Dim.length(tabTopClearance(input.labelStyle)),
+                    input.cullenectUnitWidth,
+                    input.cullenectSocketOffset,
+                    input.tabOverhangAngle,
+                    binBody,
+                    targetComponent,
+                    name=labelName,
+                )
+                continue
             createTabLabel(
                 compartment.label,
                 input.labelStyle,
@@ -324,7 +348,7 @@ def createGridfinityBinBody(
                 binBody,
                 targetComponent,
                 input.tabTopAngle,
-                name='Label' if len(input.compartments) == 1 else f'Compartment {compartmentIndex + 1} label',
+                name=labelName,
             )
 
     return binBody
@@ -334,9 +358,11 @@ def tabTopClearance(labelStyle: str) -> float:
     return const.BIN_TAB_TOP_CLEARANCE + (const.BIN_LABEL_DEPTH if labelStyle == LABEL_STYLE_EMBOSSED else 0)
 
 def hollowTabWallThickness(wallThickness: float, labelStyle: str) -> float:
-    """Hollow tabs take the wall thickness, thick enough for an engraved label not to cut through"""
+    """Hollow tabs take the wall thickness, thick enough for an engraved label or a socket not to cut through"""
     if labelStyle == LABEL_STYLE_ENGRAVED:
         return max(wallThickness, const.BIN_LABEL_DEPTH + const.BIN_TAB_HOLLOW_MIN_SKIN)
+    if labelStyle == LABEL_STYLE_CULLENECT:
+        return cullenect.hollowTabWallThickness(wallThickness)
     return wallThickness
 
 def createTabLabel(

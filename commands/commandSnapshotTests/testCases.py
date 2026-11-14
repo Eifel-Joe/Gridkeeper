@@ -15,6 +15,7 @@ MM_FIELDS = {
     GENERATOR_BIN: {
         'baseWidth', 'baseLength', 'heightUnit', 'xyClearance', 'wallThickness', 'screwHoleDiameter',
         'magnetCutoutDiameter', 'magnetCutoutDepth', 'scoopMaxRadius', 'tabWidth', 'creaseDepth',
+        'cullenectSocketOffset',
     },
     GENERATOR_BASEPLATE: {
         'baseWidth', 'baseLength', 'xyClearance', 'magnetSocketSize', 'magnetSocketDepth', 'screwHoleSize',

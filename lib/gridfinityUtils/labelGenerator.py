@@ -7,7 +7,9 @@ from .dim import Dim, valueInput
 LABEL_STYLE_OUTLINE = 'Outline'
 LABEL_STYLE_ENGRAVED = 'Engraved'
 LABEL_STYLE_EMBOSSED = 'Embossed'
-LABEL_STYLES = [LABEL_STYLE_OUTLINE, LABEL_STYLE_ENGRAVED, LABEL_STYLE_EMBOSSED]
+# a socket for exchangeable Cullenect inserts instead of a label, see cullenect
+LABEL_STYLE_CULLENECT = 'Cullenect'
+LABEL_STYLES = [LABEL_STYLE_OUTLINE, LABEL_STYLE_ENGRAVED, LABEL_STYLE_EMBOSSED, LABEL_STYLE_CULLENECT]
 
 LABEL_ICON_NONE = 'None'
 LABEL_ICONS_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'labelIcons')
