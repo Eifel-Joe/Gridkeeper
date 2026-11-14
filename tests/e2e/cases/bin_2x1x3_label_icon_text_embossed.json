@@ -38,6 +38,7 @@
         "labelIcon": "Hex nut",
         "labelStyle": "Embossed",
         "isLabelBold": true,
+        "labelColor": "",
         "cullenectSocketOffset": 0.3,
         "compartmentsX": 1,
         "compartmentsY": 1,

@@ -19,7 +19,8 @@
         "flange": false,
         "security": false,
         "hardware": "none",
-        "surface": "Embossed"
+        "surface": "Embossed",
+        "textColor": ""
     },
     "parameters": {
         "gfBaseWidth": 40.0

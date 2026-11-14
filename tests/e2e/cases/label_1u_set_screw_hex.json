@@ -1,0 +1,25 @@
+{
+    "description": "1U insert with a hex set screw (p85), headless, and one line of text, raised",
+    "generator": "label",
+    "settings": {
+        "baseWidth": 42.0,
+        "useUnits": true,
+        "widthUnits": 1,
+        "freeWidth": 25.0,
+        "offsetX": 0.0,
+        "offsetY": 0.0,
+        "line1": "M4x6",
+        "line2": "",
+        "isBold": false,
+        "showScrew": true,
+        "head": "none",
+        "shaft": "machine",
+        "threads": "full",
+        "driver": "hex",
+        "flange": false,
+        "security": false,
+        "hardware": "none",
+        "surface": "Embossed",
+        "textColor": ""
+    }
+}

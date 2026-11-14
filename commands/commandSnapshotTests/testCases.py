@@ -325,3 +325,17 @@ def addedLetterNames(insertName: str, corners: list[tuple[float, float]]) -> lis
     for (number, index) in enumerate(order):
         names[index] = f'{insertName} text +{number + 1}'
     return names
+
+def colorProblems(appearanceName: str, base: tuple[str, str | None], parts: list[tuple[str, str | None]]) -> list[str]:
+    """
+    What is wrong with the colors of a colored case (p86): every text and symbol body has the appearance of the label
+    color, the insert or bin itself doesn't. base and parts as (body name, appearance name), the appearance a body
+    shows, None for none of its own
+    """
+    problems = []
+    if len(parts) == 0:
+        problems.append('no colored label bodies')
+    if base[1] == appearanceName:
+        problems.append(f'{base[0]} has the label color')
+    problems += [f'{name} is {appearance}, not {appearanceName}' for (name, appearance) in parts if appearance != appearanceName]
+    return problems

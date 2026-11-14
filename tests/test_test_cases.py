@@ -361,3 +361,21 @@ def test_dots_above_their_letter_stay_in_its_band():
     # the dots of an i or an umlaut are bodies of their own, a little above the letter
     letters = [(1.0, 3.25, 2.0, 6.85), (2.2, 3.25, 2.7, 5.9), (2.2, 6.2, 2.7, 6.7), (3.0, 3.25, 6.0, 7.75)]
     assert cases.insertTextProblems(INSERT_BOX, letters, ONE_LINE) == []
+
+
+def test_colored_cases_want_their_parts_in_the_color():
+    # p86: the text and symbol bodies of a colored case carry the label appearance, the insert or bin itself doesn't
+    wanted = 'Gridfinity label D02020'
+    assert cases.colorProblems(wanted, ('Bin', None), [('Label text 1', wanted), ('Label text 2', wanted)]) == []
+    assert cases.colorProblems(wanted, ('Bin', None), []) == ['no colored label bodies']
+    assert cases.colorProblems(wanted, ('Bin', wanted), [('Label text 1', wanted)]) == ['Bin has the label color']
+    assert cases.colorProblems(wanted, ('Bin', None), [('Label text 1', 'Steel')]) == [f'Label text 1 is Steel, not {wanted}']
+
+
+def test_cases_of_round_10_are_there():
+    loaded = {case.name: case for case in cases.loadCases(CASES_FOLDER, STATE_CLASSES)}
+    assert loaded['label_1u_set_screw_hex'].state.head == 'none'
+    assert loaded['label_1u_set_screw_hex'].state.driver == 'hex'
+    assert loaded['label_1u_screw_text_colored'].state.textColor == '#D02020'
+    assert loaded['bin_2x1x3_label_text_engraved_colored'].state.labelColor == '#2060D0'
+    assert loaded['bin_2x1x3_label_icon_text_embossed_colored'].state.labelColor == '#D02020'

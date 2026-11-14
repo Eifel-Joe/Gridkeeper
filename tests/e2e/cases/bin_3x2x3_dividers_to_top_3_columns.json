@@ -38,6 +38,7 @@
         "labelIcon": "None",
         "labelStyle": "Cullenect",
         "isLabelBold": true,
+        "labelColor": "",
         "cullenectSocketOffset": 0.3,
         "compartmentsX": 3,
         "compartmentsY": 1,
