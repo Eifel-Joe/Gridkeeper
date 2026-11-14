@@ -19,6 +19,7 @@
         "flange": false,
         "security": false,
         "hardware": "nut_nylon",
-        "surface": "Debossed"
+        "surface": "Debossed",
+        "textColor": ""
     }
 }

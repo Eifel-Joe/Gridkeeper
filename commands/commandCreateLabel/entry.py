@@ -13,6 +13,7 @@ from ...lib.gridfinityUtils import cullenectCatalog
 from ...lib.gridfinityUtils import cullenectLabelGenerator
 from ...lib.gridfinityUtils import cullenectLabelLayout
 from ...lib.gridfinityUtils import sharedParameters
+from ...lib.gridfinityUtils import labelColors
 from .inputState import InputState
 from .labelBuilder import buildLabel, labelName, labelProblem, labelSize, labelSymbol, ICONS_FOLDER, NO_HARDWARE
 from ...lib.ui.commandUiState import CommandUiState
@@ -64,6 +65,8 @@ LINE_1_INPUT = 'text_line_1'
 LINE_2_INPUT = 'text_line_2'
 BOLD_INPUT = 'text_bold'
 SURFACE_DROPDOWN = 'surface_dropdown'
+TEXT_COLOR_DROPDOWN = 'text_color'
+CUSTOM_COLOR_INPUT = 'text_color_custom'
 SHOW_SCREW_INPUT = 'show_screw'
 HEAD_DROPDOWN = 'screw_head'
 SHAFT_DROPDOWN = 'screw_shaft'
@@ -154,6 +157,7 @@ def dropdownNames() -> dict[str, list[str]]:
     names[HARDWARE_DROPDOWN] = ['None'] + [name for (name, _) in cullenectCatalog.listHardwareIcons(ICONS_FOLDER)]
     names[SIZING_MODE_DROPDOWN] = [SIZING_MODE_UNITS, SIZING_MODE_FREE]
     names[SURFACE_DROPDOWN] = list(SURFACE_NAMES.values())
+    names[TEXT_COLOR_DROPDOWN] = labelColors.CHOICES
     return names
 
 def selectableName(inputId: str, names: list[str]) -> str:
@@ -234,6 +238,11 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     addBool(textGroup.children, BOLD_INPUT, 'Bold')
     addDropdown(textGroup.children, SURFACE_DROPDOWN, 'Text and symbol', names[SURFACE_DROPDOWN]).tooltip = \
         'Raised 0.2 mm, or set 0.2 mm in, as a body of its own to print in another colour. Set in keeps that body hidden, flush shows it'
+    addDropdown(textGroup.children, TEXT_COLOR_DROPDOWN, 'Text color', names[TEXT_COLOR_DROPDOWN]).tooltip = \
+        'Gives the text and symbol bodies this color, for printing them in another filament. None keeps the look of the insert'
+    customColorInput = textGroup.children.addStringValueInput(CUSTOM_COLOR_INPUT, 'Custom color', uiState.getState(CUSTOM_COLOR_INPUT))
+    customColorInput.tooltip = '#rrggbb, e.g. #D02020'
+    uiState.registerCommandInput(customColorInput)
 
     symbolGroup = inputs.addGroupCommandInput(SYMBOL_GROUP, 'Symbol')
     symbolGroup.isExpanded = uiState.getState(SYMBOL_GROUP)
@@ -266,15 +275,44 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     futil.add_handler(args.command.destroy, command_destroy, local_handlers=local_handlers)
     futil.add_handler(args.command.incomingFromHTML, command_incoming_from_html, local_handlers=local_handlers)
 
+def offerScrewChoices(inputs: adsk.core.CommandInputs) -> dict[str, list]:
+    """
+    Each screw dropdown offers only what makes a symbol with the blocks above it, a choice without one moves to the
+    first that has one, see cullenectCatalog.screwChoices. Head None with driver Hex used to be offered with partial
+    threads too and had no svg (p85). The values each block offers
+    """
+    options = screwOptions()
+    selection = {field: keyOf(uiState.getState(inputId), options[field]) for (inputId, field) in SCREW_DROPDOWNS.items()}
+    selection['flange'] = uiState.getState(FLANGE_INPUT)
+    selection['security'] = uiState.getState(SECURITY_INPUT)
+    (choices, corrected) = cullenectCatalog.screwChoices(cullenectCatalog.screwCombinationsOnDisk(ICONS_FOLDER), selection)
+    for (inputId, field) in SCREW_DROPDOWNS.items():
+        names = [cullenectCatalog.displayName(key) for key in choices[field]]
+        selected = cullenectCatalog.displayName(corrected[field])
+        dropdown = adsk.core.DropDownCommandInput.cast(inputs.itemById(inputId))
+        if [dropdown.listItems.item(index).name for index in range(dropdown.listItems.count)] != names:
+            dropdown.listItems.clear()
+            for name in names:
+                dropdown.listItems.add(name, name == selected)
+        uiState.updateValue(inputId, selected)
+    uiState.updateValue(FLANGE_INPUT, corrected['flange'])
+    uiState.updateValue(SECURITY_INPUT, corrected['security'])
+    return choices
+
 def updateInputs(inputs: adsk.core.CommandInputs):
     """Shows the inputs that apply and what the insert comes out as"""
+    choices = offerScrewChoices(inputs)
     state = getInputsState()
     inputs.itemById(WIDTH_UNITS_INPUT).isVisible = state.useUnits
     inputs.itemById(BASE_WIDTH_INPUT).isVisible = state.useUnits
     inputs.itemById(FREE_WIDTH_INPUT).isVisible = not state.useUnits
     for inputId in SCREW_INPUTS:
         inputs.itemById(inputId).isEnabled = state.showScrew
+    # a flange or security pin no symbol has stays off and locked
+    inputs.itemById(FLANGE_INPUT).isEnabled = state.showScrew and len(choices['flange']) > 1
+    inputs.itemById(SECURITY_INPUT).isEnabled = state.showScrew and len(choices['security']) > 1
     inputs.itemById(HARDWARE_DROPDOWN).isEnabled = not state.showScrew
+    inputs.itemById(CUSTOM_COLOR_INPUT).isVisible = uiState.getState(TEXT_COLOR_DROPDOWN) == labelColors.CUSTOM_CHOICE
     inputs.itemById(SIZE_TEXT).formattedText = sizeText(state)
     inputs.itemById(SYMBOL_TEXT).text = symbolText(state)
 
@@ -396,6 +434,8 @@ def initUiState():
     uiState.initValue(LINE_2_INPUT, '', string)
     uiState.initValue(BOLD_INPUT, False, boolean)
     uiState.initValue(SURFACE_DROPDOWN, SURFACE_NAMES[cullenectLabelGenerator.SURFACE_EMBOSSED], dropdown)
+    uiState.initValue(TEXT_COLOR_DROPDOWN, labelColors.NO_COLOR_CHOICE, dropdown)
+    uiState.initValue(CUSTOM_COLOR_INPUT, '', string)
     uiState.initValue(SHOW_SCREW_INPUT, True, boolean)
     uiState.initValue(HEAD_DROPDOWN, cullenectCatalog.displayName('socket'), dropdown)
     uiState.initValue(SHAFT_DROPDOWN, cullenectCatalog.displayName('machine'), dropdown)
@@ -446,4 +486,5 @@ def getInputsState() -> InputState:
         security=uiState.getState(SECURITY_INPUT),
         hardware=NO_HARDWARE if hardwareName == 'None' else keyOf(hardwareName, hardwareKeys),
         surface=next((key for (key, name) in SURFACE_NAMES.items() if name == surfaceName), cullenectLabelGenerator.SURFACE_EMBOSSED),
+        textColor=labelColors.dialogColor(uiState.getState(TEXT_COLOR_DROPDOWN), uiState.getState(CUSTOM_COLOR_INPUT)),
     )

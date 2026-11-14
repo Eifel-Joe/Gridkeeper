@@ -50,6 +50,8 @@ class InputState:
     labelIcon: str
     labelStyle: str
     isLabelBold: bool
+    # color of the labels, '#RRGGBB', empty for none, see labelColors
+    labelColor: str
     # play of a Cullenect insert in its socket, see cullenect
     cullenectSocketOffset: float
 

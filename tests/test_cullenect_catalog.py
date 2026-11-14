@@ -38,9 +38,23 @@ def test_flange_invalid_for_countersunk_and_none():
     assert catalog.isValidScrew('socket', 'machine', 'full', 'hex', True, False) is True
 
 
-def test_driver_needs_a_head():
-    assert catalog.isValidScrew('none', 'machine', 'full', 'hex', False, False) is False
+def test_driver_without_head_only_as_set_screw():
+    # Cullenect has no headless screw with a driver, the set screws of this fork are: slot, hex or torx, full thread
+    assert catalog.isValidScrew('none', 'machine', 'full', 'hex', False, False) is True
+    assert catalog.isValidScrew('none', 'tapping', 'full', 'slot', False, False) is True
+    assert catalog.isValidScrew('none', 'machine', 'full', 'torx', False, True) is True
+    assert catalog.isValidScrew('none', 'machine', 'full', 'slot', False, True) is False
+    assert catalog.isValidScrew('none', 'machine', 'partial', 'hex', False, False) is False
+    assert catalog.isValidScrew('none', 'machine', 'full', 'phillips', False, False) is False
     assert catalog.isValidScrew('none', 'machine', 'full', 'none', False, False) is True
+
+
+def test_set_screw_combinations():
+    combinations = catalog.setScrewCombinations()
+    assert len(combinations) == 10
+    assert all(catalog.isSetScrew(*combination) and catalog.isValidScrew(*combination) for combination in combinations)
+    assert not any(catalog.isSetScrew(*combination) for combination in catalog.allScrewCombinations())
+    assert catalog.isSetScrew('none', 'machine', 'full', 'none', False, False) is False
 
 
 def test_security_pin_needs_a_driver():
@@ -193,3 +207,69 @@ def test_shown_names_are_unique_per_choice():
     for keys in (catalog.HEADS, catalog.SHAFTS, catalog.THREADS, catalog.DRIVERS, catalog.CULLENECT_HARDWARE):
         names = [catalog.displayName(key) for key in keys]
         assert len(set(names)) == len(names)
+
+
+def test_set_screws_come_from_their_own_folder(tmp_path):
+    name = 'screw_none_machine_full_hex_noflange_nosec.svg'
+    _touch(str(tmp_path / 'setscrews' / name))
+    _touch(str(tmp_path / 'screws' / 'screw_socket_machine_full_slot_noflange_nosec.svg'))
+    assert catalog.screwIconPath(str(tmp_path), 'none', 'machine', 'full', 'hex', False, False) == str(tmp_path / 'setscrews' / name)
+    options = catalog.screwOptions(str(tmp_path))
+    assert options['head'] == ['none', 'socket']
+    assert options['driver'] == ['slot', 'hex']
+    assert catalog.screwCombinationsOnDisk(str(tmp_path)) == {
+        ('none', 'machine', 'full', 'hex', False, False), ('socket', 'machine', 'full', 'slot', False, False)}
+
+
+COMBOS = {
+    ('socket', 'machine', 'full', 'hex', False, False), ('socket', 'machine', 'full', 'hex', True, False),
+    ('socket', 'machine', 'full', 'hex', False, True), ('socket', 'machine', 'partial', 'phillips', False, False),
+    ('none', 'machine', 'full', 'none', False, False), ('none', 'machine', 'partial', 'none', False, False),
+    ('none', 'machine', 'full', 'hex', False, False), ('none', 'machine', 'full', 'hex', False, True),
+    ('none', 'tapping', 'full', 'slot', False, False),
+}
+
+
+def _selection(head, shaft, threads, driver, flange=False, security=False):
+    return {'head': head, 'shaft': shaft, 'threads': threads, 'driver': driver, 'flange': flange, 'security': security}
+
+
+def test_choices_offer_only_what_fits_the_blocks_before():
+    (choices, selection) = catalog.screwChoices(COMBOS, _selection('none', 'machine', 'full', 'hex'))
+    assert choices['head'] == ['none', 'socket']
+    assert choices['shaft'] == ['machine', 'tapping']
+    assert choices['threads'] == ['full', 'partial']
+    assert choices['driver'] == ['none', 'hex']
+    assert choices['flange'] == [False]
+    assert choices['security'] == [False, True]
+    assert selection == _selection('none', 'machine', 'full', 'hex')
+
+
+def test_choices_correct_a_selection_without_svg():
+    # Jörg's screenshot: head None with driver Hex and partial threads has no svg
+    (choices, selection) = catalog.screwChoices(COMBOS, _selection('none', 'machine', 'partial', 'hex', True, True))
+    assert choices['driver'] == ['none']
+    assert selection == _selection('none', 'machine', 'partial', 'none', False, False)
+
+
+def test_choices_keep_the_driver_when_switching_to_no_head():
+    (_, selection) = catalog.screwChoices(COMBOS, _selection('none', 'machine', 'full', 'hex', False, True))
+    assert selection == _selection('none', 'machine', 'full', 'hex', False, True)
+    (choices, selection) = catalog.screwChoices(COMBOS, _selection('none', 'tapping', 'partial', 'hex'))
+    assert choices['threads'] == ['full']
+    assert selection == _selection('none', 'tapping', 'full', 'slot')
+
+
+def test_choices_unknown_head_falls_back_to_the_first():
+    (_, selection) = catalog.screwChoices(COMBOS, _selection('pan', 'machine', 'full', 'hex'))
+    assert selection['head'] == 'none'
+
+
+def test_every_offered_choice_has_an_svg_in_the_repository():
+    folder = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'lib', 'gridfinityUtils', 'cullenectIcons')
+    combos = catalog.screwCombinationsOnDisk(folder)
+    assert set(catalog.allScrewCombinations()) | set(catalog.setScrewCombinations()) == combos
+    for combination in combos:
+        selection = dict(zip(['head', 'shaft', 'threads', 'driver', 'flange', 'security'], combination))
+        (_, corrected) = catalog.screwChoices(combos, selection)
+        assert corrected == selection

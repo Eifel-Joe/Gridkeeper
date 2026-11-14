@@ -1,10 +1,13 @@
 """
-Catalog of the Cullenect symbols (https://github.com/CullenJWebb/Cullenect-Labels, MIT).
+Catalog of the Cullenect symbols (https://github.com/CullenJWebb/Cullenect-Labels, MIT) and the set screws of this
+fork.
 
 The symbols are svg files rendered once from Cullenect.scad by tools/cullenectIcons.py into
 cullenectIcons/screws (one file per valid screw combination) and cullenectIcons/hardware. The building
 block lists below are only what that tool renders; at runtime everything is read back from the folders,
-so a new symbol is a new svg file and needs no code change. No Fusion imports, so it is testable.
+so a new symbol is a new svg file and needs no code change. The set screws (headless with a driver, which Cullenect
+doesn't have) are rendered by tools/setScrewIcons.py into cullenectIcons/setscrews, a folder of their own for their
+own license, named like the screws. No Fusion imports, so it is testable.
 """
 
 import itertools
@@ -50,6 +53,11 @@ CULLENECT_NAMES = {
 }
 
 SCREWS_FOLDER = 'screws'
+SETSCREWS_FOLDER = 'setscrews'
+# the drivers a set screw has in its end, see isSetScrew
+SET_SCREW_DRIVERS = ['slot', 'hex', 'torx']
+# the order the label dialog corrects a choice without svg in, see screwChoices
+SCREW_FIELDS = ['head', 'shaft', 'threads', 'driver', 'flange', 'security']
 HARDWARE_FOLDER = 'hardware'
 
 _SCREW_FILE = re.compile(r'^screw_([^_]+)_([^_]+)_([^_]+)_(.+)_(flange|noflange)_(sec|nosec)\.svg$')
@@ -67,8 +75,8 @@ def _inOrder(values, order: list) -> list:
     return sorted(values, key=lambda value: (order.index(value), '') if value in order else (len(order), str(value)))
 
 
-def isValidScrew(head: str, shaft: str, threads: str, driver: str, flange: bool, security: bool) -> bool:
-    """A flange needs a head that can carry it, a driver needs a head and a security pin needs a driver"""
+def isCullenectScrew(head: str, shaft: str, threads: str, driver: str, flange: bool, security: bool) -> bool:
+    """Cullenect's rules: a flange needs a head that can carry it, a driver needs a head and a security pin needs a driver"""
     if head not in HEADS or shaft not in SHAFTS or threads not in THREADS or driver not in DRIVERS:
         return False
     if flange and head in ('countersunk', 'none'):
@@ -80,14 +88,65 @@ def isValidScrew(head: str, shaft: str, threads: str, driver: str, flange: bool,
     return True
 
 
+def isSetScrew(head: str, shaft: str, threads: str, driver: str, flange: bool, security: bool) -> bool:
+    """A set screw of this fork: no head, a slot, hex or torx driver in its end, threaded all along, a flat end
+    (machine) or a point (tapping), a security pin only in a hex or torx driver"""
+    return (head == 'none' and shaft in SHAFTS and threads == 'full' and driver in SET_SCREW_DRIVERS and not flange
+            and (not security or driver in ('hex', 'torx')))
+
+
+def isValidScrew(head: str, shaft: str, threads: str, driver: str, flange: bool, security: bool) -> bool:
+    """A screw there is a symbol of: one of Cullenect's or a set screw of this fork"""
+    return isCullenectScrew(head, shaft, threads, driver, flange, security) or isSetScrew(head, shaft, threads, driver, flange, security)
+
+
 def screwIconFileName(head: str, shaft: str, threads: str, driver: str, flange: bool, security: bool) -> str:
     return f"screw_{head}_{shaft}_{threads}_{driver}_{'flange' if flange else 'noflange'}_{'sec' if security else 'nosec'}.svg"
 
 
 def allScrewCombinations() -> list[tuple]:
-    """Every valid combination as (head, shaft, threads, driver, flange, security), the ones the tool renders"""
+    """Every combination of Cullenect as (head, shaft, threads, driver, flange, security), the ones tools/cullenectIcons.py renders"""
     return [combination for combination in itertools.product(HEADS, SHAFTS, THREADS, DRIVERS, (False, True), (False, True))
-            if isValidScrew(*combination)]
+            if isCullenectScrew(*combination)]
+
+
+def setScrewCombinations() -> list[tuple]:
+    """Every set screw, the ones tools/setScrewIcons.py renders"""
+    return [combination for combination in itertools.product(HEADS, SHAFTS, THREADS, DRIVERS, (False, True), (False, True))
+            if isSetScrew(*combination)]
+
+
+def screwCombinationsOnDisk(folder: str) -> set[tuple]:
+    """(head, shaft, threads, driver, flange, security) of every svg in <folder>/screws and <folder>/setscrews"""
+    combinations = set()
+    for subfolder in (SCREWS_FOLDER, SETSCREWS_FOLDER):
+        path = os.path.join(folder, subfolder)
+        for fileName in (os.listdir(path) if os.path.isdir(path) else []):
+            match = _SCREW_FILE.match(fileName.lower())
+            if match is not None:
+                (head, shaft, threads, driver, flange, security) = match.groups()
+                combinations.add((head, shaft, threads, driver, flange == 'flange', security == 'sec'))
+    return combinations
+
+
+def screwChoices(combinations: set[tuple], selection: dict) -> tuple[dict[str, list], dict]:
+    """
+    What the label dialog offers for each building block and the selection corrected to a symbol there is. A block
+    offers the values that make a symbol with the blocks before it (SCREW_FIELDS order), a value without one is
+    replaced by the first that has one, so a head change keeps the other choices where it can. The spec has invalid
+    combinations locked in the dialog, Joerg could pick head None with driver Hex and got no symbol (p85)
+    """
+    orders = {'head': HEADS, 'shaft': SHAFTS, 'threads': THREADS, 'driver': DRIVERS, 'flange': [False, True], 'security': [False, True]}
+    corrected = dict(selection)
+    choices = {}
+    remaining = list(combinations)
+    for (index, field) in enumerate(SCREW_FIELDS):
+        values = _inOrder({combination[index] for combination in remaining}, orders[field])
+        choices[field] = values
+        if corrected.get(field) not in values and len(values) > 0:
+            corrected[field] = values[0]
+        remaining = [combination for combination in remaining if combination[index] == corrected.get(field)]
+    return (choices, corrected)
 
 
 def listHardwareIcons(folder: str) -> list[tuple[str, str]]:
@@ -102,29 +161,22 @@ def listHardwareIcons(folder: str) -> list[tuple[str, str]]:
 
 
 def screwOptions(folder: str) -> dict[str, list]:
-    """The values of each building block found in the file names of <folder>/screws, in Cullenect's order"""
-    options = {'head': set(), 'shaft': set(), 'threads': set(), 'driver': set(), 'flange': set(), 'security': set()}
-    screwsFolder = os.path.join(folder, SCREWS_FOLDER)
-    fileNames = os.listdir(screwsFolder) if os.path.isdir(screwsFolder) else []
-    for fileName in fileNames:
-        match = _SCREW_FILE.match(fileName.lower())
-        if match is None:
-            continue
-        (head, shaft, threads, driver, flange, security) = match.groups()
-        options['head'].add(head)
-        options['shaft'].add(shaft)
-        options['threads'].add(threads)
-        options['driver'].add(driver)
-        options['flange'].add(flange == 'flange')
-        options['security'].add(security == 'sec')
+    """The values of each building block found in the file names of <folder>/screws and /setscrews, in Cullenect's order"""
+    options = {name: set() for name in SCREW_FIELDS}
+    for combination in screwCombinationsOnDisk(folder):
+        for (name, value) in zip(SCREW_FIELDS, combination):
+            options[name].add(value)
     orders = {'head': HEADS, 'shaft': SHAFTS, 'threads': THREADS, 'driver': DRIVERS, 'flange': [False, True], 'security': [False, True]}
     return {name: _inOrder(values, orders[name]) for name, values in options.items()}
 
 
 def screwIconPath(folder: str, head: str, shaft: str, threads: str, driver: str, flange: bool, security: bool) -> str | None:
-    """None when there is no file for this combination, the dialog locks such a choice"""
-    path = os.path.join(folder, SCREWS_FOLDER, screwIconFileName(head, shaft, threads, driver, flange, security))
-    return path if os.path.isfile(path) else None
+    """None when there is no file for this combination, the dialog doesn't offer it (screwChoices)"""
+    for subfolder in (SCREWS_FOLDER, SETSCREWS_FOLDER):
+        path = os.path.join(folder, subfolder, screwIconFileName(head, shaft, threads, driver, flange, security))
+        if os.path.isfile(path):
+            return path
+    return None
 
 
 # length units of svg width and height in mm, a number without unit is in user units, CSS pixels of 1/96 in
