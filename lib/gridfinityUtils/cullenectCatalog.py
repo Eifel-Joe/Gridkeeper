@@ -105,11 +105,11 @@ def screwIconPath(folder: str, head: str, shaft: str, threads: str, driver: str,
 def svgSize(path: str) -> tuple[float, float]:
     """Width and height in mm of an svg, from width and height, else from the view box"""
     with open(path, 'r', encoding='utf-8') as file:
-        text = file.read(4096)
+        text = file.read(262144)
     tag = re.search(r'<svg\b[^>]*>', text, re.DOTALL)
     if tag is None:
         raise ValueError(f'No svg element in {path}')
-    attributes = dict(re.findall(r'([\w:-]+)\s*=\s*"([^"]*)"', tag.group(0)))
+    attributes = {name: value1 or value2 for name, value1, value2 in re.findall(r'''([\w:-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')''', tag.group(0))}
     number = r'^\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)\s*(mm)?\s*$'
     width, height = (re.match(number, attributes.get(name, '')) for name in ('width', 'height'))
     if width and height:

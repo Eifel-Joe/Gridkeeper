@@ -90,7 +90,10 @@ def tightenSvg(svg: str) -> str:
     (width, height) = (maxX - minX, maxY - minY)
     number = lambda value: f'{value:.5f}'.rstrip('0').rstrip('.')
     header = f'<svg width="{number(width)}mm" height="{number(height)}mm" viewBox="{number(minX)} {number(minY)} {number(width)} {number(height)}"'
-    return re.sub(r'<svg width="[^"]*" height="[^"]*" viewBox="[^"]*"', lambda _: header, svg, count=1)
+    (tight, count) = re.subn(r'<svg width="[^"]*" height="[^"]*" viewBox="[^"]*"', lambda _: header, svg, count=1)
+    if count != 1:
+        raise ValueError('The svg header is not the one OpenSCAD writes')
+    return tight
 
 
 def labelIconPath(key: str, labelIconsFolder: str) -> str:
@@ -115,14 +118,21 @@ def copyHardwareToLabelIcons(iconsFolder: str, labelIconsFolder: str) -> list[st
 
 def render(exe: str, job: tuple[str, object, str], workFolder: str) -> str | None:
     """Renders one symbol, returns an error text or None"""
+    try:
+        return _render(exe, job, workFolder)
+    except Exception as err:
+        return f'{os.path.basename(job[2])}: {err!r}'
+
+
+def _render(exe: str, job: tuple[str, object, str], workFolder: str) -> str | None:
     (kind, combination, svgPath) = job
     os.makedirs(os.path.dirname(svgPath), exist_ok=True)
     scadPath = os.path.join(workFolder, os.path.splitext(os.path.basename(svgPath))[0] + '.scad')
     with open(scadPath, 'w', encoding='utf-8') as file:
         file.write(wrapperScad(kind, combination))
     environment = dict(os.environ, OPENSCADPATH=CULLENECT_FOLDER)
-    partial = os.path.splitext(svgPath)[0] + '.partial.svg'  # OpenSCAD picks the format by extension
-    result = subprocess.run(openscadCommand(exe, scadPath, partial), capture_output=True, text=True, env=environment)
+    partial = os.path.join(workFolder, os.path.basename(svgPath))  # in the work folder, a stop leaves nothing in the repo
+    result = subprocess.run(openscadCommand(exe, scadPath, partial), capture_output=True, text=True, errors='replace', env=environment)
     if result.returncode != 0 or not os.path.isfile(partial):
         return f'{os.path.basename(svgPath)}: {result.stderr.strip()[-300:]}'
     with open(partial, 'r', encoding='utf-8') as file:
@@ -150,7 +160,7 @@ def main() -> int:
                 errors.append(error)
             if index % 50 == 0:
                 print(f'{index}/{len(jobs)} after {time.time() - started:.0f} s', flush=True)
-    copied = copyHardwareToLabelIcons(args.out, LABEL_ICONS_FOLDER) if args.out == ICONS_FOLDER else []
+    copied = copyHardwareToLabelIcons(args.out, LABEL_ICONS_FOLDER) if os.path.abspath(args.out) == os.path.abspath(ICONS_FOLDER) else []
     print(f'{len(copied)} hardware svgs copied to the label icons, run tools/labelIcons.py for their previews')
     print(f'done in {time.time() - started:.0f} s, {len(jobs) - len(errors)} rendered, {len(errors)} failed')
     for error in errors:
