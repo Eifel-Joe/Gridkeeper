@@ -91,13 +91,13 @@ def test_half_grid_bin_counts_whole_units_not_feet():
 
 
 def test_option_needs_compartments_besides_a_hollow_bin_with_a_lip():
-    enabled = dict(generateBody=True, hasLip=True, isHollow=True, isShaped=False, isCreased=False, compartmentsX=3, compartmentsY=1)
+    enabled = dict(generateBody=True, hasLip=True, isHollow=True, isShaped=False, isCreased=False, compartmentCount=3)
     assert raised.optionEnabled(**enabled) is True
-    assert raised.optionEnabled(**dict(enabled, compartmentsX=1, compartmentsY=2)) is True
     for (key, value) in [
         ('generateBody', False), ('hasLip', False), ('isHollow', False), ('isShaped', True),
         # a creased bin has a single compartment, see binBuilder.creaseLayout
         ('isCreased', True),
+        # also cells merged into one compartment, no divider is left to raise
+        ('compartmentCount', 1),
     ]:
         assert raised.optionEnabled(**dict(enabled, **{key: value})) is False, key
-    assert raised.optionEnabled(**dict(enabled, compartmentsX=1, compartmentsY=1)) is False

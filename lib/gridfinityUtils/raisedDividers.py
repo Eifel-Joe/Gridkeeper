@@ -96,9 +96,8 @@ def optionEnabled(
     isHollow: bool,
     isShaped: bool,
     isCreased: bool,
-    compartmentsX: int,
-    compartmentsY: int,
+    compartmentCount: int,
 ) -> bool:
     """Whether the dialog offers raising the dividers: a hollow bin body with a lip and more than one compartment"""
-    hasCompartments = not isCreased and compartmentsX * compartmentsY > 1
+    hasCompartments = not isCreased and compartmentCount > 1
     return generateBody and hasLip and isHollow and not isShaped and hasCompartments

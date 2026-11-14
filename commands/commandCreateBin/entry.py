@@ -504,13 +504,16 @@ def normalizeCompartmentPockets():
         commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID),
     )
 
-def hasSingleCompartment() -> bool:
-    """Merged cells of a custom grid make one compartment"""
+def compartmentCount() -> int:
+    """Merged cells of a custom grid count as one compartment"""
     return len(compartmentLayout.normalizePockets(
         compartmentPockets,
         commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID),
         commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID),
-    )) == 1
+    ))
+
+def hasSingleCompartment() -> bool:
+    return compartmentCount() == 1
 
 def updateTabHollowSidesInput(isTabEnabled: bool):
     """Side walls are only opened for a hollow tab of a single compartment, the option is cleared when it can't apply"""
@@ -1118,7 +1121,7 @@ def onChangeValidate():
     commandUIState.getInput(BIN_WITH_LIP_NOTCHES_INPUT_ID).isEnabled = generateLip
     commandUIState.getInput(BIN_DIVIDERS_TO_TOP_INPUT_ID).isEnabled = raisedDividers.optionEnabled(
         generateBody, generateLip, binType == BIN_TYPE_HOLLOW, shaped, creased,
-        commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID), commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID),
+        compartmentCount(),
     )
 
     canCrease = generateBody and not binType == BIN_TYPE_SOLID
