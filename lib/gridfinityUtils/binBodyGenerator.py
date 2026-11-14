@@ -16,7 +16,7 @@ from . import cullenect
 from .cullenectSocketGenerator import createCullenectSocket
 from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput
 from .binBodyLipGenerator import createGridfinityBinBodyLip, createStackedFootCutters
-from .raisedDividers import DividerSegment, FilletCorner, filletCorners, isCornerChainEdge, chainPath
+from .raisedDividers import DividerSegment, FilletCorner, filletCorners, isCornerChainEdge, chainPath, cornerPlaneAxes
 from .dim import Dim, valueInput, applyTo
 from ... import config
 
@@ -524,15 +524,14 @@ def roundRaisedDividerCorners(
     filletRaisedDividerCorner
     """
     sketch = raisedCornerSectionsSketch(corners, bottomZ, Dim.length(cornerFilletRadius), targetComponent)
-    sweeps: list[adsk.fusion.BRepBody] = []
+    sweeps: list[tuple[int, FilletCorner, tuple[float, float], list[adsk.fusion.BRepBody]]] = []
     toFillet: list[tuple[int, FilletCorner, tuple[float, float]]] = []
     for (index, (corner, cornerAt)) in enumerate(corners):
         at = (cornerAt[0].value, cornerAt[1].value)
         name = f'Raised divider corner {index + 1}'
         edges = raisedCornerChain(binBody, corner, at, counts, wallThickness, bottomZ.value)
-        # the edges lie in the face of the raised divider, see isCornerChainEdge, the path runs across its other axis
-        lineX = corner.column if corner.sideX == -1 else corner.column + 1
-        otherAxis = 1 if lineX not in (0, counts[0]) else 0
+        # the edges lie in the face of the raised divider, the path runs across its other axis
+        (_, otherAxis) = cornerPlaneAxes(corner, counts[0])
         inPlane = [
             (
                 (edge.startVertex.geometry.asArray()[otherAxis], edge.startVertex.geometry.z),
@@ -555,26 +554,44 @@ def roundRaisedDividerCorners(
             toFillet.append((index, corner, at))
             continue
         sweep.name = f'{name} sweep'
-        sweeps.extend(sweep.bodies.item(i) for i in range(sweep.bodies.count))
+        if sweep.bodies.count != 1:
+            # one section along one path is one body, anything else isn't the corner
+            commonUtils.debugLog(f'{name}: sweep made {sweep.bodies.count} bodies')
+            sweep.deleteMe()
+            toFillet.append((index, corner, at))
+            continue
+        sweeps.append((index, corner, at, [sweep.bodies.item(i) for i in range(sweep.bodies.count)]))
     if len(sweeps) > 0:
+        # The corners stay sharp at worst, never the bin: a cut or join Fusion fails on leaves their corners to the
+        # fillets. The cutters are kept until the last cut, see createRaisedDividers
         cutters = createStackedFootCutters(lipInput, targetComponent, name='Raised divider corners foot cutout')
         rounded: list[adsk.fusion.BRepBody] = []
-        for (index, sweep) in enumerate(sweeps):
-            cut = combineUtils.cutBody(
-                sweep,
-                commonUtils.objectCollectionFromList(cutters),
-                targetComponent,
-                isKeepToolBodies=index < len(sweeps) - 1,
-                name=f'Raised divider corner sweep {index + 1} foot cut',
-            )
-            # a cut keeping its tools lists them among its bodies too, see createRaisedDividers
+        for (position, (index, corner, at, bodies)) in enumerate(sweeps):
+            try:
+                cut = combineUtils.cutBody(
+                    bodies[0],
+                    commonUtils.objectCollectionFromList(cutters),
+                    targetComponent,
+                    isKeepToolBodies=position < len(sweeps) - 1,
+                    name=f'Raised divider corner {index + 1} foot cut',
+                )
+            except RuntimeError as error:
+                commonUtils.debugLog(f'Raised divider corner {index + 1}: foot cut failed, {error}')
+                toFillet.append((index, corner, at))
+                continue
+            # a cut keeping its tools lists them among its bodies too
             rounded.extend(body for body in cut.bodies if all(body != cutter for cutter in cutters))
-        combineUtils.joinBodies(
-            binBody,
-            commonUtils.objectCollectionFromList(rounded),
-            targetComponent,
-            name='Raised divider corners join',
-        )
+        if len(rounded) > 0:
+            try:
+                combineUtils.joinBodies(
+                    binBody,
+                    commonUtils.objectCollectionFromList(rounded),
+                    targetComponent,
+                    name='Raised divider corners join',
+                )
+            except RuntimeError as error:
+                commonUtils.debugLog(f'Raised divider corners: join failed, {error}')
+                toFillet.extend((index, corner, at) for (index, corner, at, _) in sweeps)
     for (index, corner, at) in toFillet:
         filletRaisedDividerCorner(binBody, index, corner, at, counts, wallThickness, bottomZ.value, cornerFilletRadius, targetComponent)
 
