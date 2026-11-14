@@ -127,10 +127,10 @@ def test_crossing_dividers_fillet_all_four_corners():
 
 
 def test_no_fillet_where_a_raised_divider_meets_one_that_stays_down():
-    # 4x2, the row divider spans only columns 0..2 on the grid, the column divider at line 1 rises over both rows
+    # 2x2, only the column divider at line 1 rises, over both rows, the row divider at line 1 stays down
     segments = [Segment('x', 1, 0, 2)]
     corners = raised.filletCorners(segments, 2, 2)
-    # the row divider at line 1 stays down, the crossing gets nothing
+    # so the crossing gets nothing, only the ends against the front and back walls
     assert all(not (corner.column in (0, 1) and corner.row == 0 and corner.sideY == 1) for corner in corners)
     assert all(not (corner.row == 1 and corner.sideY == -1) for corner in corners)
     assert len(corners) == 4
@@ -147,8 +147,9 @@ CORNER = Corner(0, 0, 1, -1)  # cell 0, its high x side against divider 1, low y
 CORNER_AT = (41.433, 1.2)
 
 
+# the generator passes the lip's top section, 2.4 mm, as the reach of the lip into the cell
 def chain(start, end, corner=CORNER, at=CORNER_AT):
-    return raised.isCornerChainEdge(corner, at, 3, 1, wall=1.2, lipOverhang=0.71, bottomZ=15.5, start=start, end=end)
+    return raised.isCornerChainEdge(corner, at, 3, 1, wall=1.2, lipOverhang=2.4, bottomZ=15.5, start=start, end=end)
 
 
 def test_chain_takes_the_edges_up_the_wall_chamfer_and_lip():
