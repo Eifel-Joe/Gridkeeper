@@ -163,7 +163,8 @@ class BrowserCommandInput(CommandInput):
 
 
 class TableCommandInput(CommandInput):
-    """Placeholder: only used in type annotations of lib/settingsUtils.py."""
+    """Placeholder for the annotations of lib/settingsUtils.py. It has no cast(), a test of
+    snapshotInputs would need to add one."""
 
 
 class BoundingBox3D:
