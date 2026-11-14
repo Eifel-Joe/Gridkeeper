@@ -4,7 +4,7 @@ Tests for the sketch constraint check of the shape tests: which sketches aren't 
 
 import os
 import importlib.util
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,6 +24,7 @@ constraints = _load("constraints", "commands", "commandSnapshotTests", "constrai
 class FakeSketch:
     name: str
     isFullyConstrained: bool
+    sketchTexts: list = field(default_factory=list)
 
 
 def test_lists_the_sketches_not_fully_constrained():
@@ -50,3 +51,38 @@ def test_other_cases_only_report_loose_sketches():
 
 def test_nothing_loose_never_fails():
     assert constraints.constraintFailure("bin", "bin_1x1x3_cullenect", []) is None
+
+
+@dataclass
+class FakeEntity:
+    isFullyConstrained: bool = True
+    isFixed: bool = False
+
+
+@dataclass
+class FakeTextSketch:
+    name: str
+    sketchTexts: list
+    sketchCurves: list
+    sketchPoints: list
+    isFullyConstrained: bool = False
+
+
+def test_live_text_sketch_with_everything_else_bound_counts_as_constrained():
+    sketch = FakeTextSketch("Label text sketch", ["text"], [FakeEntity(False, True)] * 4, [FakeEntity(True), FakeEntity(False, True)])
+    assert constraints.unconstrainedSketches([sketch]) == []
+
+
+def test_live_text_sketch_with_a_loose_point_is_listed():
+    sketch = FakeTextSketch("Label text sketch", ["text"], [FakeEntity(False, True)], [FakeEntity(False, False)])
+    assert constraints.unconstrainedSketches([sketch]) == ["Label text sketch"]
+
+
+def test_live_text_sketch_with_a_loose_curve_is_listed():
+    sketch = FakeTextSketch("Label text sketch", ["text"], [FakeEntity(False, False)], [])
+    assert constraints.unconstrainedSketches([sketch]) == ["Label text sketch"]
+
+
+def test_loose_sketch_without_text_is_listed_even_with_bound_entities():
+    sketch = FakeTextSketch("Label icon sketch", [], [FakeEntity(False, True)], [])
+    assert constraints.unconstrainedSketches([sketch]) == ["Label icon sketch"]

@@ -5,9 +5,21 @@
 STRICT_GENERATORS = {'label'}
 STRICT_CASE_MARKER = 'cullenect'
 
+def _isBound(entity) -> bool:
+    return entity.isFullyConstrained or entity.isFixed
+
+def _isBoundButForLiveText(sketch) -> bool:
+    """Fusion never reports a sketch with live text as fully constrained, however its box is dimensioned or fixed
+    (spike in the Cullenect label spec). Nutzer chose live text for the insert on 14.11.2026 (p50), so such a sketch
+    counts as constrained when every curve and point in it, the text box included, is bound and only the text isn't"""
+    if not any(True for _ in sketch.sketchTexts):
+        return False
+    return all(_isBound(curve) for curve in sketch.sketchCurves) and all(_isBound(point) for point in sketch.sketchPoints)
+
 def unconstrainedSketches(sketches) -> list[str]:
-    """Names of the sketches that aren't fully constrained, anything with a name and isFullyConstrained"""
-    return [sketch.name for sketch in sketches if not sketch.isFullyConstrained]
+    """Names of the sketches that aren't fully constrained, anything with a name and isFullyConstrained, a sketch with
+    live text also with sketchTexts, sketchCurves and sketchPoints"""
+    return [sketch.name for sketch in sketches if not sketch.isFullyConstrained and not _isBoundButForLiveText(sketch)]
 
 def constraintFailure(generator: str, caseName: str, names: list[str]) -> str | None:
     """Why the case fails for its loose sketches, none if it doesn't"""
