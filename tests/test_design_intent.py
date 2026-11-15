@@ -34,3 +34,32 @@ def test_assembly_and_hybrid_take_a_component_as_they_are():
 def test_values_are_fusions_design_intent_types():
     # adsk.fusion.DesignIntentTypes, read in Fusion 14.11.2026: Part 0, Assembly 1, Hybrid 2
     assert (intent.PART, intent.ASSEMBLY, intent.HYBRID) == (0, 1, 2)
+
+
+def test_new_part_in_part_design_switches_to_hybrid_into_container():
+    assert intent.structurePlan(intent.PART, True) == intent.StructurePlan(switchToHybrid=True, place=intent.PLACE_CONTAINER)
+
+
+def test_new_part_in_hybrid_or_assembly_goes_into_container():
+    for designIntent in (intent.HYBRID, intent.ASSEMBLY):
+        assert intent.structurePlan(designIntent, True) == intent.StructurePlan(switchToHybrid=False, place=intent.PLACE_CONTAINER)
+
+
+def test_preview_in_part_design_builds_root_bodies():
+    assert intent.structurePlan(intent.PART, False) == intent.StructurePlan(switchToHybrid=False, place=intent.PLACE_ROOT_BODIES)
+
+
+def test_preview_in_hybrid_goes_into_container():
+    assert intent.structurePlan(intent.HYBRID, False) == intent.StructurePlan(switchToHybrid=False, place=intent.PLACE_CONTAINER)
+
+
+def test_rebuild_of_old_root_bodies_stays_root_bodies():
+    for designIntent in (intent.PART, intent.HYBRID):
+        for mayChange in (True, False):
+            assert intent.structurePlan(designIntent, mayChange, intent.REBUILD_OLD_BODIES) == intent.StructurePlan(switchToHybrid=False, place=intent.PLACE_ROOT_BODIES)
+
+
+def test_rebuild_of_an_occurrence_keeps_its_parent():
+    for designIntent in (intent.PART, intent.HYBRID):
+        for mayChange in (True, False):
+            assert intent.structurePlan(designIntent, mayChange, intent.REBUILD_OLD_OCCURRENCE) == intent.StructurePlan(switchToHybrid=False, place=intent.PLACE_OLD_PARENT)
