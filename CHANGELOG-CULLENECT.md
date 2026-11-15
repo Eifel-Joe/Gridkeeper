@@ -4,6 +4,24 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
 
 ## Unreleased
 
+### Insert geometry (round 17)
+
+- **Descenders stay on the insert (p110):** two lines on an insert made lower by its height correction shrink so that
+  g, j, p and y end above the bottom edge. They never shrink below the least height of their style, where the
+  thinnest stroke of the font is one line of a 0.4 mm nozzle (Regular 4.43 mm, Bold 3.42 mm, Heavy 3.05 mm, measured
+  on the letters in Fusion, `tools/fontStroke.py`). Where that isn't enough the dialog says so and won't build: two
+  lines in Regular from about -0.45 mm correction, in Bold from about -0.57 mm.
+- **Debossed rim stays whole (p140):** set in, the symbol keeps 0.4 mm off the edges, so the top layer over the latch
+  isn't cut through and the insert still holds. Flush and embossed are as before.
+- **Room before the symbol (p52):** a text is fitted with 1 mm more room before the symbol, so an insert made up to
+  1 mm narrower afterwards doesn't push the symbol onto the text.
+- **Faster hardware symbols (p51):** the hardware symbols are rendered with coarser circles, about a tenth of the
+  points, the contour within 0.05 mm. An insert with a nylon lock nut builds in about 3 s instead of 24 s, with a closed
+  crimp ring in about 4 s instead of 33 s. The symbols are still derived from Cullenect-Labels by CullenJWebb (MIT).
+- **Symbols on bin labels (p180):** measured again on the coarser symbols, the limit of symbols held by dims on a bin
+  label stays at 40 points: up to the hex nut (36 points) that takes under 2 s, from the magnet (50 points) on 3 s and
+  more, those are still moved into place.
+
 ### Tests and the settings window (round 16)
 
 - **Shape tests green on any font (p30):** bins with a text label are compared by their form, the number of bodies,
