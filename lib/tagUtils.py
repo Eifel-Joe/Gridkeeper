@@ -10,6 +10,15 @@ TAG_BASEPLATE = 'baseplate'
 TAG_LABEL = 'label'
 # on a user parameter of a bin, the config field its value is, see tagParameterField
 TAG_PARAMETER_FIELD = 'parameterField'
+# on the component holding the parts of a kind, the value is the kind, see lib/gridfinityUtils/assembly.py (round 13)
+TAG_CONTAINER = 'container'
+KIND_GRID = 'grid'
+KIND_BINS = 'bins'
+KIND_LABELS = 'labels'
+# names the containers get, Nutzer 15.11.2026, the user may rename them, they are found by the tag
+CONTAINER_NAMES = {KIND_GRID: 'Grid', KIND_BINS: 'Bins', KIND_LABELS: 'Label'}
+# on the joint origin of a Cullenect pocket, the value holds its size in mm, see cullenect.pocketTagValue
+TAG_POCKET = 'pocket'
 
 # Bump only on incompatible changes to the tag value, readers ignore fields they don't know
 TAG_SCHEMA_VERSION = 1

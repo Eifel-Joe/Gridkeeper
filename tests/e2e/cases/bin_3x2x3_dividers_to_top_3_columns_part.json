@@ -1,7 +1,8 @@
 {
-    "description": "3x2x3 bin with dividers up to the top and 3 compartments side by side, built in a part design into the root component, no raised divider left loose",
+    "description": "3x2x3 bin with dividers up to the top and 3 compartments side by side, built in a part design: the document turns hybrid and the bin goes into Bins (round 13), no raised divider left loose",
     "generator": "bin",
     "designIntent": "part",
+    "designIntentAfter": "hybrid",
     "settings": {
         "binWidth": 3,
         "binLength": 2,

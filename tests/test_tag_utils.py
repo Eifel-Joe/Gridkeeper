@@ -134,3 +134,14 @@ def test_owned_parameters_are_found_by_their_owner(monkeypatch):
 
     monkeypatch.setattr(tagUtils.adsk.fusion.UserParameter, "cast", staticmethod(lambda parent: parent), raising=False)
     assert tagUtils.findOwnedParameters(_Design(), "gfBin2") == [(parameters[1], "binHeight")]
+
+
+def test_container_names_are_literal():
+    # stored in user documents and shown in the browser, the user's names (round 13, p90)
+    assert tagUtils.TAG_CONTAINER == "container"
+    assert tagUtils.CONTAINER_NAMES == {"grid": "Grid", "bins": "Bins", "labels": "Label"}
+    assert (tagUtils.KIND_GRID, tagUtils.KIND_BINS, tagUtils.KIND_LABELS) == ("grid", "bins", "labels")
+
+
+def test_pocket_tag_is_literal():
+    assert tagUtils.TAG_POCKET == "pocket"

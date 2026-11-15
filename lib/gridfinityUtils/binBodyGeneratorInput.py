@@ -79,6 +79,10 @@ class BinBodyGeneratorInput():
         self.isLabelBold = True
         # '#RRGGBB' or empty, the labels in this color as bodies of their own, see labelGenerator.createLabel
         self.labelColor = ''
+        # the bin's occurrence and an assembly.TextOccurrence for colored labels (round 13, p90), none for bodies built
+        # into the root
+        self.binOccurrence = None
+        self.textOccurrence = None
         self.cullenectSocketOffset = const.CULLENECT_SOCKET_OFFSET
         # Cullenect labels count in whole grid units, also on a half grid bin whose base width is a foot
         self.cullenectUnitWidth = Dim.length(const.DIMENSION_DEFAULT_WIDTH_UNIT)

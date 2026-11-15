@@ -175,3 +175,54 @@ def test_a_single_cavity_is_one_compartment_over_the_interior():
 ])
 def test_socket_needs_room_in_front_of_it_inside_the_compartment(compartmentLength, fits):
     assert cullenect.socketFitsDepth(compartmentLength, 1.4, 0.03) is fits
+
+
+# --- round 13 (p160): joint origins on the floor of each pocket, found by the label command by their tag
+
+def test_pocket_joint_origin_name_single_and_compartments():
+    assert cullenect.pocketJointOriginName(0, 1) == "Pocket joint origin"
+    assert cullenect.pocketJointOriginName(1, 3) == "Compartment 2 pocket joint origin"
+
+
+def test_pocket_size_mm_matches_socket():
+    (width, height) = cullenect.pocketSizeMm(1, 4.2, 0.03)
+    assert width == approx(cullenect.socketWidth(1, 4.2, 0.03) * 10)
+    assert height == approx(cullenect.socketHeight(0.03) * 10)
+    assert (width, height) == (approx(36.3), approx(11.3))
+
+
+def test_pocket_tag_value_round_trips():
+    value = cullenect.pocketTagValue(36.3, 11.3)
+    assert cullenect.readPocketTagValue(value) == (approx(36.3), approx(11.3))
+
+
+def test_pocket_tag_value_unreadable_is_none():
+    assert cullenect.readPocketTagValue("not json") is None
+    assert cullenect.readPocketTagValue('{"widthMm": "x"}') is None
+
+
+# --- round 13 (p160): a rebuilt bin keeps the inserts jointed into its pockets, by the pocket's name
+
+def test_pocket_remap_same_name():
+    old = ["Compartment 1 pocket joint origin", "Compartment 2 pocket joint origin"]
+    assert cullenect.pocketRemap(old, list(reversed(old))) == {name: name for name in old}
+
+
+def test_pocket_remap_missing_pocket_is_none():
+    old = ["Compartment 1 pocket joint origin", "Compartment 2 pocket joint origin"]
+    assert cullenect.pocketRemap(old, ["Pocket joint origin"]) == {old[0]: None, old[1]: None}
+    assert cullenect.pocketRemap(["Pocket joint origin"], ["Pocket joint origin"]) == {"Pocket joint origin": "Pocket joint origin"}
+
+
+# --- review of round 13: a rebuild moves over the joints of pockets only, and says when the insert no longer fits
+
+def test_pocket_names_leave_other_joint_origins_out():
+    tag = cullenect.pocketTagValue(36.3, 11.3)
+    origins = [("Foot joint origin 1-1", None), ("Pocket joint origin", tag), ("Mine", "not a pocket")]
+    assert cullenect.pocketNames(origins) == ["Pocket joint origin"]
+
+
+def test_pocket_fit_note_only_when_the_insert_no_longer_fits():
+    assert cullenect.pocketFitNote("Insert in pocket", "Pocket joint origin", (36.0, 11.0), (36.3, 11.3)) is None
+    note = cullenect.pocketFitNote("Insert in pocket", "Pocket joint origin", (78.0, 11.0), (36.3, 11.3))
+    assert "Insert in pocket" in note and "Pocket joint origin" in note and "doesn't fit" in note

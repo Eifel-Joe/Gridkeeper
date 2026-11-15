@@ -6,9 +6,10 @@ Cullenect labels by CullenJWebb (MIT), https://github.com/CullenJWebb/Cullenect-
 an insert is `label_width * units - 6` mm wide and 11 mm high, its socket `socket_offset` larger in X and Y.
 """
 
+import json
 import math
 
-from . import const
+from . import const, cullenectLabelLayout
 
 # the label style of labelGenerator.LABEL_STYLE_CULLENECT, kept here so this module needs no Fusion
 LABEL_STYLE = 'Cullenect'
@@ -124,3 +125,47 @@ def parameterEditKeepsSockets(isCullenect: bool, hasTab: bool, changed: list[str
     if not (isCullenect and hasTab):
         return True
     return not any(name in _SOCKET_GRID_FIELDS for name in changed)
+
+
+# --- joint origins of the pockets (round 13, p160): one on the floor of each pocket, the label command finds them by
+# their tag and checks in mm whether an insert fits, inserts and bins have base units of their own
+
+def pocketJointOriginName(compartmentIndex: int, compartmentCount: int) -> str:
+    if compartmentCount == 1:
+        return 'Pocket joint origin'
+    return f'Compartment {compartmentIndex + 1} pocket joint origin'
+
+def pocketSizeMm(units: float, baseWidth: float, socketOffset: float) -> tuple[float, float]:
+    """Width and height of the pocket in mm"""
+    return (round(socketWidth(units, baseWidth, socketOffset) * 10, 6), round(socketHeight(socketOffset) * 10, 6))
+
+def pocketTagValue(widthMm: float, heightMm: float) -> str:
+    return json.dumps({'widthMm': widthMm, 'heightMm': heightMm})
+
+def readPocketTagValue(value: str) -> tuple[float, float] | None:
+    """The pocket size in mm, none for a value that can't be read"""
+    try:
+        data = json.loads(value)
+        width = data['widthMm']
+        height = data['heightMm']
+    except (ValueError, KeyError, TypeError):
+        return None
+    if any(isinstance(item, bool) or not isinstance(item, (int, float)) for item in (width, height)):
+        return None
+    return (float(width), float(height))
+
+def pocketRemap(oldNames: list[str], newNames: list[str]) -> dict[str, str | None]:
+    """The pocket of a rebuilt bin each old pocket's joint goes to, by name (they're named by compartment, see
+    pocketJointOriginName), none where the new bin has no such pocket"""
+    return {name: (name if name in newNames else None) for name in oldNames}
+
+def pocketNames(origins: list[tuple[str, str | None]]) -> list[str]:
+    """Names of the joint origins, as (name, value of their pocket tag or None), that are of a pocket. A rebuild moves
+    over the joints of those only: a foot's joint onto a baseplate is the user's own, see rebuildUtils.repointJoints"""
+    return [name for (name, value) in origins if value is not None and readPocketTagValue(value) is not None]
+
+def pocketFitNote(jointName: str, pocketName: str, insertSizeMm: tuple[float, float], pocketSizeMm: tuple[float, float]) -> str | None:
+    """What the rebuild notes when the insert jointed into a pocket no longer fits the rebuilt one, none when it fits"""
+    if cullenectLabelLayout.insertFitsPocket(*insertSizeMm, *pocketSizeMm):
+        return None
+    return f'{jointName}: the insert doesn\'t fit the rebuilt {pocketName} any more, {insertSizeMm[0]:g} x {insertSizeMm[1]:g} mm into {pocketSizeMm[0]:g} x {pocketSizeMm[1]:g} mm'

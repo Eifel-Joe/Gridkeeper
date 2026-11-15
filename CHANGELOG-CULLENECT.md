@@ -4,6 +4,28 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
 
 ## Unreleased
 
+### An assembly of components, inserts jointed into their pockets (round 13)
+
+- **Containers Grid, Bins and Label:** every new baseplate, bin and Cullenect insert is a component of its own in the
+  container of its kind, directly in the root. A part design is switched to hybrid for it, as it was for inserts
+  before; a preview leaves it a part. The containers are found by a tag, so they may be renamed. They are grounded, so
+  a joint of a part in them moves that part only, not the container with everything in it.
+- **Text components:** the colored text and symbol bodies of a bin or an insert are in a component Text inside it, so
+  they export apart for a multicolor print. They are built there, so letters a longer live text adds land there too.
+  Engraved or uncolored labels have no bodies of their own and get no Text component.
+- **Rebuild keeps the place:** a bin or baseplate rebuilt from its context menu stays in the component it was in. Parts
+  built before this round stay where they are: bodies in the root of a part design are rebuilt as bodies in the root.
+- **Joint origins on the pockets:** every Cullenect pocket gets a joint origin mid floor, Z up and X along the pocket,
+  whatever "Add joint origins" says. It follows the bin's base units and height. Every insert gets one mid bottom.
+- **Pocket in the label dialog:** pick the joint origin of a pocket, and the insert is jointed into it, flush and
+  centered. An insert wider or higher than that pocket isn't built; the dialog asks for a pocket that fits.
+  Without a pocket the insert goes beside every bin, baseplate and insert, no longer into the first bin at the
+  origin.
+- **Rebuild keeps the inserts:** a bin rebuilt with inserts jointed into its pockets moves the joints over to the
+  pockets of the same name of the new bin. A joint whose pocket the new bin lacks is named in the rebuild notes.
+- Known limit, found in this round (p170): the joint origins of the feet and baseplate sockets from upstream v2.4 sit
+  on reference dimensions and don't follow a changed base unit. The pocket ones are driven.
+
 ### Base raised to upstream v2.4.0.0
 
 The fork now builds on GridfinityGenerator v2.4.0.0 by Le0Michine (CC BY-NC-SA 4.0), merged with its history, so every

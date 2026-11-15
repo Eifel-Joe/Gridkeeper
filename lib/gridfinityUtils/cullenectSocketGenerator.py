@@ -1,4 +1,5 @@
 import adsk.core, adsk.fusion
+from dataclasses import dataclass
 
 from . import const, commonUtils, combineUtils, filletUtils, sketchUtils, cullenect
 from .binBodyTabGenerator import tabFilletAllowance
@@ -24,6 +25,15 @@ def _extrude(profiles: adsk.core.ObjectCollection, distance: float, direction, t
     extrude.name = name
     return extrude
 
+@dataclass
+class SocketPlacement:
+    """A pocket cut into a tab: its size in label units, the middle of its floor as dims that follow the parameters"""
+    units: float
+    centerX: Dim
+    centerY: Dim
+    floorZ: Dim
+
+
 def createCullenectSocket(
     minX: Dim,
     maxX: Dim,
@@ -37,9 +47,9 @@ def createCullenectSocket(
     targetComponent: adsk.fusion.Component,
     *,
     name: str,
-) -> float | None:
+) -> SocketPlacement | None:
     """Cuts the socket into the flat top of a tab between the given x, whose back edge is at the tab origin y, and returns
-    its size in label units, none where not even half a unit fits. The socket takes the widest standard label width, so
+    its size in label units and the middle of its floor, none where not even half a unit fits. The socket takes the widest standard label width, so
     original inserts fit compartment tabs too, its width follows the base width parameter like Cullenect's.
     Built like createLabel: at the current spot with sketches on a plane at the current height, then moved by how far
     the parametric spot is from it, so a change of the parameters only changes the move and the width"""
@@ -106,4 +116,4 @@ def createCullenectSocket(
 
     combineUtils.cutBody(targetBody, commonUtils.objectCollectionFromList([socketBody]), targetComponent, name=f'{name} socket cut')
     commonUtils.debugLog(f'{name}: Cullenect socket {cullenect.describeSocket(units, baseWidth.value, socketOffset)}')
-    return units
+    return SocketPlacement(units, centerX, centerY, tabTopZ - Dim.length(const.CULLENECT_LABEL_THICKNESS))

@@ -3,10 +3,13 @@ import adsk.core, adsk.fusion
 
 from ...lib import tagUtils
 from ...lib import placementUtils
+from ...lib import assembly
 from ...lib.gridfinityUtils import cullenectLabelGenerator, cullenectLabelLayout
 from ...lib.gridfinityUtils import commonUtils, designIntent, labelColors, appearanceUtils
 from ...lib.gridfinityUtils import parameterUtils
 from ...lib.gridfinityUtils import const
+from ...lib.gridfinityUtils import cullenect
+from ...lib.gridfinityUtils.baseGenerator import createPointJointOrigins
 from ...lib.gridfinityUtils.dim import Dim
 from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
 from .inputState import InputState
@@ -67,6 +70,28 @@ def labelProblem(state: InputState) -> str | None:
     isSymbolMissing = iconPath is None and (state.showScrew or state.hardware != NO_HARDWARE)
     return cullenectLabelLayout.insertProblem(width, height, iconPath, isScrew, isSymbolMissing, len(labelLines(state)), state.offsetX, state.offsetY)
 
+# the joint origin at the middle of the insert's bottom, see cullenect.pocketJointOriginName for the pockets' (p160)
+INSERT_JOINT_ORIGIN = 'Insert joint origin'
+
+def pocketSizeMm(pocket: adsk.fusion.JointOrigin | None) -> tuple[float, float] | None:
+    """The size of the Cullenect pocket the joint origin is on, from its tag, none for any other joint origin"""
+    if pocket is None or not pocket.isValid:
+        return None
+    native = pocket.nativeObject or pocket
+    attribute = native.attributes.itemByName(tagUtils.TAG_GROUP, tagUtils.TAG_POCKET)
+    return cullenect.readPocketTagValue(attribute.value) if attribute is not None else None
+
+def pocketProblem(state: InputState, pocket: adsk.fusion.JointOrigin | None) -> str | None:
+    """Why the insert can't go into the chosen pocket, none without one or when it fits. A pocket that's gone, a
+    joint origin of no pocket or one too small: nothing is built (Nutzer 15.11.2026)"""
+    if pocket is None:
+        return None
+    size = pocketSizeMm(pocket)
+    (width, height) = labelSize(state)
+    if size is None or not cullenectLabelLayout.insertFitsPocket(width * 10, height * 10, *size):
+        return cullenectLabelLayout.POCKET_MISFIT
+    return None
+
 def labelName(state: InputState) -> str:
     return cullenectLabelLayout.labelTitle(
         state.widthUnits if state.useUnits else None,
@@ -79,51 +104,29 @@ def buildLabel(
     state: InputState,
     settings: list[dict],
     mayChangeDocument: bool = True,
+    pocket: adsk.fusion.JointOrigin | None = None,
 ) -> list[adsk.fusion.BRepBody]:
     """
     Builds the insert into the design, tagged with the settings to show later, see settingsUtils.snapshotInputs.
-    Returns the insert body first, then the text and symbol bodies. The insert is a component of its own, a part design
-    is switched to hybrid for it unless the document may not change (a preview), see designIntent.componentPlan
+    Returns the insert body first, then the text and symbol bodies. The insert is a component of its own in the
+    container Label, its text and symbol bodies in a component Text inside it (round 13, p90), a part design is switched
+    to hybrid for it unless the document may not change (a preview), see designIntent.structurePlan.
+    A joint origin sits at the middle of its bottom. With a pocket, a joint origin of a Cullenect pocket of a bin, the
+    insert is jointed into it (round 13, p100, p160), else it goes beside every bin, baseplate and insert there is
     """
     if des.designType == 0:
         raise UnsupportedDesignTypeException('Timeline must be enabled for the generator to work, projects with disabled design history currently are not supported')
-    problem = labelProblem(state)
+    problem = labelProblem(state) or pocketProblem(state, pocket)
     if problem is not None:
         raise ValueError(problem)
     (width, height) = labelSize(state)
     root = adsk.fusion.Component.cast(des.rootComponent)
     name = labelName(state)
 
-    plan = designIntent.componentPlan(des.designIntent, mayChangeDocument)
-    # The new component is active while it's built, the design's root afterwards: an active component shows every other
-    # one half transparent and the user had to switch back each time (Nutzer 15.11.2026). In finally, a failed build
-    # leaves the root active too
-    if not plan.switchToHybrid:
-        try:
-            return _buildLabel(des, state, settings, root, name, width, height, plan.isComponent)
-        finally:
-            des.activateRootComponent()
-    occurrenceCount = root.occurrences.count
-    des.designIntent = adsk.fusion.DesignIntentTypes.HybridDesignIntentType
-    try:
-        return _buildLabel(des, state, settings, root, name, width, height, True)
-    except Exception:
-        # a part design left hybrid without an insert couldn't go back to a part, its new component is taken out and
-        # the document switched back, the error goes on
-        des.activateRootComponent()
-        _undoHybridSwitch(des, occurrenceCount)
-        raise
-    finally:
-        des.activateRootComponent()
-
-def _undoHybridSwitch(des: adsk.fusion.Design, occurrenceCount: int):
-    root = des.rootComponent
-    try:
-        while root.occurrences.count > occurrenceCount:
-            root.occurrences.item(root.occurrences.count - 1).deleteMe()
-        des.designIntent = adsk.fusion.DesignIntentTypes.PartDesignIntentType
-    except Exception as err:
-        commonUtils.debugLog(f'{LOG_PREFIX} document stays hybrid after a failed insert, {err}')
+    plan = designIntent.structurePlan(des.designIntent, mayChangeDocument)
+    # the root is active afterwards, also after a failed build, a part design switched for it goes back then, see
+    # assembly.buildWithStructure
+    return assembly.buildWithStructure(des, plan, lambda: _buildLabel(des, state, settings, root, name, width, height, plan, pocket))
 
 def _buildLabel(
     des: adsk.fusion.Design,
@@ -133,21 +136,25 @@ def _buildLabel(
     name: str,
     width: float,
     height: float,
-    isComponent: bool,
+    plan: designIntent.StructurePlan,
+    pocket: adsk.fusion.JointOrigin | None = None,
 ) -> list[adsk.fusion.BRepBody]:
+    # the container comes before the insert's timeline group, see assembly.partPlace
+    place = assembly.partPlace(des, plan, tagUtils.KIND_LABELS, None)
     originalTimelineCount = des.timeline.count
-    if isComponent:
-        occurrence = adsk.fusion.Occurrences.cast(root.occurrences).addNewComponent(adsk.core.Matrix3D.create())
-        occurrence.component.name = name
+    if place.isComponent:
+        occurrence = assembly.addOccurrence(des, place.parent, name, isMovable=True)
         occurrence.activate()
         labelComponent: adsk.fusion.Component = occurrence.component
     else:
+        occurrence = None
         labelComponent: adsk.fusion.Component = des.rootComponent
 
     # pick the spot before generating, so none of this insert's geometry can count as an obstacle
+    # beside bins and baseplates too, not into the first bin at the origin (p100)
     placement = placementUtils.findPlacement(
         des,
-        tagUtils.TAG_LABEL,
+        [tagUtils.TAG_LABEL, tagUtils.TAG_BIN, tagUtils.TAG_BASEPLATE],
         LABEL_NAME_PREFIX,
         (0, 0, width, height),
         state.baseWidth,
@@ -204,13 +211,37 @@ def _buildLabel(
     labelInput.surface = state.surface
     labelInput.textStyle = state.textStyle
     # drawn at its spot, not moved there: a move would leave behind letters a later text adds
-    (base, marking) = cullenectLabelGenerator.createCullenectLabel(labelInput, labelComponent, name=name, origin=placement)
+    # its text and symbol go into a Text component of the insert (round 13, p90), none without them or as root bodies
+    textOccurrence = assembly.addOccurrence(des, occurrence, assembly.TEXT_COMPONENT_NAME) if occurrence is not None and (len(lines) > 0 or iconPath is not None) else None
+    (base, marking) = cullenectLabelGenerator.createCullenectLabel(
+        labelInput,
+        labelComponent,
+        name=name,
+        origin=placement,
+        markingComponent=textOccurrence.component if textOccurrence is not None else None,
+        baseOccurrence=occurrence if textOccurrence is not None else None,
+        markingOccurrence=textOccurrence,
+    )
     bodies = [base] + marking
     appearanceUtils.colorBodies(marking, state.textColor)
 
     # mark generated geometry so it can be told apart from the rest of the design
     for body in bodies:
         tagUtils.tagBody(body, tagUtils.TAG_LABEL, settings, labelParameters)
+
+    # at the middle of the bottom, following the width parameter, X along the width like the pockets' (p160)
+    (insertJointOrigin,) = createPointJointOrigins(
+        [(INSERT_JOINT_ORIGIN, Dim.length(placement[0]) + labelInput.width / 2, Dim.length(placement[1] + height / 2), Dim.length(0))],
+        labelComponent,
+        name=INSERT_JOINT_ORIGIN,
+    )
+    if pocket is not None and occurrence is not None:
+        # the insert moves into the pocket, the bin stays where it is. A preview in a part design builds bodies into
+        # the root, which a joint can't move, it shows the insert beside the bins then
+        jointInput = root.joints.createInput(assembly.inContext(insertJointOrigin, occurrence), pocket)
+        jointInput.setAsRigidJointMotion()
+        joint = root.joints.add(jointInput)
+        joint.name = f'{name} in pocket'
 
     if des.designType == adsk.fusion.DesignTypes.ParametricDesignType:
         group = des.timeline.timelineGroups.add(originalTimelineCount, des.timeline.count - 1)
