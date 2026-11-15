@@ -34,6 +34,28 @@ _STROKE_FACTORS = {
 # and print complete as one wide line, they would always be hinted at
 MIN_STROKE = 0.06
 
+# Round 17: no text shrinks below the height where the thinnest stroke of its font is narrower than one line of a
+# 0.4 mm nozzle (Joerg 15.11.2026: 0.4 mm nozzle, Bambu standard profile, Arachne). Measured in Fusion on 15.11.2026
+# (job r17_font): the outlines of A-Z a-z 0-9 at 10 mm, stroke across the letter from each point of the outline, the 1 %
+# quantile away from sharp corners, see tools/fontStroke.py. Regular 0.903 mm, Bold 1.170 mm, Heavy 1.313 mm
+THINNEST_STROKE_FACTORS = {
+    STYLE_REGULAR: 0.0903,
+    STYLE_BOLD: 0.1170,
+    STYLE_HEAVY: 0.1313,
+}
+NOZZLE_LINE = 0.04
+
+# depth of the descenders (g, j, p, q, y) below the baseline per text height, the text height being the capitals'
+# height. Measured with r17_font on "gjpqy", the same 0.294 for Arial and Arial Black
+DESCENT_FACTOR = 0.294
+
+
+def minTextHeight(style: str) -> float:
+    """Least height of text of this style whose thinnest stroke still is a nozzle line wide"""
+    _check(style)
+    return NOZZLE_LINE / THINNEST_STROKE_FACTORS[style]
+
+
 _notes: list[tuple[str, float, float]] = []
 
 

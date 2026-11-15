@@ -115,3 +115,14 @@ def test_note_threshold():
     styles.noteText('a', 'Heavy', 0.279)
     styles.noteText('b', 'Heavy', 0.28)
     assert [text for (text, _, _) in styles.notes()] == ['a']
+
+
+@pytest.mark.parametrize('style', ['Regular', 'Bold', 'Heavy'])
+def test_min_text_height_keeps_a_04mm_stroke(style):
+    # round 17: at the least height the thinnest stroke of the font is one 0.4 mm line
+    assert styles.THINNEST_STROKE_FACTORS[style] * styles.minTextHeight(style) == approx(0.04)
+
+
+def test_descenders_reach_below_the_baseline():
+    # measured in Fusion 15.11.2026 on "gjpqy", the same for all three styles, the text height is the capitals' height
+    assert styles.DESCENT_FACTOR == approx(0.294, abs=1e-3)
