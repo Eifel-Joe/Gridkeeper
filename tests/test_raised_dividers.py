@@ -244,3 +244,29 @@ def test_chain_path_with_a_few_microns_in_the_middle_is_none_in_cm():
     # position tolerance of its end, the path is ambiguous and the corner falls back to a fillet
     edges = [((0.12, 1.6), (0.12, 1.55)), ((0.12, 1.6), (0.12, 1.600355)), ((0.12, 1.600355), (0.19, 1.67))]
     assert raised.chainPath(edges) is None
+
+
+# p101 (round 15): a wall thicker than the lip leaves a level ledge between the corner's edges, measured in Fusion
+# 15.11.2026 at a 3 mm wall, (other axis, z) in mm: the wall's face up to the ledge, the lip's face above it. Each run is
+# swept on its own
+
+LEDGE_3MM = [
+    ((1.5, 18.896), (1.9, 18.496)),
+    ((1.5, 18.896), (1.5, 19.8)),
+    ((1.9, 18.496), (1.9, 16.0)),
+    ((3.0, 16.0), (3.0, 15.5)),
+]
+
+
+def test_a_ledge_splits_the_chain_in_two_runs():
+    assert raised.chainRuns(LEDGE_3MM) == [[3], [2, 0, 1]]
+
+
+def test_one_run_without_a_ledge():
+    edges = [((30.0, 15.5), (30.0, 16.0)), ((30.0, 16.0), (29.1, 16.9)), ((29.1, 16.9), (29.1, 19.8))]
+    assert raised.chainRuns(edges) == [[0, 1, 2]]
+
+
+def test_a_branching_chain_has_no_runs():
+    edges = [((1.0, 0.0), (1.0, 1.0)), ((1.0, 1.0), (1.0, 2.0)), ((1.0, 1.0), (2.0, 1.5))]
+    assert raised.chainRuns(edges) is None

@@ -187,6 +187,32 @@ def chainPath(edges: list[tuple[tuple[float, float], tuple[float, float]]], tole
     return order
 
 
+def chainRuns(edges: list[tuple[tuple[float, float], tuple[float, float]]], tolerance: float = 1e-3) -> list[list[int]] | None:
+    """
+    The corner's chain edges as runs that each make one path from their lowest point up, the runs from the lowest up
+    (round 15, p101). A wall thicker than the lip leaves a level ledge between the wall's face and the lip's, its edge
+    isn't in the chain, so the chain falls in two runs, each swept on its own. None where a run branches
+    """
+    def same(a, b):
+        return abs(a[0] - b[0]) <= tolerance and abs(a[1] - b[1]) <= tolerance
+
+    if len(edges) == 0:
+        return None
+    # edges that share an end belong to one run
+    groups: list[list[int]] = []
+    for index in range(len(edges)):
+        touching = [group for group in groups if any(same(a, b) for other in group for a in edges[other] for b in edges[index])]
+        merged = [index] + [member for group in touching for member in group]
+        groups = [group for group in groups if group not in touching] + [sorted(merged)]
+    runs = []
+    for group in groups:
+        order = chainPath([edges[index] for index in group], tolerance)
+        if order is None:
+            return None
+        runs.append([group[position] for position in order])
+    return sorted(runs, key=lambda run: min(point[1] for index in run for point in edges[index]))
+
+
 def segmentsForBin(
     isEnabled: bool,
     hasLip: bool,
