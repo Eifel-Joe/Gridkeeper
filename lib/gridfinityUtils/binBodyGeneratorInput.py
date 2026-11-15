@@ -83,6 +83,8 @@ class BinBodyGeneratorInput():
         # into the root
         self.binOccurrence = None
         self.textOccurrence = None
+        # where the bin is moved after it's built, colored labels are drawn there right away, see labelGenerator.createLabel
+        self.binPlacement: tuple[float, float] = (0, 0)
         self.cullenectSocketOffset = const.CULLENECT_SOCKET_OFFSET
         # Cullenect labels count in whole grid units, also on a half grid bin whose base width is a foot
         self.cullenectUnitWidth = Dim.length(const.DIMENSION_DEFAULT_WIDTH_UNIT)

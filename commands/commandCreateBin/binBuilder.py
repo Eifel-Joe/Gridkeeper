@@ -74,7 +74,6 @@ PARAMETER_FIELDS = {
 # the move placing the bin, rebuilding in place reads the spot from it, see rebuildUtils
 BIN_PLACEMENT_FEATURE = 'Bin placement'
 # the same move of the colored labels in the bin's Text component (round 13)
-TEXT_PLACEMENT_FEATURE = 'Text placement'
 
 def binDisplayName(state: InputState) -> str:
     return 'Gridfinity bin {}x{}x{}{}'.format(
@@ -365,6 +364,7 @@ def _buildBin(
     # colored labels go into a Text component of the bin, made with the first of them
     binBodyInput.binOccurrence = newCmpOcc
     binBodyInput.textOccurrence = assembly.TextOccurrence(des, newCmpOcc)
+    binBodyInput.binPlacement = binPlacement
     binBodyInput.cullenectSocketOffset = state.cullenectSocketOffset
     binBodyInput.cullenectUnitWidth = baseWidth
     isCullenect = state.labelStyle == labelGenerator.LABEL_STYLE_CULLENECT
@@ -648,20 +648,18 @@ def _buildBin(
                     name='Label',
                     textOccurrence=binBodyInput.textOccurrence,
                     targetOccurrence=binBodyInput.binOccurrence,
+                    binPlacement=binPlacement,
                 )
 
     generatedBodies: list[adsk.fusion.BRepBody] = []
     if state.generateBody or state.generateBase:
         generatedBodies = [binBody] if state.generateBody else baseBodies
-        # colored labels stand apart from the bin body, they move with it and are part of what was built
+        # colored labels stand apart from the bin body and are part of what was built. They are drawn where the bin ends
+        # up and aren't moved with it: a move takes the bodies there are, the letters a longer text adds stayed behind
+        # (round 14, p72)
         movedBodies = generatedBodies + labelBodies
         if binPlacement != (0, 0):
-            # labels in the Text component move there, a move only takes bodies of its own component
-            ownBodies = [body for body in movedBodies if body.parentComponent == gridfinityBinComponent]
-            textBodies = [body for body in movedBodies if body.parentComponent != gridfinityBinComponent]
-            placementUtils.moveBodies(ownBodies, *binPlacement, gridfinityBinComponent, name=BIN_PLACEMENT_FEATURE)
-            if len(textBodies) > 0:
-                placementUtils.moveBodies(textBodies, *binPlacement, textBodies[0].parentComponent, name=TEXT_PLACEMENT_FEATURE)
+            placementUtils.moveBodies(generatedBodies, *binPlacement, gridfinityBinComponent, name=BIN_PLACEMENT_FEATURE)
         # mark generated geometry so later bins can tell it apart from the rest of the design,
         # with the settings it was generated with to show later. Labels aren't bins, they'd count as bins of their own
         for body in generatedBodies:
