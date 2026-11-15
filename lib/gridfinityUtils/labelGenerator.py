@@ -1,8 +1,9 @@
 import os
+import math
 import adsk.core, adsk.fusion
 
-from . import const, commonUtils, combineUtils, appearanceUtils, textStyles
-from .dim import Dim, valueInput
+from . import const, commonUtils, combineUtils, appearanceUtils, textStyles, binLabelLayout, sketchUtils
+from .dim import Dim, valueInput, applyTo
 
 LABEL_STYLE_OUTLINE = 'Outline'
 LABEL_STYLE_ENGRAVED = 'Engraved'
@@ -158,13 +159,6 @@ def _importMeasured(sketch: adsk.fusion.Sketch, path: str, x: float, y: float, s
         target.deleteMe()
     return bounds
 
-def _iconAspect(sketch: adsk.fusion.Sketch, path: str) -> float | None:
-    """Width of the drawn icon per unit of its height"""
-    bounds = _importMeasured(sketch, path, 0, 0, 1)
-    if bounds is None or bounds[3] - bounds[1] <= 0:
-        return None
-    return (bounds[2] - bounds[0]) / (bounds[3] - bounds[1])
-
 def _importIcon(sketch: adsk.fusion.Sketch, path: str, minX: float, minY: float, height: float):
     """Imports the svg scaled to the given height with its bottom left corner at the given point.
     How the svg units and import position map to the sketch isn't documented, so the svg is imported
@@ -183,6 +177,277 @@ def _importIcon(sketch: adsk.fusion.Sketch, path: str, minX: float, minY: float,
     placed = _importMeasured(sketch, path, (targetMinX - scaled[0]) * directionX, (targetMinY - scaled[1]) * directionY, scale, keep=True)
     commonUtils.debugLog(f'icon {os.path.basename(path)} placed at {placed[0]:.3f}, {placed[1]:.3f}, expected {targetMinX:.3f}, {targetMinY:.3f}')
 
+def _iconMeasure(sketch: adsk.fusion.Sketch, path: str) -> tuple[float, int] | None:
+    """Width of the drawn icon per unit of its height and the number of its points, from an import into a throwaway
+    sketch on the same plane"""
+    target = sketch.parentComponent.sketches.add(sketch.referencePlane)
+    target.importSVG(path, 0, 0, 1)
+    bounds = _sketchCurvesBounds(target)
+    points = target.sketchPoints.count - 1
+    target.deleteMe()
+    if bounds is None or bounds[3] - bounds[1] <= 0:
+        return None
+    return ((bounds[2] - bounds[0]) / (bounds[3] - bounds[1]), points)
+
+
+def _offsetPlane(component: adsk.fusion.Component, base: adsk.fusion.ConstructionPlane, offset: Dim, name: str) -> adsk.fusion.ConstructionPlane:
+    planeInput = component.constructionPlanes.createInput()
+    planeInput.setByOffset(base, valueInput(offset))
+    plane = component.constructionPlanes.add(planeInput)
+    plane.name = name
+    plane.isLightBulbOn = False
+    return plane
+
+
+def _pointOf(component: adsk.fusion.Component, planes: tuple, name: str) -> adsk.fusion.ConstructionPoint:
+    pointInput = component.constructionPoints.createInput()
+    pointInput.setByThreePlanes(*planes)
+    point = component.constructionPoints.add(pointInput)
+    point.name = name
+    point.isLightBulbOn = False
+    return point
+
+
+def _labelPlane(
+    component: adsk.fusion.Component,
+    placement: binLabelLayout.BinLabelPlacement,
+    length: float,
+    name: str,
+) -> tuple[adsk.fusion.ConstructionPlane, adsk.fusion.ConstructionAxis]:
+    """
+    The plane of the label face and its back edge, both following the bin's parameters. Flat it is the plane at the
+    label's height. Tilted it goes through three points made of offset planes, the back edge at both sides and the
+    front edge: a plane at an angle to the back edge (setByAngle) turned to the other side when the height changed
+    (Fusion 15.11.2026), the one through the points kept its side through height, width, length and text. The points
+    go around so its normal points up: a sketch seen from below shows its text mirrored. Its sketch has the projection
+    of the component origin as its origin, sketch x may run against model x
+    """
+    top = _offsetPlane(component, component.xYConstructionPlane, placement.planeZ, f'{name} plane')
+    back = _offsetPlane(component, component.xZConstructionPlane, placement.hingeY, f'{name} back plane')
+    # the points only need to be apart along the back edge, the label's own x is held by the sketch's dims
+    side = _offsetPlane(component, component.yZConstructionPlane, Dim.length(1), f'{name} side plane')
+    left = _pointOf(component, (component.yZConstructionPlane, back, top), f'{name} back left')
+    right = _pointOf(component, (side, back, top), f'{name} back right')
+    axisInput = component.constructionAxes.createInput()
+    axisInput.setByTwoPoints(left, right)
+    edge = component.constructionAxes.add(axisInput)
+    edge.name = f'{name} back edge'
+    edge.isLightBulbOn = False
+    if placement.tiltAngle == 0:
+        return (top, edge)
+    front = _offsetPlane(component, component.xZConstructionPlane, placement.hingeY - Dim.length(length * math.cos(placement.tiltAngle)), f'{name} front plane')
+    low = _offsetPlane(component, component.xYConstructionPlane, placement.planeZ - Dim.length(length * math.sin(placement.tiltAngle)), f'{name} front edge plane')
+    frontLeft = _pointOf(component, (component.yZConstructionPlane, front, low), f'{name} front left')
+    planeInput = component.constructionPlanes.createInput()
+    # back left, front left, back right: their normal points up
+    planeInput.setByThreePoints(left, frontLeft, right)
+    plane = component.constructionPlanes.add(planeInput)
+    plane.name = f'{name} face plane'
+    plane.isLightBulbOn = False
+    return (plane, edge)
+
+
+def _magnitude(value: Dim) -> Dim:
+    """A distance dimension is a length, so a model x left of the origin is driven by its negative, the point stays on
+    its side of the origin as long as the parameters keep it there"""
+    return value if value.value >= 0 else Dim.length(0) - value
+
+
+def _projectedEdge(sketch: adsk.fusion.Sketch, edge: adsk.fusion.ConstructionAxis) -> tuple[adsk.fusion.SketchLine, int]:
+    """The back edge in the sketch, and which way the front is along sketch y, where model y is lower"""
+    projected = [entity for entity in sketch.project(edge) if adsk.fusion.SketchLine.cast(entity) is not None]
+    edgeLine = adsk.fusion.SketchLine.cast(projected[0])
+    edgeStart = edgeLine.startSketchPoint.geometry
+    stepped = sketch.sketchToModelSpace(adsk.core.Point3D.create(edgeStart.x, edgeStart.y + 0.1, 0))
+    front = -1 if stepped.y > sketch.sketchToModelSpace(edgeStart).y else 1
+    return (edgeLine, front)
+
+
+def _faceSketchPoint(sketch: adsk.fusion.Sketch, placement: binLabelLayout.BinLabelPlacement, x: float, fromBack: float) -> adsk.core.Point3D:
+    """The point of the label face at model x and the distance from the back edge, in sketch space"""
+    return sketch.modelToSketchSpace(adsk.core.Point3D.create(
+        x,
+        placement.hingeY.value - fromBack * math.cos(placement.tiltAngle),
+        placement.planeZ.value - fromBack * math.sin(placement.tiltAngle),
+    ))
+
+
+def _baselineTexts(
+    sketch: adsk.fusion.Sketch,
+    edge: adsk.fusion.ConstructionAxis,
+    placement: binLabelLayout.BinLabelPlacement,
+    text: str,
+    textHeight: float,
+    textParameter: adsk.fusion.UserParameter,
+    style: str,
+    count: int,
+) -> list[adsk.fusion.SketchText]:
+    """
+    The text standing on a line parallel to the back edge, its ends driven by the label's x, as one text or as twins
+    driven by the same parameter, see cullenectLabelGenerator._texts. Text along a line never breaks into lines, a box
+    did for a text made longer (p84). Before the text the sketch is fully constrained, with it Fusion doesn't say so,
+    the exception Nutzer allowed (p50)
+    """
+    (edgeLine, front) = _projectedEdge(sketch, edge)
+    start = _faceSketchPoint(sketch, placement, placement.baselineStartX.value, placement.baselineFromBack)
+    end = _faceSketchPoint(sketch, placement, placement.baselineEndX.value, placement.baselineFromBack)
+    baseline = sketch.sketchCurves.sketchLines.addByTwoPoints(start, end)
+    baseline.isConstruction = True
+    sketch.geometricConstraints.addParallel(baseline, edgeLine)
+    dimensions = sketch.sketchDimensions
+    edgeStart = edgeLine.startSketchPoint.geometry
+    offset = dimensions.addOffsetDimension(edgeLine, baseline, adsk.core.Point3D.create((start.x + end.x) / 2, (edgeStart.y + start.y) / 2, 0))
+    offset.parameter.value = placement.baselineFromBack
+    for (point, modelX, at) in ((baseline.startSketchPoint, placement.baselineStartX, start), (baseline.endSketchPoint, placement.baselineEndX, end)):
+        dimension = dimensions.addDistanceDimension(sketch.originPoint, point, adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation, adsk.core.Point3D.create(at.x, at.y + front * 0.2, 0))
+        applyTo(dimension.parameter, _magnitude(modelX))
+    texts = []
+    for _ in range(count):
+        textInput = sketch.sketchTexts.createInput2(text, textHeight)
+        alignment = adsk.core.HorizontalAlignments.CenterHorizontalAlignment if placement.isCentered else adsk.core.HorizontalAlignments.LeftHorizontalAlignment
+        textInput.setAsAlongPath(baseline, True, alignment, 0)
+        _applyStyle(textInput, style)
+        sketchText = sketch.sketchTexts.add(textInput)
+        sketchText.textParameter.expression = textParameter.name
+        texts.append(sketchText)
+    return texts
+
+
+def _heldIcon(
+    sketch: adsk.fusion.Sketch,
+    edge: adsk.fusion.ConstructionAxis,
+    placement: binLabelLayout.BinLabelPlacement,
+    path: str,
+    iconSize: float,
+    name: str,
+) -> list[adsk.fusion.Profile]:
+    """
+    A small icon drawn on the label face and held there by dims: its imported curves are let go, one of its points is
+    driven by the label's x and kept at its distance from the back edge, every other point at its distance from that
+    one (Fusion 15.11.2026, proposal A, see binLabelLayout.ICON_POINTS_HELD_BY_DIMS). Where sketch x runs against model
+    x the import is turned half round, it would stand on its head otherwise
+    """
+    corner = _faceSketchPoint(sketch, placement, placement.iconMinX.value, placement.iconMinFromBack)
+    _importIcon(sketch, path, corner.x, corner.y, iconSize)
+    curves = list(sketch.sketchCurves)
+    points = [point for point in sketch.sketchPoints if point != sketch.originPoint]
+    if len(points) == 0:
+        return []
+    # projected before the compute is deferred, a projection into a deferred sketch came back empty (Fusion
+    # 15.11.2026), and after the icon's points are counted, its own aren't to be held
+    (edgeLine, front) = _projectedEdge(sketch, edge)
+    with sketchUtils.deferSketchCompute(sketch):
+        for curve in curves:
+            if curve.isFixed:
+                curve.isFixed = False
+        for point in points:
+            if point.isFixed:
+                point.isFixed = False
+        (_, xAxis, _, _) = sketch.transform.getAsCoordinateSystem()
+        if xAxis.x < 0:
+            turn = adsk.core.Matrix3D.create()
+            turn.setToRotation(math.pi, adsk.core.Vector3D.create(0, 0, 1), corner)
+            sketch.move(commonUtils.objectCollectionFromList(curves), turn)
+        anchor = points[0]
+        dimensions = sketch.sketchDimensions
+        horizontal = adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation
+        vertical = adsk.fusion.DimensionOrientations.VerticalDimensionOrientation
+        anchorX = sketch.sketchToModelSpace(anchor.geometry).x
+        across = dimensions.addDistanceDimension(sketch.originPoint, anchor, horizontal, adsk.core.Point3D.create(anchor.geometry.x, anchor.geometry.y + front * 0.2, 0))
+        applyTo(across.parameter, _magnitude(placement.iconMinX + Dim.length(anchorX - placement.iconMinX.value)))
+        dimensions.addDistanceDimension(edgeLine.startSketchPoint, anchor, vertical, adsk.core.Point3D.create(anchor.geometry.x - 0.2, anchor.geometry.y, 0))
+        refused = 0
+        for point in points[1:]:
+            for orientation in (horizontal, vertical):
+                try:
+                    dimensions.addDistanceDimension(anchor, point, orientation, point.geometry)
+                except RuntimeError:
+                    # already held, by a constraint of the import or the dims so far
+                    refused += 1
+    commonUtils.debugLog(f'{name}: icon {os.path.basename(path)} held by dims, {len(points)} points, {refused} dims not needed')
+    return _iconProfiles(sketch)
+
+
+def _movedIcon(
+    component: adsk.fusion.Component,
+    input: BinLabelInput,
+    placement: binLabelLayout.BinLabelPlacement,
+    path: str,
+    iconSize: float,
+    isEmbossed: bool,
+    isOutline: bool,
+    name: str,
+) -> list[adsk.fusion.BRepBody]:
+    """
+    A large icon as bodies of its own, laid out flat at the label's current spot, turned down by the tilt and moved
+    by how far the parametric spot is from there, as labels were built before round 14. Its bodies don't change with
+    the text, so the move keeps all of them, but its fixed curves wouldn't follow the label's x and holding hundreds of
+    points by dims took over a minute (Fusion 15.11.2026, proposal A). The text is never moved
+    """
+    flat = _offsetPlane(component, component.xYConstructionPlane, Dim.length(placement.planeZ.value), f'{name} icon plane')
+    sketch: adsk.fusion.Sketch = component.sketches.add(flat)
+    sketch.name = f'{name} icon sketch'
+    _importIcon(sketch, path, placement.iconMinX.value, placement.hingeY.value - placement.iconMinFromBack, iconSize)
+    profiles = _iconProfiles(sketch)
+    if len(profiles) == 0:
+        return []
+    def extrude(isThin: bool) -> adsk.fusion.ExtrudeFeature:
+        return _extrudeOnFace(component, profiles, adsk.fusion.FeatureOperations.NewBodyFeatureOperation, isEmbossed, flat, input.depth, f'{name} icon', None, isThin)
+    if isOutline:
+        try:
+            iconExtrude = extrude(True)
+        except RuntimeError as err:
+            commonUtils.debugLog(f'{name}: outline extrude of the icon failed, engraving instead, {err}')
+            iconExtrude = extrude(False)
+    else:
+        iconExtrude = extrude(False)
+    bodies = list(iconExtrude.bodies)
+    features = component.features
+    if placement.tiltAngle != 0:
+        # turning about +x takes the front edge down
+        tilt = adsk.core.Matrix3D.create()
+        tilt.setToRotation(placement.tiltAngle, adsk.core.Vector3D.create(1, 0, 0), adsk.core.Point3D.create(0, placement.hingeY.value, placement.planeZ.value))
+        tiltInput = features.moveFeatures.createInput2(commonUtils.objectCollectionFromList(bodies))
+        tiltInput.defineAsFreeMove(tilt)
+        features.moveFeatures.add(tiltInput).name = f'{name} icon tilt'
+    shiftX = placement.iconMinX - Dim.length(placement.iconMinX.value)
+    shiftY = placement.hingeY - Dim.length(placement.hingeY.value)
+    shiftZ = placement.planeZ - Dim.length(placement.planeZ.value)
+    if shiftX.isExpression or shiftY.isExpression or shiftZ.isExpression:
+        moveInput = features.moveFeatures.createInput2(commonUtils.objectCollectionFromList(bodies))
+        moveInput.defineAsTranslateXYZ(valueInput(shiftX), valueInput(shiftY), valueInput(shiftZ), True)
+        features.moveFeatures.add(moveInput).name = f'{name} icon placement'
+    commonUtils.debugLog(f'{name}: icon {os.path.basename(path)} moved into place')
+    return bodies
+
+
+def _extrudeOnFace(
+    component: adsk.fusion.Component,
+    profiles: list,
+    operation: adsk.fusion.FeatureOperations,
+    isUp: bool,
+    plane: adsk.fusion.ConstructionPlane,
+    depth: float,
+    name: str,
+    participants: list | None = None,
+    isThin: bool = False,
+) -> adsk.fusion.ExtrudeFeature:
+    """Up out of the face or down into it, whichever way the plane's normal points"""
+    extrudeInput = component.features.extrudeFeatures.createInput(commonUtils.objectCollectionFromList(profiles), operation)
+    isAlongNormal = (plane.geometry.normal.z > 0) == isUp
+    extrudeInput.setOneSideExtent(
+        adsk.fusion.DistanceExtentDefinition.create(adsk.core.ValueInput.createByReal(depth)),
+        adsk.fusion.ExtentDirections.PositiveExtentDirection if isAlongNormal else adsk.fusion.ExtentDirections.NegativeExtentDirection,
+    )
+    if isThin:
+        extrudeInput.setThinExtrude(adsk.fusion.ThinExtrudeWallLocation.Center, adsk.core.ValueInput.createByReal(const.BIN_LABEL_OUTLINE_THICKNESS))
+    if participants is not None:
+        extrudeInput.participantBodies = participants
+    extrude = component.features.extrudeFeatures.add(extrudeInput)
+    extrude.name = name
+    return extrude
+
+
 def createLabel(
     input: BinLabelInput,
     targetBody: adsk.fusion.BRepBody,
@@ -192,172 +457,118 @@ def createLabel(
     textOccurrence=None,
     targetOccurrence: adsk.fusion.Occurrence | None = None,
 ) -> list[adsk.fusion.BRepBody]:
-    """Icon at the left as tall as the letters of the text after it, standing on their bottom, text alone is centered. Built as a separate body at the current label spot and
-    moved by how far the parametric spot is from it, then cut from or joined to the target body (a colored label: see below). Its sketches lie on a plane
-    at the current height, so a change of the parameters only changes the move: a sketch that moves is recomputed, its
-    text with new curves, and the extrusion of the text loses them. A tilted label is laid out flat and turned about its
-    back edge before that move.
+    """
+    Icon at the left as tall as the letters of the text after it, standing on their baseline, text alone is centered.
+    Drawn at its finished spot on planes that follow the bin's parameters, without a move (round 14, p72): a move takes
+    the letter bodies there are, and letters a longer text adds stayed at the origin, untilted and out of the bin. The
+    cut or join is the extrusion's own operation on the target body, not a combine with a list of bodies, for the same
+    reason. Shown in Fusion 15.11.2026: the letters of a longer text follow height, width, length and tilt, and cut,
+    join and the colored cut take them. A large icon is the exception, its bodies are moved, see _movedIcon.
     Planes, sketches and features are named after the given name.
     With a color the label stays bodies of their own in that color, for printing in another filament (p86): raised
-    ones aren't joined, the tools of an engraved or outline cut stay as a flush inlay. Those bodies are returned, named
-    '<name> text N' from left to right, without a color none.
-    A colored label is built in the Text component of the bin (round 13, p90) when textOccurrence is given, an
-    assembly.TextOccurrence made on first use, so a bin without colored labels gets none. Built there rather than moved
-    there, like the inserts' text, see cullenectLabelGenerator. The cut into the bin then takes the bodies as seen from
-    the root, through targetOccurrence and the Text occurrence, Fusion refused them otherwise (15.11.2026)"""
-    markingOccurrence = textOccurrence.get() if input.color and textOccurrence is not None and textOccurrence.isAvailable else None
-    bodyComponent = targetComponent
-    targetComponent = markingOccurrence.component if markingOccurrence is not None else targetComponent
-    features = targetComponent.features
-    isTilted = input.tiltAngle != 0
-    labelPlaneInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    labelPlaneInput.setByOffset(targetComponent.xYConstructionPlane, valueInput(Dim.length(input.originZ.value)))
-    labelPlane = targetComponent.constructionPlanes.add(labelPlaneInput)
-    labelPlane.name = f'{name} plane'
-    labelPlane.isLightBulbOn = False
-
-    margin = const.BIN_LABEL_MARGIN
-    contentMinX = input.originX.value + const.BIN_LABEL_SIDE_MARGIN
-    contentMinY = input.originY.value + margin
-    contentWidth = input.width.value - const.BIN_LABEL_SIDE_MARGIN * 2
-    contentHeight = input.length - margin * 2
-    profiles = adsk.core.ObjectCollection.create()
-    iconPath = input.definition.iconPath
+    ones stand on the tab, an engraved or outline cut is filled flush by them. They are built in the Text component when
+    textOccurrence is given, an assembly.TextOccurrence made on first use (round 13, p90); the cut into the bin from
+    there takes it as seen through targetOccurrence, Fusion refused it otherwise, and a twin of the text cuts, Fusion
+    won't extrude one text twice. Returns the colored bodies named '<name> text N' from left to right, without a color
+    none
+    """
     textParameter = input.definition.textParameter
     text = textParameter.textValue if textParameter is not None else ''
-    gap = const.BIN_LABEL_ICON_GAP if iconPath is not None else 0
-
-    iconAspect = 0
-    if iconPath is not None:
-        iconSketch: adsk.fusion.Sketch = targetComponent.sketches.add(labelPlane)
-        iconSketch.name = f'{name} icon sketch'
-        iconAspect = _iconAspect(iconSketch, iconPath) or 1
-
-    # the icon is as tall as the letters, so both grow and shrink together. Letters start as tall as
-    # the label allows, then everything scales down until the icon, gap and text fit the label width
-    iconSize = contentHeight * const.BIN_LABEL_TEXT_HEIGHT_RATIO
-    textWidth = 0
+    iconPath = input.definition.iconPath
+    if len(text) == 0 and iconPath is None:
+        return []
+    markingOccurrence = textOccurrence.get() if input.color and textOccurrence is not None and textOccurrence.isAvailable else None
+    component = markingOccurrence.component if markingOccurrence is not None else targetComponent
+    contentWidth = input.width.value - const.BIN_LABEL_SIDE_MARGIN * 2
+    contentHeight = input.length - const.BIN_LABEL_MARGIN * 2
     style = textStyles.styleOfBold(input.isBold)
+    isEmbossed = input.style == LABEL_STYLE_EMBOSSED
+    isOutline = input.style == LABEL_STYLE_OUTLINE
+    isColored = bool(input.color)
+
+    # the planes don't depend on the size of the letters and the icon, they're measured on the face
+    unsized = binLabelLayout.binLabelPlacement(input.originX, input.originY, input.originZ, input.width, input.length, input.tiltAngle, 0, 0, 0, False, True)
+    (plane, edge) = _labelPlane(component, unsized, input.length, name)
+    sketch: adsk.fusion.Sketch = component.sketches.add(plane)
+    sketch.name = f'{name} text sketch' if len(text) > 0 else f'{name} icon sketch'
+    (iconAspect, iconPoints) = (0, 0)
+    if iconPath is not None:
+        (iconAspect, iconPoints) = _iconMeasure(sketch, iconPath) or (1, 0)
+    gap = const.BIN_LABEL_ICON_GAP if iconPath is not None else 0
+    # the icon is as tall as the letters, so both grow and shrink together. Letters start as tall as the label
+    # allows, then everything scales down until the icon, gap and text fit the label width
+    iconSize = contentHeight * const.BIN_LABEL_TEXT_HEIGHT_RATIO
+    textHeight = contentHeight
+    lettersHeight = iconSize
     if len(text) > 0:
-        textSketch: adsk.fusion.Sketch = targetComponent.sketches.add(labelPlane)
-        textSketch.name = f'{name} text sketch'
-        textHeight = contentHeight
-        measured = _measureText(textSketch, text, textHeight, style)
+        measured = _measureText(sketch, text, textHeight, style)
         if measured is not None and measured[1] > 0:
             (measuredWidth, measuredHeight) = measured
-            iconShare = measuredHeight * iconAspect
             scale = min(
                 contentHeight * const.BIN_LABEL_TEXT_HEIGHT_RATIO / measuredHeight,
-                (contentWidth - gap) / (measuredWidth + iconShare),
+                (contentWidth - gap) / (measuredWidth + measuredHeight * iconAspect),
             )
             textHeight *= scale
-            textWidth = measuredWidth * scale
-            iconSize = measuredHeight * scale
+            lettersHeight = measuredHeight * scale
+            iconSize = lettersHeight
         # a long text on a short bin shrinks, the command hints at it when it gets too thin to print (p130)
         textStyles.noteText(text, style, textHeight)
     elif iconPath is not None:
         iconSize = min(contentHeight, contentWidth / iconAspect)
+    placement = binLabelLayout.binLabelPlacement(
+        input.originX, input.originY, input.originZ, input.width, input.length, input.tiltAngle,
+        lettersHeight, iconSize * iconAspect, iconSize, iconPath is not None, len(text) > 0,
+    )
 
-    # an icon starts at the side with the text after it, text alone is centered
-    groupMinX = contentMinX
-    iconMinY = contentMinY + (contentHeight - iconSize) / 2
-
-    if len(text) > 0:
-        textMinX = groupMinX + (iconSize * iconAspect + gap if iconPath is not None else 0)
-        sketchText = _addText(
-            textSketch,
-            text,
-            textHeight,
-            adsk.core.Point3D.create(textMinX, contentMinY, 0),
-            adsk.core.Point3D.create(contentMinX + contentWidth, contentMinY + contentHeight, 0),
-            style,
-            iconPath is None,
-        )
-        sketchText.textParameter.expression = textParameter.name
-        profiles.add(sketchText)
-        # the icon stands on the bottom of the letters as they came out
-        letterBounds = _curveBounds(sketchText.asCurves())
-        if letterBounds is not None:
-            iconMinY = letterBounds[1]
-
+    # a colored cut needs a twin of the text to cut with, its letters are the other
+    texts = _baselineTexts(sketch, edge, placement, text, textHeight, textParameter, style, 2 if isColored and not isEmbossed else 1) if len(text) > 0 else []
+    iconProfiles = []
+    iconBodies = []
     if iconPath is not None:
-        _importIcon(iconSketch, iconPath, groupMinX, iconMinY, iconSize)
-        for profile in _iconProfiles(iconSketch):
-            profiles.add(profile)
+        if binLabelLayout.isIconHeldByDims(iconPoints):
+            iconSketch = sketch if len(text) == 0 else component.sketches.add(plane)
+            iconSketch.name = f'{name} icon sketch'
+            iconProfiles = _heldIcon(iconSketch, edge, placement, iconPath, iconSize, name)
+        else:
+            iconBodies = _movedIcon(component, input, placement, iconPath, iconSize, isEmbossed, isOutline, name)
+    # the bin as seen from the Text component, Fusion refused it otherwise (round 13)
+    target = targetBody.createForAssemblyContext(targetOccurrence) if markingOccurrence is not None and targetOccurrence is not None else targetBody
 
-    if profiles.count == 0:
-        return []
+    def extrude(profiles: list, operation: adsk.fusion.FeatureOperations, participants: list | None, featureName: str) -> adsk.fusion.ExtrudeFeature:
+        if isOutline:
+            try:
+                return _extrudeOnFace(component, profiles, operation, isEmbossed, plane, input.depth, featureName, participants, True)
+            except RuntimeError as err:
+                commonUtils.debugLog(f'{name}: outline extrude failed, engraving instead, {err}')
+        return _extrudeOnFace(component, profiles, operation, isEmbossed, plane, input.depth, featureName, participants)
 
-    isEmbossed = input.style == LABEL_STYLE_EMBOSSED
-    def extrudeLabel(isThin: bool) -> adsk.fusion.ExtrudeFeature:
-        extrudeInput = features.extrudeFeatures.createInput(profiles, adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
-        extrudeInput.setOneSideExtent(
-            adsk.fusion.DistanceExtentDefinition.create(adsk.core.ValueInput.createByReal(input.depth)),
-            adsk.fusion.ExtentDirections.PositiveExtentDirection if isEmbossed else adsk.fusion.ExtentDirections.NegativeExtentDirection,
-        )
-        if isThin:
-            extrudeInput.setThinExtrude(
-                adsk.fusion.ThinExtrudeWallLocation.Center,
-                adsk.core.ValueInput.createByReal(const.BIN_LABEL_OUTLINE_THICKNESS),
-            )
-        return features.extrudeFeatures.add(extrudeInput)
-    if input.style == LABEL_STYLE_OUTLINE:
-        try:
-            labelExtrude = extrudeLabel(True)
-        except RuntimeError as err:
-            commonUtils.debugLog(f'{name}: outline extrude failed, engraving instead, {err}')
-            labelExtrude = extrudeLabel(False)
-    else:
-        labelExtrude = extrudeLabel(False)
-    labelExtrude.name = name
-    labelBodies = list(labelExtrude.bodies)
-    for body in labelBodies:
-        body.name = name
-    if input.color:
+    marked = texts[:1] + iconProfiles
+    labelBodies = []
+    if len(marked) > 0:
+        if not isColored:
+            extrude(marked, adsk.fusion.FeatureOperations.JoinFeatureOperation if isEmbossed else adsk.fusion.FeatureOperations.CutFeatureOperation, [target], name)
+        else:
+            if not isEmbossed:
+                extrude(texts[1:] + iconProfiles, adsk.fusion.FeatureOperations.CutFeatureOperation, [target], f'{name} cut')
+            labelBodies = list(extrude(marked, adsk.fusion.FeatureOperations.NewBodyFeatureOperation, None, name).bodies)
+    if len(iconBodies) > 0:
+        # the moved icon's bodies are the same whatever the text, a combine with them keeps all
+        if not isColored:
+            if isEmbossed:
+                combineUtils.joinBodies(targetBody, commonUtils.objectCollectionFromList(iconBodies), targetComponent, name=f'{name} icon join')
+            else:
+                combineUtils.cutBody(targetBody, commonUtils.objectCollectionFromList(iconBodies), targetComponent, False, name=f'{name} icon cut')
+        else:
+            if not isEmbossed:
+                tools = [body.createForAssemblyContext(markingOccurrence) for body in iconBodies] if markingOccurrence is not None else iconBodies
+                combineUtils.cutBody(target, commonUtils.objectCollectionFromList(tools), targetComponent, True, name=f'{name} icon cut')
+            labelBodies += iconBodies
+    if isColored:
         # names a snapshot pairs them by, Fusion keeps letters that don't touch as bodies of their own
         labelBodies.sort(key=lambda body: (round(body.boundingBox.minPoint.x, 4), body.boundingBox.minPoint.y))
         for (index, body) in enumerate(labelBodies):
             body.name = f'{name} text {index + 1}'
-
-    if isTilted:
-        # turning about +x takes the front edge down
-        tilt = adsk.core.Matrix3D.create()
-        tilt.setToRotation(
-            input.tiltAngle,
-            adsk.core.Vector3D.create(1, 0, 0),
-            adsk.core.Point3D.create(0, input.originY.value + input.length, input.originZ.value),
-        )
-        tiltInput = features.moveFeatures.createInput2(commonUtils.objectCollectionFromList(labelBodies))
-        tiltInput.defineAsFreeMove(tilt)
-        tiltFeature = features.moveFeatures.add(tiltInput)
-        tiltFeature.name = f'{name} tilt'
-
-    # the label is laid out at the current spot, the move follows the parameters from there. Its size stays, text
-    # alone stays in the middle of the label area, an icon and its text at its left
-    if iconPath is None:
-        shiftX = input.originX + input.width / 2 - Dim.length(input.originX.value + input.width.value / 2)
-    else:
-        shiftX = input.originX - Dim.length(input.originX.value)
-    shiftY = input.originY - Dim.length(input.originY.value)
-    shiftZ = input.originZ - Dim.length(input.originZ.value)
-    if shiftX.isExpression or shiftY.isExpression or shiftZ.isExpression:
-        moveInput = features.moveFeatures.createInput2(commonUtils.objectCollectionFromList(labelBodies))
-        moveInput.defineAsTranslateXYZ(valueInput(shiftX), valueInput(shiftY), valueInput(shiftZ), True)
-        moveFeature = features.moveFeatures.add(moveInput)
-        moveFeature.name = f'{name} placement'
-
-    if isEmbossed:
-        if not input.color:
-            combineUtils.joinBodies(targetBody, commonUtils.objectCollectionFromList(labelBodies), bodyComponent, name=f'{name} join')
-    elif markingOccurrence is not None:
-        target = targetBody.createForAssemblyContext(targetOccurrence) if targetOccurrence is not None else targetBody
-        tools = [body.createForAssemblyContext(markingOccurrence) for body in labelBodies]
-        combineUtils.cutBody(target, commonUtils.objectCollectionFromList(tools), bodyComponent, True, name=f'{name} cut')
-    else:
-        combineUtils.cutBody(targetBody, commonUtils.objectCollectionFromList(labelBodies), bodyComponent, bool(input.color), name=f'{name} cut')
-    commonUtils.debugLog(f'{name}: {input.style.lower()}, text parameter {textParameter.name if textParameter is not None else None}, icon {input.definition.iconPath}, color {input.color or None}')
-    if not input.color:
-        return []
-    # on the Text occurrence too, the letters a longer text adds show it (p120)
+    commonUtils.debugLog(f'{name}: {input.style.lower()}, text parameter {textParameter.name if textParameter is not None else None}, icon {iconPath} ({iconPoints} points), color {input.color or None}')
+    # on the Text occurrence, the letters a longer text adds show it (p120)
     appearanceUtils.colorPart(labelBodies, markingOccurrence, input.color)
     return labelBodies

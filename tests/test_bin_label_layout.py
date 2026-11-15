@@ -112,3 +112,13 @@ def test_hinge_is_the_back_edge():
     assert result.hingeY.value == approx(-1.5 + LENGTH)
     assert result.planeZ.value == approx(2.4)
     assert result.tiltAngle == 0.3
+
+
+def test_small_icons_are_held_by_dims_large_ones_moved():
+    # Fusion 15.11.2026: the hex nut's 10 points took 20 dims in 0.3 s, the 263 points of a Cullenect crimp ring not
+    # even all of their dims in a minute
+    assert layout.ICON_POINTS_HELD_BY_DIMS == 40
+    assert layout.isIconHeldByDims(10)
+    assert layout.isIconHeldByDims(40)
+    assert not layout.isIconHeldByDims(41)
+    assert not layout.isIconHeldByDims(263)
