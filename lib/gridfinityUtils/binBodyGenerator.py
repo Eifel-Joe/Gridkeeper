@@ -596,32 +596,29 @@ def roundRaisedDividerCorners(
         # fillets. The cutters are kept until the last cut, see createRaisedDividers
         cutters = createStackedFootCutters(lipInput, targetComponent, name='Raised divider corners foot cutout')
         rounded: list[adsk.fusion.BRepBody] = []
-        pieceCount = sum(len(bodies) for (_, _, _, bodies) in sweeps)
-        position = 0
-        for (index, corner, at, bodies) in sweeps:
-            # a corner goes in only with all its runs cut, else it's filleted as a whole
-            cornerPieces = []
-            for body in bodies:
-                position += 1
-                try:
-                    cut = combineUtils.cutBody(
-                        body,
-                        commonUtils.objectCollectionFromList(cutters),
-                        targetComponent,
-                        isKeepToolBodies=position < pieceCount,
-                        name=f'Raised divider corner {index + 1} foot cut',
-                    )
-                except RuntimeError as error:
-                    commonUtils.debugLog(f'Raised divider corner {index + 1}: foot cut failed, {error}')
-                    cornerPieces = None
-                    continue
-                if cornerPieces is not None:
-                    # a cut keeping its tools lists them among its bodies too
-                    cornerPieces.extend(piece for piece in cut.bodies if all(piece != cutter for cutter in cutters))
-            if cornerPieces is None:
+        # Below a ledge the run stays as it is: the feet of a bin stacked on top can't reach there past the thick wall,
+        # whose corner fillet goes up to the ledge uncut, and cut it ended 0.104 mm under the ledge, a level face of
+        # 0.6 mm2 at every corner of a 3 mm wall (round 15, p101, try B)
+        for (position, (index, corner, at, bodies)) in enumerate(sweeps):
+            # only the top run is cut, a corner goes in only with it, else it's filleted as a whole
+            try:
+                cut = combineUtils.cutBody(
+                    bodies[-1],
+                    commonUtils.objectCollectionFromList(cutters),
+                    targetComponent,
+                    isKeepToolBodies=position < len(sweeps) - 1,
+                    name=f'Raised divider corner {index + 1} foot cut',
+                )
+            except RuntimeError as error:
+                commonUtils.debugLog(f'Raised divider corner {index + 1}: foot cut failed, {error}')
+                for body in bodies:
+                    # no loose pieces of a corner that is filleted
+                    targetComponent.features.removeFeatures.add(body)
                 toFillet.append((index, corner, at))
-            else:
-                rounded.extend(cornerPieces)
+                continue
+            # a cut keeping its tools lists them among its bodies too
+            rounded.extend(bodies[:-1])
+            rounded.extend(piece for piece in cut.bodies if all(piece != cutter for cutter in cutters))
         if len(rounded) > 0:
             try:
                 combineUtils.joinBodies(

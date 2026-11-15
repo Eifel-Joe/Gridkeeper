@@ -2,7 +2,7 @@
 # the add-in loaded from this checkout. The groups run each under a minute for the Fusion MCP's time limit: set GROUP
 # to 'a' to 'f' before running (all without). Each group builds into a document of its own, closes it when everything
 # passes and prints OK or FAIL per point, ALL OK or N FAILED last.
-import adsk.core, adsk.fusion, sys, os, dataclasses
+import adsk.core, adsk.fusion, sys, os, dataclasses, re
 
 ADDIN = '__main__D%3A%2FEntwicklung%2FGridfinity%2FFusionGridfinityGenerator%2FGridfinityGenerator_py'
 CASES = r'D:\Entwicklung\Gridfinity\FusionGridfinityGenerator\tests\e2e\cases'
@@ -131,7 +131,8 @@ def groupF(run):
     for wallMm in (2.0, 3.0):
         body = run.bin('bin_3x2x3_dividers_to_top_3_columns', wallThickness=wallMm / 10, labelStyle='Outline', labelText='')
         features = body.parentComponent.features
-        fillets = [f.name for f in features.filletFeatures if f.name.startswith('Raised divider corner')]
+        # the corners' own fillets, not the one of the foot cutter ('Raised divider corners foot cutout corner fillet')
+        fillets = [f.name for f in features.filletFeatures if re.fullmatch(r'Raised divider corner \d+ fillet', f.name)]
         sweeps = [f.name for f in features.sweepFeatures if f.name.startswith('Raised divider corner')]
         run.check(f'Wall {wallMm} mm: no corner filleted instead of swept', len(fillets) == 0 and len(sweeps) > 0, f'{len(sweeps)} sweeps, fillets {fillets}')
         box = body.boundingBox
@@ -141,8 +142,10 @@ def groupF(run):
             if plane is None or abs(abs(plane.normal.z) - 1) > 1e-6:
                 continue
             z = face.boundingBox.minPoint.z
-            # level faces between the floor and the top smaller than a corner's quarter of 5 mm2: the steps
-            if box.minPoint.z + 0.5 < z < box.maxPoint.z - 0.01 and face.area < 0.05:
+            # level faces between the floor and the top no larger than a corner's section (r^2 - pi r^2 / 4, 0.7 mm2 at
+            # 1.8 mm): the steps of a corner. The ledge a thick wall leaves under the lip runs along the wall, 3.9 mm2
+            # at 2 mm, and isn't one (Fusion 15.11.2026)
+            if box.minPoint.z + 0.5 < z < box.maxPoint.z - 0.01 and face.area < 0.01:
                 small.append((round(z * 10, 3), round(face.area * 100, 3)))
         run.check(f'Wall {wallMm} mm: no small level face at the corners', len(small) == 0, f'{small[:8]} (z mm, mm2)')
     run.healthy('group f')
