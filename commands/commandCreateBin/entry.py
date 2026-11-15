@@ -1482,7 +1482,11 @@ def configChoices() -> dict[str, configJson.Choice]:
 
 def readConfig(text: str, source: str) -> InputState | None:
     """The state of a config, none when it can't be read, see configButtons.readConfig"""
-    return configButtons.readConfig(text, source, configJson.GENERATOR_BIN, InputState, getInputsState(), configChoices())
+    # a setting the config doesn't have keeps the dialog's value; the label color of the state is derived, '' without a
+    # label, the dialog's choice is what stays (round 18, p151)
+    color = labelColors.configCurrentColor(commandUIState.getState(BIN_TAB_LABEL_COLOR_INPUT_ID), commandUIState.getState(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID))
+    current = dataclasses.replace(getInputsState(), labelColor=color)
+    return configButtons.readConfig(text, source, configJson.GENERATOR_BIN, InputState, current, configChoices())
 
 def applyPendingConfig():
     global pendingConfig
