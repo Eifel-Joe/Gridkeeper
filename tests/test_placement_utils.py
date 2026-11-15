@@ -136,3 +136,37 @@ def test_result_never_overlaps():
         assert x >= 0 and y >= 0
         shifted = (footprint[0] + x, footprint[1] + y, footprint[2] + x, footprint[3] + y)
         assert not any(placementUtils.cellsOverlap(shifted, cells) for cells in occupied)
+
+
+# --- round 13 (p100): a new insert goes beside bins and baseplates too, not into the first bin at the origin
+
+def test_placement_avoids_bins_and_baseplates(monkeypatch):
+    class Point:
+        def __init__(self, x, y):
+            self.x = x
+            self.y = y
+
+    class Box:
+        def __init__(self, minX, minY, maxX, maxY):
+            self.minPoint = Point(minX, minY)
+            self.maxPoint = Point(maxX, maxY)
+
+    root = object()
+
+    class Body:
+        def __init__(self, box):
+            self.parentComponent = root
+            self.boundingBox = box
+
+    design = types.SimpleNamespace(rootComponent=root, allComponents=[])
+    tagged = {"bin": [Body(Box(0, 0, 4.2, 4.2))], "baseplate": [], "label": []}
+    monkeypatch.setattr(placementUtils.tagUtils, "findTaggedBodies", lambda d, tag: [(body, {}) for body in tagged[tag]])
+    (x, y) = placementUtils.findPlacement(design, ["label", "bin", "baseplate"], "Gridfinity label", (0, 0, 3.6, 1.1), 4.2, 1.5)
+    assert x >= 4.2 - 1e-9 or y >= 4.2 - 1e-9
+
+
+def test_placement_with_a_single_tag_still_works(monkeypatch):
+    root = object()
+    design = types.SimpleNamespace(rootComponent=root, allComponents=[])
+    monkeypatch.setattr(placementUtils.tagUtils, "findTaggedBodies", lambda d, tag: [])
+    assert placementUtils.findPlacement(design, "bin", "Gridfinity bin ", (0, 0, 4.1, 4.1), 4.2, 4.2) == (0, 0)

@@ -158,6 +158,13 @@ def caseJson(case: TestCase) -> str:
 
 # the case list in tests/e2e/README.md, see tests/e2e/write_readme.py
 GENERATOR_TITLES = {GENERATOR_BIN: 'Bins', GENERATOR_BASEPLATE: 'Baseplates', GENERATOR_LABEL: 'Labels'}
+
+# the container each generator builds into, the kind tagged on it, see tagUtils.KIND_* (round 13, p90). Every case builds
+# a new part, so it goes there also in a part design, which turns hybrid for it
+CONTAINER_KINDS = {GENERATOR_BIN: 'bins', GENERATOR_BASEPLATE: 'grid', GENERATOR_LABEL: 'labels'}
+
+def expectedContainer(generator: str) -> str:
+    return CONTAINER_KINDS[generator]
 README_INTRO = """# Shape snapshot tests
 
 Each case is a JSON file in [cases](cases) holding the settings of a bin, baseplate or label that differ from the dialog's

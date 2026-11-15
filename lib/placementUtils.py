@@ -50,14 +50,17 @@ def findFreeGridOffset(
 
 def getOccupiedExtents(
     design: adsk.fusion.Design,
-    tagName: str,
+    tagName: str | list[str],
     legacyNamePrefix: str,
 ) -> list[tuple[float, float, float, float]]:
-    """World XY extents of every placed instance of tagged bodies, plus untagged ones from before tagging"""
-    bodies = [body for (body, _) in tagUtils.findTaggedBodies(design, tagName)]
+    """World XY extents of every placed instance of bodies with the tag or one of the tags, plus untagged ones from
+    before tagging. Several tags: a new insert goes beside bins and baseplates too, not into the first bin (round 13,
+    p100)"""
+    tagNames = [tagName] if isinstance(tagName, str) else list(tagName)
+    bodies = [body for name in tagNames for (body, _) in tagUtils.findTaggedBodies(design, name)]
     for component in design.allComponents:
         for body in component.bRepBodies:
-            if body.name.startswith(legacyNamePrefix) and body.attributes.itemByName(tagUtils.TAG_GROUP, tagName) is None:
+            if body.name.startswith(legacyNamePrefix) and all(body.attributes.itemByName(tagUtils.TAG_GROUP, name) is None for name in tagNames):
                 bodies.append(body)
 
     root = design.rootComponent
@@ -74,7 +77,7 @@ def getOccupiedExtents(
 
 def findPlacement(
     design: adsk.fusion.Design,
-    tagName: str,
+    tagName: str | list[str],
     legacyNamePrefix: str,
     extent: tuple[float, float, float, float],
     cellWidth: float,

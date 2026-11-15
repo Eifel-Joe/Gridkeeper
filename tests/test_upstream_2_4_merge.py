@@ -236,18 +236,21 @@ def _parameters(function):
     (("commands", "commandCreateBaseplate", "baseplateBuilder.py"), "buildBaseplate", "_buildBaseplate"),
 ])
 def test_builder_wrapper_hands_every_argument_on(path, outer, inner):
+    # round 13: the wrapper works out the structure plan and builds through assembly.buildWithStructure, which leaves
+    # the root active. Every argument of a rebuild still has to reach the builder, the plan comes on top
     wrapper = _function(path, outer)
     builder = _function(path, inner)
-    assert _parameters(builder) == _parameters(wrapper)
     calls = [node for node in ast.walk(wrapper) if isinstance(node, ast.Call) and getattr(node.func, "id", None) == inner]
     assert len(calls) == 1
     # a keyword argument has to go to the parameter of its own name
     assert all(keyword.arg == keyword.value.id for keyword in calls[0].keywords)
     passed = [argument.id for argument in calls[0].args] + [keyword.value.id for keyword in calls[0].keywords]
-    assert passed == _parameters(wrapper)
+    assert passed == _parameters(builder)
+    # only the plan is new, only whether the document may change is used up by the wrapper
+    assert [name for name in passed if name not in _parameters(wrapper)] == ["plan"]
+    assert [name for name in _parameters(wrapper) if name not in passed] in ([], ["mayChangeDocument"])
     # and the root is active again after it, also after a failed build
-    tries = [node for node in wrapper.body if isinstance(node, ast.Try)]
-    assert len(tries) == 1 and "activateRootComponent" in ast.unparse(tries[0].finalbody)
+    assert "assembly.buildWithStructure" in ast.unparse(wrapper)
 
 
 # --- review of the recursion fix: the label color of a state comes from that state, not from the dialog, so a

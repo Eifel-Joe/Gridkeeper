@@ -4,6 +4,7 @@ from ...lib import tagUtils
 from ...lib import configJson
 from ...lib import placementUtils
 from ...lib import rebuildUtils
+from ...lib import assembly
 from ...lib.gridfinityUtils.baseplateGenerator import createGridfinityBaseplate, createGridfinityBaseplateFill
 from ...lib.gridfinityUtils import baseplateLayout
 from ...lib.gridfinityUtils.baseGenerator import cellCenters, createCellJointOrigins
@@ -11,6 +12,7 @@ from ...lib.gridfinityUtils.baseplateGeneratorInput import BaseplateGeneratorInp
 from ...lib.gridfinityUtils import commonUtils
 from ...lib.gridfinityUtils import const
 from ...lib.gridfinityUtils import parameterUtils
+from ...lib.gridfinityUtils import designIntent
 from ...lib.gridfinityUtils.dim import Dim
 from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
 from .inputState import InputState
@@ -118,20 +120,21 @@ def buildBaseplate(
     placement: tuple[float, float] | None = None,
     parameterPrefix: str | None = None,
     occurrenceTransform: adsk.core.Matrix3D | None = None,
+    oldPlace: assembly.OldPlace | None = None,
 ) -> list[adsk.fusion.BRepBody]:
     """
     Builds the baseplate into the design at the timeline marker, tagged with the settings to show later, see
-    settingsUtils.snapshotInputs. A preview spreads fill pieces apart and goes without joint origins. A baseplate
-    rebuilt in place keeps the placement, the parameters by their prefix and the transform of its component the old
-    one had, see rebuildUtils, a new one goes to a free spot
+    settingsUtils.snapshotInputs. A preview spreads fill pieces apart and goes without joint origins. A new baseplate
+    is a component of its own in the container Grid, a part design is switched to hybrid for it, not for a preview. A
+    baseplate rebuilt in place keeps the placement, the parameters by their prefix, the transform of its component and
+    the place the old one had, see rebuildUtils and assembly.OldPlace, a new one goes to a free spot
     """
-    # The new component is active while it's built, the design's root afterwards: an active component shows every other
-    # one half transparent and the user had to switch back each time (Joerg 15.11.2026). In finally, a failed build
-    # leaves the root active too. A rebuild in place builds through here as well, see rebuildBaseplate
-    try:
-        return _buildBaseplate(des, inputsState, settings, isPreview, placement, parameterPrefix, occurrenceTransform)
-    finally:
-        des.activateRootComponent()
+    if des.designType == 0:
+        raise UnsupportedDesignTypeException('Timeline must be enabled for the generator to work, projects with disabled design history currently are not supported')
+    plan = designIntent.structurePlan(des.designIntent, not isPreview, assembly.rebuildKind(oldPlace))
+    # the root is active afterwards, also after a failed build, see assembly.buildWithStructure. A rebuild in place
+    # builds through here as well, see rebuildBaseplate
+    return assembly.buildWithStructure(des, plan, lambda: _buildBaseplate(des, inputsState, settings, isPreview, placement, parameterPrefix, occurrenceTransform, plan, oldPlace))
 
 def _buildBaseplate(
     des: adsk.fusion.Design,
@@ -141,9 +144,9 @@ def _buildBaseplate(
     placement: tuple[float, float] | None = None,
     parameterPrefix: str | None = None,
     occurrenceTransform: adsk.core.Matrix3D | None = None,
+    plan: designIntent.StructurePlan | None = None,
+    oldPlace: assembly.OldPlace | None = None,
 ) -> list[adsk.fusion.BRepBody]:
-    if des.designType == 0:
-        raise UnsupportedDesignTypeException('Timeline must be enabled for the generator to work, projects with disabled design history currently are not supported')
     root = adsk.fusion.Component.cast(des.rootComponent)
 
     # a fill is laid out as one plate of the whole grid with the centering padding, then split into pieces
@@ -161,13 +164,12 @@ def _buildBaseplate(
         (paddingLeft, paddingTop, paddingRight, paddingBottom) = (inputsState.paddingLeft, inputsState.paddingTop, inputsState.paddingRight, inputsState.paddingBottom)
         plateExtent = gridPlateExtent(inputsState)
 
+    # the container comes before the baseplate's timeline group, a rebuild deletes the group, see assembly.partPlace
+    place = assembly.partPlace(des, plan or designIntent.structurePlan(des.designIntent, False), tagUtils.KIND_GRID, oldPlace)
     # the marker is before the features after a baseplate rebuilt in place, at the end otherwise
     originalTimelinePosition = des.timeline.markerPosition
-    if des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
-        # create new component, only allowed in hybrid intent type
-        newCmpOcc = adsk.fusion.Occurrences.cast(root.occurrences).addNewComponent(occurrenceTransform or adsk.core.Matrix3D.create())
-
-        newCmpOcc.component.name = plateName
+    if place.isComponent:
+        newCmpOcc = assembly.addOccurrence(des, place.parent, plateName, occurrenceTransform, isMovable=True)
         newCmpOcc.activate()
         gridfinityBaseplateComponent: adsk.fusion.Component = newCmpOcc.component
     else:
@@ -317,7 +319,7 @@ def rebuildBaseplate(
         prefix,
         BASEPLATE_PARAMETER_BASE_NAME,
         isPreview,
-        lambda placement, parameterPrefix, transform: buildBaseplate(des, inputsState, settings, isPreview, placement, parameterPrefix, transform),
+        lambda placement, parameterPrefix, transform, oldPlace: buildBaseplate(des, inputsState, settings, isPreview, placement, parameterPrefix, transform, oldPlace),
         'baseplate',
     )
 

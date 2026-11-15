@@ -6,6 +6,7 @@ from ...lib import tagUtils
 from ...lib import configJson
 from ...lib import placementUtils
 from ...lib import rebuildUtils
+from ...lib import assembly
 from ...lib.gridfinityUtils import combineUtils
 from ...lib.gridfinityUtils import geometryUtils
 from ...lib.gridfinityUtils import faceUtils
@@ -14,8 +15,9 @@ from ...lib.gridfinityUtils import commonUtils
 from ...lib.gridfinityUtils import const
 from ...lib.gridfinityUtils import raisedDividers
 from ...lib.gridfinityUtils import parameterUtils
+from ...lib.gridfinityUtils import designIntent
 from ...lib.gridfinityUtils.dim import Dim
-from ...lib.gridfinityUtils.baseGenerator import createFootGrid, cutBaseClearance, cutWallJunctionPockets, footCenters, createCellJointOrigins, keepBodiesInCells, cutOutsideShape, cutShapeWallJunctionPockets
+from ...lib.gridfinityUtils.baseGenerator import createFootGrid, cutBaseClearance, cutWallJunctionPockets, footCenters, createCellJointOrigins, createPointJointOrigins, keepBodiesInCells, cutOutsideShape, cutShapeWallJunctionPockets
 from ...lib.gridfinityUtils.baseGeneratorInput import BaseGeneratorInput
 from ...lib.gridfinityUtils.binBodyGenerator import createGridfinityBinBody, createShapeCavity, binBodyTopHeight, createCompartmentCutout, compartmentCutoutFilletRadius, tabTopClearance, createTabLabel, hollowTabWallThickness
 from ...lib.gridfinityUtils import labelGenerator
@@ -71,6 +73,8 @@ PARAMETER_FIELDS = {
 
 # the move placing the bin, rebuilding in place reads the spot from it, see rebuildUtils
 BIN_PLACEMENT_FEATURE = 'Bin placement'
+# the same move of the colored labels in the bin's Text component (round 13)
+TEXT_PLACEMENT_FEATURE = 'Text placement'
 
 def binDisplayName(state: InputState) -> str:
     return 'Gridfinity bin {}x{}x{}{}'.format(
@@ -183,19 +187,22 @@ def buildBin(
     placement: tuple[float, float] | None = None,
     parameterPrefix: str | None = None,
     occurrenceTransform: adsk.core.Matrix3D | None = None,
+    oldPlace: assembly.OldPlace | None = None,
+    mayChangeDocument: bool = True,
 ) -> list[adsk.fusion.BRepBody]:
     """
     Builds the bin into the design at the timeline marker, tagged with the settings to show later, see
-    settingsUtils.snapshotInputs. A bin rebuilt in place keeps the placement, the parameters by their prefix and
-    the transform of its component the old one had, see rebuildUtils, a new one goes to a free spot
+    settingsUtils.snapshotInputs. A new bin is a component of its own in the container Bins, a part design is switched
+    to hybrid for it unless the document may not change (a preview). A bin rebuilt in place keeps the placement, the
+    parameters by their prefix, the transform of its component and the place the old one had, see rebuildUtils and
+    assembly.OldPlace, a new one goes to a free spot
     """
-    # The new component is active while it's built, the design's root afterwards: an active component shows every other
-    # one half transparent and the user had to switch back each time (Joerg 15.11.2026). In finally, a failed build
-    # leaves the root active too. A rebuild in place builds through here as well, see rebuildBin
-    try:
-        return _buildBin(des, state, settings, placement, parameterPrefix, occurrenceTransform)
-    finally:
-        des.activateRootComponent()
+    if des.designType == adsk.fusion.DesignTypes.DirectDesignType:
+        raise UnsupportedDesignTypeException('Timeline must be enabled for the generator to work, projects with disabled design history currently are not supported')
+    plan = designIntent.structurePlan(des.designIntent, mayChangeDocument, assembly.rebuildKind(oldPlace))
+    # the root is active afterwards, also after a failed build, see assembly.buildWithStructure. A rebuild in place
+    # builds through here as well, see rebuildBin
+    return assembly.buildWithStructure(des, plan, lambda: _buildBin(des, state, settings, placement, parameterPrefix, occurrenceTransform, plan, oldPlace))
 
 def _buildBin(
     des: adsk.fusion.Design,
@@ -204,6 +211,8 @@ def _buildBin(
     placement: tuple[float, float] | None = None,
     parameterPrefix: str | None = None,
     occurrenceTransform: adsk.core.Matrix3D | None = None,
+    plan: designIntent.StructurePlan | None = None,
+    oldPlace: assembly.OldPlace | None = None,
 ) -> list[adsk.fusion.BRepBody]:
     # creased bins have a single compartment and a solid tab, see creaseLayout
     creases = creaseLayout(state)
@@ -226,22 +235,21 @@ def _buildBin(
 
     if shapeError(state) is not None:
         raise ValueError(shapeError(state))
-    if des.designType == adsk.fusion.DesignTypes.DirectDesignType:
-        raise UnsupportedDesignTypeException('Timeline must be enabled for the generator to work, projects with disabled design history currently are not supported')
     root = adsk.fusion.Component.cast(des.rootComponent)
 
     xyClearance = state.xyClearance
     binName = binDisplayName(state)
 
+    # the container comes before the bin's timeline group, a rebuild deletes the group, see assembly.partPlace
+    place = assembly.partPlace(des, plan or designIntent.structurePlan(des.designIntent, False), tagUtils.KIND_BINS, oldPlace)
     # the marker is before the features after a bin rebuilt in place, at the end otherwise
     originalTimelinePosition = des.timeline.markerPosition
-    if des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
-        # create new component, only allowed in hybrid intent type
-        newCmpOcc = adsk.fusion.Occurrences.cast(root.occurrences).addNewComponent(occurrenceTransform or adsk.core.Matrix3D.create())
-        newCmpOcc.component.name = binName
+    if place.isComponent:
+        newCmpOcc = assembly.addOccurrence(des, place.parent, binName, occurrenceTransform, isMovable=True)
         newCmpOcc.activate()
         gridfinityBinComponent: adsk.fusion.Component = newCmpOcc.component
     else:
+        newCmpOcc = None
         gridfinityBinComponent: adsk.fusion.Component = des.rootComponent
     features: adsk.fusion.Features = gridfinityBinComponent.features
 
@@ -354,6 +362,9 @@ def _buildBin(
     binBodyInput.labelStyle = state.labelStyle
     binBodyInput.isLabelBold = state.isLabelBold
     binBodyInput.labelColor = state.labelColor
+    # colored labels go into a Text component of the bin, made with the first of them
+    binBodyInput.binOccurrence = newCmpOcc
+    binBodyInput.textOccurrence = assembly.TextOccurrence(des, newCmpOcc)
     binBodyInput.cullenectSocketOffset = state.cullenectSocketOffset
     binBodyInput.cullenectUnitWidth = baseWidth
     isCullenect = state.labelStyle == labelGenerator.LABEL_STYLE_CULLENECT
@@ -390,6 +401,8 @@ def _buildBin(
     binBody: adsk.fusion.BRepBody
     # colored labels, bodies of their own beside the bin body, see labelGenerator.createLabel
     labelBodies: list[adsk.fusion.BRepBody] = []
+    # Cullenect pockets as (compartment index, compartments, placement), a joint origin goes on each (p160)
+    pockets: list[tuple[int, int, object]] = []
 
     if state.generateBody:
         binBodyInput.binHeight = Dim.parameter(tagged(parameterUtils.addUnitlessParameter(
@@ -427,7 +440,7 @@ def _buildBin(
             reuseParameters,
         ), 'heightUnit', binParameterPrefix))
         binParameters.append([PARAMETER_LABEL_HEIGHT_UNIT, binBodyInput.heightUnit.expression])
-        (binBody, labelBodies) = createGridfinityBinBody(
+        (binBody, labelBodies, pockets) = createGridfinityBinBody(
             binBodyInput,
             gridfinityBinComponent,
         )
@@ -600,7 +613,7 @@ def _buildBin(
                 combineUtils.cutBody(binBody, commonUtils.objectCollectionFromList(tabHollowCuts), gridfinityBinComponent, name='Label tab hollow cut')
 
             if isCullenect:
-                createCullenectSocket(
+                shelledPocket = createCullenectSocket(
                     tabOriginX,
                     tabOriginX + compartmentTabInput.length,
                     tabOriginY,
@@ -613,6 +626,8 @@ def _buildBin(
                     gridfinityBinComponent,
                     name='Label',
                 )
+                if shelledPocket is not None:
+                    pockets.append((0, 1, shelledPocket))
             shelledLabel = None if isCullenect else createLabelDefinition(des, binParameterPrefix, BIN_LABEL_PARAMETER, state.labelText, state.labelIcon, reuseParameters)
             if shelledLabel is not None and shelledLabel.textParameter is not None:
                 binParameters.append([PARAMETER_LABEL_LABEL, shelledLabel.textParameter.name])
@@ -631,6 +646,8 @@ def _buildBin(
                     binBodyInput.tabTopAngle,
                     binBodyInput.labelColor,
                     name='Label',
+                    textOccurrence=binBodyInput.textOccurrence,
+                    targetOccurrence=binBodyInput.binOccurrence,
                 )
 
     generatedBodies: list[adsk.fusion.BRepBody] = []
@@ -639,7 +656,12 @@ def _buildBin(
         # colored labels stand apart from the bin body, they move with it and are part of what was built
         movedBodies = generatedBodies + labelBodies
         if binPlacement != (0, 0):
-            placementUtils.moveBodies(movedBodies, *binPlacement, gridfinityBinComponent, name=BIN_PLACEMENT_FEATURE)
+            # labels in the Text component move there, a move only takes bodies of its own component
+            ownBodies = [body for body in movedBodies if body.parentComponent == gridfinityBinComponent]
+            textBodies = [body for body in movedBodies if body.parentComponent != gridfinityBinComponent]
+            placementUtils.moveBodies(ownBodies, *binPlacement, gridfinityBinComponent, name=BIN_PLACEMENT_FEATURE)
+            if len(textBodies) > 0:
+                placementUtils.moveBodies(textBodies, *binPlacement, textBodies[0].parentComponent, name=TEXT_PLACEMENT_FEATURE)
         # mark generated geometry so later bins can tell it apart from the rest of the design,
         # with the settings it was generated with to show later. Labels aren't bins, they'd count as bins of their own
         for body in generatedBodies:
@@ -662,6 +684,19 @@ def _buildBin(
             gridfinityBinComponent,
             name='Foot joint origin',
         )
+
+    if len(pockets) > 0:
+        # always, the label command joints an insert into them (p160, Joerg 15.11.2026). After the placement like the
+        # feet's, with the size of the pocket in mm, an insert and a bin have base units of their own
+        offsetX = Dim.length(binPlacement[0])
+        offsetY = Dim.length(binPlacement[1])
+        jointOrigins = createPointJointOrigins(
+            [(cullenect.pocketJointOriginName(index, count), pocket.centerX + offsetX, pocket.centerY + offsetY, pocket.floorZ) for (index, count, pocket) in pockets],
+            gridfinityBinComponent,
+            name='Pocket joint origin',
+        )
+        for (jointOrigin, (_, _, pocket)) in zip(jointOrigins, pockets):
+            jointOrigin.attributes.add(tagUtils.TAG_GROUP, tagUtils.TAG_POCKET, cullenect.pocketTagValue(*cullenect.pocketSizeMm(pocket.units, baseWidth.value, state.cullenectSocketOffset)))
 
     # group features in timeline
     binGroup = des.timeline.timelineGroups.add(originalTimelinePosition, des.timeline.markerPosition - 1)
@@ -703,7 +738,7 @@ def rebuildBin(
         BIN_PARAMETER_BASE_NAME,
         isPreview,
         # colored labels are bodies of their own beside the bin, only the bin bodies take the place of the old ones
-        lambda placement, parameterPrefix, transform: tagUtils.taggedBodies(buildBin(des, state, settings, placement, parameterPrefix, transform), tagUtils.TAG_BIN),
+        lambda placement, parameterPrefix, transform, oldPlace: tagUtils.taggedBodies(buildBin(des, state, settings, placement, parameterPrefix, transform, oldPlace, not isPreview), tagUtils.TAG_BIN),
         'bin',
     )
 

@@ -480,3 +480,20 @@ def test_cases_of_round_10_are_there():
     assert loaded['label_1u_screw_text_colored'].state.textColor == '#D02020'
     assert loaded['bin_2x1x3_label_text_engraved_colored'].state.labelColor == '#2060D0'
     assert loaded['bin_2x1x3_label_icon_text_embossed_colored'].state.labelColor == '#D02020'
+
+
+# --- round 13 (p90): every part goes into the container of its kind, also in a part design
+
+def test_expected_container_by_generator():
+    assert cases.expectedContainer(cases.GENERATOR_BIN) == "bins"
+    assert cases.expectedContainer(cases.GENERATOR_BASEPLATE) == "grid"
+    assert cases.expectedContainer(cases.GENERATOR_LABEL) == "labels"
+
+
+def test_part_design_cases_turn_hybrid():
+    folder = os.path.join(PROJECT_ROOT, "tests", "e2e", "cases")
+    for fileName in sorted(os.listdir(folder)):
+        with open(os.path.join(folder, fileName), encoding="utf-8") as file:
+            data = json.load(file)
+        if data.get("designIntent") == "part":
+            assert data.get("designIntentAfter") == "hybrid", fileName
