@@ -709,15 +709,17 @@ def stateLabelColor(state: InputState) -> str:
     10: a shelled bin let an invalid color through). It takes the state rather than asking isShaped(): that builds the
     state again, which asked for this color, endless recursion that kept the bin dialog from opening (Joerg 15.11.2026,
     see tests/test_dialog_state_calls.py)"""
-    hasLabel = labelColors.binHasLabel(
-        commandUIState.getState(BIN_GENERATE_BODY_INPUT_ID),
-        commandUIState.getState(BIN_HAS_TAB_INPUT_ID),
-        binBuilder.isShaped(state),
-        commandUIState.getState(BIN_TYPE_DROPDOWN_ID) == BIN_TYPE_SOLID,
-    )
-    isCullenect = commandUIState.getState(BIN_TAB_LABEL_STYLE_INPUT_ID) == labelGenerator.LABEL_STYLE_CULLENECT
+    # whether there is a label comes from the state, only the color choice is the dialog's (review round 12: a state
+    # of a config or rebuild differing from the inputs got the inputs' answer)
     color = labelColors.dialogColor(commandUIState.getState(BIN_TAB_LABEL_COLOR_INPUT_ID), commandUIState.getState(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID))
-    return labelColors.labelColorFor(color, hasLabel, isCullenect)
+    return labelColors.labelColorFor(color, stateHasLabel(state), isCullenectState(state))
+
+def stateHasLabel(state: InputState) -> bool:
+    """Whether the bin of the state gets a tab label to color, see labelColors.binHasLabel"""
+    return labelColors.binHasLabel(state.generateBody, state.hasTab, binBuilder.isShaped(state), state.binType == BIN_TYPE_SOLID)
+
+def isCullenectState(state: InputState) -> bool:
+    return state.labelStyle == labelGenerator.LABEL_STYLE_CULLENECT
 
 def is_all_input_valid(inputs: adsk.core.CommandInputs):
     result = True
@@ -1402,8 +1404,7 @@ def applyInputsState(state: InputState):
     commandUIState.setValue(BIN_COMPARTMENTS_SHOW_LAYOUT_ID, state.showCompartmentsLayout)
     commandUIState.setValue(BIN_SHAPE_CUSTOM_ID, state.hasCustomShape)
     # the way back of binLabelColor, a color of none of the named ones goes into the custom text
-    hasLabel = labelColors.binHasLabel(state.generateBody, state.hasTab, binBuilder.isShaped(state), state.binType == BIN_TYPE_SOLID)
-    if labelColors.restoresColor(state.labelColor, hasLabel, state.labelStyle == labelGenerator.LABEL_STYLE_CULLENECT):
+    if labelColors.restoresColor(state.labelColor, stateHasLabel(state), isCullenectState(state)):
         (colorChoice, customColor) = labelColors.choiceOf(state.labelColor)
         commandUIState.setValue(BIN_TAB_LABEL_COLOR_INPUT_ID, colorChoice)
         commandUIState.setValue(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID, customColor)
