@@ -368,8 +368,13 @@ def prepareView(design: adsk.fusion.Design, bodies: list[adsk.fusion.BRepBody], 
     """The bodies alone from the preset's view, the new document's viewport is the active one"""
     viewportPictures.hideHelpers(design)
     if preset.appearance or preset.color:
-        appearance = modelAppearance(design, preset)
-        for body in bodies:
+        try:
+            appearance = modelAppearance(design, preset)
+        except viewportPictures.PictureError as err:
+            # in Fusion's own look rather than no picture, as the snapshot previews (round 16, p31)
+            futil.log(f'{CMD_NAME}: drawn in the default look, {err}')
+            appearance = None
+        for body in bodies if appearance is not None else []:
             body.appearance = appearance
     viewportPictures.frame(app.activeViewport, presets.STYLES[preset.style], preset.camera == 'orthographic', preset.view)
 
