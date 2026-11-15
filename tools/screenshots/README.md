@@ -29,6 +29,7 @@ A shot in `shots.json`:
 |---|---|
 | `name` | File name, with `-dark` or `-light` added when it is taken in both themes |
 | `command` | `bin` or `baseplate` |
+| `menu` | Instead of a command, Fusion's right-click menu with these `items`, each a `label` with an optional `shortcut` and `icon`, a file from the add-in folder or `eye`, or `{"separator": true}`. `"cutTop": true` tears the top, for a menu going on above. `"hover": true` on an item lights it. `scene` opens the menu on Fusion's viewport, `{"width", "height", "model": {"picture", "x", "y", "width"}, "menuAt": [x, y]}` in dialog pixels, a model picture from the add-in folder, the menu's corner can be above the viewport's top, the pointer rests on the hovered item, at `cursorAt`, shares of its label's width and height. Fusion's own icons aren't drawn, the add-in's are |
 | `values` | Input values by id, as the dialog saves its defaults. Lengths are in cm, or a string such as `"42 mm"`. Groups take `true` or `false` to expand or collapse them |
 | `globals` | Values of the command's other state, such as `binShapeCells` or `compartmentPockets` |
 | `defaults` | A saved `ui_input_defaults.json` to start from instead of the original defaults |
@@ -119,7 +120,9 @@ for options shown side by side, such as the bin bottoms. The GIFs are listed in 
 milliseconds and `captionSize` are optional. `loopWith` names a dialog animation of `shots.json` going through the same
 options, for the two to be shown side by side. Its `model` steps say which picture goes with what the dialog shows,
 recording it saves when they happen to `timelines/<animation>-<theme>.json`, and the GIF fades to each picture at that
-moment and is as long, so both change and loop together. `hold` doesn't apply to it. Make the pictures in Fusion
+moment and is as long, so both change and loop together. `hold` doesn't apply to it. `"combine": true` puts the
+dialog animation beside the pictures in the GIF itself, for one image instead of a pair. The dialog animations are
+recorded to `tools/screenshots/dialogs`, which isn't kept in the repo, only the GIFs made from them are. Make the pictures in Fusion
 first, then
 
     tools/screenshots/.venv/bin/python tools/screenshots/modelGifs.py [--only bin-bottom-options]

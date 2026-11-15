@@ -1,8 +1,30 @@
 # Changelog — Cullenect labels
 
-Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of GridfinityGenerator v2.2.0.0.
+Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of GridfinityGenerator v2.4.0.0 (up to round 11 on v2.2.0.0).
 
 ## Unreleased
+
+### Base raised to upstream v2.4.0.0
+
+The fork now builds on GridfinityGenerator v2.4.0.0 by Le0Michine (CC BY-NC-SA 4.0), merged with its history, so every
+upstream commit keeps its author: bins and baseplates rebuilt in place from their context menu with parameters of
+their own, configs saved, loaded, copied and cloned, a panel for build errors, lip notches made from one notch along
+the walls, shelled bins with rounded offsets, a clearance between baseplates glued side by side.
+
+- **The inputs of this fork go along:** dividers up to the top, label color and socket play are kept in a bin's
+  config, so a rebuild, a clone or a loaded config brings them back into the dialog, the color into its dropdown or
+  custom text. Configs saved without them keep the dialog's values.
+- **Units of their own:** a bin's Cullenect sockets and raised dividers follow the bin's own `gfBinN_baseWidth`,
+  `gfBinN_baseLength` and `gfBinN_heightUnit` instead of the shared `gfBaseWidth`, `gfBaseLength` and `gfHeightUnit`
+  that upstream dropped. Every insert of the label command gets its own `gfLabelN_baseWidth` the same way.
+- A rebuild that only changes the text of a **colored** bin label builds the bin again instead of setting the text
+  parameter, so new letters get the label color too.
+- A rebuild pairs the bin bodies only, not the colored label bodies beside them, with the old ones, so the features
+  after the bin keep using it.
+- Raised dividers follow the lower lip socket of v2.4.0.0: the feet of a stacked bin are cut out of them as low as
+  out of the lip, so the ridge between two feet stays as high as the lip around it.
+- Shape test cases list only the settings that differ from the defaults, like upstream's; inserts have defaults of
+  their own (`lib/defaultSettings.py`, `LABEL`).
 
 ### Added
 
@@ -10,7 +32,7 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
   gets a socket for exchangeable Cullenect label inserts instead of a printed label: 1.2 mm deep, 0.3 mm larger than
   the insert, with the latch ribs along both long sides. The socket takes the widest standard Cullenect width
   (`42 mm × n − 6 mm`, in half units) that fits the tab with 1 mm to spare, so original Cullenect inserts fit compartment
-  tabs too. Its width is an expression on `gfBaseWidth` and it follows parameter changes like the labels do.
+  tabs too. Its width is an expression on the bin's base width parameter and it follows parameter changes like the labels do.
 - The tab is widened to at least 14 mm (more under steep overhangs) and kept flat with this style; text, icon, bold and
   tab top angle are switched off in the dialog but keep their values. Hollow tabs keep a 0.4 mm skin under the socket.
 - **Socket play** input in the label tab section (default 0.3 mm like Cullenect, 0–1 mm).
@@ -29,7 +51,7 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
 - **Command „Gridfinity label“** in the Create menu beside bin and baseplate: a Cullenect insert (`42 mm × n − 6 mm` ×
   11 mm × 1.2 mm with the latch set in 0.2 mm all around, as `cullenect_base_v2`) with up to two lines of text and a
   screw put together from head, shaft, threads, driver, flange and security pin, or a hardware symbol. Width in base
-  units (following `gfBaseWidth`) or free in mm, a width and height correction like Cullenect's `offset_xy`. Text and
+  units (following the insert's own `gfLabelN_baseWidth`) or free in mm, a width and height correction like Cullenect's `offset_xy`. Text and
   symbol are one layer (0.2 mm), raised, set in or flush, and bodies of their own to print them in another colour.
   The width is a user parameter (`gfLabel1_width`), the symbol stays at the right edge when it changes. Each text line
   is a user parameter too (`gfLabel1_text1`, `gfLabel1_text2`) and stays live text, so it can be changed later like

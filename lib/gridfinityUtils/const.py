@@ -1,5 +1,9 @@
 import adsk.core, adsk.fusion, traceback
 
+# smallest units the dialogs accept
+HEIGHT_UNIT_MIN = 0.5
+BASE_UNIT_MIN = 1
+
 BIN_XY_CLEARANCE = 0.025
 BIN_CORNER_FILLET_RADIUS = 0.4
 
@@ -44,6 +48,8 @@ BIN_SCOOP_TOP_MARGIN = 0.01
 
 BASEPLATE_EXTRA_HEIGHT = 0.64
 BASEPLATE_BIN_Z_CLEARANCE = 0.05
+# gap between baseplates glued side by side, each takes half of it on its edge. Closer than bins are to each other
+BASEPLATE_PLATE_CLEARANCE = 0.01
 
 DIMENSION_DEFAULT_WIDTH_UNIT = 4.2
 DIMENSION_DEFAULT_HEIGHT_UNIT = 0.7

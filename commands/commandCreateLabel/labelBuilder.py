@@ -6,7 +6,7 @@ from ...lib import placementUtils
 from ...lib.gridfinityUtils import cullenectLabelGenerator, cullenectLabelLayout
 from ...lib.gridfinityUtils import commonUtils, designIntent, labelColors, appearanceUtils
 from ...lib.gridfinityUtils import parameterUtils
-from ...lib.gridfinityUtils import sharedParameters
+from ...lib.gridfinityUtils import const
 from ...lib.gridfinityUtils.dim import Dim
 from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
 from .inputState import InputState
@@ -23,9 +23,11 @@ ICONS_FOLDER = os.path.join(
 
 # User parameter names are stored in user documents, keep these literal
 LABEL_PARAMETER_BASE_NAME = 'gfLabel'
+# the base unit of the insert, its own like a bin's, see binBuilder.BIN_PARAMETERS
+LABEL_BASE_WIDTH_PARAMETER = 'baseWidth'
 LABEL_WIDTH_PARAMETER = 'width'
 LABEL_TEXT_PARAMETERS = ['text1', 'text2']
-LABEL_PARAMETERS = [sharedParameters.BASE_WIDTH_FALLBACK_PARAMETER, LABEL_WIDTH_PARAMETER] + LABEL_TEXT_PARAMETERS
+LABEL_PARAMETERS = [LABEL_BASE_WIDTH_PARAMETER, LABEL_WIDTH_PARAMETER] + LABEL_TEXT_PARAMETERS
 
 # name the inserts start with, so ones without a tag still count when placing new ones
 LABEL_NAME_PREFIX = 'Gridfinity label'
@@ -58,8 +60,8 @@ def labelProblem(state: InputState) -> str | None:
     """Why the insert can't be built with these settings, none if it can"""
     if not labelColors.isColor(state.textColor):
         return labelColors.colorProblem(labelColors.CUSTOM_CHOICE, state.textColor)
-    if state.useUnits and state.baseWidth < sharedParameters.BASE_UNIT_MIN:
-        return f'The base width unit is at least {sharedParameters.BASE_UNIT_MIN * 10:g} mm'
+    if state.useUnits and state.baseWidth < const.BASE_UNIT_MIN:
+        return f'The base width unit is at least {const.BASE_UNIT_MIN * 10:g} mm'
     (width, height) = labelSize(state)
     (iconPath, isScrew) = labelSymbol(state)
     isSymbolMissing = iconPath is None and (state.showScrew or state.hardware != NO_HARDWARE)
@@ -147,17 +149,13 @@ def _buildLabel(
     labelParameters = []
     baseWidthName = None
     if state.useUnits:
-        # the shared base width, like the bins and baseplates of the design, so an insert follows a change of the grid
-        baseWidthParameter = sharedParameters.findOrCreateSharedLengthParameter(
+        # the insert's own base width, like the bins have theirs since upstream v2.4.0.0, changing it changes no
+        # other insert or bin
+        baseWidthParameter = parameterUtils.addLengthParameter(
             des,
-            tagUtils.TAG_BASE_WIDTH_PARAMETER,
-            sharedParameters.BASE_WIDTH_PARAMETER,
-            'base width unit',
-            sharedParameters.BASE_UNIT_MIN,
+            parameterUtils.parameterName(prefix, LABEL_BASE_WIDTH_PARAMETER),
             state.baseWidth,
-            parameterUtils.parameterName(prefix, sharedParameters.BASE_WIDTH_FALLBACK_PARAMETER),
-            'label',
-            LOG_PREFIX,
+            f'{name} base width unit',
         )
         baseWidthName = baseWidthParameter.name
         labelParameters.append(['Base width unit', baseWidthName])

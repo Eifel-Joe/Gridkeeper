@@ -1,4 +1,5 @@
 import adsk.core, adsk.fusion, traceback
+import html
 import os
 import pathlib
 import time
@@ -12,7 +13,6 @@ from ...lib import fusion360utils as futil
 from ... import config
 from ...lib.gridfinityUtils import commonUtils
 from ...lib.gridfinityUtils import const
-from ...lib.gridfinityUtils import sharedParameters
 from ...lib.gridfinityUtils import labelGenerator
 from ...lib.gridfinityUtils import labelColors
 from ...lib.gridfinityUtils import cullenect
@@ -27,8 +27,20 @@ from . import binBuilder
 from .binBuilder import BIN_TYPE_HOLLOW, BIN_TYPE_SHELLED, BIN_TYPE_SOLID
 from ...lib.ui.commandUiState import CommandUiState
 from ...lib.ui.defaultsButtons import addDefaultsButtonRow, defaultsButtonsHandlers, DEFAULTS_SAVE, DEFAULTS_FACTORY_RESET
+from ...lib.ui.buttonRow import addButtonRow
+from ...lib.ui import configButtons
+from ...lib.ui import selection
 from ...lib.ui import browserPages
+from ...lib.ui.infoPage import addInfoPage, infoPageHandlers, warningLine
 from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
+from ...lib.ui import errorPalette
+from ...lib import errorReport
+from ...lib import rebuildUtils
+from ...lib import configJson
+from ...lib import defaultSettings
+
+# what the dialog starts with before saved defaults, see lib/defaultSettings.py
+DEFAULT_STATE = configJson.stateFromJson(configJson.GENERATOR_BIN, InputState, defaultSettings.BIN)
 
 app = adsk.core.Application.get()
 ui = app.userInterface
@@ -49,6 +61,25 @@ actualDimensionsTableUiState = CommandUiState(CMD_NAME)
 compartmentPockets: list[dict] = []
 # cells of a custom shaped bin, see binShape, empty while the bin is a plain rectangle
 binShapeCells: list[tuple[int, int]] = []
+# config the dialog opens with next, see startWithConfig
+pendingConfig: dict | None = None
+# a body of the bin the dialog opens to rebuild next, see startRebuild, and the entity token of the one the open
+# dialog rebuilds, every preview is undone, the token finds the body again after. None while it makes a new bin
+pendingRebuildBody: adsk.fusion.BRepBody | None = None
+rebuildBodyToken: str | None = None
+# features after the rebuilt bin that need a look, shown once the dialog closes
+rebuildNotes: list[str] = []
+# the info text of the open dialog, the page asks for it once loaded
+dialogInfo = ''
+# how the open dialog came to be, for the log and the report of a failed build, see buildWorkflow
+WORKFLOW_NEW = 'New bin'
+WORKFLOW_CLONE = 'Clone from the settings window'
+WORKFLOW_REBUILD = 'Rebuild in place from the settings window'
+dialogWorkflow = WORKFLOW_NEW
+# configs loaded from a file into the open dialog
+loadedConfigs: list[str] = []
+# bodies of the last build, selected and centered in the view when the dialog closes on OK, see command_destroy
+builtBodies: list[adsk.fusion.BRepBody] = []
 
 # Specify that the command will be promoted to the panel.
 IS_PROMOTED = True
@@ -102,6 +133,7 @@ BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH = "total_real_length"
 BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT = "total_real_height"
 BIN_REAL_DIMENSIONS_TABLE_CULLENECT = "cullenect_sockets"
 BIN_WALL_THICKNESS_INPUT_ID = 'bin_wall_thickness'
+BIN_SHELL_ROUNDED_INPUT_ID = 'bin_shell_rounded'
 BIN_GENERATE_BASE_INPUT_ID = 'bin_generate_base'
 BIN_GENERATE_BODY_INPUT_ID = 'bin_generate_body'
 BIN_JOINT_ORIGINS_INPUT_ID = 'bin_joint_origins'
@@ -156,7 +188,59 @@ BIN_SHAPE_CUSTOM_ID = 'custom_shape'
 BIN_SHAPE_BROWSER_ID = 'shape_browser'
 SHAPE_NOTE = 'Compartments, scoop and label tab are not built for custom shapes yet'
 
+# InputState fields kept as they are in the dialog state, see getInputsState
+STATE_INPUT_IDS = {
+    'baseWidth': BIN_BASE_WIDTH_UNIT_INPUT_ID,
+    'baseLength': BIN_BASE_LENGTH_UNIT_INPUT_ID,
+    'heightUnit': BIN_HEIGHT_UNIT_INPUT_ID,
+    'xyClearance': BIN_XY_CLEARANCE_INPUT_ID,
+    'binWidth': BIN_WIDTH_INPUT_ID,
+    'binLength': BIN_LENGTH_INPUT_ID,
+    'binHeight': BIN_HEIGHT_INPUT_ID,
+    'isHalfGrid': BIN_HALF_GRID_INPUT_ID,
+    'wallThickness': BIN_WALL_THICKNESS_INPUT_ID,
+    'binType': BIN_TYPE_DROPDOWN_ID,
+    'isShellRounded': BIN_SHELL_ROUNDED_INPUT_ID,
+    'generateBase': BIN_GENERATE_BASE_INPUT_ID,
+    'generateBody': BIN_GENERATE_BODY_INPUT_ID,
+    'hasJointOrigins': BIN_JOINT_ORIGINS_INPUT_ID,
+    'hasScrewHoles': BIN_SCREW_HOLES_INPUT_ID,
+    'screwHoleDiameter': BIN_SCREW_DIAMETER_INPUT,
+    'hasMagnetCutouts': BIN_MAGNET_CUTOUTS_INPUT_ID,
+    'hasMagnetCutoutsTabs': BIN_MAGNET_CUTOUTS_TABS_INPUT_ID,
+    'magnetCutoutDiameter': BIN_MAGNET_DIAMETER_INPUT,
+    'magnetCutoutDepth': BIN_MAGNET_HEIGHT_INPUT,
+    'hasLip': BIN_WITH_LIP_INPUT_ID,
+    'hasLipNotches': BIN_WITH_LIP_NOTCHES_INPUT_ID,
+    'hasDividersToTop': BIN_DIVIDERS_TO_TOP_INPUT_ID,
+    'hasScoop': BIN_HAS_SCOOP_INPUT_ID,
+    'scoopMaxRadius': BIN_SCOOP_MAX_RADIUS_INPUT_ID,
+    'hasTab': BIN_HAS_TAB_INPUT_ID,
+    'tabLength': BIN_TAB_LENGTH_INPUT_ID,
+    'tabWidth': BIN_TAB_WIDTH_INPUT_ID,
+    'tabPosition': BIN_TAB_POSITION_INPUT_ID,
+    'isTabHollow': BIN_TAB_HOLLOW_INPUT_ID,
+    'isTabOpenThroughSides': BIN_TAB_HOLLOW_SIDES_INPUT_ID,
+    'labelText': BIN_TAB_LABEL_TEXT_INPUT_ID,
+    'labelIcon': BIN_TAB_LABEL_ICON_INPUT_ID,
+    'labelStyle': BIN_TAB_LABEL_STYLE_INPUT_ID,
+    'isLabelBold': BIN_TAB_LABEL_BOLD_INPUT_ID,
+    'cullenectSocketOffset': BIN_TAB_CULLENECT_OFFSET_INPUT_ID,
+    'hasCreases': BIN_CREASES_INPUT_ID,
+    'creaseDepth': BIN_CREASE_DEPTH_INPUT_ID,
+    'creaseMinLength': BIN_CREASE_MIN_LENGTH_INPUT_ID,
+    'creaseMaxPanelLength': BIN_CREASE_MAX_PANEL_LENGTH_INPUT_ID,
+    'creaseMinHeight': BIN_CREASE_MIN_HEIGHT_INPUT_ID,
+}
+# angles are kept as the expression typed in, see CommandUiState.onInputUpdate
+STATE_ANGLE_INPUT_IDS = {
+    'tabOverhangAngle': BIN_TAB_ANGLE_INPUT_ID,
+    'tabTopAngle': BIN_TAB_TOP_ANGLE_INPUT_ID,
+}
+
+INFO_BROWSER = 'info_page'
 INPUT_CHANGES_BUTTONS_BROWSER = 'input_changes_buttons'
+CONFIG_BUTTONS_BROWSER = 'config_buttons'
 PRESERVE_CHAGES_RADIO_GROUP = 'preserve_changes'
 PRESERVE_CHAGES_RADIO_GROUP_PRESERVE = 'Preserve inputs'
 PRESERVE_CHAGES_RADIO_GROUP_RESET = 'Reset inputs after creation'
@@ -172,21 +256,6 @@ INFO_TEXT = ("<b>Help:</b> Info for inputs can be found "
 def infoText():
     version = tagUtils.getGeneratorVersion()
     return f"{INFO_TEXT}<br><span style=\"color:#808080; font-size:small\">Version {version}</span>" if version else INFO_TEXT
-
-def applySharedParameterDefaults():
-    """Usable shared units of the design replace the remembered inputs, so new bins match the existing ones by default"""
-    design = adsk.fusion.Design.cast(app.activeProduct)
-    if design is None:
-        return
-    (baseWidth, baseLength) = sharedParameters.usableSharedBaseUnits(design)
-    for (inputId, value) in [
-        (BIN_BASE_WIDTH_UNIT_INPUT_ID, baseWidth),
-        (BIN_BASE_LENGTH_UNIT_INPUT_ID, baseLength),
-        (BIN_HEIGHT_UNIT_INPUT_ID, sharedParameters.usableSharedHeightUnit(design)),
-    ]:
-        if value is not None:
-            commandUIState.initValue(inputId, value, adsk.core.ValueCommandInput.classType())
-            commonUtils.debugLog(f'{CMD_NAME} dialog default {inputId} = {value} from the shared parameter')
 
 def refreshUi():
     global commandUIState
@@ -210,70 +279,70 @@ def initDefaultUiState():
     commandUIState.initValue(BIN_DIMENSIONS_GROUP, True, adsk.core.GroupCommandInput.classType())
     commandUIState.initValue(BIN_FEATURES_GROUP, True, adsk.core.GroupCommandInput.classType())
     commandUIState.initValue(BIN_COMPARTMENTS_GROUP_ID, True, adsk.core.GroupCommandInput.classType())
-    commandUIState.initValue(BIN_COMPARTMENTS_SHOW_LAYOUT_ID, False, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_COMPARTMENTS_SHOW_LAYOUT_ID, DEFAULT_STATE.showCompartmentsLayout, adsk.core.BoolValueCommandInput.classType())
     commandUIState.initValue(BIN_SCOOP_GROUP_ID, True, adsk.core.GroupCommandInput.classType())
     commandUIState.initValue(BIN_TAB_FEATURES_GROUP_ID, True, adsk.core.GroupCommandInput.classType())
     commandUIState.initValue(BIN_BASE_FEATURES_GROUP_ID, True, adsk.core.GroupCommandInput.classType())
     commandUIState.initValue(USER_CHANGES_GROUP_ID, True, adsk.core.GroupCommandInput.classType())
     commandUIState.initValue(PREVIEW_GROUP_ID, True, adsk.core.GroupCommandInput.classType())
 
-    commandUIState.initValue(BIN_BASE_WIDTH_UNIT_INPUT_ID, const.DIMENSION_DEFAULT_WIDTH_UNIT, adsk.core.ValueCommandInput.classType())
-    commandUIState.initValue(BIN_BASE_LENGTH_UNIT_INPUT_ID, const.DIMENSION_DEFAULT_WIDTH_UNIT, adsk.core.ValueCommandInput.classType())
-    commandUIState.initValue(BIN_HEIGHT_UNIT_INPUT_ID, const.DIMENSION_DEFAULT_HEIGHT_UNIT, adsk.core.ValueCommandInput.classType())
-    commandUIState.initValue(BIN_XY_CLEARANCE_INPUT_ID, const.BIN_XY_CLEARANCE, adsk.core.ValueCommandInput.classType())
-    commandUIState.initValue(BIN_WIDTH_INPUT_ID, 2, adsk.core.FloatSpinnerCommandInput.classType())
-    commandUIState.initValue(BIN_LENGTH_INPUT_ID, 3, adsk.core.FloatSpinnerCommandInput.classType())
-    commandUIState.initValue(BIN_HALF_GRID_INPUT_ID, False, adsk.core.BoolValueCommandInput.classType())
-    commandUIState.initValue(BIN_SHAPE_CUSTOM_ID, False, adsk.core.BoolValueCommandInput.classType())
-    commandUIState.initValue(BIN_HEIGHT_INPUT_ID, 5, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_BASE_WIDTH_UNIT_INPUT_ID, DEFAULT_STATE.baseWidth, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_BASE_LENGTH_UNIT_INPUT_ID, DEFAULT_STATE.baseLength, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_HEIGHT_UNIT_INPUT_ID, DEFAULT_STATE.heightUnit, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_XY_CLEARANCE_INPUT_ID, DEFAULT_STATE.xyClearance, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_WIDTH_INPUT_ID, DEFAULT_STATE.binWidth, adsk.core.FloatSpinnerCommandInput.classType())
+    commandUIState.initValue(BIN_LENGTH_INPUT_ID, DEFAULT_STATE.binLength, adsk.core.FloatSpinnerCommandInput.classType())
+    commandUIState.initValue(BIN_HALF_GRID_INPUT_ID, DEFAULT_STATE.isHalfGrid, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_SHAPE_CUSTOM_ID, DEFAULT_STATE.hasCustomShape, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_HEIGHT_INPUT_ID, DEFAULT_STATE.binHeight, adsk.core.ValueCommandInput.classType())
 
-    commandUIState.initValue(BIN_GENERATE_BODY_INPUT_ID, True, adsk.core.BoolValueCommandInput.classType())
-    commandUIState.initValue(BIN_TYPE_DROPDOWN_ID, BIN_TYPE_HOLLOW, adsk.core.DropDownCommandInput.classType())
-    commandUIState.initValue(BIN_WALL_THICKNESS_INPUT_ID, const.BIN_WALL_THICKNESS, adsk.core.ValueCommandInput.classType())
-    commandUIState.initValue(BIN_WITH_LIP_INPUT_ID, True, adsk.core.BoolValueCommandInput.classType())
-    commandUIState.initValue(BIN_WITH_LIP_NOTCHES_INPUT_ID, False, adsk.core.BoolValueCommandInput.classType())
-    commandUIState.initValue(BIN_DIVIDERS_TO_TOP_INPUT_ID, False, adsk.core.BoolValueCommandInput.classType())
-    commandUIState.initValue(BIN_CREASES_INPUT_ID, True, adsk.core.BoolValueCommandInput.classType())
-    commandUIState.initValue(BIN_CREASE_DEPTH_INPUT_ID, const.BIN_CREASE_DEPTH, adsk.core.ValueCommandInput.classType())
-    commandUIState.initValue(BIN_CREASE_MIN_LENGTH_INPUT_ID, const.BIN_CREASE_MIN_LENGTH, adsk.core.ValueCommandInput.classType())
-    commandUIState.initValue(BIN_CREASE_MAX_PANEL_LENGTH_INPUT_ID, const.BIN_CREASE_MAX_PANEL_LENGTH, adsk.core.ValueCommandInput.classType())
-    commandUIState.initValue(BIN_CREASE_MIN_HEIGHT_INPUT_ID, const.BIN_CREASE_MIN_HEIGHT, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_GENERATE_BODY_INPUT_ID, DEFAULT_STATE.generateBody, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_TYPE_DROPDOWN_ID, DEFAULT_STATE.binType, adsk.core.DropDownCommandInput.classType())
+    commandUIState.initValue(BIN_SHELL_ROUNDED_INPUT_ID, DEFAULT_STATE.isShellRounded, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_WALL_THICKNESS_INPUT_ID, DEFAULT_STATE.wallThickness, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_WITH_LIP_INPUT_ID, DEFAULT_STATE.hasLip, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_WITH_LIP_NOTCHES_INPUT_ID, DEFAULT_STATE.hasLipNotches, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_DIVIDERS_TO_TOP_INPUT_ID, DEFAULT_STATE.hasDividersToTop, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_CREASES_INPUT_ID, DEFAULT_STATE.hasCreases, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_CREASE_DEPTH_INPUT_ID, DEFAULT_STATE.creaseDepth, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_CREASE_MIN_LENGTH_INPUT_ID, DEFAULT_STATE.creaseMinLength, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_CREASE_MAX_PANEL_LENGTH_INPUT_ID, DEFAULT_STATE.creaseMaxPanelLength, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_CREASE_MIN_HEIGHT_INPUT_ID, DEFAULT_STATE.creaseMinHeight, adsk.core.ValueCommandInput.classType())
 
-    commandUIState.initValue(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID, 1, adsk.core.IntegerSpinnerCommandInput.classType())
-    commandUIState.initValue(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID, 1, adsk.core.IntegerSpinnerCommandInput.classType())
+    commandUIState.initValue(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID, DEFAULT_STATE.compartmentsX, adsk.core.IntegerSpinnerCommandInput.classType())
+    commandUIState.initValue(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID, DEFAULT_STATE.compartmentsY, adsk.core.IntegerSpinnerCommandInput.classType())
 
-    commandUIState.initValue(BIN_HAS_SCOOP_INPUT_ID, False, adsk.core.BoolValueCommandInput.classType())
-    commandUIState.initValue(BIN_SCOOP_MAX_RADIUS_INPUT_ID, const.BIN_SCOOP_MAX_RADIUS, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_HAS_SCOOP_INPUT_ID, DEFAULT_STATE.hasScoop, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_SCOOP_MAX_RADIUS_INPUT_ID, DEFAULT_STATE.scoopMaxRadius, adsk.core.ValueCommandInput.classType())
 
-    commandUIState.initValue(BIN_HAS_TAB_INPUT_ID, False, adsk.core.BoolValueCommandInput.classType())
-    commandUIState.initValue(BIN_TAB_LENGTH_INPUT_ID, 1, adsk.core.ValueCommandInput.classType())
-    commandUIState.initValue(BIN_TAB_WIDTH_INPUT_ID, const.BIN_TAB_WIDTH, adsk.core.ValueCommandInput.classType())
-    commandUIState.initValue(BIN_TAB_POSITION_INPUT_ID, 0, adsk.core.ValueCommandInput.classType())
-    commandUIState.initValue(BIN_TAB_ANGLE_INPUT_ID, '45 deg', adsk.core.ValueCommandInput.classType())
-    # follows the bin type when it changes, shelled bins get hollow tabs
-    commandUIState.initValue(BIN_TAB_HOLLOW_INPUT_ID, False, adsk.core.BoolValueCommandInput.classType())
-    commandUIState.initValue(BIN_TAB_HOLLOW_SIDES_INPUT_ID, False, adsk.core.BoolValueCommandInput.classType())
-    commandUIState.initValue(BIN_TAB_TOP_ANGLE_INPUT_ID, '0 deg', adsk.core.ValueCommandInput.classType())
-    commandUIState.initValue(BIN_TAB_LABEL_TEXT_INPUT_ID, '', adsk.core.StringValueCommandInput.classType())
-    commandUIState.initValue(BIN_TAB_LABEL_ICON_INPUT_ID, labelGenerator.LABEL_ICON_NONE, adsk.core.DropDownCommandInput.classType())
-    commandUIState.initValue(BIN_TAB_LABEL_STYLE_INPUT_ID, labelGenerator.LABEL_STYLE_OUTLINE, adsk.core.DropDownCommandInput.classType())
-    commandUIState.initValue(BIN_TAB_LABEL_BOLD_INPUT_ID, True, adsk.core.BoolValueCommandInput.classType())
-    commandUIState.initValue(BIN_TAB_LABEL_COLOR_INPUT_ID, labelColors.NO_COLOR_CHOICE, adsk.core.DropDownCommandInput.classType())
-    commandUIState.initValue(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID, '', adsk.core.StringValueCommandInput.classType())
-    commandUIState.initValue(BIN_TAB_CULLENECT_OFFSET_INPUT_ID, const.CULLENECT_SOCKET_OFFSET, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_HAS_TAB_INPUT_ID, DEFAULT_STATE.hasTab, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_TAB_LENGTH_INPUT_ID, DEFAULT_STATE.tabLength, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_TAB_WIDTH_INPUT_ID, DEFAULT_STATE.tabWidth, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_TAB_POSITION_INPUT_ID, DEFAULT_STATE.tabPosition, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_TAB_ANGLE_INPUT_ID, angleExpression(DEFAULT_STATE.tabOverhangAngle), adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_TAB_HOLLOW_INPUT_ID, DEFAULT_STATE.isTabHollow, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_TAB_HOLLOW_SIDES_INPUT_ID, DEFAULT_STATE.isTabOpenThroughSides, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_TAB_TOP_ANGLE_INPUT_ID, angleExpression(DEFAULT_STATE.tabTopAngle), adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_TAB_LABEL_TEXT_INPUT_ID, DEFAULT_STATE.labelText, adsk.core.StringValueCommandInput.classType())
+    commandUIState.initValue(BIN_TAB_LABEL_ICON_INPUT_ID, DEFAULT_STATE.labelIcon, adsk.core.DropDownCommandInput.classType())
+    commandUIState.initValue(BIN_TAB_LABEL_STYLE_INPUT_ID, DEFAULT_STATE.labelStyle, adsk.core.DropDownCommandInput.classType())
+    commandUIState.initValue(BIN_TAB_LABEL_BOLD_INPUT_ID, DEFAULT_STATE.isLabelBold, adsk.core.BoolValueCommandInput.classType())
+    (defaultColorChoice, defaultCustomColor) = labelColors.choiceOf(DEFAULT_STATE.labelColor)
+    commandUIState.initValue(BIN_TAB_LABEL_COLOR_INPUT_ID, defaultColorChoice, adsk.core.DropDownCommandInput.classType())
+    commandUIState.initValue(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID, defaultCustomColor, adsk.core.StringValueCommandInput.classType())
+    commandUIState.initValue(BIN_TAB_CULLENECT_OFFSET_INPUT_ID, DEFAULT_STATE.cullenectSocketOffset, adsk.core.ValueCommandInput.classType())
 
-    commandUIState.initValue(BIN_GENERATE_BASE_INPUT_ID, True, adsk.core.BoolValueCommandInput.classType())
-    commandUIState.initValue(BIN_JOINT_ORIGINS_INPUT_ID, False, adsk.core.BoolValueCommandInput.classType())
-    commandUIState.initValue(BIN_SCREW_HOLES_INPUT_ID, False, adsk.core.BoolValueCommandInput.classType())
-    commandUIState.initValue(BIN_SCREW_DIAMETER_INPUT, const.DIMENSION_SCREW_HOLE_DIAMETER, adsk.core.ValueCommandInput.classType())
-    commandUIState.initValue(BIN_SCREW_DIAMETER_INPUT, const.DIMENSION_SCREW_HOLE_DIAMETER, adsk.core.ValueCommandInput.classType())
-    commandUIState.initValue(BIN_MAGNET_CUTOUTS_INPUT_ID, False, adsk.core.BoolValueCommandInput.classType())
-    commandUIState.initValue(BIN_MAGNET_CUTOUTS_TABS_INPUT_ID, False, adsk.core.BoolValueCommandInput.classType())
-    commandUIState.initValue(BIN_MAGNET_DIAMETER_INPUT, const.DIMENSION_MAGNET_CUTOUT_DIAMETER, adsk.core.ValueCommandInput.classType())
-    commandUIState.initValue(BIN_MAGNET_HEIGHT_INPUT, const.DIMENSION_MAGNET_CUTOUT_DEPTH, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_GENERATE_BASE_INPUT_ID, DEFAULT_STATE.generateBase, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_JOINT_ORIGINS_INPUT_ID, DEFAULT_STATE.hasJointOrigins, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_SCREW_HOLES_INPUT_ID, DEFAULT_STATE.hasScrewHoles, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_SCREW_DIAMETER_INPUT, DEFAULT_STATE.screwHoleDiameter, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_MAGNET_CUTOUTS_INPUT_ID, DEFAULT_STATE.hasMagnetCutouts, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_MAGNET_CUTOUTS_TABS_INPUT_ID, DEFAULT_STATE.hasMagnetCutoutsTabs, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_MAGNET_DIAMETER_INPUT, DEFAULT_STATE.magnetCutoutDiameter, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_MAGNET_HEIGHT_INPUT, DEFAULT_STATE.magnetCutoutDepth, adsk.core.ValueCommandInput.classType())
 
-    compartmentPockets = []
-    binShapeCells = []
+    compartmentPockets = list(DEFAULT_STATE.compartmentPockets)
+    binShapeCells = list(DEFAULT_STATE.shapeCells)
     recordedDefaults = configUtils.readJsonConfig(UI_INPUT_DEFAULTS_CONFIG_PATH)
     if recordedDefaults is not None and recordedDefaults.get('static_ui') is not None:
         staticUiState = recordedDefaults['static_ui']
@@ -713,7 +782,16 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     global actualDimensionsTableUiState
 
     args.command.setDialogInitialSize(450, 500)
-    applySharedParameterDefaults()
+    global rebuildBodyToken
+    global pendingRebuildBody
+    global dialogInfo
+    global dialogWorkflow
+    dialogWorkflow = WORKFLOW_REBUILD if pendingRebuildBody is not None else WORKFLOW_CLONE if pendingConfig is not None else WORKFLOW_NEW
+    loadedConfigs.clear()
+    rebuildBodyToken = pendingRebuildBody.entityToken if pendingRebuildBody is not None else None
+    rebuildName = pendingRebuildBody.name if pendingRebuildBody is not None else None
+    pendingRebuildBody = None
+    applyPendingConfig()
 
     # https://help.autodesk.com/view/fusion360/ENU/?contextId=CommandInputs
     inputs = args.command.commandInputs
@@ -721,10 +799,11 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     defaultLengthUnits = app.activeProduct.unitsManager.defaultLengthUnits
 
     infoGroup = inputs.addGroupCommandInput(INFO_GROUP, 'Info')
-    # as many rows as the text has lines, so the box takes no more room than it needs, and a row for the help line
-    # to wrap into, as the box keeps its height when the dialog is made narrower
-    info = infoText()
-    infoGroup.children.addTextBoxCommandInput("info_text", "Info", info, info.count('<br>') + 2, True)
+    dialogInfo = infoText()
+    if rebuildName is not None:
+        dialogInfo = warningLine(f'<b>Rebuilding {html.escape(rebuildName)}</b> in place, features after it in the timeline are kept. '
+            'Changing only what its parameters hold, like its height or label, sets them instead.') + dialogInfo
+    addInfoPage(infoGroup.children, INFO_BROWSER)
     infoGroup.isExpanded = commandUIState.getState(INFO_GROUP)
     commandUIState.registerCommandInput(infoGroup)
 
@@ -732,15 +811,15 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     basicSizesGroup.isExpanded = commandUIState.getState(BIN_BASIC_SIZES_GROUP)
     commandUIState.registerCommandInput(basicSizesGroup)
     baseWidthUnitInput = basicSizesGroup.children.addValueInput(BIN_BASE_WIDTH_UNIT_INPUT_ID, 'Base width unit (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_BASE_WIDTH_UNIT_INPUT_ID)))
-    baseWidthUnitInput.minimumValue = sharedParameters.BASE_UNIT_MIN
+    baseWidthUnitInput.minimumValue = const.BASE_UNIT_MIN
     baseWidthUnitInput.isMinimumInclusive = True
     commandUIState.registerCommandInput(baseWidthUnitInput)
     baseLengthUnitInput = basicSizesGroup.children.addValueInput(BIN_BASE_LENGTH_UNIT_INPUT_ID, 'Base length unit (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_BASE_LENGTH_UNIT_INPUT_ID)))
-    baseLengthUnitInput.minimumValue = sharedParameters.BASE_UNIT_MIN
+    baseLengthUnitInput.minimumValue = const.BASE_UNIT_MIN
     baseLengthUnitInput.isMinimumInclusive = True
     commandUIState.registerCommandInput(baseLengthUnitInput)
     binHeightUnitInput = basicSizesGroup.children.addValueInput(BIN_HEIGHT_UNIT_INPUT_ID, 'Bin height unit (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_HEIGHT_UNIT_INPUT_ID)))
-    binHeightUnitInput.minimumValue = sharedParameters.HEIGHT_UNIT_MIN
+    binHeightUnitInput.minimumValue = const.HEIGHT_UNIT_MIN
     binHeightUnitInput.isMinimumInclusive = True
     commandUIState.registerCommandInput(binHeightUnitInput)
     xyClearanceInput = basicSizesGroup.children.addValueInput(BIN_XY_CLEARANCE_INPUT_ID, 'Bin xy clearance (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_XY_CLEARANCE_INPUT_ID)))
@@ -952,6 +1031,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     userChangesGroup.isExpanded = commandUIState.getState(USER_CHANGES_GROUP_ID)
     commandUIState.registerCommandInput(userChangesGroup)
     addDefaultsButtonRow(userChangesGroup.children, INPUT_CHANGES_BUTTONS_BROWSER)
+    addButtonRow(userChangesGroup.children, CONFIG_BUTTONS_BROWSER)
 
     previewGroup = inputs.addGroupCommandInput(PREVIEW_GROUP_ID, 'Preview')
     previewGroup.isExpanded = commandUIState.getState(PREVIEW_GROUP_ID)
@@ -978,7 +1058,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
 # is immediately called after the created event not command inputs were created for the dialog.
 def command_execute(args: adsk.core.CommandEventArgs):
     futil.log(f'{CMD_NAME} Command Execute Event')
-    generateBin(args)
+    generateBin(args, False)
 
 # This event handler is called when the command needs to compute a new preview in the graphics window.
 def command_preview(args: adsk.core.CommandEventArgs):
@@ -989,8 +1069,10 @@ def command_preview(args: adsk.core.CommandEventArgs):
         showPreviewManual: adsk.core.BoolValueCommandInput = inputs.itemById(SHOW_PREVIEW_MANUAL_INPUT)
         if showPreview.value or showPreviewManual.value:
             startTime = time.perf_counter()
-            args.isValidResult = generateBin(args)
-            showPreviewTime(inputs, time.perf_counter() - startTime, args.isValidResult)
+            isBuilt = generateBin(args, True)
+            # OK keeps a valid preview instead of building again, a rebuild's preview is only a look at the new bin
+            args.isValidResult = isBuilt and rebuildBodyToken is None
+            showPreviewTime(inputs, time.perf_counter() - startTime, isBuilt)
             showPreviewManual.value = False
             commandUIState.onInputUpdate(showPreviewManual)
     else:
@@ -1094,8 +1176,26 @@ def pageHandlers(browserId: str, command: adsk.core.Command) -> dict[str, browse
         preview()
         return compartmentsDrawingData(browserId)
 
+    def onLoadConfig(text: str, fileName: str):
+        state = readConfig(text, f'Loaded "{fileName}"')
+        if state is None:
+            return
+        loadedConfigs.append(fileName)
+        applyInputsState(state)
+        refreshUi()
+        preview()
+
+    if browserId == INFO_BROWSER:
+        return infoPageHandlers(dialogInfo, command.commandInputs.itemById(INFO_BROWSER))
     if browserId == INPUT_CHANGES_BUTTONS_BROWSER:
         return defaultsButtonsHandlers(onDefaults)
+    if browserId == CONFIG_BUTTONS_BROWSER:
+        return configButtons.configButtonsHandlers(
+            'bin',
+            lambda: configJson.configText(configJson.GENERATOR_BIN, configJson.stateToJson(configJson.GENERATOR_BIN, getInputsState()), tagUtils.getGeneratorVersion()),
+            lambda: binBuilder.binDisplayName(getInputsState()),
+            onLoad=onLoadConfig,
+        )
     if browserId == BIN_SHAPE_BROWSER_ID:
         return {browserPages.READY: lambda _: shapeDrawingData(), 'shape': onShape}
     return {browserPages.READY: lambda _: compartmentsDrawingData(browserId), 'pockets': onPockets, 'grid': onGrid}
@@ -1105,7 +1205,20 @@ def command_destroy(args: adsk.core.CommandEventArgs):
     # General logging for debug.
     futil.log(f'{CMD_NAME} Command Destroy Event "{args.terminationReason}"')
     global local_handlers
+    global rebuildBodyToken
     local_handlers = []
+    rebuildBodyToken = None
+    if args.terminationReason == adsk.core.CommandTerminationReason.CompletedTerminationReason:
+        # once the command is over, so the selection stays
+        selection.showBuiltBodies(builtBodies)
+        if len(rebuildNotes) > 0:
+            ui.messageBox(
+                'The bin was rebuilt. These features after it need a look, ones using a face or an edge of the old bin '
+                'need them picked again:\n\n' + '\n'.join(rebuildNotes),
+                CMD_NAME,
+                adsk.core.MessageBoxButtonTypes.OKButtonType,
+                adsk.core.MessageBoxIconTypes.WarningIconType,
+            )
 
 def onChangeValidate():
     global commandUIState
@@ -1220,72 +1333,135 @@ def snapshotSettings(inputs: adsk.core.CommandInputs) -> list[dict]:
         settings.append({'title': 'Shape', 'items': [[f'Row {index}', row] for (index, row) in zip(reversed(range(1, len(rows) + 1)), rows)]})
     return settings
 
+def reportConfig(state: InputState | None) -> str | None:
+    """The settings of a failed build as a config file, to build it again from the report"""
+    if state is None:
+        return None
+    return configJson.configText(configJson.GENERATOR_BIN, configJson.stateToJson(configJson.GENERATOR_BIN, state), tagUtils.getGeneratorVersion())
+
+def buildWorkflow(isPreview: bool) -> str:
+    """How the dialog came to build, like a clone's preview or the OK of a rebuild, with configs loaded into it"""
+    loaded = f', loaded {", ".join(loadedConfigs)}' if len(loadedConfigs) > 0 else ''
+    return f'{dialogWorkflow}{loaded}, {"preview" if isPreview else "OK"}'
+
+def rebuiltConfig() -> str | None:
+    """The config the bin being rebuilt was built with, from its tag, for the report of a failed rebuild"""
+    if rebuildBodyToken is None:
+        return None
+    try:
+        tag = tagUtils.readBodyTag(findRebuildBody(adsk.fusion.Design.cast(app.activeProduct)))
+        if tag is None or not isinstance(tag[1].get('config'), dict):
+            return None
+        return configJson.configText(configJson.GENERATOR_BIN, tag[1]['config'], str(tag[1].get('generatorVersion') or ''))
+    except Exception as err:
+        futil.log(f'{CMD_NAME} config of the rebuilt bin not read, {err}')
+        return None
+
 def getInputsState() -> InputState:
     def angle(inputId: str) -> float:
-        """Angles are kept as the expression typed in, see CommandUiState.onInputUpdate"""
         return app.activeProduct.unitsManager.evaluateExpression(str(commandUIState.getState(inputId)), 'deg')
     return InputState(
-        baseWidth=commandUIState.getState(BIN_BASE_WIDTH_UNIT_INPUT_ID),
-        baseLength=commandUIState.getState(BIN_BASE_LENGTH_UNIT_INPUT_ID),
-        heightUnit=commandUIState.getState(BIN_HEIGHT_UNIT_INPUT_ID),
-        xyClearance=commandUIState.getState(BIN_XY_CLEARANCE_INPUT_ID),
-        binWidth=commandUIState.getState(BIN_WIDTH_INPUT_ID),
-        binLength=commandUIState.getState(BIN_LENGTH_INPUT_ID),
-        binHeight=commandUIState.getState(BIN_HEIGHT_INPUT_ID),
-        isHalfGrid=isHalfGrid(),
-        wallThickness=commandUIState.getState(BIN_WALL_THICKNESS_INPUT_ID),
-        binType=commandUIState.getState(BIN_TYPE_DROPDOWN_ID),
-        generateBase=commandUIState.getState(BIN_GENERATE_BASE_INPUT_ID),
-        generateBody=commandUIState.getState(BIN_GENERATE_BODY_INPUT_ID),
-        hasJointOrigins=commandUIState.getState(BIN_JOINT_ORIGINS_INPUT_ID),
-        hasScrewHoles=commandUIState.getState(BIN_SCREW_HOLES_INPUT_ID),
-        screwHoleDiameter=commandUIState.getState(BIN_SCREW_DIAMETER_INPUT),
-        hasMagnetCutouts=commandUIState.getState(BIN_MAGNET_CUTOUTS_INPUT_ID),
-        hasMagnetCutoutsTabs=commandUIState.getState(BIN_MAGNET_CUTOUTS_TABS_INPUT_ID),
-        magnetCutoutDiameter=commandUIState.getState(BIN_MAGNET_DIAMETER_INPUT),
-        magnetCutoutDepth=commandUIState.getState(BIN_MAGNET_HEIGHT_INPUT),
-        hasLip=commandUIState.getState(BIN_WITH_LIP_INPUT_ID),
-        hasLipNotches=commandUIState.getState(BIN_WITH_LIP_NOTCHES_INPUT_ID),
-        hasDividersToTop=commandUIState.getState(BIN_DIVIDERS_TO_TOP_INPUT_ID),
-        hasScoop=commandUIState.getState(BIN_HAS_SCOOP_INPUT_ID),
-        scoopMaxRadius=commandUIState.getState(BIN_SCOOP_MAX_RADIUS_INPUT_ID),
-        hasTab=commandUIState.getState(BIN_HAS_TAB_INPUT_ID),
-        tabLength=commandUIState.getState(BIN_TAB_LENGTH_INPUT_ID),
-        tabWidth=commandUIState.getState(BIN_TAB_WIDTH_INPUT_ID),
-        tabPosition=commandUIState.getState(BIN_TAB_POSITION_INPUT_ID),
-        tabOverhangAngle=angle(BIN_TAB_ANGLE_INPUT_ID),
-        isTabHollow=commandUIState.getState(BIN_TAB_HOLLOW_INPUT_ID),
-        isTabOpenThroughSides=commandUIState.getState(BIN_TAB_HOLLOW_SIDES_INPUT_ID),
-        tabTopAngle=angle(BIN_TAB_TOP_ANGLE_INPUT_ID),
-        labelText=commandUIState.getState(BIN_TAB_LABEL_TEXT_INPUT_ID),
-        labelIcon=commandUIState.getState(BIN_TAB_LABEL_ICON_INPUT_ID),
-        labelStyle=commandUIState.getState(BIN_TAB_LABEL_STYLE_INPUT_ID),
-        isLabelBold=commandUIState.getState(BIN_TAB_LABEL_BOLD_INPUT_ID),
+        **{field: commandUIState.getState(inputId) for (field, inputId) in STATE_INPUT_IDS.items()},
+        **{field: angle(inputId) for (field, inputId) in STATE_ANGLE_INPUT_IDS.items()},
+        # from the color dropdown and its custom text, see applyInputsState for the way back
         labelColor=binLabelColor(),
-        cullenectSocketOffset=commandUIState.getState(BIN_TAB_CULLENECT_OFFSET_INPUT_ID),
         compartmentsX=commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID),
         compartmentsY=commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID),
         showCompartmentsLayout=commandUIState.getState(BIN_COMPARTMENTS_SHOW_LAYOUT_ID),
         compartmentPockets=compartmentPockets,
         hasCustomShape=commandUIState.getState(BIN_SHAPE_CUSTOM_ID),
         shapeCells=binShapeCells,
-        hasCreases=commandUIState.getState(BIN_CREASES_INPUT_ID),
-        creaseDepth=commandUIState.getState(BIN_CREASE_DEPTH_INPUT_ID),
-        creaseMinLength=commandUIState.getState(BIN_CREASE_MIN_LENGTH_INPUT_ID),
-        creaseMaxPanelLength=commandUIState.getState(BIN_CREASE_MAX_PANEL_LENGTH_INPUT_ID),
-        creaseMinHeight=commandUIState.getState(BIN_CREASE_MIN_HEIGHT_INPUT_ID),
     )
 
-def generateBin(args: adsk.core.CommandEventArgs):
+def applyInputsState(state: InputState):
+    """Sets the dialog state to a state from getInputsState, the inputs follow on refreshUi"""
+    global compartmentPockets
+    global binShapeCells
+    for (field, inputId) in STATE_INPUT_IDS.items():
+        commandUIState.setValue(inputId, getattr(state, field))
+    for (field, inputId) in STATE_ANGLE_INPUT_IDS.items():
+        commandUIState.setValue(inputId, angleExpression(getattr(state, field)))
+    commandUIState.setValue(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID, state.compartmentsX)
+    commandUIState.setValue(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID, state.compartmentsY)
+    commandUIState.setValue(BIN_COMPARTMENTS_SHOW_LAYOUT_ID, state.showCompartmentsLayout)
+    commandUIState.setValue(BIN_SHAPE_CUSTOM_ID, state.hasCustomShape)
+    # the way back of binLabelColor, a color of none of the named ones goes into the custom text
+    (colorChoice, customColor) = labelColors.choiceOf(state.labelColor)
+    commandUIState.setValue(BIN_TAB_LABEL_COLOR_INPUT_ID, colorChoice)
+    commandUIState.setValue(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID, customColor)
+    compartmentPockets = list(state.compartmentPockets)
+    binShapeCells = list(state.shapeCells)
+
+def angleExpression(angle: float) -> str:
+    """An angle in radians as the dialog keeps it, see STATE_ANGLE_INPUT_IDS"""
+    return f'{math.degrees(angle):g} deg'
+
+def startWithConfig(settings: dict):
+    """Opens the dialog with a config by field name, see configJson.stateToJson, settings it doesn't have stay"""
+    global pendingConfig
+    pendingConfig = settings
+    ui.commandDefinitions.itemById(CMD_ID).execute()
+
+def startRebuild(body: adsk.fusion.BRepBody, tag: dict):
+    """
+    Opens the dialog with the settings of the bin the body is of, its tag value, to rebuild it in place, see
+    binBuilder.rebuildBin. Its parameters may have been changed since, their values replace the settings
+    """
+    global pendingRebuildBody
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    settings = binBuilder.configWithParameters(tag['config'], tag.get('parameters'), design.userParameters.itemByName)
+    pendingRebuildBody = body
+    startWithConfig(settings)
+
+def findRebuildBody(design: adsk.fusion.Design) -> adsk.fusion.BRepBody:
+    return rebuildUtils.findBodyByToken(design, rebuildBodyToken)
+
+def configFileName(settings: dict) -> str:
+    """The name a saved file of these settings starts with, as the dialog's Save to file names it"""
+    defaults = configJson.stateToJson(configJson.GENERATOR_BIN, DEFAULT_STATE)
+    known = {name: value for (name, value) in settings.items() if name in defaults}
+    return binBuilder.binDisplayName(configJson.stateFromJson(configJson.GENERATOR_BIN, InputState, {**defaults, **known}))
+
+def configChoices() -> dict[str, configJson.Choice]:
+    """The options of the dropdowns with the dialog's first defaults, see initDefaultUiState"""
+    iconNames = [labelGenerator.LABEL_ICON_NONE] + [icon.name for group in labelGenerator.listIconGroups() for icon in group]
+    return {
+        'binType': configJson.Choice([BIN_TYPE_HOLLOW, BIN_TYPE_SHELLED, BIN_TYPE_SOLID], DEFAULT_STATE.binType),
+        'labelIcon': configJson.Choice(iconNames, DEFAULT_STATE.labelIcon),
+        'labelStyle': configJson.Choice(labelGenerator.LABEL_STYLES, DEFAULT_STATE.labelStyle),
+    }
+
+def readConfig(text: str, source: str) -> InputState | None:
+    """The state of a config, none when it can't be read, see configButtons.readConfig"""
+    return configButtons.readConfig(text, source, configJson.GENERATOR_BIN, InputState, getInputsState(), configChoices())
+
+def applyPendingConfig():
+    global pendingConfig
+    if pendingConfig is None:
+        return
+    state = readConfig(configJson.configText(configJson.GENERATOR_BIN, pendingConfig), 'Rebuilding' if rebuildBodyToken is not None else 'Cloned')
+    pendingConfig = None
+    if state is not None:
+        applyInputsState(state)
+
+def generateBin(args: adsk.core.CommandEventArgs, isPreview: bool):
     startTime = time.perf_counter()
     settings = snapshotSettings(args.command.commandInputs)
     # the settings come first, so a failing build can be reproduced from the log
-    commonUtils.fileLog(f'{CMD_NAME} generating with settings:\n{settingsUtils.settingsText(settings)}')
-    state = getInputsState()
+    commonUtils.fileLog(f'{CMD_NAME} generating, {buildWorkflow(isPreview)}, with settings:\n{settingsUtils.settingsText(settings)}')
+    state = None
+    global builtBodies
+    global rebuildNotes
+    builtBodies = []
+    rebuildNotes = []
 
     try:
+        state = getInputsState()
         des = adsk.fusion.Design.cast(app.activeProduct)
-        binBuilder.buildBin(des, state, settings)
+        if rebuildBodyToken is not None:
+            (builtBodies, rebuildNotes) = binBuilder.rebuildBin(des, findRebuildBody(des), state, settings, isPreview)
+        else:
+            builtBodies = binBuilder.buildBin(des, state, settings)
         futil.log(f'{CMD_NAME} {binBuilder.binDisplayName(state)} generated in {time.perf_counter() - startTime:.3f}s')
     except UnsupportedDesignTypeException as err:
         args.executeFailed = True
@@ -1293,7 +1469,8 @@ def generateBin(args: adsk.core.CommandEventArgs):
         return False
     except Exception as err:
         args.executeFailed = True
-        args.executeFailedMessage = getErrorMessage()
-        futil.log(f'{CMD_NAME} Error occurred, {err}, {getErrorMessage()}')
+        args.executeFailedMessage = f'{html.escape(errorReport.errorMessage(err))}<br>See the {errorPalette.PALETTE_TITLE} panel to copy a report of it'
+        commonUtils.fileLog(f'{CMD_NAME} Error occurred, {err}, {getErrorMessage()}')
+        errorPalette.show(f'{CMD_NAME} failed', err, reportConfig(state), buildWorkflow(isPreview), rebuiltConfig())
         return False
     return True
