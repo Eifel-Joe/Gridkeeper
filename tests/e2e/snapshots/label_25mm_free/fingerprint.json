@@ -3,8 +3,8 @@
         {
             "name": "Gridfinity label 25 mm M3",
             "file": "body1.smt",
-            "volume": 276.277436,
-            "area": 698.414489,
+            "volume": 278.104626,
+            "area": 695.816973,
             "bboxMin": [
                 0.0,
                 -0.0,
@@ -23,16 +23,16 @@
         {
             "name": "Gridfinity label 25 mm M3 text 1",
             "file": "body2.smt",
-            "volume": 5.4331,
-            "area": 41.011002,
+            "volume": 4.208769,
+            "area": 33.229879,
             "bboxMin": [
-                1.439847,
-                3.276585,
+                1.387128,
+                3.543182,
                 0.8
             ],
             "bboxMax": [
-                5.735175,
-                7.723586,
+                5.167636,
+                7.457182,
                 1.2
             ],
             "lumps": 1,
@@ -43,16 +43,16 @@
         {
             "name": "Gridfinity label 25 mm M3 text 2",
             "file": "body3.smt",
-            "volume": 2.675251,
-            "area": 21.202712,
+            "volume": 2.072392,
+            "area": 17.250368,
             "bboxMin": [
-                6.408596,
-                3.20075,
+                5.760343,
+                3.476436,
                 0.8
             ],
             "bboxMax": [
-                9.363151,
-                7.741786,
+                8.360777,
+                7.473201,
                 1.2
             ],
             "lumps": 1,

@@ -122,7 +122,8 @@ def _texts(sketch: adsk.fusion.Sketch, layout: cullenectLabelLayout.LabelLayout,
     The twins are there for a second extrusion: Fusion refuses to extrude the same text twice in one run ("invalid
     input argument"), and cutting with the bodies of the first instead loses letters a later text adds.
     Returns the texts and their twins, no twins without"""
-    available = layout.textMaxX - layout.textMinX
+    # 1 mm more before a symbol, so a width made a little smaller later doesn't push it onto the text (p52)
+    available = cullenectLabelLayout.textFitWidth(layout)
     texts = []
     twins = []
     for (index, (text, lineHeight, center)) in enumerate(zip(lines, layout.lineHeights, layout.lineCenters)):
@@ -195,8 +196,10 @@ def createCullenectLabel(
     latchTop = const.CULLENECT_LATCH_BOTTOM + const.CULLENECT_LATCH_HEIGHT
 
     lines = [line for line in input.lines if len(line.strip()) > 0]
-    size = cullenectLabelLayout.iconSize(input.iconPath, width.value, height, input.isScrew) if input.iconPath is not None else None
-    layout = cullenectLabelLayout.labelLayout(width.value, height, size, input.isScrew, len(lines))
+    # debossed, the symbol keeps off the rim over the latch (round 17, p140)
+    rim = cullenectLabelLayout.DEBOSS_RIM if input.surface == SURFACE_DEBOSSED else 0
+    size = cullenectLabelLayout.iconSize(input.iconPath, width.value, height, input.isScrew, rim) if input.iconPath is not None else None
+    layout = cullenectLabelLayout.labelLayout(width.value, height, size, input.isScrew, len(lines), input.textStyle, rim)
     problem = cullenectLabelLayout.layoutProblem(layout)
     if problem is not None:
         raise ValueError(problem)

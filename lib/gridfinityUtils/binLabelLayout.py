@@ -14,7 +14,10 @@ from .dim import Dim
 # from one anchor they do, but every dim costs more the more there are: in Fusion 15.11.2026 the hex nut's 10 points
 # took 20 dims in 0.3 s, the 263 points of cullenect-crimp-ring-closed hadn't all of their dims after a minute. Up to
 # this many points an icon is held by dims, more and its bodies are moved into place, the text never is (Hauptsitzung
-# 15.11.2026, proposal A). Counted when building, so coarser symbols (p51) fall under it by themselves
+# 15.11.2026, proposal A). Counted when building, so coarser symbols (p51) fall under it by themselves.
+# Round 17, p180: measured again on the coarser Cullenect symbols (job r17_dims): tnut-2 26 points 1.3 s, tnut-1 32,
+# nut-square 34, nut 36 points 1.9 s, magnet 50 points already 3.0 s, crimp-ring-closed 120 points 15 s. The spec holds
+# a symbol by dims when that takes under 2 s, so the limit stays between 36 and 50, see tests/test_bin_label_layout.py
 ICON_POINTS_HELD_BY_DIMS = 40
 
 
