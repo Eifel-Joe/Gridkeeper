@@ -93,8 +93,14 @@ def buildLabel(
     name = labelName(state)
 
     plan = designIntent.componentPlan(des.designIntent, mayChangeDocument)
+    # The new component is active while it's built, the design's root afterwards: an active component shows every other
+    # one half transparent and the user had to switch back each time (Joerg 15.11.2026). In finally, a failed build
+    # leaves the root active too
     if not plan.switchToHybrid:
-        return _buildLabel(des, state, settings, root, name, width, height, plan.isComponent)
+        try:
+            return _buildLabel(des, state, settings, root, name, width, height, plan.isComponent)
+        finally:
+            des.activateRootComponent()
     occurrenceCount = root.occurrences.count
     des.designIntent = adsk.fusion.DesignIntentTypes.HybridDesignIntentType
     try:
@@ -102,8 +108,11 @@ def buildLabel(
     except Exception:
         # a part design left hybrid without an insert couldn't go back to a part, its new component is taken out and
         # the document switched back, the error goes on
+        des.activateRootComponent()
         _undoHybridSwitch(des, occurrenceCount)
         raise
+    finally:
+        des.activateRootComponent()
 
 def _undoHybridSwitch(des: adsk.fusion.Design, occurrenceCount: int):
     root = des.rootComponent

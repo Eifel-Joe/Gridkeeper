@@ -144,6 +144,19 @@ def buildBin(
     settings: list[dict],
 ) -> list[adsk.fusion.BRepBody]:
     """Builds the bin into the design, tagged with the settings to show later, see settingsUtils.snapshotInputs"""
+    # The new component is active while it's built, the design's root afterwards: an active component shows every other
+    # one half transparent and the user had to switch back each time (Joerg 15.11.2026). In finally, a failed build
+    # leaves the root active too
+    try:
+        return _buildBin(des, state, settings)
+    finally:
+        des.activateRootComponent()
+
+def _buildBin(
+    des: adsk.fusion.Design,
+    state: InputState,
+    settings: list[dict],
+) -> list[adsk.fusion.BRepBody]:
     # creased bins have a single compartment and a solid tab, see creaseLayout
     creases = creaseLayout(state)
     compartmentsX: int = 1 if len(creases) > 0 else state.compartmentsX

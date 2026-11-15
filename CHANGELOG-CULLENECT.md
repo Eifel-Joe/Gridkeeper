@@ -91,6 +91,10 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
   Heavy runs about 20 % wider, a long text is fitted smaller by that. The text keeps its font when its text parameter
   changes. Test cases keep their font (`isBold` became `textStyle`), their snapshots changed only by the thickness;
   new case with two lines in Heavy.
+- **The root component stays active:** bin, baseplate and label commands activated the component they had just made,
+  so Fusion showed every other component half transparent until the user switched back. The new component is active
+  only while it is built, the design's root afterwards, also after a failed build. The shape tests fail on a case that
+  leaves another component active.
 - **Hint at thin text:** inserts and bin labels estimate the stroke from the fitted text height; text below 0.6 mm
   stroke (where a 0.4 mm nozzle starts leaving parts out) gives a message on OK and a note beside the preview time.
 - **Screw choices without a symbol:** the label dialog offered every head, shaft, thread and driver together, head
