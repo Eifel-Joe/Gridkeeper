@@ -4,6 +4,23 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
 
 ## Unreleased
 
+### Labels after a text change (round 14)
+
+- **Bin labels stay put (p72):** a label text made longer through its parameter added letters at the origin, untilted
+  and outside the bin, because the label was laid out at the current spot and moved there body by body. The text of a
+  bin and compartment label is now drawn where it ends up: on planes that follow the bin's parameters, a tilted tab
+  through three points, standing on a baseline whose ends follow the label's width. The cut into the bin (engraved,
+  outline) or the join (embossed) is the extrusion's own operation, so new letters are cut or joined too. Small icons
+  (up to 40 points, e.g. the hex nut and screws) are held there by dimensions; the large Cullenect symbols are still
+  moved into place, as their bodies never change with the text (p180). Bins built before stay as they are until they
+  are rebuilt from their context menu.
+- **New letters show the color (p120):** the label color goes on the Text component of a bin or insert instead of on
+  each body, so letters a longer text adds show it, also in the 3MF export.
+- **Context menu on a new letter (p71):** "Gridfinity settings" and "Gridfinity rebuild" now find the bin or insert
+  from a letter in its Text component that has no tag of its own. New letters keep Fusion's body names.
+- Found in this round: a 3MF export lists every letter as an object of its own, not the Text component as one part
+  (p53 stays open); a label text that already fills its label runs past it when made longer (p181).
+
 ### An assembly of components, inserts jointed into their pockets (round 13)
 
 - **Containers Grid, Bins and Label:** every new baseplate, bin and Cullenect insert is a component of its own in the
