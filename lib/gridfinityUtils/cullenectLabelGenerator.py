@@ -196,7 +196,7 @@ def createCullenectLabel(
 
     lines = [line for line in input.lines if len(line.strip()) > 0]
     size = cullenectLabelLayout.iconSize(input.iconPath, width.value, height, input.isScrew) if input.iconPath is not None else None
-    layout = cullenectLabelLayout.labelLayout(width.value, height, size, input.isScrew, len(lines))
+    layout = cullenectLabelLayout.labelLayout(width.value, height, size, input.isScrew, len(lines), input.textStyle)
     problem = cullenectLabelLayout.layoutProblem(layout)
     if problem is not None:
         raise ValueError(problem)

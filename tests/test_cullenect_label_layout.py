@@ -321,3 +321,45 @@ def test_insert_with_printer_offset_up_to_the_pocket_fits():
 
 def test_pocket_misfit_text_is_literal():
     assert layout.POCKET_MISFIT == "This pocket is too small for the insert, pick one that fits"
+
+
+DESCENT = 0.294
+
+
+def _lowestDescender(result):
+    # the lower line's baseline is under its middle by half its height, the descenders go below by DESCENT
+    height = result.lineHeights[-1]
+    return result.lineCenters[-1] - height / 2 - DESCENT * height
+
+
+class TestDescenders:
+    # round 17, p110: two lines on an insert made lower by its height correction, the descenders stay on it
+    def test_descenders_stay_inside_with_minus_1mm(self):
+        result = layout.labelLayout(3.6, 1.0, None, False, 2, 'Heavy')
+        assert _lowestDescender(result) >= -1e-9
+        assert result.lineHeights[0] == approx(result.lineHeights[1])
+        assert result.lineHeights[0] < 0.35
+        assert layout.layoutProblem(result) is None
+
+    @pytest.mark.parametrize('style', ['Regular', 'Bold', 'Heavy'])
+    def test_without_correction_two_lines_keep_their_height(self, style):
+        assert layout.labelLayout(3.6, 1.1, None, False, 2, style).lineHeights == approx([0.35, 0.35])
+
+    def test_one_line_is_unchanged(self):
+        assert layout.labelLayout(3.6, 1.0, None, False, 1, 'Heavy').lineHeights == approx([0.5])
+
+    def test_floor_stops_the_descender_shrink(self):
+        # 9 mm high: the descenders would need 2.5 mm letters, Heavy goes down to 3.05 mm only
+        result = layout.labelLayout(3.6, 0.9, None, False, 2, 'Heavy')
+        assert result.lineHeights == approx([0.04 / 0.1313] * 2)
+        assert 'Two lines' in layout.layoutProblem(result)
+
+    def test_text_already_below_its_floor_is_not_shrunk(self):
+        # Regular at 3.5 mm is below its 4.43 mm floor already, at 10 mm high its descenders would need it smaller
+        result = layout.labelLayout(3.6, 1.0, None, False, 2, 'Regular')
+        assert result.lineHeights == approx([0.35, 0.35])
+        assert 'Two lines' in layout.layoutProblem(result)
+
+    def test_insert_problem_reports_the_floor(self):
+        assert 'Two lines' in layout.insertProblem(3.6, 1.0, None, False, False, 2, 0, -0.1, textStyle='Regular')
+        assert layout.insertProblem(3.6, 1.0, None, False, False, 2, 0, -0.1, textStyle='Heavy') is None

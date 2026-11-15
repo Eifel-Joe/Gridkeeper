@@ -9,7 +9,7 @@ text at the left, a screw at the right edge, a hardware symbol at the right with
 import os
 from dataclasses import dataclass, field, replace
 
-from . import const, cullenectCatalog
+from . import const, cullenectCatalog, textStyles
 
 MIN_WIDTH = 1.0
 MAX_WIDTH = 30.0
@@ -34,6 +34,8 @@ class LabelLayout:
     # cap heights of the text lines from the top, before they shrink to fit the width
     lineHeights: list[float] = field(default_factory=list)
     lineCenters: list[float] = field(default_factory=list)
+    # largest height of the lines that keeps the descenders on the insert, see descenderLineHeight; None for any
+    descenderLimit: float | None = None
 
 
 def labelSize(units: float | None, freeWidth: float | None, baseWidth: float, offsetX: float, offsetY: float) -> tuple[float, float]:
@@ -63,12 +65,34 @@ def movedLayout(layout: LabelLayout, offsetX: float, offsetY: float) -> LabelLay
     )
 
 
-def labelLayout(width: float, height: float, iconSize: tuple[float, float] | None, isScrew: bool, lineCount: int) -> LabelLayout:
+def descenderLineHeight(lineHeight: float, lowerCenter: float, rim: float, style: str) -> tuple[float, float]:
+    """Height of two lines whose lower one stands centered at `lowerCenter` with its descenders (g, j, p, y) at least
+    `rim` above the bottom edge (round 17, p110), and that limit. The baseline is under the middle by half the height,
+    the descenders go DESCENT_FACTOR of it further down. The lines shrink to the limit, but not below the least height
+    of their style (textStyles.minTextHeight): a 0.4 mm nozzle leaves thinner strokes out. Text below that already
+    stays as it is. Where the limit is lower, layoutProblem tells. Taken whatever the text, a text parameter can change it later"""
+    limit = (lowerCenter - rim) / (0.5 + textStyles.DESCENT_FACTOR)
+    if limit >= lineHeight:
+        return (lineHeight, limit)
+    return (min(lineHeight, max(limit, textStyles.minTextHeight(style))), limit)
+
+
+def labelLayout(
+    width: float,
+    height: float,
+    iconSize: tuple[float, float] | None,
+    isScrew: bool,
+    lineCount: int,
+    textStyle: str = textStyles.DEFAULT_INSERT_STYLE,
+    rim: float = 0,
+) -> LabelLayout:
     """Where text and symbol go on an insert. A screw ends at the right edge like in Cullenect, other symbols keep the
-    margin to the right they have to top and bottom. The text runs from the left margin to a gap before the symbol"""
+    margin to the right they have to top and bottom. The text runs from the left margin to a gap before the symbol.
+    Two lines shrink to keep their descenders on the insert, see descenderLineHeight"""
     if lineCount < 0 or lineCount > MAX_LINES:
         raise ValueError(f'An insert takes up to {MAX_LINES} text lines')
     iconMaxX = None
+    descenderLimit = None
     textMaxX = width - const.CULLENECT_TEXT_MARGIN
     if iconSize is not None:
         (iconWidth, iconHeight) = iconSize
@@ -79,9 +103,11 @@ def labelLayout(width: float, height: float, iconSize: tuple[float, float] | Non
         lineHeights = [const.CULLENECT_TEXT_HEIGHT]
         lineCenters = [middle]
     elif lineCount == 2:
-        lineHeights = [const.CULLENECT_TWO_LINE_TEXT_HEIGHT] * 2
+        # the line centers stay where they are, only the letters get smaller
         pitch = const.CULLENECT_TWO_LINE_TEXT_HEIGHT + const.CULLENECT_LINE_GAP
         lineCenters = [middle + pitch / 2, middle - pitch / 2]
+        (lineHeight, descenderLimit) = descenderLineHeight(const.CULLENECT_TWO_LINE_TEXT_HEIGHT, lineCenters[1], rim, textStyle)
+        lineHeights = [lineHeight] * 2
     else:
         lineHeights = []
         lineCenters = []
@@ -95,6 +121,7 @@ def labelLayout(width: float, height: float, iconSize: tuple[float, float] | Non
         iconWidth=iconSize[0] if iconSize is not None else 0,
         lineHeights=lineHeights,
         lineCenters=lineCenters,
+        descenderLimit=descenderLimit,
     )
 
 
@@ -120,6 +147,8 @@ def layoutProblem(layout: LabelLayout) -> str | None:
         return 'No room for the symbol, make the insert wider'
     if len(layout.lineHeights) > 0 and layout.textMaxX - layout.textMinX < MIN_TEXT_SPACE - 1e-9:
         return 'No room for text beside the symbol, make the insert wider'
+    if layout.descenderLimit is not None and len(layout.lineHeights) > 0 and layout.lineHeights[0] > layout.descenderLimit + 1e-9:
+        return "Two lines don't fit this height without letters too thin to print, make the height correction smaller or use one line"
     return None
 
 
@@ -189,6 +218,7 @@ def insertProblem(
     lineCount: int,
     offsetX: float,
     offsetY: float,
+    textStyle: str = textStyles.DEFAULT_INSERT_STYLE,
 ) -> str | None:
     """Why the dialog can't build the insert, none if it can. `isSymbolMissing`: a symbol was chosen but has no svg"""
     if abs(offsetX) > MAX_OFFSET + 1e-9 or abs(offsetY) > MAX_OFFSET + 1e-9:
@@ -198,7 +228,7 @@ def insertProblem(
     if isSymbolMissing:
         return 'No svg for this symbol, see tools/cullenectIcons.py and tools/setScrewIcons.py'
     size = iconSize(iconPath, width, height, isScrew) if iconPath is not None else None
-    return layoutProblem(labelLayout(width, height, size, isScrew, lineCount))
+    return layoutProblem(labelLayout(width, height, size, isScrew, lineCount, textStyle))
 
 
 # --- an insert jointed into a pocket of a bin (round 13, p100, p160)
