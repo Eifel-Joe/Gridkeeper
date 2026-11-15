@@ -1,0 +1,158 @@
+"""
+Round 12 (p13): the inputs of this fork in upstream's config, rebuild and per bin parameter mechanism of v2.4.0.0.
+See docs/specs/2026-11-15-upstream-2-4-merge.md
+"""
+
+import os
+import sys
+import json
+import math
+import types
+import importlib.util
+import pytest
+
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CASES_FOLDER = os.path.join(PROJECT_ROOT, "tests", "e2e", "cases")
+
+
+def _load(name, *path):
+    spec = importlib.util.spec_from_file_location(name, os.path.join(PROJECT_ROOT, *path))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def _load_tag_utils():
+    # The module annotates with adsk.fusion types, so they only need to exist
+    fusion = sys.modules.get("adsk.fusion") or types.ModuleType("adsk.fusion")
+    for name in ("BRepBody", "Design", "UserParameter"):
+        if not hasattr(fusion, name):
+            setattr(fusion, name, type(name, (), {}))
+    sys.modules["adsk.fusion"] = fusion
+    sys.modules["adsk"].fusion = fusion
+    return _load("tagUtils", "lib", "tagUtils.py")
+
+
+configJson = _load("configJson", "lib", "configJson.py")
+defaultSettings = _load("defaultSettings", "lib", "defaultSettings.py")
+labelColors = _load("labelColors", "lib", "gridfinityUtils", "labelColors.py")
+binState = _load("binInputState", "commands", "commandCreateBin", "inputState.py")
+labelState = _load("labelInputState", "commands", "commandCreateLabel", "inputState.py")
+tagUtils = _load_tag_utils()
+BIN = configJson.GENERATOR_BIN
+LABEL = configJson.GENERATOR_LABEL
+
+
+def bin_defaults():
+    return configJson.stateFromJson(BIN, binState.InputState, defaultSettings.BIN)
+
+
+# --- our bin inputs have defaults and come in mm ---
+
+def test_bin_defaults_have_our_inputs():
+    state = bin_defaults()
+    assert state.hasDividersToTop is False
+    assert state.labelColor == ""
+    # the play of a Cullenect insert in its socket, 0.3 mm like Cullenect, kept in cm
+    assert state.cullenectSocketOffset == pytest.approx(0.03)
+
+
+def test_socket_play_is_written_in_mm():
+    state = bin_defaults()
+    assert configJson.stateToJson(BIN, state)["cullenectSocketOffset"] == pytest.approx(0.3)
+
+
+def test_cullenect_bin_with_color_and_dividers_round_trips():
+    settings = {**defaultSettings.BIN, "labelStyle": "Cullenect", "cullenectSocketOffset": 0.45,
+                "labelColor": "#D02020", "hasDividersToTop": True, "hasTab": True}
+    state = configJson.stateFromJson(BIN, binState.InputState, settings)
+    assert state.cullenectSocketOffset == pytest.approx(0.045)
+    back = configJson.stateToJson(BIN, state)
+    assert back == settings
+
+
+def test_config_saved_by_upstream_keeps_our_inputs_from_the_dialog():
+    current = configJson.stateFromJson(BIN, binState.InputState, {
+        **defaultSettings.BIN, "labelColor": "#2060D0", "hasDividersToTop": True, "cullenectSocketOffset": 0.5,
+    })
+    upstream = {name: value for (name, value) in defaultSettings.BIN.items()
+                if name not in ("labelColor", "hasDividersToTop", "cullenectSocketOffset")}
+    (state, notes) = configJson.readConfig(json.dumps({"generator": BIN, "settings": upstream}), BIN, binState.InputState, current)
+    assert state.labelColor == "#2060D0"
+    assert state.hasDividersToTop is True
+    assert state.cullenectSocketOffset == pytest.approx(0.05)
+    missing = [name for (name, _) in notes.missing]
+    assert sorted(missing) == ["cullenectSocketOffset", "hasDividersToTop", "labelColor"]
+
+
+# --- the color of a config goes back into the dialog's dropdown and custom text ---
+
+@pytest.mark.parametrize("color", ["", "#D02020", "#2060D0", "#A0B1C2"])
+def test_label_color_goes_back_to_the_dialog_and_round_trips(color):
+    (choice, custom) = labelColors.choiceOf(color)
+    assert choice in labelColors.CHOICES
+    assert labelColors.dialogColor(choice, custom) == color.upper()
+
+
+# --- a text edit of a colored label rebuilds, a parameter edit would leave new letters uncolored (p120) ---
+
+def test_text_of_an_uncolored_label_is_a_parameter_edit():
+    assert labelColors.textEditByParameter("") is True
+
+
+def test_text_of_a_colored_label_is_rebuilt():
+    assert labelColors.textEditByParameter("#D02020") is False
+
+
+# --- a rebuilt bin maps its tagged bodies, colored labels beside it aren't bins ---
+
+class FakeAttributes:
+    def __init__(self, tags):
+        self.tags = tags
+
+    def itemByName(self, group, name):
+        value = self.tags.get(name)
+        return types.SimpleNamespace(value=value) if value is not None else None
+
+
+class FakeBody:
+    def __init__(self, name, tags=None):
+        self.name = name
+        self.attributes = FakeAttributes(tags or {})
+
+
+def test_only_the_bin_bodies_take_the_place_of_the_old_ones():
+    tag = tagUtils.createTagValue("2.4.0.0")
+    built = [FakeBody("Bin", {tagUtils.TAG_BIN: tag}), FakeBody("Label text 1"), FakeBody("Label text 2")]
+    assert [body.name for body in tagUtils.taggedBodies(built, tagUtils.TAG_BIN)] == ["Bin"]
+
+
+# --- inserts: config format for the shape test cases, a base width parameter of their own ---
+
+def test_label_defaults_load():
+    state = configJson.stateFromJson(LABEL, labelState.InputState, defaultSettings.LABEL)
+    assert state.baseWidth == pytest.approx(4.2)
+    assert configJson.stateToJson(LABEL, state) == defaultSettings.LABEL
+    assert defaultSettings.SETTINGS[LABEL] is defaultSettings.LABEL
+
+
+def test_label_lengths_are_in_mm():
+    assert configJson.MM_FIELDS[LABEL] == {"baseWidth", "freeWidth", "offsetX", "offsetY"}
+
+
+def test_label_builder_has_no_shared_parameters():
+    path = os.path.join(PROJECT_ROOT, "commands", "commandCreateLabel", "labelBuilder.py")
+    with open(path, encoding="utf-8") as file:
+        source = file.read()
+    assert "sharedParameters" not in source
+    assert "LABEL_BASE_WIDTH_PARAMETER = 'baseWidth'" in source
+
+
+def test_nothing_uses_the_removed_shared_parameters():
+    for folder in ("commands", "lib"):
+        for (root, _, files) in os.walk(os.path.join(PROJECT_ROOT, folder)):
+            for fileName in files:
+                if fileName.endswith(".py"):
+                    with open(os.path.join(root, fileName), encoding="utf-8") as file:
+                        assert "sharedParameters" not in file.read(), os.path.join(root, fileName)
