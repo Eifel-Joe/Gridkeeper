@@ -3,6 +3,7 @@ import adsk.core, adsk.fusion
 
 from ...lib import tagUtils
 from ...lib import placementUtils
+from ...lib import assembly
 from ...lib.gridfinityUtils import cullenectLabelGenerator, cullenectLabelLayout
 from ...lib.gridfinityUtils import commonUtils, designIntent, labelColors, appearanceUtils
 from ...lib.gridfinityUtils import parameterUtils
@@ -82,8 +83,8 @@ def buildLabel(
 ) -> list[adsk.fusion.BRepBody]:
     """
     Builds the insert into the design, tagged with the settings to show later, see settingsUtils.snapshotInputs.
-    Returns the insert body first, then the text and symbol bodies. The insert is a component of its own, a part design
-    is switched to hybrid for it unless the document may not change (a preview), see designIntent.componentPlan
+    Returns the insert body first, then the text and symbol bodies. The insert is a component of its own in the
+    container Label, its text and symbol bodies in a component Text inside it (round 13, p90), a part design is switched to hybrid for it unless the document may not change (a preview), see designIntent.structurePlan
     """
     if des.designType == 0:
         raise UnsupportedDesignTypeException('Timeline must be enabled for the generator to work, projects with disabled design history currently are not supported')
@@ -94,36 +95,10 @@ def buildLabel(
     root = adsk.fusion.Component.cast(des.rootComponent)
     name = labelName(state)
 
-    plan = designIntent.componentPlan(des.designIntent, mayChangeDocument)
-    # The new component is active while it's built, the design's root afterwards: an active component shows every other
-    # one half transparent and the user had to switch back each time (Nutzer 15.11.2026). In finally, a failed build
-    # leaves the root active too
-    if not plan.switchToHybrid:
-        try:
-            return _buildLabel(des, state, settings, root, name, width, height, plan.isComponent)
-        finally:
-            des.activateRootComponent()
-    occurrenceCount = root.occurrences.count
-    des.designIntent = adsk.fusion.DesignIntentTypes.HybridDesignIntentType
-    try:
-        return _buildLabel(des, state, settings, root, name, width, height, True)
-    except Exception:
-        # a part design left hybrid without an insert couldn't go back to a part, its new component is taken out and
-        # the document switched back, the error goes on
-        des.activateRootComponent()
-        _undoHybridSwitch(des, occurrenceCount)
-        raise
-    finally:
-        des.activateRootComponent()
-
-def _undoHybridSwitch(des: adsk.fusion.Design, occurrenceCount: int):
-    root = des.rootComponent
-    try:
-        while root.occurrences.count > occurrenceCount:
-            root.occurrences.item(root.occurrences.count - 1).deleteMe()
-        des.designIntent = adsk.fusion.DesignIntentTypes.PartDesignIntentType
-    except Exception as err:
-        commonUtils.debugLog(f'{LOG_PREFIX} document stays hybrid after a failed insert, {err}')
+    plan = designIntent.structurePlan(des.designIntent, mayChangeDocument)
+    # the root is active afterwards, also after a failed build, a part design switched for it goes back then, see
+    # assembly.buildWithStructure
+    return assembly.buildWithStructure(des, plan, lambda: _buildLabel(des, state, settings, root, name, width, height, plan))
 
 def _buildLabel(
     des: adsk.fusion.Design,
@@ -133,15 +108,17 @@ def _buildLabel(
     name: str,
     width: float,
     height: float,
-    isComponent: bool,
+    plan: designIntent.StructurePlan,
 ) -> list[adsk.fusion.BRepBody]:
+    # the container comes before the insert's timeline group, see assembly.partPlace
+    place = assembly.partPlace(des, plan, tagUtils.KIND_LABELS, None)
     originalTimelineCount = des.timeline.count
-    if isComponent:
-        occurrence = adsk.fusion.Occurrences.cast(root.occurrences).addNewComponent(adsk.core.Matrix3D.create())
-        occurrence.component.name = name
+    if place.isComponent:
+        occurrence = assembly.addOccurrence(des, place.parent, name)
         occurrence.activate()
         labelComponent: adsk.fusion.Component = occurrence.component
     else:
+        occurrence = None
         labelComponent: adsk.fusion.Component = des.rootComponent
 
     # pick the spot before generating, so none of this insert's geometry can count as an obstacle
@@ -204,7 +181,17 @@ def _buildLabel(
     labelInput.surface = state.surface
     labelInput.textStyle = state.textStyle
     # drawn at its spot, not moved there: a move would leave behind letters a later text adds
-    (base, marking) = cullenectLabelGenerator.createCullenectLabel(labelInput, labelComponent, name=name, origin=placement)
+    # its text and symbol go into a Text component of the insert (round 13, p90), none without them or as root bodies
+    textOccurrence = assembly.addOccurrence(des, occurrence, assembly.TEXT_COMPONENT_NAME) if occurrence is not None and (len(lines) > 0 or iconPath is not None) else None
+    (base, marking) = cullenectLabelGenerator.createCullenectLabel(
+        labelInput,
+        labelComponent,
+        name=name,
+        origin=placement,
+        markingComponent=textOccurrence.component if textOccurrence is not None else None,
+        baseOccurrence=occurrence if textOccurrence is not None else None,
+        markingOccurrence=textOccurrence,
+    )
     bodies = [base] + marking
     appearanceUtils.colorBodies(marking, state.textColor)
 

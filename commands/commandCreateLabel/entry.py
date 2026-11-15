@@ -320,7 +320,7 @@ def symbolText(state: InputState) -> str:
         return 'None' if not state.showScrew and state.hardware == NO_HARDWARE else 'No svg for this symbol'
     return os.path.basename(path)
 
-# the small notice after a part design was switched to hybrid for the insert, see designIntent.componentPlan
+# the small notice after a part design was switched to hybrid for the insert, see designIntent.structurePlan
 HYBRID_SWITCH_MESSAGE = ('This document was a part design. It has been switched to a hybrid design, so the insert is a '
     'component of its own. A design holding components can no longer be switched back to a part design.')
 

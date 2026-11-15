@@ -11,25 +11,6 @@ ASSEMBLY = 1
 HYBRID = 2
 
 
-@dataclass(frozen=True)
-class ComponentPlan:
-    # the document is a part design and turns hybrid first, it can't be turned back once it holds a component
-    switchToHybrid: bool
-    # a component of its own, else bodies in the root component
-    isComponent: bool
-
-
-def componentPlan(designIntent: int, mayChangeDocument: bool) -> ComponentPlan:
-    """
-    A component of its own wherever the document takes one. A part design takes a single component only (Fusion refuses
-    a second one), so it is switched to hybrid, which keeps its bodies and timeline as they are (shown in Fusion
-    14.11.2026). Not where the document may not change, as in a preview, which builds into the root then
-    """
-    if designIntent == PART:
-        return ComponentPlan(switchToHybrid=mayChangeDocument, isComponent=mayChangeDocument)
-    return ComponentPlan(switchToHybrid=False, isComponent=True)
-
-
 # where a generator builds, see structurePlan
 PLACE_CONTAINER = 'container'
 PLACE_OLD_PARENT = 'oldParent'
@@ -43,7 +24,9 @@ REBUILD_OLD_OCCURRENCE = 'oldOccurrence'
 
 @dataclass(frozen=True)
 class StructurePlan:
-    # the document is a part design and turns hybrid first, see componentPlan
+    # the document is a part design and turns hybrid first, it can't be turned back once it holds a component. A part
+    # design takes a single component only (Fusion refuses a second one), hybrid keeps its bodies and timeline as they
+    # are (shown in Fusion 14.11.2026)
     switchToHybrid: bool
     # PLACE_CONTAINER: a component of its own in the container of its kind (Grid, Bins, Label), PLACE_OLD_PARENT: a
     # component where the rebuilt one was, PLACE_ROOT_BODIES: bodies in the root component
