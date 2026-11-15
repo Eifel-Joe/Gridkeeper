@@ -30,7 +30,7 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
   11 mm × 1.2 mm with the latch set in 0.2 mm all around, as `cullenect_base_v2`) with up to two lines of text and a
   screw put together from head, shaft, threads, driver, flange and security pin, or a hardware symbol. Width in base
   units (following `gfBaseWidth`) or free in mm, a width and height correction like Cullenect's `offset_xy`. Text and
-  symbol are one layer (0.2 mm), raised, set in or flush, and bodies of their own to print them in another colour.
+  symbol are two layers (0.4 mm, see p130 below), raised, set in or flush, and bodies of their own to print them in another colour.
   The width is a user parameter (`gfLabel1_width`), the symbol stays at the right edge when it changes. Each text line
   is a user parameter too (`gfLabel1_text1`, `gfLabel1_text2`) and stays live text, so it can be changed later like
   the bin labels; the font size is fitted when the insert is generated, a longer text stays on one line. All other
@@ -81,6 +81,18 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
 
 ### Fixed
 
+- **Insert lettering printable with a 0.4 mm nozzle (p130):** Joerg's slicer left parts of the insert text out,
+  above all two lines („5mm“ over „Hex key“). Arial at the insert's text heights has strokes of 0.4–0.6 mm, a 0.4 mm
+  nozzle lays 0.42–0.45 mm lines. The label dialog's „Bold“ switch is now a **Text style** choice: Regular, Bold or
+  **Heavy** (Arial Black, the default for new inserts, about twice the stroke). Measured in Fusion on built inserts:
+  M4x5 beside a screw 1.00 mm mean stroke (was 0.56), Joerg's „Welle 6mm“ 0.87 mm (was 0.52), two lines 0.76 mm (was
+  0.39) and 99 % of it within reach of one line. Text and symbol are now **0.4 mm thick (two layers)** instead of one,
+  raised or set in, on every surface; a full-height symbol set in now cuts through the top layer to the latch.
+  Heavy runs about 20 % wider, a long text is fitted smaller by that. The text keeps its font when its text parameter
+  changes. Test cases keep their font (`isBold` became `textStyle`), their snapshots changed only by the thickness;
+  new case with two lines in Heavy.
+- **Hint at thin text:** inserts and bin labels estimate the stroke from the fitted text height; text below 0.6 mm
+  stroke (where a 0.4 mm nozzle starts leaving parts out) gives a message on OK and a note beside the preview time.
 - **Screw choices without a symbol:** the label dialog offered every head, shaft, thread and driver together, head
   None with driver Hex had no svg and locked OK. Each dropdown now offers only what makes a symbol with the choices
   above it, a choice that doesn't moves to the first one that does; flange and security pin are locked where none
