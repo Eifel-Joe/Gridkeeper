@@ -3,5 +3,7 @@
     "generator": "label",
     "designIntent": "part",
     "designIntentAfter": "hybrid",
-    "settings": {}
+    "settings": {
+        "textStyle": "Regular"
+    }
 }

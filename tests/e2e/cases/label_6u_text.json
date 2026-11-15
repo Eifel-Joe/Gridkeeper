@@ -5,6 +5,7 @@
         "widthUnits": 6,
         "line1": "Assorted screws",
         "line2": "M2 to M5",
+        "textStyle": "Regular",
         "showScrew": false
     },
     "parameters": {

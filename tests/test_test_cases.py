@@ -407,8 +407,22 @@ def test_only_label_cases_set_texts(tmp_path):
 def test_welle_6mm_cases_are_there():
     loaded = {case.name: case for case in cases.loadCases(CASES_FOLDER, STATE_CLASSES)}
     nutzer = loaded["label_1u_welle_6mm"]
-    assert (nutzer.state.line1, nutzer.state.line2, nutzer.state.showScrew, nutzer.state.hardware, nutzer.state.surface, nutzer.state.isBold) ==         ("Welle 6mm", "", False, "none", "Flush", False)
+    assert (nutzer.state.line1, nutzer.state.line2, nutzer.state.showScrew, nutzer.state.hardware, nutzer.state.surface, nutzer.state.textStyle) ==         ("Welle 6mm", "", False, "none", "Flush", "Regular")
     assert loaded["label_1u_welle_6mm_text_edited"].texts["gfLabel1_text1"].startswith("Welle 6mm")
+
+
+def test_two_line_heavy_case_is_there():
+    # the two lines of the user's slicer picture in the style that prints with a 0.4 mm nozzle (p130)
+    case = cases.loadCase(os.path.join(CASES_FOLDER, "label_1u_two_lines_heavy.json"), STATE_CLASSES)
+    state = case.state
+    assert (state.line1, state.line2, state.surface, state.textStyle) == ("5mm", "Hex key", "Flush", "Heavy")
+    assert (state.useUnits, state.widthUnits, state.showScrew, state.hardware) == (True, 1, False, "none")
+
+
+def test_label_cases_have_known_text_styles():
+    labels = [case for case in cases.loadCases(CASES_FOLDER, STATE_CLASSES) if case.generator == "label"]
+    assert len(labels) >= 10
+    assert all(case.state.textStyle in ("Regular", "Bold", "Heavy") for case in labels)
 
 
 def label_settings():

@@ -193,7 +193,7 @@ def _buildLabel(
     labelInput.iconPath = iconPath
     labelInput.isScrew = isScrew
     labelInput.surface = state.surface
-    labelInput.isBold = state.isBold
+    labelInput.textStyle = state.textStyle
     # drawn at its spot, not moved there: a move would leave behind letters a later text adds
     (base, marking) = cullenectLabelGenerator.createCullenectLabel(labelInput, labelComponent, name=name, origin=placement)
     bodies = [base] + marking

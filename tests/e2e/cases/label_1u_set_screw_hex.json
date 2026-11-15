@@ -3,6 +3,7 @@
     "generator": "label",
     "settings": {
         "line1": "M4x6",
+        "textStyle": "Regular",
         "head": "none"
     }
 }

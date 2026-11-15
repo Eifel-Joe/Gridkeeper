@@ -289,3 +289,10 @@ class TestMovedLayout:
     def test_without_symbol_stays_without(self):
         moved = layout.movedLayout(layout.labelLayout(3.6, 1.1, None, False, 1), 0, 1.5)
         assert moved.iconMaxX is None
+
+
+def test_marking_is_two_layers():
+    # text and symbol of an insert are two 0.2 mm layers thick (Nutzer 15.11.2026, p130)
+    const = sys.modules["cullenectLabelLayoutTestPackage.const"]
+    assert const.CULLENECT_MARKING_DEPTH == approx(0.04)
+    assert not hasattr(const, "CULLENECT_LAYER")

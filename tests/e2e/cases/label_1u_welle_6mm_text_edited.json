@@ -3,6 +3,7 @@
     "generator": "label",
     "settings": {
         "line1": "Welle 6mm",
+        "textStyle": "Regular",
         "showScrew": false,
         "surface": "Flush"
     },

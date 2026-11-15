@@ -110,7 +110,8 @@ LABEL = {
     'offsetY': 0.0,
     'line1': 'M3x10',
     'line2': '',
-    'isBold': False,
+    # one of textStyles.STYLES, Heavy prints at 0.4 mm nozzles (round 11, p130)
+    'textStyle': 'Heavy',
     'showScrew': True,
     'head': 'socket',
     'shaft': 'machine',

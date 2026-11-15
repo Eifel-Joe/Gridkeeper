@@ -2,6 +2,7 @@
     "description": "The baseline insert with its text and symbol in red (p86), the bodies carry the label appearance",
     "generator": "label",
     "settings": {
+        "textStyle": "Regular",
         "textColor": "#D02020"
     }
 }
