@@ -85,6 +85,11 @@ Der Druck ändert sich nicht: Geometrie und Maße aller Körper bleiben gleich.
 - `BRepBody.moveToComponent` geht auch, legt aber einen Timeline-Eintrag „Körper ausschneiden/einfügen“ an, der genau
   die vorhandenen Körper nimmt.
 - unbestätigt: Ein per API neu angelegtes Dokument war bereits hybrid (`designIntent` 2).
+- **Joint verschiebt die Sammelkomponente** (gefunden in der Umsetzung): Fusion bindet die erste Occurrence einer
+  Komponente an ihre Eltern-Komponente (`isGroundToParent`). Der erste Einleger, der per Joint in eine Tasche gesetzt
+  wurde, nahm deshalb die ganze Sammelkomponente „Label“ mit, auch einen zweiten, freien Einleger. Abhilfe, in Fusion
+  geprüft: Sammelkomponenten festsetzen (`isGrounded`) und die Teile von der Bindung an die Eltern lösen. Danach bewegt
+  ein Joint nur noch das Teil selbst.
 - **Joint bei Rebuild der Bin:** Ein starrer Joint Einleger → Taschen-Origin. Löscht man die Timeline-Gruppe der Bin
   mit `deleteMe(True)`, wie `removeOldGroup` es tut, ist der Joint ebenfalls weg und der Einleger springt still in den
   Nullpunkt zurück. Das passiert auch dann, wenn der Joint vorher umgehängt wurde.
@@ -156,8 +161,8 @@ Der Druck ändert sich nicht: Geometrie und Maße aller Körper bleiben gleich.
    Unterseite), Z nach oben, X entlang seiner Breite. Er folgt dem Breiten-Parameter des Einlegers.
 10. **Passung:** Ein starrer Joint zwischen Einleger und Tasche setzt den Einleger mittig auf den Taschenboden, seine
     Oberseite bündig mit der Laschenoberseite, wie in Cullenect.scad. Die Interferenzprüfung zeigt keine Überschneidung
-    außer, falls vorhanden, der gewollten Rastnase an den Rippen (unbestätigt, wird im Live-Test gemessen und hier
-    nachgetragen).
+    und gar keine Interferenz: In Fusion am 15.11. gemessen (1U-Einleger in der Tasche einer 2x1-Bin), die
+    Interferenzanalyse fand kein Volumen. Die Rastschicht ist rundum eingezogen und liegt unter den Rippen frei.
 
 ### Einsetzen beim Label-Befehl (p100)
 
