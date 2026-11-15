@@ -1,4 +1,6 @@
 import adsk.core, adsk.fusion, traceback
+import dataclasses
+import html
 import math
 import os
 import time
@@ -10,17 +12,18 @@ from ...lib import tagUtils
 from ...lib import settingsUtils
 from ...lib import fusion360utils as futil
 from ... import config
-from ...lib.gridfinityUtils.const import DIMENSION_DEFAULT_WIDTH_UNIT
 from ...lib.gridfinityUtils import baseplateLayout
 from ...lib.gridfinityUtils import const
 from ...lib.gridfinityUtils import commonUtils
-from ...lib.gridfinityUtils import sharedParameters
 from .inputState import InputState
 from .baseplateBuilder import (
     buildBaseplate,
+    rebuildBaseplate,
+    configWithParameters,
     baseplateName,
     computeFillLayout,
     gridPlateExtent,
+    seamClearance,
     SIZING_MODE_GRID_UNITS,
     SIZING_MODE_FILL_AREA,
     FILL_ALIGN_X_OPTIONS,
@@ -32,8 +35,20 @@ from .baseplateBuilder import (
 from . import printBeds
 from ...lib.ui.commandUiState import CommandUiState
 from ...lib.ui.defaultsButtons import addDefaultsButtonRow, defaultsButtonsHandlers, DEFAULTS_SAVE, DEFAULTS_FACTORY_RESET
+from ...lib.ui.buttonRow import addButtonRow
+from ...lib.ui import configButtons
+from ...lib.ui import selection
 from ...lib.ui import browserPages
+from ...lib.ui.infoPage import addInfoPage, infoPageHandlers, warningLine
 from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
+from ...lib.ui import errorPalette
+from ...lib import errorReport
+from ...lib import rebuildUtils
+from ...lib import configJson
+from ...lib import defaultSettings
+
+# what the dialog starts with before saved defaults, see lib/defaultSettings.py
+DEFAULT_STATE = configJson.stateFromJson(configJson.GENERATOR_BASEPLATE, InputState, defaultSettings.BASEPLATE)
 
 app = adsk.core.Application.get()
 ui = app.userInterface
@@ -48,6 +63,25 @@ CMD_Description = ('Creates a gridfinity baseplate for bins to sit in.\n\n'
     'with half cells and padding taking up the rest. Magnet and screw holes and holes to connect the pieces are optional.')
 
 uiState = CommandUiState(CMD_NAME)
+# config the dialog opens with next, see startWithConfig
+pendingConfig: dict | None = None
+# how the open dialog came to be, for the log and the report of a failed build, see buildWorkflow
+WORKFLOW_NEW = 'New baseplate'
+WORKFLOW_CLONE = 'Clone from the settings window'
+WORKFLOW_REBUILD = 'Rebuild in place from the settings window'
+dialogWorkflow = WORKFLOW_NEW
+# a body of the baseplate the dialog opens to rebuild next, see startRebuild, and the entity token of the one the
+# open dialog rebuilds, every preview is undone, the token finds the body again after. None while it makes a new one
+pendingRebuildBody: adsk.fusion.BRepBody | None = None
+rebuildBodyToken: str | None = None
+# features after the rebuilt baseplate that need a look, shown once the dialog closes
+rebuildNotes: list[str] = []
+# the info text of the open dialog, the page asks for it once loaded
+dialogInfo = ''
+# configs loaded from a file into the open dialog
+loadedConfigs: list[str] = []
+# bodies of the last build, selected and centered in the view when the dialog closes on OK, see command_destroy
+builtBodies: list[adsk.fusion.BRepBody] = []
 # Specify that the command will be promoted to the panel.
 IS_PROMOTED = True
 
@@ -96,7 +130,7 @@ SIZING_MODE_DROPDOWN = 'sizing_mode_dropdown'
 
 FILL_AREA_WIDTH_INPUT = 'fill_area_width'
 FILL_AREA_LENGTH_INPUT = 'fill_area_length'
-FILL_FIT_TOLERANCE_INPUT = 'fill_fit_tolerance'
+PLATE_CLEARANCE_INPUT = 'plate_clearance'
 FILL_HALF_CELLS_INPUT = 'fill_half_cells'
 FILL_ALIGN_X_DROPDOWN = 'fill_align_x'
 FILL_ALIGN_Y_DROPDOWN = 'fill_align_y'
@@ -110,7 +144,7 @@ LAYOUT_BROWSER = 'layout_browser'
 
 # inputs only one of the sizing modes uses
 GRID_UNITS_MODE_INPUTS = [BASEPLATE_WIDTH_INPUT, BASEPLATE_LENGTH_INPUT, SIDE_PADDING_GROUP]
-FILL_AREA_MODE_INPUTS = [FILL_AREA_WIDTH_INPUT, FILL_AREA_LENGTH_INPUT, FILL_FIT_TOLERANCE_INPUT, FILL_ALIGN_X_DROPDOWN, FILL_ALIGN_Y_DROPDOWN, FILL_HALF_CELLS_INPUT, PRINT_BED_GROUP]
+FILL_AREA_MODE_INPUTS = [FILL_AREA_WIDTH_INPUT, FILL_AREA_LENGTH_INPUT, FILL_ALIGN_X_DROPDOWN, FILL_ALIGN_Y_DROPDOWN, FILL_HALF_CELLS_INPUT, PRINT_BED_GROUP]
 
 BASEPLATE_WITH_MAGNETS_INPUT = 'with_magnet_cutouts'
 BASEPLATE_MAGNET_DIAMETER_INPUT = 'magnet_diameter'
@@ -132,7 +166,45 @@ BASEPLATE_HAS_CONNECTION_HOLE_INPUT = 'has_connection_hole'
 BASEPLATE_JOINT_ORIGINS_INPUT = 'has_joint_origins'
 BASEPLATE_CONNECTION_HOLE_DIAMETER_INPUT = 'connection_hole_diameter'
 
+INFO_BROWSER = 'info_page'
 INPUT_CHANGES_BUTTONS_BROWSER = 'input_changes_buttons'
+CONFIG_BUTTONS_BROWSER = 'config_buttons'
+
+# the input of each InputState field in the order of the fields, see getInputsState
+STATE_INPUT_IDS = [
+    BASEPLATE_BASE_UNIT_WIDTH_INPUT,
+    BASEPLATE_BASE_UNIT_LENGTH_INPUT,
+    BIN_XY_CLEARANCE_INPUT_ID,
+    BASEPLATE_WIDTH_INPUT,
+    BASEPLATE_LENGTH_INPUT,
+    BASEPLATE_TYPE_DROPDOWN,
+    BASEPLATE_WITH_MAGNETS_INPUT,
+    BASEPLATE_MAGNET_DIAMETER_INPUT,
+    BASEPLATE_MAGNET_HEIGHT_INPUT,
+    BASEPLATE_WITH_SCREWS_INPUT,
+    BASEPLATE_SCREW_DIAMETER_INPUT,
+    BASEPLATE_SCREW_HEIGHT_INPUT,
+    BASEPLATE_WITH_SIDE_PADDING_INPUT,
+    BASEPLATE_SIDE_PADDING_LEFT_INPUT,
+    BASEPLATE_SIDE_PADDING_TOP_INPUT,
+    BASEPLATE_SIDE_PADDING_RIGHT_INPUT,
+    BASEPLATE_SIDE_PADDING_BOTTOM_INPUT,
+    BASEPLATE_EXTRA_THICKNESS_INPUT,
+    BASEPLATE_BIN_Z_CLEARANCE_INPUT,
+    BASEPLATE_HAS_CONNECTION_HOLE_INPUT,
+    BASEPLATE_CONNECTION_HOLE_DIAMETER_INPUT,
+    SIZING_MODE_DROPDOWN,
+    FILL_AREA_WIDTH_INPUT,
+    FILL_AREA_LENGTH_INPUT,
+    PLATE_CLEARANCE_INPUT,
+    PRINT_BED_WIDTH_INPUT,
+    PRINT_BED_LENGTH_INPUT,
+    PRINT_BED_MARGIN_INPUT,
+    FILL_ALIGN_X_DROPDOWN,
+    FILL_ALIGN_Y_DROPDOWN,
+    FILL_HALF_CELLS_INPUT,
+    BASEPLATE_JOINT_ORIGINS_INPUT,
+]
 
 SHOW_PREVIEW_INPUT = 'show_preview'
 PREVIEW_TIME_INPUT = 'preview_time'
@@ -217,27 +289,24 @@ def stop():
 
 # Function that is called when a user clicks the corresponding button in the UI.
 # This defines the contents of the command dialog and connects to the command related events.
-def applySharedParameterDefaults():
-    """Usable shared units of the design replace the remembered inputs, so new baseplates match the existing bins by default"""
-    design = adsk.fusion.Design.cast(app.activeProduct)
-    if design is None:
-        return
-    (baseWidth, baseLength) = sharedParameters.usableSharedBaseUnits(design)
-    for (inputId, value) in [
-        (BASEPLATE_BASE_UNIT_WIDTH_INPUT, baseWidth),
-        (BASEPLATE_BASE_UNIT_LENGTH_INPUT, baseLength),
-    ]:
-        if value is not None:
-            uiState.initValue(inputId, value, adsk.core.ValueCommandInput.classType())
-            commonUtils.debugLog(f'{CMD_NAME} dialog default {inputId} = {value} from the shared parameter')
-
 def command_created(args: adsk.core.CommandCreatedEventArgs):
     # General logging for debug.
     futil.log(f'{CMD_NAME} Command Created Event')
     global uiState
 
     args.command.setDialogInitialSize(450, 500)
-    applySharedParameterDefaults()
+    global dialogWorkflow
+    global rebuildBodyToken
+    global pendingRebuildBody
+    global dialogInfo
+    dialogWorkflow = WORKFLOW_REBUILD if pendingRebuildBody is not None else WORKFLOW_CLONE if pendingConfig is not None else WORKFLOW_NEW
+    loadedConfigs.clear()
+    rebuildBodyToken = pendingRebuildBody.entityToken if pendingRebuildBody is not None else None
+    dialogInfo = infoText()
+    if pendingRebuildBody is not None:
+        dialogInfo = warningLine(f'<b>Rebuilding {html.escape(pendingRebuildBody.name)}</b> in place, features after it in the timeline are kept.') + dialogInfo
+    pendingRebuildBody = None
+    applyPendingConfig()
 
     # https://help.autodesk.com/view/fusion360/ENU/?contextId=CommandInputs
     inputs = args.command.commandInputs
@@ -247,20 +316,17 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     infoGroup = inputs.addGroupCommandInput(INFO_GROUP, 'Info')
     infoGroup.isExpanded = uiState.getState(INFO_GROUP)
     uiState.registerCommandInput(infoGroup)
-    # as many rows as the text has lines, so the box takes no more room than it needs, and a row for the help line
-    # to wrap into, as the box keeps its height when the dialog is made narrower
-    info = infoText()
-    infoGroup.children.addTextBoxCommandInput("info_text", "Info", info, info.count('<br>') + 2, True)
+    addInfoPage(infoGroup.children, INFO_BROWSER)
 
     basicSizesGroup = inputs.addGroupCommandInput(BASIC_SIZES_GROUP, 'Basic size')
     basicSizesGroup.isExpanded = uiState.getState(BASIC_SIZES_GROUP)
     uiState.registerCommandInput(basicSizesGroup)
     baseWidthUnitInput = basicSizesGroup.children.addValueInput(BASEPLATE_BASE_UNIT_WIDTH_INPUT, 'Base width unit, X (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(uiState.getState(BASEPLATE_BASE_UNIT_WIDTH_INPUT)))
-    baseWidthUnitInput.minimumValue = sharedParameters.BASE_UNIT_MIN
+    baseWidthUnitInput.minimumValue = const.BASE_UNIT_MIN
     baseWidthUnitInput.isMinimumInclusive = True
     uiState.registerCommandInput(baseWidthUnitInput)
     baseLengthUnitInput = basicSizesGroup.children.addValueInput(BASEPLATE_BASE_UNIT_LENGTH_INPUT, 'Base length unit, Y (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(uiState.getState(BASEPLATE_BASE_UNIT_LENGTH_INPUT)))
-    baseLengthUnitInput.minimumValue = sharedParameters.BASE_UNIT_MIN
+    baseLengthUnitInput.minimumValue = const.BASE_UNIT_MIN
     baseLengthUnitInput.isMinimumInclusive = True
     uiState.registerCommandInput(baseLengthUnitInput)
 
@@ -269,15 +335,22 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     xyClearanceInput.isMinimumInclusive = True
     xyClearanceInput.maximumValue = 0.05
     xyClearanceInput.isMaximumInclusive = True
-    xyClearanceInput.tooltip = "Must be within range [0.1, 0.5]mm"
+    xyClearanceInput.tooltip = "Gap on each side between a bin and its cell, the sockets are made larger by it. Keep it the same as the bins' xy clearance. Must be within range [0.1, 0.5]mm"
     uiState.registerCommandInput(xyClearanceInput)
+    plateClearanceInput = basicSizesGroup.children.addValueInput(PLATE_CLEARANCE_INPUT, 'Clearance between plates (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(uiState.getState(PLATE_CLEARANCE_INPUT)))
+    plateClearanceInput.minimumValue = 0.005
+    plateClearanceInput.isMinimumInclusive = True
+    plateClearanceInput.maximumValue = 0.05
+    plateClearanceInput.isMaximumInclusive = True
+    plateClearanceInput.tooltip = "Gap between fill pieces, or grid units plates, glued side by side. Each plate takes half of it on its edge. Must be within range [0.05, 0.5]mm"
+    uiState.registerCommandInput(plateClearanceInput)
 
     mainDimensionsGroup = inputs.addGroupCommandInput(XY_DIMENSIONS_GROUP, 'Main dimensions')
     mainDimensionsGroup.isExpanded = uiState.getState(XY_DIMENSIONS_GROUP)
     uiState.registerCommandInput(mainDimensionsGroup)
     sizingModeDropdown = mainDimensionsGroup.children.addDropDownCommandInput(SIZING_MODE_DROPDOWN, 'Sizing mode', adsk.core.DropDownStyles.TextListDropDownStyle)
     sizingModeDropdown.tooltip = "Fill area generates the grid for a whole area, e.g. a drawer, split into pieces fitting the print bed"
-    for sizingMode in [SIZING_MODE_GRID_UNITS, SIZING_MODE_FILL_AREA]:
+    for sizingMode in [SIZING_MODE_FILL_AREA, SIZING_MODE_GRID_UNITS]:
         sizingModeDropdown.listItems.add(sizingMode, uiState.getState(SIZING_MODE_DROPDOWN) == sizingMode)
     uiState.registerCommandInput(sizingModeDropdown)
 
@@ -294,11 +367,6 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     fillAreaLengthInput.minimumValue = 0
     fillAreaLengthInput.isMinimumInclusive = False
     uiState.registerCommandInput(fillAreaLengthInput)
-    fillFitToleranceInput = mainDimensionsGroup.children.addValueInput(FILL_FIT_TOLERANCE_INPUT, 'Fit tolerance', defaultLengthUnits, adsk.core.ValueInput.createByReal(uiState.getState(FILL_FIT_TOLERANCE_INPUT)))
-    fillFitToleranceInput.minimumValue = 0
-    fillFitToleranceInput.isMinimumInclusive = True
-    fillFitToleranceInput.tooltip = "Total gap left between the plate and the area walls on each axis"
-    uiState.registerCommandInput(fillFitToleranceInput)
     for (inputId, label, options) in [
         (FILL_ALIGN_X_DROPDOWN, 'Grid position, X', FILL_ALIGN_X_OPTIONS),
         (FILL_ALIGN_Y_DROPDOWN, 'Grid position, Y', FILL_ALIGN_Y_OPTIONS),
@@ -424,11 +492,12 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     extraBottomThicknessInput.isMinimumInclusive = False
     uiState.registerCommandInput(extraBottomThicknessInput)
 
-    verticalClearanceInput = advancedPlateSizeGroup.children.addValueInput(BASEPLATE_BIN_Z_CLEARANCE_INPUT, 'Clearance between baseplate and bin', defaultLengthUnits, adsk.core.ValueInput.createByReal(uiState.getState(BASEPLATE_BIN_Z_CLEARANCE_INPUT)))
+    verticalClearanceInput = advancedPlateSizeGroup.children.addValueInput(BASEPLATE_BIN_Z_CLEARANCE_INPUT, 'Vertical clearance under bins', defaultLengthUnits, adsk.core.ValueInput.createByReal(uiState.getState(BASEPLATE_BIN_Z_CLEARANCE_INPUT)))
     verticalClearanceInput.minimumValue = 0
     verticalClearanceInput.isMinimumInclusive = True
     verticalClearanceInput.maximumValue = 0.3
     verticalClearanceInput.isMaximumInclusive = True
+    verticalClearanceInput.tooltip = "How much is cut off the top of the plate, so a bin sits on its feet in the sockets rather than on the ridges between them. Must be within range [0, 3]mm"
     uiState.registerCommandInput(verticalClearanceInput)
     
     generateBaseplateConnectionPinHoleInput = advancedPlateSizeGroup.children.addBoolValueInput(BASEPLATE_HAS_CONNECTION_HOLE_INPUT, 'Add connection holes',  True, '', uiState.getState(BASEPLATE_HAS_CONNECTION_HOLE_INPUT))
@@ -444,6 +513,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     inputChangesGroup.isExpanded = uiState.getState(INPUT_CHANGES_GROUP)
     uiState.registerCommandInput(inputChangesGroup)
     addDefaultsButtonRow(inputChangesGroup.children, INPUT_CHANGES_BUTTONS_BROWSER)
+    addButtonRow(inputChangesGroup.children, CONFIG_BUTTONS_BROWSER)
 
     previewGroup = inputs.addGroupCommandInput(PREVIEW_GROUP, 'Preview')
     uiState.registerCommandInput(previewGroup)
@@ -540,10 +610,12 @@ def command_validate_input(args: adsk.core.ValidateInputsEventArgs):
     inputsState = getInputsState()
     
     # Verify the validity of the input values. This controls if the OK button is enabled or not.
-    INPUTS_VALID = inputsState.baseWidth >= sharedParameters.BASE_UNIT_MIN \
-        and inputsState.baseLength >= sharedParameters.BASE_UNIT_MIN \
+    INPUTS_VALID = inputsState.baseWidth >= const.BASE_UNIT_MIN \
+        and inputsState.baseLength >= const.BASE_UNIT_MIN \
         and inputsState.xyClearance >= 0.01 \
         and inputsState.xyClearance <= 0.05 \
+        and inputsState.plateClearance >= 0.005 \
+        and inputsState.plateClearance <= 0.05 \
         and inputsState.plateWidth > 0 \
         and inputsState.plateLength > 0 \
         and (not inputsState.hasMagnetSockets or (inputsState.magnetSocketSize <= 1 and inputsState.magnetSocketSize > 0 and inputsState.magnetSocketDepth > 0)) \
@@ -572,8 +644,28 @@ def command_incoming_from_html(args: adsk.core.HTMLEventArgs):
         if uiState.getInput(SHOW_PREVIEW_INPUT).value:
             command.doExecutePreview()
 
-    if args.browserCommandInput.id == INPUT_CHANGES_BUTTONS_BROWSER:
+    def onLoadConfig(text: str, fileName: str):
+        inputsState = readConfig(text, f'Loaded "{fileName}"')
+        if inputsState is None:
+            return
+        loadedConfigs.append(fileName)
+        applyInputsState(inputsState)
+        uiState.forceUIRefresh()
+        updateSizingModeInputs(command.commandInputs)
+        if uiState.getInput(SHOW_PREVIEW_INPUT).value:
+            command.doExecutePreview()
+
+    if args.browserCommandInput.id == INFO_BROWSER:
+        handlers = infoPageHandlers(dialogInfo, args.browserCommandInput)
+    elif args.browserCommandInput.id == INPUT_CHANGES_BUTTONS_BROWSER:
         handlers = defaultsButtonsHandlers(onDefaults)
+    elif args.browserCommandInput.id == CONFIG_BUTTONS_BROWSER:
+        handlers = configButtons.configButtonsHandlers(
+            'baseplate',
+            lambda: configJson.configText(configJson.GENERATOR_BASEPLATE, configJson.stateToJson(configJson.GENERATOR_BASEPLATE, getInputsState()), tagUtils.getGeneratorVersion()),
+            lambda: baseplateName(getInputsState()),
+            onLoad=onLoadConfig,
+        )
     else:
         handlers = {browserPages.READY: lambda _: layoutData(getInputsState())}
     browserPages.handleMessage(args, handlers)
@@ -583,7 +675,20 @@ def command_incoming_from_html(args: adsk.core.HTMLEventArgs):
 def command_destroy(args: adsk.core.CommandEventArgs):
     futil.log(f'{CMD_NAME} Command Destroy Event')
     global local_handlers
+    global rebuildBodyToken
     local_handlers = []
+    rebuildBodyToken = None
+    if args.terminationReason == adsk.core.CommandTerminationReason.CompletedTerminationReason:
+        # once the command is over, so the selection stays
+        selection.showBuiltBodies(builtBodies)
+        if len(rebuildNotes) > 0:
+            ui.messageBox(
+                'The baseplate was rebuilt. These features after it need a look, ones using a face or an edge of the '
+                'old baseplate need them picked again:\n\n' + '\n'.join(rebuildNotes),
+                CMD_NAME,
+                adsk.core.MessageBoxButtonTypes.OKButtonType,
+                adsk.core.MessageBoxIconTypes.WarningIconType,
+            )
     global uiState
 
 
@@ -650,9 +755,9 @@ def fillLayoutData(inputsState: InputState) -> dict:
         return {'error': error}
     layout = computeFillLayout(inputsState)
     (baseWidth, baseLength, xyClearance) = (inputsState.baseWidth, inputsState.baseLength, inputsState.xyClearance)
-    # the plate reaches past the origin, the fit tolerance is left around it
-    originX = layout.x.startExtent(baseWidth) + inputsState.fitTolerance / 2
-    originY = layout.y.startExtent(baseLength) + inputsState.fitTolerance / 2
+    # the plate reaches past the origin
+    originX = layout.x.startExtent(baseWidth)
+    originY = layout.y.startExtent(baseLength)
     def rect(minX: float, minY: float, maxX: float, maxY: float) -> dict:
         return {'x': (minX + originX) * 10, 'y': (minY + originY) * 10, 'width': (maxX - minX) * 10, 'length': (maxY - minY) * 10}
     shapes: list[tuple] = []
@@ -661,16 +766,19 @@ def fillLayoutData(inputsState: InputState) -> dict:
         shape = baseplateLayout.pieceShapeKey(piece)
         if shape not in shapes:
             shapes.append(shape)
-        (minX, minY, maxX, maxY) = baseplateLayout.pieceOutline(layout, piece, baseWidth, baseLength, xyClearance)
-        cells = cellRects(inputsState, piece.cellOffsetX, piece.cellsX, piece.cellOffsetY, piece.cellsY, (
+        (minX, minY, maxX, maxY) = baseplateLayout.pieceOutline(layout, piece, baseWidth, baseLength, xyClearance, seamClearance(inputsState))
+        halfCells = (
             piece.isLeftEdge and layout.x.hasHalfCellsStart,
             piece.isRightEdge and layout.x.hasHalfCellsEnd,
             piece.isBottomEdge and layout.y.hasHalfCellsStart,
             piece.isTopEdge and layout.y.hasHalfCellsEnd,
-        ))
+        )
+        cells = cellRects(inputsState, piece.cellOffsetX, piece.cellsX, piece.cellOffsetY, piece.cellsY, halfCells)
+        # a row of half cells counts as half a unit, as 3x5.5
+        (sizeX, sizeY) = (piece.cellsX + (halfCells[0] + halfCells[1]) / 2, piece.cellsY + (halfCells[2] + halfCells[3]) / 2)
         pieces.append({
             **rect(minX, minY, maxX, maxY),
-            'label': f'{piece.cellsX}x{piece.cellsY}',
+            'label': f'{sizeX:g}x{sizeY:g}',
             'cells': [{**rect(*cell[:4]), 'holes': cell[4]} for cell in cells],
         })
     pieceCount = f'{len(layout.pieces)} piece' + ('s' if len(layout.pieces) > 1 else '')
@@ -681,7 +789,10 @@ def fillLayoutData(inputsState: InputState) -> dict:
         (layout.y.hasHalfCellsStart, 'front'),
         (layout.y.hasHalfCellsEnd, 'back'),
     ] if hasHalfCells]
-    halfCellsNote = f' + half cells {", ".join(halfCellSides)}' if len(halfCellSides) > 0 else ''
+    # the half rows are in the size, the note says where they are
+    halfCellsNote = f', half cells {", ".join(halfCellSides)}' if len(halfCellSides) > 0 else ''
+    plateX = layout.x.cells + (layout.x.hasHalfCellsStart + layout.x.hasHalfCellsEnd) / 2
+    plateY = layout.y.cells + (layout.y.hasHalfCellsStart + layout.y.hasHalfCellsEnd) / 2
     def padding(axis: baseplateLayout.AxisLayout) -> str:
         return f'{axis.paddingStart * 10:.1f} + {axis.paddingEnd * 10:.1f}'
     return {
@@ -689,7 +800,7 @@ def fillLayoutData(inputsState: InputState) -> dict:
         'socket': socketDrawingData(inputsState),
         'pieces': pieces,
         'caption': [
-            f'{inputsState.plateType} {layout.x.cells} x {layout.y.cells} u{halfCellsNote}, {pieceCount}{uniqueCount}',
+            f'{inputsState.plateType} {plateX:g} x {plateY:g} u{halfCellsNote}, {pieceCount}{uniqueCount}',
             f'padding X {padding(layout.x)} mm, Y {padding(layout.y)} mm'
             + (', turned 90° on the bed' if layout.isBedRotated else ''),
         ],
@@ -733,8 +844,10 @@ def gridLayoutData(inputsState: InputState) -> dict:
 
 def layoutData(inputsState: InputState) -> dict:
     data = fillLayoutData(inputsState) if inputsState.sizingMode == SIZING_MODE_FILL_AREA else gridLayoutData(inputsState)
-    # cells start the clearance before the plate does, the drawing adds it back to tell the padding
-    return {**data, 'xyClearance': inputsState.xyClearance * 10}
+    # the plate edge is a clearance short of the cells, the drawing adds it back to tell the padding. A fill keeps
+    # the bin clearance on its outer edges, a grid units plate the seam clearance
+    edgeClearance = inputsState.xyClearance if inputsState.sizingMode == SIZING_MODE_FILL_AREA else seamClearance(inputsState)
+    return {**data, 'edgeClearance': edgeClearance * 10}
 
 def updateSizingModeInputs(inputs: adsk.core.CommandInputs):
     """Shows the inputs of the selected sizing mode and refreshes the layout drawing"""
@@ -752,12 +865,21 @@ def generateBaseplate(args: adsk.core.CommandEventArgs, isPreview: bool = False)
     startTime = time.perf_counter()
     settings = snapshotSettings(args.command.commandInputs)
     # the settings come first, so a failing build can be reproduced from the log
-    commonUtils.fileLog(f'{CMD_NAME} Generating baseplate{" preview" if isPreview else ""} with settings:\n{settingsUtils.settingsText(settings)}')
-    inputsState = getInputsState()
+    commonUtils.fileLog(f'{CMD_NAME} Generating baseplate, {buildWorkflow(isPreview)}, with settings:\n{settingsUtils.settingsText(settings)}')
+    inputsState = None
+    global builtBodies
+    global rebuildNotes
+    builtBodies = []
+    rebuildNotes = []
 
     try:
+        inputsState = getInputsState()
         des = adsk.fusion.Design.cast(app.activeProduct)
-        buildBaseplate(des, inputsState, settings, isPreview)
+        if rebuildBodyToken is not None:
+            body = rebuildUtils.findBodyByToken(des, rebuildBodyToken)
+            (builtBodies, rebuildNotes) = rebuildBaseplate(des, body, inputsState, settings, isPreview)
+        else:
+            builtBodies = buildBaseplate(des, inputsState, settings, isPreview)
         futil.log(f'{CMD_NAME} {baseplateName(inputsState)} generated in {time.perf_counter() - startTime:.3f}s')
     except UnsupportedDesignTypeException as err:
         args.executeFailed = True
@@ -765,9 +887,34 @@ def generateBaseplate(args: adsk.core.CommandEventArgs, isPreview: bool = False)
         return False
     except Exception as err:
         args.executeFailed = True
-        args.executeFailedMessage = getErrorMessage()
-        futil.log(f'{CMD_NAME} Error occurred, {err}, {getErrorMessage()}')
+        args.executeFailedMessage = f'{html.escape(errorReport.errorMessage(err))}<br>See the {errorPalette.PALETTE_TITLE} panel to copy a report of it'
+        commonUtils.fileLog(f'{CMD_NAME} Error occurred, {err}, {getErrorMessage()}')
+        errorPalette.show(f'{CMD_NAME} failed', err, reportConfig(inputsState), buildWorkflow(isPreview), rebuiltConfig())
         return False
+
+def buildWorkflow(isPreview: bool) -> str:
+    """How the dialog came to build, like a clone's preview, with configs loaded into it"""
+    loaded = f', loaded {", ".join(loadedConfigs)}' if len(loadedConfigs) > 0 else ''
+    return f'{dialogWorkflow}{loaded}, {"preview" if isPreview else "OK"}'
+
+def rebuiltConfig() -> str | None:
+    """The config the baseplate being rebuilt was built with, from its tag, for the report of a failed rebuild"""
+    if rebuildBodyToken is None:
+        return None
+    try:
+        tag = tagUtils.readBodyTag(rebuildUtils.findBodyByToken(adsk.fusion.Design.cast(app.activeProduct), rebuildBodyToken))
+        if tag is None or not isinstance(tag[1].get('config'), dict):
+            return None
+        return configJson.configText(configJson.GENERATOR_BASEPLATE, tag[1]['config'], str(tag[1].get('generatorVersion') or ''))
+    except Exception as err:
+        futil.log(f'{CMD_NAME} config of the rebuilt baseplate not read, {err}')
+        return None
+
+def reportConfig(inputsState: InputState | None) -> str | None:
+    """The settings of a failed build as a config file, to build it again from the report"""
+    if inputsState is None:
+        return None
+    return configJson.configText(configJson.GENERATOR_BASEPLATE, configJson.stateToJson(configJson.GENERATOR_BASEPLATE, inputsState), tagUtils.getGeneratorVersion())
 
 def initUiState():
     global uiState
@@ -782,48 +929,47 @@ def initUiState():
     uiState.initValue(SIDE_PADDING_GROUP, True, adsk.core.GroupCommandInput.classType())
     uiState.initValue(PREVIEW_GROUP, True, adsk.core.GroupCommandInput.classType())
 
-    uiState.initValue(BASEPLATE_BASE_UNIT_WIDTH_INPUT, DIMENSION_DEFAULT_WIDTH_UNIT, adsk.core.ValueCommandInput.classType())
-    uiState.initValue(BASEPLATE_BASE_UNIT_LENGTH_INPUT, DIMENSION_DEFAULT_WIDTH_UNIT, adsk.core.ValueCommandInput.classType())
-    uiState.initValue(BIN_XY_CLEARANCE_INPUT_ID, const.BIN_XY_CLEARANCE, adsk.core.ValueCommandInput.classType())
-    uiState.initValue(BASEPLATE_WIDTH_INPUT, 2, adsk.core.IntegerSpinnerCommandInput.classType())
-    uiState.initValue(BASEPLATE_LENGTH_INPUT, 3, adsk.core.IntegerSpinnerCommandInput.classType())
-    uiState.initValue(BASEPLATE_TYPE_DROPDOWN, BASEPLATE_TYPE_LIGHT, adsk.core.DropDownCommandInput.classType())
+    uiState.initValue(BASEPLATE_BASE_UNIT_WIDTH_INPUT, DEFAULT_STATE.baseWidth, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_BASE_UNIT_LENGTH_INPUT, DEFAULT_STATE.baseLength, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(BIN_XY_CLEARANCE_INPUT_ID, DEFAULT_STATE.xyClearance, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_WIDTH_INPUT, DEFAULT_STATE.plateWidth, adsk.core.IntegerSpinnerCommandInput.classType())
+    uiState.initValue(BASEPLATE_LENGTH_INPUT, DEFAULT_STATE.plateLength, adsk.core.IntegerSpinnerCommandInput.classType())
+    uiState.initValue(BASEPLATE_TYPE_DROPDOWN, DEFAULT_STATE.plateType, adsk.core.DropDownCommandInput.classType())
 
-    uiState.initValue(SIZING_MODE_DROPDOWN, SIZING_MODE_FILL_AREA, adsk.core.DropDownCommandInput.classType())
-    uiState.initValue(FILL_AREA_WIDTH_INPUT, 40, adsk.core.ValueCommandInput.classType())
-    uiState.initValue(FILL_AREA_LENGTH_INPUT, 30, adsk.core.ValueCommandInput.classType())
-    uiState.initValue(FILL_FIT_TOLERANCE_INPUT, 0.1, adsk.core.ValueCommandInput.classType())
-    uiState.initValue(FILL_ALIGN_X_DROPDOWN, 'Center', adsk.core.DropDownCommandInput.classType())
-    uiState.initValue(FILL_ALIGN_Y_DROPDOWN, 'Center', adsk.core.DropDownCommandInput.classType())
-    uiState.initValue(FILL_HALF_CELLS_INPUT, True, adsk.core.BoolValueCommandInput.classType())
+    uiState.initValue(SIZING_MODE_DROPDOWN, DEFAULT_STATE.sizingMode, adsk.core.DropDownCommandInput.classType())
+    uiState.initValue(FILL_AREA_WIDTH_INPUT, DEFAULT_STATE.areaWidth, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(FILL_AREA_LENGTH_INPUT, DEFAULT_STATE.areaLength, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(PLATE_CLEARANCE_INPUT, DEFAULT_STATE.plateClearance, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(FILL_ALIGN_X_DROPDOWN, DEFAULT_STATE.alignmentX, adsk.core.DropDownCommandInput.classType())
+    uiState.initValue(FILL_ALIGN_Y_DROPDOWN, DEFAULT_STATE.alignmentY, adsk.core.DropDownCommandInput.classType())
+    uiState.initValue(FILL_HALF_CELLS_INPUT, DEFAULT_STATE.useHalfCells, adsk.core.BoolValueCommandInput.classType())
     uiState.initValue(PRINT_BED_GROUP, True, adsk.core.GroupCommandInput.classType())
-    # a common bed size, the dropdown starts on custom, its first option
-    (defaultBedWidth, defaultBedLength) = printBeds.presetBedSize(printBeds.presetLabel('Bambu Lab A1, P1, X1'))
+    # the bed size is custom, its first option
     uiState.initValue(PRINT_BED_PRESET_DROPDOWN, printBeds.PRINT_BED_CUSTOM, adsk.core.DropDownCommandInput.classType())
-    uiState.initValue(PRINT_BED_WIDTH_INPUT, defaultBedWidth, adsk.core.ValueCommandInput.classType())
-    uiState.initValue(PRINT_BED_LENGTH_INPUT, defaultBedLength, adsk.core.ValueCommandInput.classType())
-    uiState.initValue(PRINT_BED_MARGIN_INPUT, 0.5, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(PRINT_BED_WIDTH_INPUT, DEFAULT_STATE.bedWidth, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(PRINT_BED_LENGTH_INPUT, DEFAULT_STATE.bedLength, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(PRINT_BED_MARGIN_INPUT, DEFAULT_STATE.bedMargin, adsk.core.ValueCommandInput.classType())
 
-    uiState.initValue(BASEPLATE_WITH_MAGNETS_INPUT, True, adsk.core.BoolValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_WITH_MAGNETS_INPUT, DEFAULT_STATE.hasMagnetSockets, adsk.core.BoolValueCommandInput.classType())
 
-    uiState.initValue(BASEPLATE_MAGNET_DIAMETER_INPUT, const.DIMENSION_MAGNET_CUTOUT_DIAMETER, adsk.core.ValueCommandInput.classType())
-    uiState.initValue(BASEPLATE_MAGNET_HEIGHT_INPUT, const.DIMENSION_MAGNET_CUTOUT_DEPTH, adsk.core.ValueCommandInput.classType())
-    uiState.initValue(BASEPLATE_WITH_SCREWS_INPUT, True, adsk.core.BoolValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_MAGNET_DIAMETER_INPUT, DEFAULT_STATE.magnetSocketSize, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_MAGNET_HEIGHT_INPUT, DEFAULT_STATE.magnetSocketDepth, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_WITH_SCREWS_INPUT, DEFAULT_STATE.hasScrewHoles, adsk.core.BoolValueCommandInput.classType())
 
-    uiState.initValue(BASEPLATE_WITH_SIDE_PADDING_INPUT, False, adsk.core.BoolValueCommandInput.classType())
-    uiState.initValue(BASEPLATE_SIDE_PADDING_LEFT_INPUT, 0, adsk.core.BoolValueCommandInput.classType())
-    uiState.initValue(BASEPLATE_SIDE_PADDING_TOP_INPUT, 0, adsk.core.BoolValueCommandInput.classType())
-    uiState.initValue(BASEPLATE_SIDE_PADDING_RIGHT_INPUT, 0, adsk.core.BoolValueCommandInput.classType())
-    uiState.initValue(BASEPLATE_SIDE_PADDING_BOTTOM_INPUT, 0, adsk.core.BoolValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_WITH_SIDE_PADDING_INPUT, DEFAULT_STATE.hasPadding, adsk.core.BoolValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_SIDE_PADDING_LEFT_INPUT, DEFAULT_STATE.paddingLeft, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_SIDE_PADDING_TOP_INPUT, DEFAULT_STATE.paddingTop, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_SIDE_PADDING_RIGHT_INPUT, DEFAULT_STATE.paddingRight, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_SIDE_PADDING_BOTTOM_INPUT, DEFAULT_STATE.paddingBottom, adsk.core.ValueCommandInput.classType())
 
-    uiState.initValue(BASEPLATE_SCREW_DIAMETER_INPUT, const.DIMENSION_PLATE_SCREW_HOLE_DIAMETER, adsk.core.ValueCommandInput.classType())
-    uiState.initValue(BASEPLATE_SCREW_HEIGHT_INPUT, const.DIMENSION_SCREW_HEAD_CUTOUT_DIAMETER, adsk.core.ValueCommandInput.classType())
-    uiState.initValue(BASEPLATE_EXTRA_THICKNESS_INPUT, const.BASEPLATE_EXTRA_HEIGHT, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_SCREW_DIAMETER_INPUT, DEFAULT_STATE.screwHoleSize, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_SCREW_HEIGHT_INPUT, DEFAULT_STATE.screwHeadSize, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_EXTRA_THICKNESS_INPUT, DEFAULT_STATE.extraBottomThickness, adsk.core.ValueCommandInput.classType())
 
-    uiState.initValue(BASEPLATE_BIN_Z_CLEARANCE_INPUT, const.BASEPLATE_BIN_Z_CLEARANCE, adsk.core.ValueCommandInput.classType())
-    uiState.initValue(BASEPLATE_HAS_CONNECTION_HOLE_INPUT, False, adsk.core.BoolValueCommandInput.classType())
-    uiState.initValue(BASEPLATE_JOINT_ORIGINS_INPUT, False, adsk.core.BoolValueCommandInput.classType())
-    uiState.initValue(BASEPLATE_CONNECTION_HOLE_DIAMETER_INPUT, const.DIMENSION_PLATE_CONNECTION_SCREW_HOLE_DIAMETER, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_BIN_Z_CLEARANCE_INPUT, DEFAULT_STATE.verticalClearance, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_HAS_CONNECTION_HOLE_INPUT, DEFAULT_STATE.hasConnectionHoles, adsk.core.BoolValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_JOINT_ORIGINS_INPUT, DEFAULT_STATE.hasJointOrigins, adsk.core.BoolValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_CONNECTION_HOLE_DIAMETER_INPUT, DEFAULT_STATE.connectionHoleSize, adsk.core.ValueCommandInput.classType())
     uiState.initValue(SHOW_PREVIEW_INPUT, False, adsk.core.BoolValueCommandInput.classType())
 
     recordedDefaults = configUtils.readJsonConfig(UI_INPUT_DEFAULTS_CONFIG_PATH)
@@ -850,37 +996,59 @@ def saveUIInputsAsDefaults():
 
 def getInputsState():
     global uiState
-    return InputState(
-        uiState.getState(BASEPLATE_BASE_UNIT_WIDTH_INPUT),
-        uiState.getState(BASEPLATE_BASE_UNIT_LENGTH_INPUT),
-        uiState.getState(BIN_XY_CLEARANCE_INPUT_ID),
-        uiState.getState(BASEPLATE_WIDTH_INPUT),
-        uiState.getState(BASEPLATE_LENGTH_INPUT),
-        uiState.getState(BASEPLATE_TYPE_DROPDOWN),
-        uiState.getState(BASEPLATE_WITH_MAGNETS_INPUT),
-        uiState.getState(BASEPLATE_MAGNET_DIAMETER_INPUT),
-        uiState.getState(BASEPLATE_MAGNET_HEIGHT_INPUT),
-        uiState.getState(BASEPLATE_WITH_SCREWS_INPUT),
-        uiState.getState(BASEPLATE_SCREW_DIAMETER_INPUT),
-        uiState.getState(BASEPLATE_SCREW_HEIGHT_INPUT),
-        uiState.getState(BASEPLATE_WITH_SIDE_PADDING_INPUT),
-        uiState.getState(BASEPLATE_SIDE_PADDING_LEFT_INPUT),
-        uiState.getState(BASEPLATE_SIDE_PADDING_TOP_INPUT),
-        uiState.getState(BASEPLATE_SIDE_PADDING_RIGHT_INPUT),
-        uiState.getState(BASEPLATE_SIDE_PADDING_BOTTOM_INPUT),
-        uiState.getState(BASEPLATE_EXTRA_THICKNESS_INPUT),
-        uiState.getState(BASEPLATE_BIN_Z_CLEARANCE_INPUT),
-        uiState.getState(BASEPLATE_HAS_CONNECTION_HOLE_INPUT),
-        uiState.getState(BASEPLATE_CONNECTION_HOLE_DIAMETER_INPUT),
-        uiState.getState(SIZING_MODE_DROPDOWN),
-        uiState.getState(FILL_AREA_WIDTH_INPUT),
-        uiState.getState(FILL_AREA_LENGTH_INPUT),
-        uiState.getState(FILL_FIT_TOLERANCE_INPUT),
-        uiState.getState(PRINT_BED_WIDTH_INPUT),
-        uiState.getState(PRINT_BED_LENGTH_INPUT),
-        uiState.getState(PRINT_BED_MARGIN_INPUT),
-        uiState.getState(FILL_ALIGN_X_DROPDOWN),
-        uiState.getState(FILL_ALIGN_Y_DROPDOWN),
-        uiState.getState(FILL_HALF_CELLS_INPUT),
-        uiState.getState(BASEPLATE_JOINT_ORIGINS_INPUT),
-    )
+    return InputState(*[uiState.getState(inputId) for inputId in STATE_INPUT_IDS])
+
+def applyInputsState(inputsState: InputState):
+    """Sets the dialog state to a state from getInputsState, the inputs follow on forceUIRefresh"""
+    for (field, inputId) in zip(dataclasses.fields(InputState), STATE_INPUT_IDS):
+        uiState.setValue(inputId, getattr(inputsState, field.name))
+    # the bed size of a config is the preset's only when it matches
+    presetBedSize = printBeds.presetBedSize(uiState.getState(PRINT_BED_PRESET_DROPDOWN))
+    bedSize = (inputsState.bedWidth, inputsState.bedLength)
+    if presetBedSize is not None and not all(math.isclose(a, b, abs_tol=const.DEFAULT_FILTER_TOLERANCE) for (a, b) in zip(presetBedSize, bedSize)):
+        uiState.setValue(PRINT_BED_PRESET_DROPDOWN, printBeds.PRINT_BED_CUSTOM)
+
+def configChoices() -> dict[str, configJson.Choice]:
+    """The options of the dropdowns with the dialog's first defaults, see initUiState"""
+    return {
+        'plateType': configJson.Choice([BASEPLATE_TYPE_LIGHT, BASEPLATE_TYPE_SKELETONIZED, BASEPLATE_TYPE_FULL], DEFAULT_STATE.plateType),
+        'sizingMode': configJson.Choice([SIZING_MODE_FILL_AREA, SIZING_MODE_GRID_UNITS], DEFAULT_STATE.sizingMode),
+        'alignmentX': configJson.Choice(list(FILL_ALIGN_X_OPTIONS.keys()), DEFAULT_STATE.alignmentX),
+        'alignmentY': configJson.Choice(list(FILL_ALIGN_Y_OPTIONS.keys()), DEFAULT_STATE.alignmentY),
+    }
+
+def readConfig(text: str, source: str) -> InputState | None:
+    """The state of a config, none when it can't be read, see configButtons.readConfig"""
+    return configButtons.readConfig(text, source, configJson.GENERATOR_BASEPLATE, InputState, getInputsState(), configChoices())
+
+def startWithConfig(settings: dict):
+    """Opens the dialog with a config by field name, see configJson.stateToJson, settings it doesn't have stay"""
+    global pendingConfig
+    pendingConfig = settings
+    ui.commandDefinitions.itemById(CMD_ID).execute()
+
+def startRebuild(body: adsk.fusion.BRepBody, tag: dict):
+    """
+    Opens the dialog with the settings of the baseplate the body is of, its tag value, to rebuild it in place, see
+    baseplateBuilder.rebuildBaseplate. Its parameters may have been changed since, their values replace the settings
+    """
+    global pendingRebuildBody
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    settings = configWithParameters(tag['config'], tag.get('parameters'), design.userParameters.itemByName)
+    pendingRebuildBody = body
+    startWithConfig(settings)
+
+def configFileName(settings: dict) -> str:
+    """The name a saved file of these settings starts with, as the dialog's Save to file names it"""
+    defaults = configJson.stateToJson(configJson.GENERATOR_BASEPLATE, DEFAULT_STATE)
+    known = {name: value for (name, value) in settings.items() if name in defaults}
+    return baseplateName(configJson.stateFromJson(configJson.GENERATOR_BASEPLATE, InputState, {**defaults, **known}))
+
+def applyPendingConfig():
+    global pendingConfig
+    if pendingConfig is None:
+        return
+    inputsState = readConfig(configJson.configText(configJson.GENERATOR_BASEPLATE, pendingConfig), 'Rebuilding' if rebuildBodyToken is not None else 'Cloned')
+    pendingConfig = None
+    if inputsState is not None:
+        applyInputsState(inputsState)

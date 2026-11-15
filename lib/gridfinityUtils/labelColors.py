@@ -110,3 +110,21 @@ def binHasLabel(generateBody: bool, hasTab: bool, isShaped: bool, isSolid: bool)
     """Whether a bin gets a label tab label, as binBuilder makes one: a hollow or shelled bin body with a tab, not
     shaped. The dialog locks the label inputs otherwise, so their color mustn't lock OK there"""
     return bool(generateBody and hasTab and not isShaped and not isSolid)
+
+
+def textEditByParameter(labelColor: str) -> bool:
+    """
+    Whether a rebuild that only changes the label text may just set the text parameter, see binBuilder.parameterEdits.
+    Not for a colored label: Fusion makes the letters a text parameter adds in the default appearance, not the label
+    color (p120), a rebuild colors them
+    """
+    return labelColor == ''
+
+
+def restoresColor(labelColor: str, hasLabel: bool, isCullenect: bool) -> bool:
+    """
+    Whether a bin's state sets the dialog's color choice, see commandCreateBin.entry.applyInputsState. A bin without a
+    label to color keeps '' (see labelColorFor), that says nothing about the color, the choice in the dialog stays for
+    when the label style or tab changes (review of round 12)
+    """
+    return labelColor != '' or (hasLabel and not isCullenect)

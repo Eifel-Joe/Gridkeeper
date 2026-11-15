@@ -1,0 +1,13 @@
+{
+    "description": "3x2x3 bin with dividers up to the top on grid lines and lip notches, the raised dividers end where upstream's notches stand at the wall junctions (review of round 12)",
+    "generator": "bin",
+    "settings": {
+        "binWidth": 3,
+        "binLength": 2,
+        "binHeight": 3,
+        "hasLipNotches": true,
+        "hasDividersToTop": true,
+        "compartmentsX": 3,
+        "hasCreases": false
+    }
+}

@@ -3,6 +3,7 @@ Tests for dividers raised up into the stacking lip: which divider walls lie on g
 """
 
 import os
+import pytest
 import importlib.util
 
 
@@ -208,3 +209,38 @@ def test_corner_plane_axes_follow_the_raised_side():
     assert raised.cornerPlaneAxes(Corner(0, 0, -1, 1), 1) == (1, 0)
     # a crossing takes the plane of x
     assert raised.cornerPlaneAxes(Corner(0, 0, 1, 1), 2) == (0, 1)
+
+
+# Round 12: upstream v2.4.0.0 lowers the lip socket by the clearance times (sqrt(2) - 1), the lip's inner face then
+# ends in an edge rising 3.55 um to the top. The generator works in cm, where the old 1e-3 counted it as level and the
+# corner's sweep stopped short of the top: ledges of 1.40 mm2, 3.55 um deep, found by the shape tests in Fusion
+CM_AT = (4.1433, 0.12)
+
+
+def chain_cm(start, end):
+    return raised.isCornerChainEdge(CORNER, CM_AT, 3, 1, wall=0.12, lipOverhang=0.24, bottomZ=1.55, start=start, end=end)
+
+
+def test_chain_takes_the_last_few_microns_of_the_lip_in_cm():
+    assert chain_cm((4.1433, 0.07, 1.979645), (4.1433, 0.07, 1.98))
+    # still no level edge
+    assert not chain_cm((4.1433, 0.07, 1.98), (4.1433, 8.28, 1.98))
+
+
+def test_chain_path_runs_up_to_the_top_through_the_last_few_microns_in_cm():
+    edges = [((0.12, 1.6), (0.12, 1.55)), ((0.19, 1.86), (0.19, 1.67)), ((0.19, 1.67), (0.12, 1.6)),
+             ((0.07, 1.979645), (0.19, 1.86)), ((0.07, 1.979645), (0.07, 1.98))]
+    assert raised.chainPath(edges) == [0, 2, 1, 3, 4]
+
+
+@pytest.mark.parametrize("noise", [5e-7, 5e-6])
+def test_chain_keeps_float_noise_of_the_kernel_level_in_cm(noise):
+    # review round 12: Fusion's point resolution is about 1e-6 cm, an edge meant level may rise that much
+    assert not chain_cm((4.1433, 0.07, 1.98), (4.1433, 0.19, 1.98 + noise))
+
+
+def test_chain_path_with_a_few_microns_in_the_middle_is_none_in_cm():
+    # review round 12: such an edge only joins up as the last one; in the middle both neighbours lie within the
+    # position tolerance of its end, the path is ambiguous and the corner falls back to a fillet
+    edges = [((0.12, 1.6), (0.12, 1.55)), ((0.12, 1.6), (0.12, 1.600355)), ((0.12, 1.600355), (0.19, 1.67))]
+    assert raised.chainPath(edges) is None
