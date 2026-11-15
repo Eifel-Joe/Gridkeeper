@@ -242,3 +242,21 @@ def test_thinner_walls_take_none():
 
 def test_rounding_noise_counts_as_1_2():
     assert cullenect.wallProblem(0.12 - 1e-9) is None
+
+
+# round 16, p33: the settings list a line per socket size with how many there are
+
+
+
+def test_counts_per_size():
+    rows = cullenect.socketCounts([CELL] * 8, 0, 4.2, 4.2, 0.03)
+    assert rows == [["1U", "8 sockets, pocket 36.3 mm, insert 36 mm"]]
+
+
+def test_one_socket_is_singular():
+    assert cullenect.socketCounts([CELL], 0, 4.2, 4.2, 0.03) == [["1U", "1 socket, pocket 36.3 mm, insert 36 mm"]]
+
+
+def test_too_short_compartments_are_counted():
+    rows = cullenect.socketCounts([0, 0, CELL], 0, 4.2, 4.2, 0.03)
+    assert rows == [["No socket", "2 compartments too short for a Cullenect pocket"], ["1U", "1 socket, pocket 36.3 mm, insert 36 mm"]]
