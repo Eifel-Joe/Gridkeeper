@@ -388,6 +388,8 @@ def createGridfinityBinBody(
                 input.tabTopAngle,
                 input.labelColor,
                 name=labelName,
+                textOccurrence=input.textOccurrence,
+                targetOccurrence=input.binOccurrence,
             )
 
     return (binBody, labelBodies)
@@ -734,6 +736,8 @@ def createTabLabel(
         color: str = '',
         *,
         name: str,
+        textOccurrence=None,
+        targetOccurrence: adsk.fusion.Occurrence | None = None,
     ) -> list[adsk.fusion.BRepBody]:
     """Label on the top face of a tab with its back top corner at the tab origin y and z, between the given x.
     On a tilted top the label is as long as the slope, so it still covers the tab width once turned down. The bodies
@@ -750,7 +754,7 @@ def createTabLabel(
     labelInput.length = labelLength
     labelInput.tiltAngle = tabTopAngle
     labelInput.color = color
-    return createLabel(labelInput, targetBody, targetComponent, name=name)
+    return createLabel(labelInput, targetBody, targetComponent, name=name, textOccurrence=textOccurrence, targetOccurrence=targetOccurrence)
 
 
 def createShapeLipBottomChamfer(
