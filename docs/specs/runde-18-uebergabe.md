@@ -40,7 +40,8 @@ Punkte:
 ## Belege
 
 - pytest: `796 passed`.
-- Fusion (nach `r18_reload1`):
+- Fusion auf 4996e26 (nach `r18_reload2`): E2E a, b und c sind ALL OK; `r18_snap2` DONE, 83 Fälle, nicht grün `[]`.
+- Fusion vorher (nach `r18_reload1`):
   - `r18_e2e_a` und `r18_e2e_b` sind ALL OK.
   - Snapshot-Lauf `r18_snap`: DONE, 83 Fälle, nicht grün `[]`.
 - **Dialoge per Skript (Probe `r18_dialog_probe`):** Ein Skript kann keinen Dialog öffnen.
@@ -79,6 +80,16 @@ Kein kritischer Fund. Umgang:
     `binEntry.readConfig` ist eine Zeile, Handtest 4.
   - Ein eigener, späterer Joint des Users auf den Einleger wird nicht übernommen (er bleibt ein späteres Feature und
     kann danach fehlerhaft sein, `newlyUnhealthy` meldet es).
+
+## Parameternamen (Frage aus E2E b)
+
+In `gfLabel2_text1` zählt nichts ab 0:
+- `gfLabel2` ist das Präfix des zweiten Einlegers im Dokument. E2E b baut zwei Einleger, der erste ist `gfLabel1`.
+- `text1`/`text2` nummerieren die Text-Parameter des Einlegers in Reihenfolge der nicht leeren Zeilen. Das gilt seit
+  den Text-Parametern (`LABEL_TEXT_PARAMETERS`), die Namen stehen in Jörgs Dokumenten und bleiben deshalb.
+- Ein Einleger nur mit Zeile 2 hat also einen Parameter `…_text1` mit dem Label „Text line 2“. Das Label sagt die
+  Zeile, und der Neubau richtet sich danach (`labelConfig.textLines`).
+- Bins benennen ihre Label-Parameter nach eigenem Schema (`gfBinN_…`) und sind davon nicht berührt.
 
 ## Für Jörg (Testtermin)
 
