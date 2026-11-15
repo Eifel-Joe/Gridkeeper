@@ -64,6 +64,10 @@ def containerOccurrence(des: adsk.fusion.Design, kind: str) -> adsk.fusion.Occur
     occurrence = des.rootComponent.occurrences.addNewComponent(adsk.core.Matrix3D.create())
     occurrence.component.name = tagUtils.CONTAINER_NAMES[kind]
     occurrence.component.attributes.add(tagUtils.TAG_GROUP, tagUtils.TAG_CONTAINER, kind)
+    # A container only sorts, it never moves: a joint of a part in it, an insert into a pocket or a bin onto a
+    # baseplate, would otherwise move the whole container with every part in it (Fusion 15.11.2026: the first insert
+    # jointed into a pocket took the container Label and a second insert in it into the bin), see addOccurrence
+    occurrence.isGrounded = True
     commonUtils.debugLog(f'{LOG_PREFIX} made the container {occurrence.component.name}')
     return occurrence
 
@@ -73,12 +77,21 @@ def addOccurrence(
     parent: adsk.fusion.Occurrence | None,
     name: str,
     transform: adsk.core.Matrix3D | None = None,
+    isMovable: bool = False,
 ) -> adsk.fusion.Occurrence:
-    """A new component in the parent occurrence, the root for None, as a proxy with the full path from the root"""
+    """
+    A new component in the parent occurrence, the root for None, as a proxy with the full path from the root. A movable
+    one, a part in its container, is let go of its parent: Fusion grounds the first occurrence of a component to its
+    parent (isGroundToParent, read 15.11.2026), a joint of that part then failed against the grounded container or
+    moved the container instead. A Text component stays with its part
+    """
     owner = parent.component if parent is not None else des.rootComponent
     native = owner.occurrences.addNewComponent(transform or adsk.core.Matrix3D.create())
     native.component.name = name
-    return inContext(native, parent)
+    occurrence = inContext(native, parent)
+    if isMovable and parent is not None and occurrence.isGroundToParent:
+        occurrence.isGroundToParent = False
+    return occurrence
 
 
 @dataclass

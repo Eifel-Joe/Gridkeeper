@@ -15,7 +15,7 @@ from ...lib.gridfinityUtils import cullenectLabelLayout
 from ...lib.gridfinityUtils import labelColors
 from ...lib.gridfinityUtils import textStyles
 from .inputState import InputState
-from .labelBuilder import buildLabel, labelName, labelProblem, labelSize, labelSymbol, ICONS_FOLDER, NO_HARDWARE
+from .labelBuilder import buildLabel, labelName, labelProblem, labelSize, labelSymbol, pocketProblem, pocketSizeMm, ICONS_FOLDER, NO_HARDWARE
 from ...lib.ui.commandUiState import CommandUiState
 from ...lib.ui.defaultsButtons import addDefaultsButtonRow, defaultsButtonsHandlers, DEFAULTS_SAVE, DEFAULTS_FACTORY_RESET
 from ...lib.ui import browserPages
@@ -78,6 +78,9 @@ HARDWARE_DROPDOWN = 'hardware'
 SYMBOL_TEXT = 'symbol_text'
 INPUT_CHANGES_BUTTONS_BROWSER = 'input_changes_buttons'
 SHOW_PREVIEW_INPUT = 'show_preview'
+# a Cullenect pocket of a bin to joint the insert into (round 13, p100), its joint origin
+POCKET_GROUP = 'pocket_group'
+POCKET_INPUT = 'pocket'
 PREVIEW_TIME_INPUT = 'preview_time'
 
 SIZING_MODE_UNITS = 'Base units'
@@ -246,6 +249,13 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     addDropdown(symbolGroup.children, HARDWARE_DROPDOWN, 'Hardware', names[HARDWARE_DROPDOWN]).tooltip = 'Instead of a screw, new svg files in cullenectIcons/hardware show up here'
     symbolGroup.children.addTextBoxCommandInput(SYMBOL_TEXT, 'Symbol', '', 1, True)
 
+    pocketGroup = inputs.addGroupCommandInput(POCKET_GROUP, 'Pocket')
+    pocketGroup.isExpanded = True
+    pocketInput = pocketGroup.children.addSelectionInput(POCKET_INPUT, 'Pocket', 'A pocket joint origin of a bin, the insert is jointed into it')
+    pocketInput.addSelectionFilter(adsk.core.SelectionCommandInput.JointOrigins)
+    pocketInput.setSelectionLimits(0, 1)
+    pocketInput.tooltip = 'Optional: pick the joint origin of a Cullenect pocket of a bin, the insert goes into it. Without, it goes beside the bins, baseplates and inserts there are'
+
     inputChangesGroup = inputs.addGroupCommandInput(INPUT_CHANGES_GROUP, 'Inputs')
     inputChangesGroup.isExpanded = uiState.getState(INPUT_CHANGES_GROUP)
     uiState.registerCommandInput(inputChangesGroup)
@@ -264,6 +274,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     futil.add_handler(args.command.executePreview, command_preview, local_handlers=local_handlers)
     futil.add_handler(args.command.validateInputs, command_validate_input, local_handlers=local_handlers)
     futil.add_handler(args.command.destroy, command_destroy, local_handlers=local_handlers)
+    futil.add_handler(args.command.select, command_select, local_handlers=local_handlers)
     futil.add_handler(args.command.incomingFromHTML, command_incoming_from_html, local_handlers=local_handlers)
 
 def offerScrewChoices(inputs: adsk.core.CommandInputs) -> dict[str, list]:
@@ -304,13 +315,25 @@ def updateInputs(inputs: adsk.core.CommandInputs):
     inputs.itemById(SECURITY_INPUT).isEnabled = state.showScrew and len(choices['security']) > 1
     inputs.itemById(HARDWARE_DROPDOWN).isEnabled = not state.showScrew
     inputs.itemById(CUSTOM_COLOR_INPUT).isVisible = uiState.getState(TEXT_COLOR_DROPDOWN) == labelColors.CUSTOM_CHOICE
-    inputs.itemById(SIZE_TEXT).formattedText = sizeText(state)
+    inputs.itemById(SIZE_TEXT).formattedText = sizeText(state, selectedPocket(inputs))
     inputs.itemById(SYMBOL_TEXT).text = symbolText(state)
 
-def sizeText(state: InputState) -> str:
+def selectedPocket(inputs: adsk.core.CommandInputs) -> adsk.fusion.JointOrigin | None:
+    pocketInput = adsk.core.SelectionCommandInput.cast(inputs.itemById(POCKET_INPUT))
+    if pocketInput is None or pocketInput.selectionCount == 0:
+        return None
+    return adsk.fusion.JointOrigin.cast(pocketInput.selection(0).entity)
+
+def command_select(args: adsk.core.SelectionEventArgs):
+    """Only joint origins of Cullenect pockets can be picked as the pocket"""
+    if args.activeInput is None or args.activeInput.id != POCKET_INPUT:
+        return
+    args.isSelectable = pocketSizeMm(adsk.fusion.JointOrigin.cast(args.selection.entity)) is not None
+
+def sizeText(state: InputState, pocket: adsk.fusion.JointOrigin | None = None) -> str:
     """The size the insert comes out, or why it can't be built"""
     (width, height) = labelSize(state)
-    problem = labelProblem(state)
+    problem = labelProblem(state) or pocketProblem(state, pocket)
     text = f'{width * 10:.2f} x {height * 10:.2f} mm'
     return text if problem is None else f'{text}<br><span style="color:#d04030">{problem}</span>'
 
@@ -365,7 +388,8 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
 
 def command_validate_input(args: adsk.core.ValidateInputsEventArgs):
     global INPUTS_VALID
-    INPUTS_VALID = labelProblem(getInputsState()) is None
+    state = getInputsState()
+    INPUTS_VALID = labelProblem(state) is None and pocketProblem(state, selectedPocket(args.inputs)) is None
     args.areInputsValid = INPUTS_VALID
 
 def command_incoming_from_html(args: adsk.core.HTMLEventArgs):
@@ -393,7 +417,7 @@ def command_destroy(args: adsk.core.CommandEventArgs):
     local_handlers = []
 
 def snapshotSettings(inputs: adsk.core.CommandInputs) -> list[dict]:
-    return settingsUtils.snapshotInputs(inputs, [INFO_GROUP, INPUT_CHANGES_GROUP, PREVIEW_GROUP], CMD_NAME)
+    return settingsUtils.snapshotInputs(inputs, [INFO_GROUP, INPUT_CHANGES_GROUP, PREVIEW_GROUP, POCKET_GROUP], CMD_NAME)
 
 def generateLabel(args: adsk.core.CommandEventArgs, mayChangeDocument: bool = True):
     startTime = time.perf_counter()
@@ -404,7 +428,7 @@ def generateLabel(args: adsk.core.CommandEventArgs, mayChangeDocument: bool = Tr
     textStyles.clearNotes()
     try:
         des = adsk.fusion.Design.cast(app.activeProduct)
-        buildLabel(des, state, settings, mayChangeDocument)
+        buildLabel(des, state, settings, mayChangeDocument, selectedPocket(args.command.commandInputs))
         futil.log(f'{CMD_NAME} {labelName(state)} generated in {time.perf_counter() - startTime:.3f}s')
     except UnsupportedDesignTypeException:
         args.executeFailed = True
