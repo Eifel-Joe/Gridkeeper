@@ -189,6 +189,8 @@ def createLabel(
     targetComponent: adsk.fusion.Component,
     *,
     name: str,
+    textOccurrence=None,
+    targetOccurrence: adsk.fusion.Occurrence | None = None,
 ) -> list[adsk.fusion.BRepBody]:
     """Icon at the left as tall as the letters of the text after it, standing on their bottom, text alone is centered. Built as a separate body at the current label spot and
     moved by how far the parametric spot is from it, then cut from or joined to the target body (a colored label: see below). Its sketches lie on a plane
@@ -198,7 +200,14 @@ def createLabel(
     Planes, sketches and features are named after the given name.
     With a color the label stays bodies of their own in that color, for printing in another filament (p86): raised
     ones aren't joined, the tools of an engraved or outline cut stay as a flush inlay. Those bodies are returned, named
-    '<name> text N' from left to right, without a color none"""
+    '<name> text N' from left to right, without a color none.
+    A colored label is built in the Text component of the bin (round 13, p90) when textOccurrence is given, an
+    assembly.TextOccurrence made on first use, so a bin without colored labels gets none. Built there rather than moved
+    there, like the inserts' text, see cullenectLabelGenerator. The cut into the bin then takes the bodies as seen from
+    the root, through targetOccurrence and the Text occurrence, Fusion refused them otherwise (15.11.2026)"""
+    markingOccurrence = textOccurrence.get() if input.color and textOccurrence is not None and textOccurrence.isAvailable else None
+    bodyComponent = targetComponent
+    targetComponent = markingOccurrence.component if markingOccurrence is not None else targetComponent
     features = targetComponent.features
     isTilted = input.tiltAngle != 0
     labelPlaneInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
@@ -339,9 +348,13 @@ def createLabel(
 
     if isEmbossed:
         if not input.color:
-            combineUtils.joinBodies(targetBody, commonUtils.objectCollectionFromList(labelBodies), targetComponent, name=f'{name} join')
+            combineUtils.joinBodies(targetBody, commonUtils.objectCollectionFromList(labelBodies), bodyComponent, name=f'{name} join')
+    elif markingOccurrence is not None:
+        target = targetBody.createForAssemblyContext(targetOccurrence) if targetOccurrence is not None else targetBody
+        tools = [body.createForAssemblyContext(markingOccurrence) for body in labelBodies]
+        combineUtils.cutBody(target, commonUtils.objectCollectionFromList(tools), bodyComponent, True, name=f'{name} cut')
     else:
-        combineUtils.cutBody(targetBody, commonUtils.objectCollectionFromList(labelBodies), targetComponent, bool(input.color), name=f'{name} cut')
+        combineUtils.cutBody(targetBody, commonUtils.objectCollectionFromList(labelBodies), bodyComponent, bool(input.color), name=f'{name} cut')
     commonUtils.debugLog(f'{name}: {input.style.lower()}, text parameter {textParameter.name if textParameter is not None else None}, icon {input.definition.iconPath}, color {input.color or None}')
     if not input.color:
         return []
