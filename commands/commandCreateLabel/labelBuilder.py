@@ -223,7 +223,8 @@ def _buildLabel(
         markingOccurrence=textOccurrence,
     )
     bodies = [base] + marking
-    appearanceUtils.colorBodies(marking, state.textColor)
+    # on the Text occurrence too, the letters a longer text adds show it (p120)
+    appearanceUtils.colorPart(marking, textOccurrence, state.textColor)
 
     # mark generated geometry so it can be told apart from the rest of the design
     for body in bodies:
