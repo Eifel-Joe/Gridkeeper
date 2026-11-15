@@ -210,7 +210,23 @@ def chainRuns(edges: list[tuple[tuple[float, float], tuple[float, float]]], tole
         if order is None:
             return None
         runs.append([group[position] for position in order])
-    return sorted(runs, key=lambda run: min(point[1] for index in run for point in edges[index]))
+    runs.sort(key=lambda run: min(point[1] for index in run for point in edges[index]))
+    # each run starts at the height the one below ends and aside of it, a level step between them: anything else, a
+    # stray edge beside the chain, is no ledge and the corner is filleted as before (review round 15)
+    for (below, above) in zip(runs, runs[1:]):
+        top = max((point for index in below for point in edges[index]), key=lambda point: point[1])
+        bottom = min((point for index in above for point in edges[index]), key=lambda point: point[1])
+        if abs(top[1] - bottom[1]) > tolerance or abs(top[0] - bottom[0]) <= tolerance:
+            return None
+    return runs
+
+
+def runOffset(edges: list[tuple[tuple[float, float], tuple[float, float]]], runs: list[list[int]], run: int) -> tuple[float, float]:
+    """How far the lowest point of a run is from that of the first, aside and up: where its section goes"""
+    def lowest(indices):
+        return min((point for index in indices for point in edges[index]), key=lambda point: point[1])
+    (base, start) = (lowest(runs[0]), lowest(runs[run]))
+    return (start[0] - base[0], start[1] - base[1])
 
 
 def segmentsForBin(

@@ -1,6 +1,6 @@
 # End-to-end check of round 15 (docs/specs/2026-11-15-runde-15-design.md, "Ende-zu-Ende-Kriterium"), run in Fusion with
 # the add-in loaded from this checkout. The groups run each under a minute for the Fusion MCP's time limit: set GROUP
-# to 'a' to 'f' before running (all without). Each group builds into a document of its own, closes it when everything
+# to 'a' to 'g' before running (all without). Each group builds into a document of its own, closes it when everything
 # passes and prints OK or FAIL per point, ALL OK or N FAILED last.
 import adsk.core, adsk.fusion, sys, os, dataclasses, re
 
@@ -125,33 +125,62 @@ def groupD(run):
     run.healthy('group d')
 
 
+def dividerCorners(run, wallMm):
+    """p101: dividers up to the top with the wall, every corner swept up to the top in one rounding per run, none
+    filleted with a smaller radius (the step), no small level face left at a corner, and a bin stacked on top doesn't
+    run into it: the run below the ledge isn't cut by the feet (review round 15)"""
+    (case, _) = run.load('bin_3x2x3_dividers_to_top_3_columns')
+    body = run.bin('bin_3x2x3_dividers_to_top_3_columns', wallThickness=wallMm / 10, labelStyle='Outline', labelText='')
+    features = body.parentComponent.features
+    # the corners' own fillets, not the one of the foot cutter ('Raised divider corners foot cutout corner fillet')
+    fillets = [f.name for f in features.filletFeatures if re.fullmatch(r'Raised divider corner \d+ fillet', f.name)]
+    sweeps = [f.name for f in features.sweepFeatures if f.name.startswith('Raised divider corner')]
+    run.check(f'Wall {wallMm} mm: no corner filleted instead of swept', len(fillets) == 0 and len(sweeps) > 0, f'{len(sweeps)} sweeps, fillets {fillets}')
+    box = body.boundingBox
+    small = []
+    for face in body.faces:
+        plane = adsk.core.Plane.cast(face.geometry)
+        if plane is None or abs(abs(plane.normal.z) - 1) > 1e-6:
+            continue
+        z = face.boundingBox.minPoint.z
+        # level faces between the floor and the top no larger than a corner's section (r^2 - pi r^2 / 4, 0.7 mm2 at
+        # 1.8 mm): the steps of a corner. The ledge a thick wall leaves under the lip runs along the wall, 3.9 mm2
+        # at 2 mm, and isn't one (Fusion 15.11.2026)
+        if box.minPoint.z + 0.5 < z < box.maxPoint.z - 0.01 and face.area < 0.01:
+            small.append((round(z * 10, 3), round(face.area * 100, 3)))
+    run.check(f'Wall {wallMm} mm: no small level face at the corners', len(small) == 0, f'{small[:8]} (z mm, mm2)')
+    # a plain bin of the same size stacked on it: one bin height up, Gridfinity stacks by height units
+    stacked = run.bin('bin_1x1x3_plain', binWidth=case.state.binWidth, binLength=case.state.binLength)
+    root = run.des.rootComponent
+    (below, above) = (root.allOccurrencesByComponent(body.parentComponent).item(0), root.allOccurrencesByComponent(stacked.parentComponent).item(0))
+    (lower, upper) = (body.createForAssemblyContext(below), stacked.createForAssemblyContext(above))
+    move = above.transform2
+    translation = move.translation
+    translation.add(adsk.core.Vector3D.create(
+        lower.boundingBox.minPoint.x - upper.boundingBox.minPoint.x,
+        lower.boundingBox.minPoint.y - upper.boundingBox.minPoint.y,
+        case.state.binHeight * case.state.heightUnit,
+    ))
+    move.translation = translation
+    above.transform2 = move
+    collection = adsk.core.ObjectCollection.create()
+    collection.add(body.createForAssemblyContext(below))
+    collection.add(stacked.createForAssemblyContext(above))
+    interference = [round(result.interferenceBody.volume * 1000, 4) for result in run.des.analyzeInterference(run.des.createInterferenceInput(collection))]
+    run.check(f'Wall {wallMm} mm: a bin stacked on top runs into nothing', len(interference) == 0, f'{interference} mm3')
+
+
 def groupF(run):
-    """p101: dividers up to the top with walls of 2 and 3 mm, every corner swept up to the top in one rounding per run,
-    none filleted with a smaller radius (the step), and no small level face left at a corner"""
-    for wallMm in (2.0, 3.0):
-        body = run.bin('bin_3x2x3_dividers_to_top_3_columns', wallThickness=wallMm / 10, labelStyle='Outline', labelText='')
-        features = body.parentComponent.features
-        # the corners' own fillets, not the one of the foot cutter ('Raised divider corners foot cutout corner fillet')
-        fillets = [f.name for f in features.filletFeatures if re.fullmatch(r'Raised divider corner \d+ fillet', f.name)]
-        sweeps = [f.name for f in features.sweepFeatures if f.name.startswith('Raised divider corner')]
-        run.check(f'Wall {wallMm} mm: no corner filleted instead of swept', len(fillets) == 0 and len(sweeps) > 0, f'{len(sweeps)} sweeps, fillets {fillets}')
-        box = body.boundingBox
-        small = []
-        for face in body.faces:
-            plane = adsk.core.Plane.cast(face.geometry)
-            if plane is None or abs(abs(plane.normal.z) - 1) > 1e-6:
-                continue
-            z = face.boundingBox.minPoint.z
-            # level faces between the floor and the top no larger than a corner's section (r^2 - pi r^2 / 4, 0.7 mm2 at
-            # 1.8 mm): the steps of a corner. The ledge a thick wall leaves under the lip runs along the wall, 3.9 mm2
-            # at 2 mm, and isn't one (Fusion 15.11.2026)
-            if box.minPoint.z + 0.5 < z < box.maxPoint.z - 0.01 and face.area < 0.01:
-                small.append((round(z * 10, 3), round(face.area * 100, 3)))
-        run.check(f'Wall {wallMm} mm: no small level face at the corners', len(small) == 0, f'{small[:8]} (z mm, mm2)')
+    dividerCorners(run, 2.0)
     run.healthy('group f')
 
 
-GROUPS = {'a': groupA, 'b': groupB, 'c': groupC, 'd': groupD, 'e': groupE, 'f': groupF}
+def groupG(run):
+    dividerCorners(run, 3.0)
+    run.healthy('group g')
+
+
+GROUPS = {'a': groupA, 'b': groupB, 'c': groupC, 'd': groupD, 'e': groupE, 'f': groupF, 'g': groupG}
 
 
 def run(_context: str):
