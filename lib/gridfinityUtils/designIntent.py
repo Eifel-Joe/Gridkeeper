@@ -46,3 +46,9 @@ def structurePlan(designIntent: int, mayChangeDocument: bool, rebuild: str = REB
     if designIntent == PART and not mayChangeDocument:
         return StructurePlan(switchToHybrid=False, place=PLACE_ROOT_BODIES)
     return StructurePlan(switchToHybrid=designIntent == PART, place=PLACE_CONTAINER)
+
+
+def hybridSwitchMessage(partName: str) -> str:
+    """The notice after a part design was switched to hybrid for a bin, baseplate or insert, see structurePlan"""
+    return (f'This document was a part design. It has been switched to a hybrid design, so the {partName} is a '
+        'component of its own. A design holding components can no longer be switched back to a part design.')

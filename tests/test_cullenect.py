@@ -212,3 +212,17 @@ def test_pocket_remap_missing_pocket_is_none():
     old = ["Compartment 1 pocket joint origin", "Compartment 2 pocket joint origin"]
     assert cullenect.pocketRemap(old, ["Pocket joint origin"]) == {old[0]: None, old[1]: None}
     assert cullenect.pocketRemap(["Pocket joint origin"], ["Pocket joint origin"]) == {"Pocket joint origin": "Pocket joint origin"}
+
+
+# --- review of round 13: a rebuild moves over the joints of pockets only, and says when the insert no longer fits
+
+def test_pocket_names_leave_other_joint_origins_out():
+    tag = cullenect.pocketTagValue(36.3, 11.3)
+    origins = [("Foot joint origin 1-1", None), ("Pocket joint origin", tag), ("Mine", "not a pocket")]
+    assert cullenect.pocketNames(origins) == ["Pocket joint origin"]
+
+
+def test_pocket_fit_note_only_when_the_insert_no_longer_fits():
+    assert cullenect.pocketFitNote("Insert in pocket", "Pocket joint origin", (36.0, 11.0), (36.3, 11.3)) is None
+    note = cullenect.pocketFitNote("Insert in pocket", "Pocket joint origin", (78.0, 11.0), (36.3, 11.3))
+    assert "Insert in pocket" in note and "Pocket joint origin" in note and "doesn't fit" in note

@@ -7,6 +7,7 @@ import time
 
 
 
+from ...lib.gridfinityUtils import designIntent
 from ...lib import configUtils
 from ...lib import tagUtils
 from ...lib import settingsUtils
@@ -535,10 +536,18 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
 
 # This event handler is called when the user clicks the OK button in the command dialog or 
 # is immediately called after the created event not command inputs were created for the dialog.
+# the small notice after a part design was switched to hybrid, see designIntent.structurePlan
+HYBRID_SWITCH_MESSAGE = designIntent.hybridSwitchMessage('baseplate')
+
 def command_execute(args: adsk.core.CommandEventArgs):
     # General logging for debug.
     futil.log(f'{CMD_NAME} Command Execute Event')
+    des = adsk.fusion.Design.cast(app.activeProduct)
+    wasPart = des is not None and des.designIntent == adsk.fusion.DesignIntentTypes.PartDesignIntentType
     generateBaseplate(args)
+    # a new bin or baseplate switches a part design to hybrid for its component of its own, that can't be undone (round 13)
+    if wasPart and des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
+        ui.messageBox(HYBRID_SWITCH_MESSAGE, CMD_NAME)
 
 
 # This event handler is called when the command needs to compute a new preview in the graphics window.

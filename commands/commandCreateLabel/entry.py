@@ -2,6 +2,7 @@ import adsk.core, adsk.fusion, traceback
 import os
 import time
 
+from ...lib.gridfinityUtils import designIntent
 from ...lib import configUtils
 from ...lib import tagUtils
 from ...lib import settingsUtils
@@ -344,8 +345,7 @@ def symbolText(state: InputState) -> str:
     return os.path.basename(path)
 
 # the small notice after a part design was switched to hybrid for the insert, see designIntent.structurePlan
-HYBRID_SWITCH_MESSAGE = ('This document was a part design. It has been switched to a hybrid design, so the insert is a '
-    'component of its own. A design holding components can no longer be switched back to a part design.')
+HYBRID_SWITCH_MESSAGE = designIntent.hybridSwitchMessage('insert')
 
 def command_execute(args: adsk.core.CommandEventArgs):
     futil.log(f'{CMD_NAME} Command Execute Event')
