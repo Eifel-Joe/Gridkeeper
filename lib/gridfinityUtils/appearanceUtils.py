@@ -58,10 +58,22 @@ def labelAppearance(design: adsk.fusion.Design, color: str) -> adsk.core.Appeara
     commonUtils.debugLog(f'appearance {name} copied from {base.name}, its {property.id}')
     return appearance
 
-def colorBodies(bodies: list[adsk.fusion.BRepBody], color: str):
-    """Gives the bodies the appearance of the color, nothing for no color"""
+# Whether the color also stays on each body, beside the Text occurrence. Kept while it isn't shown that the 3MF export
+# takes the occurrence's color (round 14 spec, decision 2, checked in Fusion by tests/e2e/runde14_labels.py): a body
+# with it exports colored either way, a letter a longer text adds shows the occurrence's color
+COLOR_BODIES_TOO = True
+
+def colorPart(bodies: list[adsk.fusion.BRepBody], occurrence: adsk.fusion.Occurrence | None, color: str, *, colorBodiesToo: bool = COLOR_BODIES_TOO):
+    """
+    Gives the Text occurrence of a part the appearance of the color, so the letters a longer text adds later show it
+    too (p120), and the bodies as well when asked. Without an occurrence, bodies in the root, the bodies get it. Nothing
+    for no color
+    """
     if color == '' or len(bodies) == 0:
         return
     appearance = labelAppearance(bodies[0].parentComponent.parentDesign, color)
-    for body in bodies:
-        body.appearance = appearance
+    if occurrence is not None:
+        occurrence.appearance = appearance
+    if colorBodiesToo or occurrence is None:
+        for body in bodies:
+            body.appearance = appearance

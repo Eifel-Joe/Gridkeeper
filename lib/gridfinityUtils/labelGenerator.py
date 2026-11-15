@@ -358,5 +358,6 @@ def createLabel(
     commonUtils.debugLog(f'{name}: {input.style.lower()}, text parameter {textParameter.name if textParameter is not None else None}, icon {input.definition.iconPath}, color {input.color or None}')
     if not input.color:
         return []
-    appearanceUtils.colorBodies(labelBodies, input.color)
+    # on the Text occurrence too, the letters a longer text adds show it (p120)
+    appearanceUtils.colorPart(labelBodies, markingOccurrence, input.color)
     return labelBodies
