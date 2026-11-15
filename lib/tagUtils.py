@@ -88,6 +88,28 @@ def readBodyTag(body: adsk.fusion.BRepBody) -> tuple[str, dict] | None:
             return (tagName, parseTagValue(attribute.value))
     return None
 
+def partTag(body: adsk.fusion.BRepBody, occurrenceOf) -> tuple[adsk.fusion.BRepBody, str, dict] | None:
+    """
+    The generated body that answers for the body, native, with its tag: the body itself when it has one, else the first
+    tagged body of the part one level up, none when there's neither. Letters a longer text adds come out of the
+    extrusion untagged, in the Text component of their bin or insert (round 14, p71), the part answers for them.
+    A body selected in the design is a proxy whose occurrence is its assemblyContext, a native one is looked up by its
+    component with occurrenceOf, which gives None for the root
+    """
+    native = body.nativeObject or body
+    tag = readBodyTag(native)
+    if tag is not None:
+        return (native, *tag)
+    occurrence = body.assemblyContext if body.nativeObject is not None else occurrenceOf(native.parentComponent)
+    part = occurrence.assemblyContext if occurrence is not None else None
+    if part is None:
+        return None
+    for partBody in part.component.bRepBodies:
+        partBodyTag = readBodyTag(partBody)
+        if partBodyTag is not None:
+            return (partBody, *partBodyTag)
+    return None
+
 def taggedBodies(bodies: list[adsk.fusion.BRepBody], tagName: str) -> list[adsk.fusion.BRepBody]:
     """
     The bodies with the tag, in their order. A bin's colored labels are bodies of their own without one, a rebuild
