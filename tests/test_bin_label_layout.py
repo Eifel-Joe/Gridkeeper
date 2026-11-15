@@ -141,3 +141,26 @@ def test_span_follows_both_as_expressions():
     assert low.isExpression and high.isExpression
     assert low.expression.startswith("max(") and "gfBin1_baseWidth * 0.25" in low.expression and "gfBin1_baseWidth / 2" in low.expression
     assert high.expression.startswith("min(")
+
+
+# round 17, p180: points of each Cullenect symbol on a bin label after p51 and the time to hold it by dims, measured
+# in Fusion 15.11.2026 (job r17_dims, the limit raised for the run). Under 2 s they take the dims (spec)
+MEASURED_HELD_SECONDS = {
+    'tnut-2': (26, 1.30), 'tnut-1': (32, 1.77), 'nut-square': (34, 1.75), 'nut': (36, 1.92),
+    'magnet': (50, 3.04), 'crimp-spade-open': (57, 3.75), 'washer-locking': (58, 4.33), 'washer': (60, 4.45),
+    'crimp-fork-open': (69, 6.18), 'crimp-receptacle-open': (76, 6.29), 'threaded-insert': (76, 5.55),
+    'crimp-ring-open': (85, 7.50), 'crimp-spade-closed': (96, 9.79), 'nut-nylon': (96, 9.11),
+    'crimp-fork-closed': (108, 12.84), 'crimp-receptacle-closed': (115, 14.11), 'crimp-ring-closed': (120, 15.19),
+    'crimp-butt-splice': (122, 15.08),
+}
+
+
+def test_measured_symbols_held_under_2s_take_the_dims():
+    fast = [name for (name, (points, seconds)) in MEASURED_HELD_SECONDS.items() if seconds < 2]
+    assert fast == ['tnut-2', 'tnut-1', 'nut-square', 'nut']
+    assert all(layout.isIconHeldByDims(MEASURED_HELD_SECONDS[name][0]) for name in fast)
+
+
+def test_measured_slow_symbols_are_moved():
+    slow = [points for (points, seconds) in MEASURED_HELD_SECONDS.values() if seconds >= 2]
+    assert not any(layout.isIconHeldByDims(points) for points in slow)

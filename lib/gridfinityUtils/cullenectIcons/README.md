@@ -8,6 +8,10 @@ from the original OpenSCAD code:
   (copy with license in `tools/cullenect/`).
 - Tool: `tools/cullenectIcons.py` renders them with OpenSCAD (`projection()` of the head without the
   driver, the shaft and the security pin, or of the hardware symbol).
+- Resolution: the screws as fine as Cullenect.scad draws them (`$fa = 1`, `$fs = 0.01`). The hardware symbols
+  with coarser circles (`$fa = 12`, `$fs = 0.2`, passed to `cullenect_hardware`) since round 17: about a tenth of
+  the points, so an insert with a nylon lock nut builds in seconds, the contour within 0.05 mm of the fine one,
+  which a 0.4 mm nozzle doesn't show (`python tools/cullenectIcons.py --compare <folder of the fine svgs>`).
 - Generator: the add-in itself is based on FusionGridfinityGenerator by Le0Michine (CC BY-NC-SA 4.0).
   Gridfinity is by Zack Freedman.
 
