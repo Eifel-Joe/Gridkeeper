@@ -1,6 +1,6 @@
 # End-to-end check of round 17 (docs/specs/2026-11-15-runde-17-design.md, "Ende-zu-Ende-Kriterium"), run in Fusion with
 # the add-in loaded from this checkout. The groups run each under a minute for the Fusion MCP's time limit: set GROUP
-# to 'a' to 'f' before running (all without). Each group builds into a document of its own, closes it when everything
+# to 'a' to 'g' before running (all without). Each group builds into a document of its own, closes it when everything
 # passes and prints OK or FAIL per point, ALL OK or N FAILED last.
 import adsk.core, adsk.fusion, sys, os, dataclasses, time
 
@@ -136,7 +136,56 @@ def groupE(run):
     run.healthy('p51')
 
 
-GROUPS = {'a': groupA, 'b': groupB, 'c': groupC, 'd': groupD, 'e': groupE}
+def binLabel(run, iconName, isHeld):
+    """p180: a bin label with a Cullenect symbol takes the path the measurement says (dims up to 40 points, moved
+    above), its icon and text sketches are fully constrained, and a longer text leaves the symbol where it is"""
+    (case, settings) = (lambda c: (c, run.tc.caseSettings(c)))(run.tc.loadCase(os.path.join(CASES, 'bin_2x1x3_label_icon_text_embossed.json'), run.stateClasses))
+    body = run.binBuilder.buildBin(run.des, dataclasses.replace(case.state, labelIcon=iconName, labelText='M4'), settings)[0]
+    occurrence = next(o for o in run.des.rootComponent.allOccurrences if o.component == body.parentComponent) if body.parentComponent != run.des.rootComponent else None
+    components = [body.parentComponent] + ([child.component for child in occurrence.childOccurrences] if occurrence is not None else [])
+    sketches = [sketch for component in components for sketch in component.sketches]
+    iconSketches = [sketch for sketch in sketches if sketch.name.endswith('icon sketch')]
+    held = any(sketch.sketchDimensions.count > 10 for sketch in iconSketches)
+    run.check(f'p180 {iconName}: {"held by dims" if isHeld else "moved"}', len(iconSketches) > 0 and held == isHeld,
+              f'{[(sketch.name, sketch.sketchDimensions.count) for sketch in iconSketches]}')
+    constraints = module('commands.commandSnapshotTests.constraints')
+    loose = constraints.unconstrainedSketches([sketch for sketch in sketches if 'icon' in sketch.name or 'text' in sketch.name])
+    run.check(f'p180 {iconName}: label sketches fully constrained', len(loose) == 0, str(loose))
+
+    def iconBox():
+        faces = [face for component in components for feature in component.features.extrudeFeatures if ' icon' in feature.name for face in feature.faces]
+        faces += [face for component in components for feature in component.features.moveFeatures if 'icon' in feature.name.lower() for b in feature.bodies for face in b.faces]
+        if not faces:
+            return None
+        return [round(min(getattr(face.boundingBox.minPoint, a) for face in faces), 4) for a in 'xyz'] + [round(max(getattr(face.boundingBox.maxPoint, a) for face in faces), 4) for a in 'xyz']
+    before = iconBox()
+    names = []
+    for sketch in sketches:
+        for text in sketch.sketchTexts:
+            if text.textParameter is not None and text.textParameter.expression not in names:
+                names.append(text.textParameter.expression)
+    parameters = [run.des.userParameters.itemByName(name) for name in names]
+    textUtils = module('lib.gridfinityUtils.parameterUtils')
+    for parameter in parameters:
+        parameter.expression = textUtils.textExpression(parameter.textValue + ' Mutter')
+    adsk.doEvents()
+    after = iconBox()
+    run.check(f'p180 {iconName}: symbol stays where it is after a longer text', before is not None and before == after and len(parameters) > 0,
+              f'{before} -> {after}, {len(parameters)} text parameters')
+
+
+def groupF(run):
+    binLabel(run, 'Cullenect nut', True)
+    binLabel(run, 'Cullenect nut nylon', False)
+    run.healthy('p180')
+
+
+def groupG(run):
+    binLabel(run, 'Cullenect crimp ring closed', False)
+    run.healthy('p180')
+
+
+GROUPS = {'a': groupA, 'b': groupB, 'c': groupC, 'd': groupD, 'e': groupE, 'f': groupF, 'g': groupG}
 
 
 def run(_context: str):
