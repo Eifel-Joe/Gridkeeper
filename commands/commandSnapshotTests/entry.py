@@ -780,13 +780,18 @@ def takePreview(document: adsk.core.Document, bodies: list[adsk.fusion.BRepBody]
     """
     design = adsk.fusion.Design.cast(document.products.itemByProductType('DesignProductType'))
     viewportPictures.hideHelpers(design)
-    base = viewportPictures.firstLibraryAppearance(viewportPictures.COLOR_BASE_PREFIXES)
-    appearance = viewportPictures.colorAppearance(design, base, PREVIEW_COLOR)
-    for body in bodies:
-        body.appearance = appearance
+    warnings = []
+    try:
+        base = viewportPictures.firstLibraryAppearance(viewportPictures.COLOR_BASE_PREFIXES)
+        appearance = viewportPictures.colorAppearance(design, base, PREVIEW_COLOR)
+        for body in bodies:
+            body.appearance = appearance
+    except viewportPictures.PictureError as err:
+        # the picture in Fusion's own look rather than none (round 16, p31)
+        warnings.append(f'drawn in the default look, {err}')
     viewport = app.activeViewport
     viewportPictures.frame(viewport, PREVIEW_STYLE, False, PREVIEW_VIEW)
-    return viewportPictures.viewportPicture(viewport, name, os.path.join(folder, snapshots.PREVIEW_FILE), PREVIEW_OPTIONS, reportPalette.finishPicture)
+    return warnings + viewportPictures.viewportPicture(viewport, name, os.path.join(folder, snapshots.PREVIEW_FILE), PREVIEW_OPTIONS, reportPalette.finishPicture)
 
 def writeReadme():
     """The case list, with the previews of the snapshots, see testCases.casesMarkdown"""
