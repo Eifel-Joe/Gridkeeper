@@ -298,9 +298,11 @@ def _baselineTexts(
     edgeStart = edgeLine.startSketchPoint.geometry
     offset = dimensions.addOffsetDimension(edgeLine, baseline, adsk.core.Point3D.create((start.x + end.x) / 2, (edgeStart.y + start.y) / 2, 0))
     offset.parameter.value = placement.baselineFromBack
+    ends = []
     for (point, modelX, at) in ((baseline.startSketchPoint, placement.baselineStartX, start), (baseline.endSketchPoint, placement.baselineEndX, end)):
         dimension = dimensions.addDistanceDimension(sketch.originPoint, point, adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation, adsk.core.Point3D.create(at.x, at.y + front * 0.2, 0))
         applyTo(dimension.parameter, _magnitude(modelX))
+        ends.append(dimension)
     texts = []
     for _ in range(count):
         textInput = sketch.sketchTexts.createInput2(text, textHeight)
@@ -310,6 +312,20 @@ def _baselineTexts(
         sketchText = sketch.sketchTexts.add(textInput)
         sketchText.textParameter.expression = textParameter.name
         texts.append(sketchText)
+    if not placement.isCentered and len(texts) > 0:
+        # Text along a line starts its first letter later than the line by that letter's lead, the text box put the
+        # letter itself at its side: after an icon the gap came out 2.6 mm instead of 1.8 mm (snapshots, Fusion
+        # 15.11.2026). The line starts earlier by what the letters are off
+        bounds = _curveBounds(texts[0].asCurves())
+        if bounds is not None:
+            left = min(sketch.sketchToModelSpace(adsk.core.Point3D.create(x, bounds[1], 0)).x for x in (bounds[0], bounds[2]))
+            lead = left - placement.baselineStartX.value
+            if abs(lead) > const.DEFAULT_FILTER_TOLERANCE:
+                startX = _magnitude(placement.baselineStartX - Dim.length(lead))
+                if startX.isExpression:
+                    ends[0].parameter.expression = startX.expression
+                else:
+                    ends[0].parameter.value = startX.value
     return texts
 
 
@@ -456,6 +472,7 @@ def createLabel(
     name: str,
     textOccurrence=None,
     targetOccurrence: adsk.fusion.Occurrence | None = None,
+    binPlacement: tuple[float, float] = (0, 0),
 ) -> list[adsk.fusion.BRepBody]:
     """
     Icon at the left as tall as the letters of the text after it, standing on their baseline, text alone is centered.
@@ -470,7 +487,7 @@ def createLabel(
     textOccurrence is given, an assembly.TextOccurrence made on first use (round 13, p90); the cut into the bin from
     there takes it as seen through targetOccurrence, Fusion refused it otherwise, and a twin of the text cuts, Fusion
     won't extrude one text twice. Returns the colored bodies named '<name> text N' from left to right, without a color
-    none
+    none. They are built where the bin ends up, binPlacement from where it's built, and aren't to be moved with it
     """
     textParameter = input.definition.textParameter
     text = textParameter.textValue if textParameter is not None else ''
@@ -486,11 +503,38 @@ def createLabel(
     isOutline = input.style == LABEL_STYLE_OUTLINE
     isColored = bool(input.color)
 
-    # the planes don't depend on the size of the letters and the icon, they're measured on the face
-    unsized = binLabelLayout.binLabelPlacement(input.originX, input.originY, input.originZ, input.width, input.length, input.tiltAngle, 0, 0, 0, False, True)
-    (plane, edge) = _labelPlane(component, unsized, input.length, name)
-    sketch: adsk.fusion.Sketch = component.sketches.add(plane)
-    sketch.name = f'{name} text sketch' if len(text) > 0 else f'{name} icon sketch'
+    # The cut into the bin or the join happens where the bin is when it's built, the colored letters are drawn where the
+    # bin ends up: a bin beside others is moved there after it's built (binBuilder, "Bin placement"), and a move of the
+    # letter bodies would leave behind the letters a longer text adds (review of round 14). A colored label at the
+    # origin draws both on one face
+    (shiftX, shiftY) = binPlacement if isColored else (0, 0)
+    needsCut = not isColored or not isEmbossed
+    isOneFace = not isColored or (shiftX == 0 and shiftY == 0)
+
+    def facePlacement(dx: float, dy: float, lettersHeight: float, iconWidth: float, iconHeight: float) -> binLabelLayout.BinLabelPlacement:
+        originX = input.originX + Dim.length(dx) if dx != 0 else input.originX
+        originY = input.originY + Dim.length(dy) if dy != 0 else input.originY
+        return binLabelLayout.binLabelPlacement(
+            originX, originY, input.originZ, input.width, input.length, input.tiltAngle,
+            lettersHeight, iconWidth, iconHeight, iconPath is not None, len(text) > 0,
+        )
+
+    # (offset, feature name, how many texts: the twin a colored cut needs and the letters on one face)
+    faceSpecs = []
+    if isOneFace:
+        faceSpecs.append(((shiftX, shiftY), name, 2 if isColored and needsCut else 1))
+    else:
+        if needsCut:
+            faceSpecs.append(((0, 0), f'{name} cut', 1))
+        faceSpecs.append(((shiftX, shiftY), name, 1))
+    # the planes don't depend on the size of the letters and the icon, they're measured on the first face
+    faces = []
+    for ((dx, dy), faceName, _) in faceSpecs:
+        (plane, edge) = _labelPlane(component, facePlacement(dx, dy, 0, 0, 0), input.length, faceName)
+        faces.append((plane, edge))
+    (firstPlane, _) = faces[0]
+    sketch: adsk.fusion.Sketch = component.sketches.add(firstPlane)
+    sketch.name = f'{faceSpecs[0][1]} text sketch' if len(text) > 0 else f'{faceSpecs[0][1]} icon sketch'
     (iconAspect, iconPoints) = (0, 0)
     if iconPath is not None:
         (iconAspect, iconPoints) = _iconMeasure(sketch, iconPath) or (1, 0)
@@ -515,42 +559,59 @@ def createLabel(
         textStyles.noteText(text, style, textHeight)
     elif iconPath is not None:
         iconSize = min(contentHeight, contentWidth / iconAspect)
-    placement = binLabelLayout.binLabelPlacement(
-        input.originX, input.originY, input.originZ, input.width, input.length, input.tiltAngle,
-        lettersHeight, iconSize * iconAspect, iconSize, iconPath is not None, len(text) > 0,
-    )
+    isIconHeld = iconPath is not None and binLabelLayout.isIconHeldByDims(iconPoints)
 
-    # a colored cut needs a twin of the text to cut with, its letters are the other
-    texts = _baselineTexts(sketch, edge, placement, text, textHeight, textParameter, style, 2 if isColored and not isEmbossed else 1) if len(text) > 0 else []
-    iconProfiles = []
+    # per face its texts and held icon profiles, on the sketch measured on for the first
+    drawn = []
+    for (index, (((dx, dy), faceName, textCount), (plane, edge))) in enumerate(zip(faceSpecs, faces)):
+        placement = facePlacement(dx, dy, lettersHeight, iconSize * iconAspect, iconSize)
+        textSketch = sketch if index == 0 else None
+        texts = []
+        if len(text) > 0:
+            if textSketch is None:
+                textSketch = component.sketches.add(plane)
+                textSketch.name = f'{faceName} text sketch'
+            texts = _baselineTexts(textSketch, edge, placement, text, textHeight, textParameter, style, textCount)
+        iconProfiles = []
+        if isIconHeld:
+            iconSketch = textSketch if textSketch is not None and len(text) == 0 else component.sketches.add(plane)
+            iconSketch.name = f'{faceName} icon sketch'
+            iconProfiles = _heldIcon(iconSketch, edge, placement, iconPath, iconSize, faceName)
+        drawn.append((plane, texts, iconProfiles))
     iconBodies = []
-    if iconPath is not None:
-        if binLabelLayout.isIconHeldByDims(iconPoints):
-            iconSketch = sketch if len(text) == 0 else component.sketches.add(plane)
-            iconSketch.name = f'{name} icon sketch'
-            iconProfiles = _heldIcon(iconSketch, edge, placement, iconPath, iconSize, name)
-        else:
-            iconBodies = _movedIcon(component, input, placement, iconPath, iconSize, isEmbossed, isOutline, name)
+    if iconPath is not None and not isIconHeld:
+        unplaced = facePlacement(0, 0, lettersHeight, iconSize * iconAspect, iconSize)
+        iconBodies = _movedIcon(component, input, unplaced, iconPath, iconSize, isEmbossed, isOutline, name)
     # the bin as seen from the Text component, Fusion refused it otherwise (round 13)
     target = targetBody.createForAssemblyContext(targetOccurrence) if markingOccurrence is not None and targetOccurrence is not None else targetBody
 
-    def extrude(profiles: list, operation: adsk.fusion.FeatureOperations, participants: list | None, featureName: str) -> adsk.fusion.ExtrudeFeature:
-        if isOutline:
+    # an outline whose thin extrusion failed is engraved, the inlay as well as the cut it fills
+    isThin = [isOutline]
+
+    def extrude(plane, profiles: list, operation: adsk.fusion.FeatureOperations, participants: list | None, featureName: str) -> adsk.fusion.ExtrudeFeature:
+        if isThin[0]:
             try:
                 return _extrudeOnFace(component, profiles, operation, isEmbossed, plane, input.depth, featureName, participants, True)
             except RuntimeError as err:
                 commonUtils.debugLog(f'{name}: outline extrude failed, engraving instead, {err}')
+                isThin[0] = False
         return _extrudeOnFace(component, profiles, operation, isEmbossed, plane, input.depth, featureName, participants)
 
-    marked = texts[:1] + iconProfiles
     labelBodies = []
-    if len(marked) > 0:
-        if not isColored:
-            extrude(marked, adsk.fusion.FeatureOperations.JoinFeatureOperation if isEmbossed else adsk.fusion.FeatureOperations.CutFeatureOperation, [target], name)
-        else:
-            if not isEmbossed:
-                extrude(texts[1:] + iconProfiles, adsk.fusion.FeatureOperations.CutFeatureOperation, [target], f'{name} cut')
-            labelBodies = list(extrude(marked, adsk.fusion.FeatureOperations.NewBodyFeatureOperation, None, name).bodies)
+    (lettersPlane, lettersTexts, lettersIcon) = drawn[-1]
+    if not isColored:
+        if len(lettersTexts) + len(lettersIcon) > 0:
+            extrude(lettersPlane, lettersTexts + lettersIcon, adsk.fusion.FeatureOperations.JoinFeatureOperation if isEmbossed else adsk.fusion.FeatureOperations.CutFeatureOperation, [target], name)
+    else:
+        if needsCut:
+            (cutPlane, cutTexts, cutIcon) = drawn[0]
+            # on one face the twin is the second text, on a face of its own its only one
+            cutProfiles = (cutTexts[1:] if isOneFace else cutTexts) + cutIcon
+            if len(cutProfiles) > 0:
+                extrude(cutPlane, cutProfiles, adsk.fusion.FeatureOperations.CutFeatureOperation, [target], f'{name} cut')
+        marked = lettersTexts[:1] + lettersIcon
+        if len(marked) > 0:
+            labelBodies = list(extrude(lettersPlane, marked, adsk.fusion.FeatureOperations.NewBodyFeatureOperation, None, name).bodies)
     if len(iconBodies) > 0:
         # the moved icon's bodies are the same whatever the text, a combine with them keeps all
         if not isColored:
@@ -562,6 +623,11 @@ def createLabel(
             if not isEmbossed:
                 tools = [body.createForAssemblyContext(markingOccurrence) for body in iconBodies] if markingOccurrence is not None else iconBodies
                 combineUtils.cutBody(target, commonUtils.objectCollectionFromList(tools), targetComponent, True, name=f'{name} icon cut')
+            if shiftX != 0 or shiftY != 0:
+                # cut where the bin is built, then where it ends up like the letters
+                moveInput = component.features.moveFeatures.createInput2(commonUtils.objectCollectionFromList(iconBodies))
+                moveInput.defineAsTranslateXYZ(valueInput(Dim.length(shiftX)), valueInput(Dim.length(shiftY)), valueInput(Dim.length(0)), True)
+                component.features.moveFeatures.add(moveInput).name = f'{name} icon bin placement'
             labelBodies += iconBodies
     if isColored:
         # names a snapshot pairs them by, Fusion keeps letters that don't touch as bodies of their own
