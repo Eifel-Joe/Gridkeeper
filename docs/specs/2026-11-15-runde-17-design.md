@@ -39,3 +39,12 @@ Die Prüfung meldet das Problem und der Dialog sperrt OK, wie die übrigen Einle
 - Einleger mit Text, danach Breite −1 mm: Abstand Text–Symbol > 0.
 - Bauzeit Einleger mit Nylonmutter < 5 s; Crimp-Ring gemessen und protokolliert.
 - pytest grün, Snapshot-Tests grün (bekannte p30-Fälle ausgenommen).
+
+## Ergänzung p180 (Jörg 15.11.2026: „Setz die offenen neuen Punkte auch mit in die Bearbeitung“)
+- p180 „Große Cullenect-Symbole in Bin-Labels werden noch verschoben“
+- **Entscheidung (Hauptsitzung):** Nach den gröberen Symbolen aus p51 die Punktzahl und die Zeit für das Setzen der
+  Maße je Cullenect-Symbol messen. Die Grenze `ICON_POINTS_HELD_BY_DIMS` (heute 40) so anheben, dass jedes Symbol, das
+  auf einem Bin-Label in unter 2 s über Maße gehalten wird, den Maß-Weg nimmt. Was darüber bleibt, wird weiter
+  verschoben; Liste der Symbole mit Punktzahl und Weg ins Protokoll.
+- **Ende-zu-Ende:** Bin mit Crimp-Ring- und Nylonmutter-Label: Weg je Symbol wie gemessen, Label-Skizzen vollständig
+  bestimmt, Text danach verlängert → Symbol bleibt an seiner Stelle.
