@@ -415,3 +415,16 @@ class TestDebossedRim:
     def test_debossed_two_thin_lines_are_reported(self, style):
         # their descenders would need letters below the least height of the style
         assert 'Two lines' in layout.insertProblem(3.6, 1.1, None, False, False, 2, 0, 0, textStyle=style, isDebossed=True)
+
+
+class TestTextFitWidth:
+    # round 17, p52: the text is fitted once, a width made smaller later moves the symbol towards it. 1 mm more room
+    # before the symbol keeps them apart when the insert gets up to 1 mm narrower
+    def test_text_keeps_1mm_more_before_the_symbol(self):
+        result = layout.labelLayout(3.6, 1.1, SCREW, True, 1)
+        assert layout.SHRINK_ROOM == approx(0.1)
+        assert layout.textFitWidth(result) == approx(result.textMaxX - result.textMinX - 0.1)
+
+    def test_without_symbol_the_text_room_stays(self):
+        result = layout.labelLayout(3.6, 1.1, None, False, 1)
+        assert layout.textFitWidth(result) == approx(result.textMaxX - result.textMinX)
