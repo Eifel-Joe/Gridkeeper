@@ -114,3 +114,15 @@ Arial Black 0,215. Symbole (Madenschraube, Gewindeeinsatz) haben > 1,1 mm, unkri
    unverändert, neuer Fall grün, nur die 4 bekannten roten.
 5. Die Beschriftungskörper eines gebauten Einlegers sind 0,4 mm dick (Bounding Box in z).
 6. Nutzer: Slicer mit 0,4-mm-Düse zeigt die zweizeilige Schrift vollständig; Probedruck.
+
+## Nachtrag nach der Umsetzung (15.11.)
+- Messung an gebauten Einlegern (bündig, Heavy): M4x5 neben Schraube 4,7 mm → 1,00 mm mittel, 99 % / 93 %;
+  Welle 6mm eingepasst 3,9 mm → 0,87 mm, 99 % / 85 %; 5mm + Hex key 3,5 mm → 0,76 mm, 99 % / 70 % (Spalten 0,42 / 0,9).
+  Kriterium 1 erfüllt. Beschriftungskörper 0,4 mm dick (5). Textparameter verlängert → bleibt Arial Black (2).
+  „Schrauben M4 x 40 DIN 912“ auf 1U → 0,9 mm hoch, 0,19 mm Strich, Hinweis kommt (3).
+- Der Hinweis schlägt „Heavy“ nur vor, wenn Heavy nicht schon gewählt ist; Bin-Labels nie (ihr Dialog hat nur Fett).
+- Fund: Ein Symbol in voller Einlegerhöhe (25-mm-Einleger, Schraube 11 mm hoch) schneidet mit 0,4 mm Tiefe die oberste
+  Schicht am Rand ganz durch – die 0,2 mm, die über die Rastschicht ragen. Bündig füllt der Symbolkörper die Stelle,
+  vertieft bleibt eine Kerbe. Als neuer Punkt in die Liste (p140), nicht in dieser Runde.
+- Snapshots: alle 10 Einleger-Fälle neu abgelegt und grün, Bin-Fälle unverändert; voller Lauf 78 grün, rot nur die
+  4 bekannten Text-Label-Bin-Fälle (p30). Vorschaubilder fehlen weiter (p31).
