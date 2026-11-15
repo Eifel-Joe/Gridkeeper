@@ -3,8 +3,8 @@
         {
             "name": "Gridfinity label 2U M4",
             "file": "body1.smt",
-            "volume": 974.540691,
-            "area": 2107.556233,
+            "volume": 974.481695,
+            "area": 2107.523415,
             "bboxMin": [
                 0.0,
                 0.0,
@@ -16,9 +16,9 @@
                 1.2
             ],
             "lumps": 1,
-            "faces": 1340,
-            "edges": 3945,
-            "vertices": 2630
+            "faces": 350,
+            "edges": 975,
+            "vertices": 650
         },
         {
             "name": "Gridfinity label 2U M4 text 1",
@@ -303,8 +303,8 @@
         {
             "name": "Gridfinity label 2U M4 symbol 1",
             "file": "body16.smt",
-            "volume": 14.67163,
-            "area": 92.897843,
+            "volume": 14.753551,
+            "area": 93.293775,
             "bboxMin": [
                 66.83012,
                 1.16988,
@@ -316,29 +316,29 @@
                 1.2
             ],
             "lumps": 1,
-            "faces": 368,
-            "edges": 1098,
-            "vertices": 732
+            "faces": 38,
+            "edges": 108,
+            "vertices": 72
         },
         {
             "name": "Gridfinity label 2U M4 symbol 2",
             "file": "body17.smt",
-            "volume": 3.166557,
-            "area": 26.388351,
+            "volume": 3.143632,
+            "area": 26.254582,
             "bboxMin": [
                 69.43013,
-                3.10001,
+                3.11316,
                 0.8
             ],
             "bboxMax": [
                 74.23011,
-                7.89999,
+                7.88684,
                 1.2
             ],
             "lumps": 1,
-            "faces": 722,
-            "edges": 2160,
-            "vertices": 1440
+            "faces": 62,
+            "edges": 180,
+            "vertices": 120
         }
     ]
 }
