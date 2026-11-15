@@ -271,7 +271,9 @@ def buildWithParameters(case: testCases.TestCase) -> tuple[list[adsk.fusion.BRep
     try:
         bodies = buildBodies(design, case, testCases.editedState(case))
         tbm = adsk.fusion.TemporaryBRepManager.get()
-        return ([tbm.copy(body) for body in bodies], unhealthyFeatures(design.timeline))
+        # its sketches checked too, built with the parameters from the start (round 16, p34)
+        checks = testCases.runChecks([('sketches', lambda: sketchConstraintNotes(case, document))])
+        return ([tbm.copy(body) for body in bodies], unhealthyFeatures(design.timeline) + checks)
     finally:
         document.close(False)
 
@@ -586,23 +588,34 @@ def runCases(cases: list[testCases.TestCase], showProgress: Callable[[int, list[
         originalDocument.activate()
     return caseReports
 
+def compareWithSnapshot(case: testCases.TestCase, folder: str, bodies: list[adsk.fusion.BRepBody]) -> list[snapshots.BodyResult]:
+    """The bodies against the case's snapshot: settings newer than it at their defaults count as the same, a text label
+    case by its form (round 16, p30)"""
+    settings = testCases.snapshotSettings(case)
+    return snapshots.compareSnapshot(folder, bodies, settings, testCases.DEFAULT_SETTINGS[case.generator], testCases.isTextLabelCase(case.generator, settings))
+
 def runCase(case: testCases.TestCase, keepOpen: bool) -> dict:
     document = None
+    bodies = None
     notes = []
     try:
         (document, bodies, unhealthy) = buildCase(case)
-        results = snapshots.compareSnapshot(os.path.join(SNAPSHOTS_FOLDER, case.name), bodies, testCases.snapshotSettings(case))
+        results = compareWithSnapshot(case, os.path.join(SNAPSHOTS_FOLDER, case.name), bodies)
         # the shape may match all the same, the case fails for what Fusion found wrong in building it
         notes += unhealthy
-        notes += looseBodyNotes(document, bodies)
-        notes += designIntentNotes(case, document)
-        notes += sketchConstraintNotes(case, document)
-        notes += raisedCornerLedgeNotes(case, bodies)
-        notes += insertTextNotes(case, bodies)
-        notes += colorNotes(case, bodies)
-        notes += structureNotes(case, document, bodies)
     except Exception as err:
         results = [snapshots.BodyResult('', snapshots.STATUS_FAIL, [f'build failed, {buildFailure(case, err)}'])]
+    if document is not None and bodies is not None:
+        # a check that breaks is a check failure of its own, not a build failure (round 16, p34)
+        notes += testCases.runChecks([
+            ('loose bodies', lambda: looseBodyNotes(document, bodies)),
+            ('design intent', lambda: designIntentNotes(case, document)),
+            ('sketches', lambda: sketchConstraintNotes(case, document)),
+            ('raised divider corners', lambda: raisedCornerLedgeNotes(case, bodies)),
+            ('insert text', lambda: insertTextNotes(case, bodies)),
+            ('colors', lambda: colorNotes(case, bodies)),
+            ('structure', lambda: structureNotes(case, document, bodies)),
+        ])
     if document is not None and case.parameters:
         try:
             (references, unhealthy) = buildWithParameters(case)
@@ -1091,7 +1104,7 @@ def stageSnapshots(cases: list[testCases.TestCase], stagingFolder: str, showProg
                 caseReports.append(report.case(case.name, case.description, report.STATUS_NEW, [report.body(body.name, report.STATUS_NEW) for body in bodies], notes, previews=previews))
                 toApply.append(case.name)
             else:
-                results = snapshots.compareSnapshot(currentFolder, bodies, testCases.snapshotSettings(case))
+                results = compareWithSnapshot(case, currentFolder, bodies)
                 status = UPDATE_STATUSES[snapshots.worstStatus([result.status for result in results])]
                 if status != report.STATUS_UNCHANGED:
                     toApply.append(case.name)

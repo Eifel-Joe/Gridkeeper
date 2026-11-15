@@ -243,10 +243,12 @@ def snapshotSettings(case: TestCase) -> dict:
 def settingsText(settings: dict) -> str:
     return json.dumps(settings, indent=4, ensure_ascii=False) + '\n'
 
-def settingChanges(expected: dict, actual: dict) -> list[dict]:
+def settingChanges(expected: dict, actual: dict, defaults: dict | None = None) -> list[dict]:
     """
     Each setting that differs, as the snapshot was built with it and as the case has it now, none for a setting only
-    one of them has. Values that aren't numbers, flags or text are written as JSON, the report shows them as they are
+    one of them has. Values that aren't numbers, flags or text are written as JSON, the report shows them as they are.
+    A setting the snapshot doesn't have, newer than it, is no change where the case has it at its default, one of
+    defaults (round 16, p30): the snapshot was built the way the default builds
     """
     def shown(value):
         return value if value is None or isinstance(value, (bool, int, float, str)) else json.dumps(value, ensure_ascii=False)
@@ -257,12 +259,65 @@ def settingChanges(expected: dict, actual: dict) -> list[dict]:
         if isinstance(a, (int, float)) and isinstance(b, (int, float)):
             return math.isclose(a, b, rel_tol=1e-9, abs_tol=1e-9)
         return a == b
+    defaults = defaults or {}
+    def isNewerAtDefault(name) -> bool:
+        return name not in expected and name in actual and name in defaults and same(defaults[name], actual[name])
     names = list(expected) + [name for name in actual if name not in expected]
     return [
         {'key': name, 'expected': shown(expected.get(name)), 'actual': shown(actual.get(name))}
         for name in names
-        if name not in expected or name not in actual or not same(expected[name], actual[name])
+        if (name not in expected or name not in actual or not same(expected[name], actual[name])) and not isNewerAtDefault(name)
     ]
+
+
+def isTextLabelCase(generator: str, settings: dict) -> bool:
+    """A bin with a text label on its tab, its own or a compartment's: where its letters lie depends on the font and the
+    Fusion version, its snapshot is compared by form (round 16, p30, see formChanges). Cullenect tabs carry no text"""
+    if generator != GENERATOR_BIN or not settings.get('hasTab') or settings.get('labelStyle') == 'Cullenect':
+        return False
+    pockets = settings.get('compartmentPockets') or []
+    return bool(str(settings.get('labelText') or '').strip()) or any(str(pocket.get('label') or '').strip() for pocket in pockets)
+
+
+def _close(expected: float, actual: float) -> bool:
+    # as snapshots.isClose, relative to the size of the numbers
+    return abs(expected - actual) <= 1e-6 * max(abs(expected), abs(actual), 1)
+
+
+def formChanges(expected: list[dict], built: list[dict]) -> list[dict]:
+    """
+    The form of the bodies against the snapshot's, fingerprints as in snapshots.fingerprint: how many bodies, their
+    volume together and the box around all of them, not where each letter body lies (round 16, p30). Each that differs
+    """
+    def box(entries):
+        if not entries:
+            return ([], [])
+        return ([min(entry['bboxMin'][axis] for entry in entries) for axis in range(3)], [max(entry['bboxMax'][axis] for entry in entries) for axis in range(3)])
+    changes = []
+    if len(expected) != len(built):
+        changes.append({'key': 'bodies', 'expected': len(expected), 'actual': len(built)})
+    (expectedVolume, builtVolume) = (sum(entry['volume'] for entry in expected), sum(entry['volume'] for entry in built))
+    if not _close(expectedVolume, builtVolume):
+        changes.append({'key': 'volume', 'expected': round(expectedVolume, 6), 'actual': round(builtVolume, 6)})
+    ((expectedMin, expectedMax), (builtMin, builtMax)) = (box(expected), box(built))
+    for (key, a, b) in (('bboxMin', expectedMin, builtMin), ('bboxMax', expectedMax, builtMax)):
+        if len(a) != len(b) or not all(_close(x, y) for (x, y) in zip(a, b)):
+            changes.append({'key': key, 'expected': a, 'actual': b})
+    return changes
+
+
+def runChecks(checks: list) -> list[str]:
+    """
+    The notes of the checks after a case is built, (name, function giving its notes) in order. A check that breaks is a
+    note of its own, a check failure, not a build failure (round 16, p34)
+    """
+    notes = []
+    for (name, check) in checks:
+        try:
+            notes += check()
+        except Exception as err:
+            notes.append(f'check {name} failed, {err}')
+    return notes
 
 # A raised divider corner carries on from the compartment corner below without a ledge (p83): an upward face left
 # where they meet is a sickle Nutzer found by hand, 0.36 mm2 where the fillet couldn't follow a short wall under the

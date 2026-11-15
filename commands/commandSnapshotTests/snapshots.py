@@ -76,16 +76,17 @@ def saveSnapshot(folder: str, bodies: list[adsk.fusion.BRepBody], settings: dict
     with open(os.path.join(folder, SETTINGS_FILE), 'w', encoding='utf-8') as file:
         file.write(testCases.settingsText(settings))
 
-def compareSettings(folder: str, settings: dict) -> list[BodyResult]:
+def compareSettings(folder: str, settings: dict, defaults: dict | None = None) -> list[BodyResult]:
     """
     The settings against those of the snapshot, for review when they differ, a default changing among them. The shape
-    may stay the same, the snapshot is updated all the same so it tells what it was built with
+    may stay the same, the snapshot is updated all the same so it tells what it was built with. A setting newer than
+    the snapshot at its default, one of defaults, is no change, see testCases.settingChanges
     """
     path = os.path.join(folder, SETTINGS_FILE)
     if not os.path.isfile(path):
         return [BodyResult(SETTINGS_RESULT_NAME, STATUS_REVIEW, ['the snapshot has no settings, update it'])]
     with open(path, encoding='utf-8') as file:
-        changes = testCases.settingChanges(json.load(file), settings)
+        changes = testCases.settingChanges(json.load(file), settings, defaults)
     if len(changes) == 0:
         return []
     return [BodyResult(SETTINGS_RESULT_NAME, STATUS_REVIEW, ['built with other settings than the snapshot'], changes)]
@@ -122,11 +123,15 @@ def leftoverData(body: adsk.fusion.BRepBody | None) -> dict | None:
         'max': [round(v * 10, 2) for v in box.maxPoint.asArray()],
     }
 
-def compareSnapshot(folder: str, bodies: list[adsk.fusion.BRepBody], settings: dict) -> list[BodyResult]:
+# the result of a case compared by its form, see compareSnapshot
+FORM_RESULT_NAME = 'Form'
+
+def compareSnapshot(folder: str, bodies: list[adsk.fusion.BRepBody], settings: dict, defaults: dict | None = None, byForm: bool = False) -> list[BodyResult]:
     """
     Bodies against the snapshot, paired by name, built with the settings, see compareSettings. Material left over by
     the subtraction either way fails, as does a body missing on either side. Only the fingerprint changing, the shape
-    staying, is for review
+    staying, is for review. byForm compares only the form of all bodies together, for text label cases whose letters
+    lie where the font puts them (round 16, p30, see testCases.formChanges)
     """
     if not hasSnapshot(folder):
         return [BodyResult('', STATUS_FAIL, ['no snapshot, run Gridfinity tests: update snapshots'])]
@@ -134,7 +139,11 @@ def compareSnapshot(folder: str, bodies: list[adsk.fusion.BRepBody], settings: d
         expectedBodies = {entry['name']: entry for entry in json.load(file)['bodies']}
     builtBodies = {body.name: body for body in bodies}
 
-    results = compareSettings(folder, settings)
+    results = compareSettings(folder, settings, defaults)
+    if byForm:
+        changes = testCases.formChanges(list(expectedBodies.values()), [{'name': body.name, **fingerprint(body)} for body in bodies])
+        results.append(BodyResult(FORM_RESULT_NAME, STATUS_FAIL if changes else STATUS_PASS, ['compared by form, not where each letter lies'] if not changes else [], changes))
+        return results
     for name in expectedBodies:
         if name not in builtBodies:
             results.append(BodyResult(name, STATUS_FAIL, ['in the snapshot, not built']))
