@@ -31,9 +31,21 @@ Noch nicht in Fusion geprüft: Task 5 (Rechtsklick auf einen neuen Buchstaben) u
 Farbe, wenn sie an der Occurrence als Proxy mit vollem Pfad steht? Kommt sie im 3MF an?). `COLOR_BODIES_TOO = True`
 bleibt, bis Probe Q5 belegt, dass der 3MF-Export die Occurrence-Farbe übernimmt.
 
+## Hinweisfenster-Test (Task 1)
+
+Durchgeführt von der Hauptsitzung am 15.11., weil diese Sitzung kein Fusion-MCP hat: `messageBox` per Skript geöffnet,
+`fusion-hinweis-schliessen.sh` im Hintergrund. Fenster geschlossen, Skriptaufruf kehrte zurück, Schließ-Skript endete
+mit exit 0. Zeile in `D:\Entwicklung\Gridfinity\fusion-hinweise.log` (hier nachgelesen):
+
+    2026-11-15 19:04:35 GESCHLOSSEN Fenster 'Gridfinity Test' Texte: [Gridfinity Test / Runde 14 Hinweistest: wird automatisch geschlossen] Knoepfe: [OK]
+
+Vorbefund dieser Sitzung: `fusion-hinweis-schliessen.sh -NurAnzeigen` → keine Ausgabe, Rückgabe 0.
+
+Fusion-Läufe dieser Runde gehen ab hier als Aufträge über die Hauptsitzung: Skript nach
+`D:\Entwicklung\Gridfinity\fusion-auftraege\<name>.py`, Ausgabe in `<name>.out`.
+
 ## Offen, braucht Fusion
 
-- Task 1 Hinweisfenster-Test. Vorbefund: `fusion-hinweis-schliessen.sh -NurAnzeigen` → keine Ausgabe, Rückgabe 0.
 - Task 2 Probe Q1–Q5 mit den Entscheidungsregeln im Plan. Kernfrage Q1: Commit 073efbe meldet, dass eine Label-Skizze
   auf einer mitlaufenden Ebene ihre Textkurven neu bekam und die Extrusion sie verlor.
 - Task 4 `createLabel` ohne Verschieben (ruht bis zur Probe).
