@@ -153,3 +153,8 @@ def readPocketTagValue(value: str) -> tuple[float, float] | None:
     if any(isinstance(item, bool) or not isinstance(item, (int, float)) for item in (width, height)):
         return None
     return (float(width), float(height))
+
+def pocketRemap(oldNames: list[str], newNames: list[str]) -> dict[str, str | None]:
+    """The pocket of a rebuilt bin each old pocket's joint goes to, by name (they're named by compartment, see
+    pocketJointOriginName), none where the new bin has no such pocket"""
+    return {name: (name if name in newNames else None) for name in oldNames}
