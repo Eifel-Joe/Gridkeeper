@@ -241,6 +241,8 @@ def test_builder_wrapper_hands_every_argument_on(path, outer, inner):
     assert _parameters(builder) == _parameters(wrapper)
     calls = [node for node in ast.walk(wrapper) if isinstance(node, ast.Call) and getattr(node.func, "id", None) == inner]
     assert len(calls) == 1
+    # a keyword argument has to go to the parameter of its own name
+    assert all(keyword.arg == keyword.value.id for keyword in calls[0].keywords)
     passed = [argument.id for argument in calls[0].args] + [keyword.value.id for keyword in calls[0].keywords]
     assert passed == _parameters(wrapper)
     # and the root is active again after it, also after a failed build
