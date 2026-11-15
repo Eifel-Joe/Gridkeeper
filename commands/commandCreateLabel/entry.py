@@ -7,12 +7,11 @@ from ...lib import tagUtils
 from ...lib import settingsUtils
 from ...lib import fusion360utils as futil
 from ... import config
-from ...lib.gridfinityUtils.const import DIMENSION_DEFAULT_WIDTH_UNIT
+from ...lib.gridfinityUtils.const import DIMENSION_DEFAULT_WIDTH_UNIT, BASE_UNIT_MIN
 from ...lib.gridfinityUtils import commonUtils
 from ...lib.gridfinityUtils import cullenectCatalog
 from ...lib.gridfinityUtils import cullenectLabelGenerator
 from ...lib.gridfinityUtils import cullenectLabelLayout
-from ...lib.gridfinityUtils import sharedParameters
 from ...lib.gridfinityUtils import labelColors
 from ...lib.gridfinityUtils import textStyles
 from .inputState import InputState
@@ -139,15 +138,6 @@ def stop():
     if command_definition:
         command_definition.deleteMe()
 
-def applySharedParameterDefaults():
-    """The design's shared base width replaces the remembered one, so inserts match the bins of the design"""
-    design = adsk.fusion.Design.cast(app.activeProduct)
-    if design is None:
-        return
-    (baseWidth, _) = sharedParameters.usableSharedBaseUnits(design)
-    if baseWidth is not None:
-        uiState.initValue(BASE_WIDTH_INPUT, baseWidth, adsk.core.ValueCommandInput.classType())
-
 def screwOptions() -> dict[str, list]:
     return cullenectCatalog.screwOptions(ICONS_FOLDER)
 
@@ -199,7 +189,6 @@ def addBool(inputs: adsk.core.CommandInputs, inputId: str, label: str, tooltip: 
 def command_created(args: adsk.core.CommandCreatedEventArgs):
     futil.log(f'{CMD_NAME} Command Created Event')
     args.command.setDialogInitialSize(400, 500)
-    applySharedParameterDefaults()
     inputs = args.command.commandInputs
 
     infoGroup = inputs.addGroupCommandInput(INFO_GROUP, 'Info')
@@ -218,7 +207,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     uiState.registerCommandInput(unitsInput)
     addLength(sizeGroup.children, FREE_WIDTH_INPUT, 'Width', 'Free width, e.g. for the pocket of a compartment tab, the bin dialog shows its insert width')
     baseWidthInput = addLength(sizeGroup.children, BASE_WIDTH_INPUT, 'Base width unit (mm)', 'Grid of the bins, the width in base units is counted in it')
-    baseWidthInput.minimumValue = sharedParameters.BASE_UNIT_MIN
+    baseWidthInput.minimumValue = BASE_UNIT_MIN
     baseWidthInput.isMinimumInclusive = True
     for (inputId, label, tooltip) in [
         (OFFSET_X_INPUT, 'Correction width', "Added to the width, for printers printing too wide or too narrow, Cullenect's offset_xy, at most 1 mm either way"),

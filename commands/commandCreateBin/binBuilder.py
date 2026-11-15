@@ -1,8 +1,11 @@
 import adsk.core, adsk.fusion
 import copy
+import math
 
 from ...lib import tagUtils
+from ...lib import configJson
 from ...lib import placementUtils
+from ...lib import rebuildUtils
 from ...lib.gridfinityUtils import combineUtils
 from ...lib.gridfinityUtils import geometryUtils
 from ...lib.gridfinityUtils import faceUtils
@@ -11,12 +14,12 @@ from ...lib.gridfinityUtils import commonUtils
 from ...lib.gridfinityUtils import const
 from ...lib.gridfinityUtils import raisedDividers
 from ...lib.gridfinityUtils import parameterUtils
-from ...lib.gridfinityUtils import sharedParameters
 from ...lib.gridfinityUtils.dim import Dim
 from ...lib.gridfinityUtils.baseGenerator import createFootGrid, cutBaseClearance, cutWallJunctionPockets, footCenters, createCellJointOrigins, keepBodiesInCells, cutOutsideShape, cutShapeWallJunctionPockets
 from ...lib.gridfinityUtils.baseGeneratorInput import BaseGeneratorInput
 from ...lib.gridfinityUtils.binBodyGenerator import createGridfinityBinBody, createShapeCavity, binBodyTopHeight, createCompartmentCutout, compartmentCutoutFilletRadius, tabTopClearance, createTabLabel, hollowTabWallThickness
 from ...lib.gridfinityUtils import labelGenerator
+from ...lib.gridfinityUtils import labelColors
 from ...lib.gridfinityUtils import compartmentLayout
 from ...lib.gridfinityUtils import binShape
 from ...lib.gridfinityUtils import binGrid
@@ -45,9 +48,29 @@ BIN_LEGACY_NAME_PREFIX = 'Gridfinity bin '
 BIN_PARAMETER_BASE_NAME = 'gfBin'
 BIN_HEIGHT_PARAMETER = 'heightU'
 BIN_LABEL_PARAMETER = 'label'
-# per bin fallback for the shared height unit
+# the units of the bin, its own like the rest
 BIN_HEIGHT_UNIT_PARAMETER = 'heightUnit'
-BIN_PARAMETERS = [BIN_HEIGHT_PARAMETER, BIN_HEIGHT_UNIT_PARAMETER, sharedParameters.BASE_WIDTH_FALLBACK_PARAMETER, sharedParameters.BASE_LENGTH_FALLBACK_PARAMETER]
+BIN_BASE_WIDTH_PARAMETER = 'baseWidth'
+BIN_BASE_LENGTH_PARAMETER = 'baseLength'
+BIN_PARAMETERS = [BIN_HEIGHT_PARAMETER, BIN_HEIGHT_UNIT_PARAMETER, BIN_BASE_WIDTH_PARAMETER, BIN_BASE_LENGTH_PARAMETER]
+
+# Labels of the parameters in the tag are stored in user documents, keep these literal
+PARAMETER_LABEL_BASE_WIDTH = 'Base width unit'
+PARAMETER_LABEL_BASE_LENGTH = 'Base length unit'
+PARAMETER_LABEL_BIN_HEIGHT = 'Bin height (u)'
+PARAMETER_LABEL_HEIGHT_UNIT = 'Height unit'
+PARAMETER_LABEL_LABEL = 'Label'
+# config fields the parameters stand for, lengths in mm like the config, see configJson
+PARAMETER_FIELDS = {
+    PARAMETER_LABEL_BASE_WIDTH: 'baseWidth',
+    PARAMETER_LABEL_BASE_LENGTH: 'baseLength',
+    PARAMETER_LABEL_BIN_HEIGHT: 'binHeight',
+    PARAMETER_LABEL_HEIGHT_UNIT: 'heightUnit',
+    PARAMETER_LABEL_LABEL: 'labelText',
+}
+
+# the move placing the bin, rebuilding in place reads the spot from it, see rebuildUtils
+BIN_PLACEMENT_FEATURE = 'Bin placement'
 
 def binDisplayName(state: InputState) -> str:
     return 'Gridfinity bin {}x{}x{}{}'.format(
@@ -119,22 +142,37 @@ def creaseLayout(state: InputState) -> list[tuple[wallCreases.WallSide, int]]:
         hasScoop,
     )
 
+def tagged(parameter: adsk.fusion.UserParameter, field: str, owner: str) -> adsk.fusion.UserParameter:
+    """The parameter tagged with the config field it holds and the bin it's of, see tagUtils.tagParameterField"""
+    tagUtils.tagParameterField(parameter, field, owner)
+    return parameter
+
+def compartmentLabelField(index: int) -> str:
+    """The config field of a compartment's own label, the label of its pocket, see compartmentLayout"""
+    return f'compartmentPockets.{index}.label'
+
 def createLabelDefinition(
     design: adsk.fusion.Design,
     binParameterPrefix: str,
     parameterName: str,
     text: str,
     icon: str,
+    reuse: bool = False,
+    field: str = 'labelText',
 ) -> labelGenerator.BinLabelDefinition | None:
-    """The text goes into a text parameter so the label can be edited later, nothing for a blank label"""
+    """
+    The text goes into a text parameter so the label can be edited later, tagged with the config field the text
+    comes from, nothing for a blank label
+    """
     textParameter = None
     if len(text.strip()) > 0:
-        textParameter = parameterUtils.addTextParameter(
+        textParameter = tagged(parameterUtils.addTextParameter(
             design,
             parameterUtils.parameterName(binParameterPrefix, parameterName),
             text,
             'Gridfinity bin label text',
-        )
+            reuse,
+        ), field, binParameterPrefix)
     definition = labelGenerator.BinLabelDefinition(textParameter, labelGenerator.iconPath(icon))
     return None if definition.isEmpty else definition
 
@@ -142,13 +180,20 @@ def buildBin(
     des: adsk.fusion.Design,
     state: InputState,
     settings: list[dict],
+    placement: tuple[float, float] | None = None,
+    parameterPrefix: str | None = None,
+    occurrenceTransform: adsk.core.Matrix3D | None = None,
 ) -> list[adsk.fusion.BRepBody]:
-    """Builds the bin into the design, tagged with the settings to show later, see settingsUtils.snapshotInputs"""
+    """
+    Builds the bin into the design at the timeline marker, tagged with the settings to show later, see
+    settingsUtils.snapshotInputs. A bin rebuilt in place keeps the placement, the parameters by their prefix and
+    the transform of its component the old one had, see rebuildUtils, a new one goes to a free spot
+    """
     # The new component is active while it's built, the design's root afterwards: an active component shows every other
     # one half transparent and the user had to switch back each time (Joerg 15.11.2026). In finally, a failed build
-    # leaves the root active too
+    # leaves the root active too. A rebuild in place builds through here as well, see rebuildBin
     try:
-        return _buildBin(des, state, settings)
+        return _buildBin(des, state, settings, placement, parameterPrefix, occurrenceTransform)
     finally:
         des.activateRootComponent()
 
@@ -156,6 +201,9 @@ def _buildBin(
     des: adsk.fusion.Design,
     state: InputState,
     settings: list[dict],
+    placement: tuple[float, float] | None = None,
+    parameterPrefix: str | None = None,
+    occurrenceTransform: adsk.core.Matrix3D | None = None,
 ) -> list[adsk.fusion.BRepBody]:
     # creased bins have a single compartment and a solid tab, see creaseLayout
     creases = creaseLayout(state)
@@ -185,10 +233,11 @@ def _buildBin(
     xyClearance = state.xyClearance
     binName = binDisplayName(state)
 
-    originalTimelineCount = des.timeline.count
+    # the marker is before the features after a bin rebuilt in place, at the end otherwise
+    originalTimelinePosition = des.timeline.markerPosition
     if des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
         # create new component, only allowed in hybrid intent type
-        newCmpOcc = adsk.fusion.Occurrences.cast(root.occurrences).addNewComponent(adsk.core.Matrix3D.create())
+        newCmpOcc = adsk.fusion.Occurrences.cast(root.occurrences).addNewComponent(occurrenceTransform or adsk.core.Matrix3D.create())
         newCmpOcc.component.name = binName
         newCmpOcc.activate()
         gridfinityBinComponent: adsk.fusion.Component = newCmpOcc.component
@@ -197,7 +246,7 @@ def _buildBin(
     features: adsk.fusion.Features = gridfinityBinComponent.features
 
     # pick the spot before generating, so none of this bin's geometry can count as an obstacle
-    binPlacement = placementUtils.findPlacement(
+    binPlacement = placement or placementUtils.findPlacement(
         des,
         tagUtils.TAG_BIN,
         BIN_LEGACY_NAME_PREFIX,
@@ -211,21 +260,30 @@ def _buildBin(
         state.baseLength,
     )
 
-    binParameterPrefix = parameterUtils.nextFreePrefix(des, BIN_PARAMETER_BASE_NAME, BIN_PARAMETERS)
-    (baseWidthParameter, baseLengthParameter) = sharedParameters.findOrCreateBaseUnitParameters(
+    reuseParameters = parameterPrefix is not None
+    # the bin's id too, see tagUtils.tagBody
+    binParameterPrefix = parameterPrefix or parameterUtils.nextFreePrefix(des, BIN_PARAMETER_BASE_NAME, BIN_PARAMETERS, tagUtils.usedBodyIds(des, tagUtils.TAG_BIN))
+    # every bin has units of its own, changing one bin's parameters changes no other bin
+    baseWidthParameter = tagged(parameterUtils.addLengthParameter(
         des,
+        parameterUtils.parameterName(binParameterPrefix, BIN_BASE_WIDTH_PARAMETER),
         state.baseWidth,
+        'Gridfinity bin base width unit',
+        reuseParameters,
+    ), 'baseWidth', binParameterPrefix)
+    baseLengthParameter = tagged(parameterUtils.addLengthParameter(
+        des,
+        parameterUtils.parameterName(binParameterPrefix, BIN_BASE_LENGTH_PARAMETER),
         state.baseLength,
-        binParameterPrefix,
-        'bin',
-        LOG_PREFIX,
-    )
+        'Gridfinity bin base length unit',
+        reuseParameters,
+    ), 'baseLength', binParameterPrefix)
     baseWidth = Dim.parameter(baseWidthParameter)
     baseLength = Dim.parameter(baseLengthParameter)
     gridWidth = baseWidth / feetPerUnit if halfGrid else baseWidth
     gridLength = baseLength / feetPerUnit if halfGrid else baseLength
     # user parameters driving the bin, kept in its tag to show with its settings
-    binParameters = [['Base width unit', baseWidthParameter.name], ['Base length unit', baseLengthParameter.name]]
+    binParameters = [[PARAMETER_LABEL_BASE_WIDTH, baseWidthParameter.name], [PARAMETER_LABEL_BASE_LENGTH, baseLengthParameter.name]]
 
     # create base interface
     baseGeneratorInput = BaseGeneratorInput()
@@ -280,6 +338,7 @@ def _buildBin(
     binBodyInput.binCornerFilletRadius = const.BIN_CORNER_FILLET_RADIUS - xyClearance
     # a shaped hollow bin gets its cavity once trimmed to the shape
     binBodyInput.isSolid = isSolid or isShelled or shaped
+    binBodyInput.hasLipBottomChamfer = not isSolid
     binBodyInput.wallThickness = state.wallThickness
     binBodyInput.hasScoop = state.hasScoop and isHollow and not shaped
     binBodyInput.scoopMaxRadius = state.scoopMaxRadius
@@ -333,13 +392,14 @@ def _buildBin(
     labelBodies: list[adsk.fusion.BRepBody] = []
 
     if state.generateBody:
-        binBodyInput.binHeight = Dim.parameter(parameterUtils.addUnitlessParameter(
+        binBodyInput.binHeight = Dim.parameter(tagged(parameterUtils.addUnitlessParameter(
             des,
             parameterUtils.parameterName(binParameterPrefix, BIN_HEIGHT_PARAMETER),
             state.binHeight,
             'Gridfinity bin height, in height units',
-        ))
-        binParameters.append(['Bin height (u)', binBodyInput.binHeight.expression])
+            reuseParameters,
+        ), 'binHeight', binParameterPrefix))
+        binParameters.append([PARAMETER_LABEL_BIN_HEIGHT, binBodyInput.binHeight.expression])
         # Cullenect tabs get a socket, the text goes on the inserts
         if binBodyInput.hasTab and not isCullenect:
             for compartmentIndex, compartment in enumerate(binBodyInput.compartments):
@@ -350,24 +410,23 @@ def _buildBin(
                     BIN_LABEL_PARAMETER if len(binBodyInput.compartments) == 1 else f'{BIN_LABEL_PARAMETER}{compartmentIndex + 1}',
                     compartmentText or state.labelText,
                     state.labelIcon if compartmentIcon == compartmentLayout.DEFAULT_ICON else compartmentIcon,
+                    reuseParameters,
+                    # a compartment without its own label shows the bin's
+                    compartmentLabelField(compartmentIndex) if compartmentText else 'labelText',
                 )
                 if compartment.label is not None and compartment.label.textParameter is not None:
                     binParameters.append([
-                        'Label' if len(binBodyInput.compartments) == 1 else f'Compartment {compartmentIndex + 1} label',
+                        PARAMETER_LABEL_LABEL if len(binBodyInput.compartments) == 1 else f'Compartment {compartmentIndex + 1} label',
                         compartment.label.textParameter.name,
                     ])
-        binBodyInput.heightUnit = Dim.parameter(sharedParameters.findOrCreateSharedLengthParameter(
+        binBodyInput.heightUnit = Dim.parameter(tagged(parameterUtils.addLengthParameter(
             des,
-            tagUtils.TAG_HEIGHT_UNIT_PARAMETER,
-            sharedParameters.HEIGHT_UNIT_PARAMETER,
-            'height unit',
-            sharedParameters.HEIGHT_UNIT_MIN,
-            state.heightUnit,
             parameterUtils.parameterName(binParameterPrefix, BIN_HEIGHT_UNIT_PARAMETER),
-            'bin',
-            LOG_PREFIX,
-        ))
-        binParameters.append(['Height unit', binBodyInput.heightUnit.expression])
+            state.heightUnit,
+            'Gridfinity bin height unit',
+            reuseParameters,
+        ), 'heightUnit', binParameterPrefix))
+        binParameters.append([PARAMETER_LABEL_HEIGHT_UNIT, binBodyInput.heightUnit.expression])
         (binBody, labelBodies) = createGridfinityBinBody(
             binBodyInput,
             gridfinityBinComponent,
@@ -396,9 +455,9 @@ def _buildBin(
             gridfinityBinComponent,
         )
 
-    if state.generateBody and state.generateBase and (shaped or not isShelled):
+    if state.generateBody and state.generateBase:
         # curve up the gaps between feet along the walls instead of leaving flat overhangs,
-        # shaped bins need them at the inner corners whatever the type, the shell follows the pockets cut before it
+        # shaped bins need them at the inner corners too, the shell follows the pockets cut before it
         if shaped:
             cutShapeWallJunctionPockets(
                 outlineGrid,
@@ -457,7 +516,7 @@ def _buildBin(
             topBody = max(splitBodies.bodies, key=lambda x: x.boundingBox.minPoint.z)
             horizontalFaces = [face for face in bottomBody.faces if geometryUtils.isHorizontal(face)]
             topFace = faceUtils.maxByArea(horizontalFaces)
-            shellUtils.simpleShell([topFace], binBodyInput.wallThickness, gridfinityBinComponent, name='Shell')
+            shellUtils.simpleShell([topFace], binBodyInput.wallThickness, gridfinityBinComponent, name='Shell', isRounded=state.isShellRounded)
             toolBodies = adsk.core.ObjectCollection.create()
             toolBodies.add(topBody)
             combineAfterShellFeatureInput = combineFeatures.createInput(bottomBody, toolBodies)
@@ -465,7 +524,7 @@ def _buildBin(
             combineAfterShellFeature.name = 'Shell and lip join'
             binBody = combineAfterShellFeature.bodies.item(0)
         else:
-            shellUtils.simpleShell([topFace], binBodyInput.wallThickness, gridfinityBinComponent, name='Shell')
+            shellUtils.simpleShell([topFace], binBodyInput.wallThickness, gridfinityBinComponent, name='Shell', isRounded=state.isShellRounded)
 
         if state.hasTab and not shaped:
             compartmentTabInput = BinBodyTabGeneratorInput()
@@ -554,9 +613,9 @@ def _buildBin(
                     gridfinityBinComponent,
                     name='Label',
                 )
-            shelledLabel = None if isCullenect else createLabelDefinition(des, binParameterPrefix, BIN_LABEL_PARAMETER, state.labelText, state.labelIcon)
+            shelledLabel = None if isCullenect else createLabelDefinition(des, binParameterPrefix, BIN_LABEL_PARAMETER, state.labelText, state.labelIcon, reuseParameters)
             if shelledLabel is not None and shelledLabel.textParameter is not None:
-                binParameters.append(['Label', shelledLabel.textParameter.name])
+                binParameters.append([PARAMETER_LABEL_LABEL, shelledLabel.textParameter.name])
             if shelledLabel is not None:
                 labelBodies += createTabLabel(
                     shelledLabel,
@@ -580,11 +639,11 @@ def _buildBin(
         # colored labels stand apart from the bin body, they move with it and are part of what was built
         movedBodies = generatedBodies + labelBodies
         if binPlacement != (0, 0):
-            placementUtils.moveBodies(movedBodies, *binPlacement, gridfinityBinComponent, name='Bin placement')
+            placementUtils.moveBodies(movedBodies, *binPlacement, gridfinityBinComponent, name=BIN_PLACEMENT_FEATURE)
         # mark generated geometry so later bins can tell it apart from the rest of the design,
         # with the settings it was generated with to show later. Labels aren't bins, they'd count as bins of their own
         for body in generatedBodies:
-            tagUtils.tagBody(body, tagUtils.TAG_BIN, settings, binParameters)
+            tagUtils.tagBody(body, tagUtils.TAG_BIN, settings, binParameters, configJson.stateToJson(configJson.GENERATOR_BIN, state), binParameterPrefix)
         generatedBodies = movedBodies
 
     if state.generateBase and state.hasJointOrigins:
@@ -605,6 +664,120 @@ def _buildBin(
         )
 
     # group features in timeline
-    binGroup = des.timeline.timelineGroups.add(originalTimelineCount, des.timeline.count - 1)
+    binGroup = des.timeline.timelineGroups.add(originalTimelinePosition, des.timeline.markerPosition - 1)
     binGroup.name = binName
     return generatedBodies
+
+def rebuildBin(
+    des: adsk.fusion.Design,
+    body: adsk.fusion.BRepBody,
+    state: InputState,
+    settings: list[dict],
+    isPreview: bool,
+) -> tuple[list[adsk.fusion.BRepBody], list[str]]:
+    """
+    Builds the bin in place of the one the body is of, keeping the features after it, see rebuildUtils.rebuild, or
+    sets its parameters when they hold all that changed. Returns the bodies and what of the later features needs a look
+    """
+    target = rebuildUtils.findTarget(des, body, tagUtils.TAG_BIN, BIN_PLACEMENT_FEATURE)
+    newConfig = configJson.stateToJson(configJson.GENERATOR_BIN, state)
+    edits = parameterEdits(des, target.bodies[0], state)
+    if edits is not None:
+        # nothing in the timeline changes, the features after it stay as they are
+        (parameters, values) = edits
+        if not isPreview:
+            commonUtils.fileLog(f'{LOG_PREFIX} editing the parameters of {target.group.name} instead of rebuilding it, {rebuildUtils.configChanges(configJson.GENERATOR_BIN, target.bodies[0], newConfig)}')
+        if len(parameters) > 0 and not des.modifyParameters(parameters, values):
+            raise RuntimeError(f'Fusion didn\'t take the new values of {", ".join(parameter.name for parameter in parameters)}')
+        if not isPreview:
+            retag(target, state, settings)
+        return (target.bodies, [])
+
+    prefix = rebuildUtils.bodyId(target.bodies[0], BIN_PARAMETER_BASE_NAME)
+    if not isPreview:
+        commonUtils.fileLog(f'{LOG_PREFIX} rebuilding {target.group.name} at {target.placement}, {rebuildUtils.configChanges(configJson.GENERATOR_BIN, target.bodies[0], newConfig)}')
+    return rebuildUtils.rebuild(
+        des,
+        target,
+        prefix,
+        BIN_PARAMETER_BASE_NAME,
+        isPreview,
+        # colored labels are bodies of their own beside the bin, only the bin bodies take the place of the old ones
+        lambda placement, parameterPrefix, transform: tagUtils.taggedBodies(buildBin(des, state, settings, placement, parameterPrefix, transform), tagUtils.TAG_BIN),
+        'bin',
+    )
+
+def isSameSetting(old, new) -> bool:
+    if isinstance(old, (int, float)) and isinstance(new, (int, float)) and not isinstance(old, bool) and not isinstance(new, bool):
+        return math.isclose(old, new, abs_tol=1e-6)
+    return old == new
+
+def parameterEdits(
+    des: adsk.fusion.Design,
+    body: adsk.fusion.BRepBody,
+    state: InputState,
+) -> tuple[list[adsk.fusion.UserParameter], list[adsk.core.ValueInput]] | None:
+    """
+    The parameters to set and their new expressions when every setting the rebuild changes is one of the bin's own
+    parameters, so setting them builds the same bin a rebuild would. None when it has to be rebuilt: a shared unit,
+    of a bin built before bins had units of their own, would change every bin built on it, a blank label has no
+    parameter, a height can turn the creases on or off
+    """
+    tag = tagUtils.readBodyTag(body)
+    if tag is None or not isinstance(tag[1].get('config'), dict):
+        return None
+    tagParameters = tag[1].get('parameters')
+    oldConfig = configWithParameters(tag[1]['config'], tagParameters, des.userParameters.itemByName)
+    newConfig = configJson.stateToJson(configJson.GENERATOR_BIN, state)
+    changed = [name for (name, value) in newConfig.items() if not isSameSetting(oldConfig.get(name), value)]
+    # compartments without a label of their own show the bin's, each has a parameter holding it
+    parametersByField: dict[str, list[adsk.fusion.UserParameter]] = {}
+    for (field, parameter) in rebuildUtils.parameterFields(tagParameters, des.userParameters.itemByName, PARAMETER_FIELDS):
+        parametersByField.setdefault(field, []).append(parameter)
+    if any(name not in parametersByField for name in changed):
+        return None
+    try:
+        oldState = configJson.stateFromJson(configJson.GENERATOR_BIN, InputState, {**newConfig, **{name: oldConfig[name] for name in changed}})
+    except configJson.ConfigError:
+        return None
+    if creaseLayout(oldState) != creaseLayout(state):
+        return None
+    if not cullenect.parameterEditKeepsSockets(state.labelStyle == labelGenerator.LABEL_STYLE_CULLENECT, state.hasTab, changed):
+        return None
+    parameters = []
+    values = []
+    for name in changed:
+        for parameter in parametersByField[name]:
+            if name == 'labelText':
+                if len(state.labelText.strip()) == 0 or len(oldState.labelText.strip()) == 0:
+                    return None
+                # letters a text parameter adds come uncolored, a colored label is built again, see labelColors
+                if not labelColors.textEditByParameter(state.labelColor):
+                    return None
+                expression = parameterUtils.textExpression(state.labelText)
+            elif name in configJson.MM_FIELDS[configJson.GENERATOR_BIN]:
+                if rebuildUtils.prefixOf([parameter.name], BIN_PARAMETER_BASE_NAME) is None:
+                    return None
+                expression = f'{newConfig[name]:g} mm'
+            else:
+                expression = f'{newConfig[name]:g}'
+            parameters.append(parameter)
+            values.append(adsk.core.ValueInput.createByString(expression))
+    return (parameters, values)
+
+def retag(target: rebuildUtils.RebuildTarget, state: InputState, settings: list[dict]):
+    """The bin with its parameters set keeps its tag up to date, the settings window shows it, and is named after its size"""
+    tag = tagUtils.readBodyTag(target.bodies[0])
+    parameters = tag[1].get('parameters') if tag is not None else None
+    # a bin built before bins had ids gets the prefix of its parameters
+    bodyId = rebuildUtils.bodyId(target.bodies[0], BIN_PARAMETER_BASE_NAME)
+    config = configJson.stateToJson(configJson.GENERATOR_BIN, state)
+    for body in target.bodies:
+        tagUtils.tagBody(body, tagUtils.TAG_BIN, settings, parameters, config, bodyId)
+    target.group.name = binDisplayName(state)
+    if target.occurrence is not None:
+        target.occurrence.component.name = binDisplayName(state)
+
+def configWithParameters(config: dict, parameters: list, findParameter) -> dict:
+    """The config a bin was built with, with the values its parameters have now, see rebuildUtils.configWithParameters"""
+    return rebuildUtils.configWithParameters(configJson.GENERATOR_BIN, config, parameters, findParameter, PARAMETER_FIELDS)

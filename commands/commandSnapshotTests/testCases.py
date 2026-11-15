@@ -4,47 +4,41 @@ import math
 import os
 import re
 
-# Shape test cases, one JSON file each, holding every setting of a bin, baseplate or label InputState by its field name.
-# Lengths are in mm and angles in degrees to read easily, the state keeps Fusion's cm and radians.
+# Shape test cases, one JSON file each, holding the settings of a bin, baseplate or label InputState that differ from the
+# dialog's defaults, see lib/defaultSettings.py, by field name in the config format of lib/configJson.py. A case
+# is built the way a new bin is, a default changing changes it too.
 # Kept free of Fusion imports so it can be unit tested, the state classes come in as an argument
 
-GENERATOR_BIN = 'bin'
-GENERATOR_BASEPLATE = 'baseplate'
-GENERATOR_LABEL = 'label'
+def _loadLibFile(name: str):
+    """A module of lib, when the tests and tools load this file on its own, outside the add-in package"""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'lib', f'{name}.py')
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
-# the rest are counts, base or height units, flags and names, kept as they are
-MM_FIELDS = {
-    GENERATOR_BIN: {
-        'baseWidth', 'baseLength', 'heightUnit', 'xyClearance', 'wallThickness', 'screwHoleDiameter',
-        'magnetCutoutDiameter', 'magnetCutoutDepth', 'scoopMaxRadius', 'tabWidth', 'creaseDepth',
-        'cullenectSocketOffset',
-    },
-    GENERATOR_BASEPLATE: {
-        'baseWidth', 'baseLength', 'xyClearance', 'magnetSocketSize', 'magnetSocketDepth', 'screwHoleSize',
-        'screwHeadSize', 'paddingLeft', 'paddingTop', 'paddingRight', 'paddingBottom', 'extraBottomThickness',
-        'verticalClearance', 'connectionHoleSize', 'areaWidth', 'areaLength', 'fitTolerance', 'bedWidth',
-        'bedLength', 'bedMargin',
-    },
-    GENERATOR_LABEL: {'baseWidth', 'freeWidth', 'offsetX', 'offsetY'},
-}
-DEGREE_FIELDS = {
-    GENERATOR_BIN: {'tabOverhangAngle', 'tabTopAngle'},
-    GENERATOR_BASEPLATE: set(),
-    GENERATOR_LABEL: set(),
-}
-# lists of cells, JSON has no tuples
-CELL_LIST_FIELDS = {
-    GENERATOR_BIN: {'shapeCells'},
-    GENERATOR_BASEPLATE: set(),
-    GENERATOR_LABEL: set(),
-}
+try:
+    from ...lib import configJson
+    from ...lib import defaultSettings
+except ImportError:
+    configJson = _loadLibFile('configJson')
+    defaultSettings = _loadLibFile('defaultSettings')
+GENERATOR_BIN = configJson.GENERATOR_BIN
+GENERATOR_BASEPLATE = configJson.GENERATOR_BASEPLATE
+GENERATOR_LABEL = configJson.GENERATOR_LABEL
+stateFromJson = configJson.stateFromJson
+stateToJson = configJson.stateToJson
+# by generator
+DEFAULT_SETTINGS = defaultSettings.SETTINGS
 
-# the shared user parameters a case may change after building, see lib/gridfinityUtils/sharedParameters.py, with the
-# setting each stands for. Keep the names literal, they're in user documents
+# the user parameters a case may change after building, with the setting each stands for. Keep the names literal,
+# they're in user documents. Bins and baseplates have units of their own, the first of a case's new document is
+# numbered 1, see binBuilder.BIN_PARAMETERS, baseplateBuilder.BASEPLATE_PARAMETERS and labelBuilder.LABEL_PARAMETERS
 PARAMETER_FIELDS = {
-    GENERATOR_BIN: {'gfBaseWidth': 'baseWidth', 'gfBaseLength': 'baseLength', 'gfHeightUnit': 'heightUnit'},
-    GENERATOR_BASEPLATE: {'gfBaseWidth': 'baseWidth', 'gfBaseLength': 'baseLength'},
-    GENERATOR_LABEL: {'gfBaseWidth': 'baseWidth'},
+    GENERATOR_BIN: {'gfBin1_baseWidth': 'baseWidth', 'gfBin1_baseLength': 'baseLength', 'gfBin1_heightUnit': 'heightUnit'},
+    GENERATOR_BASEPLATE: {'gfPlate1_baseWidth': 'baseWidth', 'gfPlate1_baseLength': 'baseLength'},
+    GENERATOR_LABEL: {'gfLabel1_baseWidth': 'baseWidth'},
 }
 
 # the design intent of the document a case is built in, hybrid unless the case says otherwise. In part design the
@@ -63,7 +57,7 @@ class TestCase:
     description: str
     generator: str
     state: object
-    # shared parameters set after building, in cm, the result has to be the same as built with them, see editedState
+    # parameters set after building, in cm, the result has to be the same as built with them, see editedState
     parameters: dict[str, float] = dataclasses.field(default_factory=dict)
     designIntent: str = DESIGN_INTENT_HYBRID
     # the design intent the document has to have once built, None for any, a generator may switch it
@@ -72,37 +66,8 @@ class TestCase:
     # from the start, that fits the text anew, see insertTextProblems
     texts: dict[str, str] = dataclasses.field(default_factory=dict)
 
-def stateFromJson(generator: str, stateClass: type, settings: dict) -> object:
-    """Every field of the state has to be there and nothing else, so a case never falls back to a default"""
-    fieldNames = [field.name for field in dataclasses.fields(stateClass)]
-    missing = [name for name in fieldNames if name not in settings]
-    unknown = [name for name in settings if name not in fieldNames]
-    if missing or unknown:
-        raise TestCaseError(f'missing settings {missing}, unknown settings {unknown}')
-    def value(name: str):
-        if name in MM_FIELDS[generator]:
-            return settings[name] / 10
-        if name in DEGREE_FIELDS[generator]:
-            return settings[name] / 180 * math.pi
-        if name in CELL_LIST_FIELDS[generator]:
-            return [tuple(cell) for cell in settings[name]]
-        return settings[name]
-    return stateClass(**{name: value(name) for name in fieldNames})
-
-def stateToJson(generator: str, state: object) -> dict:
-    """Settings of a case file, rounded so float noise from the unit change doesn't show"""
-    def value(name: str, fieldValue):
-        if name in MM_FIELDS[generator]:
-            return round(fieldValue * 10, 6)
-        if name in DEGREE_FIELDS[generator]:
-            return round(fieldValue * 180 / math.pi, 6)
-        if name in CELL_LIST_FIELDS[generator]:
-            return [list(cell) for cell in fieldValue]
-        return fieldValue
-    return {field.name: value(field.name, getattr(state, field.name)) for field in dataclasses.fields(state)}
-
 def parametersFromJson(generator: str, parameters: dict) -> dict[str, float]:
-    """Values in mm of the generator's shared parameters, in cm"""
+    """Values in mm of the generator's parameters, in cm"""
     unknown = [name for name in parameters if name not in PARAMETER_FIELDS[generator]]
     if unknown:
         raise TestCaseError(f'unknown parameters {unknown}, a {generator} has {sorted(PARAMETER_FIELDS[generator])}')
@@ -137,7 +102,9 @@ def loadCase(path: str, stateClasses: dict[str, type]) -> TestCase:
         generator = data['generator']
         if generator not in stateClasses:
             raise TestCaseError(f'unknown generator {generator!r}')
-        state = stateFromJson(generator, stateClasses[generator], data['settings'])
+        if not isinstance(data['settings'], dict):
+            raise TestCaseError('settings are an object of the settings that differ from the defaults')
+        state = stateFromJson(generator, stateClasses[generator], {**DEFAULT_SETTINGS[generator], **data['settings']})
         parameters = parametersFromJson(generator, data.get('parameters', {}))
         texts = textsFromJson(generator, data.get('texts', {}))
         if texts and parameters:
@@ -149,7 +116,7 @@ def loadCase(path: str, stateClasses: dict[str, type]) -> TestCase:
         designIntentAfter = data.get('designIntentAfter')
         if designIntentAfter is not None and designIntentAfter not in DESIGN_INTENTS:
             raise TestCaseError(f'unknown design intent after building {designIntentAfter!r}')
-    except (OSError, ValueError, KeyError, TypeError, AttributeError, TestCaseError) as err:
+    except (OSError, ValueError, KeyError, TypeError, AttributeError, TestCaseError, configJson.ConfigError) as err:
         raise TestCaseError(f'case {name}: {err}') from err
     return TestCase(name, data.get('description', ''), generator, state, parameters, designIntent, designIntentAfter, texts)
 
@@ -168,6 +135,11 @@ def looseBodyNames(designBodies: list[tuple[str, str]], builtKeys: set[str]) -> 
 def parametersToJson(case: TestCase) -> dict:
     return {name: round(value * 10, 6) for (name, value) in case.parameters.items()}
 
+def changedSettings(generator: str, settings: dict) -> dict:
+    """The settings, as stateToJson has them, that differ from the defaults"""
+    defaults = DEFAULT_SETTINGS[generator]
+    return {name: value for (name, value) in settings.items() if name not in defaults or value != defaults[name]}
+
 def caseJson(case: TestCase) -> str:
     data = {
         'description': case.description,
@@ -177,7 +149,7 @@ def caseJson(case: TestCase) -> str:
         data['designIntent'] = case.designIntent
     if case.designIntentAfter is not None:
         data['designIntentAfter'] = case.designIntentAfter
-    data['settings'] = stateToJson(case.generator, case.state)
+    data['settings'] = changedSettings(case.generator, stateToJson(case.generator, case.state))
     if case.parameters:
         data['parameters'] = parametersToJson(case)
     if case.texts:
@@ -188,14 +160,16 @@ def caseJson(case: TestCase) -> str:
 GENERATOR_TITLES = {GENERATOR_BIN: 'Bins', GENERATOR_BASEPLATE: 'Baseplates', GENERATOR_LABEL: 'Labels'}
 README_INTRO = """# Shape snapshot tests
 
-Each case is a JSON file in [cases](cases) holding every setting of a bin or baseplate, lengths in mm and angles in
-degrees. Its snapshot in [snapshots](snapshots), a folder named after the case, has the shapes it built, their
-fingerprints and a preview picture.
+Each case is a JSON file in [cases](cases) holding the settings of a bin, baseplate or label that differ from the dialog's
+defaults in [lib/defaultSettings.py](../../lib/defaultSettings.py), lengths in mm and angles in degrees. Its snapshot in
+[snapshots](snapshots), a folder named after the case, has the shapes it built, their fingerprints, every setting they
+were built with and a preview picture. A run tells when the settings changed, a default changing among them, even
+when the shapes stay the same.
 
 Run them in Fusion from Utilities > Add-ins with **Gridfinity tests: run**, record new snapshots with **Gridfinity
 tests: update snapshots**. The commands are there when the add-in runs from a git checkout.
 
-A case with parameters sets those shared user parameters once built, the snapshot is of the bodies Fusion recomputed,
+A case with parameters sets those user parameters once built, the snapshot is of the bodies Fusion recomputed,
 and a run also compares them with the case built with the new values from the start.
 
 This page is written from the case files, run `python3 tests/e2e/write_readme.py` after adding or changing one.
@@ -203,6 +177,8 @@ This page is written from the case files, run `python3 tests/e2e/write_readme.py
 
 # the name of a snapshot's picture, see commandSnapshotTests/snapshots.py
 PREVIEW_FILE = 'preview.png'
+# every setting of the case its snapshot was built with, see snapshotSettings
+SETTINGS_FILE = 'settings.json'
 README_PREVIEW_WIDTH = 120
 
 def casesMarkdown(folder: str) -> str:
@@ -252,6 +228,34 @@ def caseSettings(case: TestCase) -> list[dict]:
         'title': 'Texts set after building',
         'items': [[name, json.dumps(value, ensure_ascii=False)] for (name, value) in case.texts.items()],
     }] if case.texts else [])
+
+def snapshotSettings(case: TestCase) -> dict:
+    """Every setting the case is built with, its defaults filled in, as its snapshot keeps them"""
+    return stateToJson(case.generator, case.state)
+
+def settingsText(settings: dict) -> str:
+    return json.dumps(settings, indent=4, ensure_ascii=False) + '\n'
+
+def settingChanges(expected: dict, actual: dict) -> list[dict]:
+    """
+    Each setting that differs, as the snapshot was built with it and as the case has it now, none for a setting only
+    one of them has. Values that aren't numbers, flags or text are written as JSON, the report shows them as they are
+    """
+    def shown(value):
+        return value if value is None or isinstance(value, (bool, int, float, str)) else json.dumps(value, ensure_ascii=False)
+    def same(a, b) -> bool:
+        # a flag isn't the number it equals in Python
+        if isinstance(a, bool) or isinstance(b, bool):
+            return type(a) is type(b) and a == b
+        if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+            return math.isclose(a, b, rel_tol=1e-9, abs_tol=1e-9)
+        return a == b
+    names = list(expected) + [name for name in actual if name not in expected]
+    return [
+        {'key': name, 'expected': shown(expected.get(name)), 'actual': shown(actual.get(name))}
+        for name in names
+        if name not in expected or name not in actual or not same(expected[name], actual[name])
+    ]
 
 # A raised divider corner carries on from the compartment corner below without a ledge (p83): an upward face left
 # where they meet is a sickle Joerg found by hand, 0.36 mm2 where the fillet couldn't follow a short wall under the

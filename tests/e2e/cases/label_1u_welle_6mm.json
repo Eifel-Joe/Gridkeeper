@@ -2,24 +2,9 @@
     "description": "Joerg's 1U insert \"Welle 6mm\", flush, no symbol: Fusion broke the line in two and hung it off the insert (p84), the text stays one line on it",
     "generator": "label",
     "settings": {
-        "baseWidth": 42.0,
-        "useUnits": true,
-        "widthUnits": 1,
-        "freeWidth": 25.0,
-        "offsetX": 0.0,
-        "offsetY": 0.0,
         "line1": "Welle 6mm",
-        "line2": "",
         "textStyle": "Regular",
         "showScrew": false,
-        "head": "socket",
-        "shaft": "machine",
-        "threads": "full",
-        "driver": "hex",
-        "flange": false,
-        "security": false,
-        "hardware": "none",
-        "surface": "Flush",
-        "textColor": ""
+        "surface": "Flush"
     }
 }
