@@ -119,3 +119,12 @@ def textEditByParameter(labelColor: str) -> bool:
     color (p120), a rebuild colors them
     """
     return labelColor == ''
+
+
+def restoresColor(labelColor: str, hasLabel: bool, isCullenect: bool) -> bool:
+    """
+    Whether a bin's state sets the dialog's color choice, see commandCreateBin.entry.applyInputsState. A bin without a
+    label to color keeps '' (see labelColorFor), that says nothing about the color, the choice in the dialog stays for
+    when the label style or tab changes (review of round 12)
+    """
+    return labelColor != '' or (hasLabel and not isCullenect)

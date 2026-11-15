@@ -1386,9 +1386,11 @@ def applyInputsState(state: InputState):
     commandUIState.setValue(BIN_COMPARTMENTS_SHOW_LAYOUT_ID, state.showCompartmentsLayout)
     commandUIState.setValue(BIN_SHAPE_CUSTOM_ID, state.hasCustomShape)
     # the way back of binLabelColor, a color of none of the named ones goes into the custom text
-    (colorChoice, customColor) = labelColors.choiceOf(state.labelColor)
-    commandUIState.setValue(BIN_TAB_LABEL_COLOR_INPUT_ID, colorChoice)
-    commandUIState.setValue(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID, customColor)
+    hasLabel = labelColors.binHasLabel(state.generateBody, state.hasTab, binBuilder.isShaped(state), state.binType == BIN_TYPE_SOLID)
+    if labelColors.restoresColor(state.labelColor, hasLabel, state.labelStyle == labelGenerator.LABEL_STYLE_CULLENECT):
+        (colorChoice, customColor) = labelColors.choiceOf(state.labelColor)
+        commandUIState.setValue(BIN_TAB_LABEL_COLOR_INPUT_ID, colorChoice)
+        commandUIState.setValue(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID, customColor)
     compartmentPockets = list(state.compartmentPockets)
     binShapeCells = list(state.shapeCells)
 

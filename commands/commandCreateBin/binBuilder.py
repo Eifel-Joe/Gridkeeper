@@ -726,6 +726,8 @@ def parameterEdits(
         return None
     if creaseLayout(oldState) != creaseLayout(state):
         return None
+    if not cullenect.parameterEditKeepsSockets(state.labelStyle == labelGenerator.LABEL_STYLE_CULLENECT, state.hasTab, changed):
+        return None
     parameters = []
     values = []
     for name in changed:

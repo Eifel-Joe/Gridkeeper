@@ -57,6 +57,8 @@ Stand 2026-11-15. Punkt p13 „Eigene Kopie mit dem Original-Generator aktuell h
   keinen Label-Parameter, ein Text-Wechsel dort baut ohnehin neu.
 - Bekannte Grenze (wie vor dem Merge): Die Anzahl Sockel-Einheiten wird beim Bau aus dem Rastermaß bestimmt; ändert
   man nur `gfBinN_baseWidth`, passt die Breite, die Einheitenzahl nicht. Ein Rebuild über den Dialog rechnet neu.
+  (Review: Upstreams Abkürzung setzte auch beim Dialog-Rebuild nur Parameter; für Cullenect-Bins mit Tab baut
+  eine Änderung von Rastermaß-Breite/-Länge jetzt neu, `cullenect.parameterEditKeepsSockets`.)
 
 ## Label-Befehl (Einleger)
 

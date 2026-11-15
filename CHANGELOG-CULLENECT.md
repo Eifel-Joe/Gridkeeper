@@ -21,6 +21,11 @@ the walls, shelled bins with rounded offsets, a clearance between baseplates glu
   parameter, so new letters get the label color too.
 - A rebuild pairs the bin bodies only, not the colored label bodies beside them, with the old ones, so the features
   after the bin keep using it.
+- A rebuild of a bin with Cullenect sockets that changes its base units builds it again, so the number of socket
+  units and the sockets of short compartments are worked out anew; setting `gfBinN_baseWidth` by hand still keeps
+  them. Rebuilding a bin without a label to color leaves the dialog's color choice as it was.
+- Known limit: colored label bodies have no tag of their own, a feature after the bin that uses one of them has to
+  pick it again after a rebuild (Fusion reports it).
 - Raised dividers follow the lower lip socket of v2.4.0.0: the feet of a stacked bin are cut out of them as low as
   out of the lip, so the ridge between two feet stays as high as the lip around it.
 - Shape test cases list only the settings that differ from the defaults, like upstream's; inserts have defaults of
