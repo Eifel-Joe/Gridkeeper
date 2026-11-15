@@ -1,7 +1,7 @@
 import adsk.core, adsk.fusion
 
-from . import const, commonUtils, combineUtils, filletUtils, sketchUtils, cullenectLabelLayout, cullenectCatalog
-from .labelGenerator import _measureText, _iconProfiles, _importIcon
+from . import const, commonUtils, combineUtils, filletUtils, sketchUtils, cullenectLabelLayout, cullenectCatalog, textStyles
+from .labelGenerator import _measureText, _iconProfiles, _importIcon, _applyStyle
 from .dim import Dim, valueInput
 
 # Insert for the Cullenect label system, after cullenect_base_v2 and cullenect_label_generate in Cullenect.scad by
@@ -25,7 +25,8 @@ class CullenectLabelInput():
         self.iconPath: str | None = None
         self.isScrew: bool = False
         self.surface: str = SURFACE_EMBOSSED
-        self.isBold: bool = False
+        # one of textStyles.STYLES, Heavy (Arial Black) prints with a 0.4 mm nozzle (p130)
+        self.textStyle: str = textStyles.DEFAULT_INSERT_STYLE
 
 
 def _offsetPlane(offset: float, targetComponent: adsk.fusion.Component, name: str) -> adsk.fusion.ConstructionPlane:
@@ -105,16 +106,15 @@ def _fixSketch(sketch: adsk.fusion.Sketch):
                 point.isFixed = True
 
 
-def _addLineText(sketch: adsk.fusion.Sketch, text: str, height: float, baseline: adsk.fusion.SketchLine, isBold: bool) -> adsk.fusion.SketchText:
+def _addLineText(sketch: adsk.fusion.Sketch, text: str, height: float, baseline: adsk.fusion.SketchLine, style: str) -> adsk.fusion.SketchText:
     """Text standing on the baseline from its start, on one line however long it gets, see _texts"""
     textInput = sketch.sketchTexts.createInput2(text, height)
     textInput.setAsAlongPath(baseline, True, adsk.core.HorizontalAlignments.LeftHorizontalAlignment, 0)
-    if isBold:
-        textInput.textStyle = adsk.fusion.TextStyles.TextStyleBold
+    _applyStyle(textInput, style)
     return sketch.sketchTexts.add(textInput)
 
 
-def _texts(sketch: adsk.fusion.Sketch, layout: cullenectLabelLayout.LabelLayout, lines: list[str], textParameters: list, isBold: bool, withTwins: bool, timer: commonUtils.StepTimer) -> tuple[list, list]:
+def _texts(sketch: adsk.fusion.Sketch, layout: cullenectLabelLayout.LabelLayout, lines: list[str], textParameters: list, style: str, withTwins: bool, timer: commonUtils.StepTimer) -> tuple[list, list]:
     """The text lines at the left, each shrunk to fit in front of the symbol, as live text driven by its text parameter
     so it can be edited later, and with twins a second text on top of each, driven by the same parameter. Each line
     stands on a fixed baseline; Fusion may not report a sketch with live text as fully constrained, the one exception Nutzer allowed
@@ -126,8 +126,11 @@ def _texts(sketch: adsk.fusion.Sketch, layout: cullenectLabelLayout.LabelLayout,
     texts = []
     twins = []
     for (index, (text, lineHeight, center)) in enumerate(zip(lines, layout.lineHeights, layout.lineCenters)):
-        measured = _measureText(sketch, text, lineHeight, isBold)
+        # measured in its own font: Arial Black runs ~20 % wider than Arial and is fitted by that
+        measured = _measureText(sketch, text, lineHeight, style)
         textHeight = cullenectLabelLayout.fittedLineHeight(lineHeight, measured[0] if measured is not None else 0, available)
+        # a long text shrinks to fit, the command hints at it when it gets too thin to print (p130)
+        textStyles.noteText(text, style, textHeight)
         # Each line stands on a line of its own instead of in a box (p84, p70): Fusion breaks text in a box where it
         # takes it for longer than the box, by the advance of the letters, wider than their outlines that were
         # measured. the user's "Welle 6mm", fitted to exactly 34 mm, came out as two lines hanging off the insert, and a
@@ -142,7 +145,7 @@ def _texts(sketch: adsk.fusion.Sketch, layout: cullenectLabelLayout.LabelLayout,
         # fixed before the text goes on it: fixing a path that carries text leaves the text invalid for an extrusion
         # ("invalid input argument", tried in Fusion 14.11.2026), see _fixSketch
         baseline.isFixed = True
-        lineTexts = [_addLineText(sketch, text, textHeight, baseline, isBold) for _ in range(2 if withTwins else 1)]
+        lineTexts = [_addLineText(sketch, text, textHeight, baseline, style) for _ in range(2 if withTwins else 1)]
         if index < len(textParameters) and textParameters[index] is not None:
             for sketchText in lineTexts:
                 sketchText.textParameter.expression = textParameters[index].name
@@ -208,7 +211,7 @@ def createCullenectLabel(
     if len(lines) > 0:
         textSketch: adsk.fusion.Sketch = targetComponent.sketches.add(plane)
         textSketch.name = f'{name} text sketch'
-        (texts, twins) = _texts(textSketch, layout, lines, input.textParameters, input.isBold, not isEmbossed, timer)
+        (texts, twins) = _texts(textSketch, layout, lines, input.textParameters, input.textStyle, not isEmbossed, timer)
         if len(texts) > 0:
             if not isEmbossed:
                 # cut by the twin texts, not by the bodies of the filling: a combine takes the letter bodies there
