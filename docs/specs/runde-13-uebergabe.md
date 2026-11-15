@@ -19,8 +19,7 @@ Cullenect-Tasche setzen“, p100 „Label-Befehl legt den Einleger am Nullpunkt 
 ## Offen
 
 - Dialoge: Nutzer hat Fusion am 15.11. neu gestartet und gemeldet: „Ja, alle drei öffnen“ (Bin, Baseplate, Label).
-- **Nicht per API prüfbar:** Wandert ein eingesetzter Einleger mit, wenn Nutzer die Bin von Hand verschiebt? Das gehört in
-  den Handtest.
+- Handtest: Nutzer am 15.11.: „Einleger wandert mit, Handtest ok“.
 - Neuer Punkt in der Liste: p170 „Joint Origins an Bin-Füßen und Grundplatten-Aufnahmen folgen geänderten Rastermaßen
   nicht“ (Upstream-Fehler, Referenzmaße statt steuernder Maße).
 
