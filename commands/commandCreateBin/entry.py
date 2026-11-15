@@ -15,6 +15,7 @@ from ...lib.gridfinityUtils import const
 from ...lib.gridfinityUtils import sharedParameters
 from ...lib.gridfinityUtils import labelGenerator
 from ...lib.gridfinityUtils import labelColors
+from ...lib.gridfinityUtils import textStyles
 from ...lib.gridfinityUtils import cullenect
 from ...lib.gridfinityUtils.binBodyTabGenerator import tabFilletAllowance
 from ...lib.gridfinityUtils import compartmentLayout
@@ -978,7 +979,11 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
 # is immediately called after the created event not command inputs were created for the dialog.
 def command_execute(args: adsk.core.CommandEventArgs):
     futil.log(f'{CMD_NAME} Command Execute Event')
-    generateBin(args)
+    if generateBin(args):
+        # a label text fitted so small that a 0.4 mm nozzle leaves parts out (p130)
+        hint = textStyles.hintText(textStyles.notes(), suggestHeavy=False)
+        if hint is not None:
+            ui.messageBox(hint, CMD_NAME)
 
 # This event handler is called when the command needs to compute a new preview in the graphics window.
 def command_preview(args: adsk.core.CommandEventArgs):
@@ -998,7 +1003,7 @@ def command_preview(args: adsk.core.CommandEventArgs):
         args.executeFailedMessage = "Some inputs are invalid, unable to generate preview"
 
 def showPreviewTime(inputs: adsk.core.CommandInputs, seconds: float, isValid: bool):
-    inputs.itemById(PREVIEW_TIME_INPUT).text = f'{seconds:.2f} s' if isValid else f'failed after {seconds:.2f} s'
+    inputs.itemById(PREVIEW_TIME_INPUT).text = f'{seconds:.2f} s{textStyles.previewNote(textStyles.notes())}' if isValid else f'failed after {seconds:.2f} s'
 
 def command_input_changed(args: adsk.core.InputChangedEventArgs):
     changed_input = args.input
@@ -1282,6 +1287,8 @@ def generateBin(args: adsk.core.CommandEventArgs):
     # the settings come first, so a failing build can be reproduced from the log
     commonUtils.fileLog(f'{CMD_NAME} generating with settings:\n{settingsUtils.settingsText(settings)}')
     state = getInputsState()
+    # notes of an earlier build, a preview or a failed one, are not this one's
+    textStyles.clearNotes()
 
     try:
         des = adsk.fusion.Design.cast(app.activeProduct)
