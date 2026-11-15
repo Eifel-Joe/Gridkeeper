@@ -1,0 +1,21 @@
+{
+    "baseWidth": 42.0,
+    "useUnits": true,
+    "widthUnits": 1,
+    "freeWidth": 25.0,
+    "offsetX": 0.0,
+    "offsetY": 0.0,
+    "line1": "M3x10",
+    "line2": "",
+    "textStyle": "Regular",
+    "showScrew": true,
+    "head": "socket",
+    "shaft": "machine",
+    "threads": "full",
+    "driver": "hex",
+    "flange": false,
+    "security": false,
+    "hardware": "none",
+    "surface": "Embossed",
+    "textColor": ""
+}
