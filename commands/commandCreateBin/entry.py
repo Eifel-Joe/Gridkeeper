@@ -1205,13 +1205,6 @@ def pageHandlers(browserId: str, command: adsk.core.Command) -> dict[str, browse
 def command_destroy(args: adsk.core.CommandEventArgs):
     # General logging for debug.
     futil.log(f'{CMD_NAME} Command Destroy Event "{args.terminationReason}"')
-    if args.terminationReason == adsk.core.CommandTerminationReason.CompletedTerminationReason:
-        # A label text fitted so small that a 0.4 mm nozzle leaves parts out (p130). Told here and not on execute: a
-        # valid preview is kept on OK (isValidResult) and execute doesn't run then. The notes are those of the last
-        # build, the preview kept or the execute
-        hint = textStyles.hintText(textStyles.notes(), suggestHeavy=False)
-        if hint is not None:
-            ui.messageBox(hint, CMD_NAME)
     global local_handlers
     global rebuildBodyToken
     local_handlers = []
@@ -1227,6 +1220,13 @@ def command_destroy(args: adsk.core.CommandEventArgs):
                 adsk.core.MessageBoxButtonTypes.OKButtonType,
                 adsk.core.MessageBoxIconTypes.WarningIconType,
             )
+        # A label text fitted so small that a 0.4 mm nozzle leaves parts out (p130). Told here and not on execute: a
+        # valid preview is kept on OK (isValidResult) and execute doesn't run then. The notes are those of the last
+        # build, the preview kept or the execute. After the warning of a rebuild, which asks for action. A rebuild
+        # that only sets the label's text parameter builds no label and notes nothing, see binBuilder.parameterEdits
+        hint = textStyles.hintText(textStyles.notes(), suggestHeavy=False)
+        if hint is not None:
+            ui.messageBox(hint, CMD_NAME)
 
 def onChangeValidate():
     global commandUIState
@@ -1478,9 +1478,12 @@ def generateBin(args: adsk.core.CommandEventArgs, isPreview: bool):
     except UnsupportedDesignTypeException as err:
         args.executeFailed = True
         args.executeFailedMessage = 'Design type is unsupported. Projects with disabled design history are unsupported, please enable timeline feature to proceed.'
+        # a failed build has no label to hint at, like rebuildNotes it only keeps what a build that went through noted
+        textStyles.clearNotes()
         return False
     except Exception as err:
         args.executeFailed = True
+        textStyles.clearNotes()
         args.executeFailedMessage = f'{html.escape(errorReport.errorMessage(err))}<br>See the {errorPalette.PALETTE_TITLE} panel to copy a report of it'
         commonUtils.fileLog(f'{CMD_NAME} Error occurred, {err}, {getErrorMessage()}')
         errorPalette.show(f'{CMD_NAME} failed', err, reportConfig(state), buildWorkflow(isPreview), rebuiltConfig())
