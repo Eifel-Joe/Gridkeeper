@@ -979,11 +979,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
 # is immediately called after the created event not command inputs were created for the dialog.
 def command_execute(args: adsk.core.CommandEventArgs):
     futil.log(f'{CMD_NAME} Command Execute Event')
-    if generateBin(args):
-        # a label text fitted so small that a 0.4 mm nozzle leaves parts out (p130)
-        hint = textStyles.hintText(textStyles.notes(), suggestHeavy=False)
-        if hint is not None:
-            ui.messageBox(hint, CMD_NAME)
+    generateBin(args)
 
 # This event handler is called when the command needs to compute a new preview in the graphics window.
 def command_preview(args: adsk.core.CommandEventArgs):
@@ -1109,6 +1105,13 @@ def pageHandlers(browserId: str, command: adsk.core.Command) -> dict[str, browse
 def command_destroy(args: adsk.core.CommandEventArgs):
     # General logging for debug.
     futil.log(f'{CMD_NAME} Command Destroy Event "{args.terminationReason}"')
+    if args.terminationReason == adsk.core.CommandTerminationReason.CompletedTerminationReason:
+        # A label text fitted so small that a 0.4 mm nozzle leaves parts out (p130). Told here and not on execute: a
+        # valid preview is kept on OK (isValidResult) and execute doesn't run then. The notes are those of the last
+        # build, the preview kept or the execute
+        hint = textStyles.hintText(textStyles.notes(), suggestHeavy=False)
+        if hint is not None:
+            ui.messageBox(hint, CMD_NAME)
     global local_handlers
     local_handlers = []
 

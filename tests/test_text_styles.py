@@ -102,3 +102,16 @@ def test_hint_text_for_a_bin_label_offers_no_heavy_style():
         '"Schrauben M4": 3.5 mm high, stroke about 0.58 mm. Below 0.6 mm a 0.4 mm nozzle leaves parts out: '
         'shorten the text or make it wider.'
     )
+
+
+def test_hint_text_names_a_repeated_text_once():
+    # a bin labels each compartment, the same text on all of them is one sentence
+    hint = styles.hintText([('Schrauben M4', 0.35, 0.058)] * 8, suggestHeavy=False)
+    assert hint.count('"Schrauben M4"') == 1
+
+
+def test_note_threshold():
+    # Heavy at 0.279 cm text height is just below 0.6 mm stroke, at 0.28 cm just above
+    styles.noteText('a', 'Heavy', 0.279)
+    styles.noteText('b', 'Heavy', 0.28)
+    assert [text for (text, _, _) in styles.notes()] == ['a']
