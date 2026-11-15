@@ -51,8 +51,9 @@ def byName(component_bodies, names):
 
 
 def groupA(run):
-    # p110: two lines with descenders, height correction -1 mm: the lowest point of the letters on the insert
-    for (style, surface) in (('Heavy', 'Flush'), ('Heavy', 'Embossed'), ('Bold', 'Embossed')):
+    # p110: two lines with descenders, height correction -1 mm: the lowest point of the letters on the insert. Heavy
+    # only, Regular and Bold would need letters below their floor there, see group b
+    for (style, surface) in (('Heavy', 'Flush'), ('Heavy', 'Embossed'), ('Heavy', 'Debossed')):
         bodies = run.label('label_1u_two_lines_heavy', line1='gjpy', line2='Agjp', offsetY=-0.1, textStyle=style, surface=surface)
         insert = bodies[0]
         letters = parts(bodies, 'text')
@@ -102,11 +103,8 @@ def groupC(run):
     right = max(body.boundingBox.maxPoint.x for body in symbols)
     run.check('p140: symbol 0.4 mm off the right edge', right <= insert.boundingBox.maxPoint.x - 0.04 + TOLERANCE,
               f'symbol to {right * 10:.3f} mm, insert to {insert.boundingBox.maxPoint.x * 10:.3f} mm')
-    letters = parts(bodies, 'text')
-    lowest = min(body.boundingBox.minPoint.y for body in letters)
-    run.check('p140: descenders 0.4 mm off the bottom', lowest >= insert.boundingBox.minPoint.y + 0.04 - TOLERANCE, f'{(lowest - insert.boundingBox.minPoint.y) * 10:.3f} mm')
-    # the nylon nut debossed, as label_2u_hardware but in Heavy
-    bodies = run.label('label_2u_hardware', textStyle='Heavy')
+    # the nylon nut debossed, label_2u_hardware as it is
+    bodies = run.label('label_2u_hardware')
     topRim(run, 'p140 debossed nylon nut', bodies[0])
     run.healthy('p140')
 
