@@ -195,8 +195,10 @@ def createCullenectLabel(
     latchTop = const.CULLENECT_LATCH_BOTTOM + const.CULLENECT_LATCH_HEIGHT
 
     lines = [line for line in input.lines if len(line.strip()) > 0]
-    size = cullenectLabelLayout.iconSize(input.iconPath, width.value, height, input.isScrew) if input.iconPath is not None else None
-    layout = cullenectLabelLayout.labelLayout(width.value, height, size, input.isScrew, len(lines), input.textStyle)
+    # debossed, symbol and descenders keep off the rim over the latch (round 17, p140)
+    rim = cullenectLabelLayout.DEBOSS_RIM if input.surface == SURFACE_DEBOSSED else 0
+    size = cullenectLabelLayout.iconSize(input.iconPath, width.value, height, input.isScrew, rim) if input.iconPath is not None else None
+    layout = cullenectLabelLayout.labelLayout(width.value, height, size, input.isScrew, len(lines), input.textStyle, rim)
     problem = cullenectLabelLayout.layoutProblem(layout)
     if problem is not None:
         raise ValueError(problem)

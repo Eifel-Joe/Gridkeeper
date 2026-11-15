@@ -19,6 +19,11 @@ MIN_HEIGHT = 0.5
 MIN_TEXT_SPACE = 0.3
 # largest correction of width and height, like a printer is off
 MAX_OFFSET = 0.1
+# Round 17, p140: debossed text and symbol are cut 0.4 mm deep, the whole top layer. Reaching the edge they cut the
+# rim over the latch through, the 0.2 mm the top layer stands over it, and the insert no longer holds. Debossed they
+# keep this far from the edge: the overhang and one line of a 0.4 mm nozzle over the latch. Flush and embossed don't
+# cut the rim and stay as they are
+DEBOSS_RIM = const.CULLENECT_LATCH_INSET + 0.02
 
 
 @dataclass
@@ -96,7 +101,9 @@ def labelLayout(
     textMaxX = width - const.CULLENECT_TEXT_MARGIN
     if iconSize is not None:
         (iconWidth, iconHeight) = iconSize
-        iconMaxX = width if isScrew else width - max(0, (height - iconHeight) / 2)
+        # a screw ends at the right edge, debossed at the rim; other symbols keep a margin like their gap to top and
+        # bottom, which is at least the rim as they fit between the rims, see iconSize
+        iconMaxX = width - rim if isScrew else width - max(0, (height - iconHeight) / 2)
         textMaxX = iconMaxX - iconWidth - const.CULLENECT_ICON_GAP
     middle = height / 2
     if lineCount == 1:
@@ -125,14 +132,15 @@ def labelLayout(
     )
 
 
-def iconSize(iconPath: str, width: float, height: float, isScrew: bool = True) -> tuple[float, float]:
+def iconSize(iconPath: str, width: float, height: float, isScrew: bool = True, rim: float = 0) -> tuple[float, float]:
     """Size of the symbol on the insert, as large as its svg says like in Cullenect, scaled down to fit the height of
     the insert and its width. A screw ends at the right edge and keeps the margin at the left, other symbols keep the
-    right margin of their gap to top and bottom too, which grows as they get smaller, see labelLayout"""
+    right margin of their gap to top and bottom too, which grows as they get smaller, see labelLayout. Debossed they stay
+    `rim` off the edges, see DEBOSS_RIM"""
     (widthMm, heightMm) = cullenectCatalog.svgSize(iconPath)
     (iconWidth, iconHeight) = (widthMm / 10, heightMm / 10)
     margin = const.CULLENECT_TEXT_MARGIN
-    scale = min(1, height / iconHeight, (width - margin) / iconWidth)
+    scale = min(1, (height - 2 * rim) / iconHeight, (width - rim - margin) / iconWidth)
     if not isScrew and iconWidth > iconHeight / 2:
         # width - (height - scale * iconHeight) / 2 - scale * iconWidth >= margin
         scale = min(scale, (width - margin - height / 2) / (iconWidth - iconHeight / 2))
@@ -219,6 +227,7 @@ def insertProblem(
     offsetX: float,
     offsetY: float,
     textStyle: str = textStyles.DEFAULT_INSERT_STYLE,
+    isDebossed: bool = False,
 ) -> str | None:
     """Why the dialog can't build the insert, none if it can. `isSymbolMissing`: a symbol was chosen but has no svg"""
     if abs(offsetX) > MAX_OFFSET + 1e-9 or abs(offsetY) > MAX_OFFSET + 1e-9:
@@ -227,8 +236,9 @@ def insertProblem(
         return f'An insert is {MIN_WIDTH * 10:g} to {MAX_WIDTH * 10:g} mm wide'
     if isSymbolMissing:
         return 'No svg for this symbol, see tools/cullenectIcons.py and tools/setScrewIcons.py'
-    size = iconSize(iconPath, width, height, isScrew) if iconPath is not None else None
-    return layoutProblem(labelLayout(width, height, size, isScrew, lineCount, textStyle))
+    rim = DEBOSS_RIM if isDebossed else 0
+    size = iconSize(iconPath, width, height, isScrew, rim) if iconPath is not None else None
+    return layoutProblem(labelLayout(width, height, size, isScrew, lineCount, textStyle, rim))
 
 
 # --- an insert jointed into a pocket of a bin (round 13, p100, p160)

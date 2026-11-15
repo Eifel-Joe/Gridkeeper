@@ -68,7 +68,7 @@ def labelProblem(state: InputState) -> str | None:
     (width, height) = labelSize(state)
     (iconPath, isScrew) = labelSymbol(state)
     isSymbolMissing = iconPath is None and (state.showScrew or state.hardware != NO_HARDWARE)
-    return cullenectLabelLayout.insertProblem(width, height, iconPath, isScrew, isSymbolMissing, len(labelLines(state)), state.offsetX, state.offsetY, state.textStyle)
+    return cullenectLabelLayout.insertProblem(width, height, iconPath, isScrew, isSymbolMissing, len(labelLines(state)), state.offsetX, state.offsetY, state.textStyle, state.surface == cullenectLabelGenerator.SURFACE_DEBOSSED)
 
 # the joint origin at the middle of the insert's bottom, see cullenect.pocketJointOriginName for the pockets' (p160)
 INSERT_JOINT_ORIGIN = 'Insert joint origin'

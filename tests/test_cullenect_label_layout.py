@@ -363,3 +363,55 @@ class TestDescenders:
     def test_insert_problem_reports_the_floor(self):
         assert 'Two lines' in layout.insertProblem(3.6, 1.0, None, False, False, 2, 0, -0.1, textStyle='Regular')
         assert layout.insertProblem(3.6, 1.0, None, False, False, 2, 0, -0.1, textStyle='Heavy') is None
+
+
+RIM = 0.04
+
+
+class TestDebossedRim:
+    # round 17, p140: set in 0.4 mm, as deep as the whole top layer, a symbol or descender reaching the edge cut the rim
+    # over the latch through. Debossed they keep 0.4 mm from the edge, the 0.2 mm overhang and a nozzle line with it
+    def test_the_rim_is_the_overhang_and_a_nozzle_line(self):
+        assert layout.DEBOSS_RIM == approx(0.04)
+
+    def test_debossed_screw_keeps_the_rim(self, tmp_path):
+        size = layout.iconSize(_svg(tmp_path, 14.56, 11), 2.5, 1.1, True, rim=RIM)
+        assert size[1] <= 1.1 - 2 * RIM + 1e-9
+        result = layout.labelLayout(2.5, 1.1, size, True, 1, rim=RIM)
+        assert result.iconMaxX == approx(2.5 - RIM)
+        assert result.iconCenterY - size[1] / 2 >= RIM - 1e-9
+
+    def test_debossed_hardware_keeps_the_rim(self, tmp_path):
+        size = layout.iconSize(_svg(tmp_path, 12, 12), 3.6, 1.1, False, rim=RIM)
+        assert size[1] <= 1.1 - 2 * RIM + 1e-9
+        result = layout.labelLayout(3.6, 1.1, size, False, 1, rim=RIM)
+        assert result.iconMaxX <= 3.6 - RIM + 1e-9
+
+    def test_a_narrow_debossed_screw_keeps_the_rim(self, tmp_path):
+        size = layout.iconSize(_svg(tmp_path, 14.56, 10), 1.0, 1.1, True, rim=RIM)
+        result = layout.labelLayout(1.0, 1.1, size, True, 0, rim=RIM)
+        assert result.iconMaxX == approx(1.0 - RIM)
+        assert result.iconMaxX - size[0] >= 0.1 - 1e-9
+
+    def test_flush_and_embossed_keep_the_symbol_size(self, tmp_path):
+        path = _svg(tmp_path, 14.56, 11)
+        assert layout.iconSize(path, 2.5, 1.1, True) == approx((1.456, 1.1))
+        assert layout.labelLayout(2.5, 1.1, (1.456, 1.1), True, 1).iconMaxX == approx(2.5)
+
+    def test_debossed_descenders_keep_the_rim(self):
+        # Hauptsitzung 15.11.2026: the descenders are the same cut on a sister path, they keep the same rim
+        result = layout.labelLayout(3.6, 1.1, None, False, 2, 'Heavy', rim=RIM)
+        assert _lowestDescender(result) >= RIM - 1e-9
+        assert result.lineHeights[0] < 0.35
+
+    def test_debossed_heavy_with_minus_1mm_is_reported(self):
+        assert 'Two lines' in layout.insertProblem(3.6, 1.0, None, False, False, 2, 0, -0.1, textStyle='Heavy', isDebossed=True)
+
+    def test_debossed_two_lines_of_heavy_fit_without_correction(self):
+        result = layout.labelLayout(3.6, 1.1, None, False, 2, 'Heavy', rim=RIM)
+        assert layout.layoutProblem(result) is None
+
+    @pytest.mark.parametrize('style', ['Regular', 'Bold'])
+    def test_debossed_two_thin_lines_are_reported(self, style):
+        # their descenders would need letters below the least height of the style
+        assert 'Two lines' in layout.insertProblem(3.6, 1.1, None, False, False, 2, 0, 0, textStyle=style, isDebossed=True)
