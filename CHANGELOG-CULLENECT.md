@@ -30,7 +30,8 @@ the walls, shelled bins with rounded offsets, a clearance between baseplates glu
   out of the lip, so the ridge between two feet stays as high as the lip around it.
 - Shape test cases list only the settings that differ from the defaults, like upstream's; inserts have defaults of
   their own (`lib/defaultSettings.py`, `LABEL`). The text style of an insert (Heavy by default, round 11) is one of its
-  settings there; bin labels keep their bold switch, which the label generator turns into Regular or Bold.
+  settings there; bin labels keep their bold switch, which the label generator turns into Regular or Bold. A rebuild that only sets a bin label's text parameter gives no
+  thin-text hint, it builds no label; a failed build gives none either.
 
 ### Added
 
