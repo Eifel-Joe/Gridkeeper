@@ -75,10 +75,15 @@ def notes() -> list[tuple[str, float, float]]:
     return list(_notes)
 
 
-def hintText(noted: list[tuple[str, float, float]]) -> str | None:
-    """What the command tells about thin text, none without any"""
+def hintText(noted: list[tuple[str, float, float]], suggestHeavy: bool = True) -> str | None:
+    """What the command tells about thin text, none without any. suggestHeavy: the dialog offers the Heavy style"""
     if len(noted) == 0:
         return None
     lines = ' '.join(f'"{text}": {height * 10:.1f} mm high, stroke about {stroke * 10:.2f} mm.' for (text, height, stroke) in noted)
-    return (f'{lines} Below {MIN_STROKE * 10:g} mm a 0.4 mm nozzle leaves parts out: '
-        'shorten the text, make it wider or use the Heavy style.')
+    remedy = 'shorten the text, make it wider or use the Heavy style' if suggestHeavy else 'shorten the text or make it wider'
+    return f'{lines} Below {MIN_STROKE * 10:g} mm a 0.4 mm nozzle leaves parts out: {remedy}.'
+
+
+def previewNote(noted: list[tuple[str, float, float]]) -> str:
+    """Added to the preview time, a preview shows no message box"""
+    return f', text thinner than {MIN_STROKE * 10:g} mm' if len(noted) > 0 else ''

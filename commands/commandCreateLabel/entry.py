@@ -339,8 +339,14 @@ def command_execute(args: adsk.core.CommandEventArgs):
     futil.log(f'{CMD_NAME} Command Execute Event')
     des = adsk.fusion.Design.cast(app.activeProduct)
     wasPart = des is not None and des.designIntent == adsk.fusion.DesignIntentTypes.PartDesignIntentType
-    if generateLabel(args) is not False and wasPart and des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
+    if generateLabel(args) is False:
+        return
+    if wasPart and des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
         ui.messageBox(HYBRID_SWITCH_MESSAGE, CMD_NAME)
+    # text fitted so small that a 0.4 mm nozzle leaves parts out (p130)
+    hint = textStyles.hintText(textStyles.notes())
+    if hint is not None:
+        ui.messageBox(hint, CMD_NAME)
 
 def command_preview(args: adsk.core.CommandEventArgs):
     futil.log(f'{CMD_NAME} Command Preview Event')
@@ -351,7 +357,7 @@ def command_preview(args: adsk.core.CommandEventArgs):
             # a preview leaves a part design as it is, only OK switches it to hybrid
             isGenerated = generateLabel(args, mayChangeDocument=False) is not False
             seconds = time.perf_counter() - startTime
-            inputs.itemById(PREVIEW_TIME_INPUT).text = f'{seconds:.2f} s' if isGenerated else f'failed after {seconds:.2f} s'
+            inputs.itemById(PREVIEW_TIME_INPUT).text = f'{seconds:.2f} s{textStyles.previewNote(textStyles.notes())}' if isGenerated else f'failed after {seconds:.2f} s'
         else:
             args.executeFailed = True
             args.executeFailedMessage = "Some inputs are invalid, unable to generate preview"
@@ -405,6 +411,8 @@ def generateLabel(args: adsk.core.CommandEventArgs, mayChangeDocument: bool = Tr
     settings = snapshotSettings(args.command.commandInputs)
     commonUtils.fileLog(f'{CMD_NAME} Generating label with settings:\n{settingsUtils.settingsText(settings)}')
     state = getInputsState()
+    # notes of an earlier build, a preview or a failed one, are not this one's
+    textStyles.clearNotes()
     try:
         des = adsk.fusion.Design.cast(app.activeProduct)
         buildLabel(des, state, settings, mayChangeDocument)

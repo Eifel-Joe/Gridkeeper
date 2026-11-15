@@ -88,3 +88,17 @@ def test_hint_text_of_two_lines():
 
 def test_no_hint_without_notes():
     assert styles.hintText([]) is None
+
+
+def test_preview_note():
+    # shown after the preview time instead of a message box
+    assert styles.previewNote([]) == ''
+    assert styles.previewNote([('Hex key', 0.2, 0.022)]) == ', text thinner than 0.6 mm'
+
+
+def test_hint_text_for_a_bin_label_offers_no_heavy_style():
+    # the bin dialog only has a bold switch
+    assert styles.hintText([('Schrauben M4', 0.35, 0.058)], suggestHeavy=False) == (
+        '"Schrauben M4": 3.5 mm high, stroke about 0.58 mm. Below 0.6 mm a 0.4 mm nozzle leaves parts out: '
+        'shorten the text or make it wider.'
+    )
