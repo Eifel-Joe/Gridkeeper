@@ -40,7 +40,7 @@ def test_screw_wrapper_flange_and_security():
 def test_hardware_wrapper():
     scad = tool.wrapperScad('hardware', 'crimp_fork_open')
     assert 'use <Cullenect.scad>' in scad
-    assert 'cullenect_hardware("crimp_fork_open")' in scad
+    assert 'cullenect_hardware("crimp_fork_open", $fa = 12, $fs = 0.2)' in scad
     assert 'projection(' in scad
 
 
@@ -110,3 +110,43 @@ def test_render_reports_errors_instead_of_raising(tmp_path):
     job = ('screw', ('socket', 'machine', 'full', 'hex', False, False), str(tmp_path / 'a.svg'))
     error = tool.render(str(tmp_path / 'no-such-openscad.exe'), job, str(tmp_path))
     assert error is not None and 'a.svg' in error
+
+
+# --- round 17, p51: coarser hardware symbols, within 0.05 mm of the fine ones
+
+import math
+
+import pytest
+
+
+def _circleSegments(radius, count):
+    points = [(radius * math.cos(2 * math.pi * i / count), radius * math.sin(2 * math.pi * i / count)) for i in range(count)]
+    return [(*a, *b) for (a, b) in zip(points, points[1:] + points[:1])]
+
+
+def test_deviation_of_a_coarse_circle():
+    deviation = tool.contourDeviation(_circleSegments(5, 360), _circleSegments(5, 30))
+    assert deviation == pytest.approx(5 * (1 - math.cos(math.radians(6))), abs=1e-6)
+
+
+def test_identical_contours_have_no_deviation():
+    assert tool.contourDeviation(_circleSegments(5, 60), _circleSegments(5, 60)) == pytest.approx(0, abs=1e-9)
+
+
+def test_svg_segments_close_each_loop():
+    svg = '<svg><path d="\nM 0,0 L 1,0 L 1,1\n z\nM 2,2 L 3,2 L 3,3\n z\n"/></svg>'
+    assert tool.svgSegments(svg) == [
+        (0, 0, 1, 0), (1, 0, 1, 1), (1, 1, 0, 0),
+        (2, 2, 3, 2), (3, 2, 3, 3), (3, 3, 2, 2),
+    ]
+
+
+def test_wrapper_uses_the_resolution_of_its_kind():
+    assert tool.HARDWARE_RESOLUTION in tool.wrapperScad('hardware', 'nut_nylon')
+    assert tool.SCREW_RESOLUTION in tool.wrapperScad('screw', ('socket', 'machine', 'full', 'hex', False, False))
+    assert tool.HARDWARE_RESOLUTION != tool.SCREW_RESOLUTION
+
+
+def test_screws_keep_their_resolution():
+    # only the hardware symbols are rendered anew (Hauptsitzung 15.11.2026), the screws stay as they were made
+    assert tool.SCREW_RESOLUTION == '$fa = 3; $fs = 0.1;'

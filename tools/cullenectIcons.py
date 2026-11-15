@@ -13,6 +13,7 @@ cullenect_label_generate. Existing svgs are kept unless --force is given.
 import argparse
 import concurrent.futures
 import importlib.util
+import math
 import os
 import re
 import shutil
@@ -27,9 +28,15 @@ CULLENECT_FOLDER = os.path.join(TOOLS_FOLDER, 'cullenect')
 ICONS_FOLDER = os.path.join(PROJECT_ROOT, 'lib', 'gridfinityUtils', 'cullenectIcons')
 LABEL_ICONS_FOLDER = os.path.join(PROJECT_ROOT, 'lib', 'gridfinityUtils', 'labelIcons')
 
-# Cullenect.scad sets $fs and $fa in its own top level, which `use` does not run: coarser than the
-# 0.01 mm of the original, a symbol is only about 15 mm wide
-RESOLUTION = '$fa = 3; $fs = 0.1;'
+# Set at the top of the wrapper for the screws. It doesn't reach into Cullenect's modules, whose own top level
+# ($fa = 1, $fs = 0.01) wins there (found in round 17): the screws are drawn as fine as in the original. They keep their
+# files (Hauptsitzung 15.11.2026), so this line stays as it was
+SCREW_RESOLUTION = '$fa = 3; $fs = 0.1;'
+# Round 17, p51: a hardware symbol of a thousand points took 15 s to import into an insert, a sketch point costs time.
+# Passed to the module call, which overrides Cullenect's own setting inside it: coarser circles, the contour within
+# MAX_DEVIATION of the fine one, which a 0.4 mm nozzle doesn't show (Joerg 15.11.2026), checked with --compare
+HARDWARE_RESOLUTION = '$fa = 12, $fs = 0.2'
+MAX_DEVIATION = 0.05
 
 
 def _loadCatalog():
@@ -46,7 +53,7 @@ catalog = _loadCatalog()
 def wrapperScad(kind: str, combination) -> str:
     """The .scad text rendering one symbol: kind 'screw' with (head, shaft, threads, driver, flange, security)
     or kind 'hardware' with the Cullenect key"""
-    lines = ['use <Cullenect.scad>', RESOLUTION]
+    lines = ['use <Cullenect.scad>'] + ([SCREW_RESOLUTION] if kind == 'screw' else [])
     if kind == 'screw':
         (head, shaft, threads, driver, flange, security) = combination
         lines += [
@@ -61,7 +68,7 @@ def wrapperScad(kind: str, combination) -> str:
             lines.append('    cullenect_driver(driver="security");')
         lines.append('}')
     elif kind == 'hardware':
-        lines += ['projection(cut = false) {', f'    cullenect_hardware("{combination}");', '}']
+        lines += ['projection(cut = false) {', f'    cullenect_hardware("{combination}", {HARDWARE_RESOLUTION});', '}']
     else:
         raise ValueError(f'Unknown symbol kind {kind}')
     return '\n'.join(lines) + '\n'
@@ -94,6 +101,48 @@ def tightenSvg(svg: str) -> str:
     if count != 1:
         raise ValueError('The svg header is not the one OpenSCAD writes')
     return tight
+
+
+_POINT = r'(-?[\d.]+(?:e-?\d+)?),(-?[\d.]+(?:e-?\d+)?)'
+
+
+def svgSegments(svg: str) -> list[tuple[float, float, float, float]]:
+    """The straight segments of the path loops OpenSCAD writes (M x,y L x,y ... z), each loop closed"""
+    segments = []
+    for loop in re.findall(r'M[^Mz]*z', svg):
+        points = [(float(x), float(y)) for (x, y) in re.findall(_POINT, loop)]
+        segments += [(*a, *b) for (a, b) in zip(points, points[1:] + points[:1]) if a != b]
+    return segments
+
+
+def _pointToSegment(x: float, y: float, segment: tuple[float, float, float, float]) -> float:
+    (x1, y1, x2, y2) = segment
+    (dx, dy) = (x2 - x1, y2 - y1)
+    lengthSquared = dx * dx + dy * dy
+    t = 0 if lengthSquared == 0 else max(0, min(1, ((x - x1) * dx + (y - y1) * dy) / lengthSquared))
+    return math.hypot(x - x1 - t * dx, y - y1 - t * dy)
+
+
+def _oneWay(a, b) -> float:
+    """Largest distance of a point of contour a to contour b"""
+    return max(min(_pointToSegment(x, y, segment) for segment in b) for (x, y, _, _) in a)
+
+
+def contourDeviation(a, b) -> float:
+    """How far two contours of segments are apart at most, from the points of either to the other"""
+    return max(_oneWay(a, b), _oneWay(b, a))
+
+
+def compare(oldFolder: str, newFolder: str) -> list[tuple[str, int, int, float]]:
+    """(name, old points, new points, deviation in mm) of each hardware symbol in both folders"""
+    rows = []
+    for key in catalog.CULLENECT_HARDWARE:
+        paths = [os.path.join(folder, catalog.HARDWARE_FOLDER, f'{key}.svg') for folder in (oldFolder, newFolder)]
+        if not all(os.path.isfile(path) for path in paths):
+            continue
+        (old, new) = [svgSegments(open(path, encoding='utf-8').read()) for path in paths]
+        rows.append((key, len(old), len(new), contourDeviation(old, new)))
+    return rows
 
 
 def labelIconPath(key: str, labelIconsFolder: str) -> str:
@@ -150,12 +199,23 @@ def renderScad(exe: str, scad: str, svgPath: str, workFolder: str, libraryFolder
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split('\n')[1])
-    parser.add_argument('--openscad', required=True, help='path of openscad.exe')
+    parser.add_argument('--openscad', help='path of openscad.exe, needed to render')
     parser.add_argument('--out', default=ICONS_FOLDER, help='folder with screws/ and hardware/')
     parser.add_argument('--jobs', type=int, default=max(1, (os.cpu_count() or 2) - 1))
     parser.add_argument('--force', action='store_true', help='render svgs that exist already')
+    parser.add_argument('--only', choices=['screw', 'hardware'], help='render only symbols of this kind')
+    parser.add_argument('--compare', metavar='OLD_FOLDER', help='only compare the hardware symbols of --out with the ones in OLD_FOLDER')
     args = parser.parse_args()
-    jobs = [job for job in renderJobs(args.out) if args.force or not os.path.isfile(job[2])]
+    if args.compare:
+        rows = compare(args.compare, args.out)
+        for (key, oldCount, newCount, deviation) in rows:
+            print(f'{key}: {oldCount} -> {newCount} segments, deviation {deviation:.4f} mm')
+        worst = max((row[3] for row in rows), default=0)
+        print(f'largest deviation {worst:.4f} mm, allowed {MAX_DEVIATION} mm')
+        return 0 if worst <= MAX_DEVIATION + 1e-9 else 1
+    if not args.openscad:
+        parser.error('--openscad is needed to render')
+    jobs = [job for job in renderJobs(args.out) if (args.force or not os.path.isfile(job[2])) and args.only in (None, job[0])]
     print(f'{len(jobs)} symbols to render with {args.jobs} jobs')
     started = time.time()
     errors = []
