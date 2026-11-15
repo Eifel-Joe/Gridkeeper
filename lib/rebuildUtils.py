@@ -7,6 +7,7 @@ from . import configJson
 from . import tagUtils
 from . import assembly
 from .gridfinityUtils import commonUtils
+from .gridfinityUtils import cullenect
 
 # Rebuilding a generated body at its place in the timeline: the new one is built right after the old one's timeline
 # group, the features after it that use the old bodies get the new ones and the old group goes. Features picking a
@@ -268,11 +269,13 @@ def replaceFeatureBodies(item: adsk.fusion.TimelineObject, feature: adsk.fusion.
             setattr(typed, name, swapped)
         commonUtils.debugLog(f'{LOG_PREFIX} {item.name} {name} now uses the new bodies')
 
-def removeOldGroup(target: RebuildTarget) -> list[str]:
+def removeOldGroup(target: RebuildTarget, oneByOne: bool = False) -> list[str]:
     """
     Once the later features have the new bodies, with the marker back at the end. Fusion may refuse to delete the
     group as a whole, without saying why, then its items go one by one, the last first so none is still used by
-    what's left, and what it won't delete is suppressed. Returns the names of those
+    what's left, and what it won't delete is suppressed. Returns the names of those. One by one from the start once a
+    joint was moved over to the new part: deleting the group as a whole took the joint along (Fusion 15.11.2026, the
+    insert dropped back to the origin), item by item it stays, see repointJoints
     """
     group = target.group
     groupName = group.name
@@ -282,9 +285,9 @@ def removeOldGroup(target: RebuildTarget) -> list[str]:
         raise RuntimeError(f'The timeline group {groupName} of the old bin changed while rebuilding, it was left as is')
     group.isCollapsed = True
     try:
-        if group.deleteMe(True):
+        if not oneByOne and group.deleteMe(True):
             return []
-        commonUtils.fileLog(f'{LOG_PREFIX} the timeline group {groupName} wasn\'t deleted, deleting its items one by one')
+        commonUtils.fileLog(f'{LOG_PREFIX} deleting the items of the timeline group {groupName} one by one, ' + ('a joint was moved over to the new part' if oneByOne else 'Fusion didn\'t delete the group'))
     except RuntimeError as err:
         commonUtils.fileLog(f'{LOG_PREFIX} the timeline group {groupName} wasn\'t deleted, {err}, deleting its items one by one')
     # items of a group can't be deleted on their own, the group goes and they stay in the timeline
@@ -307,6 +310,57 @@ def removeOldGroup(target: RebuildTarget) -> list[str]:
             commonUtils.fileLog(f'{LOG_PREFIX} {name} of {groupName} wasn\'t suppressed either, {err}')
         kept.append(name)
     return kept
+
+def repointJoints(
+    design: adsk.fusion.Design,
+    target: RebuildTarget,
+    newOccurrence: adsk.fusion.Occurrence | None,
+) -> tuple[int, list[str]]:
+    """
+    Joints using a pocket joint origin of the old part, an insert jointed into a Cullenect pocket (round 13, p160), get
+    the pocket of the same name of the new part, so the insert stays in its pocket. A joint only takes it with the marker
+    right before it, the new part coming before it in the timeline (tried in Fusion 15.11.2026: at the end of the
+    timeline it failed). Returns how many were moved over and a note per joint whose pocket the new part doesn't have
+    """
+    if target.occurrence is None or newOccurrence is None:
+        return (0, [])
+    oldComponent = (target.occurrence.nativeObject or target.occurrence).component
+    newComponent = newOccurrence.component
+    remap = cullenect.pocketRemap(
+        [jointOrigin.name for jointOrigin in oldComponent.jointOrigins],
+        [jointOrigin.name for jointOrigin in newComponent.jointOrigins],
+    )
+    moved = 0
+    notes = []
+    # items of a collapsed group can't be rolled to ("Associated feature is invalid", Fusion 15.11.2026), the group of
+    # the insert holding the joint is expanded meanwhile, as in replaceBodies
+    collapsedGroups = []
+    for joint in list(design.rootComponent.allJoints):
+        for side in ('geometryOrOriginOne', 'geometryOrOriginTwo'):
+            jointOrigin = adsk.fusion.JointOrigin.cast(getattr(joint, side))
+            if jointOrigin is None or (jointOrigin.nativeObject or jointOrigin).parentComponent != oldComponent:
+                continue
+            newName = remap.get(jointOrigin.name)
+            if newName is None:
+                notes.append(f'{joint.name}: the new {newComponent.name} has no {jointOrigin.name}, the joint goes with the old one')
+                continue
+            try:
+                item = joint.timelineObject
+                group = item.parentGroup
+                if group is not None and group.isCollapsed:
+                    group.isCollapsed = False
+                    collapsedGroups.append(group)
+                item.rollTo(True)
+                setattr(joint, side, newComponent.jointOrigins.itemByName(newName).createForAssemblyContext(newOccurrence))
+                moved += 1
+                commonUtils.debugLog(f'{LOG_PREFIX} {joint.name} now uses {newName} of the new part')
+            except Exception as err:
+                commonUtils.fileLog(f'{LOG_PREFIX} {joint.name} couldn\'t be moved over to {newName}, {err}')
+                notes.append(f'{joint.name}: couldn\'t be moved over to {newName} of the new {newComponent.name}, it goes with the old one')
+    design.timeline.moveToEnd()
+    for group in collapsedGroups:
+        group.isCollapsed = True
+    return (moved, notes)
 
 def newlyUnhealthy(target: RebuildTarget) -> list[str]:
     """Later items that were fine before and have a warning or an error now, with Fusion's message"""
@@ -429,11 +483,12 @@ def rebuild(
         occurrences = design.rootComponent.allOccurrencesByComponent(newBodies[0].parentComponent)
         newOccurrence = occurrences.item(0) if occurrences.count > 0 else None
     failed = replaceBodies(target, newBodies, newOccurrence)
-    keptOldItems = removeOldGroup(target)
+    (movedJoints, jointNotes) = repointJoints(design, target, newOccurrence)
+    keptOldItems = removeOldGroup(target, oneByOne=movedJoints > 0)
     # shared units stay, the body's own ones it no longer has go, like the label of a tab turned off
     newNames = tagParameterNames(newBodies[0]) if len(newBodies) > 0 else []
     removeUnusedParameters(design, [name for name in oldNames if prefix is not None and prefixOf([name], baseName) == prefix and name not in newNames])
-    notes = [f'{name}: couldn\'t be given the new {title}' for name in failed] + newlyUnhealthy(target)
+    notes = [f'{name}: couldn\'t be given the new {title}' for name in failed] + jointNotes + newlyUnhealthy(target)
     notes += [f'{name}: of the old {title}, Fusion wouldn\'t delete it, it\'s suppressed instead' for name in keptOldItems]
     return (newBodies, notes)
 
