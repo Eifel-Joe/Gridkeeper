@@ -51,6 +51,35 @@ Punkte:
   - Das Ende-zu-Ende-Kriterium „Alle drei Dialoge öffnen sich nach Add-in-Neustart“ steht deshalb auf der
     Handtest-Liste (Entscheidung der Hauptsitzung).
 
+## Review (Opus)
+
+Kein kritischer Fund. Umgang:
+- **Wichtig, behoben:**
+  - (I1) Neubau per Rechtsklick auf die Buchstaben: Die Tasche ging verloren. `insertComponent` geht jetzt vom
+    Text-Bauteil zum Einleger.
+  - (I2) Die Ecke hing an der Reihenfolge der Körper. Jetzt wird der Einleger-Körper ausgewählt (`_insertBody`).
+  - (I3) Die Ecke wird direkt hinter der alten Gruppe gelesen, sonst würde eine spätere Bewegung doppelt wirken.
+  - (I4) Ein Text nur in Zeile 2 kam doppelt zurück. Die Parameter heißen jetzt nach ihrer Zeile
+    (`labelConfig.textLines`), mit Unit-Test.
+  - (I5) Eine Tasche einer Bin, die erst nach dem Einleger in der Timeline steht, wird beim Neubau mit Meldung
+    abgelehnt.
+  - (I6) Vorbelegt wird nur der eigene Joint „… in pocket“ des Befehls auf eine Cullenect-Tasche.
+  - Klein (M1): Der Dialog sagt jetzt „Rebuilding …“.
+  - Klein (M3): Schraubenteile und Hardware sind Config-Auswahlen; was fehlt, wird gemeldet.
+  - Klein (M4): unbenutzter Import entfernt.
+  - Klein (M7): Startet kein Dialog, bleibt nichts für den nächsten liegen.
+  - E2E: a startet vom Buchstaben, b prüft Zeile 2 allein. c ruft `labelEntry.readConfig` nur ohne Notizen auf, weil
+    sonst eine messageBox das Skript anhalten würde.
+- **Klein, bleibt:**
+  - (M2) Ein von Hand geänderter Breitenparameter wird beim Neubau aus der Config neu gesetzt. Gewollt, die Breite folgt
+    aus Einheiten, Basisbreite und Korrektur.
+  - (M5) `labelConfig.settingsOfDialog` spiegelt `getInputsState` für den Test. Der Dialog selbst nutzt
+    `applyInputsState`/`getInputsState`, beide sind über E2E c geprüft.
+  - (M6) Der p151-Test prüft den Weg über `configJson.readConfig` mit der Dialogfarbe. Die Verdrahtung in
+    `binEntry.readConfig` ist eine Zeile, Handtest 4.
+  - Ein eigener, späterer Joint des Users auf den Einleger wird nicht übernommen (er bleibt ein späteres Feature und
+    kann danach fehlerhaft sein, `newlyUnhealthy` meldet es).
+
 ## Für Nutzer (Testtermin)
 
 1. **Joint wird neu angelegt:** Ein Einleger in einer Tasche bekommt beim Neubau einen neuen Joint in dieselbe Tasche.

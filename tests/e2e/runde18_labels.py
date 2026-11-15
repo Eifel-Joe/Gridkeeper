@@ -79,14 +79,17 @@ def groupA(run):
     pocket = pocketOf(run, binBody)
     run.check('a: pocket found', pocket is not None)
     (state, settings) = run.state('label_1u_screw_text')
-    insert = run.labelBuilder.buildLabel(run.des, state, settings, True, pocket)[0]
+    built = run.labelBuilder.buildLabel(run.des, state, settings, True, pocket)
+    insert = built[0]
+    # started from a letter, as a right click on the raised text does (review: the pocket was lost then)
+    letter = built[1]
     before = box(run.inRoot(insert))
     oldGroup = insert.name
     tag = run.tagUtils.readBodyTag(insert)
     run.check('a: the tag has the config', tag is not None and isinstance(tag[1].get('config'), dict))
-    found = run.labelBuilder.insertPocket(run.des, insert)
-    run.check('a: the old pocket is found from the insert', found is not None and found.name == pocket.name, found.name if found else 'none')
-    (bodies, notes) = run.labelBuilder.rebuildLabel(run.des, insert, dataclasses.replace(state, line1='M5x20'), settings, False, found)
+    found = run.labelBuilder.insertPocket(run.des, letter)
+    run.check('a: the old pocket is found from a letter', found is not None and found.name == pocket.name, found.name if found else 'none')
+    (bodies, notes) = run.labelBuilder.rebuildLabel(run.des, letter, dataclasses.replace(state, line1='M5x20'), settings, False, found)
     run.check('a: rebuilt without notes', len(notes) == 0, str(notes))
     new = bodies[0]
     after = box(run.inRoot(new))
@@ -116,6 +119,12 @@ def groupB(run):
     run.check('b: wider', after[3] - after[0] > before[3] - before[0] + 3, f'{(before[3] - before[0]) * 10:.1f} -> {(after[3] - after[0]) * 10:.1f} mm')
     run.check('b: one insert left', len(run.inserts()) == 1)
     run.check('b: no notes', len(notes) == 0, str(notes))
+    # a text only in line 2 goes back into line 2 (review: it came back in both lines)
+    (second, secondSettings) = run.state('label_1u_screw_text', line1='', line2='DIN 912')
+    insert = run.labelBuilder.buildLabel(run.des, second, secondSettings)[0]
+    tag = run.tagUtils.readBodyTag(insert)[1]
+    config = module('lib.rebuildUtils').configWithParameters(run.configJson.GENERATOR_LABEL, tag['config'], tag.get('parameters'), run.des.userParameters.itemByName, module('lib.gridfinityUtils.labelConfig').PARAMETER_FIELDS)
+    run.check('b: line 2 alone stays line 2', (config['line1'], config['line2']) == ('', 'DIN 912'), f"{config['line1']!r}, {config['line2']!r}, {tag.get('parameters')}")
     run.healthy('b')
 
 
@@ -131,6 +140,9 @@ def groupC(run):
     text = run.configJson.configText(run.configJson.GENERATOR_LABEL, config)
     (read, notes) = run.configJson.readConfig(text, run.configJson.GENERATOR_LABEL, type(state), state)
     run.check('c: saved and loaded, same values', notes.isEmpty() and run.configJson.stateToJson(run.configJson.GENERATOR_LABEL, read) == config)
+    if not notes.isEmpty():
+        # labelEntry.readConfig would show its notes in a message box, which stops the script
+        return
     kept = labelEntry.uiState.toDict()
     try:
         cloned = labelEntry.readConfig(text, 'Cloned')

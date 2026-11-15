@@ -114,3 +114,15 @@ def test_parameter_fields_are_settings_of_an_insert():
     assert set(labelConfig.PARAMETER_FIELDS.values()) <= fields
     assert set(labelConfig.PARAMETER_FIELDS) == {"Base width unit", "Text line 1", "Text line 2"}
     assert "baseWidth" in configJson.MM_FIELDS[LABEL]
+
+
+def test_a_text_only_in_line_2_is_labelled_line_2():
+    # review round 18 (I4): labelled by its place, a second line alone went back into line 1 on a rebuild and the
+    # insert got its text twice. Labelled by the line it was typed in, it goes back there
+    assert labelConfig.textLines("", "DIN 912") == [("DIN 912", "Text line 2")]
+    assert labelConfig.PARAMETER_FIELDS["Text line 2"] == "line2"
+
+
+def test_both_lines_keep_their_labels():
+    assert labelConfig.textLines("M3x10", "DIN 912") == [("M3x10", "Text line 1"), ("DIN 912", "Text line 2")]
+    assert labelConfig.textLines("M3x10", "  ") == [("M3x10", "Text line 1")]

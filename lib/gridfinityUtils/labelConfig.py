@@ -22,6 +22,13 @@ PARAMETER_FIELDS = {
 }
 
 
+def textLines(line1: str, line2: str) -> list[tuple[str, str]]:
+    """The text lines an insert gets, empty ones left out, each with the label of its parameter, named after the line it
+    was typed in: a second line alone labelled 'Text line 1' went back into line 1 on a rebuild and the insert got it
+    twice (review round 18)"""
+    return [(text, f'Text line {index}') for (index, text) in ((1, line1), (2, line2)) if len(text.strip()) > 0]
+
+
 def dialogValues(settings: dict, surfaceNames: dict[str, str]) -> dict:
     """The settings as the dialog shows them, see settingsOfDialog for the way back"""
     values = {name: value for (name, value) in settings.items() if name != 'textColor'}
