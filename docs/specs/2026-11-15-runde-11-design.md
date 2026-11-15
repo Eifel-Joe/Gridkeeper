@@ -80,12 +80,14 @@ Arial Black 0,215. Symbole (Madenschraube, Gewindeeinsatz) haben > 1,1 mm, unkri
 ### Hinweis bei dünner Schrift
 - Geschätzte Strichbreite = Strichfaktor des Stils × tatsächliche Schrifthöhe (nach dem Einpassen).
 - Liegt sie unter **0,6 mm**, sammelt der Generator einen Hinweis je Zeile bzw. Label: Text, Schrifthöhe,
-  geschätzte Strichbreite. Sammelstelle ist ein kleines Modul (`textStrokes`), das der Befehl vor dem Bau leert und
+  geschätzte Strichbreite. Sammelstelle ist das Modul `textStyles`, das der Befehl vor dem Bau leert und
   danach liest; reine Rechnung und Textbau ohne Fusion testbar.
 - Einleger-Befehl: Bei OK einmal eine Meldung („Text … ist ca. 0,52 mm breit, unter 0,6 mm druckt eine 0,4-mm-Düse
   Teile nicht: Text kürzen, Einleger breiter oder Stil Heavy“). Bei der Vorschau steht derselbe Kurztext neben der
   Vorschauzeit, keine Meldung.
-- Bin-Befehl: gleiche Meldung bei OK, wenn ein Label-Text unter 0,6 mm schrumpft (z. B. „Schrauben M4“ fett auf 1U).
+- Bin-Befehl: gleiche Meldung bei OK, wenn ein Label-Text unter 0,6 mm schrumpft (z. B. „Schrauben M4“ fett auf 1U),
+  beim Schließen des Befehls: Mit Vorschau übernimmt Fusion deren Ergebnis, ohne Execute (Review 15.11.). Gleicher
+  Text auf mehreren Fächern steht einmal da.
 - Die Schwelle 0,6 statt 0,9: Mit 0,9 meldete jeder zweizeilige Einleger (Heavy 0,76 mm), obwohl er mit einer Bahn
   vollständig druckt (99 %). Die Meldung soll nur kommen, wo wirklich Teile fehlen werden. (Eigene Wahl, Jörg prüft.)
 

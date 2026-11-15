@@ -167,7 +167,7 @@ def selectableName(inputId: str, names: list[str]) -> str:
     older version or a symbol whose svg is gone"""
     selected = uiState.getState(inputId)
     if selected not in names and len(names) > 0:
-        selected = names[0]
+        selected = textStyles.DEFAULT_INSERT_STYLE if inputId == TEXT_STYLE_DROPDOWN else names[0]
         uiState.updateValue(inputId, selected)
     return selected
 
