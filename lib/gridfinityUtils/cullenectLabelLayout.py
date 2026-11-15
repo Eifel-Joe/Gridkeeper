@@ -21,7 +21,8 @@ MIN_TEXT_SPACE = 0.3
 MAX_OFFSET = 0.1
 # Round 17, p140: debossed text and symbol are cut 0.4 mm deep, the whole top layer. Reaching the edge they cut the
 # rim over the latch through, the 0.2 mm the top layer stands over it, and the insert no longer holds. Debossed the
-# symbol keeps this far from the edge: the overhang and one line of a 0.4 mm nozzle over the latch. Flush and embossed
+# symbol keeps this far from the edge, one line of a 0.4 mm nozzle in all: the 0.2 mm overhang and 0.2 mm over the
+# latch. Flush and embossed
 # don't cut the rim and stay as they are. Descenders of a lower line may still reach into it, see labelLayout
 DEBOSS_RIM = const.CULLENECT_LATCH_INSET + 0.02
 
@@ -160,7 +161,7 @@ def layoutProblem(layout: LabelLayout) -> str | None:
     if len(layout.lineHeights) > 0 and layout.textMaxX - layout.textMinX < MIN_TEXT_SPACE - 1e-9:
         return 'No room for text beside the symbol, make the insert wider'
     if layout.descenderLimit is not None and len(layout.lineHeights) > 0 and layout.lineHeights[0] > layout.descenderLimit + 1e-9:
-        return "Two lines don't fit this height without letters too thin to print, make the height correction smaller or use one line"
+        return "Two lines don't fit this height: their descenders would reach over the edge and the letters can't get smaller without getting too thin to print. Make the height correction smaller, use one line or the Heavy style"
     return None
 
 

@@ -421,3 +421,8 @@ class TestTextFitWidth:
     def test_without_symbol_the_text_room_stays(self):
         result = layout.labelLayout(3.6, 1.1, None, False, 1)
         assert layout.textFitWidth(result) == approx(result.textMaxX - result.textMinX)
+
+
+def test_bold_two_lines_at_minus_1mm_are_reported():
+    # reachable in the dialog: Bold's floor is 3.42 mm, its descenders at 10 mm high would need 3.15 mm
+    assert 'Two lines' in layout.insertProblem(3.6, 1.0, None, False, False, 2, 0, -0.1, textStyle='Bold')

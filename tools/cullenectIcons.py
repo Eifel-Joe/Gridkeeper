@@ -210,7 +210,12 @@ def main() -> int:
         rows = compare(args.compare, args.out)
         for (key, oldCount, newCount, deviation) in rows:
             print(f'{key}: {oldCount} -> {newCount} segments, deviation {deviation:.4f} mm')
-        worst = max((row[3] for row in rows), default=0)
+        missing = [key for key in catalog.CULLENECT_HARDWARE if key not in [row[0] for row in rows]]
+        if missing:
+            # a wrong folder skips every symbol, that is no pass
+            print(f'not compared, missing in either folder: {", ".join(missing)}')
+            return 1
+        worst = max(row[3] for row in rows)
         print(f'largest deviation {worst:.4f} mm, allowed {MAX_DEVIATION} mm')
         return 0 if worst <= MAX_DEVIATION + 1e-9 else 1
     if not args.openscad:

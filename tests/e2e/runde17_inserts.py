@@ -94,18 +94,29 @@ def topRim(run, name, insert):
     run.check(f'{name}: top rim whole', outer.edges.count == 8 and sameSize, f'{outer.edges.count} edges in its outline, as large as the insert {sameSize}')
 
 
+def symbolOffRim(run, name, bodies):
+    """The symbol stays 0.4 mm off the right, top and bottom edge: an overhang of 0.2 mm cut through below that would
+    leave the outline of the top face whole, topRim alone wouldn't tell"""
+    rim = module('lib.gridfinityUtils.cullenectLabelLayout').DEBOSS_RIM
+    (insert, symbols) = (bodies[0].boundingBox, parts(bodies, 'symbol'))
+    gaps = {
+        'right': insert.maxPoint.x - max(body.boundingBox.maxPoint.x for body in symbols),
+        'top': insert.maxPoint.y - max(body.boundingBox.maxPoint.y for body in symbols),
+        'bottom': min(body.boundingBox.minPoint.y for body in symbols) - insert.minPoint.y,
+    }
+    run.check(f'{name}: symbol 0.4 mm off right, top and bottom', all(gap >= rim - TOLERANCE for gap in gaps.values()),
+              ', '.join(f'{side} {gap * 10:.3f} mm' for (side, gap) in gaps.items()))
+
+
 def groupC(run):
     # p140: 25 mm with a screw, debossed: the top layer stays whole all around, the symbol keeps 0.4 mm off the edge
     bodies = run.label('label_25mm_free', surface='Debossed', line1='gjpy')
-    insert = bodies[0]
-    topRim(run, 'p140 debossed screw', insert)
-    symbols = parts(bodies, 'symbol')
-    right = max(body.boundingBox.maxPoint.x for body in symbols)
-    run.check('p140: symbol 0.4 mm off the right edge', right <= insert.boundingBox.maxPoint.x - 0.04 + TOLERANCE,
-              f'symbol to {right * 10:.3f} mm, insert to {insert.boundingBox.maxPoint.x * 10:.3f} mm')
+    topRim(run, 'p140 debossed screw', bodies[0])
+    symbolOffRim(run, 'p140 debossed screw', bodies)
     # the nylon nut debossed, label_2u_hardware as it is
     bodies = run.label('label_2u_hardware')
     topRim(run, 'p140 debossed nylon nut', bodies[0])
+    symbolOffRim(run, 'p140 debossed nylon nut', bodies)
     run.healthy('p140')
 
 
@@ -122,7 +133,9 @@ def groupD(run):
     letters = byName(component.bRepBodies, textNames)
     symbols = byName(component.bRepBodies, symbolNames)
     gap = min(body.boundingBox.minPoint.x for body in symbols) - max(body.boundingBox.maxPoint.x for body in letters)
-    run.check('p52: gap between text and symbol', gap > 0, f'{gap * 10:.3f} mm, {len(letters)} letters, {len(symbols)} symbol bodies')
+    # without the 1 mm of p52 the gap would still be above 0 by the fitting reserve, it has to keep the icon gap
+    iconGap = module('lib.gridfinityUtils.const').CULLENECT_ICON_GAP
+    run.check('p52: text and symbol keep the icon gap', gap >= iconGap - TOLERANCE, f'{gap * 10:.3f} mm, {len(letters)} letters, {len(symbols)} symbol bodies')
     run.healthy('p52')
 
 
