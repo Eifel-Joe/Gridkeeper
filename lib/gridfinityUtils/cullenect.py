@@ -52,6 +52,13 @@ def effectiveTabWidth(userTabWidth: float, overhangAngle: float, filletAllowance
     inset = socketFrontInset(overhangAngle, filletAllowance)
     return max(userTabWidth, const.CULLENECT_MIN_TAB_WIDTH, socketHeight(socketOffset) + 2 * inset)
 
+def wallProblem(wallThickness: float) -> str | None:
+    """Why a bin with these walls takes no Cullenect socket, none if it does (p35). A wall entered as 1.2 mm may come back
+    a hair under it from the units, so the check has a tolerance"""
+    if wallThickness < const.CULLENECT_MIN_WALL_THICKNESS - 1e-6:
+        return f'Cullenect sockets need walls of at least {const.CULLENECT_MIN_WALL_THICKNESS * 10:g} mm'
+    return None
+
 def hollowTabWallThickness(wallThickness: float) -> float:
     """Top of a hollow tab with a socket, thick enough for the socket not to cut through"""
     return max(wallThickness, const.CULLENECT_LABEL_THICKNESS + const.BIN_TAB_HOLLOW_MIN_SKIN)

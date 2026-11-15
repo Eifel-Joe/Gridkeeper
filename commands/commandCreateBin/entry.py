@@ -542,7 +542,9 @@ def hasCullenectSockets() -> bool:
 def updateCullenectSockets():
     """Second row of the dimensions table, which inserts fit the sockets"""
     try:
-        text = f'Cullenect: {"; ".join(cullenectSockets())}' if hasCullenectSockets() else ''
+        problem = cullenect.wallProblem(commandUIState.getState(BIN_WALL_THICKNESS_INPUT_ID)) if hasCullenectSockets() else None
+        # the reason OK is locked, in place of the sockets (p35)
+        text = f'Cullenect: {problem}' if problem is not None else f'Cullenect: {"; ".join(cullenectSockets())}' if hasCullenectSockets() else ''
         socketsInput = actualDimensionsTableUiState.getInput(BIN_REAL_DIMENSIONS_TABLE_CULLENECT)
         actualDimensionsTableUiState.updateValue(BIN_REAL_DIMENSIONS_TABLE_CULLENECT, text)
         socketsInput.tooltip = 'Socket width of the label tabs and the width of the Cullenect insert that fits them'
@@ -764,6 +766,9 @@ def is_all_input_valid(inputs: adsk.core.CommandInputs):
         result = result and bin_magnet_cutout_depth.value > 0
 
     result = result and shapeError() is None
+    # Cullenect only from 1.2 mm walls (p35), a loaded config and a rebuild open this dialog too
+    if hasCullenectSockets():
+        result = result and cullenect.wallProblem(bin_wall_thickness.value) is None
     result = result and labelColors.isColor(binLabelColor())
     if inputs.itemById(BIN_CREASES_INPUT_ID).value:
         result = result and inputs.itemById(BIN_CREASE_DEPTH_INPUT_ID).value > 0

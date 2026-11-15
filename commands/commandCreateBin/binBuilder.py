@@ -593,8 +593,9 @@ def _buildBin(
                 tabMaxX = tabOriginX + compartmentTabInput.length
                 tabHollowCuts = createTabHollowCuts(
                     compartmentTabInput,
-                    tabOriginX if tabOriginX.value >= shellThickness.value else shellThickness,
-                    tabMaxX if tabMaxX.value <= shellInteriorMaxX.value else shellInteriorMaxX,
+                    # as expressions, so they follow a changed base width (round 15, p60)
+                    Dim.max(tabOriginX, shellThickness),
+                    Dim.min(tabMaxX, shellInteriorMaxX),
                     hollowTabWallThickness(shellThickness.value, binBodyInput.labelStyle),
                     shellInterior,
                     TabCavity(shellThickness, shellInteriorMaxX, bodyLength - shellThickness, compartmentCutoutFilletRadius(shellInteriorCornerFilletRadius)),

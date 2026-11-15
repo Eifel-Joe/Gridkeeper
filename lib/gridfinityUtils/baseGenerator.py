@@ -6,7 +6,7 @@ import os
 from .sketchUtils import createRectangle
 from ...lib.gridfinityUtils.baseGeneratorInput import BaseGeneratorInput
 from .dim import Dim, valueInput, applyTo
-from . import sketchUtils, const, edgeUtils, commonUtils, combineUtils, faceUtils, extrudeUtils, shapeUtils, geometryUtils, patternUtils, binShape, binGrid
+from . import sketchUtils, const, edgeUtils, commonUtils, combineUtils, faceUtils, extrudeUtils, shapeUtils, geometryUtils, patternUtils, binShape, binGrid, jointOriginLayout
 from ...lib import fusion360utils as futil
 from ... import config
 
@@ -525,43 +525,16 @@ def createCellJointOrigins(
 ) -> list[adsk.fusion.JointOrigin]:
     """
     Joint origins at the base bottom of the given cell centers, Z up, the bottom of bin feet and of baseplate
-    sockets alike, so a joint between the two seats a bin in its socket.
-    They sit on sketch points dimensioned from the origin, so they follow the base unit parameters. Sketches
-    don't follow moves of bodies, so these are made after the bodies are placed, with the placement in the centers.
+    sockets alike, so a joint between the two seats a bin in its socket. Named '<name> <column>-<row>' from 1.
+    Each is a sketch point of its own with driving dims, see createPointJointOrigins, so they follow the base unit
+    parameters (round 15, p170: in one sketch with reference dims they didn't). Sketches don't follow moves of bodies,
+    so these are made after the bodies are placed, with the placement in the centers.
     """
-    planeInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    planeInput.setByOffset(targetComponent.xYConstructionPlane, adsk.core.ValueInput.createByReal(-const.BIN_BASE_HEIGHT))
-    plane = targetComponent.constructionPlanes.add(planeInput)
-    plane.name = f'{name} plane'
-    plane.isLightBulbOn = False
-    sketch: adsk.fusion.Sketch = targetComponent.sketches.add(plane)
-    sketch.name = f'{name} sketch'
-    points: list[tuple[int, int, adsk.fusion.SketchPoint]] = []
-    with sketchUtils.deferSketchCompute(sketch):
-        dimensions = sketch.sketchDimensions
-        for (column, row, x, y) in centers:
-            pointOnSketch = sketch.modelToSketchSpace(adsk.core.Point3D.create(x.value, y.value, -const.BIN_BASE_HEIGHT))
-            pointOnSketch.z = 0
-            point = sketch.sketchPoints.add(pointOnSketch)
-            # distance dimensions are unsigned
-            for (orientation, distance, textPoint) in [
-                (adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation, x, adsk.core.Point3D.create(pointOnSketch.x / 2, pointOnSketch.y, 0)),
-                (adsk.fusion.DimensionOrientations.VerticalDimensionOrientation, y, adsk.core.Point3D.create(pointOnSketch.x, pointOnSketch.y / 2, 0)),
-            ]:
-                applyTo(
-                    dimensions.addDistanceDimension(sketch.originPoint, point, orientation, textPoint, False).parameter,
-                    distance if distance.value >= 0 else distance * -1,
-                )
-            points.append((column, row, point))
-    sketch.isVisible = False
-
-    jointOrigins = []
-    for (column, row, point) in points:
-        jointOriginInput = targetComponent.jointOrigins.createInput(adsk.fusion.JointGeometry.createByPoint(point))
-        jointOrigin = targetComponent.jointOrigins.add(jointOriginInput)
-        jointOrigin.name = f'{name} {column + 1}-{row + 1}'
-        jointOrigins.append(jointOrigin)
-    return jointOrigins
+    return createPointJointOrigins(
+        jointOriginLayout.cellJointOriginPoints(centers, name, Dim.length(-const.BIN_BASE_HEIGHT)),
+        targetComponent,
+        name=name,
+    )
 
 def createPointJointOrigins(
     points: list[tuple[str, Dim, Dim, Dim]],
@@ -574,17 +547,23 @@ def createPointJointOrigins(
     point on a plane at z, dimensioned from the origin, so they follow the parameters the dims hold. Sketches don't
     follow moves of bodies, the caller passes the spots after the placement (round 13, the pockets of Cullenect labels).
     A sketch per point with driving dimensions: the last argument of addDistanceDimension is isDriving, createCellJointOrigins
-    passes False and gets reference dimensions its points don't follow (Fusion 15.11.2026: gfBin1_baseWidth 42 -> 50 mm left
+    passed False before round 15 and got reference dimensions its points don't follow (Fusion 15.11.2026: gfBin1_baseWidth 42 -> 50 mm left
     the foot joint origins at 20.75/62.75 mm instead of 24.75/74.75 mm). Driving ones for several points in one sketch
     failed with VCS_SKETCH_OVER_CONSTRAINTS once two points shared an x or y, so each point gets a sketch of its own
     """
     jointOrigins = []
+    # one plane per height, points at the same height share it (round 15, the cells of a 6x6 baseplate are 36)
+    planes: dict[tuple[float, str], adsk.fusion.ConstructionPlane] = {}
     for (index, (pointName, x, y, z)) in enumerate(points):
-        planeInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-        planeInput.setByOffset(targetComponent.xYConstructionPlane, valueInput(z))
-        plane = targetComponent.constructionPlanes.add(planeInput)
-        plane.name = f'{name} plane {index + 1}'
-        plane.isLightBulbOn = False
+        key = (round(z.value, 6), z.expression if z.isExpression else '')
+        plane = planes.get(key)
+        if plane is None:
+            planeInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
+            planeInput.setByOffset(targetComponent.xYConstructionPlane, valueInput(z))
+            plane = targetComponent.constructionPlanes.add(planeInput)
+            plane.name = f'{name} plane {len(planes) + 1}'
+            plane.isLightBulbOn = False
+            planes[key] = plane
         sketch: adsk.fusion.Sketch = targetComponent.sketches.add(plane)
         sketch.name = f'{name} sketch {index + 1}'
         with sketchUtils.deferSketchCompute(sketch):
