@@ -17,7 +17,7 @@ from ...lib.gridfinityUtils import raisedDividers
 from ...lib.gridfinityUtils import parameterUtils
 from ...lib.gridfinityUtils import designIntent
 from ...lib.gridfinityUtils.dim import Dim
-from ...lib.gridfinityUtils.baseGenerator import createFootGrid, cutBaseClearance, cutWallJunctionPockets, footCenters, createCellJointOrigins, keepBodiesInCells, cutOutsideShape, cutShapeWallJunctionPockets
+from ...lib.gridfinityUtils.baseGenerator import createFootGrid, cutBaseClearance, cutWallJunctionPockets, footCenters, createCellJointOrigins, createPointJointOrigins, keepBodiesInCells, cutOutsideShape, cutShapeWallJunctionPockets
 from ...lib.gridfinityUtils.baseGeneratorInput import BaseGeneratorInput
 from ...lib.gridfinityUtils.binBodyGenerator import createGridfinityBinBody, createShapeCavity, binBodyTopHeight, createCompartmentCutout, compartmentCutoutFilletRadius, tabTopClearance, createTabLabel, hollowTabWallThickness
 from ...lib.gridfinityUtils import labelGenerator
@@ -401,6 +401,8 @@ def _buildBin(
     binBody: adsk.fusion.BRepBody
     # colored labels, bodies of their own beside the bin body, see labelGenerator.createLabel
     labelBodies: list[adsk.fusion.BRepBody] = []
+    # Cullenect pockets as (compartment index, compartments, placement), a joint origin goes on each (p160)
+    pockets: list[tuple[int, int, object]] = []
 
     if state.generateBody:
         binBodyInput.binHeight = Dim.parameter(tagged(parameterUtils.addUnitlessParameter(
@@ -438,7 +440,7 @@ def _buildBin(
             reuseParameters,
         ), 'heightUnit', binParameterPrefix))
         binParameters.append([PARAMETER_LABEL_HEIGHT_UNIT, binBodyInput.heightUnit.expression])
-        (binBody, labelBodies) = createGridfinityBinBody(
+        (binBody, labelBodies, pockets) = createGridfinityBinBody(
             binBodyInput,
             gridfinityBinComponent,
         )
@@ -611,7 +613,7 @@ def _buildBin(
                 combineUtils.cutBody(binBody, commonUtils.objectCollectionFromList(tabHollowCuts), gridfinityBinComponent, name='Label tab hollow cut')
 
             if isCullenect:
-                createCullenectSocket(
+                shelledPocket = createCullenectSocket(
                     tabOriginX,
                     tabOriginX + compartmentTabInput.length,
                     tabOriginY,
@@ -624,6 +626,8 @@ def _buildBin(
                     gridfinityBinComponent,
                     name='Label',
                 )
+                if shelledPocket is not None:
+                    pockets.append((0, 1, shelledPocket))
             shelledLabel = None if isCullenect else createLabelDefinition(des, binParameterPrefix, BIN_LABEL_PARAMETER, state.labelText, state.labelIcon, reuseParameters)
             if shelledLabel is not None and shelledLabel.textParameter is not None:
                 binParameters.append([PARAMETER_LABEL_LABEL, shelledLabel.textParameter.name])
@@ -680,6 +684,19 @@ def _buildBin(
             gridfinityBinComponent,
             name='Foot joint origin',
         )
+
+    if len(pockets) > 0:
+        # always, the label command joints an insert into them (p160, Joerg 15.11.2026). After the placement like the
+        # feet's, with the size of the pocket in mm, an insert and a bin have base units of their own
+        offsetX = Dim.length(binPlacement[0])
+        offsetY = Dim.length(binPlacement[1])
+        jointOrigins = createPointJointOrigins(
+            [(cullenect.pocketJointOriginName(index, count), pocket.centerX + offsetX, pocket.centerY + offsetY, pocket.floorZ) for (index, count, pocket) in pockets],
+            gridfinityBinComponent,
+            name='Pocket joint origin',
+        )
+        for (jointOrigin, (_, _, pocket)) in zip(jointOrigins, pockets):
+            jointOrigin.attributes.add(tagUtils.TAG_GROUP, tagUtils.TAG_POCKET, cullenect.pocketTagValue(*cullenect.pocketSizeMm(pocket.units, baseWidth.value, state.cullenectSocketOffset)))
 
     # group features in timeline
     binGroup = des.timeline.timelineGroups.add(originalTimelinePosition, des.timeline.markerPosition - 1)

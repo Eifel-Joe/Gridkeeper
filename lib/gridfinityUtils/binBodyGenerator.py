@@ -13,7 +13,7 @@ from .binBodyTabGeneratorInput import BinBodyTabGeneratorInput
 from .binBodyTabGenerator import createGridfinityBinBodyTab, createTabHollowCuts, TabCavity, TabWallOpenings, TabHollowCuts
 from .labelGenerator import BinLabelDefinition, BinLabelInput, createLabel, LABEL_STYLE_EMBOSSED, LABEL_STYLE_ENGRAVED, LABEL_STYLE_CULLENECT
 from . import cullenect
-from .cullenectSocketGenerator import createCullenectSocket
+from .cullenectSocketGenerator import createCullenectSocket, SocketPlacement
 from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput
 from .binBodyLipGenerator import createGridfinityBinBodyLip, createStackedFootCutters
 from .raisedDividers import DividerSegment, FilletCorner, filletCorners, isCornerChainEdge, chainPath, cornerPlaneAxes
@@ -58,8 +58,9 @@ def binBodyTopHeight(input: BinBodyGeneratorInput) -> Dim:
 def createGridfinityBinBody(
     input: BinBodyGeneratorInput,
     targetComponent: adsk.fusion.Component,
-) -> tuple[adsk.fusion.BRepBody, list[adsk.fusion.BRepBody]]:
-    """The bin body and the bodies of its colored labels, see createLabel"""
+) -> tuple[adsk.fusion.BRepBody, list[adsk.fusion.BRepBody], list[tuple[int, int, SocketPlacement]]]:
+    """The bin body, the bodies of its colored labels, see createLabel, and its Cullenect pockets with the index of
+    their compartment and the number of compartments, see cullenect.pocketJointOriginName"""
     bodyWidth = input.baseWidth * input.binWidth - Dim.length(input.xyClearance * 2)
     bodyLength = input.baseLength * input.binLength - Dim.length(input.xyClearance * 2)
     wall = Dim.length(input.wallThickness)
@@ -340,6 +341,7 @@ def createGridfinityBinBody(
         )
 
     labelBodies: list[adsk.fusion.BRepBody] = []
+    pockets: list[tuple[int, int, SocketPlacement]] = []
     if not input.isSolid and input.hasTab:
         # every compartment gets its own label, also where the tabs come from a pattern. A Cullenect socket goes into
         # every tab, the inserts carry the labels
@@ -360,7 +362,7 @@ def createGridfinityBinBody(
                     # the tab fills the compartment, the socket would cut into the divider in front
                     commonUtils.debugLog(f'{labelName}: compartment {compartmentLength.value * 10:.2f} mm long, too short for a Cullenect socket')
                     continue
-                createCullenectSocket(
+                pocket = createCullenectSocket(
                     labelMinX,
                     labelMaxX,
                     tabOriginY,
@@ -373,6 +375,8 @@ def createGridfinityBinBody(
                     targetComponent,
                     name=labelName,
                 )
+                if pocket is not None:
+                    pockets.append((compartmentIndex, len(input.compartments), pocket))
                 continue
             labelBodies += createTabLabel(
                 compartment.label,
@@ -392,7 +396,7 @@ def createGridfinityBinBody(
                 targetOccurrence=input.binOccurrence,
             )
 
-    return (binBody, labelBodies)
+    return (binBody, labelBodies, pockets)
 
 def createRaisedDividers(
     segments: list[DividerSegment],
