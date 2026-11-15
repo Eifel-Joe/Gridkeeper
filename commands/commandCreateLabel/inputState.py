@@ -16,7 +16,8 @@ class InputState:
 
     line1: str
     line2: str
-    isBold: bool
+    # one of textStyles.STYLES
+    textStyle: str
 
     showScrew: bool
     head: str
