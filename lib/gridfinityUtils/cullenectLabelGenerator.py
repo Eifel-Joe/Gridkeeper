@@ -6,7 +6,7 @@ from .dim import Dim, valueInput
 
 # Insert for the Cullenect label system, after cullenect_base_v2 and cullenect_label_generate in Cullenect.scad by
 # CullenJWebb (MIT), https://github.com/CullenJWebb/Cullenect-Labels: a 1.2 mm plate with rounded corners whose middle
-# layer is set in all around as the latch, text at the left and a symbol at the right, one layer high
+# layer is set in all around as the latch, text at the left and a symbol at the right, two layers high (p130)
 
 SURFACE_EMBOSSED = 'Embossed'
 SURFACE_DEBOSSED = 'Debossed'
@@ -202,7 +202,7 @@ def createCullenectLabel(
 
     isEmbossed = input.surface == SURFACE_EMBOSSED
     plane = _offsetPlane(thickness, targetComponent, f'{name} text plane')
-    depth = const.CULLENECT_LAYER
+    depth = const.CULLENECT_MARKING_DEPTH
     textBodies = []
     iconBodies = []
     if len(lines) > 0:
