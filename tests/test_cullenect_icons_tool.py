@@ -150,3 +150,9 @@ def test_wrapper_uses_the_resolution_of_its_kind():
 def test_screws_keep_their_resolution():
     # only the hardware symbols are rendered anew (Hauptsitzung 15.11.2026), the screws stay as they were made
     assert tool.SCREW_RESOLUTION == '$fa = 3; $fs = 0.1;'
+
+
+def test_compare_fails_when_it_compared_nothing(tmp_path, monkeypatch):
+    # a wrong folder skipped every symbol and passed with "largest deviation 0" (review round 17)
+    monkeypatch.setattr('sys.argv', ['cullenectIcons.py', '--compare', str(tmp_path / 'nothing')])
+    assert tool.main() == 1
