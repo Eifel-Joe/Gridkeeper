@@ -245,7 +245,7 @@ def _buildBin(
     # the marker is before the features after a bin rebuilt in place, at the end otherwise
     originalTimelinePosition = des.timeline.markerPosition
     if place.isComponent:
-        newCmpOcc = assembly.addOccurrence(des, place.parent, binName, occurrenceTransform)
+        newCmpOcc = assembly.addOccurrence(des, place.parent, binName, occurrenceTransform, isMovable=True)
         newCmpOcc.activate()
         gridfinityBinComponent: adsk.fusion.Component = newCmpOcc.component
     else:

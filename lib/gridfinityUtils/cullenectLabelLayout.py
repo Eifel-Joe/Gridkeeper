@@ -199,3 +199,16 @@ def insertProblem(
         return 'No svg for this symbol, see tools/cullenectIcons.py and tools/setScrewIcons.py'
     size = iconSize(iconPath, width, height, isScrew) if iconPath is not None else None
     return layoutProblem(labelLayout(width, height, size, isScrew, lineCount))
+
+
+# --- an insert jointed into a pocket of a bin (round 13, p100, p160)
+
+# shown in the label dialog, the insert isn't built then (Nutzer 15.11.2026: "Gar nichts. Hinweis, dass diese Tasche
+# nicht passt und eine passende gewählt werden soll.")
+POCKET_MISFIT = 'This pocket is too small for the insert, pick one that fits'
+
+def insertFitsPocket(insertWidthMm: float, insertHeightMm: float, pocketWidthMm: float, pocketHeightMm: float) -> bool:
+    """Whether the insert fits the pocket, in mm: an insert and a bin have base units of their own, and an insert may
+    have a free width, so label units don't tell"""
+    tolerance = 0.001
+    return insertWidthMm <= pocketWidthMm + tolerance and insertHeightMm <= pocketHeightMm + tolerance

@@ -169,7 +169,7 @@ def _buildBaseplate(
     # the marker is before the features after a baseplate rebuilt in place, at the end otherwise
     originalTimelinePosition = des.timeline.markerPosition
     if place.isComponent:
-        newCmpOcc = assembly.addOccurrence(des, place.parent, plateName, occurrenceTransform)
+        newCmpOcc = assembly.addOccurrence(des, place.parent, plateName, occurrenceTransform, isMovable=True)
         newCmpOcc.activate()
         gridfinityBaseplateComponent: adsk.fusion.Component = newCmpOcc.component
     else:

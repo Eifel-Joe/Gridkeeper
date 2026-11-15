@@ -296,3 +296,28 @@ def test_marking_is_two_layers():
     const = sys.modules["cullenectLabelLayoutTestPackage.const"]
     assert const.CULLENECT_MARKING_DEPTH == approx(0.04)
     assert not hasattr(const, "CULLENECT_LAYER")
+
+
+# --- round 13 (p100, p160): an insert jointed into a pocket has to fit it, compared in mm since an insert and a bin
+# have base units of their own
+
+def test_insert_fits_pocket_of_same_units():
+    assert layout.insertFitsPocket(36.0, 11.0, 36.3, 11.3)
+
+
+def test_insert_wider_than_pocket_does_not_fit():
+    assert not layout.insertFitsPocket(78.0, 11.0, 36.3, 11.3)
+
+
+def test_insert_of_larger_base_unit_does_not_fit():
+    # 2U on a 12 mm base unit... in the pocket of 2U on an 11 mm base: 2*120-6 = 234 > 2*110-6+0.3 = 214.3
+    assert not layout.insertFitsPocket(2 * 120 - 6, 11.0, 2 * 110 - 6 + 0.3, 11.3)
+
+
+def test_insert_with_printer_offset_up_to_the_pocket_fits():
+    assert layout.insertFitsPocket(36.3, 11.3, 36.3, 11.3)
+    assert not layout.insertFitsPocket(36.31, 11.0, 36.3, 11.3)
+
+
+def test_pocket_misfit_text_is_literal():
+    assert layout.POCKET_MISFIT == "This pocket is too small for the insert, pick one that fits"
