@@ -1,0 +1,204 @@
+{
+    "bodies": [
+        {
+            "name": "Gridfinity label 1U 5mm",
+            "file": "body1.smt",
+            "volume": 440.10551,
+            "area": 1001.950433,
+            "bboxMin": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "bboxMax": [
+                36.0,
+                11.0,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 214,
+            "edges": 597,
+            "vertices": 398
+        },
+        {
+            "name": "Gridfinity label 1U 5mm text 1",
+            "file": "body2.smt",
+            "volume": 2.546384,
+            "area": 19.205504,
+            "bboxMin": [
+                13.519781,
+                1.25,
+                0.8
+            ],
+            "bboxMax": [
+                16.48738,
+                4.75,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 14,
+            "edges": 36,
+            "vertices": 24
+        },
+        {
+            "name": "Gridfinity label 1U 5mm text 2",
+            "file": "body3.smt",
+            "volume": 3.441214,
+            "area": 24.798159,
+            "bboxMin": [
+                1.362892,
+                1.25,
+                0.8
+            ],
+            "bboxMax": [
+                4.712483,
+                4.75,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 14,
+            "edges": 36,
+            "vertices": 24
+        },
+        {
+            "name": "Gridfinity label 1U 5mm text 3",
+            "file": "body4.smt",
+            "volume": 2.124166,
+            "area": 16.789288,
+            "bboxMin": [
+                16.659277,
+                1.192701,
+                0.8
+            ],
+            "bboxMax": [
+                19.595839,
+                3.842769,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 24,
+            "edges": 66,
+            "vertices": 44
+        },
+        {
+            "name": "Gridfinity label 1U 5mm text 4",
+            "file": "body5.smt",
+            "volume": 2.610823,
+            "area": 20.482041,
+            "bboxMin": [
+                1.159959,
+                6.190314,
+                0.8
+            ],
+            "bboxMax": [
+                4.070259,
+                9.75,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 28,
+            "edges": 78,
+            "vertices": 52
+        },
+        {
+            "name": "Gridfinity label 1U 5mm text 5",
+            "file": "body6.smt",
+            "volume": 3.294067,
+            "area": 24.831203,
+            "bboxMin": [
+                4.562074,
+                6.25,
+                0.8
+            ],
+            "bboxMax": [
+                8.864257,
+                8.842769,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 30,
+            "edges": 84,
+            "vertices": 56
+        },
+        {
+            "name": "Gridfinity label 1U 5mm text 6",
+            "file": "body7.smt",
+            "volume": 3.294067,
+            "area": 24.831203,
+            "bboxMin": [
+                9.451569,
+                6.25,
+                0.8
+            ],
+            "bboxMax": [
+                13.753752,
+                8.842769,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 30,
+            "edges": 84,
+            "vertices": 56
+        },
+        {
+            "name": "Gridfinity label 1U 5mm text 7",
+            "file": "body8.smt",
+            "volume": 1.99861,
+            "area": 15.677322,
+            "bboxMin": [
+                8.362892,
+                1.25,
+                0.8
+            ],
+            "bboxMax": [
+                11.569236,
+                3.785471,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 14,
+            "edges": 36,
+            "vertices": 24
+        },
+        {
+            "name": "Gridfinity label 1U 5mm text 8",
+            "file": "body9.smt",
+            "volume": 2.124166,
+            "area": 16.789288,
+            "bboxMin": [
+                5.244884,
+                1.192701,
+                0.8
+            ],
+            "bboxMax": [
+                8.181446,
+                3.842769,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 24,
+            "edges": 66,
+            "vertices": 44
+        },
+        {
+            "name": "Gridfinity label 1U 5mm text 9",
+            "file": "body10.smt",
+            "volume": 2.219471,
+            "area": 17.150557,
+            "bboxMin": [
+                19.76296,
+                0.22101,
+                0.8
+            ],
+            "bboxMax": [
+                22.754434,
+                3.78547,
+                1.2
+            ],
+            "lumps": 1,
+            "faces": 15,
+            "edges": 39,
+            "vertices": 26
+        }
+    ]
+}

@@ -5,7 +5,7 @@
         "useUnits": false,
         "offsetX": -0.1,
         "line1": "M3",
-        "isBold": true,
+        "textStyle": "Bold",
         "head": "pan",
         "shaft": "tapping",
         "threads": "partial",

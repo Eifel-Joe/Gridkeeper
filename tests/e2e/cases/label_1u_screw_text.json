@@ -1,5 +1,7 @@
 {
     "description": "1U Cullenect insert with a socket head screw and one line of text, raised, the baseline the other label cases change things of",
     "generator": "label",
-    "settings": {}
+    "settings": {
+        "textStyle": "Regular"
+    }
 }

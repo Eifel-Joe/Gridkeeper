@@ -205,3 +205,11 @@ def test_a_bin_with_a_label_brings_its_color_back():
 @pytest.mark.parametrize("hasLabel, isCullenect", [(False, False), (True, True), (False, True)])
 def test_a_bin_without_a_label_to_color_leaves_the_choice(hasLabel, isCullenect):
     assert labelColors.restoresColor("", hasLabel, isCullenect) is False
+
+
+# --- round 11 merged in: the text style of an insert is a setting of its config, Heavy by default ---
+
+def test_label_defaults_have_the_text_style_of_round_11():
+    textStyles = _load("textStyles", "lib", "gridfinityUtils", "textStyles.py")
+    assert defaultSettings.LABEL["textStyle"] == textStyles.DEFAULT_INSERT_STYLE
+    assert "isBold" not in defaultSettings.LABEL

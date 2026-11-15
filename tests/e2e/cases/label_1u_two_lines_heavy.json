@@ -1,0 +1,10 @@
+{
+    "description": "1U insert with two lines in the Heavy style, flush - lettering printable with a 0.4 mm nozzle (p130)",
+    "generator": "label",
+    "settings": {
+        "line1": "5mm",
+        "line2": "Hex key",
+        "showScrew": false,
+        "surface": "Flush"
+    }
+}

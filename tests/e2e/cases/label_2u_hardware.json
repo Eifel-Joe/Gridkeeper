@@ -5,6 +5,7 @@
         "widthUnits": 2,
         "line1": "M4",
         "line2": "Nylon lock nut",
+        "textStyle": "Regular",
         "showScrew": false,
         "hardware": "nut_nylon",
         "surface": "Debossed"

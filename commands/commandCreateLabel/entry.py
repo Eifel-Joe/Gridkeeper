@@ -13,6 +13,7 @@ from ...lib.gridfinityUtils import cullenectCatalog
 from ...lib.gridfinityUtils import cullenectLabelGenerator
 from ...lib.gridfinityUtils import cullenectLabelLayout
 from ...lib.gridfinityUtils import labelColors
+from ...lib.gridfinityUtils import textStyles
 from .inputState import InputState
 from .labelBuilder import buildLabel, labelName, labelProblem, labelSize, labelSymbol, ICONS_FOLDER, NO_HARDWARE
 from ...lib.ui.commandUiState import CommandUiState
@@ -62,7 +63,7 @@ OFFSET_Y_INPUT = 'offset_y'
 SIZE_TEXT = 'size_text'
 LINE_1_INPUT = 'text_line_1'
 LINE_2_INPUT = 'text_line_2'
-BOLD_INPUT = 'text_bold'
+TEXT_STYLE_DROPDOWN = 'text_style'
 SURFACE_DROPDOWN = 'surface_dropdown'
 TEXT_COLOR_DROPDOWN = 'text_color'
 CUSTOM_COLOR_INPUT = 'text_color_custom'
@@ -148,6 +149,7 @@ def dropdownNames() -> dict[str, list[str]]:
     names[SIZING_MODE_DROPDOWN] = [SIZING_MODE_UNITS, SIZING_MODE_FREE]
     names[SURFACE_DROPDOWN] = list(SURFACE_NAMES.values())
     names[TEXT_COLOR_DROPDOWN] = labelColors.CHOICES
+    names[TEXT_STYLE_DROPDOWN] = textStyles.STYLES
     return names
 
 def selectableName(inputId: str, names: list[str]) -> str:
@@ -155,7 +157,7 @@ def selectableName(inputId: str, names: list[str]) -> str:
     older version or a symbol whose svg is gone"""
     selected = uiState.getState(inputId)
     if selected not in names and len(names) > 0:
-        selected = names[0]
+        selected = textStyles.DEFAULT_INSERT_STYLE if inputId == TEXT_STYLE_DROPDOWN else names[0]
         uiState.updateValue(inputId, selected)
     return selected
 
@@ -224,9 +226,9 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     for (inputId, label) in [(LINE_1_INPUT, 'Line 1'), (LINE_2_INPUT, 'Line 2')]:
         stringInput = textGroup.children.addStringValueInput(inputId, label, uiState.getState(inputId))
         uiState.registerCommandInput(stringInput)
-    addBool(textGroup.children, BOLD_INPUT, 'Bold')
+    addDropdown(textGroup.children, TEXT_STYLE_DROPDOWN, 'Text style', names[TEXT_STYLE_DROPDOWN]).tooltip =         'Heavy is Arial Black, its strokes print with a 0.4 mm nozzle. Regular and Bold are Arial, thin when small'
     addDropdown(textGroup.children, SURFACE_DROPDOWN, 'Text and symbol', names[SURFACE_DROPDOWN]).tooltip = \
-        'Raised 0.2 mm, or set 0.2 mm in, as a body of its own to print in another colour. Set in keeps that body hidden, flush shows it'
+        'Raised 0.4 mm, or set 0.4 mm in, as a body of its own to print in another colour. Set in keeps that body hidden, flush shows it'
     addDropdown(textGroup.children, TEXT_COLOR_DROPDOWN, 'Text color', names[TEXT_COLOR_DROPDOWN]).tooltip = \
         'Gives the text and symbol bodies this color, for printing them in another filament. None keeps the look of the insert'
     customColorInput = textGroup.children.addStringValueInput(CUSTOM_COLOR_INPUT, 'Custom color', uiState.getState(CUSTOM_COLOR_INPUT))
@@ -326,8 +328,14 @@ def command_execute(args: adsk.core.CommandEventArgs):
     futil.log(f'{CMD_NAME} Command Execute Event')
     des = adsk.fusion.Design.cast(app.activeProduct)
     wasPart = des is not None and des.designIntent == adsk.fusion.DesignIntentTypes.PartDesignIntentType
-    if generateLabel(args) is not False and wasPart and des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
+    if generateLabel(args) is False:
+        return
+    if wasPart and des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
         ui.messageBox(HYBRID_SWITCH_MESSAGE, CMD_NAME)
+    # text fitted so small that a 0.4 mm nozzle leaves parts out (p130)
+    hint = textStyles.hintText(textStyles.notes(), suggestHeavy=getInputsState().textStyle != textStyles.STYLE_HEAVY)
+    if hint is not None:
+        ui.messageBox(hint, CMD_NAME)
 
 def command_preview(args: adsk.core.CommandEventArgs):
     futil.log(f'{CMD_NAME} Command Preview Event')
@@ -338,7 +346,7 @@ def command_preview(args: adsk.core.CommandEventArgs):
             # a preview leaves a part design as it is, only OK switches it to hybrid
             isGenerated = generateLabel(args, mayChangeDocument=False) is not False
             seconds = time.perf_counter() - startTime
-            inputs.itemById(PREVIEW_TIME_INPUT).text = f'{seconds:.2f} s' if isGenerated else f'failed after {seconds:.2f} s'
+            inputs.itemById(PREVIEW_TIME_INPUT).text = f'{seconds:.2f} s{textStyles.previewNote(textStyles.notes())}' if isGenerated else f'failed after {seconds:.2f} s'
         else:
             args.executeFailed = True
             args.executeFailedMessage = "Some inputs are invalid, unable to generate preview"
@@ -392,6 +400,8 @@ def generateLabel(args: adsk.core.CommandEventArgs, mayChangeDocument: bool = Tr
     settings = snapshotSettings(args.command.commandInputs)
     commonUtils.fileLog(f'{CMD_NAME} Generating label with settings:\n{settingsUtils.settingsText(settings)}')
     state = getInputsState()
+    # notes of an earlier build, a preview or a failed one, are not this one's
+    textStyles.clearNotes()
     try:
         des = adsk.fusion.Design.cast(app.activeProduct)
         buildLabel(des, state, settings, mayChangeDocument)
@@ -421,7 +431,7 @@ def initUiState():
     uiState.initValue(OFFSET_Y_INPUT, 0, value)
     uiState.initValue(LINE_1_INPUT, 'M3x10', string)
     uiState.initValue(LINE_2_INPUT, '', string)
-    uiState.initValue(BOLD_INPUT, False, boolean)
+    uiState.initValue(TEXT_STYLE_DROPDOWN, textStyles.DEFAULT_INSERT_STYLE, dropdown)
     uiState.initValue(SURFACE_DROPDOWN, SURFACE_NAMES[cullenectLabelGenerator.SURFACE_EMBOSSED], dropdown)
     uiState.initValue(TEXT_COLOR_DROPDOWN, labelColors.NO_COLOR_CHOICE, dropdown)
     uiState.initValue(CUSTOM_COLOR_INPUT, '', string)
@@ -465,7 +475,7 @@ def getInputsState() -> InputState:
         offsetY=uiState.getState(OFFSET_Y_INPUT),
         line1=uiState.getState(LINE_1_INPUT),
         line2=uiState.getState(LINE_2_INPUT),
-        isBold=uiState.getState(BOLD_INPUT),
+        textStyle=uiState.getState(TEXT_STYLE_DROPDOWN),
         showScrew=uiState.getState(SHOW_SCREW_INPUT),
         head=keyOf(uiState.getState(HEAD_DROPDOWN), options['head']),
         shaft=keyOf(uiState.getState(SHAFT_DROPDOWN), options['shaft']),

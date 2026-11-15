@@ -89,8 +89,9 @@ CULLENECT_RIB_WIDTH = 0.02
 CULLENECT_RIB_HEIGHT = 0.04
 CULLENECT_RIB_BOTTOM = 0.02
 CULLENECT_CORNER_RADIUS = 0.05
-# text and icons are one layer
-CULLENECT_LAYER = 0.02
+# text and icons are two 0.2 mm layers, raised above or set into the insert: one layer printed incomplete with a
+# 0.4 mm nozzle (Joerg 15.11.2026, p130)
+CULLENECT_MARKING_DEPTH = 0.04
 # least material left around the socket on the tab top
 CULLENECT_POCKET_MARGIN = 0.1
 CULLENECT_MIN_TAB_WIDTH = 1.4
