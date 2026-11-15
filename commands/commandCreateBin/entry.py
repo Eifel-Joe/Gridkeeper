@@ -4,6 +4,7 @@ import os
 import pathlib
 import time
 import math
+import dataclasses
 
 
 from ...lib import configUtils
@@ -699,13 +700,19 @@ def refreshShapeDrawing():
     browserPages.sendUpdate(commandUIState.commandInputs.get(BIN_SHAPE_BROWSER_ID), shapeDrawingData())
 
 def binLabelColor() -> str:
-    """The label color of the bin's state, '' where there is no label to color, a custom text that is no color as it
-    is (see labelColors.dialogColor). Hollow and shelled bins both have labels on their tab (review round 10: a
-    shelled bin let an invalid color through)"""
+    """The label color of the dialog's state, see stateLabelColor"""
+    return getInputsState().labelColor
+
+def stateLabelColor(state: InputState) -> str:
+    """The label color of a bin state built without one, '' where there is no label to color, a custom text that is no
+    color as it is (see labelColors.dialogColor). Hollow and shelled bins both have labels on their tab (review round
+    10: a shelled bin let an invalid color through). It takes the state rather than asking isShaped(): that builds the
+    state again, which asked for this color, endless recursion that kept the bin dialog from opening (Nutzer 15.11.2026,
+    see tests/test_dialog_state_calls.py)"""
     hasLabel = labelColors.binHasLabel(
         commandUIState.getState(BIN_GENERATE_BODY_INPUT_ID),
         commandUIState.getState(BIN_HAS_TAB_INPUT_ID),
-        isShaped(),
+        binBuilder.isShaped(state),
         commandUIState.getState(BIN_TYPE_DROPDOWN_ID) == BIN_TYPE_SOLID,
     )
     isCullenect = commandUIState.getState(BIN_TAB_LABEL_STYLE_INPUT_ID) == labelGenerator.LABEL_STYLE_CULLENECT
@@ -1368,11 +1375,11 @@ def rebuiltConfig() -> str | None:
 def getInputsState() -> InputState:
     def angle(inputId: str) -> float:
         return app.activeProduct.unitsManager.evaluateExpression(str(commandUIState.getState(inputId)), 'deg')
-    return InputState(
+    state = InputState(
         **{field: commandUIState.getState(inputId) for (field, inputId) in STATE_INPUT_IDS.items()},
         **{field: angle(inputId) for (field, inputId) in STATE_ANGLE_INPUT_IDS.items()},
-        # from the color dropdown and its custom text, see applyInputsState for the way back
-        labelColor=binLabelColor(),
+        # filled in below from the finished state, see stateLabelColor; applyInputsState is the way back
+        labelColor='',
         compartmentsX=commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID),
         compartmentsY=commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID),
         showCompartmentsLayout=commandUIState.getState(BIN_COMPARTMENTS_SHOW_LAYOUT_ID),
@@ -1380,6 +1387,7 @@ def getInputsState() -> InputState:
         hasCustomShape=commandUIState.getState(BIN_SHAPE_CUSTOM_ID),
         shapeCells=binShapeCells,
     )
+    return dataclasses.replace(state, labelColor=stateLabelColor(state))
 
 def applyInputsState(state: InputState):
     """Sets the dialog state to a state from getInputsState, the inputs follow on refreshUi"""
