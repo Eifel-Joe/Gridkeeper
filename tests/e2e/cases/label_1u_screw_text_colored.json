@@ -10,7 +10,7 @@
         "offsetY": 0.0,
         "line1": "M3x10",
         "line2": "",
-        "isBold": false,
+        "textStyle": "Regular",
         "showScrew": true,
         "head": "socket",
         "shaft": "machine",

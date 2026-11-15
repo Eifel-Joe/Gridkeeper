@@ -10,7 +10,7 @@
         "offsetY": 0.0,
         "line1": "M3",
         "line2": "",
-        "isBold": true,
+        "textStyle": "Bold",
         "showScrew": true,
         "head": "pan",
         "shaft": "tapping",
