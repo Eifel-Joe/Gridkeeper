@@ -1,0 +1,21 @@
+{
+    "baseWidth": 42.0,
+    "useUnits": true,
+    "widthUnits": 6,
+    "freeWidth": 25.0,
+    "offsetX": 0.0,
+    "offsetY": 0.0,
+    "line1": "Assorted screws",
+    "line2": "M2 to M5",
+    "textStyle": "Regular",
+    "showScrew": false,
+    "head": "socket",
+    "shaft": "machine",
+    "threads": "full",
+    "driver": "hex",
+    "flange": false,
+    "security": false,
+    "hardware": "none",
+    "surface": "Embossed",
+    "textColor": ""
+}

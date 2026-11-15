@@ -1,25 +1,25 @@
 23200 0 2 2           
-16 Autodesk Neutron 20 ASM 232.5.0.65535 NT 24 Sat Nov 14 03:15:49 2026 
+16 Autodesk Neutron 20 ASM 232.5.0.65535 NT 24 Sun Nov 15 15:31:42 2026 
 10 9.999999999999999547e-07 1.000000000000000036e-10 
 asmheader $-1 -1 @13 232.5.0.65535 #
 body $2 -1 $-1 $3 $-1 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $4 $-1 $1 @20 Timestamp_attrib_def 1 1794622549560520 #
+ATTRIB_CUSTOM-attrib $-1 -1 $4 $-1 $1 @20 Timestamp_attrib_def 1 1794753101992138 #
 lump $-1 -1 $-1 $-1 $5 $1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $2 $1 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  8 3 @3 314 7 0 0 3 @3 319 7 0 0 3 @3 311 1 0 0 3 @3 304 7 0 0 3 @3 308 27 0 0 3 @3 349 1 0 0 3 @3 349 2 0 0 3 @3 355 6 0 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $2 $1 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  8 3 @3 314 7 0 0 3 @3 319 7 0 0 3 @3 311 1 0 0 3 @3 304 7 0 0 3 @3 308 27 0 0 3 @3 366 1 0 0 3 @3 366 2 0 0 3 @3 372 6 0 0 #
 shell $-1 -1 $-1 $-1 $-1 $6 $-1 $3 #
 face $7 -1 $-1 $8 $9 $5 $-1 $10 reversed single #
-ATTRIB_CUSTOM-attrib $11 -1 $-1 $-1 $6 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 3 373 375 377 0 #
+ATTRIB_CUSTOM-attrib $11 -1 $-1 $-1 $6 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 3 390 392 394 0 #
 face $12 -1 $-1 $13 $14 $5 $-1 $15 forward single #
 loop $-1 -1 $-1 $-1 $16 $6 #
 plane-surface $-1 -1 $-1 4.174999999999999822 4.004999999999999893 1.449999999999999956 0 0 1 1 0 0 forward_v I I I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $7 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 376 0 #
-ATTRIB_CUSTOM-attrib $17 -1 $-1 $-1 $8 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 8 0 3 373 375 377 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $7 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 393 0 #
+ATTRIB_CUSTOM-attrib $17 -1 $-1 $-1 $8 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 8 0 3 390 392 394 0 #
 face $18 -1 $-1 $19 $20 $5 $-1 $21 forward single #
 loop $-1 -1 $-1 $-1 $22 $8 #
 plane-surface $-1 -1 $-1 0.2599999999999993427 3.995000000000000107 1.449999999999999956 0 -1 0 1 0 0 forward_v I I I I #
 coedge $-1 -1 $-1 $23 $24 $25 $26 forward $9 0 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $12 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 376 0 #
-ATTRIB_CUSTOM-attrib $27 -1 $-1 $-1 $13 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 3 373 375 377 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $12 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 393 0 #
+ATTRIB_CUSTOM-attrib $27 -1 $-1 $-1 $13 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 3 390 392 394 0 #
 face $28 -1 $-1 $29 $30 $5 $-1 $31 reversed single #
 loop $-1 -1 $-1 $-1 $32 $13 #
 plane-surface $-1 -1 $-1 4.174999999999999822 4.004999999999999893 1.489999999999999991 0 0 1 1 0 0 forward_v I I I I #
@@ -28,8 +28,8 @@ coedge $37 -1 $-1 $38 $16 $39 $40 forward $9 0 $-1 #
 coedge $41 -1 $-1 $16 $38 $33 $42 reversed $9 0 $-1 #
 coedge $-1 -1 $-1 $35 $43 $16 $26 reversed $30 0 $-1 #
 edge $-1 -1 $-1 $44 -0.1418970546041775915 $45 0.7853981633974506105 $25 $46 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $18 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 376 0 #
-ATTRIB_CUSTOM-attrib $47 -1 $-1 $-1 $19 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 2 370 377 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $18 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 393 0 #
+ATTRIB_CUSTOM-attrib $47 -1 $-1 $-1 $19 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 2 387 394 0 #
 face $48 -1 $-1 $49 $50 $5 $-1 $51 reversed single #
 loop $-1 -1 $-1 $-1 $52 $19 #
 cone-surface $-1 -1 $-1 0.3099999999999993872 3.965000000000000746 1.550000000000000044 0 0 -1 -0.03535533905932745913 0.03535533905932729953 0 1 I I 0 1 0.05000000000000000278 forward I I I I #
@@ -38,18 +38,18 @@ coedge $56 -1 $-1 $57 $22 $24 $42 forward $14 0 $-1 #
 coedge $-1 -1 $-1 $22 $57 $53 $58 reversed $14 0 $-1 #
 coedge $-1 -1 $-1 $52 $25 $22 $36 reversed $30 0 $-1 #
 edge $-1 -1 $-1 $59 0.06000000000000005329 $44 0.1000000000000000888 $35 $60 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $23 @17 sketch_attrib_def 1 1 3 @13 254 0 0 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $23 @17 sketch_attrib_def 1 1 3 @13 266 0 0 0 1 1 #
 coedge $-1 -1 $-1 $24 $23 $61 $62 forward $9 0 $-1 #
 coedge $-1 -1 $-1 $63 $64 $23 $40 reversed $50 0 $-1 #
 edge $-1 -1 $-1 $45 -1.907500000000000417 $65 5.822499999999999787 $39 $66 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $24 @17 sketch_attrib_def 1 1 3 @13 252 0 0 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $24 @17 sketch_attrib_def 1 1 3 @13 264 0 0 0 1 1 #
 edge $-1 -1 $-1 $44 0.009999999999999564793 $67 7.820000000000000284 $33 $68 forward @7 unknown #
 coedge $-1 -1 $-1 $25 $69 $63 $70 reversed $30 0 $-1 #
 vertex $-1 -1 $-1 $36 1 $71 #
 vertex $-1 -1 $-1 $70 0 $72 #
 ellipse-curve $-1 -1 $-1 0.3099999999999993872 3.965000000000000746 1.449999999999999956 -0 -0 -1 -0.03535533905932745913 0.03535533905932729953 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $28 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 376 0 #
-ATTRIB_CUSTOM-attrib $73 -1 $-1 $-1 $29 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 2 368 377 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $28 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 393 0 #
+ATTRIB_CUSTOM-attrib $73 -1 $-1 $-1 $29 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 2 385 394 0 #
 face $74 -1 $-1 $75 $76 $5 $-1 $77 forward single #
 loop $-1 -1 $-1 $-1 $39 $29 #
 plane-surface $-1 -1 $-1 0.2599999999999997868 4.015000000000000568 1.550000000000000044 0 1 0 1 -0 -0 forward_v I I I I #
@@ -57,7 +57,7 @@ coedge $-1 -1 $-1 $78 $35 $32 $55 reversed $30 0 $-1 #
 coedge $-1 -1 $-1 $79 $32 $34 $58 forward $20 0 $-1 #
 coedge $-1 -1 $-1 $32 $79 $80 $81 forward $20 0 $-1 #
 edge $-1 -1 $-1 $82 -0.7853981633974506105 $59 0.1418970546041775915 $52 $83 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $33 @17 sketch_attrib_def 1 1 3 @13 252 0 0 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $33 @17 sketch_attrib_def 1 1 3 @13 264 0 0 0 1 1 #
 coedge $-1 -1 $-1 $34 $33 $84 $85 forward $14 0 $-1 #
 edge $-1 -1 $-1 $59 0.009999999999999564793 $86 7.820000000000000284 $34 $87 forward @7 unknown #
 vertex $-1 -1 $-1 $36 0 $88 #
@@ -74,8 +74,8 @@ coedge $-1 -1 $-1 $43 $96 $97 $98 reversed $30 0 $-1 #
 edge $-1 -1 $-1 $45 0.1000000000000000888 $99 0.1199999999999998845 $63 $100 forward @7 tangent #
 point $-1 -1 $-1 0.2699999999999989075 3.995000000000000107 1.449999999999999956 #
 point $-1 -1 $-1 0.3099999999999993872 4.01499999999999968 1.449999999999999956 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $48 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 376 0 #
-ATTRIB_CUSTOM-attrib $101 -1 $-1 $-1 $49 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 3 373 375 377 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $48 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 393 0 #
+ATTRIB_CUSTOM-attrib $101 -1 $-1 $-1 $49 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 3 390 392 394 0 #
 face $102 -1 $-1 $103 $104 $5 $-1 $105 reversed single #
 loop $-1 -1 $-1 $-1 $106 $49 #
 plane-surface $-1 -1 $-1 8.089999999999999858 2.904999999999999805 1.449999999999999956 0 1 -0 -1 0 0 forward_v I I I I #
@@ -102,8 +102,8 @@ coedge $-1 -1 $-1 $127 $121 $69 $98 forward $128 0 $-1 #
 edge $-1 -1 $-1 $99 -0.7853981633974549403 $129 0.7853981633974460586 $97 $130 forward @7 unknown #
 vertex $-1 -1 $-1 $122 0 $131 #
 straight-curve $-1 -1 $-1 0.3099999999999993872 4.015000000000000568 1.550000000000000044 0 0 -1 F -0.1550009999999999444 F 0.2750009999999998289 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $74 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 376 0 #
-ATTRIB_CUSTOM-attrib $132 -1 $-1 $-1 $75 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 3 373 375 377 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $74 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 393 0 #
+ATTRIB_CUSTOM-attrib $132 -1 $-1 $-1 $75 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 3 390 392 394 0 #
 face $133 -1 $-1 $134 $135 $5 $-1 $136 forward single #
 loop $-1 -1 $-1 $-1 $137 $75 #
 plane-surface $-1 -1 $-1 4.174999999999999822 2.895000000000000018 1.449999999999999956 0 0 1 1 0 0 forward_v I I I I #
@@ -133,8 +133,8 @@ loop $-1 -1 $-1 $-1 $97 $166 #
 vertex $-1 -1 $-1 $98 1 $167 #
 ellipse-curve $-1 -1 $-1 0.3099999999999993872 3.965000000000000746 1.43000000000000016 -0 -0 1 -0.03535533905932745913 0.03535533905932729953 0 1 I I #
 point $-1 -1 $-1 0.3099999999999996092 4.015000000000000568 1.43000000000000016 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $102 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 376 0 #
-ATTRIB_CUSTOM-attrib $168 -1 $-1 $-1 $103 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 3 373 375 377 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $102 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 393 0 #
+ATTRIB_CUSTOM-attrib $168 -1 $-1 $-1 $103 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 3 390 392 394 0 #
 face $169 -1 $-1 $170 $171 $5 $-1 $172 reversed single #
 loop $-1 -1 $-1 $-1 $173 $103 #
 plane-surface $-1 -1 $-1 4.174999999999999822 2.895000000000000018 1.489999999999999991 0 0 1 1 0 0 forward_v I I I I #
@@ -155,7 +155,7 @@ point $-1 -1 $-1 8.039999999999999147 4.01499999999999968 1.489999999999999991 #
 coedge $-1 -1 $-1 $194 $119 $198 $199 reversed $90 0 $-1 #
 coedge $-1 -1 $-1 $121 $200 $119 $153 forward $128 0 $-1 #
 edge $-1 -1 $-1 $201 -0.7853981633974395082 $123 0.7853981633974571608 $152 $202 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $203 -1 $-1 $-1 $120 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 3 0 2 370 377 0 #
+ATTRIB_CUSTOM-attrib $203 -1 $-1 $-1 $120 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 3 0 2 387 394 0 #
 face $204 -1 $-1 $205 $206 $5 $-1 $207 reversed single #
 cone-surface $-1 -1 $-1 8.039999999999999147 3.965000000000000746 1.550000000000000044 0 0 -1 0.03535533905932768811 0.03535533905932706361 0 1 I I 0 1 0.05000000000000000278 forward I I I I #
 straight-curve $-1 -1 $-1 8.089999999999999858 4.015000000000000568 1.43000000000000016 1 0 0 I I #
@@ -169,8 +169,8 @@ coedge $-1 -1 $-1 $213 $127 $214 $215 forward $128 0 $-1 #
 edge $-1 -1 $-1 $216 -1.080000000000000515 $129 -0.04999999999999982236 $160 $217 forward @7 unknown #
 face $218 -1 $-1 $120 $128 $5 $-1 $219 reversed single #
 point $-1 -1 $-1 0.2599999999999993427 3.965000000000000746 1.43000000000000016 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $133 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 376 0 #
-ATTRIB_CUSTOM-attrib $220 -1 $-1 $-1 $134 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 2 370 377 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $133 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 393 0 #
+ATTRIB_CUSTOM-attrib $220 -1 $-1 $-1 $134 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 2 387 394 0 #
 face $221 -1 $-1 $222 $223 $5 $-1 $224 reversed single #
 loop $-1 -1 $-1 $-1 $183 $134 #
 cone-surface $-1 -1 $-1 8.039999999999999147 2.935000000000000053 1.550000000000000044 0 0 -1 0.03535533905932768811 -0.03535533905932706361 0 1 I I 0 1 0.05000000000000000278 forward I I I I #
@@ -179,7 +179,7 @@ coedge $227 -1 $-1 $228 $137 $229 $230 forward $104 0 $-1 #
 coedge $231 -1 $-1 $137 $228 $138 $180 reversed $104 0 $-1 #
 coedge $-1 -1 $-1 $140 $232 $137 $177 reversed $171 0 $-1 #
 edge $-1 -1 $-1 $185 -0.1418970546041408431 $233 0.7853981633974571608 $176 $234 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $138 @17 sketch_attrib_def 1 1 3 @13 244 0 0 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $138 @17 sketch_attrib_def 1 1 3 @13 256 0 0 0 1 1 #
 coedge $-1 -1 $-1 $139 $138 $235 $236 forward $76 0 $-1 #
 edge $-1 -1 $-1 $185 0.01000000000000156319 $237 7.820000000000000284 $138 $238 forward @7 unknown #
 coedge $-1 -1 $-1 $239 $173 $139 $182 forward $135 0 $-1 #
@@ -192,24 +192,24 @@ coedge $-1 -1 $-1 $245 $142 $144 $192 forward $189 0 $-1 #
 coedge $-1 -1 $-1 $142 $246 $159 $210 forward $189 0 $-1 #
 loop $-1 -1 $-1 $247 $245 $248 #
 ellipse-curve $-1 -1 $-1 0.3099999999999993872 3.965000000000000746 1.550000000000000044 0 -0 -1 -0.03535533905932745913 0.03535533905932729953 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $144 @17 sketch_attrib_def 1 1 3 @13 233 0 0 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $144 @17 sketch_attrib_def 1 1 3 @13 245 0 0 0 1 1 #
 edge $-1 -1 $-1 $145 0.119999999999999718 $195 7.849999999999999645 $187 $249 forward @7 unknown #
 point $-1 -1 $-1 0.3099999999999996092 4.015000000000000568 1.550000000000000044 #
 coedge $-1 -1 $-1 $146 $151 $245 $250 reversed $90 0 $-1 #
 vertex $-1 -1 $-1 $250 0 $251 #
-ATTRIB_CUSTOM-attrib $252 -1 $-1 $-1 $149 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 2 368 377 0 #
+ATTRIB_CUSTOM-attrib $252 -1 $-1 $-1 $149 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 2 385 394 0 #
 face $253 -1 $-1 $254 $255 $5 $-1 $256 forward single #
 coedge $-1 -1 $-1 $257 $258 $151 $199 forward $206 0 $-1 #
 edge $-1 -1 $-1 $259 0 $201 0.1199999999999998845 $198 $260 forward @7 tangent #
 coedge $-1 -1 $-1 $152 $261 $257 $262 reversed $128 0 $-1 #
 vertex $-1 -1 $-1 $262 0 $263 #
 ellipse-curve $-1 -1 $-1 8.039999999999999147 3.965000000000000746 1.43000000000000016 -0 -0 1 0.03535533905932768811 0.03535533905932706361 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $154 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 376 0 #
-ATTRIB_CUSTOM-attrib $264 -1 $-1 $-1 $155 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 5 0 2 368 377 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $154 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 393 0 #
+ATTRIB_CUSTOM-attrib $264 -1 $-1 $-1 $155 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 5 0 2 385 394 0 #
 face $265 -1 $-1 $149 $266 $5 $-1 $224 reversed single #
 loop $-1 -1 $-1 $-1 $198 $155 #
 plane-surface $-1 -1 $-1 8.089999999999999858 4.015000000000000568 1.550000000000000044 1 -0 0 -0 -1 -0 forward_v I I I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $159 @17 sketch_attrib_def 1 1 3 @13 234 0 0 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $159 @17 sketch_attrib_def 1 1 3 @13 246 0 0 0 1 1 #
 coedge $-1 -1 $-1 $160 $159 $267 $268 forward $161 0 $-1 #
 edge $-1 -1 $-1 $269 -0.5825000000000000178 $162 0.447500000000000675 $188 $270 forward @7 unknown #
 face $271 -1 $-1 $166 $161 $5 $-1 $272 reversed single #
@@ -219,20 +219,20 @@ coedge $-1 -1 $-1 $267 $275 $164 $215 reversed $276 0 $-1 #
 edge $-1 -1 $-1 $216 -0.785398163397448279 $277 0.785398163397448279 $164 $278 forward @7 unknown #
 vertex $-1 -1 $-1 $165 0 $279 #
 straight-curve $-1 -1 $-1 0.2599999999999993427 4.015000000000000568 1.43000000000000016 0 1 0 I I #
-ATTRIB_CUSTOM-attrib $280 -1 $-1 $-1 $166 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 2 368 377 0 #
+ATTRIB_CUSTOM-attrib $280 -1 $-1 $-1 $166 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 2 385 394 0 #
 plane-surface $-1 -1 $-1 4.174999999999999822 3.450000000000000178 1.43000000000000016 0 0 -1 -1 0 0 forward_v I I I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $169 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 376 0 #
-ATTRIB_CUSTOM-attrib $281 -1 $-1 $-1 $170 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 2 368 377 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $169 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 393 0 #
+ATTRIB_CUSTOM-attrib $281 -1 $-1 $-1 $170 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 2 385 394 0 #
 face $282 -1 $-1 $211 $276 $5 $-1 $283 reversed single #
 loop $-1 -1 $-1 $-1 $229 $170 #
 plane-surface $-1 -1 $-1 8.089999999999999858 2.885000000000000231 1.550000000000000044 0 -1 0 -1 -0 -0 forward_v I I I I #
 coedge $-1 -1 $-1 $173 $239 $284 $285 forward $135 0 $-1 #
 edge $-1 -1 $-1 $286 -0.7853981633974571608 $184 0.1418970546041408431 $183 $287 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $174 @17 sketch_attrib_def 1 1 3 @13 242 0 0 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $174 @17 sketch_attrib_def 1 1 3 @13 254 0 0 0 1 1 #
 coedge $-1 -1 $-1 $175 $174 $288 $289 forward $104 0 $-1 #
 coedge $-1 -1 $-1 $290 $291 $174 $230 reversed $223 0 $-1 #
 edge $-1 -1 $-1 $233 -1.907499999999998863 $292 5.822500000000001563 $229 $293 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $175 @17 sketch_attrib_def 1 1 3 @13 244 0 0 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $175 @17 sketch_attrib_def 1 1 3 @13 256 0 0 0 1 1 #
 coedge $-1 -1 $-1 $176 $294 $290 $295 reversed $171 0 $-1 #
 vertex $-1 -1 $-1 $295 0 $296 #
 ellipse-curve $-1 -1 $-1 8.039999999999999147 2.935000000000000053 1.449999999999999956 -0 -0 -1 0.03535533905932768811 -0.03535533905932706361 0 1 I I #
@@ -253,8 +253,8 @@ face $310 -1 $-1 $311 $189 $5 $-1 $312 forward single #
 straight-curve $-1 -1 $-1 0.1899999999999998912 4.015000000000000568 1.550000000000000044 1 -0 0 I I #
 edge $-1 -1 $-1 $195 -0.7853981633974571608 $259 0.7853981633974395082 $245 $313 forward @7 unknown #
 point $-1 -1 $-1 8.039999999999999147 4.015000000000000568 1.550000000000000044 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $196 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 376 0 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $197 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 2 355 365 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $196 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 393 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $197 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 2 372 382 0 #
 face $314 -1 $-1 $248 $315 $5 $-1 $316 forward single #
 loop $-1 -1 $-1 $-1 $317 $197 #
 plane-surface $-1 -1 $-1 0.1199999999999999956 2.605147186257614766 1.550000000000000044 0 -0.7071067811865475727 -0.7071067811865474617 -0 0.7071067811865474617 -0.7071067811865475727 forward_v I I I I #
@@ -265,14 +265,14 @@ straight-curve $-1 -1 $-1 8.089999999999999858 3.965000000000000746 1.5500000000
 coedge $-1 -1 $-1 $200 $213 $294 $322 forward $128 0 $-1 #
 edge $-1 -1 $-1 $201 -1.080000000000000515 $323 -0.04999999999999982236 $257 $324 forward @7 unknown #
 point $-1 -1 $-1 8.089999999999999858 3.965000000000000746 1.43000000000000016 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $204 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 376 0 #
-ATTRIB_CUSTOM-attrib $325 -1 $-1 $-1 $205 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 2 368 377 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $204 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 393 0 #
+ATTRIB_CUSTOM-attrib $325 -1 $-1 $-1 $205 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 2 385 394 0 #
 loop $-1 -1 $-1 $-1 $284 $205 #
 coedge $-1 -1 $-1 $307 $214 $209 $268 reversed $276 0 $-1 #
 edge $-1 -1 $-1 $269 0 $216 0.1199999999999998845 $209 $326 forward @7 tangent #
 vertex $-1 -1 $-1 $308 1 $327 #
 straight-curve $-1 -1 $-1 0.2599999999999993427 3.517500000000000071 1.550000000000000044 0 1 -0 I I #
-ATTRIB_CUSTOM-attrib $328 -1 $-1 $-1 $211 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 3 0 2 368 377 0 #
+ATTRIB_CUSTOM-attrib $328 -1 $-1 $-1 $211 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 3 0 2 385 394 0 #
 plane-surface $-1 -1 $-1 0.2599999999999993427 2.885000000000000231 1.550000000000000044 -1 -0 -0 -0 1 -0 forward_v I I I I #
 coedge $-1 -1 $-1 $291 $290 $213 $274 forward $223 0 $-1 #
 edge $-1 -1 $-1 $329 -7.779999999999999361 $277 -0.04999999999999982236 $273 $330 forward @7 unknown #
@@ -281,9 +281,9 @@ loop $-1 -1 $-1 $-1 $288 $222 #
 vertex $-1 -1 $-1 $215 1 $332 #
 ellipse-curve $-1 -1 $-1 0.3099999999999991651 2.935000000000000053 1.43000000000000016 -0 -0 1 -0.0353553390593273828 -0.0353553390593273828 0 1 I I #
 point $-1 -1 $-1 0.2599999999999993427 2.935000000000000053 1.43000000000000016 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $218 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 376 0 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $221 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 376 0 #
-ATTRIB_CUSTOM-attrib $333 -1 $-1 $-1 $222 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 2 370 377 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $218 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 393 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $221 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 393 0 #
+ATTRIB_CUSTOM-attrib $333 -1 $-1 $-1 $222 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 2 387 394 0 #
 cone-surface $-1 -1 $-1 0.3099999999999991651 2.935000000000000053 1.550000000000000044 0 0 -1 -0.0353553390593273828 -0.0353553390593273828 0 1 I I 0 1 0.05000000000000000971 forward I I I I #
 coedge $-1 -1 $-1 $334 $303 $225 $285 reversed $266 0 $-1 #
 edge $-1 -1 $-1 $335 -5.822500000000001563 $286 1.907499999999998863 $284 $336 forward @7 unknown #
@@ -311,30 +311,30 @@ coedge $-1 -1 $-1 $246 $344 $346 $348 forward $189 0 $-1 #
 coedge $-1 -1 $-1 $342 $267 $246 $308 reversed $276 0 $-1 #
 edge $-1 -1 $-1 $349 -0.785398163397448279 $269 0.785398163397448279 $246 $350 forward @7 unknown #
 coedge $-1 -1 $-1 $351 $352 $353 $354 reversed $247 0 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $248 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 3 0 2 355 365 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $248 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 3 0 2 372 382 0 #
 face $355 -1 $-1 $356 $357 $5 $-1 $358 reversed single #
 plane-surface $-1 -1 $-1 0.1199999999999999956 4.150000000000000355 1.550000000000000044 -0 0 1 0 -1 0 forward_v I I I I #
 ellipse-curve $-1 -1 $-1 8.039999999999999147 3.965000000000000746 1.550000000000000044 0 -0 -1 0.03535533905932768811 0.03535533905932706361 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $254 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 2 357 365 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $254 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 2 374 382 0 #
 loop $-1 -1 $-1 $-1 $359 $254 #
 cone-surface $-1 -1 $-1 0.1199999999999999956 2.750000000000000888 1.489999999999999769 1 0 0 0 -0.05543277195067738278 0.02296100594190495295 1 I I 0 1 0.05999999999999999778 forward I I I I #
 coedge $-1 -1 $-1 $360 $361 $362 $363 reversed $255 0 $-1 #
 coedge $-1 -1 $-1 $258 $257 $340 $364 forward $206 0 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $258 @17 sketch_attrib_def 1 1 3 @13 232 0 0 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $258 @17 sketch_attrib_def 1 1 3 @13 244 0 0 0 1 1 #
 edge $-1 -1 $-1 $259 0.1174999999999997158 $365 1.147500000000000409 $305 $366 forward @7 unknown #
 point $-1 -1 $-1 8.089999999999999858 3.965000000000000746 1.550000000000000044 #
 edge $-1 -1 $-1 $329 -0.7853981633974571608 $323 0.7853981633974395082 $261 $367 forward @7 unknown #
 vertex $-1 -1 $-1 $322 1 $368 #
 straight-curve $-1 -1 $-1 8.089999999999999858 2.885000000000000231 1.43000000000000016 -0 -1 -0 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $265 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 376 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $265 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 393 0 #
 straight-curve $-1 -1 $-1 0.2599999999999993427 2.935000000000000053 1.550000000000000044 0 0 -1 F -0.1550009999999999444 F 0.2750009999999998289 #
 point $-1 -1 $-1 0.2599999999999993427 2.935000000000000053 1.550000000000000044 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $271 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 376 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $271 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 393 0 #
 vertex $-1 -1 $-1 $274 0 $369 #
 straight-curve $-1 -1 $-1 0.2599999999999993427 2.885000000000000231 1.43000000000000016 -1 -0 -0 I I #
 edge $-1 -1 $-1 $277 -0.1199999999999998845 $292 -0.1000000000000000888 $291 $370 forward @7 tangent #
 point $-1 -1 $-1 0.3099999999999991651 2.885000000000000231 1.43000000000000016 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $282 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 376 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $282 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 0 @0  0 1 393 0 #
 coedge $-1 -1 $-1 $346 $284 $342 $371 forward $266 0 $-1 #
 vertex $-1 -1 $-1 $371 0 $372 #
 straight-curve $-1 -1 $-1 6.132500000000000284 2.885000000000000231 1.489999999999999991 1 0 -0 I I #
@@ -356,17 +356,17 @@ coedge $378 -1 $-1 $379 $309 $380 $381 reversed $247 0 $-1 #
 coedge $-1 -1 $-1 $309 $382 $383 $384 reversed $247 0 $-1 #
 coedge $-1 -1 $-1 $385 $386 $309 $354 forward $387 0 $-1 #
 edge $-1 -1 $-1 $388 -0.785398163397448279 $389 0.785398163397448279 $353 $390 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $311 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 3 0 2 314 350 0 1 @1 3 0 3 319 342 350 0 2 @2 12 0 2 347 350 0 2 @2 12 0 2 348 350 0 #
-face $391 -1 $-1 $392 $387 $5 $-1 $393 reversed single #
-loop $-1 -1 $-1 $-1 $394 $311 #
-plane-surface $-1 -1 $-1 0.1199999999999999956 4.150000000000000355 0 -1 0 0 0 -1 0 forward_v I I I I #
-coedge $-1 -1 $-1 $395 $396 $397 $398 reversed $315 0 $-1 #
-coedge $-1 -1 $-1 $399 $317 $400 $401 reversed $255 0 $-1 #
-coedge $402 -1 $-1 $317 $403 $394 $404 reversed $255 0 $-1 #
-coedge $-1 -1 $-1 $405 $406 $317 $363 forward $407 0 $-1 #
-edge $-1 -1 $-1 $408 0 $409 1.57079632679489678 $362 $410 forward @7 unknown #
-edge $-1 -1 $-1 $323 -0.1199999999999998845 $365 0 $318 $411 forward @7 tangent #
-vertex $-1 -1 $-1 $345 0 $412 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $311 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 5 0 2 314 367 0 1 @1 5 0 3 319 342 367 0 2 @2 16 0 2 347 367 0 2 @2 16 0 2 348 367 0 #
+face $391 -1 $-1 $392 $393 $5 $-1 $394 reversed single #
+loop $-1 -1 $-1 $-1 $395 $311 #
+plane-surface $-1 -1 $-1 8.230000000000000426 0 0 1 0 0 0 1 0 forward_v I I I I #
+coedge $-1 -1 $-1 $396 $397 $398 $399 reversed $315 0 $-1 #
+coedge $-1 -1 $-1 $400 $317 $401 $402 reversed $255 0 $-1 #
+coedge $-1 -1 $-1 $317 $403 $404 $405 reversed $255 0 $-1 #
+coedge $-1 -1 $-1 $406 $407 $317 $363 forward $408 0 $-1 #
+edge $-1 -1 $-1 $409 0.05514860642606891905 $410 0.1556780112281807016 $362 $411 forward @7 unknown #
+edge $-1 -1 $-1 $323 -0.1199999999999998845 $365 0 $318 $412 forward @7 tangent #
+vertex $-1 -1 $-1 $345 0 $413 #
 straight-curve $-1 -1 $-1 8.089999999999999858 4.082500000000000462 1.550000000000000044 -0 -1 0 I I #
 ellipse-curve $-1 -1 $-1 8.039999999999999147 2.935000000000000053 1.43000000000000016 -0 -0 1 0.03535533905932768811 -0.03535533905932706361 0 1 I I #
 point $-1 -1 $-1 8.089999999999999858 2.935000000000000053 1.43000000000000016 #
@@ -375,335 +375,318 @@ straight-curve $-1 -1 $-1 0.3099999999999991651 2.885000000000000231 1.550000000
 edge $-1 -1 $-1 $335 -0.06000000000000005329 $349 0 $334 $370 forward @7 tangent #
 point $-1 -1 $-1 0.3099999999999991651 2.885000000000000231 1.489999999999999991 #
 ellipse-curve $-1 -1 $-1 8.039999999999999147 2.935000000000000053 1.550000000000000044 0 -0 -1 0.03535533905932768811 -0.03535533905932706361 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $346 @17 sketch_attrib_def 1 1 3 @13 231 0 0 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $346 @17 sketch_attrib_def 1 1 3 @13 243 0 0 0 1 1 #
 point $-1 -1 $-1 8.039999999999999147 2.885000000000000231 1.550000000000000044 #
 straight-curve $-1 -1 $-1 4.104999999999999538 2.884999999999999787 1.550000000000000044 -1 -0 0 I I #
 point $-1 -1 $-1 0.3099999999999991651 2.885000000000000231 1.550000000000000044 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $351 @17 sketch_attrib_def 1 1 3 @13 213 0 0 0 1 1 #
-coedge $-1 -1 $-1 $413 $351 $395 $414 reversed $247 0 $-1 #
-coedge $-1 -1 $-1 $415 $416 $351 $381 forward $357 0 $-1 #
-edge $-1 -1 $-1 $417 -1.399999999999999467 $388 -0.375 $380 $418 forward @7 unknown #
-coedge $-1 -1 $-1 $352 $413 $419 $420 reversed $247 0 $-1 #
-coedge $-1 -1 $-1 $421 $422 $352 $384 forward $423 0 $-1 #
-edge $-1 -1 $-1 $389 -3.859999999999999432 $424 3.739999999999999325 $383 $425 forward @7 unknown #
-coedge $-1 -1 $-1 $426 $353 $422 $427 forward $387 0 $-1 #
-coedge $-1 -1 $-1 $353 $426 $415 $428 reversed $387 0 $-1 #
-loop $-1 -1 $-1 $-1 $353 $356 #
-vertex $-1 -1 $-1 $428 0 $429 #
-vertex $-1 -1 $-1 $427 0 $430 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $351 @17 sketch_attrib_def 1 1 3 @13 225 0 0 0 1 1 #
+coedge $-1 -1 $-1 $414 $351 $396 $415 reversed $247 0 $-1 #
+coedge $-1 -1 $-1 $416 $417 $351 $381 forward $418 0 $-1 #
+edge $-1 -1 $-1 $419 -1.399999999999999467 $388 -0.375 $380 $420 forward @7 unknown #
+coedge $-1 -1 $-1 $352 $414 $421 $422 reversed $247 0 $-1 #
+coedge $-1 -1 $-1 $423 $424 $352 $384 forward $425 0 $-1 #
+edge $-1 -1 $-1 $389 -3.859999999999999432 $426 3.739999999999999325 $383 $427 forward @7 unknown #
+coedge $-1 -1 $-1 $428 $353 $424 $429 forward $387 0 $-1 #
+coedge $-1 -1 $-1 $353 $428 $416 $430 reversed $387 0 $-1 #
+loop $-1 -1 $-1 $-1 $353 $392 #
+vertex $-1 -1 $-1 $430 0 $431 #
+vertex $-1 -1 $-1 $429 0 $432 #
 ellipse-curve $-1 -1 $-1 0.375 3.775000000000000355 1.550000000000000044 0 -0 -1 -0.180312229202569646 0.180312229202569646 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $356 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 1 0 2 316 350 0 1 @1 1 0 3 321 342 350 0 2 @2 13 0 2 347 350 0 2 @2 13 0 2 348 350 0 #
-face $431 -1 $-1 $432 $433 $5 $-1 $434 reversed single #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $356 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 1 0 2 316 367 0 1 @1 1 0 3 321 342 367 0 2 @2 13 0 2 347 367 0 2 @2 13 0 2 348 367 0 #
+face $433 -1 $-1 $434 $387 $5 $-1 $394 reversed single #
+loop $-1 -1 $-1 $-1 $435 $356 #
 cone-surface $-1 -1 $-1 0.375 3.775000000000000355 0 0 0 1 -0.180312229202569646 0.180312229202569646 0 1 I I 0 1 0.3750000000000000555 forward I I I I #
-coedge $-1 -1 $-1 $416 $435 $361 $404 forward $357 0 $-1 #
-coedge $-1 -1 $-1 $436 $359 $379 $414 forward $315 0 $-1 #
-coedge $-1 -1 $-1 $359 $436 $403 $437 forward $315 0 $-1 #
-coedge $-1 -1 $-1 $438 $439 $359 $398 forward $433 0 $-1 #
-edge $-1 -1 $-1 $440 -1.17809724509618019 $441 1.178097245096169976 $397 $442 forward @7 unknown #
-coedge $-1 -1 $-1 $443 $360 $444 $445 reversed $255 0 $-1 #
-coedge $-1 -1 $-1 $446 $447 $360 $401 forward $448 0 $-1 #
-edge $-1 -1 $-1 $449 -3.739999999999999325 $408 3.859999999999999432 $400 $450 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $361 @17 sketch_attrib_def 1 1 3 @13 216 0 1 0 1 1 #
-coedge $-1 -1 $-1 $361 $443 $396 $437 reversed $255 0 $-1 #
-edge $-1 -1 $-1 $409 -0.5602260094890540998 $451 0.9493428919433675173 $394 $452 forward @7 unknown #
-coedge $-1 -1 $-1 $453 $362 $435 $454 reversed $407 0 $-1 #
-coedge $-1 -1 $-1 $362 $453 $446 $455 forward $407 0 $-1 #
-loop $-1 -1 $-1 $-1 $362 $456 #
-vertex $-1 -1 $-1 $401 1 $457 #
-vertex $-1 -1 $-1 $363 1 $458 #
-ellipse-curve $-1 -1 $-1 0.375 3.775000000000000355 0.380147186257614067 -0 0.7071067811865475727 0.7071067811865474617 0 0.25500000000000006 -0.2550000000000001155 0.7071067811865474617 I I #
+coedge $-1 -1 $-1 $398 $436 $414 $437 forward $357 0 $-1 #
+coedge $-1 -1 $-1 $438 $359 $379 $415 forward $315 0 $-1 #
+coedge $-1 -1 $-1 $359 $438 $439 $440 forward $315 0 $-1 #
+coedge $-1 -1 $-1 $441 $395 $359 $399 forward $357 0 $-1 #
+edge $-1 -1 $-1 $442 -1.17809724509618019 $443 1.178097245096169976 $398 $444 forward @7 unknown #
+coedge $-1 -1 $-1 $445 $360 $446 $447 reversed $255 0 $-1 #
+coedge $-1 -1 $-1 $448 $449 $360 $402 forward $450 0 $451 #
+edge $-1 -1 $-1 $452 -0.1718556994735532806 $409 -0.01878792264904044149 $401 $453 forward @7 unknown #
+coedge $-1 -1 $-1 $361 $454 $435 $455 reversed $255 0 $-1 #
+coedge $-1 -1 $-1 $456 $457 $361 $405 forward $458 0 $-1 #
+edge $-1 -1 $-1 $410 0.2123839631549113705 $459 3.859999999999999432 $404 $460 forward @7 unknown #
+coedge $-1 -1 $-1 $461 $362 $457 $462 reversed $408 0 $-1 #
+coedge $-1 -1 $-1 $362 $463 $448 $464 reversed $408 0 $-1 #
+loop $-1 -1 $-1 $-1 $362 $465 #
+vertex $-1 -1 $-1 $464 0 $466 #
+vertex $-1 -1 $-1 $363 1 $467 #
+intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2 
+	0.05514860642606891905 2 0.1556780112281807016 2 
+	4.104110811078280463 3.991503092713392764 0.1636440936289560166 1 
+	4.063363423970081101 4.013471462047181859 0.1416757242951664497 1 
+	4.022616036845088061 4.030000000000000249 0.1251471862576143401 1 
+	0 
+	
+	null_surface 
+	null_surface 
+	nullbs 
+	nullbs 
+	I I 
+	0 
+	0 
+	0 
+	
+	0 F 1 F 0 UNEXTENDED UNEXTENDED } I I #
 straight-curve $-1 -1 $-1 8.089999999999999858 2.935000000000000053 1.550000000000000044 -0 -0 1 F -0.2750009999999998289 F 0.1550009999999999444 #
 point $-1 -1 $-1 8.089999999999999858 2.935000000000000053 1.550000000000000044 #
-coedge $-1 -1 $-1 $382 $379 $439 $459 reversed $247 0 $-1 #
-edge $-1 -1 $-1 $440 -8.110000000000001208 $417 -0 $379 $460 forward @7 tangent #
-coedge $-1 -1 $-1 $461 $380 $386 $428 forward $357 0 $-1 #
-coedge $-1 -1 $-1 $380 $394 $436 $462 forward $357 0 $-1 #
-vertex $-1 -1 $-1 $462 1 $463 #
+coedge $-1 -1 $-1 $382 $379 $395 $437 reversed $247 0 $-1 #
+edge $-1 -1 $-1 $442 -8.110000000000001208 $419 -0 $379 $468 forward @7 tangent #
+coedge $-1 -1 $-1 $469 $380 $386 $430 forward $418 0 $-1 #
+coedge $-1 -1 $-1 $380 $470 $438 $471 forward $418 0 $-1 #
+loop $-1 -1 $-1 $-1 $380 $472 #
+vertex $-1 -1 $-1 $471 1 $473 #
 straight-curve $-1 -1 $-1 0.1199999999999999956 4.150000000000000355 1.550000000000000044 0 1 0 I I #
-coedge $-1 -1 $-1 $464 $465 $382 $420 forward $466 0 $-1 #
-edge $-1 -1 $-1 $424 -0.7853981633974518317 $467 0.785398163397448279 $419 $468 forward @7 unknown #
-coedge $-1 -1 $-1 $469 $383 $465 $470 forward $423 0 $-1 #
-coedge $-1 -1 $-1 $383 $469 $385 $427 reversed $423 0 $-1 #
-loop $-1 -1 $-1 $-1 $383 $432 #
-vertex $-1 -1 $-1 $470 0 $471 #
+coedge $-1 -1 $-1 $474 $475 $382 $422 forward $476 0 $-1 #
+edge $-1 -1 $-1 $426 -0.7853981633974518317 $477 0.785398163397448279 $421 $478 forward @7 unknown #
+coedge $-1 -1 $-1 $479 $383 $475 $480 forward $425 0 $-1 #
+coedge $-1 -1 $-1 $383 $479 $385 $429 reversed $425 0 $-1 #
+loop $-1 -1 $-1 $-1 $383 $481 #
+vertex $-1 -1 $-1 $480 0 $482 #
 straight-curve $-1 -1 $-1 4.234999999999999432 4.030000000000000249 1.550000000000000044 1 0 0 I I #
-coedge $-1 -1 $-1 $386 $385 $472 $473 reversed $387 0 $-1 #
-edge $-1 -1 $-1 $389 1.550000000000000044 $474 1.600000000000000089 $385 $475 forward @7 tangent #
-edge $-1 -1 $-1 $388 1.550000000000000044 $476 1.600000000000000089 $415 $477 forward @7 tangent #
+coedge $-1 -1 $-1 $386 $385 $483 $484 reversed $387 0 $-1 #
+edge $-1 -1 $-1 $389 1.550000000000000044 $485 1.600000000000000089 $385 $486 forward @7 tangent #
+edge $-1 -1 $-1 $388 1.550000000000000044 $487 1.600000000000000089 $386 $488 forward @7 tangent #
 point $-1 -1 $-1 0.1199999999999999956 3.775000000000000355 1.550000000000000044 #
 point $-1 -1 $-1 0.375 4.030000000000000249 1.550000000000000044 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $392 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 5 0 2 314 350 0 1 @1 5 0 3 319 342 350 0 2 @2 16 0 2 347 350 0 2 @2 16 0 2 348 350 0 #
-face $478 -1 $-1 $479 $423 $5 $-1 $480 reversed single #
-loop $-1 -1 $-1 $-1 $439 $392 #
-plane-surface $-1 -1 $-1 8.230000000000000426 0 0 1 0 0 0 1 0 forward_v I I I I #
-coedge $-1 -1 $-1 $394 $481 $405 $454 forward $357 0 $-1 #
-coedge $-1 -1 $-1 $396 $395 $416 $462 reversed $315 0 $-1 #
-edge $-1 -1 $-1 $451 0 $441 8.110000000000001208 $403 $482 forward @7 tangent #
-coedge $-1 -1 $-1 $483 $397 $443 $484 forward $433 0 $-1 #
-coedge $-1 -1 $-1 $397 $485 $413 $459 forward $433 0 $-1 #
-vertex $-1 -1 $-1 $398 0 $486 #
-vertex $-1 -1 $-1 $484 0 $487 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $392 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 1 0 2 316 367 0 1 @1 1 0 3 321 342 367 0 2 @2 13 0 2 347 367 0 2 @2 13 0 2 348 367 0 #
+face $489 -1 $-1 $490 $491 $5 $-1 $492 reversed single #
+coedge $-1 -1 $-1 $493 $494 $403 $455 forward $393 0 $-1 #
+coedge $-1 -1 $-1 $395 $495 $474 $496 forward $357 0 $-1 #
+edge $-1 -1 $-1 $477 -1.700000000000000178 $442 -0.6750000000000007105 $395 $497 forward @7 unknown #
+coedge $-1 -1 $-1 $397 $396 $417 $471 reversed $315 0 $-1 #
+coedge $-1 -1 $-1 $454 $498 $397 $440 reversed $255 0 $-1 #
+edge $-1 -1 $-1 $499 0 $443 8.110000000000001208 $439 $500 forward @7 tangent #
+coedge $-1 -1 $-1 $501 $398 $498 $502 forward $357 0 $-1 #
+vertex $-1 -1 $-1 $399 0 $503 #
+vertex $-1 -1 $-1 $502 0 $504 #
 ellipse-curve $-1 -1 $-1 8.230000000000000426 2.750000000000000888 1.489999999999999769 1 0 0 0 -0.05543277195067738278 0.02296100594190495295 1 I I #
-coedge $-1 -1 $-1 $403 $399 $438 $484 reversed $255 0 $-1 #
-coedge $-1 -1 $-1 $488 $489 $399 $445 forward $490 0 $-1 #
-edge $-1 -1 $-1 $491 -1.57079632679489678 $449 3.483052626275001159e-15 $444 $492 forward @7 unknown #
-coedge $-1 -1 $-1 $493 $400 $406 $455 reversed $448 0 $-1 #
-coedge $-1 -1 $-1 $400 $494 $488 $495 forward $448 0 $-1 #
-loop $-1 -1 $-1 $-1 $400 $496 #
-vertex $-1 -1 $-1 $445 1 $497 #
+coedge $-1 -1 $-1 $505 $400 $506 $507 reversed $255 0 $-1 #
+coedge $-1 -1 $-1 $508 $509 $400 $447 forward $510 0 $-1 #
+edge $-1 -1 $-1 $511 0 $452 0.1005294048021475872 $446 $512 forward @7 unknown #
+coedge $-1 -1 $-1 $513 $401 $407 $464 forward $450 0 $514 #
+coedge $-1 -1 $-1 $401 $513 $508 $515 reversed $450 0 $516 #
+loop $-1 -1 $-1 $-1 $401 $517 #
+pcurve $-1 -1 $-1 2 $453 0 0 #
+vertex $-1 -1 $-1 $515 0 $518 #
+intcurve-curve $-1 -1 $-1 forward { int_int_cur 23100 full nubs 3 open 6 
+	-0.1718556994735532806 3 -0.1646232579336928681 2 -0.138749513950636616 2 -0.09371389325886372856 2 -0.04785499335210795929 2 
+	-0.01878792264904044149 3 
+	4.245889188921719182 3.99150309271339232 0.1636440936289560444 
+	4.243975171666385826 3.990471177762081822 0.1646760085802667362 
+	4.242016900962332748 3.989479399493175649 0.1656677867644817115 
+	4.232860186545230441 3.985131280219484928 0.1700159060381725706 
+	4.225208481877158917 3.98228982263283271 0.1728573636248631473 
+	4.20321220595007361 3.976198951406750393 0.1789482348509456866 
+	4.188352360743110125 3.97427384584992538 0.180873340402274263 
+	4.158079885392027997 3.974580479581909298 0.180566706670290289 
+	4.143040358721331806 3.976884914613229682 0.1782622716443847677 
+	4.120130334812250439 3.983892820305081184 0.1712543659525331274 
+	4.111777196397635947 3.987369871024034396 0.1677773153183144683 
+	4.104110811078280463 3.991503092713392764 0.1636440936289560166 
+	2.38342171954611706e-07 
+	
+	plane 0.1199999999999999956 2.605147186257614766 1.550000000000000044 0 -0.7071067811865475727 -0.7071067811865474617 -0 0.7071067811865474617 -0.7071067811865475727 forward_v I I I I 
+	spline reversed { rb_blend_spl_sur 23100 @24 blend_support_zero_curve null_surface intcurve forward { exact_int_cur 23100 full nubs 3 open 9 
+	1.680649265072318377 3 1.738186916247654867 1 1.795724567422991358 1 1.853262218598327848 1 1.910799869773664339 1 
+	1.96833752094900083 1 2.025875172124337098 1 2.083412823299673367 1 2.140950474475010079 3 
+	4.174999999999999822 4.082256106338203239 0.247342110241738744 
+	4.174999999999999822 4.068322566546347829 0.2378123893072889294 
+	4.174999999999999822 4.043457311150263855 0.2213398824954933564 
+	4.174999999999999822 4.004135138417403539 0.1971039807556173307 
+	4.174999999999999822 3.965683714594578912 0.1756578909249706388 
+	4.174999999999999822 3.927421739527032329 0.1568569793294881665 
+	4.174999999999999822 3.889318318856888723 0.1413345178147840109 
+	4.174999999999999822 3.852474246522125334 0.1295116381216323276 
+	4.174999999999999822 3.811879503558932569 0.1219062066599322647 
+	4.174999999999999822 3.793441481896608902 0.119999999999999607 
+	4.174999999999999822 3.775000000000000355 0.119999999999999607 
+	0 
+	
+	null_surface 
+	null_surface 
+	nullbs 
+	nullbs 
+	I I 
+	0 
+	0 
+	7 1.738186916247654867 1.795724567422991358 1.853262218598327848 1.910799869773664339 1.96833752094900083 2.025875172124337098 2.083412823299673367 
+	
+	0 F 1 F 0 UNEXTENDED UNEXTENDED } I I nullbs 0 0 0 nullbs 0 nullbs 
+	@24 blend_support_zero_curve null_surface intcurve forward { ref 3 } I I nullbs 0 0 0 nullbs 0 nullbs 
+	intcurve forward { int_int_cur 23100 full nubs 3 open 4 
+	1.680649265072318377 3 1.873331665165633764 2 2.00714106982032181 2 2.140950474475010079 3 
+	4.175000000000001599 4.149999999992243005 0.1482928049812263505 
+	4.175000000000001599 4.103060662905973821 0.1161890617858553076 
+	4.175000000000000711 4.055716958619226098 0.08677382719622210583 
+	4.175000000000000711 3.971478833315444046 0.04464598190157639812 
+	4.174999999999999822 3.935897673396545393 0.02961689880797832228 
+	4.174999999999999822 3.859955588247030445 0.007308322619111859778 
+	4.174999999999999822 3.819603134884896001 -5.51642065360624656e-16 
+	4.174999999999999822 3.775000000000000355 -5.51642065360624656e-16 
+	0.0002211163057665747542 
+	
+	cone 3.774999999999999911 3.775000000000000355 -0.02500000000000000139 0 0 1 0.3750000000000004441 0 0 1 I I 0.7071067811865475727 0.7071067811865475727 0.3750000000000004441 forward I I I I 
+	cone 4.575000000000000178 3.775000000000000355 -0.02500000000000000139 0 0 1 0.3750000000000004441 0 0 1 I I -0.7071067811865475727 -0.7071067811865475727 0.3750000000000004441 forward I I I I 
+	nullbs 
+	nullbs 
+	I I 
+	0 
+	0 
+	0 
+	
+	0 } I I 0.1199999999999999956 0.1199999999999999956 
+	no_radius 
+	F 0 F 1 
+	I I 
+	1 0.01200000000000000025 0.005495148435108630595 
+	1 
+	full nubs 3 3 open open none none 3 3 
+	-0.1250000000000036637 3 0 3 0.1250000000000004441 3 
+	1.711336012365831216 3 1.873331665165633764 2 2.140950474475010079 3 
+	4.091134642268952959 4.081947891653079807 0.2019201801537576779 
+	4.113381798244686749 4.069520974746157371 0.2206759953396952578 
+	4.143584073464101181 4.061257617425719779 0.2331973190636574544 
+	4.174999999999999822 4.061342633229095611 0.2332671067970055745 
+	4.206415926535897576 4.061257617425719779 0.2331973190636572602 
+	4.236618201755311119 4.069520974746156483 0.2206759953396955631 
+	4.258865357731044021 4.081947891653078031 0.2019201801537585939 
+	4.091134642268952959 4.044358193316232253 0.1770089955841719354 
+	4.113381798244686749 4.03248064149757468 0.1961254875688809574 
+	4.143584073464101181 4.024573622433592845 0.2088897607784625798 
+	4.174999999999999822 4.024619017694085699 0.2089695416575650944 
+	4.206415926535897576 4.024573622433592845 0.208889760778461997 
+	4.236618201755311119 4.032480641497573792 0.1961254875688804578 
+	4.258865357731044021 4.0443581933162287 0.1770089955841719076 
+	4.091134642268952959 4.00767343334181092 0.1549886230728436676 
+	4.113381798244686749 3.996673214411595954 0.1746441826835663791 
+	4.143584073464101181 3.989131675245580322 0.1876438379095234088 
+	4.174999999999999822 3.988299435728754005 0.1872276331847575193 
+	4.206415926535897576 3.98913167524557899 0.1876438379095224096 
+	4.236618201755311119 3.996673214411593289 0.1746441826835650746 
+	4.258865357731044021 4.007673433341804703 0.1549886230728425018 
+	4.091134642268952959 3.905381092160695289 0.1038320090859586181 
+	4.113381798244686749 3.896863871335438212 0.1247293212474470114 
+	4.143584073464101181 3.891529441596050631 0.1388327565185293322 
+	4.174999999999999822 3.892904311505852366 0.1395203318388887614 
+	4.206415926535897576 3.89152944159605152 0.1388327565185299151 
+	4.236618201755311119 3.896863871335439988 0.1247293212474488572 
+	4.258865357731044021 3.905381092160697953 0.1038320090859617684 
+	4.091134642268952959 3.849391657111604026 0.08249999999999763078 
+	4.113381798244686749 3.845090640533419979 0.1049999999999987332 
+	4.143584073464101181 3.841267514686145024 0.1199999999999996209 
+	4.174999999999999822 3.837444388838870069 0.1199999999999996209 
+	4.206415926535897576 3.841267514686144136 0.1199999999999996209 
+	4.236618201755311119 3.845090640533418203 0.1049999999999995104 
+	4.258865357731044021 3.84939165711160225 0.08249999999999937939 
+	4.091134642268952959 3.775000000000000355 0.08249999999999763078 
+	4.113381798244686749 3.775000000000000355 0.1049999999999987332 
+	4.143584073464101181 3.775000000000000355 0.119999999999999607 
+	4.174999999999999822 3.775000000000000355 0.1199999999999996209 
+	4.206415926535897576 3.775000000000000355 0.1199999999999996209 
+	4.236618201755311119 3.775000000000000355 0.1049999999999995104 
+	4.258865357731044021 3.775000000000000355 0.08249999999999937939 
+	0.005495148435108630595 
+	
+	0 
+	0 
+	0 
+	0 
+	0 
+	0 
+	F 
+	0 0 0 } F -0.1250000000000036637 F 0.1250000000000004441 F 1.757115275185055392 F 2.140950474475010079 
+	nullbs 
+	nubs 3 open 6 
+	-0.1718556994735532806 3 -0.1646232579336928681 3 -0.138749513950636616 3 -0.09371389325886372856 3 -0.04785499335210795929 3 
+	-0.01878792264904044149 3 
+	0.100582690548791695 1.83139457784977 
+	0.09743648091661749611 1.831914211459624742 
+	0.09428581276252107068 1.832416207936562236 
+	0.09112929201049296823 1.832899119836586044 
+	0.07983683275350843267 1.83462673811764021 
+	0.06853812453510632619 1.836099476177945222 
+	0.05716750412509338797 1.83726129149613393 
+	0.03737589808033936478 1.839283537446241068 
+	0.01771092335609723498 1.840319854336866179 
+	-0.002184178516600771003 1.840238890266977734 
+	-0.02244297525128058357 1.840156446123430323 
+	-0.04245158206061988571 1.838917712092995815 
+	-0.06258592839551700704 1.836683779758379265 
+	-0.07534726887274213747 1.835267892167545822 
+	-0.08798232630208238647 1.833475987632594117 
+	-0.1005826905487929718 1.831394577849769556 
+	
+	I I 
+	0 
+	0 
+	0 
+	
+	0 } I I #
+coedge $519 -1 $-1 $403 $439 $470 $520 reversed $255 0 $-1 #
+edge $-1 -1 $-1 $459 0 $521 1.57079632679489678 $435 $522 forward @7 unknown #
+coedge $-1 -1 $-1 $523 $404 $494 $524 reversed $458 0 $-1 #
+coedge $-1 -1 $-1 $404 $523 $406 $462 forward $458 0 $-1 #
+loop $-1 -1 $-1 $-1 $404 $525 #
+vertex $-1 -1 $-1 $405 1 $526 #
 straight-curve $-1 -1 $-1 4.234999999999999432 4.030000000000000249 0.1251471862576144511 -1 0 -0 I I #
-vertex $-1 -1 $-1 $404 1 $498 #
-straight-curve $-1 -1 $-1 0.1199999999999999956 3.378860389693211008 0.7762867965644034696 0 -0.7071067811865474617 0.7071067811865475727 I I #
-coedge $-1 -1 $-1 $406 $405 $499 $500 forward $407 0 $-1 #
-edge $-1 -1 $-1 $501 0.02470562748477132808 $409 0.3801471862576142335 $435 $477 forward @7 tangent #
-edge $-1 -1 $-1 $502 0.02470562748477184156 $408 0.1251471862576145622 $406 $475 forward @7 tangent #
-face $503 -1 $-1 $504 $407 $5 $-1 $393 reversed single #
-point $-1 -1 $-1 0.375 4.030000000000000249 0.1251471862576145622 #
-point $-1 -1 $-1 0.1199999999999999956 3.775000000000000355 0.3801471862576142335 #
-edge $-1 -1 $-1 $467 -1.700000000000000178 $440 -0.6750000000000007105 $439 $505 forward @7 unknown #
+coedge $-1 -1 $-1 $527 $406 $528 $529 reversed $408 0 $-1 #
+edge $-1 -1 $-1 $530 0.4931806951743252232 $410 0.8449411079456921048 $406 $531 forward @7 unknown #
+coedge $-1 -1 $-1 $407 $527 $532 $533 forward $408 0 $-1 #
+edge $-1 -1 $-1 $409 1.83139457785029558 $534 2.140950474475010079 $407 $535 forward @7 tangent #
+face $536 -1 $-1 $537 $408 $5 $-1 $538 reversed single #
+point $-1 -1 $-1 4.104110811078280463 3.991503092713392764 0.1636440936289560166 #
+point $-1 -1 $-1 4.022616036845088061 4.030000000000000249 0.1251471862576143401 #
 straight-curve $-1 -1 $-1 0.1199999999999999956 2.750000000000000888 1.550000000000000044 -1 -0 -0 F -8.296001000000000403 F 0.1860009999999999997 #
-coedge $-1 -1 $-1 $506 $415 $507 $508 reversed $357 0 $-1 #
-edge $-1 -1 $-1 $451 -1.178097245096169976 $417 1.17809724509618019 $416 $509 forward @7 unknown #
+coedge $-1 -1 $-1 $539 $416 $540 $541 reversed $418 0 $-1 #
+coedge $-1 -1 $-1 $417 $542 $454 $520 forward $418 0 $-1 #
+edge $-1 -1 $-1 $499 -1.178097245096169976 $419 1.17809724509618019 $417 $543 forward @7 unknown #
+face $544 -1 $-1 $545 $418 $5 $-1 $546 reversed single #
 point $-1 -1 $-1 0.1199999999999999956 2.750000000000000888 1.550000000000000044 #
-coedge $-1 -1 $-1 $510 $419 $485 $511 reversed $466 0 $-1 #
-coedge $-1 -1 $-1 $419 $510 $421 $470 reversed $466 0 $-1 #
-loop $-1 -1 $-1 $-1 $419 $512 #
-vertex $-1 -1 $-1 $420 1 $513 #
+coedge $-1 -1 $-1 $547 $421 $436 $496 reversed $476 0 $-1 #
+coedge $-1 -1 $-1 $421 $547 $423 $480 reversed $476 0 $-1 #
+loop $-1 -1 $-1 $-1 $421 $548 #
+vertex $-1 -1 $-1 $422 1 $549 #
 ellipse-curve $-1 -1 $-1 7.974999999999999645 3.775000000000000355 1.550000000000000044 0 -0 -1 0.180312229202569646 0.180312229202569646 0 1 I I #
-coedge $-1 -1 $-1 $422 $421 $514 $515 reversed $423 0 $-1 #
-edge $-1 -1 $-1 $424 1.550000000000000044 $516 1.600000000000000089 $421 $517 forward @7 tangent #
+coedge $-1 -1 $-1 $424 $423 $550 $551 reversed $425 0 $-1 #
+edge $-1 -1 $-1 $426 1.550000000000000044 $552 1.600000000000000089 $475 $553 forward @7 tangent #
+face $554 -1 $-1 $555 $425 $5 $-1 $556 reversed single #
 point $-1 -1 $-1 7.974999999999998757 4.030000000000000249 1.550000000000000044 #
-coedge $-1 -1 $-1 $518 $519 $426 $473 forward $520 0 $-1 #
-edge $-1 -1 $-1 $476 -0.785398163397448279 $474 0.785398163397448279 $426 $521 forward @7 unknown #
-vertex $-1 -1 $-1 $473 1 $522 #
-straight-curve $-1 -1 $-1 0.375 4.030000000000000249 0 0 0 1 I I #
-vertex $-1 -1 $-1 $473 0 $523 #
-straight-curve $-1 -1 $-1 0.1199999999999999956 3.775000000000000355 0 0 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $432 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 6 0 2 314 350 0 1 @1 6 0 3 319 342 350 0 2 @2 14 0 2 347 350 0 2 @2 14 0 2 348 350 0 #
-face $524 -1 $-1 $525 $490 $5 $-1 $526 reversed single #
-plane-surface $-1 -1 $-1 8.349999999999999645 4.030000000000000249 0 0 1 -0 -1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $435 $506 $527 $528 forward $357 0 $-1 #
+coedge $-1 -1 $-1 $557 $558 $428 $484 forward $559 0 $-1 #
+edge $-1 -1 $-1 $487 -3.141592653589793116 $485 -1.570796326794896558 $428 $560 forward @7 unknown #
+vertex $-1 -1 $-1 $551 0 $561 #
+straight-curve $-1 -1 $-1 0.375 4.030000000000000249 0 0 0 1 F 0.02470562748477122747 F 1.600000000000000089 #
+vertex $-1 -1 $-1 $541 1 $562 #
+straight-curve $-1 -1 $-1 0.1199999999999999956 3.775000000000000355 0 0 0 1 F 0.02470562748477123094 F 1.600000000000000089 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $434 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 2 0 2 316 367 0 1 @1 2 0 3 321 342 367 0 2 @2 15 0 2 347 367 0 2 @2 15 0 2 348 367 0 #
+face $563 -1 $-1 $525 $564 $5 $-1 $556 reversed single #
+loop $-1 -1 $-1 $-1 $565 $434 #
+cone-surface $-1 -1 $-1 7.974999999999999645 3.775000000000000355 0 -0 0 1 0.180312229202569646 0.180312229202569646 0 1 I I 0 1 0.3750000000000000555 forward I I I I #
+coedge $-1 -1 $-1 $566 $435 $542 $567 reversed $393 0 $-1 #
+coedge $-1 -1 $-1 $435 $566 $456 $524 forward $393 0 $-1 #
+coedge $-1 -1 $-1 $436 $568 $569 $570 reversed $357 0 $-1 #
+edge $-1 -1 $-1 $571 -1.600000000000000089 $477 -1.550000000000000044 $436 $572 forward @7 tangent #
+straight-curve $-1 -1 $-1 8.230000000000000426 2.075000000000000178 1.550000000000000044 0 -1 0 I I #
+coedge $-1 -1 $-1 $439 $505 $441 $502 reversed $255 0 $-1 #
+vertex $-1 -1 $-1 $520 1 $573 #
 straight-curve $-1 -1 $-1 0.1199999999999999956 2.707573593128807854 1.447573593128806735 1 0 0 F -0.1860009999999999997 F 8.296001000000000403 #
-coedge $-1 -1 $-1 $529 $438 $489 $530 forward $433 0 $-1 #
-edge $-1 -1 $-1 $441 0.51790367901871881 $491 2.027472580451140427 $438 $531 forward @7 unknown #
-coedge $-1 -1 $-1 $439 $532 $464 $511 forward $433 0 $-1 #
+coedge $-1 -1 $-1 $574 $441 $575 $576 forward $357 0 $-1 #
+edge $-1 -1 $-1 $443 0.51790367901871881 $577 2.027472580451140427 $441 $578 forward @7 unknown #
 point $-1 -1 $-1 8.230000000000000426 2.750000000000000888 1.550000000000000044 #
 point $-1 -1 $-1 8.230000000000000426 2.707573593128808298 1.447573593128806735 #
-coedge $-1 -1 $-1 $533 $444 $447 $495 reversed $490 0 $-1 #
-coedge $-1 -1 $-1 $444 $533 $483 $530 reversed $490 0 $-1 #
-loop $-1 -1 $-1 $-1 $444 $479 #
-vertex $-1 -1 $-1 $530 0 $534 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 3.775000000000000355 0.380147186257614067 -0 0.7071067811865475727 0.7071067811865474617 0 0.25500000000000006 -0.2550000000000001155 0.7071067811865474617 I I #
-coedge $-1 -1 $-1 $535 $446 $536 $537 forward $448 0 $-1 #
-coedge $-1 -1 $-1 $447 $538 $539 $540 forward $448 0 $-1 #
-edge $-1 -1 $-1 $541 0.02470562748477361792 $449 0.1251471862576145622 $447 $517 forward @7 tangent #
-face $542 -1 $-1 $543 $448 $5 $-1 $480 reversed single #
-point $-1 -1 $-1 7.974999999999998757 4.030000000000000249 0.1251471862576145622 #
-point $-1 -1 $-1 0.1199999999999999956 2.707573593128808298 1.447573593128806735 #
-coedge $-1 -1 $-1 $544 $545 $453 $500 reversed $546 0 $-1 #
-edge $-1 -1 $-1 $501 -0.785398163397448279 $502 0.785398163397448279 $499 $547 reversed @7 unknown #
-vertex $-1 -1 $-1 $500 0 $548 #
-vertex $-1 -1 $-1 $549 0 $550 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $456 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 1 0 2 316 350 0 1 @1 1 0 3 321 342 350 0 2 @2 13 0 2 347 350 0 2 @2 13 0 2 348 350 0 #
-face $551 -1 $-1 $552 $553 $5 $-1 $554 reversed single #
-straight-curve $-1 -1 $-1 8.230000000000000426 2.075000000000000178 1.550000000000000044 0 -1 0 I I #
-coedge $-1 -1 $-1 $481 $461 $555 $556 forward $357 0 $-1 #
-coedge $-1 -1 $-1 $557 $558 $461 $508 forward $559 0 $-1 #
-edge $-1 -1 $-1 $560 -2.737500000000000266 $476 0.6625000000000000888 $461 $561 forward @7 unknown #
-ellipse-curve $-1 -1 $-1 0.1199999999999999956 2.750000000000000888 1.489999999999999769 -1 0 0 0 -0.05543277195067738278 0.02296100594190495295 1 I I #
-coedge $-1 -1 $-1 $465 $464 $562 $563 reversed $466 0 $-1 #
-edge $-1 -1 $-1 $564 -1.600000000000000089 $467 -1.550000000000000044 $485 $565 forward @7 tangent #
-face $566 -1 $-1 $496 $466 $5 $-1 $526 reversed single #
-point $-1 -1 $-1 8.22999999999999865 3.775000000000000355 1.550000000000000044 #
-coedge $-1 -1 $-1 $567 $568 $469 $515 forward $569 0 $-1 #
-edge $-1 -1 $-1 $474 -5.887499999999999289 $516 1.712500000000000355 $469 $570 forward @7 unknown #
-vertex $-1 -1 $-1 $563 0 $571 #
-straight-curve $-1 -1 $-1 7.974999999999999645 4.030000000000002025 0 0 0 1 I I #
-coedge $-1 -1 $-1 $572 $472 $568 $573 forward $520 0 $-1 #
-coedge $-1 -1 $-1 $472 $572 $557 $574 forward $520 0 $-1 #
-loop $-1 -1 $-1 $-1 $572 $575 #
-ellipse-curve $-1 -1 $-1 0.375 3.775000000000000355 1.600000000000000089 -0 -0 -1 -0.180312229202569646 0.180312229202569646 0 1 I I #
-point $-1 -1 $-1 0.375 4.030000000000000249 1.600000000000000089 #
-point $-1 -1 $-1 0.1200000000000000511 3.775000000000000355 1.600000000000000089 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $479 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 2 0 2 316 350 0 1 @1 2 0 3 321 342 350 0 2 @2 15 0 2 347 350 0 2 @2 15 0 2 348 350 0 #
-face $576 -1 $-1 $575 $559 $5 $-1 $577 reversed single #
-cone-surface $-1 -1 $-1 7.974999999999999645 3.775000000000000355 0 -0 0 1 0.180312229202569646 0.180312229202569646 0 1 I I 0 1 0.3750000000000000555 forward I I I I #
-coedge $-1 -1 $-1 $578 $579 $481 $528 reversed $580 0 $-1 #
-edge $-1 -1 $-1 $581 -2.212499999999999911 $501 1.187500000000000444 $527 $582 reversed @7 unknown #
-coedge $-1 -1 $-1 $583 $483 $584 $585 forward $433 0 $-1 #
-edge $-1 -1 $-1 $491 -0.3801471862576142335 $586 -0.02470562748477236892 $483 $565 forward @7 tangent #
-straight-curve $-1 -1 $-1 8.230000000000000426 2.341360389693210919 1.813786796564403669 0 0.7071067811865474617 -0.7071067811865475727 I I #
-coedge $-1 -1 $-1 $485 $583 $587 $588 reversed $433 0 $-1 #
-coedge $-1 -1 $-1 $489 $488 $589 $590 forward $490 0 $-1 #
-point $-1 -1 $-1 8.22999999999999865 3.775000000000000355 0.3801471862576142335 #
-coedge $-1 -1 $-1 $591 $493 $592 $593 forward $448 0 $-1 #
-coedge $-1 -1 $-1 $594 $595 $493 $537 reversed $596 0 $-1 #
-edge $-1 -1 $-1 $502 -4.3125 $597 -0.9124999999999996447 $536 $598 forward @7 unknown #
-coedge $-1 -1 $-1 $494 $591 $599 $600 forward $448 0 $-1 #
-coedge $-1 -1 $-1 $601 $602 $494 $540 reversed $603 0 $-1 #
-edge $-1 -1 $-1 $604 -2.212499999999999467 $541 1.1875 $539 $605 forward @7 unknown #
-vertex $-1 -1 $-1 $540 1 $606 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $496 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 6 0 2 314 350 0 1 @1 6 0 3 319 342 350 0 2 @2 14 0 2 347 350 0 2 @2 14 0 2 348 350 0 #
-face $607 -1 $-1 $608 $609 $5 $-1 $610 forward single #
-coedge $-1 -1 $-1 $611 $499 $579 $612 reversed $546 0 $-1 #
-coedge $-1 -1 $-1 $499 $611 $594 $549 reversed $546 0 $-1 #
-loop $-1 -1 $-1 $-1 $499 $613 #
-ellipse-curve $-1 -1 $-1 0.375 3.775000000000000355 0.02470562748477122747 0 0 1 -0.180312229202569646 0.180312229202569646 0 1 I I #
-point $-1 -1 $-1 0.1199999999999999956 3.774999999999999911 0.02470562748477132808 #
-edge $-1 -1 $-1 $502 0.08506096654409771307 $614 0.3891168824543138061 $545 $615 forward @7 tangent #
-point $-1 -1 $-1 0.375 4.030000000000000249 0.02470562748477184156 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $504 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 4 0 2 316 350 0 1 @1 3 0 3 321 342 350 0 2 @2 11 0 2 347 350 0 2 @2 11 0 2 348 350 0 #
-face $616 -1 $-1 $617 $618 $5 $-1 $619 forward single #
-loop $-1 -1 $-1 $-1 $620 $504 #
-cone-surface $-1 -1 $-1 0.375 0.375 0 0 0 1 -0.180312229202569646 -0.180312229202569646 0 1 I I 0 1 0.3750000000000000555 forward I I I I #
-coedge $-1 -1 $-1 $620 $621 $506 $556 reversed $553 0 $-1 #
-edge $-1 -1 $-1 $560 -1.600000000000000089 $581 -0.02470562748477142523 $506 $622 forward @7 tangent #
-coedge $-1 -1 $-1 $623 $507 $519 $574 reversed $559 0 $-1 #
-coedge $-1 -1 $-1 $507 $623 $624 $625 reversed $559 0 $-1 #
-loop $-1 -1 $-1 $-1 $623 $525 #
-vertex $-1 -1 $-1 $508 0 $626 #
-straight-curve $-1 -1 $-1 0.1200000000000001066 3.112500000000000266 1.600000000000000089 0 1 -0 F -2.737500000000000266 F 0.6625000000000000888 #
-coedge $-1 -1 $-1 $627 $628 $510 $563 forward $629 0 $-1 #
-edge $-1 -1 $-1 $516 -0.785398163397448279 $564 0.785398163397448279 $510 $630 forward @7 unknown #
-vertex $-1 -1 $-1 $588 0 $631 #
-straight-curve $-1 -1 $-1 8.230000000000000426 3.775000000000000355 0 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $512 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 2 0 2 316 350 0 1 @1 2 0 3 321 342 350 0 2 @2 15 0 2 347 350 0 2 @2 15 0 2 348 350 0 #
-coedge $-1 -1 $-1 $632 $514 $628 $633 reversed $569 0 $-1 #
-coedge $-1 -1 $-1 $514 $632 $518 $573 reversed $569 0 $-1 #
-loop $-1 -1 $-1 $-1 $632 $634 #
-straight-curve $-1 -1 $-1 6.262499999999999289 4.030000000000000249 1.600000000000000089 1 -0 0 F -5.887499999999999289 F 1.712500000000000355 #
-point $-1 -1 $-1 7.974999999999999645 4.030000000000002025 1.600000000000000089 #
-coedge $-1 -1 $-1 $519 $518 $635 $636 reversed $520 0 $-1 #
-edge $-1 -1 $-1 $474 0 $637 0.09899494936611706597 $568 $638 forward @7 tangent #
-edge $-1 -1 $-1 $639 0.2616295090390226563 $476 0.360624458405139181 $557 $640 forward @7 tangent #
-face $641 -1 $-1 $634 $520 $5 $-1 $642 reversed single #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $525 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 4 340 341 342 352 0 #
-plane-surface $-1 -1 $-1 0.2474999999999999978 3.052500000000000213 1.727500000000000036 -0.7071067811865473507 0 0.7071067811865476838 0.7071067811865476838 -0 0.7071067811865473507 forward_v I I I I #
-coedge $-1 -1 $-1 $643 $527 $644 $645 reversed $580 0 $-1 #
-coedge $-1 -1 $-1 $527 $643 $544 $612 forward $580 0 $-1 #
-loop $-1 -1 $-1 $-1 $527 $646 #
-vertex $-1 -1 $-1 $528 0 $647 #
-straight-curve $-1 -1 $-1 0.1199999999999999956 2.587499999999999911 0.02470562748477142523 -0 -1 0 F -9997.412501000000702 F 10002.58750099999997 #
-coedge $-1 -1 $-1 $532 $529 $648 $649 forward $433 0 $-1 #
-coedge $-1 -1 $-1 $650 $651 $529 $585 reversed $652 0 $-1 #
-edge $-1 -1 $-1 $586 -2.212499999999999467 $653 1.1875 $584 $654 forward @7 unknown #
-vertex $-1 -1 $-1 $590 1 $655 #
-coedge $-1 -1 $-1 $656 $657 $532 $588 forward $658 0 $-1 #
-edge $-1 -1 $-1 $564 -2.737500000000000266 $659 0.6625000000000000888 $532 $660 forward @7 unknown #
-coedge $-1 -1 $-1 $661 $662 $533 $590 reversed $663 0 $-1 #
-edge $-1 -1 $-1 $541 -0.785398163397448279 $586 0.785398163397448279 $589 $664 forward @7 unknown #
-coedge $665 -1 $-1 $538 $535 $666 $667 reversed $448 0 $-1 #
-coedge $-1 -1 $-1 $668 $669 $535 $593 reversed $670 0 $-1 #
-edge $-1 -1 $-1 $597 5.88431826770857036 $671 8.362252985495043589 $535 $672 forward @7 unknown #
-coedge $-1 -1 $-1 $673 $536 $545 $549 forward $596 0 $-1 #
-coedge $-1 -1 $-1 $536 $673 $668 $674 forward $596 0 $-1 #
-loop $-1 -1 $-1 $-1 $536 $675 #
-vertex $-1 -1 $-1 $593 2 $676 #
-straight-curve $-1 -1 $-1 4.6875 4.030000000000000249 0.02470562748477224749 1 0 0 F -10004.68750100000034 F 9995.312501000000339 #
-coedge $-1 -1 $-1 $677 $678 $538 $600 reversed $679 0 $-1 #
-edge $-1 -1 $-1 $680 3.40638354991274106 $604 5.884318267708598782 $538 $681 forward @7 unknown #
-coedge $-1 -1 $-1 $682 $539 $678 $683 forward $603 0 $-1 #
-coedge $-1 -1 $-1 $539 $682 $661 $684 forward $603 0 $-1 #
-loop $-1 -1 $-1 $-1 $539 $617 #
-vertex $-1 -1 $-1 $683 2 $685 #
-straight-curve $-1 -1 $-1 6.787499999999999645 4.030000000000000249 0.02470562748477224749 1 0 0 F -10006.7875010000007 F 9993.212500999999975 #
-point $-1 -1 $-1 7.974999999999999645 4.030000000000002025 0.02470562748477361792 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $543 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 4 0 2 314 -352 0 1 @1 4 0 3 319 342 -352 0 2 @2 18 0 2 347 -352 0 2 @2 18 0 2 348 -352 0 #
-face $686 -1 $-1 $687 $688 $5 $-1 $689 forward single #
-loop $-1 -1 $-1 $-1 $690 $543 #
-plane-surface $-1 -1 $-1 0 0 0 0 -1 0 1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $545 $544 $691 $692 reversed $546 0 $-1 #
-edge $-1 -1 $-1 $693 -0.04970562748477161397 $501 0.2543502884254438823 $544 $694 forward @7 tangent #
-face $695 -1 $-1 $646 $546 $5 $-1 $696 reversed single #
-vertex $-1 -1 $-1 $692 0 $697 #
-straight-curve $-1 -1 $-1 0.375 4.090147186257613754 0.08485281374238573537 0 -0.7071067811865471286 -0.7071067811865477948 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $552 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 2 314 350 0 #
-face $698 -1 $-1 $699 $603 $5 $-1 $700 reversed single #
-loop $-1 -1 $-1 $-1 $701 $552 #
-plane-surface $-1 -1 $-1 4.174999999999999822 2.075000000000000178 0.1199999999999999956 0 0 1 1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $702 $555 $703 $704 reversed $553 0 $-1 #
-coedge $-1 -1 $-1 $555 $702 $705 $706 forward $553 0 $-1 #
-straight-curve $-1 -1 $-1 0.1199999999999999956 0.375 0 -0 -0 -1 I I #
-coedge $-1 -1 $-1 $558 $557 $707 $708 reversed $559 0 $-1 #
-coedge $-1 -1 $-1 $709 $703 $558 $625 forward $710 0 $-1 #
-edge $-1 -1 $-1 $560 0 $711 0.09899494936611649698 $558 $712 forward @7 tangent #
-point $-1 -1 $-1 0.1200000000000000511 0.375 1.600000000000000089 #
-coedge $-1 -1 $-1 $713 $562 $657 $714 forward $629 0 $-1 #
-coedge $-1 -1 $-1 $562 $713 $567 $633 forward $629 0 $-1 #
-loop $-1 -1 $-1 $-1 $713 $715 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 3.775000000000000355 1.600000000000000089 -0 -0 -1 0.180312229202569646 0.180312229202569646 0 1 I I #
-point $-1 -1 $-1 8.230000000000000426 3.775000000000000355 1.600000000000000089 #
-coedge $-1 -1 $-1 $568 $567 $716 $717 reversed $569 0 $-1 #
-edge $-1 -1 $-1 $718 0.2616295090390220457 $516 0.3606244584051391255 $567 $719 forward @7 tangent #
-face $720 -1 $-1 $715 $569 $5 $-1 $721 reversed single #
-coedge $-1 -1 $-1 $722 $723 $572 $636 forward $724 0 $-1 #
-edge $-1 -1 $-1 $639 -0.785398163397448168 $637 0.785398163397448168 $635 $725 forward @7 unknown #
-vertex $-1 -1 $-1 $717 0 $726 #
-straight-curve $-1 -1 $-1 0.375 4.030000000000000249 1.600000000000000089 0 -0.7071067811865475727 0.7071067811865475727 F 0 F 0.3606244584051391255 #
-vertex $-1 -1 $-1 $636 0 $727 #
-straight-curve $-1 -1 $-1 0.375 3.775000000000000355 1.854999999999999982 -0.7071067811865476838 0 -0.7071067811865473507 F 0 F 0.360624458405139181 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $575 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 4 340 341 342 352 0 #
-cone-surface $-1 -1 $-1 0.375 3.775000000000000355 1.600000000000000089 -0 -0 -1 -0.1803122292025696738 0.1803122292025696183 0 1 I I 0.7071067811865476838 0.7071067811865473507 0.25500000000000006 forward I I I I #
-coedge $-1 -1 $-1 $579 $578 $728 $729 reversed $580 0 $-1 #
-coedge $-1 -1 $-1 $705 $730 $578 $645 forward $731 0 $-1 #
-edge $-1 -1 $-1 $732 -0.04970562748477143356 $581 0.2543502884254440488 $578 $733 forward @7 tangent #
-face $734 -1 $-1 $735 $580 $5 $-1 $736 reversed single #
-point $-1 -1 $-1 0.1199999999999999956 0.375 0.02470562748477142523 #
-coedge $-1 -1 $-1 $737 $738 $583 $649 reversed $739 0 $-1 #
-edge $-1 -1 $-1 $653 0.02470562748477050583 $659 1.600000000000000089 $583 $740 forward @7 tangent #
-coedge $-1 -1 $-1 $741 $584 $662 $742 reversed $652 0 $-1 #
-coedge $-1 -1 $-1 $584 $741 $743 $744 forward $652 0 $-1 #
-loop $-1 -1 $-1 $-1 $584 $745 #
-vertex $-1 -1 $-1 $585 1 $746 #
-straight-curve $-1 -1 $-1 8.230000000000000426 1.5625 0.0247056274847728026 0 -1 0 F -9998.437501000000339 F 10001.56250100000034 #
-point $-1 -1 $-1 8.230000000000000426 3.775000000000000799 0.02470562748477236892 #
-coedge $-1 -1 $-1 $747 $587 $748 $749 reversed $658 0 $-1 #
-coedge $-1 -1 $-1 $587 $747 $627 $714 reversed $658 0 $-1 #
-loop $-1 -1 $-1 $-1 $747 $750 #
-vertex $-1 -1 $-1 $751 0 $752 #
-straight-curve $-1 -1 $-1 8.230000000000000426 1.037500000000000089 1.600000000000000089 0 -1 0 F -2.737500000000000266 F 0.6625000000000000888 #
-coedge $-1 -1 $-1 $753 $589 $602 $684 reversed $663 0 $-1 #
-coedge $-1 -1 $-1 $589 $753 $650 $742 forward $663 0 $-1 #
-loop $-1 -1 $-1 $-1 $589 $699 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 3.775000000000000355 0.02470562748477138013 0 -0 -1 0.180312229202569646 0.180312229202569646 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $591 @17 sketch_attrib_def 1 1 3 @13 116 0 0 0 1 1 #
-coedge $754 -1 $-1 $701 $755 $591 $667 forward $618 0 $-1 #
-edge $-1 -1 $-1 $680 1.927668997615923807 $671 2.247331002384077792 $666 $756 forward @7 unknown #
-coedge $-1 -1 $-1 $757 $592 $595 $674 reversed $670 0 $-1 #
-coedge $-1 -1 $-1 $592 $758 $701 $759 forward $670 0 $-1 #
-loop $-1 -1 $-1 $-1 $758 $760 #
-vertex $-1 -1 $-1 $593 2 $761 #
-intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 3 
-	5.88431826770857036 2 6.104450459557373421 1 8.362252985495043589 2 
-	3.774999999999999023 4.029999999999999361 0.02470562748477179299 8.912341906892951471 
-	3.783988437169776731 4.029999999999999361 0.02470562748477179299 8.912341906892951471 
-	3.886730122417022759 4.030000000000000249 0.0319396760788925177 8.787693665700942347 
-	4.015168997615863766 4.030000000000000249 0.1199999999999622202 7.509229523526268935 
-	0 
-	
-	null_surface 
-	null_surface 
-	nullbs 
-	nullbs 
-	I I 
-	0 
-	0 
-	0 
-	
-	0 F 1 F 0 UNEXTENDED UNEXTENDED } I I #
-coedge $-1 -1 $-1 $595 $594 $762 $763 reversed $596 0 $-1 #
-edge $-1 -1 $-1 $764 -0.04970562748477166254 $597 0.2543502884254449925 $668 $765 forward @7 tangent #
-face $766 -1 $-1 $613 $596 $5 $-1 $767 reversed single #
-point $-1 -1 $-1 3.775000000000000355 4.030000000000000249 0.02470562748477220585 #
-coedge $-1 -1 $-1 $768 $599 $755 $769 forward $679 0 $-1 #
-coedge $-1 -1 $-1 $599 $770 $601 $683 reversed $679 0 $-1 #
-loop $-1 -1 $-1 $-1 $677 $771 #
-vertex $-1 -1 $-1 $667 2 $772 #
+coedge $-1 -1 $-1 $498 $445 $565 $579 reversed $255 0 $-1 #
+coedge $-1 -1 $-1 $580 $581 $445 $507 forward $564 0 $-1 #
+edge $-1 -1 $-1 $582 -3.739999999999999325 $511 -0.09238396315491215205 $506 $460 forward @7 unknown #
+coedge $-1 -1 $-1 $583 $446 $449 $515 forward $510 0 $-1 #
+coedge $-1 -1 $-1 $446 $584 $580 $585 reversed $510 0 $-1 #
+loop $-1 -1 $-1 $-1 $446 $555 #
+vertex $-1 -1 $-1 $585 0 $586 #
 intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2 
-	3.40638354991274106 2 5.884318267708598782 2 
-	4.334831002382881771 4.030000000000000249 0.1200000000008196732 7.509229523515431381 
-	4.473820975093832253 4.030000000000000249 0.02470562748477073481 8.912341906892681465 
-	4.575000000000001954 4.030000000000000249 0.02470562748477162646 8.91234190689266903 
+	0 2 0.1005294048021475872 2 
+	4.327383963154911584 4.030000000000000249 0.1251471862576140626 1 
+	4.286636576029918544 4.013471462047180971 0.1416757242951664775 1 
+	4.245889188921719182 3.99150309271339232 0.1636440936289560444 1 
 	0 
 	
 	null_surface 
@@ -716,585 +699,1984 @@ intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2
 	0 
 	
 	0 F 1 F 0 UNEXTENDED UNEXTENDED } I I #
-coedge $-1 -1 $-1 $602 $601 $773 $774 reversed $603 0 $-1 #
-edge $-1 -1 $-1 $604 0.08506096654409768532 $775 0.3891168824543138061 $678 $776 forward @7 tangent #
-edge $-1 -1 $-1 $777 -0.04970562748477166254 $541 0.2543502884254447705 $661 $778 forward @7 tangent #
-point $-1 -1 $-1 4.575000000000000178 4.030000000000000249 0.0247056274847722232 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $608 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 1 0 2 316 -352 0 1 @1 1 0 3 321 342 -352 0 2 @2 13 0 2 347 -352 0 2 @2 13 0 2 348 -352 0 #
-face $779 -1 $-1 $780 $781 $5 $-1 $782 forward single #
-loop $-1 -1 $-1 $-1 $783 $608 #
-cone-surface $-1 -1 $-1 0.375 3.775000000000000355 0 0 0 1 -0.2651650429449553537 0.2651650429449553537 0 1 I I 0 1 0.3750000000000000555 forward I I I I #
-coedge $-1 -1 $-1 $784 $785 $786 $787 forward $609 0 $-1 #
-coedge $-1 -1 $-1 $788 $789 $611 $692 forward $790 0 $-1 #
-edge $-1 -1 $-1 $614 -0.7853981633974490562 $693 0.7853981633974476129 $611 $791 forward @7 unknown #
-vertex $-1 -1 $-1 $692 1 $792 #
-straight-curve $-1 -1 $-1 0.2998528137423855378 3.774999999999999911 -0.1551471862576143113 -0.7071067811865473507 0 0.7071067811865477948 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $613 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 1 0 3 307 343 350 0 1 @1 1 0 3 307 344 350 0 #
-cone-surface $-1 -1 $-1 0.375 3.774999999999999911 -0.03514718625761432957 0 0 1 -0.1379898987322335235 0.1379898987322333292 0 1 I I 0.7071067811865472397 0.7071067811865476838 0.2800000000000001932 forward I I I I #
-point $-1 -1 $-1 0.375 3.814999999999999947 -0.1902943725152283494 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $617 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 8 0 5 307 311 312 343 350 0 #
-face $793 -1 $-1 $745 $663 $5 $-1 $794 reversed single #
-plane-surface $-1 -1 $-1 5.224999999999999645 3.970147186257614091 -0.03514718625761426019 0 0.7071067811865471286 -0.7071067811865477948 -1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $795 $666 $669 $759 reversed $618 0 $-1 #
-coedge $-1 -1 $-1 $621 $620 $796 $797 forward $553 0 $-1 #
-coedge $-1 -1 $-1 $624 $798 $620 $704 forward $710 0 $-1 #
-edge $-1 -1 $-1 $799 -0.785398163397448279 $560 0.785398163397448279 $620 $800 forward @7 unknown #
-coedge $-1 -1 $-1 $801 $644 $621 $706 reversed $731 0 $-1 #
-edge $-1 -1 $-1 $802 -0.785398163397448279 $581 0.785398163397448279 $705 $803 reversed @7 unknown #
-coedge $-1 -1 $-1 $804 $805 $623 $708 forward $806 0 $-1 #
-edge $-1 -1 $-1 $711 -1.338750000000000107 $639 2.061250000000000249 $707 $807 forward @7 unknown #
-coedge $-1 -1 $-1 $798 $624 $808 $809 reversed $710 0 $-1 #
-loop $-1 -1 $-1 $-1 $709 $810 #
-vertex $-1 -1 $-1 $809 1 $811 #
+coedge $-1 -1 $-1 $449 $448 $587 $588 reversed $450 0 $589 #
+pcurve $-1 -1 $-1 0 reversed { exp_par_cur nubs 3 open 4 
+	-2.140950474475010079 3 -2.00714106982032181 3 -1.873331665165633764 3 -1.83139457785029558 3 
+	-0.1250000000000036637 2.140950474475010079 
+	-0.1249999999999953648 2.096347339590121983 
+	-0.1220151866587882022 2.051744204705232111 
+	-0.1181244213789318237 2.007141069820322254 
+	-0.114233656099075459 1.962537934935412398 
+	-0.1094915190935994431 1.917934800050526079 
+	-0.1048839524197525963 1.873331665165633986 
+	-0.1034398907994186489 1.859352556496529196 
+	-0.1020023855423209252 1.84537360695540964 
+	-0.1005826905431944779 1.831394577850296246 
+	1.398428199134888153e-05 
+	spline forward { ref 2 } I I I I 
+	} 0 0 #
+edge $-1 -1 $-1 $452 1.831394577850296024 $590 2.140950474475010079 $508 $591 forward @7 tangent #
+pcurve $-1 -1 $-1 0 reversed { exp_par_cur nubs 3 open 4 
+	1.831394577850296024 3 1.873331665165633764 3 2.00714106982032181 3 2.140950474475010079 3 
+	0.1005826905431935342 1.831394577850296246 
+	0.1020023855423199538 1.84537360695540853 
+	0.1034398907994175665 1.859352556496528086 
+	0.1048839524197515 1.87333166516563443 
+	0.1094915190935983884 1.917934800050532074 
+	0.1142336560990763888 1.962537934935417727 
+	0.1181244213789327535 2.007141069820321366 
+	0.1220151866587891043 2.051744204705225005 
+	0.125000000000000111 2.096347339590120651 
+	0.125000000000000111 2.140950474475010079 
+	1.398428200822448157e-05 
+	spline forward { ref 2 } I I I I 
+	} 0 0 #
+face $592 -1 $-1 $593 $450 $5 $-1 $594 forward single #
+point $-1 -1 $-1 4.245889188921719182 3.99150309271339232 0.1636440936289560444 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $454 @17 sketch_attrib_def 1 1 3 @13 228 0 1 0 1 1 #
+edge $-1 -1 $-1 $521 -0.5602260094890540998 $499 0.9493428919433675173 $470 $595 forward @7 unknown #
+vertex $-1 -1 $-1 $455 1 $596 #
+ellipse-curve $-1 -1 $-1 0.375 3.775000000000000355 0.380147186257614067 -0 0.7071067811865475727 0.7071067811865474617 0 0.25500000000000006 -0.2550000000000001155 0.7071067811865474617 I I #
+coedge $-1 -1 $-1 $457 $456 $597 $598 forward $458 0 $-1 #
+edge $-1 -1 $-1 $599 0.02470562748477122747 $459 0.1251471862576145622 $494 $486 forward @7 tangent #
+face $600 -1 $-1 $481 $458 $5 $-1 $556 reversed single #
+point $-1 -1 $-1 0.375 4.030000000000000249 0.1251471862576145622 #
+coedge $-1 -1 $-1 $463 $461 $601 $602 reversed $408 0 $-1 #
+coedge $-1 -1 $-1 $597 $603 $461 $529 forward $604 0 $-1 #
+edge $-1 -1 $-1 $605 3.925231146709436684e-17 $530 0.2543502884254447705 $528 $606 forward @7 tangent #
+vertex $-1 -1 $-1 $462 0 $607 #
+intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2 
+	0.4931806951743252232 2 0.8449411079456921048 2 
+	3.774999999999998579 4.030000000000001137 0.02470562748477237586 1.478055478043565074 
+	3.878436747528183126 4.030000000000000249 0.02470562748477223014 1.478055478043567295 
+	4.022616036845088949 4.030000000000000249 0.1251471862576152005 1.234857428969259319 
+	0 
+	
+	null_surface 
+	null_surface 
+	nullbs 
+	nullbs 
+	I I 
+	0 
+	0 
+	0 
+	
+	0 F 1 F 0 UNEXTENDED UNEXTENDED } I I #
+coedge $-1 -1 $-1 $608 $609 $463 $533 reversed $610 0 $-1 #
+edge $-1 -1 $-1 $611 3.925231146709436684e-17 $534 0.339411254969542775 $532 $612 forward @7 tangent #
+vertex $-1 -1 $-1 $588 1 $613 #
+intcurve-curve $-1 -1 $-1 forward { off_surf_int_cur 23100 full nubs 3 open 3 
+	1.83139457785029558 3 2.006757161602031214 3 2.140950474475010079 3 
+	4.104110811073714338 3.991503092706587541 0.1636440936404837954 
+	4.100501195908027974 3.952630155853808169 0.1392644626798927587 
+	4.096747439720770601 3.913801004960057561 0.1180597894006260029 
+	4.093909524208246609 3.873266704151203665 0.1034115306022778263 
+	4.091737856363648618 3.842248501783527281 0.09220219316029543144 
+	4.090147186257613754 3.810242204138755362 0.08485281374238562435 
+	4.090147186257613754 3.774999999999999911 0.08485281374238554108 
+	0.0005299415490069984188 
+	
+	cone 3.774999999999999911 3.774999999999999467 -0.1199999999999999956 0 0 1 0.1979898987322331327 0.1979898987322336046 0 1 I I 0.7071067811865473507 0.7071067811865477948 0.2800000000000000822 forward I I I I 
+	null_surface 
+	nullbs 
+	nullbs 
+	I I 
+	0 
+	0 
+	0 
+	
+	0 F -1.414213562373095368 F 1.702693586639664414 F -0.7859512598521066762 F -0.0316768424637454693 intcurve forward { ref 4 } F 1.83139457785029558 F 2.140950474475010079 F 1.680649265072318377 F 2.140950474475010079 -0.1199999999999999956 0 1 } I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $465 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 7 0 3 307 343 367 0 1 @1 7 0 3 307 344 367 0 1 @1 3 0 6 354 360 362 363 364 367 0 1 @1 3 0 6 354 361 362 363 364 367 0 #
+face $614 -1 $-1 $615 $616 $5 $-1 $617 reversed single #
+cone-surface $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.0351471862576143157 0 0 1 0.1379898987322331905 0.1379898987322334958 0 1 I I 0.7071067811865473507 0.7071067811865477948 0.2800000000000000822 forward I I I I #
+coedge $-1 -1 $-1 $618 $469 $619 $620 forward $418 0 $-1 #
+coedge $-1 -1 $-1 $621 $622 $469 $541 forward $623 0 $-1 #
+edge $-1 -1 $-1 $624 -2.737457055032113118 $487 0.6625429449678872373 $469 $625 forward @7 unknown #
+coedge $-1 -1 $-1 $470 $618 $493 $567 forward $418 0 $-1 #
+ellipse-curve $-1 -1 $-1 0.1199999999999999956 2.750000000000000888 1.489999999999999769 -1 0 0 0 -0.05543277195067738278 0.02296100594190495295 1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $472 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 3 0 2 314 367 0 1 @1 3 0 3 319 342 367 0 2 @2 12 0 2 347 367 0 2 @2 12 0 2 348 367 0 #
+face $626 -1 $-1 $627 $628 $5 $-1 $629 reversed single #
+plane-surface $-1 -1 $-1 0.1199999999999999956 4.150000000000000355 0 -1 0 0 0 -1 0 forward_v I I I I #
+coedge $-1 -1 $-1 $475 $474 $630 $631 reversed $476 0 $-1 #
+face $632 -1 $-1 $633 $476 $5 $-1 $492 reversed single #
+point $-1 -1 $-1 8.22999999999999865 3.775000000000000355 1.550000000000000044 #
+coedge $-1 -1 $-1 $634 $635 $479 $551 forward $636 0 $-1 #
+edge $-1 -1 $-1 $485 -5.887499999999999289 $552 1.712500000000000355 $479 $637 forward @7 unknown #
+vertex $-1 -1 $-1 $551 1 $638 #
+straight-curve $-1 -1 $-1 7.974999999999999645 4.030000000000002025 0 0 0 1 F 0.0247056274847717583 F 1.600000000000000089 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $481 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 6 0 2 314 367 0 1 @1 6 0 3 319 342 367 0 2 @2 14 0 2 347 367 0 2 @2 14 0 2 348 367 0 #
+face $639 -1 $-1 $640 $510 $5 $-1 $641 reversed single #
+plane-surface $-1 -1 $-1 8.349999999999999645 4.030000000000000249 0 0 1 -0 -1 0 0 forward_v I I I I #
+coedge $-1 -1 $-1 $642 $483 $635 $643 forward $559 0 $-1 #
+coedge $-1 -1 $-1 $483 $642 $621 $644 forward $559 0 $-1 #
+loop $-1 -1 $-1 $-1 $642 $645 #
+ellipse-curve $-1 -1 $-1 0.375 3.775000000000000355 1.600000000000000089 -0 -0 -1 0.25500000000000006 0 0 1 I I #
+point $-1 -1 $-1 0.375 4.030000000000000249 1.600000000000000089 #
+point $-1 -1 $-1 0.1199999999999999956 3.775000000000000355 1.600000000000000089 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $490 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 6 0 2 314 367 0 1 @1 6 0 3 319 342 367 0 2 @2 14 0 2 347 367 0 2 @2 14 0 2 348 367 0 #
+loop $-1 -1 $-1 $-1 $506 $490 #
+coedge $-1 -1 $-1 $646 $575 $505 $579 forward $491 0 $-1 #
+coedge $-1 -1 $-1 $494 $493 $647 $648 reversed $393 0 $-1 #
+edge $-1 -1 $-1 $649 0.02470562748477123094 $521 0.3801471862576142335 $493 $488 forward @7 tangent #
+coedge $-1 -1 $-1 $495 $574 $650 $651 forward $357 0 $-1 #
+coedge $-1 -1 $-1 $652 $653 $495 $570 forward $654 0 $-1 #
+edge $-1 -1 $-1 $571 -2.737542944967887415 $655 0.6624570550321130513 $495 $656 forward @7 unknown #
+vertex $-1 -1 $-1 $631 1 $657 #
+straight-curve $-1 -1 $-1 8.230000000000000426 3.775000000000000355 0 0 0 -1 F -1.600000000000000089 F -0.02470562748477140788 #
+point $-1 -1 $-1 0.1199999999999999956 2.707573593128808298 1.447573593128806735 #
+coedge $-1 -1 $-1 $568 $501 $658 $659 forward $357 0 $-1 #
+coedge $-1 -1 $-1 $565 $660 $501 $576 reversed $491 0 $-1 #
+edge $-1 -1 $-1 $577 -0.3801471862576142335 $661 -0.02470562748477140788 $501 $572 forward @7 tangent #
+vertex $-1 -1 $-1 $576 0 $662 #
+straight-curve $-1 -1 $-1 8.230000000000000426 2.341360389693210919 1.813786796564403669 0 0.7071067811865474617 -0.7071067811865475727 I I #
+edge $-1 -1 $-1 $577 -1.57079632679489678 $582 3.483052626275001159e-15 $565 $663 forward @7 unknown #
+coedge $-1 -1 $-1 $664 $506 $509 $585 forward $564 0 $-1 #
+coedge $-1 -1 $-1 $506 $664 $646 $665 forward $564 0 $-1 #
+vertex $-1 -1 $-1 $507 0 $666 #
+coedge $-1 -1 $-1 $667 $508 $668 $669 reversed $510 0 $-1 #
+coedge $-1 -1 $-1 $509 $667 $670 $671 reversed $510 0 $-1 #
+edge $-1 -1 $-1 $511 0.1414202824029626715 $672 0.4931806951743296641 $509 $673 forward @7 unknown #
+point $-1 -1 $-1 4.327383963154911584 4.030000000000000249 0.1251471862576141736 #
+coedge $-1 -1 $-1 $674 $675 $513 $588 forward $676 0 $-1 #
+edge $-1 -1 $-1 $590 -3.141592653589795781 $534 -1.570796326794893893 $587 $677 forward @7 tangent #
+pcurve $-1 -1 $-1 0 reversed { exp_par_cur nubs 1 open 2 
+	-3.141592653589794892 1 -1.57079632679489456 1 
+	0.1250000000000002776 2.140950474475010079 
+	-0.1250000000000003331 2.140950474475010079 
+	1.301214125134180796e-16 
+	spline forward { ref 2 } I I I I 
+	} 0 0 #
+vertex $-1 -1 $-1 $588 0 $678 #
+intcurve-curve $-1 -1 $-1 forward { off_surf_int_cur 23100 full nubs 3 open 3 
+	1.831394577850296024 3 2.006757161601923301 3 2.140950474475010079 3 
+	4.245889188926285307 3.991503092706586653 0.16364409364048349 
+	4.249498804091969006 3.952630155853831262 0.1392644626799074692 
+	4.253252560279224603 3.913801004960105079 0.1180597894006524679 
+	4.256090475791747707 3.873266704151278716 0.1034115306023049019 
+	4.258262143636348362 3.84224850178357924 0.09220219316030704715 
+	4.259852813742385891 3.810242204138784228 0.0848528137423855966 
+	4.259852813742385891 3.775000000000000355 0.08485281374238558272 
+	0.00052994154900595997 
+	
+	cone 4.575000000000000178 3.774999999999999911 -0.1199999999999999956 0 0 1 -0.1979898987322335768 0.1979898987322332993 0 1 I I 0.7071067811865472397 0.7071067811865476838 0.2800000000000001932 forward I I I I 
+	null_surface 
+	nullbs 
+	nullbs 
+	I I 
+	0 
+	0 
+	0 
+	
+	0 F -1.41421356237309559 F 1.70269358663965753 F 0.03167684246374245782 F 0.785951259852105788 intcurve forward { ref 4 } F 1.831394577850296024 F 2.140950474475010079 F 1.680649265072318377 F 2.140950474475010079 -0.1199999999999999956 0 1 } I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $517 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 18 0 1 367 0 #
+face $679 -1 $-1 $680 $681 $5 $-1 $682 forward single #
+spline-surface $-1 -1 $-1 reversed { ref 2 } F -0.1250000000000036637 F 0.1250000000000004441 F 1.831394577849769556 F 2.140950474475010079 #
+straight-curve $-1 -1 $-1 0.1199999999999999956 3.378860389693211008 0.7762867965644034696 0 -0.7071067811865474617 0.7071067811865475727 I I #
+point $-1 -1 $-1 0.1199999999999999956 3.775000000000000355 0.3801471862576142335 #
+coedge $-1 -1 $-1 $683 $528 $523 $598 reversed $604 0 $-1 #
+edge $-1 -1 $-1 $599 -4.3125 $530 -0.9125000000000000888 $597 $684 forward @7 unknown #
+vertex $-1 -1 $-1 $598 0 $685 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $525 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 6 0 2 314 367 0 1 @1 6 0 3 319 342 367 0 2 @2 14 0 2 347 367 0 2 @2 14 0 2 348 367 0 #
+coedge $-1 -1 $-1 $686 $687 $527 $602 forward $681 0 $-1 #
+edge $-1 -1 $-1 $611 -0.7853981633974493892 $605 0.7853981633974471688 $527 $688 forward @7 tangent #
+coedge $-1 -1 $-1 $528 $683 $689 $690 reversed $604 0 $-1 #
+loop $-1 -1 $-1 $-1 $603 $691 #
+vertex $-1 -1 $-1 $692 1 $693 #
+straight-curve $-1 -1 $-1 3.774999999999999911 3.850147186257613985 -0.1551471862576143113 0 0.7071067811865477948 0.7071067811865471286 F 3.925231146709436684e-17 F 0.2543502884254447705 #
+point $-1 -1 $-1 3.774999999999999911 4.030000000000000249 0.0247056274847717583 #
+coedge $-1 -1 $-1 $694 $532 $695 $696 reversed $610 0 $-1 #
+coedge $-1 -1 $-1 $532 $694 $674 $697 reversed $610 0 $-1 #
+loop $-1 -1 $-1 $-1 $609 $698 #
+vertex $-1 -1 $-1 $699 0 $700 #
+straight-curve $-1 -1 $-1 3.850147186257613985 3.774999999999999467 -0.1551471862576143113 0.7071067811865477948 0 0.7071067811865471286 F 3.925231146709436684e-17 F 0.339411254969542775 #
+point $-1 -1 $-1 4.090147186257613754 3.774999999999999911 0.08485281374238573537 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $537 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 4 0 3 307 343 367 0 1 @1 4 0 3 307 344 367 0 #
+face $701 -1 $-1 $702 $703 $5 $-1 $704 reversed single #
+loop $-1 -1 $-1 $-1 $705 $537 #
+plane-surface $-1 -1 $-1 3.125 0.1798528137423857087 -0.03514718625761430182 0 -0.7071067811865475727 -0.7071067811865474617 -1 0 -0 forward_v I I I I #
+coedge $-1 -1 $-1 $542 $539 $706 $707 reversed $418 0 $-1 #
+coedge $-1 -1 $-1 $708 $709 $539 $620 reversed $710 0 $-1 #
+edge $-1 -1 $-1 $624 -1.600000000000000089 $711 -0.02470562748477141829 $539 $712 forward @7 tangent #
+coedge $-1 -1 $-1 $713 $540 $558 $644 reversed $623 0 $-1 #
+coedge $-1 -1 $-1 $540 $713 $714 $715 reversed $623 0 $-1 #
+loop $-1 -1 $-1 $-1 $713 $640 #
+vertex $-1 -1 $-1 $716 1 $717 #
+straight-curve $-1 -1 $-1 0.1199999999999999956 3.112457055032113118 1.600000000000000089 -0 1 -0 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $545 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 4 0 2 314 367 0 1 @1 4 0 3 319 342 367 0 2 @2 18 0 2 347 367 0 2 @2 18 0 2 348 367 0 #
+face $718 -1 $-1 $719 $720 $5 $-1 $721 reversed single #
+loop $-1 -1 $-1 $-1 $722 $545 #
+plane-surface $-1 -1 $-1 0 0.1199999999999999956 0 0 -1 0 1 0 0 forward_v I I I I #
+coedge $-1 -1 $-1 $723 $724 $547 $631 forward $725 0 $-1 #
+edge $-1 -1 $-1 $552 -1.570796326794896558 $571 0 $547 $726 forward @7 unknown #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $548 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 2 0 2 316 367 0 1 @1 2 0 3 321 342 367 0 2 @2 15 0 2 347 367 0 2 @2 15 0 2 348 367 0 #
+face $727 -1 $-1 $728 $729 $5 $-1 $730 reversed single #
+coedge $-1 -1 $-1 $731 $550 $724 $732 reversed $636 0 $-1 #
+coedge $-1 -1 $-1 $550 $731 $557 $643 reversed $636 0 $-1 #
+loop $-1 -1 $-1 $-1 $731 $733 #
+straight-curve $-1 -1 $-1 6.262499999999999289 4.030000000000000249 1.600000000000000089 1 0 -0 I I #
+point $-1 -1 $-1 7.974999999999999645 4.030000000000002025 1.600000000000000089 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $555 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 1 0 5 307 311 312 343 367 0 1 @1 3 0 8 354 356 357 360 362 363 364 367 0 #
+face $734 -1 $-1 $645 $623 $5 $-1 $735 reversed single #
+cone-surface $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.03514718625761432957 0 0 1 -0.1379898987322335235 0.1379898987322333292 0 1 I I 0.7071067811865472397 0.7071067811865476838 0.2800000000000001932 forward I I I I #
+coedge $-1 -1 $-1 $558 $557 $736 $737 reversed $559 0 $-1 #
+edge $-1 -1 $-1 $485 0 $738 0.09899494936611706597 $635 $739 forward @7 tangent #
+edge $-1 -1 $-1 $740 0.2616295090390227118 $487 0.360624458405139181 $621 $741 forward @7 tangent #
+face $742 -1 $-1 $733 $559 $5 $-1 $743 reversed single #
+coedge $-1 -1 $-1 $660 $565 $581 $665 reversed $491 0 $-1 #
+coedge $-1 -1 $-1 $744 $745 $566 $648 forward $746 0 $-1 #
+edge $-1 -1 $-1 $599 -0.785398163397448279 $649 0.785398163397448279 $566 $747 forward @7 unknown #
+vertex $-1 -1 $-1 $748 1 $749 #
+coedge $-1 -1 $-1 $750 $751 $568 $651 reversed $729 0 $-1 #
+edge $-1 -1 $-1 $752 0.02470562748477134196 $655 1.600000000000000089 $650 $753 forward @7 tangent #
+coedge $-1 -1 $-1 $754 $569 $755 $756 reversed $654 0 $-1 #
+coedge $-1 -1 $-1 $569 $754 $723 $757 reversed $654 0 $-1 #
+loop $-1 -1 $-1 $-1 $754 $758 #
+vertex $-1 -1 $-1 $570 1 $759 #
+straight-curve $-1 -1 $-1 8.230000000000000426 1.03745705503211294 1.600000000000000089 0 -1 -0 I I #
+point $-1 -1 $-1 8.230000000000000426 3.775000000000000355 1.600000000000000089 #
+coedge $-1 -1 $-1 $760 $761 $574 $659 reversed $762 0 $-1 #
+edge $-1 -1 $-1 $661 -2.212499999999999467 $752 1.1875 $658 $763 forward @7 unknown #
+coedge $-1 -1 $-1 $575 $646 $764 $765 forward $491 0 $-1 #
+vertex $-1 -1 $-1 $576 1 $766 #
+point $-1 -1 $-1 8.22999999999999865 3.775000000000000355 0.3801471862576142335 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 3.775000000000000355 0.380147186257614067 -0 0.7071067811865475727 0.7071067811865474617 0 0.25500000000000006 -0.2550000000000001155 0.7071067811865474617 I I #
+coedge $-1 -1 $-1 $581 $580 $767 $768 forward $564 0 $-1 #
+edge $-1 -1 $-1 $769 0.0247056274847717583 $582 0.1251471862576145622 $646 $553 forward @7 tangent #
+point $-1 -1 $-1 7.974999999999998757 4.030000000000000249 0.1251471862576145622 #
+coedge $-1 -1 $-1 $584 $583 $770 $771 reversed $510 0 $-1 #
+coedge $-1 -1 $-1 $772 $773 $583 $669 forward $774 0 $-1 #
+edge $-1 -1 $-1 $775 0 $590 0.339411254969542997 $668 $776 forward @7 tangent #
+coedge $-1 -1 $-1 $777 $767 $584 $671 forward $778 0 $-1 #
+edge $-1 -1 $-1 $672 0.08506096654409771307 $779 0.3394112549695423309 $670 $780 forward @7 tangent #
+vertex $-1 -1 $-1 $585 1 $781 #
+intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2 
+	0.1414202824029626715 2 0.4931806951743296641 2 
+	4.327383963154912472 4.030000000000000249 0.1251471862576149785 1.234857428969259541 
+	4.471563252471819183 4.030000000000000249 0.02470562748477045378 1.478055478043569737 
+	4.575000000000002842 4.030000000000000249 0.02470562748477115114 1.478055478043569071 
+	0 
+	
+	null_surface 
+	null_surface 
+	nullbs 
+	nullbs 
+	I I 
+	0 
+	0 
+	0 
+	
+	0 F 1 F 0 UNEXTENDED UNEXTENDED } I I #
+coedge $-1 -1 $-1 $782 $587 $609 $697 forward $676 0 $-1 #
+coedge $-1 -1 $-1 $587 $782 $772 $783 reversed $676 0 $-1 #
+loop $-1 -1 $-1 $-1 $675 $784 #
+ellipse-curve $-1 -1 $-1 4.174999999999999822 3.775000000000000355 -1.890848588814719733e-16 3.055359483286572082e-17 -1 -4.857225732735107319e-17 -0.08485281374238570762 1.528934212531475938e-18 -0.08485281374238569374 1 F -3.141592653589795781 F -1.570796326794893893 #
+point $-1 -1 $-1 4.259852813742385891 3.774999999999999911 0.08485281374238569374 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $593 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 17 0 1 367 0 #
+face $785 -1 $-1 $786 $787 $5 $-1 $788 forward single #
+loop $-1 -1 $-1 $-1 $687 $593 #
+torus-surface $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.2399999999999999911 -0 -0 1 0.1600000000000001976 0.1199999999999999956 0.7071067811865466846 0.7071067811865483499 0 forward_v I I I I #
+coedge $-1 -1 $-1 $603 $597 $745 $789 forward $604 0 $-1 #
+straight-curve $-1 -1 $-1 4.6875 4.030000000000000249 0.02470562748477224749 1 0 0 F -4.3125 F -0.9125000000000000888 #
+point $-1 -1 $-1 0.375 4.030000000000000249 0.02470562748477122747 #
+coedge $-1 -1 $-1 $790 $601 $791 $692 reversed $681 0 $-1 #
+coedge $-1 -1 $-1 $601 $790 $792 $699 reversed $681 0 $-1 #
+ellipse-curve $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.1551471862576143113 -0 -0 1 0.05313708498984765632 0.05313708498984777429 0 1 F -0.7853981633974493892 F 0.7853981633974471688 #
+coedge $-1 -1 $-1 $793 $791 $603 $690 forward $787 0 $-1 #
+edge $-1 -1 $-1 $605 -2.75 $794 0.6499999999999996891 $603 $795 forward @7 tangent #
+face $796 -1 $-1 $797 $604 $5 $-1 $798 reversed single #
+edge $-1 -1 $-1 $799 2.356194490192344393 $605 3.141592653589793116 $791 $800 forward @7 tangent #
+point $-1 -1 $-1 3.774999999999999911 3.850147186257613985 -0.1551471862576142557 #
+coedge $-1 -1 $-1 $609 $608 $801 $802 forward $610 0 $-1 #
+coedge $-1 -1 $-1 $792 $803 $608 $696 forward $804 0 $-1 #
+edge $-1 -1 $-1 $805 -2.75 $611 0.6499999999999994671 $608 $806 forward @7 tangent #
+edge $-1 -1 $-1 $534 -2.225000000000000089 $807 1.174999999999999822 $609 $808 forward @7 tangent #
+face $809 -1 $-1 $810 $610 $5 $-1 $811 reversed single #
+edge $-1 -1 $-1 $611 -3.141592653589793116 $812 -2.356194490192344393 $792 $813 forward @7 tangent #
+point $-1 -1 $-1 3.850147186257613985 3.774999999999999467 -0.1551471862576142557 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $615 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 3 0 3 307 343 367 0 1 @1 3 0 3 307 344 367 0 #
+face $814 -1 $-1 $815 $816 $5 $-1 $817 reversed single #
+loop $-1 -1 $-1 $-1 $818 $615 #
+cone-surface $-1 -1 $-1 0.375 0.375 -0.03514718625761428794 0 0 1 -0.1379898987322333292 -0.1379898987322333292 0 1 I I 0.7071067811865475727 0.7071067811865473507 0.2800000000000000266 forward I I I I #
+coedge $-1 -1 $-1 $819 $820 $821 $822 forward $616 0 $-1 #
+coedge $-1 -1 $-1 $823 $824 $618 $707 forward $816 0 $-1 #
+edge $-1 -1 $-1 $649 -1.187500000000000444 $711 2.212499999999999911 $618 $825 forward @7 unknown #
+coedge $-1 -1 $-1 $826 $619 $827 $716 reversed $710 0 $-1 #
+coedge $-1 -1 $-1 $619 $826 $828 $829 reversed $710 0 $-1 #
+loop $-1 -1 $-1 $-1 $619 $830 #
+vertex $-1 -1 $-1 $829 0 $831 #
+straight-curve $-1 -1 $-1 0.1199999999999999956 0.375 0 0 0 -1 F -1.600000000000000089 F -0.02470562748477141829 #
+coedge $-1 -1 $-1 $622 $621 $832 $833 reversed $623 0 $-1 #
+coedge $-1 -1 $-1 $834 $827 $622 $715 forward $835 0 $-1 #
+edge $-1 -1 $-1 $624 0 $836 0.09899494936611649698 $622 $837 forward @7 tangent #
+edge $-1 -1 $-1 $838 1.57079632679489678 $624 3.141592653589793116 $708 $839 forward @7 unknown #
+point $-1 -1 $-1 0.1199999999999999956 0.375 1.600000000000000089 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $627 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 1 0 3 310 343 367 0 1 @1 1 0 3 310 344 367 0 #
+face $840 -1 $-1 $841 $842 $5 $-1 $843 reversed single #
+loop $-1 -1 $-1 $-1 $844 $627 #
+cone-surface $-1 -1 $-1 0.375 3.774999999999999911 -0.3751471862576143956 0 0 -1 -0.02485281374238585556 0.02485281374238581392 0 1 I I -0.7071067811865464625 0.7071067811865484609 0.1200000000000003009 forward I I I I #
+coedge $-1 -1 $-1 $845 $846 $819 $847 reversed $628 0 $-1 #
+coedge $-1 -1 $-1 $848 $630 $653 $757 forward $725 0 $-1 #
+coedge $-1 -1 $-1 $630 $848 $634 $732 forward $725 0 $-1 #
+loop $-1 -1 $-1 $-1 $848 $849 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 3.775000000000000355 1.600000000000000089 -0 -0 -1 0.25500000000000006 0 0 1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $633 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 3 0 2 316 367 0 1 @1 3 0 3 321 342 367 0 2 @2 17 0 2 347 367 0 2 @2 17 0 2 348 367 0 #
+face $850 -1 $-1 $851 $852 $5 $-1 $853 reversed single #
+loop $-1 -1 $-1 $-1 $750 $633 #
+cone-surface $-1 -1 $-1 7.974999999999999645 0.375 0 -0 0 1 0.180312229202569646 -0.180312229202569646 0 1 I I 0 1 0.3750000000000000555 forward I I I I #
+coedge $-1 -1 $-1 $635 $634 $854 $855 reversed $636 0 $-1 #
+edge $-1 -1 $-1 $856 0.2616295090390220457 $552 0.3606244584051391255 $634 $857 forward @7 tangent #
+face $858 -1 $-1 $849 $636 $5 $-1 $859 reversed single #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $640 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 4 340 341 342 369 0 #
+plane-surface $-1 -1 $-1 0.2474999999999999978 3.052500000000000213 1.727500000000000036 -0.7071067811865473507 0 0.7071067811865476838 0.7071067811865476838 -0 0.7071067811865473507 forward_v I I I I #
+coedge $-1 -1 $-1 $860 $861 $642 $737 forward $862 0 $-1 #
+edge $-1 -1 $-1 $740 -0.785398163397448168 $738 0.785398163397448168 $736 $863 forward @7 unknown #
+vertex $-1 -1 $-1 $855 0 $864 #
+straight-curve $-1 -1 $-1 0.375 4.030000000000000249 1.600000000000000089 0 -0.7071067811865475727 0.7071067811865475727 F 0 F 0.3606244584051391255 #
+vertex $-1 -1 $-1 $737 0 $865 #
+straight-curve $-1 -1 $-1 0.375 3.775000000000000355 1.854999999999999982 -0.7071067811865476838 0 -0.7071067811865473507 F 0 F 0.360624458405139181 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $645 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 4 340 341 342 369 0 #
+cone-surface $-1 -1 $-1 0.375 3.775000000000000355 1.600000000000000089 -0 -0 -1 -0.1803122292025696738 0.1803122292025696183 0 1 I I 0.7071067811865476838 0.7071067811865473507 0.25500000000000006 forward I I I I #
+coedge $-1 -1 $-1 $866 $647 $824 $748 reversed $746 0 $-1 #
+coedge $-1 -1 $-1 $647 $866 $683 $789 reversed $746 0 $-1 #
+loop $-1 -1 $-1 $-1 $745 $815 #
+ellipse-curve $-1 -1 $-1 0.375 3.775000000000000355 0.02470562748477122747 0 0 1 -0.180312229202569646 0.180312229202569646 0 1 F -0.785398163397448279 F 0.785398163397448279 #
+edge $-1 -1 $-1 $867 -3.925231146709436684e-17 $649 0.2543502884254436602 $744 $868 forward @7 tangent #
+point $-1 -1 $-1 0.1200000000000002176 3.775000000000000355 0.02470562748477123094 #
+coedge $-1 -1 $-1 $869 $650 $870 $871 forward $729 0 $-1 #
+coedge $-1 -1 $-1 $650 $869 $872 $873 reversed $729 0 $-1 #
+vertex $-1 -1 $-1 $651 0 $874 #
+straight-curve $-1 -1 $-1 8.22999999999999865 0.374999999999999889 0 0 0 1 F 0.02470562748477134196 F 1.600000000000000089 #
+coedge $-1 -1 $-1 $653 $652 $875 $876 reversed $654 0 $-1 #
+coedge $-1 -1 $-1 $872 $877 $652 $756 forward $878 0 $-1 #
+edge $-1 -1 $-1 $879 0.2616295090390245437 $655 0.3606244584051391255 $652 $880 forward @7 tangent #
+edge $-1 -1 $-1 $571 0 $881 0.09899494936611455409 $653 $882 forward @7 tangent #
+face $883 -1 $-1 $884 $654 $5 $-1 $885 reversed single #
+point $-1 -1 $-1 8.22999999999999865 0.374999999999999889 1.600000000000000089 #
+coedge $-1 -1 $-1 $886 $658 $887 $888 reversed $762 0 $-1 #
+coedge $-1 -1 $-1 $658 $886 $889 $890 forward $762 0 $-1 #
+loop $-1 -1 $-1 $-1 $760 $891 #
+straight-curve $-1 -1 $-1 8.230000000000000426 1.5625 0.0247056274847728026 0 -1 0 F -2.212499999999999467 F 1.1875 #
+coedge $-1 -1 $-1 $892 $887 $660 $765 reversed $893 0 $-1 #
+edge $-1 -1 $-1 $769 -0.785398163397448279 $661 0.7853981633974518317 $764 $894 forward @7 unknown #
+point $-1 -1 $-1 8.230000000000000426 3.774999999999999467 0.02470562748477140788 #
+coedge $-1 -1 $-1 $670 $895 $664 $768 reversed $778 0 $-1 #
+edge $-1 -1 $-1 $672 -2.212499999999999467 $769 1.1875 $767 $896 forward @7 unknown #
+vertex $-1 -1 $-1 $665 0 $897 #
+coedge $-1 -1 $-1 $898 $899 $667 $771 forward $900 0 $-1 #
+edge $-1 -1 $-1 $779 -0.7853981633974490562 $775 0.7853981633974473908 $667 $901 forward @7 tangent #
+coedge $-1 -1 $-1 $902 $668 $675 $783 forward $774 0 $-1 #
+coedge $-1 -1 $-1 $668 $902 $903 $904 reversed $774 0 $-1 #
+loop $-1 -1 $-1 $-1 $773 $905 #
+vertex $-1 -1 $-1 $906 1 $907 #
+straight-curve $-1 -1 $-1 4.499852813742386104 3.774999999999999911 -0.1551471862576143113 -0.7071067811865473507 0 0.7071067811865477948 F 0 F 0.339411254969542997 #
+coedge $-1 -1 $-1 $895 $670 $908 $909 reversed $778 0 $-1 #
+loop $-1 -1 $-1 $-1 $777 $910 #
+vertex $-1 -1 $-1 $911 0 $912 #
+straight-curve $-1 -1 $-1 4.575000000000000178 4.090147186257613754 0.08485281374238567986 0 -0.7071067811865471286 -0.7071067811865477948 F 0.08506096654409771307 F 0.3394112549695423309 #
+point $-1 -1 $-1 4.575000000000000178 4.030000000000000249 0.02470562748477211912 #
+coedge $-1 -1 $-1 $675 $674 $913 $914 forward $676 0 $-1 #
+edge $-1 -1 $-1 $590 -2.225000000000000089 $915 1.174999999999999822 $772 $916 forward @7 tangent #
+face $917 -1 $-1 $918 $676 $5 $-1 $919 forward single #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $680 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 16 0 1 367 0 #
+face $920 -1 $-1 $921 $922 $5 $-1 $923 forward single #
+loop $-1 -1 $-1 $-1 $924 $680 #
+cone-surface $-1 -1 $-1 1.024999999999999689 3.934999999999999609 -0.2399999999999999911 -1 0 -0 0 0 -0.1199999999999999956 1 I I 0 1 0.1199999999999999956 forward I I I I #
+edge $-1 -1 $-1 $599 0.08506096654409835145 $794 0.3394112549695423309 $683 $925 forward @7 tangent #
+coedge $-1 -1 $-1 $687 $686 $926 $927 reversed $681 0 $-1 #
+coedge $-1 -1 $-1 $689 $924 $686 $692 forward $787 0 $-1 #
+coedge $-1 -1 $-1 $928 $695 $687 $699 forward $804 0 $-1 #
+coedge $-1 -1 $-1 $924 $689 $929 $930 reversed $787 0 $-1 #
+vertex $-1 -1 $-1 $930 1 $931 #
+straight-curve $-1 -1 $-1 1.024999999999999689 3.850147186257613985 -0.1551471862576142557 -1 0 0 F -2.75 F 0.6499999999999996891 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $691 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 8 0 3 307 343 367 0 1 @1 8 0 3 307 344 367 0 #
+face $932 -1 $-1 $933 $934 $5 $-1 $935 reversed single #
+plane-surface $-1 -1 $-1 1.024999999999999689 3.970147186257614091 -0.03514718625761426019 0 0.7071067811865471286 -0.7071067811865477948 -1 0 0 forward_v I I I I #
+vertex $-1 -1 $-1 $927 1 $936 #
+ellipse-curve $-1 -1 $-1 3.774999999999999467 3.934999999999999609 -0.2399999999999999911 -1 0 0 0 0.08485281374238566598 -0.08485281374238574925 1 F 2.356194490192344393 F 3.141592653589793116 #
+coedge $-1 -1 $-1 $937 $938 $694 $802 reversed $939 0 $-1 #
+edge $-1 -1 $-1 $805 3.925231146709436684e-17 $807 0.339411254969542775 $694 $940 forward @7 tangent #
+coedge $-1 -1 $-1 $695 $928 $941 $942 forward $804 0 $-1 #
+loop $-1 -1 $-1 $-1 $928 $943 #
+vertex $-1 -1 $-1 $942 1 $944 #
+straight-curve $-1 -1 $-1 3.850147186257613985 3.125 -0.1551471862576142557 0 1 0 F -2.75 F 0.6499999999999994671 #
+vertex $-1 -1 $-1 $914 0 $945 #
+straight-curve $-1 -1 $-1 4.090147186257613754 1.549999999999999822 0.08485281374238573537 0 -1 0 F -2.225000000000000089 F 1.174999999999999822 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $698 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 6 0 3 307 343 367 0 1 @1 6 0 3 307 344 367 0 #
+face $946 -1 $-1 $947 $948 $5 $-1 $949 reversed single #
+plane-surface $-1 -1 $-1 3.970147186257614091 3.125 -0.03514718625761426019 0.7071067811865471286 0 -0.7071067811865477948 -0.7071067811865479058 0 -0.7071067811865472397 forward_v I I I I #
+vertex $-1 -1 $-1 $699 1 $950 #
+ellipse-curve $-1 -1 $-1 3.934999999999999609 3.774999999999999467 -0.2399999999999999911 0 -1 0 0.08485281374238566598 0 -0.08485281374238574925 1 F -3.141592653589793116 F -2.356194490192344393 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $702 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 2 0 3 307 343 367 0 1 @1 2 0 3 307 344 367 0 #
+face $951 -1 $-1 $691 $746 $5 $-1 $952 reversed single #
+loop $-1 -1 $-1 $-1 $824 $702 #
+plane-surface $-1 -1 $-1 0.1798528137423857087 1.024999999999999689 -0.03514718625761430182 -0.7071067811865475727 0 -0.7071067811865474617 -0.7071067811865474617 0 0.7071067811865475727 forward_v I I I I #
+coedge $-1 -1 $-1 $953 $821 $954 $955 reversed $703 0 $-1 #
+coedge $-1 -1 $-1 $956 $705 $722 $847 forward $616 0 $-1 #
+coedge $-1 -1 $-1 $705 $956 $957 $958 reversed $616 0 $-1 #
+coedge $-1 -1 $-1 $818 $828 $705 $822 reversed $703 0 $-1 #
+edge $-1 -1 $-1 $959 5.887846720064155951e-17 $960 0.2543502884254440488 $821 $961 forward @7 tangent #
+coedge $-1 -1 $-1 $962 $706 $953 $963 reversed $816 0 $-1 #
+coedge $-1 -1 $-1 $706 $962 $744 $748 forward $816 0 $-1 #
+straight-curve $-1 -1 $-1 0.1199999999999999956 2.587499999999999911 0.02470562748477142523 -0 -1 0 F -1.187500000000000444 F 2.212499999999999911 #
+coedge $-1 -1 $-1 $709 $708 $845 $964 forward $710 0 $-1 #
+coedge $-1 -1 $-1 $714 $965 $708 $716 forward $835 0 $-1 #
+coedge $-1 -1 $-1 $821 $953 $709 $829 forward $703 0 $-1 #
+edge $-1 -1 $-1 $711 -0.785398163397448279 $960 0.785398163397448168 $709 $966 forward @7 unknown #
+face $967 -1 $-1 $472 $710 $5 $-1 $968 reversed single #
+point $-1 -1 $-1 0.1199999999999999956 0.375 0.02470562748477141829 #
+coedge $-1 -1 $-1 $969 $970 $713 $833 forward $971 0 $-1 #
+edge $-1 -1 $-1 $836 -1.338750000000000107 $740 2.061250000000000249 $832 $972 forward @7 unknown #
+coedge $-1 -1 $-1 $965 $714 $973 $974 reversed $835 0 $-1 #
+loop $-1 -1 $-1 $-1 $834 $975 #
+vertex $-1 -1 $-1 $974 1 $976 #
 straight-curve $-1 -1 $-1 0.1199999999999999956 0.375 1.600000000000000089 0.7071067811865476838 0 0.7071067811865473507 F 0 F 0.360624458405139181 #
-coedge $-1 -1 $-1 $628 $627 $812 $813 reversed $629 0 $-1 #
-edge $-1 -1 $-1 $564 0 $814 0.09899494936611455409 $657 $815 forward @7 tangent #
-face $816 -1 $-1 $817 $629 $5 $-1 $818 reversed single #
-coedge $-1 -1 $-1 $819 $820 $632 $717 forward $821 0 $-1 #
-edge $-1 -1 $-1 $637 -2.913749999999999396 $718 4.686250000000000249 $716 $822 forward @7 unknown #
-vertex $-1 -1 $-1 $813 0 $823 #
+vertex $-1 -1 $-1 $716 0 $977 #
+ellipse-curve $-1 -1 $-1 0.375 0.375 1.600000000000000089 -0 -0 -1 0.25500000000000006 0 0 1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $719 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 5 0 3 310 343 367 0 1 @1 5 0 3 310 344 367 0 #
+face $978 -1 $-1 $979 $980 $5 $-1 $981 reversed single #
+loop $-1 -1 $-1 $-1 $982 $719 #
+cone-surface $-1 -1 $-1 3.774999999999999467 0.375 -0.3751471862576143956 0 0 -1 0.02485281374238587637 -0.02485281374238584862 0 1 I I -0.7071067811865464625 0.707106781186548683 0.1200000000000003564 forward I I I I #
+coedge $-1 -1 $-1 $983 $984 $985 $986 reversed $720 0 $-1 #
+coedge $-1 -1 $-1 $987 $722 $826 $964 reversed $628 0 $-1 #
+coedge $-1 -1 $-1 $722 $988 $989 $990 reversed $628 0 $-1 #
+edge $-1 -1 $-1 $960 -1.1875 $991 2.212499999999999911 $722 $992 forward @7 unknown #
+coedge $-1 -1 $-1 $724 $723 $993 $994 reversed $725 0 $-1 #
+face $995 -1 $-1 $996 $725 $5 $-1 $997 reversed single #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $728 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  3 1 @1 3 0 5 307 311 312 343 367 0 1 @1 3 0 6 354 356 359 360 364 367 0 1 @1 3 0 6 354 356 359 360 365 367 0 #
+face $998 -1 $-1 $465 $939 $5 $-1 $999 reversed single #
+loop $-1 -1 $-1 $-1 $1000 $728 #
+cone-surface $-1 -1 $-1 4.575000000000000178 0.375 -0.03514718625761428794 0 0 1 -0.1379898987322333292 -0.1379898987322333292 0 1 I I 0.7071067811865475727 0.7071067811865473507 0.2800000000000000266 forward I I I I #
+coedge $-1 -1 $-1 $1001 $1002 $731 $855 forward $1003 0 $-1 #
+edge $-1 -1 $-1 $738 -2.913749999999999396 $856 4.686250000000000249 $854 $1004 forward @7 unknown #
+vertex $-1 -1 $-1 $994 0 $1005 #
 straight-curve $-1 -1 $-1 7.974999999999999645 3.775000000000000355 1.854999999999999982 0 0.7071067811865475727 -0.7071067811865475727 F 0 F 0.3606244584051391255 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $634 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 4 340 341 342 352 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $733 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 4 340 341 342 369 0 #
 plane-surface $-1 -1 $-1 6.202499999999998792 3.902500000000000302 1.727500000000000036 0 0.7071067811865475727 0.7071067811865475727 1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $824 $635 $820 $825 reversed $724 0 $-1 #
-coedge $-1 -1 $-1 $635 $824 $804 $826 forward $724 0 $-1 #
-loop $-1 -1 $-1 $-1 $635 $827 #
+coedge $-1 -1 $-1 $1006 $736 $1002 $1007 reversed $862 0 $-1 #
+coedge $-1 -1 $-1 $736 $1006 $969 $1008 forward $862 0 $-1 #
+loop $-1 -1 $-1 $-1 $736 $1009 #
 ellipse-curve $-1 -1 $-1 0.3750000000000000555 3.775000000000000355 1.669999999999999929 0 0 -1 -0.1308147545195114669 0.1308147545195114392 0 1 I I #
 point $-1 -1 $-1 0.375 3.959999999999999964 1.670000000000000373 #
-point $-1 -1 $-1 0.1899999999999999467 3.775000000000000355 1.669999999999999929 #
-coedge $-1 -1 $-1 $828 $829 $643 $729 forward $830 0 $-1 #
-edge $-1 -1 $-1 $693 -3.075000000000000178 $732 0.3249999999999998446 $643 $831 forward @7 unknown #
-coedge $-1 -1 $-1 $644 $801 $832 $833 reversed $731 0 $-1 #
-loop $-1 -1 $-1 $-1 $705 $735 #
-vertex $-1 -1 $-1 $729 1 $834 #
-straight-curve $-1 -1 $-1 0.2998528137423857043 0.375 -0.1551471862576143113 -0.7071067811865474617 0 0.7071067811865475727 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $646 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 2 0 3 307 343 350 0 1 @1 2 0 3 307 344 350 0 #
-face $835 -1 $-1 $836 $731 $5 $-1 $837 reversed single #
-plane-surface $-1 -1 $-1 0.1798528137423857087 1.024999999999999689 -0.03514718625761430182 -0.7071067811865475727 0 -0.7071067811865474617 -0.7071067811865474617 0 0.7071067811865475727 forward_v I I I I #
-coedge $-1 -1 $-1 $838 $648 $839 $840 forward $739 0 $-1 #
-coedge $-1 -1 $-1 $648 $838 $841 $751 reversed $739 0 $-1 #
-loop $-1 -1 $-1 $-1 $738 $842 #
-straight-curve $-1 -1 $-1 8.22999999999999865 0.374999999999999889 0 0 0 1 I I #
-coedge $-1 -1 $-1 $651 $650 $843 $844 reversed $652 0 $-1 #
-edge $-1 -1 $-1 $845 -0.0497056274847710311 $586 0.2543502884254441598 $650 $846 forward @7 tangent #
-coedge $-1 -1 $-1 $847 $839 $651 $744 reversed $848 0 $-1 #
-edge $-1 -1 $-1 $849 -0.0497056274847710311 $653 0.2543502884254441598 $743 $850 forward @7 tangent #
-face $851 -1 $-1 $852 $652 $5 $-1 $853 reversed single #
-point $-1 -1 $-1 8.22999999999999865 0.374999999999999889 0.02470562748477050583 #
-coedge $-1 -1 $-1 $657 $656 $854 $855 reversed $658 0 $-1 #
-coedge $-1 -1 $-1 $841 $856 $656 $749 forward $857 0 $-1 #
-edge $-1 -1 $-1 $858 0.2616295090390220457 $659 0.3606244584051391255 $656 $859 forward @7 tangent #
-face $860 -1 $-1 $861 $658 $5 $-1 $862 reversed single #
-edge $-1 -1 $-1 $659 -0.785398163397448168 $863 0.7853981633974518317 $738 $864 forward @7 unknown #
-point $-1 -1 $-1 8.22999999999999865 0.3749999999999999445 1.600000000000000089 #
-coedge $-1 -1 $-1 $662 $661 $865 $866 reversed $663 0 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $666 @17 sketch_attrib_def 1 1 3 @13 116 0 0 0 1 1 #
-coedge $-1 -1 $-1 $666 $867 $677 $769 reversed $618 0 $-1 #
-straight-curve $-1 -1 $-1 6.262499999999999289 4.030000000000000249 0.1199999999999999956 -1 0 0 F -9993.737500999999611 F 10006.26250100000107 #
-coedge $-1 -1 $-1 $758 $668 $868 $869 reversed $670 0 $-1 #
-coedge $-1 -1 $-1 $669 $757 $870 $871 forward $670 0 $-1 #
-edge $-1 -1 $-1 $872 -0.7853981633974493892 $671 0.02994244378335584461 $701 $873 forward @7 unknown #
-face $874 -1 $-1 $875 $670 $5 $-1 $876 reversed single #
-point $-1 -1 $-1 4.015168997615921498 4.029999999999999361 0.1199999999999999956 #
-coedge $-1 -1 $-1 $877 $878 $673 $763 forward $879 0 $-1 #
-edge $-1 -1 $-1 $764 -3.075000000000000178 $614 0.3249999999999998446 $673 $880 forward @7 unknown #
-vertex $-1 -1 $-1 $869 2 $881 #
-straight-curve $-1 -1 $-1 3.774999999999999911 3.850147186257613985 -0.1551471862576142557 0 0.7071067811865477948 0.7071067811865471286 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $675 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 8 0 3 307 343 350 0 1 @1 8 0 3 307 344 350 0 #
-plane-surface $-1 -1 $-1 1.024999999999999689 3.970147186257614091 -0.03514718625761426019 0 0.7071067811865471286 -0.7071067811865477948 -1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $770 $677 $882 $883 reversed $679 0 $-1 #
-edge $-1 -1 $-1 $680 -0.02994244378335042533 $884 0.7853981633974476129 $755 $885 forward @7 unknown #
-coedge $-1 -1 $-1 $678 $768 $886 $887 reversed $679 0 $-1 #
-face $888 -1 $-1 $889 $679 $5 $-1 $890 reversed single #
-point $-1 -1 $-1 4.334831002384075482 4.029999999999999361 0.1199999999999999956 #
-coedge $-1 -1 $-1 $891 $892 $682 $774 forward $893 0 $-1 #
-edge $-1 -1 $-1 $777 -3.074999999999999289 $775 0.3250000000000001776 $682 $894 reversed @7 unknown #
-vertex $-1 -1 $-1 $683 2 $895 #
-straight-curve $-1 -1 $-1 4.575000000000000178 4.090147186257613754 0.08485281374238573537 0 -0.7071067811865471286 -0.7071067811865477948 I I #
-vertex $-1 -1 $-1 $684 0 $896 #
-straight-curve $-1 -1 $-1 7.974999999999999645 3.850147186257613985 -0.1551471862576142557 0 0.7071067811865477948 0.7071067811865471286 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $687 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 3 0 2 314 -352 0 1 @1 3 0 3 319 342 -352 0 2 @2 12 0 2 347 -352 0 2 @2 12 0 2 348 -352 0 #
-face $897 -1 $-1 $898 $899 $5 $-1 $900 forward single #
-loop $-1 -1 $-1 $-1 $901 $687 #
-plane-surface $-1 -1 $-1 0 4.150000000000000355 0 -1 0 0 0 -1 0 forward_v I I I I #
-coedge $-1 -1 $-1 $902 $903 $904 $905 reversed $688 0 $-1 #
-coedge $-1 -1 $-1 $906 $690 $907 $908 reversed $609 0 $-1 #
-coedge $-1 -1 $-1 $690 $909 $910 $911 forward $609 0 $-1 #
-coedge $-1 -1 $-1 $912 $913 $690 $787 reversed $899 0 $-1 #
-edge $-1 -1 $-1 $914 -1.979999999999999982 $915 0.02500000000000013323 $786 $916 forward @7 tangent #
-coedge $-1 -1 $-1 $917 $691 $829 $918 forward $790 0 $-1 #
-coedge $-1 -1 $-1 $691 $917 $877 $919 reversed $790 0 $-1 #
-loop $-1 -1 $-1 $-1 $917 $920 #
-ellipse-curve $-1 -1 $-1 0.375 3.774999999999999911 -0.1902943725152286825 -0 -0 1 -0.02828427124746206445 0.02828427124746202281 0 1 I I #
-point $-1 -1 $-1 0.3349999999999998535 3.774999999999999911 -0.190294372515228738 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $699 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 7 0 5 307 311 312 343 350 0 #
-cone-surface $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.0351471862576143157 0 0 1 0.1379898987322331905 0.1379898987322334958 0 1 I I 0.7071067811865473507 0.7071067811865477948 0.2800000000000000822 forward I I I I #
-coedge $-1 -1 $-1 $921 $701 $922 $923 reversed $618 0 $-1 #
-coedge $-1 -1 $-1 $924 $925 $702 $797 reversed $926 0 $-1 #
-edge $-1 -1 $-1 $799 -1.600000000000000089 $802 -0.02470562748477142176 $702 $927 forward @7 tangent #
-coedge $-1 -1 $-1 $703 $709 $928 $929 forward $710 0 $-1 #
-vertex $-1 -1 $-1 $930 1 $931 #
-ellipse-curve $-1 -1 $-1 0.375 0.375 1.600000000000000089 -0 -0 -1 -0.180312229202569646 -0.180312229202569646 0 1 I I #
-coedge $-1 -1 $-1 $730 $705 $932 $933 reversed $731 0 $-1 #
-vertex $-1 -1 $-1 $706 0 $934 #
-ellipse-curve $-1 -1 $-1 0.375 0.375 0.0247056274847713489 0 0 1 -0.180312229202569646 -0.180312229202569646 0 1 I I #
-coedge $-1 -1 $-1 $935 $707 $723 $826 reversed $806 0 $-1 #
-coedge $-1 -1 $-1 $707 $935 $936 $937 forward $806 0 $-1 #
-loop $-1 -1 $-1 $-1 $707 $938 #
-straight-curve $-1 -1 $-1 0.1899999999999999467 1.713750000000000107 1.670000000000000151 0 1 0 I I #
-coedge $-1 -1 $-1 $936 $939 $709 $809 forward $940 0 $-1 #
-edge $-1 -1 $-1 $941 -0.785398163397448279 $711 0.785398163397448057 $808 $942 forward @7 unknown #
-face $943 -1 $-1 $750 $710 $5 $-1 $944 reversed single #
-point $-1 -1 $-1 0.1899999999999999467 0.375 1.669999999999999929 #
-coedge $-1 -1 $-1 $945 $946 $713 $813 forward $947 0 $-1 #
-edge $-1 -1 $-1 $718 -0.7853981633974548293 $814 0.7853981633974513876 $812 $948 forward @7 unknown #
-vertex $-1 -1 $-1 $855 0 $949 #
-straight-curve $-1 -1 $-1 8.22999999999999865 3.775000000000000355 1.600000000000000089 -0.7071067811865475727 0 0.7071067811865475727 F 0 F 0.3606244584051391255 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $715 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 7 0 4 340 341 342 352 0 #
-face $950 -1 $-1 $810 $951 $5 $-1 $952 reversed single #
-cone-surface $-1 -1 $-1 7.974999999999999645 3.775000000000000355 1.600000000000000089 0 -0 -1 0.1803122292025687301 0.1803122292025700624 0 1 I I 0.7071067811865472397 0.7071067811865479058 0.2549999999999996714 forward I I I I #
-coedge $-1 -1 $-1 $953 $716 $946 $954 reversed $821 0 $-1 #
-coedge $-1 -1 $-1 $716 $953 $722 $825 forward $821 0 $-1 #
-loop $-1 -1 $-1 $-1 $716 $955 #
-straight-curve $-1 -1 $-1 3.288749999999999396 3.959999999999999964 1.670000000000000817 1 0 0 I I #
-point $-1 -1 $-1 7.974999999999999645 3.959999999999999964 1.670000000000000373 #
-coedge $-1 -1 $-1 $723 $722 $956 $957 forward $724 0 $-1 #
-edge $-1 -1 $-1 $958 0 $637 0.1899999999999997247 $722 $959 forward @7 tangent #
-edge $-1 -1 $-1 $960 0 $639 0.1900000000000001688 $723 $961 forward @7 tangent #
-face $962 -1 $-1 $955 $724 $5 $-1 $963 reversed single #
-coedge $-1 -1 $-1 $964 $728 $965 $966 forward $830 0 $-1 #
-coedge $-1 -1 $-1 $728 $964 $788 $918 reversed $830 0 $-1 #
-loop $-1 -1 $-1 $-1 $964 $967 #
-straight-curve $-1 -1 $-1 0.3349999999999999645 0.6999999999999998446 -0.1902943725152285992 0 -1 0 F -9999.300000999999611 F 10000.70000100000107 #
-coedge $-1 -1 $-1 $968 $965 $730 $833 forward $969 0 $-1 #
-edge $-1 -1 $-1 $732 -0.785398163397448279 $970 0.785398163397448279 $730 $971 forward @7 unknown #
-point $-1 -1 $-1 0.3349999999999999645 0.375 -0.1902943725152285992 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $735 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 3 0 3 307 343 350 0 1 @1 3 0 3 307 344 350 0 #
-face $972 -1 $-1 $973 $974 $5 $-1 $975 reversed single #
-cone-surface $-1 -1 $-1 0.375 0.375 -0.03514718625761428794 0 0 1 -0.1379898987322333292 -0.1379898987322333292 0 1 I I 0.7071067811865475727 0.7071067811865473507 0.2800000000000000266 forward I I I I #
-coedge $-1 -1 $-1 $738 $737 $976 $977 forward $739 0 $-1 #
-coedge $-1 -1 $-1 $743 $978 $737 $840 reversed $848 0 $-1 #
-edge $-1 -1 $-1 $653 -0.785398163397448279 $979 0.785398163397448279 $839 $980 forward @7 unknown #
-coedge $-1 -1 $-1 $981 $748 $738 $751 forward $857 0 $-1 #
-face $982 -1 $-1 $512 $739 $5 $-1 $983 reversed single #
-coedge $-1 -1 $-1 $984 $985 $741 $844 forward $986 0 $-1 #
-edge $-1 -1 $-1 $849 -3.074999999999999734 $845 0.3249999999999997335 $741 $987 reversed @7 unknown #
-vertex $-1 -1 $-1 $844 1 $988 #
-straight-curve $-1 -1 $-1 8.050147186257614607 3.774999999999999467 -0.1551471862576142557 0.7071067811865477948 0 0.7071067811865471286 I I #
-coedge $-1 -1 $-1 $978 $743 $989 $990 reversed $848 0 $-1 #
-loop $-1 -1 $-1 $-1 $839 $852 #
-vertex $-1 -1 $-1 $744 0 $991 #
-straight-curve $-1 -1 $-1 8.050147186257614607 0.375 -0.1551471862576142557 0.7071067811865477948 0 0.7071067811865471286 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $745 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 5 307 311 312 343 350 0 #
-face $992 -1 $-1 $993 $848 $5 $-1 $994 reversed single #
-plane-surface $-1 -1 $-1 8.170147186257613825 3.125 -0.03514718625761426019 0.7071067811865471286 0 -0.7071067811865477948 -0.7071067811865479058 0 -0.7071067811865472397 forward_v I I I I #
-coedge $-1 -1 $-1 $995 $996 $747 $855 forward $997 0 $-1 #
-edge $-1 -1 $-1 $814 -1.338750000000000107 $858 2.061250000000000249 $854 $998 forward @7 unknown #
-coedge $-1 -1 $-1 $748 $981 $999 $1000 reversed $857 0 $-1 #
-loop $-1 -1 $-1 $-1 $856 $861 #
-vertex $-1 -1 $-1 $855 1 $1001 #
+point $-1 -1 $-1 0.1899999999999998357 3.775000000000000355 1.669999999999999929 #
+coedge $-1 -1 $-1 $745 $744 $1010 $1011 reversed $746 0 $-1 #
+vertex $-1 -1 $-1 $1012 1 $1013 #
+straight-curve $-1 -1 $-1 0.2998528137423855378 3.774999999999999911 -0.1551471862576143113 -0.7071067811865473507 0 0.7071067811865477948 F -3.925231146709436684e-17 F 0.2543502884254436602 #
+coedge $-1 -1 $-1 $751 $750 $1014 $1015 forward $729 0 $-1 #
+coedge $-1 -1 $-1 $889 $1016 $750 $871 reversed $1017 0 $-1 #
+edge $-1 -1 $-1 $752 -0.785398163397448279 $1018 0.785398163397448279 $870 $1019 forward @7 unknown #
+coedge $-1 -1 $-1 $1020 $755 $751 $873 forward $878 0 $-1 #
+edge $-1 -1 $-1 $655 4.353815782843768212e-16 $1021 1.570796326794900111 $751 $1022 forward @7 unknown #
+point $-1 -1 $-1 8.230000000000000426 0.375 0.02470562748477134196 #
+coedge $-1 -1 $-1 $1023 $1024 $754 $876 forward $1025 0 $-1 #
+edge $-1 -1 $-1 $881 -1.338750000000000107 $879 2.061250000000000249 $875 $1026 forward @7 unknown #
+coedge $-1 -1 $-1 $755 $1020 $1027 $1028 reversed $878 0 $-1 #
+loop $-1 -1 $-1 $-1 $877 $884 #
+vertex $-1 -1 $-1 $876 1 $1029 #
 straight-curve $-1 -1 $-1 7.974999999999998757 0.375 1.854999999999999982 0.7071067811865475727 0 -0.7071067811865475727 F 0 F 0.3606244584051391255 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $750 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 3 0 4 340 341 342 352 0 #
-face $1002 -1 $-1 $938 $857 $5 $-1 $1003 reversed single #
+vertex $-1 -1 $-1 $876 0 $1030 #
+straight-curve $-1 -1 $-1 8.22999999999999865 3.775000000000000355 1.600000000000000089 -0.7071067811865475727 0 0.7071067811865475727 F 0 F 0.3606244584051391255 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $758 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 3 0 4 340 341 342 369 0 #
+face $1031 -1 $-1 $1032 $878 $5 $-1 $1033 reversed single #
 plane-surface $-1 -1 $-1 8.102499999999999147 1.097500000000000142 1.727500000000000036 0.7071067811865475727 -0 0.7071067811865475727 0.7071067811865475727 0 -0.7071067811865475727 forward_v I I I I #
-vertex $-1 -1 $-1 $930 0 $1004 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 1.600000000000000089 -0 -0 -1 0.180312229202569646 -0.180312229202569646 0 1 I I #
-coedge $-1 -1 $-1 $1005 $1006 $753 $866 forward $1007 0 $-1 #
-edge $-1 -1 $-1 $845 -0.7853981633974495002 $777 0.7853981633974470578 $753 $1008 reversed @7 unknown #
-coedge $-1 -1 $-1 $755 $1009 $1010 $1011 reversed $618 0 $-1 #
-coedge $-1 -1 $-1 $1012 $1013 $757 $869 forward $1014 0 $-1 #
-edge $-1 -1 $-1 $1015 -0.7853981633974495002 $764 0.7853981633974470578 $757 $1016 reversed @7 unknown #
-coedge $-1 -1 $-1 $1017 $922 $758 $871 reversed $1018 0 $-1 #
-edge $-1 -1 $-1 $1015 -0.04970562748477164172 $872 0.3891168824543145277 $758 $1019 forward @7 tangent #
-vertex $-1 -1 $-1 $759 2 $1020 #
-ellipse-curve $-1 -1 $-1 3.774999999999999911 3.774999999999999467 0.1199999999999999956 0 0 1 0.2476955262170044136 0.2476955262170049687 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $760 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 7 0 3 307 343 350 0 1 @1 7 0 3 307 344 350 0 #
-face $1021 -1 $-1 $1022 $1023 $5 $-1 $1024 reversed single #
-cone-surface $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.0351471862576143157 0 0 1 0.1379898987322331905 0.1379898987322334958 0 1 I I 0.7071067811865473507 0.7071067811865477948 0.2800000000000000822 forward I I I I #
-coedge $-1 -1 $-1 $1025 $762 $789 $919 forward $879 0 $-1 #
-coedge $-1 -1 $-1 $762 $1025 $1012 $1026 reversed $879 0 $-1 #
-loop $-1 -1 $-1 $-1 $1025 $1027 #
-straight-curve $-1 -1 $-1 0.6999999999999998446 3.814999999999999503 -0.1902943725152287102 -1 0 0 F -9999.300000999999611 F 10000.70000100000107 #
-point $-1 -1 $-1 3.774999999999999911 3.814999999999999503 -0.1902943725152286825 #
-coedge $-1 -1 $-1 $1010 $1028 $768 $883 forward $1029 0 $-1 #
-edge $-1 -1 $-1 $1030 -0.0497056274847711213 $884 0.3891168824543141946 $882 $1031 forward @7 tangent #
-vertex $-1 -1 $-1 $883 2 $1032 #
-ellipse-curve $-1 -1 $-1 4.575000000000000178 3.774999999999999911 0.1199999999999999817 0 0 1 -0.247695526217004941 0.2476955262170046079 0 1 I I #
-coedge $-1 -1 $-1 $1033 $1034 $770 $887 forward $1035 0 $-1 #
-edge $-1 -1 $-1 $775 -0.7853981633974490562 $1030 0.7853981633974475018 $770 $1036 reversed @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $771 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 5 307 311 312 343 350 0 #
-face $1037 -1 $-1 $1038 $1039 $5 $-1 $1040 reversed single #
-cone-surface $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.03514718625761432957 0 0 1 -0.1379898987322335235 0.1379898987322333292 0 1 I I 0.7071067811865472397 0.7071067811865476838 0.2800000000000001932 forward I I I I #
-coedge $-1 -1 $-1 $1041 $773 $1034 $1042 forward $893 0 $-1 #
-coedge $-1 -1 $-1 $773 $1041 $1005 $1043 reversed $893 0 $-1 #
-loop $-1 -1 $-1 $-1 $1041 $1044 #
-straight-curve $-1 -1 $-1 4.900000000000000355 3.814999999999999503 -0.19029437251522896 1 -0 0 F -10004.90000099999997 F 9995.100001000000702 #
-point $-1 -1 $-1 4.575000000000000178 3.814999999999999947 -0.1902943725152288768 #
-point $-1 -1 $-1 7.974999999999999645 3.814999999999999503 -0.1902943725152286825 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $780 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 4 0 2 316 -352 0 1 @1 3 0 3 321 342 -352 0 2 @2 11 0 2 347 -352 0 2 @2 11 0 2 348 -352 0 #
-face $1045 -1 $-1 $1046 $1047 $5 $-1 $1048 reversed single #
-loop $-1 -1 $-1 $-1 $1049 $780 #
-cone-surface $-1 -1 $-1 0.375 0.375 0 0 0 1 -0.2651650429449553537 -0.2651650429449553537 0 1 I I 0 1 0.3750000000000000555 forward I I I I #
-coedge $-1 -1 $-1 $1050 $1051 $1052 $1053 reversed $781 0 $-1 #
-coedge $-1 -1 $-1 $1052 $783 $1054 $1055 reversed $688 0 $-1 #
-coedge $-1 -1 $-1 $783 $1052 $1056 $1057 forward $688 0 $-1 #
-coedge $-1 -1 $-1 $1058 $1059 $783 $905 forward $1060 0 $-1 #
-edge $-1 -1 $-1 $1061 -0.02499999999999916178 $1062 1.979999999999999982 $783 $1063 forward @7 tangent #
-coedge $-1 -1 $-1 $1064 $784 $1065 $1066 reversed $609 0 $-1 #
-coedge $-1 -1 $-1 $1067 $1068 $784 $908 forward $1069 0 $-1 #
-edge $-1 -1 $-1 $1070 1.774999999999999467 $915 5.174999999999998934 $907 $1071 forward @7 unknown #
-coedge $-1 -1 $-1 $785 $1072 $1073 $1074 forward $609 0 $-1 #
-coedge $-1 -1 $-1 $1075 $1076 $785 $911 reversed $1077 0 $-1 #
-edge $-1 -1 $-1 $1078 -5.887499999999999289 $914 1.712499999999999911 $785 $1079 forward @7 unknown #
-coedge $-1 -1 $-1 $1049 $786 $1076 $1080 forward $899 0 $-1 #
-coedge $-1 -1 $-1 $786 $1049 $1081 $1082 reversed $899 0 $-1 #
-vertex $-1 -1 $-1 $1080 0 $1083 #
-vertex $-1 -1 $-1 $1082 0 $1084 #
-straight-curve $-1 -1 $-1 0.3749999999999999445 0 0 0 0 -1 I I #
-coedge $-1 -1 $-1 $789 $788 $1085 $1086 forward $790 0 $-1 #
-edge $-1 -1 $-1 $693 -0.04970562748477125314 $1087 0.1302943725152286847 $788 $1088 forward @7 tangent #
-edge $-1 -1 $-1 $614 -0.04970562748477164172 $1089 0.1302943725152287957 $789 $1090 forward @7 tangent #
-face $1091 -1 $-1 $1027 $790 $5 $-1 $1092 reversed single #
-coedge $-1 -1 $-1 $1093 $795 $1094 $1095 reversed $618 0 $-1 #
-coedge $-1 -1 $-1 $870 $1096 $795 $923 forward $1018 0 $-1 #
-edge $-1 -1 $-1 $1097 -2.225000000000000089 $872 1.174999999999999378 $795 $1098 forward @7 unknown #
-coedge $-1 -1 $-1 $976 $796 $1099 $930 reversed $926 0 $-1 #
-coedge $-1 -1 $-1 $796 $1100 $1101 $1102 forward $926 0 $-1 #
-loop $-1 -1 $-1 $-1 $924 $1103 #
-straight-curve $-1 -1 $-1 0.3749999999999999445 0.1199999999999999956 0 0 0 -1 I I #
-coedge $-1 -1 $-1 $1104 $1099 $798 $929 reversed $951 0 $-1 #
-edge $-1 -1 $-1 $941 0.2616295090390224898 $799 0.360624458405139181 $928 $1105 forward @7 tangent #
-edge $-1 -1 $-1 $863 -5.887499999999999289 $799 1.712499999999999911 $924 $1106 forward @7 unknown #
-point $-1 -1 $-1 0.375 0.1200000000000000511 1.600000000000000089 #
-coedge $-1 -1 $-1 $1101 $1107 $801 $933 forward $974 0 $-1 #
-edge $-1 -1 $-1 $970 -0.04970562748477135029 $802 0.2543502884254440488 $801 $1108 forward @7 tangent #
-point $-1 -1 $-1 0.375 0.1199999999999999956 0.02470562748477142176 #
-coedge $-1 -1 $-1 $805 $804 $1109 $1110 forward $806 0 $-1 #
-coedge $-1 -1 $-1 $1111 $808 $805 $937 reversed $940 0 $-1 #
-edge $-1 -1 $-1 $1112 0 $711 0.1900000000000001688 $936 $1113 forward @7 tangent #
-face $1114 -1 $-1 $827 $806 $5 $-1 $1115 reversed single #
-coedge $-1 -1 $-1 $808 $1111 $1116 $1117 forward $940 0 $-1 #
-loop $-1 -1 $-1 $-1 $808 $1118 #
-vertex $-1 -1 $-1 $1119 1 $1120 #
-ellipse-curve $-1 -1 $-1 0.375 0.3750000000000000555 1.669999999999999929 0 0 -1 -0.1308147545195113282 -0.1308147545195113282 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $810 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 5 0 4 340 341 342 352 0 #
-cone-surface $-1 -1 $-1 0.375 0.375 1.600000000000000089 -0 -0 -1 -0.180312229202569646 -0.180312229202569646 0 1 I I 0.7071067811865476838 0.7071067811865473507 0.2550000000000000044 forward I I I I #
-coedge $-1 -1 $-1 $1121 $812 $996 $1122 reversed $947 0 $-1 #
-coedge $-1 -1 $-1 $812 $1121 $819 $954 forward $947 0 $-1 #
-loop $-1 -1 $-1 $-1 $812 $1123 #
-ellipse-curve $-1 -1 $-1 7.975000000000001421 3.775000000000000355 1.670000000000000373 0 0 -1 0.13081475451951044 0.1308147545195112449 0 1 I I #
+coedge $-1 -1 $-1 $761 $760 $1034 $1035 reversed $762 0 $-1 #
+coedge $-1 -1 $-1 $764 $1036 $760 $888 forward $893 0 $-1 #
+edge $-1 -1 $-1 $1037 -3.925231146709436684e-17 $661 0.2543502884254441598 $887 $1038 forward @7 tangent #
+coedge $-1 -1 $-1 $1039 $870 $761 $890 reversed $1017 0 $-1 #
+edge $-1 -1 $-1 $1040 3.925231146709436684e-17 $752 0.2543502884254441598 $761 $1041 forward @7 tangent #
+face $1042 -1 $-1 $1043 $762 $5 $-1 $1044 reversed single #
+coedge $-1 -1 $-1 $1036 $764 $895 $1045 reversed $893 0 $-1 #
+loop $-1 -1 $-1 $-1 $892 $1043 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 3.775000000000000355 0.02470562748477138013 0 -0 -1 0.180312229202569646 0.180312229202569646 0 1 F -0.785398163397448279 F 0.7853981633974518317 #
+coedge $-1 -1 $-1 $767 $777 $892 $1045 forward $778 0 $-1 #
+straight-curve $-1 -1 $-1 6.787499999999999645 4.030000000000000249 0.02470562748477224749 1 0 0 F -2.212499999999999467 F 1.1875 #
+point $-1 -1 $-1 7.974999999999999645 4.030000000000000249 0.0247056274847717583 #
+coedge $-1 -1 $-1 $1046 $770 $1047 $906 reversed $900 0 $-1 #
+coedge $-1 -1 $-1 $770 $1046 $1048 $911 reversed $900 0 $-1 #
+loop $-1 -1 $-1 $-1 $899 $1049 #
+ellipse-curve $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.1551471862576143113 0 0 1 -0.05313708498984777429 0.05313708498984769102 0 1 F -0.7853981633974490562 F 0.7853981633974473908 #
+coedge $-1 -1 $-1 $773 $772 $1050 $1051 reversed $774 0 $-1 #
+coedge $-1 -1 $-1 $1052 $1047 $773 $904 forward $1053 0 $-1 #
+edge $-1 -1 $-1 $775 -2.75 $1054 0.6499999999999996891 $773 $1055 forward @7 tangent #
+face $1056 -1 $-1 $1057 $774 $5 $-1 $1058 reversed single #
+edge $-1 -1 $-1 $1059 2.356194490192344837 $775 3.141592653589790007 $1047 $1060 forward @7 tangent #
+point $-1 -1 $-1 4.499852813742386104 3.774999999999999911 -0.1551471862576143113 #
+coedge $-1 -1 $-1 $1048 $1061 $777 $909 forward $1062 0 $-1 #
+edge $-1 -1 $-1 $1063 -2.75 $779 0.6499999999999994671 $777 $1064 forward @7 tangent #
+face $1065 -1 $-1 $830 $778 $5 $-1 $1066 reversed single #
+edge $-1 -1 $-1 $779 -3.141592653589794448 $1067 -2.356194490192344393 $1048 $1068 forward @7 tangent #
+point $-1 -1 $-1 4.575000000000000178 3.850147186257614429 -0.1551471862576142557 #
+coedge $-1 -1 $-1 $1069 $1070 $782 $914 reversed $1071 0 $1072 #
+edge $-1 -1 $-1 $807 1.570796326794893893 $915 3.141592653589795781 $782 $1073 forward @7 tangent #
+vertex $-1 -1 $-1 $914 1 $1074 #
+straight-curve $-1 -1 $-1 4.259852813742385891 1.549999999999999822 0.08485281374238567986 0 -1 0 F -2.225000000000000089 F 1.174999999999999822 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $784 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 7 0 1 367 0 #
+face $1075 -1 $-1 $1076 $1053 $5 $-1 $1077 forward single #
+cone-surface $-1 -1 $-1 4.174999999999999822 1.549999999999999822 -6.938893903907228378e-18 -0 -1 0 -0 0 0.1199999999999999956 1 I I 0 1 0.1199999999999999956 forward I I I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $786 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 15 0 1 367 0 #
+face $1078 -1 $-1 $1079 $1080 $5 $-1 $1081 forward single #
+loop $-1 -1 $-1 $-1 $929 $786 #
+torus-surface $-1 -1 $-1 0.375 3.774999999999999911 -0.2399999999999999911 -0 -0 1 0.1600000000000001976 0.1199999999999999956 -0.7071067811865480168 0.7071067811865470176 0 forward_v I I I I #
+coedge $-1 -1 $-1 $791 $793 $1082 $1083 reversed $787 0 $-1 #
+straight-curve $-1 -1 $-1 0.375 4.090147186257613754 0.08485281374238567986 0 -0.7071067811865471286 -0.7071067811865477948 F 0.08506096654409835145 F 0.3394112549695423309 #
+coedge $-1 -1 $-1 $1084 $1085 $790 $927 forward $1086 0 $-1 #
+edge $-1 -1 $-1 $812 5.497787143782137065 $799 7.068583470577033623 $926 $1087 forward @7 tangent #
+coedge $-1 -1 $-1 $803 $792 $1088 $1089 reversed $804 0 $-1 #
+coedge $-1 -1 $-1 $1010 $1090 $793 $930 forward $922 0 $-1 #
+edge $-1 -1 $-1 $1091 2.356194490192344837 $794 3.141592653589795336 $929 $1092 forward @7 tangent #
+point $-1 -1 $-1 0.375 3.850147186257614429 -0.1551471862576142557 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $797 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 4 0 3 310 343 367 0 1 @1 4 0 3 310 344 367 0 #
+face $1093 -1 $-1 $1094 $1095 $5 $-1 $1096 reversed single #
+loop $-1 -1 $-1 $-1 $1097 $797 #
+plane-surface $-1 -1 $-1 3.810147186257613949 2.924999999999999822 -0.3751471862576142291 0.7071067811865475727 0 -0.7071067811865475727 -0.7071067811865475727 0 -0.7071067811865475727 forward_v I I I I #
+point $-1 -1 $-1 3.774999999999999911 3.814999999999999503 -0.2399999999999999911 #
+coedge $-1 -1 $-1 $1098 $801 $1099 $1100 reversed $939 0 $-1 #
+coedge $-1 -1 $-1 $801 $989 $1069 $1101 forward $939 0 $-1 #
+loop $-1 -1 $-1 $-1 $1098 $851 #
+straight-curve $-1 -1 $-1 3.850147186257613985 0.375 -0.1551471862576143113 0.7071067811865477948 0 0.7071067811865471286 F 3.925231146709436684e-17 F 0.339411254969542775 #
+coedge $-1 -1 $-1 $1102 $1099 $803 $942 reversed $1103 0 $-1 #
+edge $-1 -1 $-1 $1104 2.356194490192344393 $805 3.141592653589793116 $803 $1105 forward @7 tangent #
+face $1106 -1 $-1 $1049 $804 $5 $-1 $1107 forward single #
+point $-1 -1 $-1 3.850147186257613985 0.375 -0.1551471862576142557 #
+point $-1 -1 $-1 4.090147186257613754 0.375 0.08485281374238573537 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $810 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 5 310 311 312 343 367 0 #
+face $1108 -1 $-1 $1109 $1110 $5 $-1 $1111 reversed single #
+loop $-1 -1 $-1 $-1 $1112 $810 #
+plane-surface $-1 -1 $-1 5.424999999999999822 3.810147186257613949 -0.3751471862576142291 0 0.7071067811865475727 -0.7071067811865475727 -1 0 0 forward_v I I I I #
+point $-1 -1 $-1 3.814999999999999503 3.774999999999999467 -0.2399999999999999911 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $815 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 1 0 3 307 343 367 0 1 @1 1 0 3 307 344 367 0 #
+cone-surface $-1 -1 $-1 0.375 3.774999999999999911 -0.03514718625761432957 0 0 1 -0.1379898987322335235 0.1379898987322333292 0 1 I I 0.7071067811865472397 0.7071067811865476838 0.2800000000000001932 forward I I I I #
+coedge $-1 -1 $-1 $828 $818 $823 $963 forward $703 0 $-1 #
+coedge $-1 -1 $-1 $1113 $1114 $818 $955 forward $1115 0 $-1 #
+edge $-1 -1 $-1 $1116 -0.785398163397448279 $959 0.785398163397448279 $818 $1117 forward @7 tangent #
+coedge $-1 -1 $-1 $820 $819 $1098 $1118 reversed $616 0 $-1 #
+coedge $-1 -1 $-1 $1119 $1120 $820 $958 forward $1121 0 $-1 #
+edge $-1 -1 $-1 $959 -2.75 $1122 0.6499999999999994671 $820 $1123 forward @7 tangent #
+vertex $-1 -1 $-1 $1124 1 $1125 #
+vertex $-1 -1 $-1 $822 1 $1126 #
+straight-curve $-1 -1 $-1 0.375 0.2998528137423857043 -0.1551471862576143113 0 -0.7071067811865474617 0.7071067811865475727 F 5.887846720064155951e-17 F 0.2543502884254440488 #
+coedge $-1 -1 $-1 $824 $823 $1127 $1128 reversed $816 0 $-1 #
+edge $-1 -1 $-1 $1116 -7.850462293418874601e-17 $711 0.2543502884254439378 $823 $1129 forward @7 tangent #
+edge $-1 -1 $-1 $838 -1.600000000000000089 $960 -0.02470562748477142523 $845 $1130 forward @7 tangent #
+coedge $-1 -1 $-1 $827 $834 $1131 $1132 forward $835 0 $-1 #
+ellipse-curve $-1 -1 $-1 0.375 0.375 0.0247056274847713489 0 0 1 -0.180312229202569646 -0.180312229202569646 0 1 F -0.785398163397448279 F 0.785398163397448168 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $830 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 4 0 2 316 367 0 1 @1 4 0 3 321 342 367 0 2 @2 11 0 2 347 367 0 2 @2 11 0 2 348 367 0 #
+cone-surface $-1 -1 $-1 0.375 0.375 0 0 0 1 -0.180312229202569646 -0.180312229202569646 0 1 I I 0 1 0.3750000000000000555 forward I I I I #
+coedge $-1 -1 $-1 $1133 $832 $861 $1008 reversed $971 0 $-1 #
+coedge $-1 -1 $-1 $832 $1133 $1134 $1135 forward $971 0 $-1 #
+loop $-1 -1 $-1 $-1 $832 $1032 #
+straight-curve $-1 -1 $-1 0.1899999999999999467 1.713750000000000107 1.669999999999999929 0 1 0 I I #
+coedge $-1 -1 $-1 $1134 $1136 $834 $974 forward $1137 0 $-1 #
+edge $-1 -1 $-1 $1138 -0.785398163397448279 $836 0.785398163397448057 $973 $1139 forward @7 unknown #
+face $1140 -1 $-1 $758 $835 $5 $-1 $1141 reversed single #
+point $-1 -1 $-1 0.1899999999999999467 0.375 1.669999999999999929 #
+point $-1 -1 $-1 0.3749999999999999445 0.1199999999999999956 1.600000000000000089 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $841 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 5 310 311 312 343 367 0 #
+face $1142 -1 $-1 $1143 $1144 $5 $-1 $1145 reversed single #
+loop $-1 -1 $-1 $-1 $1146 $841 #
+cone-surface $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.3751471862576143956 0 0 -1 -0.02485281374238585556 0.02485281374238581392 0 1 I I -0.7071067811865464625 0.7071067811865484609 0.1200000000000003009 forward I I I I #
+coedge $-1 -1 $-1 $1147 $1148 $1149 $1150 reversed $842 0 $-1 #
+coedge $-1 -1 $-1 $1151 $844 $1152 $1153 forward $720 0 $-1 #
+coedge $-1 -1 $-1 $844 $1151 $1154 $1155 forward $720 0 $-1 #
+coedge $-1 -1 $-1 $1156 $1157 $844 $986 forward $1158 0 $-1 #
+edge $-1 -1 $-1 $1159 0.04970562748477194703 $1160 0.06343145750507564462 $985 $1161 forward @7 tangent #
+coedge $-1 -1 $-1 $1014 $845 $1162 $1163 reversed $628 0 $-1 #
+coedge $-1 -1 $-1 $846 $1164 $1165 $1166 forward $628 0 $-1 #
+coedge $-1 -1 $-1 $938 $1098 $846 $990 forward $939 0 $-1 #
+edge $-1 -1 $-1 $991 0.4934393481202511422 $1167 0.9214722978756507699 $846 $1168 forward @7 unknown #
+vertex $-1 -1 $-1 $1118 1 $1169 #
+straight-curve $-1 -1 $-1 1.5625 0.1199999999999999956 0.02470562748477142523 1 0 0 F -1.1875 F 2.212499999999999911 #
+coedge $-1 -1 $-1 $1170 $1171 $848 $994 forward $1172 0 $-1 #
+edge $-1 -1 $-1 $856 -0.7853981633974548293 $881 0.7853981633974513876 $993 $1173 forward @7 unknown #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $849 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 7 0 4 340 341 342 369 0 #
+face $1174 -1 $-1 $975 $1175 $5 $-1 $1176 reversed single #
+cone-surface $-1 -1 $-1 7.974999999999999645 3.775000000000000355 1.600000000000000089 0 -0 -1 0.1803122292025687301 0.1803122292025700624 0 1 I I 0.7071067811865472397 0.7071067811865479058 0.2549999999999996714 forward I I I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $851 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 5 0 3 307 343 367 0 1 @1 5 0 3 307 344 367 0 1 @1 3 0 6 354 356 358 360 364 367 0 1 @1 3 0 6 354 356 358 360 365 367 0 #
+cone-surface $-1 -1 $-1 3.774999999999999467 0.375 -0.03514718625761432957 0 0 1 0.1379898987322334403 -0.1379898987322333292 0 1 I I 0.7071067811865472397 0.7071067811865477948 0.2800000000000001377 forward I I I I #
+coedge $-1 -1 $-1 $1177 $1050 $1070 $1178 reversed $852 0 $-1 #
+coedge $-1 -1 $-1 $1179 $854 $1171 $1180 reversed $1003 0 $-1 #
+coedge $-1 -1 $-1 $854 $1179 $860 $1007 forward $1003 0 $-1 #
+loop $-1 -1 $-1 $-1 $854 $1181 #
+straight-curve $-1 -1 $-1 3.288749999999999396 3.959999999999999964 1.670000000000000373 1 0 0 I I #
+point $-1 -1 $-1 7.974999999999999645 3.959999999999999964 1.670000000000000373 #
+coedge $-1 -1 $-1 $861 $860 $1182 $1183 forward $862 0 $-1 #
+edge $-1 -1 $-1 $1184 0 $738 0.1796446609406723294 $860 $1185 forward @7 tangent #
+edge $-1 -1 $-1 $1186 0 $740 0.1796446609406727735 $861 $1187 forward @7 tangent #
+face $1188 -1 $-1 $1181 $862 $5 $-1 $1189 reversed single #
+coedge $-1 -1 $-1 $1190 $929 $866 $1011 forward $922 0 $-1 #
+edge $-1 -1 $-1 $794 -0.7853981633974490562 $867 0.7853981633974475018 $866 $1191 forward @7 tangent #
+edge $-1 -1 $-1 $1192 2.356194490192344837 $867 3.141592653589793116 $1193 $1194 forward @7 tangent #
+point $-1 -1 $-1 0.2998528137423855933 3.774999999999999911 -0.1551471862576143113 #
+coedge $-1 -1 $-1 $1195 $987 $869 $1015 reversed $628 0 $-1 #
+edge $-1 -1 $-1 $1018 0.0247056274847714287 $1021 1.600000000000000089 $1014 $1196 forward @7 tangent #
+coedge $-1 -1 $-1 $870 $1039 $1197 $1198 forward $1017 0 $-1 #
+loop $-1 -1 $-1 $-1 $889 $1199 #
+vertex $-1 -1 $-1 $871 1 $1200 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 0.02470562748477131421 0 -0 -1 0.180312229202569646 -0.180312229202569646 0 1 F -0.785398163397448279 F 0.785398163397448279 #
+coedge $-1 -1 $-1 $877 $872 $1201 $1202 forward $878 0 $-1 #
+vertex $-1 -1 $-1 $873 1 $1203 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 1.600000000000000089 -0 -0 -1 0.25500000000000006 0 0 1 I I #
+coedge $-1 -1 $-1 $1204 $875 $1205 $1206 reversed $1025 0 $-1 #
+coedge $-1 -1 $-1 $875 $1204 $1170 $1207 forward $1025 0 $-1 #
+loop $-1 -1 $-1 $-1 $875 $1208 #
+straight-curve $-1 -1 $-1 8.160000000000000142 2.436250000000000249 1.669999999999998819 0 -1 -0 I I #
+coedge $-1 -1 $-1 $1209 $1205 $877 $1028 forward $1210 0 $-1 #
+edge $-1 -1 $-1 $879 -0.7853981633974476129 $1211 0.7853981633974537191 $1027 $1212 forward @7 unknown #
+point $-1 -1 $-1 8.160000000000000142 0.375 1.669999999999998597 #
 point $-1 -1 $-1 8.160000000000000142 3.775000000000000355 1.669999999999998597 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $817 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 4 340 341 342 352 0 #
-loop $-1 -1 $-1 $-1 $1104 $817 #
-plane-surface $-1 -1 $-1 2.14749999999999952 0.2474999999999999978 1.727500000000000036 0 -0.7071067811865473507 0.7071067811865476838 1 0 -0 forward_v I I I I #
-coedge $-1 -1 $-1 $820 $819 $1124 $1125 forward $821 0 $-1 #
-edge $-1 -1 $-1 $1126 0 $718 0.1899999999999997247 $819 $1127 forward @7 tangent #
-face $1128 -1 $-1 $1123 $821 $5 $-1 $1129 reversed single #
-coedge $-1 -1 $-1 $1130 $1131 $824 $957 reversed $1132 0 $-1 #
-edge $-1 -1 $-1 $958 -0.785398163397448057 $960 0.785398163397448168 $956 $1133 forward @7 unknown #
-vertex $-1 -1 $-1 $957 0 $1134 #
-straight-curve $-1 -1 $-1 0.375 3.960000000000000853 1.860000000000000098 0 0 -1 I I #
-vertex $-1 -1 $-1 $957 1 $1135 #
-straight-curve $-1 -1 $-1 0.1899999999999998357 3.775000000000000355 1.860000000000000098 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $827 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 19 0 4 328 334 342 352 0 #
-cone-surface $-1 -1 $-1 0.3750000000000000555 3.775000000000000355 1.860000000000000098 0 0 -1 -0.1308147545195114669 0.1308147545195114392 0 1 I I 0 1 0.1850000000000002198 forward I I I I #
-coedge $-1 -1 $-1 $829 $828 $1136 $1137 forward $830 0 $-1 #
-coedge $-1 -1 $-1 $832 $1138 $828 $966 reversed $969 0 $-1 #
-edge $-1 -1 $-1 $732 -0.04970562748477139192 $1139 0.1302943725152286292 $965 $1140 forward @7 tangent #
-face $1141 -1 $-1 $1142 $830 $5 $-1 $1143 reversed single #
-coedge $-1 -1 $-1 $1138 $832 $1144 $1145 forward $969 0 $-1 #
-loop $-1 -1 $-1 $-1 $1138 $1146 #
-vertex $-1 -1 $-1 $833 1 $1147 #
-ellipse-curve $-1 -1 $-1 0.375 0.375 -0.190294372515228627 -0 -0 1 -0.02828427124746188751 -0.02828427124746188751 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $836 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 4 0 3 307 343 350 0 1 @1 4 0 3 307 344 350 0 #
-face $1148 -1 $-1 $1149 $1150 $5 $-1 $1151 reversed single #
-loop $-1 -1 $-1 $-1 $1101 $836 #
-plane-surface $-1 -1 $-1 3.125 0.1798528137423857087 -0.03514718625761430182 0 -0.7071067811865475727 -0.7071067811865474617 -1 0 -0 forward_v I I I I #
-coedge $-1 -1 $-1 $1152 $924 $838 $977 reversed $926 0 $-1 #
-edge $-1 -1 $-1 $979 0.02470562748477132115 $863 1.600000000000000089 $838 $1153 forward @7 tangent #
-coedge $-1 -1 $-1 $839 $847 $1154 $1155 forward $848 0 $-1 #
-vertex $-1 -1 $-1 $840 1 $1156 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 0.02470562748477131421 0 -0 -1 0.180312229202569646 -0.180312229202569646 0 1 I I #
-coedge $-1 -1 $-1 $856 $841 $1157 $1158 forward $857 0 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $842 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 3 0 2 316 350 0 1 @1 4 0 3 321 342 350 0 2 @2 17 0 2 347 350 0 2 @2 17 0 2 348 350 0 #
-cone-surface $-1 -1 $-1 7.974999999999999645 0.375 0 -0 0 1 0.180312229202569646 -0.180312229202569646 0 1 I I 0 1 0.3750000000000000555 forward I I I I #
-coedge $-1 -1 $-1 $1159 $843 $1006 $1160 forward $986 0 $-1 #
-coedge $-1 -1 $-1 $843 $1159 $1161 $1162 reversed $986 0 $-1 #
-loop $-1 -1 $-1 $-1 $1159 $1163 #
-straight-curve $-1 -1 $-1 8.015000000000000568 3.449999999999999734 -0.190294372515229071 0 -1 0 F -9996.550000999999611 F 10003.45000100000107 #
-point $-1 -1 $-1 8.015000000000000568 3.774999999999999467 -0.1902943725152273502 #
-coedge $-1 -1 $-1 $1161 $1164 $847 $990 forward $1039 0 $-1 #
-edge $-1 -1 $-1 $1165 -0.7853981633974488341 $849 0.7853981633974478349 $847 $1166 reversed @7 unknown #
-point $-1 -1 $-1 8.015000000000000568 0.375 -0.1902943725152273502 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $852 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 5 0 5 307 311 312 343 350 0 #
-face $1167 -1 $-1 $771 $1168 $5 $-1 $1169 reversed single #
-cone-surface $-1 -1 $-1 7.974999999999999645 0.375 -0.03514718625761432957 0 0 1 0.1379898987322334403 -0.1379898987322333292 0 1 I I 0.7071067811865472397 0.7071067811865477948 0.2800000000000001377 forward I I I I #
-coedge $-1 -1 $-1 $1170 $854 $1171 $1172 reversed $997 0 $-1 #
-coedge $-1 -1 $-1 $854 $1170 $945 $1122 forward $997 0 $-1 #
-loop $-1 -1 $-1 $-1 $854 $1173 #
-straight-curve $-1 -1 $-1 8.160000000000000142 2.436250000000000249 1.669999999999999929 0 -1 -0 I I #
-coedge $-1 -1 $-1 $1174 $1171 $856 $1000 forward $1175 0 $-1 #
-edge $-1 -1 $-1 $858 -0.7853981633974476129 $1176 0.7853981633974537191 $999 $1177 forward @7 unknown #
-point $-1 -1 $-1 8.159999999999998366 0.375 1.670000000000000373 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $861 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 8 0 4 340 341 342 352 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $884 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 8 0 4 340 341 342 369 0 #
+face $1213 -1 $-1 $1009 $971 $5 $-1 $1214 reversed single #
 cone-surface $-1 -1 $-1 7.974999999999998757 0.375 1.600000000000000089 0 -0 -1 0.1803122292025696183 -0.1803122292025693407 0 1 I I 0.7071067811865474617 0.7071067811865476838 0.2549999999999997824 forward I I I I #
-point $-1 -1 $-1 7.974999999999998757 0.1200000000000000511 1.600000000000000089 #
-coedge $-1 -1 $-1 $1178 $865 $892 $1043 forward $1007 0 $-1 #
-coedge $-1 -1 $-1 $865 $1178 $984 $1160 reversed $1007 0 $-1 #
-loop $-1 -1 $-1 $-1 $1178 $1179 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.1902943725152285437 0 0 -1 0.02828427124746200894 0.02828427124746207486 0 1 I I #
-coedge $-1 -1 $-1 $867 $1093 $1180 $1181 reversed $618 0 $-1 #
-coedge $-1 -1 $-1 $1182 $882 $867 $1011 forward $1029 0 $-1 #
-edge $-1 -1 $-1 $884 -2.225000000000000089 $1183 1.174999999999999822 $867 $1184 forward @7 unknown #
-coedge $-1 -1 $-1 $1185 $868 $878 $1026 forward $1014 0 $-1 #
-coedge $-1 -1 $-1 $868 $1185 $1186 $1187 reversed $1014 0 $-1 #
-loop $-1 -1 $-1 $-1 $1185 $1188 #
-vertex $-1 -1 $-1 $1189 2 $1190 #
-ellipse-curve $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.1902943725152285437 0 0 -1 0.02828427124746200894 0.02828427124746207486 0 1 I I #
-coedge $-1 -1 $-1 $1096 $870 $1191 $1189 reversed $1018 0 $-1 #
-loop $-1 -1 $-1 $-1 $922 $1192 #
-straight-curve $-1 -1 $-1 3.850147186257613985 3.774999999999999467 -0.1551471862576142557 0.7071067811865477948 0 0.7071067811865471286 I I #
-point $-1 -1 $-1 4.12529437251522868 3.774999999999999467 0.1199999999999999956 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $875 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 23 0 3 308 343 350 0 2 @2 23 0 3 308 344 350 0 #
-face $1193 -1 $-1 $1146 $1194 $5 $-1 $1195 reversed single #
-loop $-1 -1 $-1 $-1 $1196 $875 #
+coedge $-1 -1 $-1 $1215 $1216 $886 $1035 forward $1217 0 $-1 #
+edge $-1 -1 $-1 $1040 -2.75 $1037 0.6499999999999994671 $886 $1218 forward @7 tangent #
+coedge $-1 -1 $-1 $887 $892 $1219 $1220 reversed $893 0 $-1 #
+vertex $-1 -1 $-1 $1221 1 $1222 #
+straight-curve $-1 -1 $-1 8.050147186257614607 3.774999999999999467 -0.1551471862576142557 0.7071067811865477948 0 0.7071067811865471286 F -3.925231146709436684e-17 F 0.2543502884254441598 #
+coedge $-1 -1 $-1 $1016 $889 $1223 $1224 reversed $1017 0 $-1 #
+vertex $-1 -1 $-1 $1225 1 $1226 #
+straight-curve $-1 -1 $-1 8.050147186257614607 0.375 -0.1551471862576143113 0.7071067811865477948 0 0.7071067811865471286 F 3.925231146709436684e-17 F 0.2543502884254441598 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $891 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 5 307 311 312 343 367 0 #
+face $1227 -1 $-1 $910 $893 $5 $-1 $1228 reversed single #
+plane-surface $-1 -1 $-1 8.170147186257613825 3.125 -0.03514718625761426019 0.7071067811865471286 0 -0.7071067811865477948 -0.7071067811865479058 0 -0.7071067811865472397 forward_v I I I I #
+edge $-1 -1 $-1 $1063 3.925231146709436684e-17 $769 0.2543502884254447705 $895 $1229 forward @7 tangent #
+coedge $-1 -1 $-1 $899 $898 $1230 $1231 reversed $900 0 $-1 #
+coedge $-1 -1 $-1 $903 $1232 $898 $906 forward $1053 0 $-1 #
+coedge $-1 -1 $-1 $1233 $908 $899 $911 forward $1062 0 $-1 #
+face $1234 -1 $-1 $1235 $900 $5 $-1 $1236 forward single #
+coedge $-1 -1 $-1 $1000 $1237 $902 $1051 forward $852 0 $-1 #
+edge $-1 -1 $-1 $1054 -3.925231146709437917e-17 $915 0.3394112549695429415 $902 $1238 forward @7 tangent #
+coedge $-1 -1 $-1 $1232 $903 $1239 $1240 forward $1053 0 $-1 #
+loop $-1 -1 $-1 $-1 $1232 $918 #
+vertex $-1 -1 $-1 $1240 0 $1241 #
+straight-curve $-1 -1 $-1 4.499852813742386104 1.024999999999999689 -0.1551471862576143113 0 -1 0 F -2.75 F 0.6499999999999996891 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $905 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 5 307 311 312 343 367 0 #
+face $1242 -1 $-1 $1199 $1243 $5 $-1 $1244 reversed single #
+plane-surface $-1 -1 $-1 4.379852813742385997 1.024999999999999689 -0.03514718625761430182 -0.7071067811865475727 0 -0.7071067811865474617 -0.7071067811865474617 0 0.7071067811865475727 forward_v I I I I #
+vertex $-1 -1 $-1 $1231 1 $1245 #
+ellipse-curve $-1 -1 $-1 4.415000000000000036 3.774999999999999467 -0.2399999999999999911 -4.336808689942012189e-17 -1 0 -0.08485281374238570762 3.679904200040093617e-18 -0.08485281374238569374 1 F 2.356194490192344837 F 3.141592653589790007 #
+coedge $-1 -1 $-1 $908 $1233 $1246 $1247 forward $1062 0 $-1 #
+loop $-1 -1 $-1 $-1 $1233 $1248 #
+vertex $-1 -1 $-1 $1247 1 $1249 #
+straight-curve $-1 -1 $-1 5.224999999999999645 3.850147186257613985 -0.1551471862576142557 -1 0 0 F -2.75 F 0.6499999999999994671 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $910 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 8 0 5 307 311 312 343 367 0 #
+plane-surface $-1 -1 $-1 5.224999999999999645 3.970147186257614091 -0.03514718625761426019 0 0.7071067811865471286 -0.7071067811865477948 -1 0 0 forward_v I I I I #
+vertex $-1 -1 $-1 $911 1 $1250 #
+ellipse-curve $-1 -1 $-1 4.575000000000000178 3.934999999999999609 -0.2399999999999999911 1 -4.336808689942012189e-17 -0 3.679904200040092077e-18 0.08485281374238566598 -0.08485281374238574925 1 F -3.141592653589794448 F -2.356194490192344393 #
+coedge $-1 -1 $-1 $1165 $913 $938 $1101 reversed $1071 0 $1251 #
+coedge $-1 -1 $-1 $913 $1165 $1000 $1178 forward $1071 0 $1252 #
+loop $-1 -1 $-1 $-1 $913 $1253 #
+pcurve $-1 -1 $-1 0 reversed { exp_par_cur nubs 1 open 2 
+	1.57079632679489456 1 3.141592653589794892 1 
+	0.6250000000000003331 2.140950474475009635 
+	0.3749999999999996669 2.140950474475009635 
+	1.511377109169037485e-16 
+	spline forward { rb_blend_spl_sur 23100 @24 blend_support_zero_curve null_surface intcurve forward { exact_int_cur 23100 full nubs 3 open 9 
+	1.680649265072318155 3 1.738186916247654645 1 1.795724567422991136 1 1.853262218598327626 1 1.910799869773664117 1 
+	1.968337520949000607 1 2.025875172124337098 1 2.083412823299673367 1 2.140950474475009635 3 
+	4.174999999999999822 -0.06774389364628297105 0.04924349972071477566 
+	4.174999999999999822 -0.05381035385442720781 0.0397137787862649333 
+	4.174999999999999822 -0.02218344450301341225 0.01868793678408589565 
+	4.174999999999999822 0.02378811024178086042 -0.009584974461473612373 
+	4.174999999999999822 0.07237603459546348983 -0.03678690917257007587 
+	4.174999999999999822 0.1234859430152250026 -0.06187389216558482341 
+	4.174999999999999822 0.1777631260511096933 -0.08432779836505073512 
+	4.174999999999999822 0.2380208090965663104 -0.1030778980475329926 
+	4.174999999999999822 0.2992750849410670821 -0.1164031562587716923 
+	4.174999999999999822 0.3565585181033913975 -0.1200000000000003703 
+	4.174999999999999822 0.3750000000000000555 -0.1200000000000003703 
+	0 
+	
+	null_surface 
+	null_surface 
+	nullbs 
+	nullbs 
+	I I 
+	0 
+	0 
+	7 1.738186916247654645 1.795724567422991136 1.853262218598327626 1.910799869773664117 1.968337520949000607 2.025875172124337098 2.083412823299673367 
+	
+	0 F 1 F 0 UNEXTENDED UNEXTENDED } I I nullbs 0 0 0 nullbs 0 nullbs 
+	@24 blend_support_zero_curve null_surface intcurve forward { ref 15 } I I nullbs 0 0 0 nullbs 0 nullbs 
+	intcurve forward { int_int_cur 23100 full nubs 3 open 4 
+	1.680649265072318155 3 1.873331665165633542 2 2.00714106982032181 2 2.140950474475009635 3 
+	4.174999999999999822 7.757262772843105544e-12 0.1482928049812269056 
+	4.174999999999999822 0.04693933709402726973 0.1161890617858555852 
+	4.175000000000000711 0.09428304138077428509 0.08677382719622216134 
+	4.175000000000000711 0.1785211666845563094 0.04464598190157637037 
+	4.174999999999999822 0.2141023266034550454 0.02961689880797830493 
+	4.174999999999999822 0.2900444117529700772 0.007308322619111894472 
+	4.174999999999999822 0.3303968651151040214 -5.419826899937118833e-16 
+	4.174999999999999822 0.3749999999999999445 -5.481726184086710418e-16 
+	0.0003928961773138732743 
+	
+	cone 4.575000000000000178 0.375 -0.02500000000000000139 0 0 1 0.3750000000000004441 0 0 1 I I 0.7071067811865475727 0.7071067811865475727 0.3750000000000004441 forward I I I I 
+	cone 3.774999999999999911 0.375 -0.02500000000000000139 0 0 1 0.3750000000000004441 0 0 1 I I -0.7071067811865475727 -0.7071067811865475727 0.3750000000000004441 forward I I I I 
+	nullbs 
+	nullbs 
+	I I 
+	0 
+	0 
+	0 
+	
+	0 } I I 0.1199999999999999956 0.1199999999999999956 
+	no_radius 
+	F 0 F 1 
+	I I 
+	1 0.01200000000000000025 0.00530247584031374574 
+	1 
+	full nubs 3 3 open open none none 3 3 
+	0.3749999999999995559 3 0.5 1 0.6250000000000004441 3 
+	1.711336012365830994 3 1.873331665165633542 2 2.140950474475009635 3 
+	4.257044880756319039 0.06798834649439183808 0.2019725209537685806 
+	4.234595449561172842 0.08039400945046989988 0.2207457830730422677 
+	4.174999999999999822 0.09692072409134451505 0.2457884305209653286 
+	4.115404550438827691 0.08039400945046916436 0.2207457830730427673 
+	4.092955119243681494 0.06798834649439083888 0.2019725209537692467 
+	4.257044880756319039 0.1056077602384049297 0.1770688312434963441 
+	4.234595449561172842 0.1174739632419392332 0.1962052684479799192 
+	4.174999999999999822 0.1332880013699024313 0.2217338148671420539 
+	4.115404550438827691 0.1174739632419372903 0.1962052684479811404 
+	4.092955119243681494 0.105607760238402279 0.1770688312434980094 
+	4.257044880756319039 0.1429507462958150288 0.1546764695292683345 
+	4.234595449561172842 0.1541590251052343541 0.1742279779587992961 
+	4.174999999999999822 0.1692421034372638688 0.2002272884107133277 
+	4.115404550438827691 0.1541590251052318006 0.1742279779588005728 
+	4.092955119243681494 0.1429507462958115316 0.1546764695292701108 
+	4.257044880756319039 0.2435877554069528772 0.1043476905762303064 
+	4.234595449561172842 0.2517612587547570779 0.1254168965678087999 
+	4.174999999999999822 0.2624301182335271876 0.1536237671099743296 
+	4.115404550438827691 0.2517612587547498615 0.1254168965678124636 
+	4.092955119243681494 0.243587755406942913 0.1043476905762353441 
+	4.257044880756319039 0.3034756872739041711 0.08249999999999936551 
+	4.234595449561172842 0.308732485313922167 0.1049999999999995104 
+	4.174999999999999822 0.3163787370084938932 0.1349999999999997313 
+	4.115404550438827691 0.3087324853139226111 0.1049999999999995243 
+	4.092955119243681494 0.3034756872739047262 0.08249999999999939326 
+	4.257044880756319039 0.375 0.08249999999999939326 
+	4.234595449561172842 0.375 0.1049999999999995381 
+	4.174999999999999822 0.3749999999999999445 0.1349999999999997591 
+	4.115404550438827691 0.3749999999999999445 0.1049999999999995381 
+	4.092955119243681494 0.3749999999999999445 0.08249999999999940714 
+	0.00530247584031374574 
+	
+	0 
+	0 
+	0 
+	0 
+	0 
+	0 
+	F 
+	0 0 0 } I I I I 
+	} 0 0 #
+ellipse-curve $-1 -1 $-1 4.174999999999999822 0.375 -1.925543058334255875e-16 -5.661901255411749568e-18 1 2.220446049250313081e-16 -0.08485281374238570762 1.836068125155206378e-17 -0.08485281374238569374 1 F 1.570796326794893893 F 3.141592653589795781 #
+point $-1 -1 $-1 4.259852813742385891 0.375 0.08485281374238569374 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $918 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 1 367 0 #
+face $1254 -1 $-1 $1255 $1256 $5 $-1 $1257 forward single #
+cone-surface $-1 -1 $-1 4.415000000000000036 1.024999999999999689 -0.2399999999999999911 0 -1 0 -0 0 0.1199999999999999956 1 I I 0 1 0.1199999999999999956 forward I I I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $921 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 14 0 1 367 0 #
+face $1258 -1 $-1 $1259 $1115 $5 $-1 $1260 forward single #
+loop $-1 -1 $-1 $-1 $1261 $921 #
+cone-surface $-1 -1 $-1 0.2149999999999999689 1.024999999999999689 -0.2399999999999999911 0 -1 -0 0 -0 0.1199999999999999956 1 I I 0 1 0.1199999999999999956 forward I I I I #
+coedge $-1 -1 $-1 $1262 $1263 $924 $1083 forward $1264 0 $-1 #
+edge $-1 -1 $-1 $799 -2.75 $1091 0.6499999999999996891 $1082 $1265 forward @7 tangent #
+coedge $-1 -1 $-1 $1266 $926 $1263 $1267 forward $1086 0 $-1 #
+coedge $-1 -1 $-1 $926 $1266 $1268 $1269 reversed $1086 0 $-1 #
+loop $-1 -1 $-1 $-1 $926 $1270 #
+ellipse-curve $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.2399999999999999911 -0 -0 1 0.02828427124746200894 0.02828427124746206445 0 1 F 5.497787143782137065 F 7.068583470577033623 #
+coedge $-1 -1 $-1 $1268 $1271 $928 $1089 forward $1272 0 $-1 #
+edge $-1 -1 $-1 $1104 -2.75 $812 0.6499999999999994671 $1088 $1273 forward @7 tangent #
+coedge $-1 -1 $-1 $929 $1190 $1274 $1275 reversed $922 0 $-1 #
+vertex $-1 -1 $-1 $1083 1 $1276 #
+ellipse-curve $-1 -1 $-1 0.375 3.934999999999999609 -0.2399999999999999911 -1 4.336808689942012189e-17 0 3.679904200040094388e-18 0.0848528137423857215 -0.08485281374238569374 1 F 2.356194490192344837 F 3.141592653589795336 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $933 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 8 0 3 310 343 367 0 1 @1 8 0 3 310 344 367 0 #
+face $1277 -1 $-1 $1270 $1272 $5 $-1 $1278 reversed single #
+loop $-1 -1 $-1 $-1 $1279 $933 #
+plane-surface $-1 -1 $-1 0.3398528137423857398 1.224999999999999867 -0.3751471862576143401 -0.7071067811865480168 0 -0.7071067811865470176 -0.7071067811865470176 0 0.7071067811865480168 forward_v I I I I #
+coedge $-1 -1 $-1 $1280 $1281 $1282 $1283 reversed $934 0 $-1 #
+coedge $-1 -1 $-1 $989 $937 $956 $1118 forward $939 0 $-1 #
+coedge $-1 -1 $-1 $941 $1284 $937 $1100 forward $1103 0 $-1 #
+edge $-1 -1 $-1 $1122 -0.7853981633974488341 $805 0.7853981633974477239 $937 $1285 forward @7 tangent #
+edge $-1 -1 $-1 $1167 1.773494866275846515 $807 2.140950474475009635 $938 $1286 forward @7 tangent #
+coedge $-1 -1 $-1 $1284 $941 $1287 $1288 reversed $1103 0 $-1 #
+loop $-1 -1 $-1 $-1 $1284 $1289 #
+vertex $-1 -1 $-1 $1288 1 $1290 #
+ellipse-curve $-1 -1 $-1 3.934999999999999609 0.375 -0.2399999999999999911 -4.336808689942010957e-17 1 0 0.08485281374238566598 3.679904200040090536e-18 -0.08485281374238574925 1 F 2.356194490192344393 F 3.141592653589793116 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $943 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 10 0 1 367 0 #
+cone-surface $-1 -1 $-1 3.934999999999999609 3.125 -0.2399999999999999911 -0 1 -0 0 0 -0.1199999999999999956 1 I I 0 1 0.1199999999999999956 forward I I I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $947 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 5 310 311 312 343 367 0 #
+face $1291 -1 $-1 $1292 $1293 $5 $-1 $1294 reversed single #
+loop $-1 -1 $-1 $-1 $1295 $947 #
+plane-surface $-1 -1 $-1 8.010147186257613683 2.924999999999999822 -0.3751471862576142291 0.7071067811865475727 0 -0.7071067811865475727 -0.7071067811865475727 0 -0.7071067811865475727 forward_v I I I I #
+coedge $-1 -1 $-1 $1296 $1297 $1298 $1299 forward $948 0 $-1 #
+coedge $-1 -1 $-1 $1300 $954 $1120 $1124 reversed $1115 0 $-1 #
+coedge $-1 -1 $-1 $954 $1300 $1301 $1302 forward $1115 0 $-1 #
+loop $-1 -1 $-1 $-1 $1114 $1079 #
+vertex $-1 -1 $-1 $1302 1 $1303 #
+ellipse-curve $-1 -1 $-1 0.375 0.375 -0.1551471862576142835 -0 -0 1 -0.05313708498984760081 -0.05313708498984760081 0 1 F -0.785398163397448279 F 0.785398163397448279 #
+edge $-1 -1 $-1 $1122 0 $991 0.2543502884254438268 $956 $1304 forward @7 tangent #
+coedge $-1 -1 $-1 $1305 $957 $1284 $1306 reversed $1121 0 $-1 #
+coedge $-1 -1 $-1 $957 $1305 $1113 $1124 forward $1121 0 $-1 #
+loop $-1 -1 $-1 $-1 $1305 $1259 #
+vertex $-1 -1 $-1 $1306 1 $1307 #
+straight-curve $-1 -1 $-1 3.125 0.2998528137423857043 -0.1551471862576143113 1 0 0 F -2.75 F 0.6499999999999994671 #
+edge $-1 -1 $-1 $1308 2.356194490192344837 $959 3.141592653589793116 $1120 $1309 forward @7 tangent #
+point $-1 -1 $-1 0.375 0.2998528137423856488 -0.1551471862576142835 #
+point $-1 -1 $-1 0.3749999999999999445 0.1199999999999999956 0.02470562748477142523 #
+coedge $-1 -1 $-1 $1301 $1193 $962 $1128 forward $1080 0 $-1 #
+edge $-1 -1 $-1 $867 -2.75 $1116 0.6499999999999996891 $962 $1310 forward @7 tangent #
+straight-curve $-1 -1 $-1 0.2998528137423856488 0.375 -0.1551471862576142557 -0.7071067811865474617 0 0.7071067811865475727 F -7.850462293418874601e-17 F 0.2543502884254439378 #
+straight-curve $-1 -1 $-1 0.3749999999999999445 0.1199999999999999956 0 0 0 -1 F -1.600000000000000089 F -0.02470562748477142523 #
+coedge $-1 -1 $-1 $1311 $1162 $965 $1132 reversed $1175 0 $-1 #
+edge $-1 -1 $-1 $1138 0.2616295090390224898 $838 0.360624458405139181 $1131 $1312 forward @7 tangent #
+coedge $-1 -1 $-1 $970 $969 $1313 $1314 forward $971 0 $-1 #
+coedge $-1 -1 $-1 $1315 $973 $970 $1135 reversed $1137 0 $-1 #
+edge $-1 -1 $-1 $1316 0 $836 0.1796446609406727735 $1134 $1317 forward @7 tangent #
+coedge $-1 -1 $-1 $973 $1315 $1318 $1319 forward $1137 0 $-1 #
+loop $-1 -1 $-1 $-1 $973 $1320 #
+vertex $-1 -1 $-1 $1321 1 $1322 #
+ellipse-curve $-1 -1 $-1 0.375 0.3750000000000000555 1.669999999999999929 0 0 -1 -0.1308147545195113282 -0.1308147545195113282 0 1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $975 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 5 0 4 340 341 342 369 0 #
+cone-surface $-1 -1 $-1 0.375 0.375 1.600000000000000089 -0 -0 -1 -0.180312229202569646 -0.180312229202569646 0 1 I I 0.7071067811865476838 0.7071067811865473507 0.2550000000000000044 forward I I I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $979 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 5 0 5 310 311 312 343 367 0 #
+face $1323 -1 $-1 $1324 $1325 $5 $-1 $1326 reversed single #
+loop $-1 -1 $-1 $-1 $1327 $979 #
+cone-surface $-1 -1 $-1 7.974999999999999645 0.375 -0.3751471862576143956 0 0 -1 0.02485281374238587637 -0.02485281374238584862 0 1 I I -0.7071067811865464625 0.707106781186548683 0.1200000000000003564 forward I I I I #
+coedge $-1 -1 $-1 $1328 $1329 $1330 $1331 reversed $980 0 $-1 #
+coedge $-1 -1 $-1 $1282 $982 $1332 $1333 forward $842 0 $-1 #
+coedge $-1 -1 $-1 $982 $1282 $1334 $1335 forward $842 0 $-1 #
+coedge $-1 -1 $-1 $1336 $1337 $982 $1150 forward $1338 0 $-1 #
+edge $-1 -1 $-1 $1339 0.04970562748477135029 $1340 0.06343145750507581115 $1149 $1341 forward @7 tangent #
+coedge $-1 -1 $-1 $984 $983 $1342 $1343 reversed $720 0 $-1 #
+coedge $-1 -1 $-1 $1344 $1345 $983 $1153 reversed $1346 0 $-1 #
+edge $-1 -1 $-1 $1159 -0.7853981633974490562 $1347 0.7853981633974476129 $1152 $1348 forward @7 unknown #
+coedge $-1 -1 $-1 $1349 $1350 $984 $1155 reversed $1351 0 $-1 #
+edge $-1 -1 $-1 $1352 -0.7853981633974475018 $1160 0.7853981633974490562 $1154 $1353 forward @7 unknown #
+coedge $-1 -1 $-1 $1354 $985 $1350 $1355 reversed $1158 0 $-1 #
+coedge $-1 -1 $-1 $985 $1354 $1356 $1357 reversed $1158 0 $-1 #
+loop $-1 -1 $-1 $-1 $1156 $1358 #
+vertex $-1 -1 $-1 $1153 0 $1359 #
+vertex $-1 -1 $-1 $986 1 $1360 #
+straight-curve $-1 -1 $-1 0.375 3.850147186257614429 -0.3351471862576144156 0 -0.7071067811865457964 -0.7071067811865492381 F 0.04970562748477194703 F 0.06343145750507564462 #
+coedge $-1 -1 $-1 $1131 $1201 $987 $1163 forward $1175 0 $-1 #
+edge $-1 -1 $-1 $1021 -5.887499999999999289 $838 1.712499999999999467 $987 $1361 forward @7 unknown #
+coedge $-1 -1 $-1 $988 $1195 $1177 $1362 reversed $628 0 $-1 #
+coedge $-1 -1 $-1 $1070 $1069 $988 $1166 reversed $1071 0 $1363 #
+edge $-1 -1 $-1 $1364 -0.1713241957617732958 $1167 -0.02444570086154903427 $988 $1365 forward @7 unknown #
+vertex $-1 -1 $-1 $1166 1 $1366 #
+intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2 
+	0.4934393481202511422 2 0.9214722978756507699 2 
+	3.774999999999999911 0.1200000000000001066 0.02470562748477121359 1.478392301321115765 
+	3.900829030106025552 0.1200000000000001066 0.02470562748477070358 1.478392301321115543 
+	4.1076566719880514 0.1200000000000001205 0.1888541231496925488 1.118418387821379145 
+	0 
+	
+	null_surface 
+	null_surface 
+	nullbs 
+	nullbs 
+	I I 
+	0 
+	0 
+	0 
+	
+	0 F 1 F 0 UNEXTENDED UNEXTENDED } F 0.4934393481202511422 F 0.9214722978756507699 #
+point $-1 -1 $-1 3.774999999999999911 0.1200000000000001343 0.02470562748477123788 #
+coedge $-1 -1 $-1 $1367 $993 $1024 $1207 reversed $1172 0 $-1 #
+coedge $-1 -1 $-1 $993 $1367 $1001 $1180 forward $1172 0 $-1 #
+loop $-1 -1 $-1 $-1 $993 $1368 #
+ellipse-curve $-1 -1 $-1 7.975000000000001421 3.775000000000000355 1.670000000000000373 0 0 -1 0.13081475451951044 0.1308147545195112449 0 1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $996 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 4 340 341 342 369 0 #
+loop $-1 -1 $-1 $-1 $1311 $996 #
+plane-surface $-1 -1 $-1 2.14749999999999952 0.2474999999999999978 1.727500000000000036 0 -0.7071067811865473507 0.7071067811865476838 1 0 -0 forward_v I I I I #
+coedge $-1 -1 $-1 $1369 $1000 $1164 $1362 forward $852 0 $-1 #
+edge $-1 -1 $-1 $1364 1.773494866274539117 $915 2.140950474475009635 $1000 $1370 forward @7 tangent #
+coedge $-1 -1 $-1 $1002 $1001 $1371 $1372 forward $1003 0 $-1 #
+edge $-1 -1 $-1 $1373 0 $856 0.1796446609406723294 $1001 $1374 forward @7 tangent #
+face $1375 -1 $-1 $1368 $1003 $5 $-1 $1376 reversed single #
+coedge $-1 -1 $-1 $1377 $1378 $1006 $1183 reversed $1379 0 $-1 #
+edge $-1 -1 $-1 $1184 -0.785398163397448057 $1186 0.785398163397448168 $1182 $1380 forward @7 unknown #
+vertex $-1 -1 $-1 $1183 0 $1381 #
+straight-curve $-1 -1 $-1 0.375 3.960000000000000853 1.849644660940672702 0 0 -1 I I #
+vertex $-1 -1 $-1 $1183 1 $1382 #
+straight-curve $-1 -1 $-1 0.1899999999999998357 3.775000000000000355 1.849644660940672702 0 0 -1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1009 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 19 0 4 328 334 342 369 0 #
+cone-surface $-1 -1 $-1 0.3750000000000000555 3.775000000000000355 1.849644660940672702 0 0 -1 -0.1308147545195114669 0.1308147545195114392 0 1 I I 0 1 0.1850000000000002198 forward I I I I #
+coedge $-1 -1 $-1 $1090 $1010 $1193 $1012 reversed $922 0 $-1 #
+ellipse-curve $-1 -1 $-1 0.375 3.774999999999999911 -0.1551471862576143113 -0 -0 1 -0.05313708498984777429 0.05313708498984769102 0 1 F -0.7853981633974490562 F 0.7853981633974475018 #
+vertex $-1 -1 $-1 $1275 1 $1383 #
+coedge $-1 -1 $-1 $1127 $1261 $1190 $1012 forward $1080 0 $-1 #
+ellipse-curve $-1 -1 $-1 0.2149999999999998856 3.774999999999999467 -0.2399999999999999911 -4.336808689942012189e-17 -1 -0 -0.08485281374238570762 3.679904200040093617e-18 -0.08485281374238569374 1 F 2.356194490192344837 F 3.141592653589793116 #
+coedge $-1 -1 $-1 $1164 $1014 $1384 $1385 reversed $628 0 $-1 #
+straight-curve $-1 -1 $-1 7.974999999999998757 0.1199999999999999956 0 0 0 1 F 0.0247056274847714287 F 1.600000000000000089 #
+coedge $-1 -1 $-1 $1386 $1384 $1016 $1198 reversed $1243 0 $-1 #
+edge $-1 -1 $-1 $1387 0 $1018 0.2543502884254440488 $1016 $1388 forward @7 tangent #
+face $1389 -1 $-1 $891 $1017 $5 $-1 $1390 reversed single #
+point $-1 -1 $-1 7.974999999999999645 0.1199999999999999956 0.0247056274847714287 #
+coedge $-1 -1 $-1 $1162 $1311 $1020 $1202 reversed $1175 0 $-1 #
+edge $-1 -1 $-1 $1021 0 $1211 0.09899494936611649698 $1201 $1391 forward @7 tangent #
+point $-1 -1 $-1 7.974999999999998757 0.1199999999999999956 1.600000000000000089 #
+coedge $-1 -1 $-1 $1024 $1023 $1392 $1393 forward $1025 0 $-1 #
+coedge $-1 -1 $-1 $1027 $1394 $1023 $1206 forward $1210 0 $-1 #
+edge $-1 -1 $-1 $1395 0 $879 0.1796446609406741057 $1023 $1396 forward @7 tangent #
+edge $-1 -1 $-1 $1397 0 $881 0.1796446609406741057 $1170 $1398 forward @7 tangent #
+face $1399 -1 $-1 $1400 $1025 $5 $-1 $1401 reversed single #
+coedge $-1 -1 $-1 $1394 $1027 $1402 $1403 reversed $1210 0 $-1 #
+loop $-1 -1 $-1 $-1 $1027 $1404 #
+vertex $-1 -1 $-1 $1028 1 $1405 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 1.670000000000000373 0 0 -1 0.1308147545195109951 -0.1308147545195108008 0 1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1032 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 26 0 4 328 334 342 369 0 #
+plane-surface $-1 -1 $-1 0.1899999999999999467 0.375 1.849644660940672702 -1 0 -0 -0 1 0 forward_v I I I I #
+coedge $-1 -1 $-1 $1406 $1034 $1407 $1221 reversed $1217 0 $-1 #
+coedge $-1 -1 $-1 $1034 $1406 $1408 $1225 forward $1217 0 $-1 #
+loop $-1 -1 $-1 $-1 $1406 $1409 #
+straight-curve $-1 -1 $-1 8.050147186257614607 3.125 -0.1551471862576142557 0 1 0 F -2.75 F 0.6499999999999994671 #
+coedge $-1 -1 $-1 $1246 $1407 $1036 $1220 forward $1410 0 $-1 #
+edge $-1 -1 $-1 $1037 -0.7853981633974493892 $1063 0.7853981633974471688 $1036 $1411 forward @7 tangent #
+edge $-1 -1 $-1 $1412 2.356194490192345281 $1037 3.141592653589798001 $1407 $1413 forward @7 tangent #
+point $-1 -1 $-1 8.050147186257614607 3.774999999999999467 -0.1551471862576143113 #
+coedge $-1 -1 $-1 $1408 $1414 $1039 $1224 forward $1415 0 $-1 #
+edge $-1 -1 $-1 $1387 -0.7853981633974488341 $1040 0.7853981633974477239 $1039 $1416 forward @7 tangent #
+edge $-1 -1 $-1 $1417 2.356194490192344393 $1040 3.141592653589797113 $1216 $1418 forward @7 tangent #
+point $-1 -1 $-1 8.050147186257614607 0.375 -0.1551471862576142557 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1043 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 7 0 5 307 311 312 343 367 0 #
+cone-surface $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.0351471862576143157 0 0 1 0.1379898987322331905 0.1379898987322334958 0 1 I I 0.7071067811865473507 0.7071067811865477948 0.2800000000000000822 forward I I I I #
+straight-curve $-1 -1 $-1 7.974999999999999645 3.850147186257613985 -0.1551471862576143113 0 0.7071067811865477948 0.7071067811865471286 F 3.925231146709436684e-17 F 0.2543502884254447705 #
+coedge $-1 -1 $-1 $1419 $1420 $1046 $1231 forward $1421 0 $-1 #
+edge $-1 -1 $-1 $1067 5.497787143782137065 $1059 7.068583470577033623 $1230 $1422 forward @7 tangent #
+coedge $-1 -1 $-1 $1047 $1052 $1423 $1424 reversed $1053 0 $-1 #
+coedge $-1 -1 $-1 $1061 $1048 $1425 $1426 reversed $1062 0 $-1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1049 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 9 0 1 367 0 #
+face $1427 -1 $-1 $784 $1428 $5 $-1 $1429 forward single #
+torus-surface $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.2399999999999999911 0 0 1 0.1600000000000001976 0.1199999999999999956 -0.7071067811865480168 0.7071067811865470176 0 forward_v I I I I #
+coedge $-1 -1 $-1 $1050 $1369 $1430 $1431 reversed $852 0 $-1 #
+straight-curve $-1 -1 $-1 4.499852813742386104 0.375 -0.1551471862576142557 -0.7071067811865474617 0 0.7071067811865475727 F -3.925231146709437917e-17 F 0.3394112549695429415 #
+coedge $-1 -1 $-1 $1430 $1432 $1052 $1240 reversed $1428 0 $-1 #
+edge $-1 -1 $-1 $1054 -3.141592653589790007 $1433 -2.356194490192344837 $1052 $1434 forward @7 tangent #
+point $-1 -1 $-1 4.499852813742386104 0.375 -0.1551471862576143113 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1057 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 5 307 311 312 343 367 0 #
+loop $-1 -1 $-1 $-1 $1435 $1057 #
+plane-surface $-1 -1 $-1 7.325000000000000178 0.1798528137423857087 -0.03514718625761430182 0 -0.7071067811865475727 -0.7071067811865474617 -1 0 0 forward_v I I I I #
+point $-1 -1 $-1 4.535000000000000142 3.774999999999999911 -0.2399999999999999911 #
+coedge $-1 -1 $-1 $1436 $1219 $1061 $1247 reversed $1410 0 $-1 #
+edge $-1 -1 $-1 $1437 2.356194490192344393 $1063 3.141592653589793116 $1061 $1438 forward @7 tangent #
+face $1439 -1 $-1 $548 $1062 $5 $-1 $1440 forward single #
+point $-1 -1 $-1 7.974999999999999645 3.850147186257613985 -0.1551471862576142557 #
+point $-1 -1 $-1 4.575000000000000178 3.814999999999999947 -0.2399999999999999911 #
+pcurve $-1 -1 $-1 0 reversed { exp_par_cur nubs 3 open 4 
+	1.773494866275846515 3 1.873331665165633542 3 2.00714106982032181 3 2.140950474475009635 3 
+	0.5948289965924464795 1.773494866275846515 
+	0.598054318925815398 1.806773799239108635 
+	0.6014461917587935469 1.840052732202371866 
+	0.6048839524197517914 1.873331665165633542 
+	0.609491519093598666 1.917934800050528965 
+	0.6142336560990763195 1.962537934935428163 
+	0.6181244213789327535 2.00714106982032181 
+	0.6220151866587890765 2.051744204705215235 
+	0.625000000000000111 2.096347339590085568 
+	0.625000000000000111 2.140950474475009635 
+	1.398428199970606942e-05 
+	spline forward { ref 14 } I I I I 
+	} 0 0 #
+pcurve $-1 -1 $-1 0 reversed { exp_par_cur nubs 3 open 4 
+	-2.140950474475009635 3 -2.00714106982032181 3 -1.873331665165633542 3 -1.773494866274539117 3 
+	0.375 2.140950474475009635 
+	0.375 2.096347339590085568 
+	0.3779848133412118116 2.051744204705250318 
+	0.3818755786210681347 2.00714106982032181 
+	0.3857663439009244022 1.962537934935393302 
+	0.3905084809064003903 1.917934800050527633 
+	0.3951160475802472649 1.873331665165633542 
+	0.3985538082412505845 1.84005273220193688 
+	0.4019456810742729758 1.806773799238237332 
+	0.4051710034076800859 1.773494866274539117 
+	1.398428200177938924e-05 
+	spline forward { ref 14 } I I I I 
+	} 0 0 #
+face $1441 -1 $-1 $517 $1071 $5 $-1 $1442 forward single #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1076 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 5 0 1 367 0 #
+face $1443 -1 $-1 $1409 $1415 $5 $-1 $1444 forward single #
+loop $-1 -1 $-1 $-1 $1445 $1076 #
+cone-surface $-1 -1 $-1 7.325000000000000178 0.2149999999999999689 -0.2399999999999999911 1 0 0 0 0 0.1199999999999999956 1 I I 0 1 0.1199999999999999956 forward I I I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1079 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 13 0 1 367 0 #
+face $1446 -1 $-1 $1289 $1121 $5 $-1 $1447 forward single #
+torus-surface $-1 -1 $-1 0.375 0.375 -0.2399999999999999911 -0 -0 1 0.1599999999999999756 0.1199999999999999956 -0.7071067811865475727 -0.7071067811865475727 0 forward_v I I I I #
+coedge $-1 -1 $-1 $1193 $1301 $1448 $1449 reversed $1080 0 $-1 #
+coedge $-1 -1 $-1 $1356 $1082 $1344 $1450 forward $1264 0 $-1 #
+coedge $-1 -1 $-1 $1082 $1356 $1084 $1267 reversed $1264 0 $-1 #
+loop $-1 -1 $-1 $-1 $1262 $1451 #
+straight-curve $-1 -1 $-1 1.024999999999999689 3.814999999999999503 -0.2399999999999999911 -1 0 0 F -2.75 F 0.6499999999999996891 #
+coedge $-1 -1 $-1 $1085 $1084 $1452 $1453 reversed $1086 0 $-1 #
+edge $-1 -1 $-1 $799 0 $1454 0.1302943725152289067 $1263 $1455 forward @7 tangent #
+coedge $-1 -1 $-1 $1456 $1088 $1085 $1269 forward $1272 0 $-1 #
+edge $-1 -1 $-1 $812 0 $1457 0.1302943725152286847 $1085 $1458 forward @7 tangent #
+face $1459 -1 $-1 $1451 $1086 $5 $-1 $1460 reversed single #
+coedge $-1 -1 $-1 $1088 $1456 $1461 $1462 reversed $1272 0 $-1 #
+loop $-1 -1 $-1 $-1 $1271 $1094 #
+straight-curve $-1 -1 $-1 3.814999999999999503 3.125 -0.2399999999999999911 0 1 0 F -2.75 F 0.6499999999999994671 #
+coedge $-1 -1 $-1 $1345 $1344 $1090 $1275 forward $1346 0 $-1 #
+edge $-1 -1 $-1 $1091 5.497787143782137065 $1192 7.068583470577033623 $1274 $1463 forward @7 tangent #
+point $-1 -1 $-1 0.375 3.814999999999999947 -0.2399999999999999911 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1094 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 22 0 3 308 343 367 0 2 @2 22 0 3 308 344 367 0 #
+plane-surface $-1 -1 $-1 3.814999999999999503 3.774999999999999467 -0.2399999999999999911 1 0 0 0 -1 0 forward_v I I I I #
+coedge $-1 -1 $-1 $1342 $1464 $1349 $1465 forward $1095 0 $-1 #
+coedge $-1 -1 $-1 $1466 $1097 $1456 $1467 forward $934 0 $-1 #
+coedge $-1 -1 $-1 $1097 $1466 $1468 $1469 forward $934 0 $-1 #
+coedge $-1 -1 $-1 $1148 $1147 $1097 $1283 forward $842 0 $-1 #
+edge $-1 -1 $-1 $1470 0.04970562748477166948 $1471 0.06343145750507608871 $1282 $1472 forward @7 tangent #
+coedge $-1 -1 $-1 $1099 $1102 $1119 $1306 forward $1103 0 $-1 #
+ellipse-curve $-1 -1 $-1 3.774999999999999467 0.375 -0.1551471862576143113 -0 -0 1 0.05313708498984778816 -0.05313708498984773265 0 1 F -0.7853981633974488341 F 0.7853981633974477239 #
+intcurve-curve $-1 -1 $-1 forward { off_surf_int_cur 23100 full nubs 3 open 3 
+	1.680649265072318155 3 2.006757161600951633 3 2.140950474475009635 3 
+	4.113096715498361533 0.05803432922684306772 0.2331456187236128907 
+	4.106962259066506249 0.1309340157941078775 0.1788112106039935756 
+	4.099186970733776469 0.2013548696682643246 0.1306517363657497266 
+	4.093909524208299011 0.276733295848048233 0.1034115306025482628 
+	4.091737856363674375 0.307751498215955821 0.09220219316041106117 
+	4.090147186257613754 0.3397577958609608317 0.08485281374238563823 
+	4.090147186257613754 0.375 0.08485281374238566598 
+	0.0005299415489979884819 
+	
+	cone 3.774999999999999467 0.375 -0.1199999999999999956 0 0 1 0.1979898987322334936 -0.197989898732233327 0 1 I I 0.7071067811865472397 0.7071067811865477948 0.2800000000000001377 forward I I I I 
+	null_surface 
+	nullbs 
+	nullbs 
+	I I 
+	0 
+	0 
+	0 
+	
+	0 F -1.41421356237309559 F 1.704346837287954886 F 0.03123397805491193863 F 0.786381369268794761 intcurve forward { ref 16 } F 1.680649265072318155 F 2.140950474475009635 F 1.680649265072318155 F 2.140950474475009635 -0.1199999999999999956 0 1 } F 1.773494866275846515 F 2.140950474475009635 #
+coedge $-1 -1 $-1 $1461 $1473 $1102 $1288 forward $1474 0 $-1 #
+edge $-1 -1 $-1 $1475 5.497787143782137065 $1104 7.068583470577033623 $1287 $1476 forward @7 tangent #
+face $1477 -1 $-1 $943 $1103 $5 $-1 $1478 forward single #
+point $-1 -1 $-1 3.814999999999999503 0.375 -0.2399999999999999911 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1109 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 5 310 311 312 343 367 0 #
+face $1479 -1 $-1 $1480 $1481 $5 $-1 $1482 reversed single #
+loop $-1 -1 $-1 $-1 $1483 $1109 #
+plane-surface $-1 -1 $-1 7.125 0.3398528137423857398 -0.3751471862576143401 0 -0.7071067811865480168 -0.7071067811865470176 -1 0 0 forward_v I I I I #
+coedge $-1 -1 $-1 $1484 $1485 $1327 $1486 reversed $1110 0 $-1 #
+coedge $-1 -1 $-1 $1487 $1112 $1488 $1489 reversed $948 0 $-1 #
+coedge $-1 -1 $-1 $1112 $1487 $1490 $1491 forward $948 0 $-1 #
+coedge $-1 -1 $-1 $1492 $1493 $1112 $1299 reversed $1494 0 $-1 #
+edge $-1 -1 $-1 $1495 -1.274999999999999467 $1496 2.125 $1298 $1497 forward @7 unknown #
+coedge $-1 -1 $-1 $1114 $1113 $1498 $1499 reversed $1115 0 $-1 #
+coedge $-1 -1 $-1 $1261 $1127 $1114 $1302 reversed $1080 0 $-1 #
+edge $-1 -1 $-1 $1500 2.356194490192344837 $1116 3.141592653589792672 $1114 $1501 forward @7 tangent #
+point $-1 -1 $-1 0.2998528137423857043 0.375 -0.1551471862576143113 #
+straight-curve $-1 -1 $-1 3.774999999999999467 0.2998528137423857043 -0.1551471862576143113 0 -0.7071067811865474617 0.7071067811865475727 F 0 F 0.2543502884254438268 #
+coedge $-1 -1 $-1 $1120 $1119 $1502 $1503 reversed $1121 0 $-1 #
+edge $-1 -1 $-1 $1475 2.356194490192345281 $1122 3.141592653589792672 $1284 $1504 forward @7 tangent #
+point $-1 -1 $-1 3.774999999999999467 0.2998528137423857043 -0.1551471862576143113 #
+vertex $-1 -1 $-1 $1499 1 $1505 #
+ellipse-curve $-1 -1 $-1 0.375 0.2149999999999999689 -0.2399999999999999911 1 0 0 0 -0.08485281374238570762 -0.08485281374238569374 1 F 2.356194490192344837 F 3.141592653589793116 #
+straight-curve $-1 -1 $-1 0.2998528137423857043 1.024999999999999689 -0.1551471862576143113 0 -1 0 F -2.75 F 0.6499999999999996891 #
+coedge $-1 -1 $-1 $1201 $1131 $1506 $1321 reversed $1175 0 $-1 #
+straight-curve $-1 -1 $-1 0.375 0.375 1.854999999999999982 0 -0.7071067811865476838 -0.7071067811865473507 F 0 F 0.360624458405139181 #
+coedge $-1 -1 $-1 $1507 $1508 $1133 $1314 reversed $1509 0 $-1 #
+edge $-1 -1 $-1 $1186 -2.762500000000000178 $1316 0.6375000000000001776 $1313 $1510 forward @7 unknown #
+coedge $-1 -1 $-1 $1136 $1134 $1511 $1512 forward $1137 0 $-1 #
+vertex $-1 -1 $-1 $1314 1 $1513 #
+straight-curve $-1 -1 $-1 0.1899999999999999467 0.375 1.849644660940672702 0 0 -1 I I #
+coedge $-1 -1 $-1 $1514 $1506 $1136 $1319 reversed $1515 0 $-1 #
+edge $-1 -1 $-1 $1516 0 $1138 0.1796446609406725514 $1318 $1517 forward @7 tangent #
+face $1518 -1 $-1 $1519 $1137 $5 $-1 $1520 reversed single #
+edge $-1 -1 $-1 $1211 -2.913749999999998508 $1138 4.686250000000000249 $1506 $1521 forward @7 unknown #
+point $-1 -1 $-1 0.375 0.1900000000000000022 1.670000000000000151 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1143 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 7 0 5 310 311 312 343 367 0 #
+face $1522 -1 $-1 $1523 $1524 $5 $-1 $1525 reversed single #
+loop $-1 -1 $-1 $-1 $1526 $1143 #
+cone-surface $-1 -1 $-1 4.575000000000000178 0.375 -0.3751471862576142291 0 0 -1 -0.02485281374238568208 -0.02485281374238568208 0 1 I I -0.7071067811865475727 0.7071067811865474617 0.1199999999999999678 forward I I I I #
+coedge $-1 -1 $-1 $1527 $1528 $1295 $1486 forward $1144 0 $-1 #
+coedge $-1 -1 $-1 $1490 $1146 $1492 $1529 forward $980 0 $-1 #
+coedge $-1 -1 $-1 $1146 $1490 $1530 $1531 forward $980 0 $-1 #
+coedge $-1 -1 $-1 $1532 $1533 $1146 $1331 forward $1534 0 $-1 #
+edge $-1 -1 $-1 $1535 0.04970562748477135723 $1536 0.06343145750507671321 $1330 $1537 forward @7 tangent #
+coedge $-1 -1 $-1 $1473 $1461 $1147 $1333 reversed $1474 0 $-1 #
+edge $-1 -1 $-1 $1339 -0.7853981633974488341 $1470 0.7853981633974478349 $1332 $1538 forward @7 unknown #
+coedge $-1 -1 $-1 $1468 $1539 $1148 $1335 reversed $1351 0 $-1 #
+edge $-1 -1 $-1 $1471 -0.7853981633974477239 $1340 0.7853981633974488341 $1334 $1540 forward @7 unknown #
+coedge $-1 -1 $-1 $1541 $1149 $1539 $1542 reversed $1338 0 $-1 #
+coedge $-1 -1 $-1 $1149 $1541 $1543 $1544 reversed $1338 0 $-1 #
+loop $-1 -1 $-1 $-1 $1337 $1545 #
+vertex $-1 -1 $-1 $1333 0 $1546 #
+vertex $-1 -1 $-1 $1150 1 $1547 #
+straight-curve $-1 -1 $-1 3.774999999999999467 0.2998528137423858153 -0.3351471862576144156 0 0.7071067811865453523 -0.7071067811865496822 F 0.04970562748477135029 F 0.06343145750507581115 #
+coedge $-1 -1 $-1 $1548 $1279 $1151 $1343 forward $1095 0 $-1 #
+edge $-1 -1 $-1 $1352 0.04970562748477131559 $1347 0.0634314575050761581 $1342 $1549 forward @7 tangent #
+coedge $-1 -1 $-1 $1274 $1152 $1262 $1450 reversed $1346 0 $-1 #
+coedge $-1 -1 $-1 $1152 $1274 $1550 $1551 forward $1346 0 $-1 #
+loop $-1 -1 $-1 $-1 $1274 $1552 #
+vertex $-1 -1 $-1 $1343 1 $1553 #
+ellipse-curve $-1 -1 $-1 0.375 3.774999999999999911 -0.3702943725152286758 -0 -0 1 -0.02828427124746206445 0.02828427124746202281 0 1 F -0.7853981633974490562 F 0.7853981633974476129 #
+coedge $-1 -1 $-1 $1554 $1154 $1279 $1465 reversed $1351 0 $-1 #
+coedge $-1 -1 $-1 $1154 $1555 $1156 $1355 forward $1351 0 $-1 #
+loop $-1 -1 $-1 $-1 $1554 $1556 #
+vertex $-1 -1 $-1 $1343 0 $1557 #
+ellipse-curve $-1 -1 $-1 0.375 3.774999999999999911 -0.3800000000000000044 0 0 -1 -0.02142135623730972993 0.02142135623730969524 0 1 F -0.7853981633974476129 F 0.7853981633974490562 #
+coedge $-1 -1 $-1 $1157 $1156 $1558 $1559 reversed $1158 0 $-1 #
+edge $-1 -1 $-1 $1560 -2.124999999999999112 $1160 1.274999999999999911 $1156 $1561 forward @7 unknown #
+coedge $-1 -1 $-1 $1263 $1262 $1157 $1357 forward $1264 0 $-1 #
+edge $-1 -1 $-1 $1159 -0.4249999999999999334 $1454 2.975000000000000089 $1157 $1562 forward @7 unknown #
+face $1563 -1 $-1 $1545 $1158 $5 $-1 $1564 reversed single #
+point $-1 -1 $-1 0.375 3.814999999999999503 -0.3702943725152288423 #
+point $-1 -1 $-1 0.375 3.805294372515229284 -0.3800000000000000044 #
+straight-curve $-1 -1 $-1 2.087499999999999467 0.1199999999999999956 1.600000000000000089 -1 -0 0 I I #
+edge $-1 -1 $-1 $1364 0.06540639836326314627 $1565 0.493439348120249921 $1164 $1566 forward @7 unknown #
+pcurve $-1 -1 $-1 -2 $1567 0 0 #
+vertex $-1 -1 $-1 $1178 0 $1568 #
+intcurve-curve $-1 -1 $-1 forward { int_int_cur 23100 full nubs 3 open 6 
+	-0.1713241957617732958 3 -0.1628850787452536808 2 -0.1307729832177626506 2 -0.09056922580879621376 2 -0.04835024454361407098 2 
+	-0.02444570086154903427 3 
+	4.242343328009920533 0.1200000000000000233 0.1888541231513010676 
+	4.240146688277475207 0.1200000000000000233 0.1905974834890128145 
+	4.237889463657602107 0.1199999999999274147 0.1922656485325401343 
+	4.2267609074046808 0.1199999999999274147 0.1998928161121824032 
+	4.217185447639875129 0.1199999999999999956 0.2047013697519846631 
+	4.194322077552302908 0.1199999999999999956 0.2121521340578421122 
+	4.181046240040074302 0.1199999999999055572 0.2138306640731860997 
+	4.15371791183735084 0.1199999999999055572 0.211872963609323034 
+	4.140182970041086818 0.1199999999993240501 0.208005314966460686 
+	4.120542663931975547 0.1199999999993240363 0.1980974879021790425 
+	4.113864150730068836 0.1200000000000000788 0.1937806807805025344 
+	4.107656671990079111 0.1200000000000000788 0.1888541231513012342 
+	1.014480640232183438e-06 
+	
+	plane 0 0.1199999999999999956 0 0 -1 0 1 0 0 forward_v I I I I 
+	spline reversed { ref 14 } I I I I 
+	nullbs 
+	nubs 3 open 6 
+	-0.1713241957617732958 3 -0.1628850787452536808 3 -0.1307729832177626506 3 -0.09056922580879621376 3 -0.04835024454361407098 3 
+	-0.02444570086154903427 3 
+	0.4051710034076809741 1.773494866274540005 
+	0.4086910116917503166 1.772367169950199051 
+	0.4122290072381253889 1.771284660896885965 
+	0.4157869630070444855 1.770252181590184382 
+	0.4293265891198180806 1.766323132245604555 
+	0.4430213387583362694 1.763156685764918796 
+	0.4569935961187917006 1.760971301338689621 
+	0.4744866072769858278 1.758235239930232563 
+	0.4919542081029278924 1.757115275185054726 
+	0.5096664311202219189 1.757749188425954401 
+	0.5282664839492414721 1.758414876733866761 
+	0.5464648236822731153 1.760988325364961193 
+	0.5645657783618457382 1.765138956413590199 
+	0.5748123296781917357 1.767488537128412585 
+	0.5848845826443630491 1.770308043295597544 
+	0.5948289965923189149 1.773494866274539561 
+	
+	I I 
+	0 
+	0 
+	0 
+	
+	0 } F -0.1713241957617732958 F -0.02444570086154903427 #
+point $-1 -1 $-1 4.1076566719880514 0.1200000000000001205 0.1888541231496925488 #
+coedge $-1 -1 $-1 $1171 $1170 $1569 $1570 forward $1172 0 $-1 #
+face $1571 -1 $-1 $1208 $1172 $5 $-1 $1572 reversed single #
+coedge $-1 -1 $-1 $1237 $1177 $1435 $1573 reversed $852 0 $-1 #
+intcurve-curve $-1 -1 $-1 forward { off_surf_int_cur 23100 full nubs 3 open 3 
+	1.680649265072318155 3 2.006757161600964956 3 2.140950474475009635 3 
+	4.236903284501638112 0.05803432922684291506 0.2331456187236128075 
+	4.243037740933493396 0.1309340157941107641 0.1788112106039912996 
+	4.250813029266224063 0.2013548696682699035 0.1306517363657456188 
+	4.256090475791701522 0.2767332958480575034 0.1034115306025449876 
+	4.258262143636326158 0.3077514982159622603 0.09220219316040971502 
+	4.259852813742385891 0.3397577958609642734 0.08485281374238566598 
+	4.259852813742385891 0.375 0.08485281374238569374 
+	0.0005299415489980347773 
+	
+	cone 4.575000000000000178 0.375 -0.1199999999999999956 0 0 1 -0.197989898732233327 -0.197989898732233327 0 1 I I 0.7071067811865475727 0.7071067811865473507 0.2800000000000000266 forward I I I I 
+	null_surface 
+	nullbs 
+	nullbs 
+	I I 
+	0 
+	0 
+	0 
+	
+	0 F -1.414213562373095145 F 1.704346837287950889 F -0.7863813692687952051 F -0.03123397805491126902 intcurve forward { ref 16 } F 1.680649265072318155 F 2.140950474475009635 F 1.680649265072318155 F 2.140950474475009635 -0.1199999999999999956 0 1 } F 1.773494866274539117 F 2.140950474475009635 #
+coedge $-1 -1 $-1 $1574 $1575 $1179 $1372 reversed $1576 0 $-1 #
+edge $-1 -1 $-1 $1373 -5.912500000000001421 $1184 1.687499999999999556 $1371 $1577 forward @7 unknown #
+vertex $-1 -1 $-1 $1570 1 $1578 #
+straight-curve $-1 -1 $-1 7.975000000000001421 3.95999999999999952 1.849644660940672702 0 0 -1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1181 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 20 0 4 328 334 342 369 0 #
+plane-surface $-1 -1 $-1 0.375 3.959999999999999964 1.849644660940672702 0 1 0 1 -0 0 forward_v I I I I #
+coedge $-1 -1 $-1 $1579 $1182 $1575 $1580 reversed $1379 0 $-1 #
+coedge $-1 -1 $-1 $1182 $1579 $1507 $1581 reversed $1379 0 $-1 #
+loop $-1 -1 $-1 $-1 $1579 $1582 #
+ellipse-curve $-1 -1 $-1 0.3750000000000000555 3.775000000000000355 1.849644660940672702 -0 -0 1 -0.1308147545195114669 0.1308147545195114392 0 1 I I #
+point $-1 -1 $-1 0.375 3.960000000000000853 1.849644660940672702 #
+point $-1 -1 $-1 0.1899999999999998357 3.775000000000000355 1.849644660940672702 #
+point $-1 -1 $-1 0.3349999999999998535 3.774999999999999911 -0.2399999999999999911 #
+coedge $-1 -1 $-1 $1197 $1435 $1195 $1385 forward $1243 0 $-1 #
+edge $-1 -1 $-1 $1565 0.912500000000000977 $1018 4.3125 $1195 $1583 forward @7 unknown #
+coedge $-1 -1 $-1 $1435 $1197 $1584 $1585 reversed $1243 0 $-1 #
+vertex $-1 -1 $-1 $1586 1 $1587 #
+straight-curve $-1 -1 $-1 7.974999999999999645 0.2998528137423857043 -0.1551471862576143113 0 -0.7071067811865474617 0.7071067811865475727 F 0 F 0.2543502884254440488 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1199 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 5 0 5 307 311 312 343 367 0 #
+cone-surface $-1 -1 $-1 7.974999999999999645 0.375 -0.03514718625761432957 0 0 1 0.1379898987322334403 -0.1379898987322333292 0 1 I I 0.7071067811865472397 0.7071067811865477948 0.2800000000000001377 forward I I I I #
+straight-curve $-1 -1 $-1 7.974999999999998757 0.1199999999999999956 1.600000000000000089 -2.46289013126866706e-15 0.7071067811865476838 0.7071067811865473507 F 0 F 0.360624458405139181 #
+coedge $-1 -1 $-1 $1588 $1589 $1204 $1393 reversed $1590 0 $-1 #
+edge $-1 -1 $-1 $1395 -2.762500000000000178 $1397 0.6375000000000001776 $1392 $1591 forward @7 unknown #
+coedge $-1 -1 $-1 $1205 $1209 $1592 $1593 forward $1210 0 $-1 #
+vertex $-1 -1 $-1 $1593 1 $1594 #
+straight-curve $-1 -1 $-1 8.159999999999998366 0.375 1.849644660940672702 0 0 -1 I I #
+vertex $-1 -1 $-1 $1393 1 $1595 #
+straight-curve $-1 -1 $-1 8.160000000000000142 3.775000000000000355 1.849644660940672702 0 0 -1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1208 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 22 0 4 328 334 342 369 0 #
+face $1596 -1 $-1 $1597 $1598 $5 $-1 $1599 reversed single #
+plane-surface $-1 -1 $-1 8.160000000000000142 3.775000000000000355 1.849644660940672702 1 0 0 0 -1 0 forward_v I I I I #
+coedge $-1 -1 $-1 $1506 $1514 $1209 $1403 forward $1515 0 $-1 #
+edge $-1 -1 $-1 $1600 0 $1211 0.1796446609406727735 $1209 $1601 forward @7 tangent #
+face $1602 -1 $-1 $1582 $1210 $5 $-1 $1603 reversed single #
+point $-1 -1 $-1 7.974999999999998757 0.1899999999999999467 1.669999999999999929 #
+coedge $-1 -1 $-1 $1216 $1215 $1604 $1605 reversed $1217 0 $-1 #
+coedge $-1 -1 $-1 $1219 $1436 $1215 $1221 forward $1410 0 $-1 #
+coedge $-1 -1 $-1 $1606 $1223 $1216 $1225 reversed $1415 0 $-1 #
+face $1607 -1 $-1 $1608 $1217 $5 $-1 $1609 forward single #
+loop $-1 -1 $-1 $-1 $1407 $1608 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.1551471862576143113 0 0 1 0.05313708498984765632 0.05313708498984777429 0 1 F -0.7853981633974493892 F 0.7853981633974471688 #
+vertex $-1 -1 $-1 $1605 1 $1610 #
+ellipse-curve $-1 -1 $-1 8.134999999999999787 3.774999999999999467 -0.2399999999999999911 0 1 0 0.08485281374238573537 -0 -0.08485281374238567986 1 F 2.356194490192345281 F 3.141592653589798001 #
+coedge $-1 -1 $-1 $1223 $1606 $1611 $1586 forward $1415 0 $-1 #
+loop $-1 -1 $-1 $-1 $1414 $1255 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 -0.1551471862576143113 0 0 1 0.05313708498984778816 -0.05313708498984773265 0 1 F -0.7853981633974488341 F 0.7853981633974477239 #
+vertex $-1 -1 $-1 $1612 1 $1613 #
+ellipse-curve $-1 -1 $-1 8.134999999999999787 0.375 -0.2399999999999999911 -4.336808689942010957e-17 1 0 0.08485281374238566598 3.679904200040090536e-18 -0.08485281374238574925 1 F 2.356194490192344393 F 3.141592653589797113 #
+coedge $-1 -1 $-1 $1530 $1230 $1614 $1615 forward $1421 0 $-1 #
+coedge $-1 -1 $-1 $1230 $1530 $1616 $1617 reversed $1421 0 $-1 #
+loop $-1 -1 $-1 $-1 $1230 $1618 #
+ellipse-curve $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.2399999999999999911 0 0 1 -0.02828427124746206445 0.02828427124746202281 0 1 F 5.497787143782137065 F 7.068583470577033623 #
+coedge $-1 -1 $-1 $1619 $1614 $1232 $1424 forward $1620 0 $-1 #
+edge $-1 -1 $-1 $1059 -2.75 $1433 0.6499999999999996891 $1423 $1621 forward @7 tangent #
+coedge $-1 -1 $-1 $1616 $1622 $1233 $1426 forward $1623 0 $-1 #
+edge $-1 -1 $-1 $1437 -2.75 $1067 0.6499999999999994671 $1425 $1624 forward @7 tangent #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1235 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 8 0 1 367 0 #
+loop $-1 -1 $-1 $-1 $1239 $1235 #
+torus-surface $-1 -1 $-1 4.575000000000000178 0.375 -0.2399999999999999911 0 0 1 0.1599999999999999756 0.1199999999999999956 -0.7071067811865475727 -0.7071067811865475727 0 forward_v I I I I #
+coedge $-1 -1 $-1 $1625 $1239 $1237 $1431 forward $1428 0 $-1 #
+edge $-1 -1 $-1 $1054 -0.785398163397448279 $1626 0.785398163397448279 $1237 $1627 forward @7 tangent #
+coedge $-1 -1 $-1 $1239 $1625 $1628 $1629 reversed $1428 0 $-1 #
+vertex $-1 -1 $-1 $1240 1 $1630 #
+ellipse-curve $-1 -1 $-1 4.415000000000000036 0.375 -0.2399999999999999911 -0 1 -0 -0.08485281374238570762 0 -0.08485281374238569374 1 F -3.141592653589790007 F -2.356194490192344837 #
+coedge $-1 -1 $-1 $1384 $1386 $1369 $1573 forward $1243 0 $-1 #
+coedge $-1 -1 $-1 $1407 $1246 $1631 $1632 reversed $1410 0 $-1 #
+vertex $-1 -1 $-1 $1632 1 $1633 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 3.934999999999999609 -0.2399999999999999911 -1 0 0 0 0.08485281374238566598 -0.08485281374238574925 1 F 2.356194490192344393 F 3.141592653589793116 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1248 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 1 367 0 #
+cone-surface $-1 -1 $-1 5.224999999999999645 3.934999999999999609 -0.2399999999999999911 -1 0 0 0 0 -0.1199999999999999956 1 I I 0 1 0.1199999999999999956 forward I I I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1253 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 19 0 1 367 0 #
+spline-surface $-1 -1 $-1 reversed { ref 14 } F 0.3749999999999995559 F 0.6250000000000004441 F 1.757115275185054726 F 2.140950474475009635 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1255 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 1 367 0 #
+torus-surface $-1 -1 $-1 7.974999999999999645 0.375 -0.2399999999999999911 0 0 1 0.1600000000000002531 0.1199999999999999956 0.7071067811865479058 -0.7071067811865472397 0 forward_v I I I I #
+coedge $-1 -1 $-1 $1634 $1611 $1635 $1636 reversed $1256 0 $-1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1259 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 12 0 1 367 0 #
+cone-surface $-1 -1 $-1 3.125 0.2149999999999999689 -0.2399999999999999911 1 0 -0 0 -0 0.1199999999999999956 1 I I 0 1 0.1199999999999999956 forward I I I I #
+coedge $-1 -1 $-1 $1637 $1550 $1261 $1449 forward $1638 0 $-1 #
+edge $-1 -1 $-1 $1192 -2.75 $1500 0.6499999999999996891 $1448 $1639 forward @7 tangent #
+edge $-1 -1 $-1 $1091 0 $1159 0.1302943725152288512 $1344 $1640 forward @7 tangent #
+face $1641 -1 $-1 $1552 $1264 $5 $-1 $1642 reversed single #
+coedge $-1 -1 $-1 $1558 $1643 $1266 $1453 forward $1644 0 $-1 #
+edge $-1 -1 $-1 $1457 -0.7853981633974495002 $1454 0.7853981633974470578 $1266 $1645 forward @7 unknown #
+vertex $-1 -1 $-1 $1453 1 $1646 #
+straight-curve $-1 -1 $-1 3.774999999999999911 3.814999999999999503 -0.2399999999999999911 0 0 -1 F 0 F 0.1302943725152289067 #
+coedge $-1 -1 $-1 $1271 $1268 $1280 $1467 reversed $1272 0 $-1 #
+vertex $-1 -1 $-1 $1453 0 $1647 #
+straight-curve $-1 -1 $-1 3.814999999999999503 3.774999999999999467 -0.2399999999999999911 0 0 -1 F 0 F 0.1302943725152286847 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1270 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 21 0 3 308 343 367 0 2 @2 21 0 3 308 344 367 0 #
+cone-surface $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.2399999999999999911 0 0 -1 0.02828427124746200894 0.02828427124746207486 0 1 I I 0 1 0.1600000000000001976 forward I I I I #
+coedge $-1 -1 $-1 $1332 $1287 $1271 $1462 forward $1474 0 $-1 #
+edge $-1 -1 $-1 $1104 0 $1470 0.1302943725152286847 $1461 $1648 forward @7 tangent #
+ellipse-curve $-1 -1 $-1 0.375 3.774999999999999911 -0.2399999999999999911 -0 -0 1 -0.02828427124746206445 0.02828427124746202281 0 1 F 5.497787143782137065 F 7.068583470577033623 #
+coedge $-1 -1 $-1 $1279 $1548 $1649 $1650 forward $1095 0 $-1 #
+edge $-1 -1 $-1 $1651 -1.274999999999999911 $1352 2.125 $1349 $1652 forward @7 unknown #
+coedge $-1 -1 $-1 $1281 $1280 $1643 $1653 forward $934 0 $-1 #
+edge $-1 -1 $-1 $1470 -2.974999999999999645 $1457 0.4249999999999998224 $1456 $1654 forward @7 unknown #
+coedge $-1 -1 $-1 $1555 $1334 $1281 $1469 reversed $1351 0 $-1 #
+edge $-1 -1 $-1 $1655 -1.274999999999999023 $1471 2.125 $1468 $1656 forward @7 unknown #
+vertex $-1 -1 $-1 $1283 0 $1657 #
+vertex $-1 -1 $-1 $1283 1 $1658 #
+straight-curve $-1 -1 $-1 3.850147186257613985 0.375 -0.3351471862576141936 -0.7071067811865475727 0 -0.7071067811865475727 F 0.04970562748477166948 F 0.06343145750507608871 #
+coedge $-1 -1 $-1 $1287 $1332 $1659 $1660 reversed $1474 0 $-1 #
+loop $-1 -1 $-1 $-1 $1473 $1661 #
+vertex $-1 -1 $-1 $1503 1 $1662 #
+ellipse-curve $-1 -1 $-1 3.774999999999999467 0.375 -0.2399999999999999911 -0 -0 1 0.0282842712474620922 -0.02828427124746206445 0 1 F 5.497787143782137065 F 7.068583470577033623 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1289 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 11 0 1 367 0 #
+torus-surface $-1 -1 $-1 3.774999999999999467 0.375 -0.2399999999999999911 -0 -0 1 0.1600000000000002531 0.1199999999999999956 0.7071067811865479058 -0.7071067811865472397 0 forward_v I I I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1292 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 22 0 5 308 311 312 343 367 0 #
+face $1663 -1 $-1 $1664 $1665 $5 $-1 $1666 reversed single #
+loop $-1 -1 $-1 $-1 $1667 $1292 #
+plane-surface $-1 -1 $-1 8.015000000000000568 3.774999999999999467 -0.2399999999999999911 1 0 0 0 -1 0 forward_v I I I I #
+coedge $-1 -1 $-1 $1668 $1669 $1670 $1671 reversed $1293 0 $-1 #
+coedge $-1 -1 $-1 $1672 $1295 $1673 $1674 forward $1110 0 $-1 #
+coedge $-1 -1 $-1 $1295 $1672 $1675 $1676 forward $1110 0 $-1 #
+edge $-1 -1 $-1 $1677 0.04970562748477261317 $1678 0.06343145750507638014 $1327 $1679 forward @7 tangent #
+coedge $-1 -1 $-1 $1297 $1296 $1680 $1681 forward $948 0 $-1 #
+coedge $-1 -1 $-1 $1682 $1683 $1296 $1489 forward $1524 0 $-1 #
+edge $-1 -1 $-1 $1684 0.04970562748477166948 $1496 0.06343145750507572789 $1488 $1685 forward @7 tangent #
+coedge $-1 -1 $-1 $1329 $1328 $1297 $1491 reversed $980 0 $-1 #
+edge $-1 -1 $-1 $1686 0.04970562748477119763 $1495 0.06343145750507667158 $1297 $1687 forward @7 tangent #
+coedge $-1 -1 $-1 $1688 $1298 $1328 $1529 reversed $1494 0 $-1 #
+coedge $-1 -1 $-1 $1298 $1675 $1682 $1689 reversed $1494 0 $-1 #
+loop $-1 -1 $-1 $-1 $1688 $1690 #
+vertex $-1 -1 $-1 $1299 0 $1691 #
+vertex $-1 -1 $-1 $1489 1 $1692 #
+straight-curve $-1 -1 $-1 5.849999999999999645 3.805294372515227952 -0.3800000000000000044 1 0 0 F -1.274999999999999467 F 2.125 #
+coedge $-1 -1 $-1 $1693 $1694 $1300 $1499 forward $1695 0 $-1 #
+edge $-1 -1 $-1 $1500 5.497787143782137953 $1308 7.068583470577034511 $1498 $1696 forward @7 tangent #
+vertex $-1 -1 $-1 $1449 1 $1697 #
+ellipse-curve $-1 -1 $-1 0.2149999999999999689 0.375 -0.2399999999999999911 0 -1 0 -0.08485281374238569374 0 -0.08485281374238570762 1 F 2.356194490192344837 F 3.141592653589792672 #
+coedge $-1 -1 $-1 $1659 $1698 $1305 $1503 forward $1699 0 $-1 #
+edge $-1 -1 $-1 $1308 -2.75 $1475 0.6499999999999994671 $1502 $1700 forward @7 tangent #
+ellipse-curve $-1 -1 $-1 3.774999999999999467 0.2149999999999998579 -0.2399999999999999911 1 0 0 0 -0.08485281374238573537 -0.08485281374238566598 1 F 2.356194490192345281 F 3.141592653589792672 #
+point $-1 -1 $-1 0.375 0.3349999999999999645 -0.2399999999999999911 #
+coedge $-1 -1 $-1 $1318 $1402 $1311 $1321 forward $1515 0 $-1 #
+coedge $-1 -1 $-1 $1701 $1313 $1378 $1581 forward $1509 0 $-1 #
+coedge $-1 -1 $-1 $1313 $1701 $1702 $1703 reversed $1509 0 $-1 #
+loop $-1 -1 $-1 $-1 $1701 $1704 #
+straight-curve $-1 -1 $-1 0.1899999999999999467 1.012500000000000178 1.849644660940672702 0 -1 -0 F -3.026501000000000552 F 0.9015010000000002188 #
+coedge $-1 -1 $-1 $1702 $1705 $1315 $1512 reversed $1706 0 $-1 #
+edge $-1 -1 $-1 $1316 -0.785398163397448057 $1516 0.785398163397448279 $1511 $1707 forward @7 unknown #
+point $-1 -1 $-1 0.1899999999999999467 0.375 1.849644660940672702 #
+coedge $-1 -1 $-1 $1402 $1318 $1708 $1709 forward $1515 0 $-1 #
+loop $-1 -1 $-1 $-1 $1506 $1519 #
+vertex $-1 -1 $-1 $1512 1 $1710 #
+straight-curve $-1 -1 $-1 0.375 0.1900000000000000022 1.849644660940672702 0 0 -1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1320 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 25 0 4 328 334 342 369 0 #
+face $1711 -1 $-1 $1404 $1515 $5 $-1 $1712 reversed single #
+cone-surface $-1 -1 $-1 0.375 0.3750000000000000555 1.849644660940672702 0 0 -1 -0.1308147545195113282 -0.1308147545195113282 0 1 I I 0 1 0.1850000000000000533 forward I I I I #
+straight-curve $-1 -1 $-1 5.061250000000000249 0.1899999999999999467 1.669999999999999929 -1 0 0 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1324 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 3 0 5 310 311 312 343 367 0 #
+face $1713 -1 $-1 $1714 $1715 $5 $-1 $1716 reversed single #
+loop $-1 -1 $-1 $-1 $1488 $1324 #
+cone-surface $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.3751471862576144511 0 0 -1 0.02485281374238580698 0.02485281374238586249 0 1 I I -0.7071067811865459074 0.707106781186548905 0.1200000000000003425 forward I I I I #
+coedge $-1 -1 $-1 $1717 $1718 $1719 $1720 reversed $1325 0 $-1 #
+coedge $-1 -1 $-1 $1721 $1327 $1722 $1723 forward $1144 0 $-1 #
+coedge $-1 -1 $-1 $1327 $1721 $1724 $1725 forward $1144 0 $-1 #
+edge $-1 -1 $-1 $1535 -0.7853981633974475018 $1495 0.7853981633974490562 $1492 $1726 forward @7 unknown #
+coedge $-1 -1 $-1 $1420 $1419 $1329 $1531 reversed $1421 0 $-1 #
+edge $-1 -1 $-1 $1686 -0.7853981633974490562 $1536 0.7853981633974475018 $1530 $1727 forward @7 unknown #
+coedge $-1 -1 $-1 $1719 $1330 $1728 $1729 reversed $1534 0 $-1 #
+coedge $-1 -1 $-1 $1330 $1719 $1688 $1730 reversed $1534 0 $-1 #
+loop $-1 -1 $-1 $-1 $1533 $1731 #
+vertex $-1 -1 $-1 $1331 0 $1732 #
+vertex $-1 -1 $-1 $1331 1 $1733 #
+straight-curve $-1 -1 $-1 4.579852813742386175 3.774999999999999911 -0.4151471862576144312 -0.7071067811865464625 0 0.707106781186548683 F 0.04970562748477135723 F 0.06343145750507671321 #
+ellipse-curve $-1 -1 $-1 3.774999999999999467 0.375 -0.3702943725152286758 -0 -0 1 0.02828427124746209914 -0.02828427124746207139 0 1 F -0.7853981633974488341 F 0.7853981633974478349 #
+coedge $-1 -1 $-1 $1334 $1554 $1336 $1542 forward $1351 0 $-1 #
+ellipse-curve $-1 -1 $-1 3.774999999999999467 0.375 -0.3800000000000000044 0 0 -1 0.02142135623730975075 -0.02142135623730972646 0 1 F -0.7853981633974477239 F 0.7853981633974489451 #
+coedge $-1 -1 $-1 $1337 $1336 $1734 $1735 reversed $1338 0 $-1 #
+edge $-1 -1 $-1 $1736 -2.124999999999999556 $1340 1.274999999999999467 $1336 $1737 forward @7 unknown #
+coedge $-1 -1 $-1 $1698 $1659 $1337 $1544 forward $1699 0 $-1 #
+edge $-1 -1 $-1 $1339 -0.4249999999999998224 $1738 2.974999999999999645 $1337 $1739 forward @7 unknown #
+face $1740 -1 $-1 $1690 $1338 $5 $-1 $1741 reversed single #
+point $-1 -1 $-1 3.774999999999999467 0.3349999999999999645 -0.3702943725152287868 #
+point $-1 -1 $-1 3.774999999999999467 0.3447056274847712931 -0.3799999999999999489 #
+coedge $-1 -1 $-1 $1464 $1342 $1742 $1743 forward $1095 0 $-1 #
+straight-curve $-1 -1 $-1 0.3798528137423854423 3.774999999999999911 -0.4151471862576144312 -0.7071067811865464625 0 0.707106781186548683 F 0.04970562748477131559 F 0.0634314575050761581 #
+coedge $-1 -1 $-1 $1448 $1742 $1345 $1551 reversed $1638 0 $-1 #
+edge $-1 -1 $-1 $1192 0 $1347 0.1302943725152285737 $1550 $1744 forward @7 tangent #
+face $1745 -1 $-1 $1746 $1346 $5 $-1 $1747 reversed single #
+point $-1 -1 $-1 0.3349999999999999645 3.774999999999999911 -0.3702943725152285648 #
+coedge $-1 -1 $-1 $1539 $1349 $1748 $1749 reversed $1351 0 $-1 #
+coedge $-1 -1 $-1 $1350 $1468 $1750 $1751 reversed $1351 0 $-1 #
+face $1752 -1 $-1 $1358 $1351 $5 $-1 $1753 reversed single #
+point $-1 -1 $-1 0.3447056274847714041 3.774999999999999911 -0.3800000000000000044 #
+coedge $-1 -1 $-1 $1750 $1452 $1354 $1559 forward $1644 0 $-1 #
+edge $-1 -1 $-1 $1454 0.04970562748477182907 $1560 0.06343145750507604708 $1354 $1754 forward @7 tangent #
+vertex $-1 -1 $-1 $1751 0 $1755 #
+straight-curve $-1 -1 $-1 1.649999999999999911 3.805294372515227952 -0.38000000000000006 -1 0 0 F -2.124999999999999112 F 1.274999999999999911 #
+straight-curve $-1 -1 $-1 0.7999999999999999334 3.814999999999999503 -0.3702943725152288978 1 -0 0 F -0.4249999999999999334 F 2.975000000000000089 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1358 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 2 0 3 310 343 367 0 1 @1 2 0 3 310 344 367 0 #
+plane-surface $-1 -1 $-1 1.224999999999999867 3.810147186257613949 -0.3751471862576142291 0 0.7071067811865475727 -0.7071067811865475727 -1 0 0 forward_v I I I I #
+vertex $-1 -1 $-1 $1573 1 $1756 #
+intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2 
+	0.06540639836326314627 2 0.493439348120249921 2 
+	4.24234332800992231 0.1200000000000000372 0.1888541231513023166 1.118418387818710613 
+	4.449170969893510019 0.1200000000000000372 0.02470562748477065501 1.478392301321125979 
+	4.575000000000001066 0.1200000000000000233 0.02470562748477053358 1.478392301321126201 
+	0 
+	
+	null_surface 
+	null_surface 
+	nullbs 
+	nullbs 
+	I I 
+	0 
+	0 
+	0 
+	
+	0 F 1 F 0 UNEXTENDED UNEXTENDED } F 0.06540639836326314627 F 0.493439348120249921 #
+intcurve-curve $-1 -1 $-1 forward { ref 21 } I I #
+point $-1 -1 $-1 4.24234332800992231 0.1200000000000000372 0.1888541231513023166 #
+coedge $-1 -1 $-1 $1757 $1758 $1367 $1570 reversed $1759 0 $-1 #
+edge $-1 -1 $-1 $1397 -0.7853981633974513876 $1373 0.7853981633974452814 $1569 $1760 forward @7 unknown #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1368 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 21 0 4 328 334 342 369 0 #
+cone-surface $-1 -1 $-1 7.975000000000001421 3.775000000000000355 1.849644660940672702 0 0 -1 0.13081475451951044 0.1308147545195112449 0 1 I I 0 1 0.1849999999999993872 forward I I I I #
+edge $-1 -1 $-1 $1626 -7.850462293418874601e-17 $1565 0.2543502884254433272 $1435 $1761 forward @7 tangent #
+coedge $-1 -1 $-1 $1762 $1371 $1758 $1763 forward $1576 0 $-1 #
+coedge $-1 -1 $-1 $1371 $1762 $1377 $1580 forward $1576 0 $-1 #
+loop $-1 -1 $-1 $-1 $1762 $1764 #
+straight-curve $-1 -1 $-1 2.062499999999999556 3.959999999999999964 1.849644660940672702 -1 0 -0 F -6.176501000000000019 F 1.951500999999999708 #
+point $-1 -1 $-1 7.975000000000001421 3.95999999999999952 1.849644660940672702 #
+coedge $-1 -1 $-1 $1378 $1377 $1765 $1766 reversed $1379 0 $-1 #
+edge $-1 -1 $-1 $1767 0.155060966544098594 $1184 0.3394112549695423309 $1377 $1768 forward @7 tangent #
+edge $-1 -1 $-1 $1186 0 $1769 0.1843502884254438479 $1378 $1770 forward @7 tangent #
+face $1771 -1 $-1 $1772 $1379 $5 $-1 $1773 reversed single #
+straight-curve $-1 -1 $-1 3.662500000000000089 0.1199999999999999956 0.02470562748477142523 1 0 0 F 0.912500000000000977 F 4.3125 #
+coedge $-1 -1 $-1 $1611 $1634 $1386 $1585 forward $1256 0 $-1 #
+edge $-1 -1 $-1 $1626 -2.75 $1387 0.6499999999999994671 $1386 $1774 forward @7 tangent #
+edge $-1 -1 $-1 $1775 2.356194490192345281 $1387 3.141592653589792672 $1414 $1776 forward @7 tangent #
+point $-1 -1 $-1 7.974999999999999645 0.2998528137423857043 -0.1551471862576143113 #
+coedge $-1 -1 $-1 $1777 $1392 $1778 $1779 forward $1590 0 $-1 #
+coedge $-1 -1 $-1 $1392 $1777 $1757 $1780 reversed $1590 0 $-1 #
+loop $-1 -1 $-1 $-1 $1777 $1772 #
+straight-curve $-1 -1 $-1 8.160000000000000142 3.137500000000000178 1.849644660940672702 -0 1 -0 F -3.026501000000000552 F 0.9015010000000005519 #
+coedge $-1 -1 $-1 $1781 $1778 $1394 $1593 reversed $1598 0 $-1 #
+edge $-1 -1 $-1 $1600 -0.7853981633974442822 $1395 0.7853981633974476129 $1592 $1782 forward @7 unknown #
+point $-1 -1 $-1 8.159999999999998366 0.375 1.849644660940672702 #
+point $-1 -1 $-1 8.160000000000000142 3.775000000000000355 1.849644660940672702 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1400 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 5 0 4 327 334 342 369 0 #
+face $1783 -1 $-1 $1784 $1785 $5 $-1 $1786 reversed single #
+loop $-1 -1 $-1 $-1 $1787 $1400 #
+cone-surface $-1 -1 $-1 7.974999999999999645 0.375 1.969644660940672587 0 0 1 0.2156675682618969803 -0.215667568261896675 0 1 I I 0.7071067811865485719 0.7071067811865465735 0.3049999999999997713 forward I I I I #
+vertex $-1 -1 $-1 $1709 1 $1788 #
+straight-curve $-1 -1 $-1 7.975000000000000533 0.1899999999999999467 1.849644660940672702 0 0 -1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1404 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 23 0 4 328 334 342 369 0 #
+cone-surface $-1 -1 $-1 7.974999999999999645 0.375 1.849644660940672702 0 0 -1 0.1308147545195109951 -0.1308147545195108008 0 1 I I 0 1 0.1849999999999994427 forward I I I I #
+coedge $-1 -1 $-1 $1789 $1667 $1406 $1605 forward $1481 0 $-1 #
+edge $-1 -1 $-1 $1417 -2.75 $1412 0.6499999999999994671 $1604 $1790 forward @7 tangent #
+coedge $-1 -1 $-1 $1414 $1408 $1791 $1612 reversed $1415 0 $-1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1409 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 3 0 1 367 0 #
+face $1792 -1 $-1 $1248 $1410 $5 $-1 $1793 forward single #
+cone-surface $-1 -1 $-1 8.134999999999999787 3.125 -0.2399999999999999911 0 1 0 0 0 -0.1199999999999999956 1 I I 0 1 0.1199999999999999956 forward I I I I #
+point $-1 -1 $-1 8.015000000000000568 3.774999999999999467 -0.2399999999999999911 #
+coedge $-1 -1 $-1 $1445 $1584 $1414 $1586 reversed $1256 0 $-1 #
+edge $-1 -1 $-1 $1775 5.497787143782137065 $1417 7.068583470577033623 $1791 $1794 forward @7 tangent #
+point $-1 -1 $-1 8.015000000000000568 0.375 -0.2399999999999999911 #
+coedge $-1 -1 $-1 $1423 $1728 $1419 $1615 reversed $1620 0 $-1 #
+edge $-1 -1 $-1 $1059 0 $1536 0.1302943725152283516 $1614 $1795 forward @7 tangent #
+coedge $-1 -1 $-1 $1680 $1425 $1420 $1617 forward $1623 0 $-1 #
+edge $-1 -1 $-1 $1067 0 $1686 0.1302943725152282406 $1420 $1796 forward @7 tangent #
+face $1797 -1 $-1 $1798 $1421 $5 $-1 $1799 reversed single #
+coedge $-1 -1 $-1 $1728 $1423 $1800 $1801 forward $1620 0 $-1 #
+loop $-1 -1 $-1 $-1 $1619 $1798 #
+straight-curve $-1 -1 $-1 4.535000000000000142 1.024999999999999689 -0.2399999999999999911 0 -1 0 F -2.75 F 0.6499999999999996891 #
+coedge $-1 -1 $-1 $1425 $1680 $1802 $1803 reversed $1623 0 $-1 #
+loop $-1 -1 $-1 $-1 $1425 $1664 #
+straight-curve $-1 -1 $-1 5.224999999999999645 3.814999999999999503 -0.2399999999999999911 -1 0 0 F -2.75 F 0.6499999999999994671 #
+coedge $-1 -1 $-1 $1432 $1430 $1634 $1804 reversed $1428 0 $-1 #
+vertex $-1 -1 $-1 $1804 1 $1805 #
+ellipse-curve $-1 -1 $-1 4.575000000000000178 0.375 -0.1551471862576142835 0 0 1 -0.05313708498984760081 -0.05313708498984760081 0 1 F -0.785398163397448279 F 0.785398163397448279 #
+coedge $-1 -1 $-1 $1806 $1800 $1432 $1629 forward $1807 0 $-1 #
+edge $-1 -1 $-1 $1433 5.497787143782137953 $1808 7.068583470577034511 $1628 $1809 forward @7 tangent #
+point $-1 -1 $-1 4.535000000000000142 0.375 -0.2399999999999999911 #
+coedge $-1 -1 $-1 $1802 $1810 $1436 $1632 forward $1665 0 $-1 #
+edge $-1 -1 $-1 $1412 5.497787143782137065 $1437 7.068583470577033623 $1631 $1811 forward @7 tangent #
+point $-1 -1 $-1 7.974999999999999645 3.814999999999999503 -0.2399999999999999911 #
+coedge $-1 -1 $-1 $1584 $1445 $1625 $1804 forward $1256 0 $-1 #
+coedge $-1 -1 $-1 $1812 $1813 $1445 $1636 forward $1814 0 $-1 #
+edge $-1 -1 $-1 $1808 -2.75 $1775 0.6499999999999994671 $1635 $1815 forward @7 tangent #
+coedge $-1 -1 $-1 $1742 $1448 $1694 $1816 forward $1638 0 $-1 #
+loop $-1 -1 $-1 $-1 $1448 $1746 #
+straight-curve $-1 -1 $-1 0.3349999999999999645 1.024999999999999689 -0.2399999999999999911 0 -1 0 F -2.75 F 0.6499999999999996891 #
+straight-curve $-1 -1 $-1 0.375 3.814999999999999947 -0.2399999999999999911 0 0 -1 F 0 F 0.1302943725152288512 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1451 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 20 0 3 308 343 367 0 2 @2 20 0 3 308 344 367 0 #
+plane-surface $-1 -1 $-1 0.375 3.814999999999999503 -0.2399999999999999911 0 1 0 1 -0 0 forward_v I I I I #
+coedge $-1 -1 $-1 $1452 $1750 $1466 $1653 reversed $1644 0 $-1 #
+loop $-1 -1 $-1 $-1 $1558 $1714 #
+ellipse-curve $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.3702943725152286758 -0 -0 1 0.02828427124746200894 0.02828427124746207486 0 1 F -0.7853981633974495002 F 0.7853981633974470578 #
+point $-1 -1 $-1 3.774999999999999911 3.814999999999999503 -0.3702943725152288978 #
+point $-1 -1 $-1 3.814999999999999503 3.774999999999999467 -0.3702943725152286758 #
+straight-curve $-1 -1 $-1 3.814999999999999503 0.375 -0.2399999999999999911 0 0 -1 F 0 F 0.1302943725152286847 #
+coedge $-1 -1 $-1 $1817 $1748 $1464 $1650 reversed $1715 0 $-1 #
+edge $-1 -1 $-1 $1818 0.04970562748477139886 $1651 0.06343145750507611647 $1464 $1819 forward @7 tangent #
+vertex $-1 -1 $-1 $1465 0 $1820 #
+straight-curve $-1 -1 $-1 0.3447056274847712931 1.649999999999999911 -0.3800000000000000044 0 1 0 F -1.274999999999999911 F 2.125 #
+edge $-1 -1 $-1 $1457 0.049705627484771156 $1655 0.06343145750507599157 $1466 $1821 forward @7 tangent #
+straight-curve $-1 -1 $-1 3.814999999999999503 3.349999999999999645 -0.3702943725152286758 -0 1 0 F -2.974999999999999645 F 0.4249999999999998224 #
+vertex $-1 -1 $-1 $1469 0 $1822 #
+straight-curve $-1 -1 $-1 3.805294372515227952 2.5 -0.3800000000000000044 0 -1 0 F -1.274999999999999023 F 2.125 #
+point $-1 -1 $-1 3.814999999999999503 0.375 -0.3702943725152286758 #
+point $-1 -1 $-1 3.805294372515228396 0.375 -0.3800000000000000044 #
+coedge $-1 -1 $-1 $1543 $1502 $1473 $1660 forward $1699 0 $-1 #
+edge $-1 -1 $-1 $1475 0 $1339 0.1302943725152287957 $1473 $1823 forward @7 tangent #
+face $1824 -1 $-1 $698 $1474 $5 $-1 $1825 reversed single #
+point $-1 -1 $-1 3.774999999999999467 0.3349999999999999645 -0.2399999999999999911 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1480 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 21 0 5 308 311 312 343 367 0 #
+face $1826 -1 $-1 $1618 $1623 $5 $-1 $1827 reversed single #
+loop $-1 -1 $-1 $-1 $1631 $1480 #
+cone-surface $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.2399999999999999911 0 0 -1 0.02828427124746200894 0.02828427124746207486 0 1 I I 0 1 0.1600000000000001976 forward I I I I #
+coedge $-1 -1 $-1 $1604 $1673 $1828 $1829 reversed $1481 0 $-1 #
+coedge $-1 -1 $-1 $1830 $1483 $1831 $1832 forward $1293 0 $-1 #
+coedge $-1 -1 $-1 $1483 $1830 $1833 $1834 forward $1293 0 $-1 #
+coedge $-1 -1 $-1 $1718 $1717 $1483 $1671 forward $1325 0 $-1 #
+edge $-1 -1 $-1 $1835 0.04970562748477135029 $1836 0.06343145750507608871 $1670 $1837 forward @7 tangent #
+coedge $-1 -1 $-1 $1485 $1484 $1838 $1839 forward $1110 0 $-1 #
+coedge $-1 -1 $-1 $1667 $1789 $1484 $1674 reversed $1481 0 $-1 #
+edge $-1 -1 $-1 $1677 -2.974999999999999645 $1840 0.4249999999999998224 $1673 $1841 forward @7 unknown #
+coedge $-1 -1 $-1 $1493 $1722 $1485 $1676 reversed $1494 0 $-1 #
+edge $-1 -1 $-1 $1842 -1.274999999999996803 $1678 2.125 $1675 $1843 forward @7 unknown #
+vertex $-1 -1 $-1 $1486 0 $1844 #
+vertex $-1 -1 $-1 $1486 1 $1845 #
+straight-curve $-1 -1 $-1 8.050147186257614607 0.375 -0.3351471862576141936 -0.7071067811865475727 0 -0.7071067811865475727 F 0.04970562748477261317 F 0.06343145750507638014 #
+coedge $-1 -1 $-1 $1622 $1616 $1487 $1681 reversed $1623 0 $-1 #
+edge $-1 -1 $-1 $1684 -2.974999999999999645 $1686 0.4249999999999998224 $1680 $1846 forward @7 unknown #
+coedge $-1 -1 $-1 $1838 $1488 $1493 $1689 forward $1524 0 $-1 #
+coedge $-1 -1 $-1 $1488 $1838 $1847 $1848 forward $1524 0 $-1 #
+vertex $-1 -1 $-1 $1681 0 $1849 #
+straight-curve $-1 -1 $-1 7.974999999999999645 3.850147186257613985 -0.3351471862576141936 -3.925231146709433849e-15 -0.7071067811865475727 -0.7071067811865475727 F 0.04970562748477166948 F 0.06343145750507572789 #
+vertex $-1 -1 $-1 $1531 0 $1850 #
+straight-curve $-1 -1 $-1 4.575000000000000178 3.850147186257614429 -0.3351471862576144156 0 -0.7071067811865457964 -0.7071067811865492381 F 0.04970562748477119763 F 0.06343145750507667158 #
+coedge $-1 -1 $-1 $1851 $1492 $1533 $1730 forward $1494 0 $-1 #
+edge $-1 -1 $-1 $1496 -0.7853981633974471688 $1842 0.7853981633974495002 $1493 $1852 forward @7 unknown #
+face $1853 -1 $-1 $1731 $1494 $5 $-1 $1854 reversed single #
+point $-1 -1 $-1 4.575000000000000178 3.805294372515227952 -0.3800000000000000044 #
+point $-1 -1 $-1 7.974999999999999645 3.805294372515228396 -0.3800000000000000044 #
+coedge $-1 -1 $-1 $1855 $1498 $1698 $1856 forward $1695 0 $-1 #
+coedge $-1 -1 $-1 $1498 $1855 $1637 $1816 reversed $1695 0 $-1 #
+loop $-1 -1 $-1 $-1 $1498 $1857 #
+ellipse-curve $-1 -1 $-1 0.375 0.375 -0.2399999999999999911 -0 -0 1 -0.02828427124746188404 -0.02828427124746188404 0 1 F 5.497787143782137953 F 7.068583470577034511 #
+point $-1 -1 $-1 0.3349999999999999645 0.375 -0.2399999999999999911 #
+coedge $-1 -1 $-1 $1502 $1543 $1693 $1856 reversed $1699 0 $-1 #
+loop $-1 -1 $-1 $-1 $1659 $1858 #
+straight-curve $-1 -1 $-1 3.125 0.3349999999999999645 -0.2399999999999999911 1 0 0 F -2.75 F 0.6499999999999994671 #
+coedge $-1 -1 $-1 $1508 $1507 $1859 $1860 reversed $1509 0 $-1 #
+coedge $-1 -1 $-1 $1861 $1511 $1508 $1703 forward $1706 0 $-1 #
+edge $-1 -1 $-1 $1316 0 $1862 0.1843502884254438756 $1508 $1863 forward @7 tangent #
+face $1864 -1 $-1 $1320 $1509 $5 $-1 $1865 reversed single #
+coedge $-1 -1 $-1 $1511 $1861 $1866 $1867 reversed $1706 0 $-1 #
+loop $-1 -1 $-1 $-1 $1861 $1784 #
+ellipse-curve $-1 -1 $-1 0.375 0.3750000000000000555 1.849644660940672702 -0 -0 1 -0.1308147545195113282 -0.1308147545195113282 0 1 I I #
+coedge $-1 -1 $-1 $1866 $1868 $1514 $1709 reversed $1785 0 $-1 #
+edge $-1 -1 $-1 $1516 -5.912499999999999645 $1600 1.687500000000000888 $1708 $1869 forward @7 unknown #
+point $-1 -1 $-1 0.375 0.1900000000000000022 1.849644660940672702 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1519 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 24 0 4 328 334 342 369 0 #
+plane-surface $-1 -1 $-1 7.975000000000000533 0.1899999999999999467 1.849644660940672702 0 -1 0 -1 -0 0 forward_v I I I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1523 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 7 0 3 310 343 367 0 1 @1 7 0 3 310 344 367 0 #
+face $1870 -1 $-1 $1556 $1644 $5 $-1 $1871 reversed single #
+loop $-1 -1 $-1 $-1 $1734 $1523 #
+cone-surface $-1 -1 $-1 0.375 0.375 -0.3751471862576142291 0 0 -1 -0.02485281374238568208 -0.02485281374238568208 0 1 I I -0.7071067811865475727 0.7071067811865474617 0.1199999999999999678 forward I I I I #
+coedge $-1 -1 $-1 $1670 $1526 $1872 $1873 forward $1325 0 $-1 #
+coedge $-1 -1 $-1 $1526 $1670 $1851 $1874 forward $1325 0 $-1 #
+coedge $-1 -1 $-1 $1533 $1532 $1526 $1720 forward $1534 0 $-1 #
+edge $-1 -1 $-1 $1875 0.04970562748477100334 $1876 0.06343145750507638014 $1719 $1877 forward @7 tangent #
+coedge $-1 -1 $-1 $1528 $1527 $1830 $1878 reversed $1144 0 $-1 #
+coedge $-1 -1 $-1 $1675 $1833 $1527 $1723 reversed $1494 0 $-1 #
+edge $-1 -1 $-1 $1678 -0.7853981633974477239 $1879 0.7853981633974488341 $1722 $1880 forward @7 unknown #
+coedge $-1 -1 $-1 $1881 $1828 $1528 $1725 reversed $1882 0 $-1 #
+edge $-1 -1 $-1 $1883 -0.7853981633974488341 $1677 0.7853981633974478349 $1724 $1884 forward @7 unknown #
+ellipse-curve $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.3800000000000000044 0 0 -1 -0.02142135623730972993 0.02142135623730969524 0 1 F -0.7853981633974476129 F 0.7853981633974490562 #
+ellipse-curve $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.3702943725152286758 -0 -0 1 -0.02828427124746206445 0.02828427124746202281 0 1 F -0.7853981633974490562 F 0.7853981633974475018 #
+coedge $-1 -1 $-1 $1614 $1619 $1532 $1729 forward $1620 0 $-1 #
+edge $-1 -1 $-1 $1875 -0.4249999999999999334 $1536 2.975000000000000089 $1532 $1885 forward @7 unknown #
+edge $-1 -1 $-1 $1535 -2.124999999999999112 $1876 1.274999999999999911 $1533 $1886 forward @7 unknown #
+face $1887 -1 $-1 $1888 $1534 $5 $-1 $1889 reversed single #
+point $-1 -1 $-1 4.544705627484772137 3.774999999999999911 -0.3800000000000000044 #
+point $-1 -1 $-1 4.535000000000000142 3.774999999999999911 -0.3702943725152283427 #
+coedge $-1 -1 $-1 $1748 $1817 $1541 $1735 forward $1715 0 $-1 #
+edge $-1 -1 $-1 $1738 0.04970562748477164172 $1736 0.06343145750507619973 $1541 $1890 forward @7 tangent #
+vertex $-1 -1 $-1 $1749 0 $1891 #
+straight-curve $-1 -1 $-1 2.5 0.3447056274847712931 -0.3799999999999999489 1 0 0 F -2.124999999999999556 F 1.274999999999999467 #
+vertex $-1 -1 $-1 $1892 1 $1893 #
+straight-curve $-1 -1 $-1 3.349999999999999645 0.3349999999999999645 -0.3702943725152285648 -1 -0 0 F -0.4249999999999998224 F 2.974999999999999645 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1545 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 6 0 3 310 343 367 0 1 @1 6 0 3 310 344 367 0 #
+plane-surface $-1 -1 $-1 2.924999999999999822 0.3398528137423857398 -0.3751471862576143401 0 -0.7071067811865480168 -0.7071067811865470176 -1 0 -0 forward_v I I I I #
+coedge $-1 -1 $-1 $1550 $1637 $1548 $1743 reversed $1638 0 $-1 #
+edge $-1 -1 $-1 $1347 -2.975000000000000089 $1818 0.4249999999999999334 $1742 $1894 forward @7 unknown #
+straight-curve $-1 -1 $-1 0.3349999999999998535 3.774999999999999911 -0.2399999999999999911 0 0 -1 F 0 F 0.1302943725152285737 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1552 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 19 0 3 308 343 367 0 2 @2 19 0 3 308 344 367 0 #
+face $1895 -1 $-1 $1857 $1638 $5 $-1 $1896 reversed single #
+cone-surface $-1 -1 $-1 0.375 3.774999999999999911 -0.2399999999999999911 0 0 -1 -0.02828427124746206445 0.02828427124746202281 0 1 I I 0 1 0.1600000000000001976 forward I I I I #
+coedge $-1 -1 $-1 $1649 $1734 $1554 $1749 forward $1715 0 $-1 #
+edge $-1 -1 $-1 $1736 -0.785398163397448279 $1651 0.785398163397448279 $1554 $1897 forward @7 unknown #
+coedge $-1 -1 $-1 $1643 $1558 $1555 $1751 forward $1644 0 $-1 #
+edge $-1 -1 $-1 $1560 -0.7853981633974471688 $1655 0.7853981633974493892 $1555 $1898 forward @7 unknown #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1556 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 2 0 3 308 343 367 0 1 @1 2 0 3 308 344 367 0 #
+plane-surface $-1 -1 $-1 2.074999999999999734 2.074999999999999734 -0.3800000000000000044 0 0 -1 -1 0 0 forward_v I I I I #
+straight-curve $-1 -1 $-1 3.775000000000000355 3.850147186257613541 -0.3351471862576144156 -3.925231146709433849e-15 -0.7071067811865475727 -0.7071067811865475727 F 0.04970562748477182907 F 0.06343145750507604708 #
+point $-1 -1 $-1 3.774999999999999911 3.805294372515227952 -0.3800000000000000044 #
+point $-1 -1 $-1 4.575000000000001066 0.1200000000000002454 0.02470562748477074522 #
+coedge $-1 -1 $-1 $1899 $1569 $1589 $1780 forward $1759 0 $-1 #
+coedge $-1 -1 $-1 $1569 $1899 $1574 $1763 reversed $1759 0 $-1 #
+loop $-1 -1 $-1 $-1 $1899 $1900 #
+ellipse-curve $-1 -1 $-1 7.975000000000001421 3.775000000000000355 1.849644660940672702 -0 -0 1 0.13081475451951044 0.1308147545195112449 0 1 I I #
+straight-curve $-1 -1 $-1 4.575000000000000178 0.2998528137423856488 -0.1551471862576142557 0 -0.7071067811865474617 0.7071067811865475727 F -7.850462293418874601e-17 F 0.2543502884254433272 #
+coedge $-1 -1 $-1 $1575 $1574 $1901 $1902 reversed $1576 0 $-1 #
+edge $-1 -1 $-1 $1373 0 $1903 0.1843502884254440422 $1758 $1904 forward @7 tangent #
+face $1905 -1 $-1 $1906 $1576 $5 $-1 $1907 reversed single #
+coedge $-1 -1 $-1 $1901 $1859 $1579 $1766 forward $1908 0 $-1 #
+edge $-1 -1 $-1 $1769 -0.785398163397448168 $1767 0.785398163397448168 $1765 $1909 forward @7 unknown #
+vertex $-1 -1 $-1 $1766 1 $1910 #
+straight-curve $-1 -1 $-1 0.375 4.200000000000000178 2.089644660940672694 0 -0.7071067811865465735 -0.7071067811865484609 F 0 F 0.3394112549695423309 #
+vertex $-1 -1 $-1 $1766 0 $1911 #
+straight-curve $-1 -1 $-1 0.1899999999999998357 3.775000000000000355 1.849644660940672702 -0.7071067811865473507 0 0.7071067811865477948 F 0 F 0.3394112549695427195 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1582 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 4 327 334 342 369 0 #
+face $1912 -1 $-1 $1900 $1590 $5 $-1 $1913 reversed single #
+cone-surface $-1 -1 $-1 0.3750000000000000555 3.775000000000000355 1.969644660940672587 0 0 1 -0.215667568261897119 0.2156675682618970913 0 1 I I 0.7071067811865473507 0.7071067811865477948 0.3050000000000001599 forward I I I I #
+straight-curve $-1 -1 $-1 7.325000000000000178 0.2998528137423857043 -0.1551471862576143113 1 0 0 F -2.75 F 0.6499999999999994671 #
+vertex $-1 -1 $-1 $1636 1 $1914 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 0.2149999999999998579 -0.2399999999999999911 1 0 0 0 -0.08485281374238573537 -0.08485281374238566598 1 F 2.356194490192345281 F 3.141592653589792672 #
+coedge $-1 -1 $-1 $1589 $1588 $1915 $1916 reversed $1590 0 $-1 #
+coedge $-1 -1 $-1 $1592 $1787 $1588 $1779 reversed $1598 0 $-1 #
+edge $-1 -1 $-1 $1395 0 $1917 0.1843502884254443752 $1778 $1918 forward @7 tangent #
+edge $-1 -1 $-1 $1397 0 $1919 0.1843502884254443475 $1589 $1920 forward @7 tangent #
+coedge $-1 -1 $-1 $1787 $1592 $1868 $1921 forward $1598 0 $-1 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 1.849644660940672702 -0 -0 1 0.1308147545195109951 -0.1308147545195108008 0 1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1597 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 4 327 334 342 369 0 #
+face $1922 -1 $-1 $1704 $1706 $5 $-1 $1923 reversed single #
+loop $-1 -1 $-1 $-1 $1924 $1597 #
+plane-surface $-1 -1 $-1 6.287499999999999645 0.06999999999999997891 1.969644660940672587 0 -0.7071067811865475727 -0.7071067811865474617 -1 0 -0 forward_v I I I I #
+coedge $-1 -1 $-1 $1778 $1781 $1925 $1926 reversed $1598 0 $-1 #
+point $-1 -1 $-1 7.975000000000000533 0.1899999999999999467 1.849644660940672702 #
+coedge $-1 -1 $-1 $1673 $1604 $1810 $1927 forward $1481 0 $-1 #
+straight-curve $-1 -1 $-1 8.015000000000000568 3.125 -0.2399999999999999911 0 1 0 F -2.75 F 0.6499999999999994671 #
+coedge $-1 -1 $-1 $1828 $1881 $1606 $1612 forward $1882 0 $-1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1608 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 1 367 0 #
+torus-surface $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.2399999999999999911 0 0 1 0.1600000000000001976 0.1199999999999999956 0.7071067811865466846 0.7071067811865483499 0 forward_v I I I I #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 -0.2399999999999999911 0 0 1 0.0282842712474620922 -0.02828427124746206445 0 1 F 5.497787143782137065 F 7.068583470577033623 #
+straight-curve $-1 -1 $-1 4.535000000000000142 3.774999999999999911 -0.2399999999999999911 0 0 -1 F 0 F 0.1302943725152283516 #
+straight-curve $-1 -1 $-1 4.575000000000000178 3.814999999999999947 -0.2399999999999999911 0 0 -1 F 0 F 0.1302943725152282406 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1618 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 19 0 5 308 311 312 343 367 0 #
+face $1928 -1 $-1 $1929 $1620 $5 $-1 $1930 reversed single #
+cone-surface $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.2399999999999999911 0 0 -1 -0.02828427124746206445 0.02828427124746202281 0 1 I I 0 1 0.1600000000000001976 forward I I I I #
+coedge $-1 -1 $-1 $1628 $1872 $1619 $1801 reversed $1807 0 $-1 #
+edge $-1 -1 $-1 $1433 0 $1875 0.1302943725152282961 $1800 $1931 forward @7 tangent #
+coedge $-1 -1 $-1 $1847 $1631 $1622 $1803 forward $1665 0 $-1 #
+edge $-1 -1 $-1 $1437 0 $1684 0.1302943725152286847 $1622 $1932 forward @7 tangent #
+edge $-1 -1 $-1 $1808 2.356194490192344837 $1626 3.141592653589793116 $1634 $1933 forward @7 tangent #
+point $-1 -1 $-1 4.575000000000000178 0.2998528137423857043 -0.1551471862576143113 #
+coedge $-1 -1 $-1 $1872 $1628 $1813 $1934 forward $1807 0 $-1 #
+loop $-1 -1 $-1 $-1 $1628 $1929 #
+vertex $-1 -1 $-1 $1629 1 $1935 #
+ellipse-curve $-1 -1 $-1 4.575000000000000178 0.375 -0.2399999999999999911 0 0 1 -0.02828427124746188404 -0.02828427124746188404 0 1 F 5.497787143782137953 F 7.068583470577034511 #
+coedge $-1 -1 $-1 $1631 $1847 $1789 $1927 reversed $1665 0 $-1 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.2399999999999999911 0 0 1 0.02828427124746200894 0.02828427124746206445 0 1 F 5.497787143782137065 F 7.068583470577033623 #
+coedge $-1 -1 $-1 $1831 $1635 $1881 $1936 forward $1814 0 $-1 #
+coedge $-1 -1 $-1 $1635 $1831 $1806 $1934 reversed $1814 0 $-1 #
+loop $-1 -1 $-1 $-1 $1635 $1937 #
+straight-curve $-1 -1 $-1 7.325000000000000178 0.3349999999999999645 -0.2399999999999999911 1 0 0 F -2.75 F 0.6499999999999994671 #
+edge $-1 -1 $-1 $1500 0 $1818 0.1302943725152285737 $1694 $1938 forward @7 tangent #
+coedge $-1 -1 $-1 $1734 $1649 $1855 $1892 forward $1715 0 $-1 #
+vertex $-1 -1 $-1 $1892 0 $1939 #
+straight-curve $-1 -1 $-1 0.2998528137423856488 0.375 -0.3351471862576143046 0.7071067811865477948 0 -0.7071067811865473507 F 0.04970562748477139886 F 0.06343145750507611647 #
+point $-1 -1 $-1 0.3447056274847714041 0.375 -0.3800000000000000044 #
+straight-curve $-1 -1 $-1 3.850147186257613541 3.774999999999999467 -0.3351471862576144711 -0.707106781186543798 0 -0.7071067811865512365 F 0.049705627484771156 F 0.06343145750507599157 #
+point $-1 -1 $-1 3.805294372515227952 3.774999999999999467 -0.3800000000000000044 #
+straight-curve $-1 -1 $-1 3.774999999999999467 0.3349999999999999645 -0.2399999999999999911 0 0 -1 F 0 F 0.1302943725152287957 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1661 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 23 0 3 308 343 367 0 2 @2 23 0 3 308 344 367 0 #
 cone-surface $-1 -1 $-1 3.774999999999999467 0.375 -0.2399999999999999911 0 0 -1 0.02828427124746209914 -0.02828427124746207139 0 1 I I 0 1 0.1600000000000002531 forward I I I I #
-coedge $-1 -1 $-1 $878 $877 $1197 $1198 forward $879 0 $-1 #
-edge $-1 -1 $-1 $764 -0.04970562748477130866 $1199 0.1302943725152286847 $878 $1200 forward @7 tangent #
-face $1201 -1 $-1 $1188 $879 $5 $-1 $1202 reversed single #
-coedge $-1 -1 $-1 $882 $1182 $1203 $1204 reversed $1029 0 $-1 #
-loop $-1 -1 $-1 $-1 $1010 $1205 #
-vertex $-1 -1 $-1 $883 2 $1206 #
-straight-curve $-1 -1 $-1 4.499852813742386104 3.774999999999999911 -0.1551471862576143113 -0.7071067811865473507 0 0.7071067811865477948 I I #
-point $-1 -1 $-1 4.224705627484771853 3.774999999999999911 0.1200000000000000511 #
-coedge $-1 -1 $-1 $1207 $886 $1208 $1209 forward $1035 0 $-1 #
-coedge $-1 -1 $-1 $886 $1207 $891 $1042 reversed $1035 0 $-1 #
-loop $-1 -1 $-1 $-1 $1207 $1210 #
-ellipse-curve $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.1902943725152286825 0 0 -1 -0.02828427124746206445 0.02828427124746202281 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $889 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 23 0 5 308 311 312 343 350 0 #
-face $1211 -1 $-1 $1212 $1213 $5 $-1 $1214 reversed single #
-loop $-1 -1 $-1 $-1 $1215 $889 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1664 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 20 0 5 308 311 312 343 367 0 #
+plane-surface $-1 -1 $-1 4.575000000000000178 3.814999999999999503 -0.2399999999999999911 0 1 0 1 0 0 forward_v I I I I #
+coedge $-1 -1 $-1 $1724 $1791 $1667 $1829 forward $1882 0 $-1 #
+edge $-1 -1 $-1 $1417 0 $1677 0.1302943725152286847 $1828 $1940 forward @7 tangent #
+coedge $-1 -1 $-1 $1669 $1668 $1721 $1878 forward $1293 0 $-1 #
+coedge $-1 -1 $-1 $1813 $1812 $1668 $1832 reversed $1814 0 $-1 #
+edge $-1 -1 $-1 $1835 -2.974999999999999645 $1883 0.4249999999999998224 $1831 $1941 forward @7 unknown #
+coedge $-1 -1 $-1 $1722 $1851 $1669 $1834 reversed $1494 0 $-1 #
+edge $-1 -1 $-1 $1879 -1.274999999999999467 $1836 2.125 $1833 $1942 forward @7 unknown #
+vertex $-1 -1 $-1 $1671 0 $1943 #
+vertex $-1 -1 $-1 $1671 1 $1944 #
+straight-curve $-1 -1 $-1 4.575000000000000178 0.2998528137423857043 -0.3351471862576143046 0 0.7071067811865470176 -0.7071067811865480168 F 0.04970562748477135029 F 0.06343145750507608871 #
+coedge $-1 -1 $-1 $1683 $1682 $1672 $1839 reversed $1524 0 $-1 #
+edge $-1 -1 $-1 $1840 0.04970562748477021231 $1842 0.06343145750507631075 $1672 $1945 forward @7 tangent #
+vertex $-1 -1 $-1 $1848 0 $1946 #
+straight-curve $-1 -1 $-1 8.015000000000000568 3.349999999999999645 -0.3702943725152273435 -0 1 0 F -2.974999999999999645 F 0.4249999999999998224 #
+vertex $-1 -1 $-1 $1676 0 $1947 #
+straight-curve $-1 -1 $-1 8.005294372515228574 2.5 -0.3800000000000000044 0 -1 0 F -1.274999999999996803 F 2.125 #
+point $-1 -1 $-1 8.014999999999998792 0.375 -0.3702943725152286758 #
+point $-1 -1 $-1 8.005294372515228574 0.375 -0.3800000000000000044 #
+straight-curve $-1 -1 $-1 5 3.814999999999999503 -0.3702943725152286758 -1 0 0 F -2.974999999999999645 F 0.4249999999999998224 #
+coedge $-1 -1 $-1 $1810 $1802 $1683 $1848 reversed $1665 0 $-1 #
+edge $-1 -1 $-1 $1840 -0.7853981633974495002 $1684 0.7853981633974470578 $1847 $1948 forward @7 unknown #
+point $-1 -1 $-1 7.974999999999999645 3.814999999999999503 -0.3702943725152286758 #
+point $-1 -1 $-1 4.575000000000000178 3.814999999999999947 -0.3702943725152282317 #
+coedge $-1 -1 $-1 $1833 $1688 $1718 $1874 reversed $1494 0 $-1 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.3800000000000000044 0 0 -1 0.0214213562373097334 0.02142135623730978197 0 1 F -0.7853981633974471688 F 0.7853981633974495002 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1690 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 5 308 311 312 343 367 0 #
+plane-surface $-1 -1 $-1 6.275000000000000355 2.074999999999999734 -0.3800000000000000044 0 0 -1 -1 0 0 forward_v I I I I #
+coedge $-1 -1 $-1 $1694 $1693 $1817 $1892 reversed $1695 0 $-1 #
+edge $-1 -1 $-1 $1308 0 $1738 0.1302943725152285737 $1698 $1949 forward @7 tangent #
+face $1950 -1 $-1 $1858 $1695 $5 $-1 $1951 reversed single #
+face $1952 -1 $-1 $1661 $1699 $5 $-1 $1953 reversed single #
+coedge $-1 -1 $-1 $1765 $1954 $1701 $1860 forward $1908 0 $-1 #
+edge $-1 -1 $-1 $1862 -1.168750000000000178 $1769 2.231250000000000178 $1859 $1955 forward @7 unknown #
+coedge $-1 -1 $-1 $1705 $1702 $1954 $1956 reversed $1706 0 $-1 #
+vertex $-1 -1 $-1 $1860 0 $1957 #
+straight-curve $-1 -1 $-1 0.1899999999999999467 0.375 1.849644660940672702 -0.7071067811865474617 0 0.7071067811865475727 F 0 F 0.3394112549695427195 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1704 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 4 327 334 342 369 0 #
+plane-surface $-1 -1 $-1 0.06999999999999997891 1.012500000000000178 1.969644660940672587 -0.7071067811865475727 0 -0.7071067811865474617 -0.7071067811865474617 0 0.7071067811865475727 forward_v I I I I #
+coedge $-1 -1 $-1 $1924 $1708 $1705 $1867 forward $1785 0 $-1 #
+edge $-1 -1 $-1 $1516 0 $1958 0.1843502884254438756 $1705 $1959 forward @7 tangent #
+coedge $-1 -1 $-1 $1708 $1924 $1781 $1921 reversed $1785 0 $-1 #
+straight-curve $-1 -1 $-1 6.287499999999999645 0.1899999999999999467 1.849644660940672702 1 0 -0 F -6.176501000000000019 F 1.951501000000000374 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1714 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 3 0 3 310 343 367 0 1 @1 3 0 3 310 344 367 0 #
+cone-surface $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.3751471862576144511 0 0 -1 0.02485281374238580698 0.02485281374238586249 0 1 I I -0.7071067811865459074 0.707106781186548905 0.1200000000000003425 forward I I I I #
+coedge $-1 -1 $-1 $1800 $1806 $1717 $1873 reversed $1807 0 $-1 #
+edge $-1 -1 $-1 $1875 -0.785398163397448279 $1835 0.785398163397448279 $1872 $1960 forward @7 unknown #
+edge $-1 -1 $-1 $1836 -0.785398163397448279 $1876 0.785398163397448279 $1851 $1961 forward @7 unknown #
+vertex $-1 -1 $-1 $1873 0 $1962 #
+vertex $-1 -1 $-1 $1720 1 $1963 #
+straight-curve $-1 -1 $-1 4.499852813742386104 0.375 -0.3351471862576143046 0.7071067811865477948 0 -0.7071067811865473507 F 0.04970562748477100334 F 0.06343145750507638014 #
+edge $-1 -1 $-1 $1883 0.04970562748477119763 $1879 0.0634314575050760332 $1830 $1964 forward @7 tangent #
+vertex $-1 -1 $-1 $1834 0 $1965 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 -0.3800000000000000044 0 0 -1 0.02142135623730975075 -0.02142135623730972646 0 1 F -0.7853981633974477239 F 0.7853981633974489451 #
+coedge $-1 -1 $-1 $1791 $1724 $1812 $1936 reversed $1882 0 $-1 #
+loop $-1 -1 $-1 $-1 $1881 $1966 #
+vertex $-1 -1 $-1 $1725 0 $1967 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 -0.3702943725152286758 -0 -0 1 0.02828427124746209914 -0.02828427124746207139 0 1 F -0.7853981633974488341 F 0.7853981633974478349 #
+straight-curve $-1 -1 $-1 4.535000000000000142 0.7999999999999999334 -0.3702943725152283982 0 1 0 F -0.4249999999999999334 F 2.975000000000000089 #
+straight-curve $-1 -1 $-1 4.544705627484772137 1.649999999999999911 -0.3800000000000000044 0 -1 -0 F -2.124999999999999112 F 1.274999999999999911 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1731 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 8 0 5 310 311 312 343 367 0 #
+face $1968 -1 $-1 $1969 $1970 $5 $-1 $1971 forward single #
+plane-surface $-1 -1 $-1 4.539852813742386139 1.224999999999999867 -0.3751471862576143401 -0.7071067811865480168 0 -0.7071067811865470176 -0.7071067811865470176 0 0.7071067811865480168 forward_v I I I I #
+straight-curve $-1 -1 $-1 0.375 0.2998528137423856488 -0.3351471862576141936 0 0.7071067811865470176 -0.7071067811865480168 F 0.04970562748477164172 F 0.06343145750507619973 #
+point $-1 -1 $-1 0.375 0.3447056274847712931 -0.3799999999999999489 #
+edge $-1 -1 $-1 $1818 -0.785398163397448279 $1738 0.785398163397448279 $1855 $1972 forward @7 unknown #
+point $-1 -1 $-1 0.375 0.3349999999999999645 -0.3702943725152285648 #
+straight-curve $-1 -1 $-1 0.3349999999999999645 0.7999999999999999334 -0.3702943725152285648 0 -1 0 F -2.975000000000000089 F 0.4249999999999999334 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1746 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 26 0 3 308 343 367 0 2 @2 26 0 3 308 344 367 0 #
+plane-surface $-1 -1 $-1 0.3349999999999999645 0.375 -0.2399999999999999911 -1 0 -0 -0 1 0 forward_v I I I I #
+ellipse-curve $-1 -1 $-1 0.375 0.375 -0.3800000000000000044 0 0 -1 -0.02142135623730943156 -0.02142135623730943156 0 1 F -0.785398163397448279 F 0.785398163397448279 #
+ellipse-curve $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.3800000000000000044 0 0 -1 0.0214213562373097334 0.02142135623730978197 0 1 F -0.7853981633974471688 F 0.7853981633974495002 #
+coedge $-1 -1 $-1 $1758 $1757 $1973 $1974 reversed $1759 0 $-1 #
+face $1975 -1 $-1 $1764 $1759 $5 $-1 $1976 reversed single #
+coedge $-1 -1 $-1 $1973 $1765 $1762 $1902 forward $1908 0 $-1 #
+edge $-1 -1 $-1 $1767 -2.743749999999999467 $1903 4.856250000000001954 $1901 $1977 forward @7 unknown #
+vertex $-1 -1 $-1 $1974 0 $1978 #
+straight-curve $-1 -1 $-1 7.975000000000001421 3.95999999999999952 1.849644660940672702 0 0.7071067811865484609 0.7071067811865465735 F 0 F 0.3394112549695432746 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1764 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 8 0 4 327 334 342 369 0 #
+face $1979 -1 $-1 $1253 $1908 $5 $-1 $1980 reversed single #
+plane-surface $-1 -1 $-1 2.062499999999999556 4.080000000000000071 1.969644660940672587 0 0.7071067811865471286 -0.7071067811865477948 -1 0 0 forward_v I I I I #
+loop $-1 -1 $-1 $1981 $1765 $1906 #
+ellipse-curve $-1 -1 $-1 0.3750000000000000555 3.775000000000000355 1.979999999999999982 0 0 -1 -0.2229898987322334603 0.2229898987322334325 0 1 I I #
+point $-1 -1 $-1 0.375 4.09035533905932791 1.979999999999999982 #
+point $-1 -1 $-1 0.05964466094067263913 3.775000000000000355 1.979999999999999982 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1772 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 4 327 334 342 369 0 #
+plane-surface $-1 -1 $-1 8.280000000000001137 3.137500000000000178 1.969644660940672587 0.7071067811865471286 0 -0.7071067811865477948 -0.7071067811865479058 0 -0.7071067811865472397 forward_v I I I I #
+point $-1 -1 $-1 7.974999999999999645 0.3349999999999999645 -0.2399999999999999911 #
+coedge $-1 -1 $-1 $1925 $1973 $1777 $1916 forward $1908 0 $-1 #
+edge $-1 -1 $-1 $1919 -1.168750000000000178 $1917 2.231250000000000178 $1915 $1982 forward @7 unknown #
+vertex $-1 -1 $-1 $1926 0 $1983 #
+straight-curve $-1 -1 $-1 8.159999999999998366 0.375 1.849644660940672702 0.7071067811865504593 0 0.7071067811865445751 F 0 F 0.3394112549695442183 #
+vertex $-1 -1 $-1 $1916 0 $1984 #
+straight-curve $-1 -1 $-1 8.160000000000000142 3.775000000000000355 1.849644660940672702 0.7071067811865477948 0 0.7071067811865471286 F 0 F 0.3394112549695429415 #
+edge $-1 -1 $-1 $1600 0 $1985 0.1843502884254438756 $1868 $1986 forward @7 tangent #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1784 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 3 0 4 327 334 342 369 0 #
+cone-surface $-1 -1 $-1 0.375 0.3750000000000000555 1.969644660940672587 0 0 1 -0.2156675682618970358 -0.2156675682618970358 0 1 I I 0.7071067811865475727 0.7071067811865475727 0.3050000000000000488 forward I I I I #
+coedge $-1 -1 $-1 $1868 $1866 $1987 $1988 reversed $1785 0 $-1 #
+coedge $-1 -1 $-1 $1987 $1915 $1787 $1926 forward $1908 0 $-1 #
+edge $-1 -1 $-1 $1917 -0.7853981633974475018 $1985 0.7853981633974462806 $1925 $1989 forward @7 unknown #
+edge $-1 -1 $-1 $1412 0 $1840 0.1302943725152273524 $1810 $1990 forward @7 tangent #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1798 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 26 0 5 308 311 312 343 367 0 #
+face $1991 -1 $-1 $1937 $1807 $5 $-1 $1992 reversed single #
+plane-surface $-1 -1 $-1 4.535000000000000142 0.375 -0.2399999999999999911 -1 0 0 0 1 0 forward_v I I I I #
+straight-curve $-1 -1 $-1 4.535000000000000142 0.375 -0.2399999999999999911 0 0 -1 F 0 F 0.1302943725152282961 #
+straight-curve $-1 -1 $-1 7.974999999999999645 3.814999999999999503 -0.2399999999999999911 0 0 -1 F 0 F 0.1302943725152286847 #
+ellipse-curve $-1 -1 $-1 4.575000000000000178 0.2149999999999999689 -0.2399999999999999911 1 0 0 0 -0.08485281374238570762 -0.08485281374238569374 1 F 2.356194490192344837 F 3.141592653589793116 #
+edge $-1 -1 $-1 $1808 0 $1835 0.1302943725152285737 $1813 $1993 forward @7 tangent #
+point $-1 -1 $-1 4.575000000000000178 0.3349999999999999645 -0.2399999999999999911 #
+edge $-1 -1 $-1 $1775 0 $1883 0.1302943725152285737 $1881 $1994 forward @7 tangent #
+face $1995 -1 $-1 $1966 $1814 $5 $-1 $1996 reversed single #
+straight-curve $-1 -1 $-1 0.3349999999999999645 0.375 -0.2399999999999999911 0 0 -1 F 0 F 0.1302943725152285737 #
+point $-1 -1 $-1 0.3349999999999999645 0.375 -0.3702943725152285648 #
+straight-curve $-1 -1 $-1 8.015000000000000568 0.375 -0.2399999999999999911 0 0 -1 F 0 F 0.1302943725152286847 #
+straight-curve $-1 -1 $-1 7.549999999999999822 0.3349999999999999645 -0.3702943725152285648 1 0 0 F -2.974999999999999645 F 0.4249999999999998224 #
+straight-curve $-1 -1 $-1 6.700000000000000178 0.3447056274847712931 -0.3800000000000000044 -1 0 -0 F -1.274999999999999467 F 2.125 #
+point $-1 -1 $-1 4.575000000000000178 0.3349999999999999645 -0.3702943725152285648 #
+point $-1 -1 $-1 4.575000000000000178 0.3447056274847714041 -0.3800000000000000044 #
+straight-curve $-1 -1 $-1 8.050147186257614607 3.774999999999999467 -0.3351471862576144711 -0.707106781186543798 0 -0.7071067811865512365 F 0.04970562748477021231 F 0.06343145750507631075 #
+point $-1 -1 $-1 8.015000000000000568 3.774999999999999467 -0.3702943725152273435 #
+point $-1 -1 $-1 8.005294372515228574 3.774999999999999467 -0.3800000000000000044 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.3702943725152286758 -0 -0 1 0.02828427124746200894 0.02828427124746207486 0 1 F -0.7853981633974495002 F 0.7853981633974470578 #
+straight-curve $-1 -1 $-1 0.375 0.3349999999999999645 -0.2399999999999999911 0 0 -1 F 0 F 0.1302943725152285737 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1857 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 25 0 3 308 343 367 0 2 @2 25 0 3 308 344 367 0 #
+cone-surface $-1 -1 $-1 0.375 0.375 -0.2399999999999999911 0 0 -1 -0.02828427124746188751 -0.02828427124746188751 0 1 I I 0 1 0.1599999999999999756 forward I I I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1858 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 24 0 3 308 343 367 0 2 @2 24 0 3 308 344 367 0 #
+plane-surface $-1 -1 $-1 3.774999999999999467 0.3349999999999999645 -0.2399999999999999911 0 -1 0 -1 -0 0 forward_v I I I I #
+coedge $-1 -1 $-1 $1859 $1987 $1861 $1956 forward $1908 0 $-1 #
+straight-curve $-1 -1 $-1 0.05964466094067311097 1.543750000000000178 1.979999999999999982 0 1 0 I I #
+edge $-1 -1 $-1 $1958 -0.785398163397448279 $1862 0.785398163397448057 $1954 $1997 forward @7 unknown #
+point $-1 -1 $-1 0.05964466094067269464 0.375 1.979999999999999982 #
+vertex $-1 -1 $-1 $1956 0 $1998 #
+straight-curve $-1 -1 $-1 0.375 0.1900000000000000022 1.849644660940672702 0 -0.7071067811865474617 0.7071067811865474617 F 0 F 0.339411254969542775 #
+ellipse-curve $-1 -1 $-1 4.575000000000000178 0.375 -0.3702943725152285093 -0 -0 1 -0.02828427124746188751 -0.02828427124746188751 0 1 F -0.785398163397448279 F 0.785398163397448279 #
+ellipse-curve $-1 -1 $-1 4.575000000000000178 0.375 -0.3800000000000000044 0 0 -1 -0.02142135623730943156 -0.02142135623730943156 0 1 F -0.785398163397448279 F 0.785398163397448279 #
+point $-1 -1 $-1 4.535000000000000142 0.375 -0.3702943725152282872 #
+point $-1 -1 $-1 4.544705627484772137 0.375 -0.3800000000000000044 #
+straight-curve $-1 -1 $-1 7.974999999999999645 0.2998528137423858153 -0.3351471862576144156 0 0.7071067811865453523 -0.7071067811865496822 F 0.04970562748477119763 F 0.0634314575050760332 #
+point $-1 -1 $-1 7.974999999999999645 0.3447056274847714041 -0.3800000000000000044 #
+face $1999 -1 $-1 $905 $1882 $5 $-1 $2000 reversed single #
+point $-1 -1 $-1 7.974999999999999645 0.3349999999999999645 -0.3702943725152285648 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1888 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 4 0 2 314 -369 0 1 @1 4 0 3 319 342 -369 0 2 @2 18 0 2 347 -369 0 2 @2 18 0 2 348 -369 0 #
+face $2001 -1 $-1 $2002 $2003 $5 $-1 $2004 forward single #
+loop $-1 -1 $-1 $-1 $2005 $1888 #
+plane-surface $-1 -1 $-1 0 0 0 0 -1 0 1 0 0 forward_v I I I I #
+ellipse-curve $-1 -1 $-1 0.375 0.375 -0.3702943725152285093 -0 -0 1 -0.02828427124746188751 -0.02828427124746188751 0 1 F -0.785398163397448279 F 0.785398163397448279 #
+coedge $-1 -1 $-1 $1915 $1901 $1899 $1974 forward $1908 0 $-1 #
+edge $-1 -1 $-1 $1903 -0.7853981633974451704 $1919 0.7853981633974514986 $1973 $2006 forward @7 unknown #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1900 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 7 0 4 327 334 342 369 0 #
+cone-surface $-1 -1 $-1 7.975000000000001421 3.775000000000000355 1.969644660940672587 0 0 1 0.2156675682618961198 0.2156675682618974799 0 1 I I 0.7071067811865485719 0.7071067811865465735 0.3049999999999997158 forward I I I I #
+straight-curve $-1 -1 $-1 3.118749999999999467 4.090355339059327022 1.979999999999999982 1 0 0 I I #
+point $-1 -1 $-1 7.975000000000001421 4.090355339059327022 1.979999999999999982 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1906 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 4 332 334 342 369 0 #
+plane-surface $-1 -1 $-1 4.174999999999999822 2.075000000000000178 1.979999999999999982 0 0 -1 -1 0 0 forward_v I I I I #
+loop $-1 -1 $-1 $-1 $2007 $1906 #
+straight-curve $-1 -1 $-1 8.290355339059328088 2.606250000000000178 1.979999999999999982 0 -1 0 I I #
+point $-1 -1 $-1 8.290355339059326312 0.375 1.979999999999999982 #
+point $-1 -1 $-1 8.290355339059328088 3.775000000000000355 1.979999999999999982 #
+vertex $-1 -1 $-1 $1988 0 $2008 #
+straight-curve $-1 -1 $-1 7.975000000000000533 0.1899999999999999467 1.849644660940672702 0 -0.7071067811865474617 0.7071067811865475727 F 0 F 0.3394112549695427195 #
+coedge $-1 -1 $-1 $1954 $1925 $1924 $1988 forward $1908 0 $-1 #
+edge $-1 -1 $-1 $1985 -2.743750000000001243 $1958 4.856249999999999289 $1987 $2009 forward @7 unknown #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 1.979999999999999982 0 0 -1 0.222989898732233377 -0.2229898987322330439 0 1 I I #
+straight-curve $-1 -1 $-1 8.015000000000000568 3.774999999999999467 -0.2399999999999999911 0 0 -1 F 0 F 0.1302943725152273524 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1929 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 25 0 5 308 311 312 343 367 0 #
+cone-surface $-1 -1 $-1 4.575000000000000178 0.375 -0.2399999999999999911 0 0 -1 -0.02828427124746188751 -0.02828427124746188751 0 1 I I 0 1 0.1599999999999999756 forward I I I I #
+straight-curve $-1 -1 $-1 4.575000000000000178 0.3349999999999999645 -0.2399999999999999911 0 0 -1 F 0 F 0.1302943725152285737 #
+straight-curve $-1 -1 $-1 7.974999999999999645 0.3349999999999999645 -0.2399999999999999911 0 0 -1 F 0 F 0.1302943725152285737 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1937 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 24 0 5 308 311 312 343 367 0 #
+plane-surface $-1 -1 $-1 7.974999999999999645 0.3349999999999999645 -0.2399999999999999911 0 -1 0 -1 0 0 forward_v I I I I #
+ellipse-curve $-1 -1 $-1 0.375 0.3750000000000000555 1.979999999999999982 0 0 -1 -0.222989898732233377 -0.222989898732233377 0 1 I I #
+point $-1 -1 $-1 0.375 0.05964466094067272239 1.979999999999999982 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1966 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 23 0 5 308 311 312 343 367 0 #
 cone-surface $-1 -1 $-1 7.974999999999999645 0.375 -0.2399999999999999911 0 0 -1 0.02828427124746209914 -0.02828427124746207139 0 1 I I 0 1 0.1600000000000002531 forward I I I I #
-coedge $-1 -1 $-1 $892 $891 $1216 $1217 forward $893 0 $-1 #
-edge $-1 -1 $-1 $775 -0.04970562748477111437 $1218 0.1302943725152287957 $1034 $1219 forward @7 tangent #
-edge $-1 -1 $-1 $777 -0.04970562748477130866 $1220 0.1302943725152286847 $892 $1221 forward @7 tangent #
-face $1222 -1 $-1 $1179 $893 $5 $-1 $1223 reversed single #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $898 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 1 314 0 #
-face $1224 -1 $-1 $1225 $1226 $5 $-1 $1227 forward single #
-loop $-1 -1 $-1 $-1 $1228 $898 #
-plane-surface $-1 -1 $-1 4.174999999999999822 2.075000000000000178 0 0 0 1 1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $913 $912 $1229 $1230 forward $899 0 $-1 #
-coedge $-1 -1 $-1 $1229 $901 $1231 $1232 reversed $781 0 $-1 #
-coedge $-1 -1 $-1 $901 $1229 $1233 $1234 forward $781 0 $-1 #
-coedge $-1 -1 $-1 $903 $902 $901 $1053 forward $688 0 $-1 #
-edge $-1 -1 $-1 $1235 -0.02500000000000013323 $1236 1.979999999999999982 $901 $1237 forward @7 tangent #
-coedge $-1 -1 $-1 $1238 $1239 $902 $1055 forward $1240 0 $-1 #
-edge $-1 -1 $-1 $1235 -1.570796326794899 $1061 0 $1054 $1241 forward @7 unknown #
-coedge $-1 -1 $-1 $1233 $1242 $903 $1057 reversed $1077 0 $-1 #
-edge $-1 -1 $-1 $1236 -0.785398163397448279 $1062 0.785398163397448279 $903 $1243 forward @7 unknown #
-coedge $-1 -1 $-1 $1244 $904 $1242 $1245 forward $1060 0 $-1 #
-coedge $-1 -1 $-1 $904 $1246 $1247 $1248 reversed $1060 0 $-1 #
-loop $-1 -1 $-1 $-1 $1244 $1249 #
-vertex $-1 -1 $-1 $1250 0 $1251 #
-vertex $-1 -1 $-1 $905 1 $1252 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1969 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 1 0 2 316 -369 0 1 @1 1 0 3 321 342 -369 0 2 @2 13 0 2 347 -369 0 2 @2 13 0 2 348 -369 0 #
+face $2010 -1 $-1 $2011 $2012 $5 $-1 $2013 forward single #
+loop $-1 -1 $-1 $-1 $2014 $1969 #
+cone-surface $-1 -1 $-1 0.375 3.775000000000000355 0 0 0 1 -0.2651650429449553537 0.2651650429449553537 0 1 I I 0 1 0.3750000000000000555 forward I I I I #
+coedge $-1 -1 $-1 $2015 $2016 $2017 $2018 forward $1970 0 $-1 #
+ellipse-curve $-1 -1 $-1 7.975000000000001421 3.775000000000000355 1.979999999999999982 0 0 -1 0.2229898987322324888 0.2229898987322338766 0 1 I I #
+coedge $-1 -1 $-1 $2019 $2020 $2021 $2022 reversed $1981 0 $-1 #
+point $-1 -1 $-1 7.975000000000000533 0.05964466094067269464 1.979999999999999982 #
+straight-curve $-1 -1 $-1 5.231249999999999289 0.05964466094067244484 1.979999999999999982 -1 0 -0 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2002 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 3 0 2 314 -369 0 1 @1 3 0 3 319 342 -369 0 2 @2 12 0 2 347 -369 0 2 @2 12 0 2 348 -369 0 #
+face $2023 -1 $-1 $2024 $2025 $5 $-1 $2026 forward single #
+loop $-1 -1 $-1 $-1 $2027 $2002 #
+plane-surface $-1 -1 $-1 0 4.150000000000000355 0 -1 0 0 0 -1 0 forward_v I I I I #
+coedge $-1 -1 $-1 $2028 $2029 $2030 $2031 reversed $2003 0 $-1 #
+coedge $-1 -1 $-1 $2032 $2005 $2033 $2034 reversed $1970 0 $-1 #
+coedge $-1 -1 $-1 $2005 $2035 $2036 $2037 forward $1970 0 $-1 #
+coedge $-1 -1 $-1 $2038 $2039 $2005 $2018 reversed $2025 0 $-1 #
+edge $-1 -1 $-1 $2040 -1.979999999999999982 $2041 0.02500000000000013323 $2017 $2042 forward @7 tangent #
+coedge $-1 -1 $-1 $2043 $2007 $2044 $2045 reversed $1981 0 $-1 #
+coedge $-1 -1 $-1 $2007 $2046 $2047 $2048 reversed $1981 0 $-1 #
+coedge $-1 -1 $-1 $2049 $2050 $2007 $2022 forward $2051 0 $-1 #
+edge $-1 -1 $-1 $2052 -0.785398163397448279 $2053 0.785398163397448279 $2021 $2054 forward @7 unknown #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2011 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 4 0 2 316 -369 0 1 @1 4 0 3 321 342 -369 0 2 @2 11 0 2 347 -369 0 2 @2 11 0 2 348 -369 0 #
+face $2055 -1 $-1 $2056 $2057 $5 $-1 $2058 forward single #
+loop $-1 -1 $-1 $-1 $2059 $2011 #
+cone-surface $-1 -1 $-1 0.375 0.375 0 0 0 1 -0.2651650429449553537 -0.2651650429449553537 0 1 I I 0 1 0.3750000000000000555 forward I I I I #
+coedge $-1 -1 $-1 $2060 $2061 $2062 $2063 reversed $2012 0 $-1 #
+coedge $-1 -1 $-1 $2062 $2014 $2064 $2065 reversed $2003 0 $-1 #
+coedge $-1 -1 $-1 $2014 $2062 $2043 $2066 forward $2003 0 $-1 #
+coedge $-1 -1 $-1 $2044 $2067 $2014 $2031 forward $2068 0 $-1 #
+edge $-1 -1 $-1 $2069 -0.02499999999999916178 $2070 1.979999999999999982 $2014 $2071 forward @7 tangent #
+coedge $-1 -1 $-1 $2072 $2015 $2073 $2074 reversed $1970 0 $-1 #
+coedge $-1 -1 $-1 $2075 $2076 $2015 $2034 forward $2077 0 $-1 #
+edge $-1 -1 $-1 $2078 1.774999999999999467 $2041 5.174999999999998934 $2033 $2079 forward @7 unknown #
+coedge $-1 -1 $-1 $2016 $2080 $2081 $2082 forward $1970 0 $-1 #
+coedge $-1 -1 $-1 $2046 $2083 $2016 $2037 reversed $1981 0 $-1 #
+edge $-1 -1 $-1 $2084 -5.887499999999999289 $2040 1.712499999999999911 $2016 $2085 forward @7 unknown #
+coedge $-1 -1 $-1 $2059 $2017 $2083 $2086 forward $2025 0 $-1 #
+coedge $-1 -1 $-1 $2017 $2059 $2087 $2088 reversed $2025 0 $-1 #
+vertex $-1 -1 $-1 $2086 0 $2089 #
+vertex $-1 -1 $-1 $2088 0 $2090 #
+straight-curve $-1 -1 $-1 0.3749999999999999445 0 0 0 0 -1 I I #
+coedge $-1 -1 $-1 $2091 $2019 $2029 $2066 reversed $1981 0 $-1 #
+coedge $-1 -1 $-1 $2092 $2030 $2019 $2045 forward $2068 0 $-1 #
+edge $-1 -1 $-1 $2070 -5.887499999999999289 $2052 1.712500000000000355 $2044 $2093 forward @7 unknown #
+coedge $-1 -1 $-1 $2020 $2036 $2094 $2095 reversed $1981 0 $-1 #
+coedge $-1 -1 $-1 $2096 $2097 $2020 $2048 forward $2098 0 $-1 #
+edge $-1 -1 $-1 $2053 -2.737500000000000266 $2099 0.6625000000000000888 $2047 $2100 forward @7 unknown #
+coedge $-1 -1 $-1 $2101 $2021 $2097 $2102 forward $2051 0 $-1 #
+coedge $-1 -1 $-1 $2021 $2101 $2092 $2103 forward $2051 0 $-1 #
+loop $-1 -1 $-1 $-1 $2049 $2104 #
+vertex $-1 -1 $-1 $2045 1 $2105 #
+vertex $-1 -1 $-1 $2102 0 $2106 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 3.775000000000000355 1.979999999999999982 0 0 -1 0.2651650429449553537 0.2651650429449553537 0 1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2024 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 8 0 4 307 311 312 343 0 #
+face $2107 -1 $-1 $2108 $2109 $5 $-1 $2110 forward single #
+loop $-1 -1 $-1 $-1 $2111 $2024 #
+plane-surface $-1 -1 $-1 5.224999999999999645 4.054999999999999716 -0.1199999999999999956 0 0.7071067811865471286 -0.7071067811865477948 -1 0 0 forward_v I I I I #
+coedge $-1 -1 $-1 $2039 $2038 $2112 $2113 forward $2025 0 $-1 #
+coedge $-1 -1 $-1 $2112 $2027 $2114 $2115 reversed $2012 0 $-1 #
+coedge $-1 -1 $-1 $2027 $2112 $2091 $2116 forward $2012 0 $-1 #
+coedge $-1 -1 $-1 $2029 $2028 $2027 $2063 forward $2003 0 $-1 #
+edge $-1 -1 $-1 $2117 -0.02500000000000013323 $2118 1.979999999999999982 $2027 $2119 forward @7 tangent #
+coedge $-1 -1 $-1 $2120 $2121 $2028 $2065 forward $2122 0 $-1 #
+edge $-1 -1 $-1 $2117 -1.570796326794899 $2069 0 $2064 $2123 forward @7 unknown #
+edge $-1 -1 $-1 $2118 -0.785398163397448279 $2070 0.785398163397448279 $2029 $2124 forward @7 unknown #
+coedge $-1 -1 $-1 $2030 $2125 $2126 $2127 reversed $2068 0 $-1 #
+loop $-1 -1 $-1 $-1 $2092 $2128 #
+vertex $-1 -1 $-1 $2129 0 $2130 #
+vertex $-1 -1 $-1 $2031 1 $2131 #
 straight-curve $-1 -1 $-1 0.375 4.150000000000000355 0 0 0 1 I I #
-coedge $1253 -1 $-1 $1254 $906 $1255 $1256 forward $609 0 $-1 #
-coedge $-1 -1 $-1 $1257 $1258 $906 $1066 forward $1259 0 $-1 #
-edge $-1 -1 $-1 $1260 0 $1070 0.1414213562373100863 $1065 $1261 forward @7 unknown #
-coedge $-1 -1 $-1 $1262 $907 $1263 $1264 reversed $1069 0 $-1 #
-coedge $-1 -1 $-1 $907 $1262 $1257 $1265 forward $1069 0 $-1 #
-loop $-1 -1 $-1 $-1 $907 $1266 #
-vertex $-1 -1 $-1 $908 0 $1267 #
+coedge $-1 -1 $-1 $2132 $2032 $2133 $2134 forward $1970 0 $-1 #
+coedge $-1 -1 $-1 $2135 $2133 $2032 $2074 forward $2136 0 $-1 #
+edge $-1 -1 $-1 $2137 0 $2078 0.1414213562373100863 $2073 $2138 forward @7 unknown #
+coedge $-1 -1 $-1 $2139 $2033 $2140 $2141 reversed $2077 0 $-1 #
+coedge $-1 -1 $-1 $2033 $2139 $2135 $2142 forward $2077 0 $-1 #
+loop $-1 -1 $-1 $-1 $2033 $2143 #
+vertex $-1 -1 $-1 $2034 0 $2144 #
 straight-curve $-1 -1 $-1 5.549999999999998934 0 -0.02499999999999998751 -1 0 -0 I I #
-coedge $-1 -1 $-1 $909 $1254 $1268 $1269 reversed $609 0 $-1 #
-coedge $-1 -1 $-1 $1270 $1271 $909 $1074 reversed $1272 0 $-1 #
-edge $-1 -1 $-1 $1273 -0.02499999999999991118 $1078 1.979999999999999982 $1073 $1274 forward @7 tangent #
-coedge $-1 -1 $-1 $1275 $910 $1271 $1276 reversed $1077 0 $-1 #
-coedge $-1 -1 $-1 $910 $1233 $912 $1080 reversed $1077 0 $-1 #
-loop $-1 -1 $-1 $-1 $1277 $1278 #
-vertex $-1 -1 $-1 $1074 1 $1279 #
+coedge $-1 -1 $-1 $2035 $2145 $2146 $2147 reversed $1970 0 $-1 #
+coedge $-1 -1 $-1 $2148 $2094 $2035 $2082 reversed $2149 0 $-1 #
+edge $-1 -1 $-1 $2150 -0.02499999999999991118 $2084 1.979999999999999982 $2081 $2151 forward @7 tangent #
+coedge $-1 -1 $-1 $2036 $2091 $2038 $2086 reversed $1981 0 $-1 #
+vertex $-1 -1 $-1 $2082 1 $2152 #
 straight-curve $-1 -1 $-1 2.087499999999999911 0 1.979999999999999982 -1 -0 -0 I I #
-edge $-1 -1 $-1 $914 -0.785398163397448279 $1280 0.785398163397448279 $912 $1281 forward @7 unknown #
-coedge $-1 -1 $-1 $1282 $1263 $913 $1082 forward $1283 0 $-1 #
-edge $-1 -1 $-1 $915 -1.570796326794897002 $1284 0 $1081 $1285 forward @7 unknown #
+edge $-1 -1 $-1 $2040 -0.785398163397448279 $2153 0.785398163397448279 $2038 $2154 forward @7 unknown #
+coedge $-1 -1 $-1 $2155 $2140 $2039 $2088 forward $2156 0 $-1 #
+edge $-1 -1 $-1 $2041 -1.570796326794897002 $2157 0 $2087 $2158 forward @7 unknown #
 point $-1 -1 $-1 0.375 0 1.979999999999999982 #
 point $-1 -1 $-1 0.3749999999999999445 0 -0.02500000000000004996 #
-coedge $-1 -1 $-1 $1286 $1287 $917 $1086 reversed $1288 0 $-1 #
-edge $-1 -1 $-1 $1087 -0.7853981633974475018 $1089 0.7853981633974490562 $917 $1289 reversed @7 unknown #
-vertex $-1 -1 $-1 $1086 0 $1290 #
-straight-curve $-1 -1 $-1 0.3349999999999998535 3.774999999999999911 -0.2399999999999999911 0 0 -1 I I #
-vertex $-1 -1 $-1 $1086 1 $1291 #
-straight-curve $-1 -1 $-1 0.375 3.814999999999999947 -0.2399999999999999911 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $920 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 19 0 3 308 343 350 0 2 @2 19 0 3 308 344 350 0 #
-cone-surface $-1 -1 $-1 0.375 3.774999999999999911 -0.2399999999999999911 0 0 -1 -0.02828427124746206445 0.02828427124746202281 0 1 I I 0 1 0.1600000000000001976 forward I I I I #
-coedge $1292 -1 $-1 $1009 $921 $1293 $1294 forward $618 0 $-1 #
-coedge $-1 -1 $-1 $1295 $1296 $921 $1095 forward $1150 0 $-1 #
-edge $-1 -1 $-1 $1297 -0.02994244378335312803 $1097 0.7853981633974479459 $921 $1298 forward @7 unknown #
-coedge $-1 -1 $-1 $922 $1017 $1295 $1299 forward $1018 0 $-1 #
-vertex $-1 -1 $-1 $1299 2 $1300 #
-straight-curve $-1 -1 $-1 4.125294372515227792 2.600000000000000089 0.1199999999999999956 -0 1 0 I I #
-coedge $-1 -1 $-1 $928 $1157 $924 $930 forward $951 0 $-1 #
-coedge $-1 -1 $-1 $925 $1293 $1296 $1301 forward $926 0 $-1 #
-coedge $-1 -1 $-1 $1302 $932 $925 $1102 reversed $974 0 $-1 #
-edge $-1 -1 $-1 $1303 -2.212499999999999467 $802 1.1875 $1101 $1304 reversed @7 unknown #
-face $1305 -1 $-1 $456 $926 $5 $-1 $1306 reversed single #
-coedge $-1 -1 $-1 $1157 $928 $1307 $1119 reversed $951 0 $-1 #
-straight-curve $-1 -1 $-1 0.375 0.375 1.854999999999999982 0 -0.7071067811865476838 -0.7071067811865473507 F 0 F 0.360624458405139181 #
-straight-curve $-1 -1 $-1 2.087499999999999911 0.1200000000000001066 1.600000000000000089 -1 0 0 F -5.887499999999999289 F 1.712499999999999911 #
-coedge $-1 -1 $-1 $932 $1302 $1308 $1309 reversed $974 0 $-1 #
-straight-curve $-1 -1 $-1 0.375 0.2998528137423857043 -0.1551471862576143113 0 -0.7071067811865474617 0.7071067811865475727 I I #
-coedge $-1 -1 $-1 $1310 $1311 $935 $1110 reversed $1312 0 $-1 #
-edge $-1 -1 $-1 $960 -2.762500000000000178 $1112 0.6375000000000001776 $1109 $1313 forward @7 unknown #
-coedge $-1 -1 $-1 $939 $936 $1314 $1315 forward $940 0 $-1 #
-vertex $-1 -1 $-1 $1110 1 $1316 #
-straight-curve $-1 -1 $-1 0.1899999999999999467 0.375 1.860000000000000098 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $938 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 26 0 4 328 334 342 352 0 #
-plane-surface $-1 -1 $-1 0.1899999999999999467 0.375 1.860000000000000098 -1 0 -0 -0 1 0 forward_v I I I I #
-coedge $-1 -1 $-1 $1317 $1307 $939 $1117 reversed $1318 0 $-1 #
-edge $-1 -1 $-1 $1319 0 $941 0.1899999999999999467 $1116 $1320 forward @7 tangent #
-face $1321 -1 $-1 $1322 $940 $5 $-1 $1323 reversed single #
-edge $-1 -1 $-1 $1176 -2.913749999999998508 $941 4.686250000000000249 $1307 $1324 forward @7 unknown #
-point $-1 -1 $-1 0.375 0.1900000000000000022 1.670000000000000151 #
-coedge $-1 -1 $-1 $946 $945 $1325 $1326 forward $947 0 $-1 #
-edge $-1 -1 $-1 $1327 0 $814 0.190000000000001501 $945 $1328 forward @7 tangent #
-face $1329 -1 $-1 $1330 $947 $5 $-1 $1331 reversed single #
-coedge $-1 -1 $-1 $1332 $1333 $953 $1125 reversed $1334 0 $-1 #
-edge $-1 -1 $-1 $1126 -5.912500000000001421 $958 1.687499999999999556 $1124 $1335 forward @7 unknown #
-vertex $-1 -1 $-1 $1326 1 $1336 #
-straight-curve $-1 -1 $-1 7.975000000000001421 3.95999999999999952 1.860000000000000098 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $955 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 20 0 4 328 334 342 352 0 #
-plane-surface $-1 -1 $-1 0.375 3.959999999999999964 1.860000000000000098 0 1 0 1 -0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $1337 $956 $1333 $1338 reversed $1132 0 $-1 #
-coedge $-1 -1 $-1 $956 $1337 $1310 $1339 reversed $1132 0 $-1 #
-loop $-1 -1 $-1 $-1 $1337 $1340 #
-ellipse-curve $-1 -1 $-1 0.3750000000000000555 3.775000000000000355 1.860000000000000098 -0 -0 1 -0.1308147545195114669 0.1308147545195114392 0 1 I I #
-point $-1 -1 $-1 0.375 3.960000000000000853 1.860000000000000098 #
-point $-1 -1 $-1 0.1899999999999998357 3.775000000000000355 1.860000000000000098 #
-coedge $-1 -1 $-1 $1341 $1342 $964 $1137 reversed $1343 0 $-1 #
-edge $-1 -1 $-1 $1139 -0.4249999999999999334 $1087 2.975000000000000089 $964 $1344 reversed @7 unknown #
-coedge $-1 -1 $-1 $965 $968 $1345 $1346 forward $969 0 $-1 #
-vertex $-1 -1 $-1 $1137 0 $1347 #
-straight-curve $-1 -1 $-1 0.3349999999999999645 0.375 -0.2399999999999999911 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $967 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 26 0 3 308 343 350 0 2 @2 26 0 3 308 344 350 0 #
-face $1348 -1 $-1 $920 $1349 $5 $-1 $1350 reversed single #
-plane-surface $-1 -1 $-1 0.3349999999999999645 0.375 -0.2399999999999999911 -1 0 -0 -0 1 0 forward_v I I I I #
-coedge $-1 -1 $-1 $1308 $1351 $968 $1145 reversed $1194 0 $-1 #
-edge $-1 -1 $-1 $970 -0.04970562748477147519 $1352 0.1302943725152286847 $1144 $1353 forward @7 tangent #
-face $1354 -1 $-1 $967 $969 $5 $-1 $1355 reversed single #
-point $-1 -1 $-1 0.375 0.3349999999999999645 -0.1902943725152285159 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $973 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 5 0 3 307 343 350 0 1 @1 5 0 3 307 344 350 0 #
-face $1356 -1 $-1 $842 $1357 $5 $-1 $1358 reversed single #
-loop $-1 -1 $-1 $-1 $1094 $973 #
-cone-surface $-1 -1 $-1 3.774999999999999467 0.375 -0.03514718625761432957 0 0 1 0.1379898987322334403 -0.1379898987322333292 0 1 I I 0.7071067811865472397 0.7071067811865477948 0.2800000000000001377 forward I I I I #
-coedge $-1 -1 $-1 $1359 $976 $1360 $1361 forward $926 0 $-1 #
-straight-curve $-1 -1 $-1 7.974999999999998757 0.1199999999999999956 0 0 0 1 I I #
-coedge $-1 -1 $-1 $1362 $1360 $978 $1155 reversed $1168 0 $-1 #
-edge $-1 -1 $-1 $1165 -0.04970562748477104498 $979 0.2543502884254440488 $1154 $1363 forward @7 tangent #
-point $-1 -1 $-1 7.974999999999998757 0.1199999999999999956 0.02470562748477132115 #
-coedge $-1 -1 $-1 $1099 $1104 $981 $1158 reversed $951 0 $-1 #
-edge $-1 -1 $-1 $863 0 $1176 0.09899494936611649698 $1157 $1364 forward @7 tangent #
-coedge $-1 -1 $-1 $985 $984 $1365 $1366 forward $986 0 $-1 #
-edge $-1 -1 $-1 $845 -0.04970562748477264092 $1367 0.1302943725152287402 $984 $1368 forward @7 tangent #
-coedge $-1 -1 $-1 $1215 $989 $985 $1162 forward $1039 0 $-1 #
-edge $-1 -1 $-1 $849 -0.04970562748477264092 $1369 0.1302943725152282406 $1161 $1370 forward @7 tangent #
-face $1371 -1 $-1 $1372 $986 $5 $-1 $1373 reversed single #
-coedge $-1 -1 $-1 $989 $1215 $1374 $1375 reversed $1039 0 $-1 #
-vertex $-1 -1 $-1 $1376 1 $1377 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 -0.1902943725152285714 0 0 -1 0.02828427124746209914 -0.02828427124746207139 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $993 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 5 307 311 312 343 350 0 #
-loop $-1 -1 $-1 $-1 $1360 $993 #
-plane-surface $-1 -1 $-1 7.325000000000000178 0.1798528137423857087 -0.03514718625761430182 0 -0.7071067811865475727 -0.7071067811865474617 -1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $996 $995 $1378 $1379 forward $997 0 $-1 #
-coedge $-1 -1 $-1 $999 $1380 $995 $1172 forward $1175 0 $-1 #
-edge $-1 -1 $-1 $1381 0 $858 0.1899999999999997247 $995 $1382 forward @7 tangent #
-face $1383 -1 $-1 $1340 $997 $5 $-1 $1384 reversed single #
-coedge $-1 -1 $-1 $1380 $999 $1385 $1386 reversed $1175 0 $-1 #
-loop $-1 -1 $-1 $-1 $999 $1387 #
-vertex $-1 -1 $-1 $1000 1 $1388 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 1.670000000000000373 0 0 -1 0.1308147545195109951 -0.1308147545195108008 0 1 I I #
-coedge $-1 -1 $-1 $1006 $1005 $1389 $1390 forward $1007 0 $-1 #
-face $1391 -1 $-1 $1163 $1007 $5 $-1 $1392 reversed single #
-coedge $-1 -1 $-1 $1393 $1394 $1009 $1181 forward $1357 0 $-1 #
-edge $-1 -1 $-1 $1183 -0.785398163397448279 $1395 0.02994244378335069248 $1009 $1396 forward @7 unknown #
-coedge $-1 -1 $-1 $1028 $1010 $1394 $1397 reversed $1029 0 $-1 #
-vertex $-1 -1 $-1 $1181 2 $1398 #
-straight-curve $-1 -1 $-1 4.224705627484771853 1.549999999999999822 0.1199999999999999956 -0 -1 0 I I #
-coedge $-1 -1 $-1 $1013 $1012 $1399 $1400 forward $1014 0 $-1 #
-coedge $-1 -1 $-1 $1401 $1191 $1013 $1187 forward $1402 0 $-1 #
-edge $-1 -1 $-1 $1015 -0.04970562748477130866 $1403 0.1302943725152293508 $1013 $1404 forward @7 tangent #
-face $1405 -1 $-1 $1406 $1014 $5 $-1 $1407 reversed single #
-edge $-1 -1 $-1 $1408 -3.074999999999999734 $1015 0.3249999999999997335 $1191 $1409 reversed @7 unknown #
-point $-1 -1 $-1 3.814999999999999503 3.774999999999999467 -0.1902943725152286825 #
-coedge $-1 -1 $-1 $1186 $1410 $1017 $1189 forward $1402 0 $-1 #
-face $1411 -1 $-1 $1205 $1018 $5 $-1 $1412 reversed single #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1022 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 24 0 3 308 343 350 0 2 @2 24 0 3 308 344 350 0 #
-loop $-1 -1 $-1 $-1 $1351 $1022 #
-plane-surface $-1 -1 $-1 3.774999999999999467 0.3349999999999999645 -0.2399999999999999911 0 -1 0 -1 -0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $1413 $1414 $1415 $1416 forward $1023 0 $-1 #
-coedge $-1 -1 $-1 $1417 $1418 $1025 $1198 reversed $1419 0 $-1 #
-edge $-1 -1 $-1 $1089 -0.4249999999999999334 $1199 2.975000000000000089 $1025 $1420 reversed @7 unknown #
-vertex $-1 -1 $-1 $1198 1 $1421 #
-straight-curve $-1 -1 $-1 3.774999999999999911 3.814999999999999503 -0.2399999999999999911 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1027 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 20 0 3 308 343 350 0 2 @2 20 0 3 308 344 350 0 #
-plane-surface $-1 -1 $-1 0.375 3.814999999999999503 -0.2399999999999999911 0 1 0 1 -0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $1422 $1208 $1028 $1204 forward $1423 0 $-1 #
-edge $-1 -1 $-1 $1030 -3.075000000000000178 $1424 0.3249999999999998446 $1203 $1425 reversed @7 unknown #
-face $1426 -1 $-1 $1103 $1029 $5 $-1 $1427 reversed single #
-point $-1 -1 $-1 4.535000000000000142 3.774999999999999911 -0.1902943725152284604 #
-coedge $-1 -1 $-1 $1034 $1033 $1428 $1429 forward $1035 0 $-1 #
-coedge $-1 -1 $-1 $1203 $1430 $1033 $1209 reversed $1423 0 $-1 #
-edge $-1 -1 $-1 $1030 -0.0497056274847715307 $1431 0.1302943725152282406 $1033 $1432 forward @7 tangent #
-face $1433 -1 $-1 $1044 $1035 $5 $-1 $1434 reversed single #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1038 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 24 0 5 308 311 312 343 350 0 #
-face $1435 -1 $-1 $1436 $1437 $5 $-1 $1438 reversed single #
-loop $-1 -1 $-1 $-1 $1439 $1038 #
-plane-surface $-1 -1 $-1 7.974999999999999645 0.3349999999999999645 -0.2399999999999999911 0 -1 0 -1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $1164 $1161 $1440 $1441 forward $1039 0 $-1 #
-coedge $-1 -1 $-1 $1442 $1443 $1041 $1217 reversed $1444 0 $-1 #
-edge $-1 -1 $-1 $1218 -0.4249999999999998224 $1220 2.974999999999999645 $1041 $1445 reversed @7 unknown #
-vertex $-1 -1 $-1 $1429 1 $1446 #
-straight-curve $-1 -1 $-1 4.575000000000000178 3.814999999999999947 -0.2399999999999999911 0 0 -1 I I #
-vertex $-1 -1 $-1 $1217 1 $1447 #
-straight-curve $-1 -1 $-1 7.974999999999999645 3.814999999999999503 -0.2399999999999999911 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1044 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 20 0 5 308 311 312 343 350 0 #
-plane-surface $-1 -1 $-1 4.575000000000000178 3.814999999999999503 -0.2399999999999999911 0 1 0 1 0 0 forward_v I I I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1046 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 8 0 4 307 311 312 343 0 #
-face $1448 -1 $-1 $1449 $1450 $5 $-1 $1451 forward single #
-loop $-1 -1 $-1 $-1 $1452 $1046 #
-plane-surface $-1 -1 $-1 5.224999999999999645 4.054999999999999716 -0.1199999999999999956 0 0.7071067811865471286 -0.7071067811865477948 -1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $1453 $1454 $1455 $1456 forward $1047 0 $-1 #
-coedge $-1 -1 $-1 $1051 $1050 $1049 $1230 reversed $781 0 $-1 #
-edge $-1 -1 $-1 $1280 -1.979999999999999982 $1284 0.02499999999999991118 $1229 $1457 forward @7 tangent #
-coedge $-1 -1 $-1 $1458 $1459 $1050 $1232 forward $1460 0 $-1 #
-edge $-1 -1 $-1 $1284 -0.3249999999999998446 $1235 3.07500000000000151 $1231 $1461 forward @7 unknown #
-coedge $-1 -1 $-1 $1076 $1056 $1051 $1234 reversed $1077 0 $-1 #
-edge $-1 -1 $-1 $1280 -2.737500000000000266 $1236 0.6625000000000000888 $1051 $1462 forward @7 unknown #
-vertex $-1 -1 $-1 $1055 0 $1463 #
-vertex $-1 -1 $-1 $1234 1 $1464 #
+coedge $-1 -1 $-1 $2083 $2043 $2061 $2116 reversed $1981 0 $-1 #
+coedge $-1 -1 $-1 $2159 $2044 $2050 $2103 reversed $2068 0 $-1 #
+straight-curve $-1 -1 $-1 6.262499999999999289 4.150000000000000355 1.979999999999999982 1 0 0 I I #
+coedge $-1 -1 $-1 $2081 $2160 $2046 $2095 forward $2149 0 $-1 #
+edge $-1 -1 $-1 $2099 -0.785398163397448279 $2084 0.785398163397448279 $2094 $2161 forward @7 unknown #
+coedge $-1 -1 $-1 $2162 $2047 $2160 $2163 reversed $2098 0 $-1 #
+coedge $-1 -1 $-1 $2047 $2162 $2049 $2102 reversed $2098 0 $-1 #
+loop $-1 -1 $-1 $-1 $2096 $2164 #
+vertex $-1 -1 $-1 $2095 0 $2165 #
+straight-curve $-1 -1 $-1 8.349999999999999645 1.037500000000000089 1.979999999999999982 0 -1 0 I I #
+coedge $-1 -1 $-1 $2050 $2049 $2166 $2167 reversed $2051 0 $-1 #
+edge $-1 -1 $-1 $2053 -1.979999999999999982 $2168 0.02499999999999946709 $2097 $2169 forward @7 tangent #
+edge $-1 -1 $-1 $2170 -0.02499999999999769074 $2052 1.979999999999999982 $2092 $2171 forward @7 tangent #
+face $2172 -1 $-1 $2128 $2051 $5 $-1 $2173 forward single #
+point $-1 -1 $-1 7.974999999999999645 4.150000000000000355 1.979999999999999982 #
+point $-1 -1 $-1 8.349999999999999645 3.775000000000000355 1.979999999999999982 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2056 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 7 0 4 307 311 312 343 0 #
+face $2174 -1 $-1 $2175 $2176 $5 $-1 $2177 forward single #
+loop $-1 -1 $-1 $-1 $2166 $2056 #
+cone-surface $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.1199999999999999956 0 0 1 0.1979898987322331327 0.1979898987322336046 0 1 I I 0.7071067811865473507 0.7071067811865477948 0.2800000000000000822 forward I I I I #
+coedge $-1 -1 $-1 $2178 $2179 $2159 $2180 forward $2057 0 $-1 #
+coedge $-1 -1 $-1 $2061 $2060 $2059 $2113 reversed $2012 0 $-1 #
+edge $-1 -1 $-1 $2153 -1.979999999999999982 $2157 0.02499999999999991118 $2112 $2181 forward @7 tangent #
+coedge $-1 -1 $-1 $2182 $2183 $2060 $2115 forward $2184 0 $-1 #
+edge $-1 -1 $-1 $2157 -0.3249999999999998446 $2117 3.07500000000000151 $2114 $2185 forward @7 unknown #
+edge $-1 -1 $-1 $2153 -2.737500000000000266 $2118 0.6625000000000000888 $2061 $2186 forward @7 unknown #
+vertex $-1 -1 $-1 $2065 0 $2187 #
+vertex $-1 -1 $-1 $2116 1 $2188 #
 straight-curve $-1 -1 $-1 0 3.775000000000000355 0 0 0 1 I I #
-coedge $-1 -1 $-1 $1465 $1054 $1466 $1250 forward $1240 0 $-1 #
-coedge $-1 -1 $-1 $1054 $1465 $1458 $1467 forward $1240 0 $-1 #
-loop $-1 -1 $-1 $-1 $1054 $1468 #
+coedge $-1 -1 $-1 $2189 $2064 $2190 $2129 forward $2122 0 $-1 #
+coedge $-1 -1 $-1 $2064 $2189 $2182 $2191 forward $2122 0 $-1 #
+loop $-1 -1 $-1 $-1 $2064 $2192 #
 ellipse-curve $-1 -1 $-1 0.3749999999999991118 3.775000000000001243 -0.02500000000000102141 -0 -0 -1 8.881784197001252323e-16 0.3749999999999991118 0 1 I I #
-coedge $-1 -1 $-1 $1056 $1277 $1058 $1245 reversed $1077 0 $-1 #
 ellipse-curve $-1 -1 $-1 0.375 3.775000000000000355 1.979999999999999982 0 0 -1 -0.2651650429449553537 0.2651650429449553537 0 1 I I #
-coedge $-1 -1 $-1 $1469 $1058 $1470 $1471 reversed $1060 0 $-1 #
-edge $-1 -1 $-1 $1062 -5.887499999999999289 $1472 1.712500000000000355 $1058 $1473 forward @7 unknown #
-coedge $-1 -1 $-1 $1059 $1474 $1475 $1476 reversed $1060 0 $-1 #
-coedge $-1 -1 $-1 $1477 $1466 $1059 $1248 forward $1478 0 $-1 #
-edge $-1 -1 $-1 $1061 -0.3249999999999998446 $1479 3.075000000000000178 $1247 $1480 forward @7 unknown #
-face $1481 -1 $-1 $-1 $1060 $5 $-1 $1482 forward single #
-edge $-1 -1 $-1 $1061 0.03535533905932640442 $1483 0.3394112549695426084 $1238 $1484 forward @7 tangent #
+coedge $-1 -1 $-1 $2067 $2193 $2194 $2195 reversed $2068 0 $-1 #
+coedge $-1 -1 $-1 $2196 $2190 $2067 $2127 forward $2197 0 $-1 #
+edge $-1 -1 $-1 $2069 -0.3249999999999998446 $2198 3.075000000000000178 $2126 $2199 forward @7 unknown #
+face $2200 -1 $-1 $-1 $2068 $5 $-1 $2201 forward single #
+edge $-1 -1 $-1 $2069 0.03535533905932640442 $2202 0.3394112549695426084 $2120 $2203 forward @7 tangent #
 point $-1 -1 $-1 0.375 4.150000000000000355 -0.02499999999999916178 #
 point $-1 -1 $-1 0.375 4.150000000000000355 1.979999999999999982 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1064 @17 sketch_attrib_def 1 1 3 @13 114 0 0 0 1 1 #
-coedge $-1 -1 $-1 $1072 $1064 $1485 $1486 reversed $609 0 $-1 #
-coedge $1487 -1 $-1 $1488 $1489 $1064 $1256 reversed $1490 0 $-1 #
-edge $-1 -1 $-1 $1260 3.914194109070750383 $1491 4.435805890929249706 $1064 $1492 forward @7 unknown #
-coedge $-1 -1 $-1 $1493 $1065 $1068 $1265 reversed $1259 0 $-1 #
-coedge $-1 -1 $-1 $1065 $1494 $1488 $1495 reversed $1259 0 $-1 #
-loop $-1 -1 $-1 $-1 $1065 $1496 #
-vertex $-1 -1 $-1 $1256 0 $1497 #
+coedge $-1 -1 $-1 $2145 $2072 $2204 $2205 forward $1970 0 $-1 #
+coedge $-1 -1 $-1 $2073 $2206 $2072 $2134 reversed $2136 0 $-1 #
+edge $-1 -1 $-1 $2137 0.6461446690596466258 $2207 0.9218442786682189416 $2072 $2208 forward @7 unknown #
+coedge $-1 -1 $-1 $2209 $2073 $2076 $2142 reversed $2136 0 $-1 #
+loop $-1 -1 $-1 $-1 $2135 $2210 #
+vertex $-1 -1 $-1 $2134 0 $2211 #
 intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2 
 	0 2 0.1414213562373100863 2 
 	3.914194109070750383 2.775557561562891351e-17 4.163336342344337027e-17 1 
@@ -1312,290 +2694,80 @@ intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2
 	0 
 	
 	0 F 1 F 0 UNEXTENDED UNEXTENDED } I I #
-coedge $-1 -1 $-1 $1068 $1067 $1498 $1499 forward $1069 0 $-1 #
-coedge $-1 -1 $-1 $1081 $1500 $1067 $1264 forward $1283 0 $-1 #
-edge $-1 -1 $-1 $1501 0 $915 0.3040559159102153575 $1263 $1502 forward @7 tangent #
-edge $-1 -1 $-1 $1503 0 $1070 0.304055915910215413 $1068 $1504 forward @7 tangent #
-face $1505 -1 $-1 $1496 $1069 $5 $-1 $1506 forward single #
+coedge $-1 -1 $-1 $2076 $2075 $2212 $2213 forward $2077 0 $-1 #
+coedge $-1 -1 $-1 $2087 $2214 $2075 $2141 forward $2156 0 $-1 #
+edge $-1 -1 $-1 $2215 0 $2041 0.3040559159102153575 $2140 $2216 forward @7 tangent #
+edge $-1 -1 $-1 $2217 0 $2078 0.304055915910215413 $2076 $2218 forward @7 tangent #
+face $2219 -1 $-1 $2220 $2077 $5 $-1 $2221 forward single #
 point $-1 -1 $-1 3.774999999999999467 0 -0.02499999999999999445 #
-coedge $-1 -1 $-1 $1507 $1508 $1072 $1269 forward $1509 0 $-1 #
-edge $-1 -1 $-1 $1273 -0.3249999999999992895 $1510 3.074999999999999289 $1268 $1511 forward @7 unknown #
-coedge $-1 -1 $-1 $1512 $1073 $1513 $1514 reversed $1272 0 $-1 #
-coedge $-1 -1 $-1 $1073 $1512 $1075 $1276 forward $1272 0 $-1 #
-loop $-1 -1 $-1 $-1 $1073 $1515 #
-vertex $-1 -1 $-1 $1514 1 $1516 #
+coedge $-1 -1 $-1 $2080 $2132 $2222 $2223 reversed $1970 0 $-1 #
+coedge $-1 -1 $-1 $2224 $2225 $2080 $2147 forward $2226 0 $-1 #
+edge $-1 -1 $-1 $2150 -0.3249999999999992895 $2227 3.074999999999999289 $2146 $2228 forward @7 unknown #
+coedge $-1 -1 $-1 $2160 $2081 $2229 $2230 reversed $2149 0 $-1 #
+loop $-1 -1 $-1 $-1 $2081 $2231 #
+vertex $-1 -1 $-1 $2230 1 $2232 #
 straight-curve $-1 -1 $-1 7.974999999999998757 0 0 0 0 1 I I #
-coedge $-1 -1 $-1 $1277 $1075 $1517 $1518 reversed $1077 0 $-1 #
-edge $-1 -1 $-1 $1519 -0.785398163397448279 $1078 0.785398163397448279 $1271 $1520 forward @7 unknown #
-coedge $-1 -1 $-1 $1242 $1275 $1521 $1522 reversed $1077 0 $-1 #
-face $1523 -1 $-1 $1192 $1524 $5 $-1 $1525 reversed single #
 point $-1 -1 $-1 7.974999999999999645 0 1.979999999999999982 #
-vertex $-1 -1 $-1 $1230 0 $1526 #
+vertex $-1 -1 $-1 $2113 0 $2233 #
 ellipse-curve $-1 -1 $-1 0.375 0.375 1.979999999999999982 0 0 -1 -0.2651650429449553537 -0.2651650429449553537 0 1 I I #
-coedge $-1 -1 $-1 $1500 $1081 $1459 $1527 reversed $1283 0 $-1 #
-loop $-1 -1 $-1 $-1 $1081 $1528 #
-vertex $-1 -1 $-1 $1232 0 $1529 #
+coedge $-1 -1 $-1 $2214 $2087 $2183 $2234 reversed $2156 0 $-1 #
+loop $-1 -1 $-1 $-1 $2087 $2235 #
+vertex $-1 -1 $-1 $2115 0 $2236 #
 ellipse-curve $-1 -1 $-1 0.374999999999999889 0.374999999999999889 -0.02500000000000016445 -0 -0 -1 -0.374999999999999889 1.11022302462515654e-16 0 1 I I #
-coedge $-1 -1 $-1 $1530 $1085 $1342 $1531 reversed $1288 0 $-1 #
-coedge $-1 -1 $-1 $1085 $1530 $1417 $1532 reversed $1288 0 $-1 #
-loop $-1 -1 $-1 $-1 $1287 $1533 #
-ellipse-curve $-1 -1 $-1 0.375 3.774999999999999911 -0.3702943725152286758 -0 -0 1 -0.02828427124746206445 0.02828427124746202281 0 1 I I #
-point $-1 -1 $-1 0.3349999999999997979 3.774999999999999911 -0.3702943725152286758 #
-point $-1 -1 $-1 0.375 3.814999999999999947 -0.3702943725152287868 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1093 @17 sketch_attrib_def 1 1 3 @13 114 0 0 0 1 1 #
-coedge $1534 -1 $-1 $1100 $1359 $1093 $1294 reversed $926 0 $-1 #
-edge $-1 -1 $-1 $1297 1.927668997615923363 $1395 2.247331002384075571 $1093 $1535 reversed @7 unknown #
-coedge $-1 -1 $-1 $1536 $1094 $1096 $1299 reversed $1150 0 $-1 #
-coedge $-1 -1 $-1 $1094 $1537 $1100 $1301 reversed $1150 0 $-1 #
-vertex $-1 -1 $-1 $1294 2 $1538 #
-ellipse-curve $-1 -1 $-1 3.774999999999999467 0.375 0.1199999999999999817 0 0 1 0.24769552621700483 -0.2476955262170046357 0 1 I I #
-edge $-1 -1 $-1 $1408 -0.04970562748477171805 $1097 0.3891168824543145277 $1096 $1539 forward @7 tangent #
-point $-1 -1 $-1 4.12529437251522868 0.375 0.1200000000000001066 #
-edge $-1 -1 $-1 $1297 -8.362252985495080893 $1303 -5.884318267708581018 $1100 $1540 reversed @7 unknown #
-coedge $-1 -1 $-1 $1107 $1101 $1537 $1541 reversed $974 0 $-1 #
-vertex $-1 -1 $-1 $1102 2 $1542 #
-straight-curve $-1 -1 $-1 1.5625 0.1199999999999999956 0.02470562748477142523 1 0 0 F -10001.56250100000034 F 9998.437501000000339 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1103 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 4 0 2 314 350 0 1 @1 4 0 3 319 342 350 0 2 @2 18 0 2 347 350 0 2 @2 18 0 2 348 350 0 #
-plane-surface $-1 -1 $-1 0 0.1199999999999999956 0 0 -1 0 1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $1116 $1385 $1104 $1119 forward $1318 0 $-1 #
-coedge $-1 -1 $-1 $1543 $1144 $1107 $1309 forward $1194 0 $-1 #
-edge $-1 -1 $-1 $970 -3.074999999999999734 $1544 0.3249999999999997335 $1107 $1545 forward @7 unknown #
-coedge $-1 -1 $-1 $1546 $1109 $1131 $1339 forward $1312 0 $-1 #
-coedge $-1 -1 $-1 $1109 $1546 $1547 $1548 reversed $1312 0 $-1 #
-loop $-1 -1 $-1 $-1 $1546 $1549 #
-straight-curve $-1 -1 $-1 0.1899999999999999467 1.012500000000000178 1.860000000000000098 0 -1 -0 F -3.026501000000000552 F 0.9015010000000002188 #
-coedge $-1 -1 $-1 $1547 $1550 $1111 $1315 reversed $1551 0 $-1 #
-edge $-1 -1 $-1 $1112 -0.785398163397448057 $1319 0.785398163397448279 $1314 $1552 forward @7 unknown #
-point $-1 -1 $-1 0.1899999999999999467 0.375 1.860000000000000098 #
-coedge $-1 -1 $-1 $1385 $1116 $1553 $1554 forward $1318 0 $-1 #
-loop $-1 -1 $-1 $-1 $1307 $1322 #
-vertex $-1 -1 $-1 $1315 1 $1555 #
-straight-curve $-1 -1 $-1 0.375 0.1900000000000000022 1.860000000000000098 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1118 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 25 0 4 328 334 342 352 0 #
-face $1556 -1 $-1 $1387 $1318 $5 $-1 $1557 reversed single #
-cone-surface $-1 -1 $-1 0.375 0.3750000000000000555 1.860000000000000098 0 0 -1 -0.1308147545195113282 -0.1308147545195113282 0 1 I I 0 1 0.1850000000000000533 forward I I I I #
-straight-curve $-1 -1 $-1 5.061250000000000249 0.1899999999999999467 1.670000000000000151 -1 0 0 I I #
-coedge $-1 -1 $-1 $1558 $1559 $1121 $1326 reversed $1560 0 $-1 #
-edge $-1 -1 $-1 $1327 -0.7853981633974513876 $1126 0.7853981633974452814 $1325 $1561 forward @7 unknown #
-vertex $-1 -1 $-1 $1379 1 $1562 #
-straight-curve $-1 -1 $-1 8.160000000000000142 3.775000000000000355 1.860000000000000098 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1123 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 21 0 4 328 334 342 352 0 #
-face $1563 -1 $-1 $1564 $1565 $5 $-1 $1566 reversed single #
-cone-surface $-1 -1 $-1 7.975000000000001421 3.775000000000000355 1.860000000000000098 0 0 -1 0.13081475451951044 0.1308147545195112449 0 1 I I 0 1 0.1849999999999993872 forward I I I I #
-coedge $-1 -1 $-1 $1567 $1124 $1559 $1568 forward $1334 0 $-1 #
-coedge $-1 -1 $-1 $1124 $1567 $1130 $1338 forward $1334 0 $-1 #
-loop $-1 -1 $-1 $-1 $1567 $1569 #
-straight-curve $-1 -1 $-1 2.062499999999999556 3.959999999999999964 1.860000000000000098 -1 0 -0 F -6.176501000000000019 F 1.951500999999999708 #
-point $-1 -1 $-1 7.975000000000001421 3.95999999999999952 1.860000000000000098 #
-coedge $-1 -1 $-1 $1131 $1130 $1570 $1571 reversed $1132 0 $-1 #
-edge $-1 -1 $-1 $1572 0.169705627484771554 $958 0.3394112549695423309 $1130 $1573 forward @7 tangent #
-edge $-1 -1 $-1 $960 0 $1574 0.1697056274847711932 $1131 $1575 forward @7 tangent #
-face $1576 -1 $-1 $1577 $1132 $5 $-1 $1578 reversed single #
-coedge $-1 -1 $-1 $1579 $1136 $1580 $1581 forward $1343 0 $-1 #
-coedge $-1 -1 $-1 $1136 $1579 $1286 $1531 forward $1343 0 $-1 #
-loop $-1 -1 $-1 $-1 $1342 $1582 #
-straight-curve $-1 -1 $-1 0.3349999999999999645 0.7999999999999999334 -0.3702943725152285648 0 -1 0 F -9999.200001000001066 F 10000.80000099999961 #
-coedge $-1 -1 $-1 $1583 $1580 $1138 $1346 reversed $1584 0 $-1 #
-edge $-1 -1 $-1 $1352 -0.785398163397448279 $1139 0.785398163397448279 $1138 $1585 reversed @7 unknown #
-point $-1 -1 $-1 0.3349999999999999645 0.375 -0.3702943725152286203 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1142 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 2 0 3 308 343 350 0 1 @1 2 0 3 308 344 350 0 #
-loop $-1 -1 $-1 $-1 $1586 $1142 #
-plane-surface $-1 -1 $-1 2.074999999999999734 2.074999999999999734 -0.3800000000000000044 0 0 -1 -1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $1144 $1543 $1587 $1588 forward $1194 0 $-1 #
-vertex $-1 -1 $-1 $1346 0 $1589 #
-straight-curve $-1 -1 $-1 0.375 0.3349999999999999645 -0.2399999999999999911 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1146 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 25 0 3 308 343 350 0 2 @2 25 0 3 308 344 350 0 #
-cone-surface $-1 -1 $-1 0.375 0.375 -0.2399999999999999911 0 0 -1 -0.02828427124746188751 -0.02828427124746188751 0 1 I I 0 1 0.1599999999999999756 forward I I I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1149 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 3 0 5 307 311 312 343 350 0 #
-loop $-1 -1 $-1 $-1 $1394 $1149 #
-cone-surface $-1 -1 $-1 4.575000000000000178 0.375 -0.03514718625761428794 0 0 1 -0.1379898987322333292 -0.1379898987322333292 0 1 I I 0.7071067811865475727 0.7071067811865473507 0.2800000000000000266 forward I I I I #
-coedge $-1 -1 $-1 $1293 $1152 $1393 $1590 forward $926 0 $-1 #
-coedge $-1 -1 $-1 $1154 $1591 $1152 $1361 reversed $1168 0 $-1 #
-edge $-1 -1 $-1 $979 -4.3125 $1592 -0.9125000000000000888 $1360 $1593 reversed @7 unknown #
-coedge $-1 -1 $-1 $1591 $1154 $1594 $1376 reversed $1168 0 $-1 #
-straight-curve $-1 -1 $-1 7.974999999999999645 0.2998528137423857043 -0.1551471862576143113 0 -0.7071067811865474617 0.7071067811865475727 I I #
-straight-curve $-1 -1 $-1 7.974999999999998757 0.1199999999999999956 1.600000000000000089 -2.46289013126866706e-15 0.7071067811865476838 0.7071067811865473507 F 0 F 0.360624458405139181 #
-coedge $-1 -1 $-1 $1595 $1596 $1159 $1366 reversed $1597 0 $-1 #
-edge $-1 -1 $-1 $1367 -0.4249999999999998224 $1369 2.974999999999999645 $1159 $1598 reversed @7 unknown #
-vertex $-1 -1 $-1 $1366 0 $1599 #
-straight-curve $-1 -1 $-1 8.015000000000000568 3.774999999999999467 -0.2399999999999999911 0 0 -1 I I #
-vertex $-1 -1 $-1 $1441 0 $1600 #
-straight-curve $-1 -1 $-1 8.015000000000000568 0.375 -0.2399999999999999911 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1163 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 22 0 5 308 311 312 343 350 0 #
-face $1601 -1 $-1 $1602 $1603 $5 $-1 $1604 reversed single #
-plane-surface $-1 -1 $-1 8.015000000000000568 3.774999999999999467 -0.2399999999999999911 1 0 0 0 -1 0 forward_v I I I I #
-coedge $-1 -1 $-1 $1439 $1594 $1164 $1375 forward $1213 0 $-1 #
-edge $-1 -1 $-1 $1165 -0.04970562748477139192 $1605 0.1302943725152288512 $1374 $1606 forward @7 tangent #
-edge $-1 -1 $-1 $1607 -3.075000000000000178 $1165 0.3249999999999992895 $1362 $1608 reversed @7 unknown #
-point $-1 -1 $-1 7.974999999999999645 0.3349999999999999645 -0.1902943725152285992 #
-coedge $-1 -1 $-1 $1609 $1610 $1170 $1379 reversed $1611 0 $-1 #
-edge $-1 -1 $-1 $1381 -2.762500000000000178 $1327 0.6375000000000001776 $1378 $1612 forward @7 unknown #
-coedge $-1 -1 $-1 $1171 $1174 $1613 $1614 forward $1175 0 $-1 #
-vertex $-1 -1 $-1 $1614 1 $1615 #
-straight-curve $-1 -1 $-1 8.159999999999998366 0.375 1.860000000000000098 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1173 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 22 0 4 328 334 342 352 0 #
-plane-surface $-1 -1 $-1 8.160000000000000142 3.775000000000000355 1.860000000000000098 1 0 0 0 -1 0 forward_v I I I I #
-coedge $-1 -1 $-1 $1307 $1317 $1174 $1386 forward $1318 0 $-1 #
-edge $-1 -1 $-1 $1616 0 $1176 0.1900000000000001688 $1174 $1617 forward @7 tangent #
-face $1618 -1 $-1 $1173 $1175 $5 $-1 $1619 reversed single #
-point $-1 -1 $-1 7.974999999999998757 0.1899999999999999467 1.669999999999999929 #
-coedge $-1 -1 $-1 $1620 $1621 $1178 $1390 reversed $1622 0 $-1 #
-edge $-1 -1 $-1 $1220 -0.7853981633974470578 $1367 0.7853981633974495002 $1178 $1623 reversed @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1179 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 21 0 5 308 311 312 343 350 0 #
-cone-surface $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.2399999999999999911 0 0 -1 0.02828427124746200894 0.02828427124746207486 0 1 I I 0 1 0.1600000000000001976 forward I I I I #
-coedge $-1 -1 $-1 $1624 $1180 $1359 $1590 reversed $1357 0 $-1 #
-coedge $-1 -1 $-1 $1180 $1625 $1182 $1397 forward $1357 0 $-1 #
-vertex $-1 -1 $-1 $1590 2 $1626 #
-ellipse-curve $-1 -1 $-1 4.575000000000000178 0.375 0.1199999999999999956 0 0 1 -0.2476955262170047467 -0.2476955262170047467 0 1 I I #
-edge $-1 -1 $-1 $1424 -0.04970562748477111437 $1183 0.3891168824543141946 $1394 $1627 forward @7 tangent #
-point $-1 -1 $-1 4.224705627484771853 0.375 0.1199999999999999956 #
-coedge $-1 -1 $-1 $1628 $1629 $1185 $1400 reversed $1630 0 $-1 #
-edge $-1 -1 $-1 $1199 -0.7853981633974470578 $1403 0.7853981633974495002 $1185 $1631 reversed @7 unknown #
-coedge $-1 -1 $-1 $1410 $1186 $1632 $1633 forward $1402 0 $-1 #
-loop $-1 -1 $-1 $-1 $1401 $1406 #
-vertex $-1 -1 $-1 $1400 1 $1634 #
-straight-curve $-1 -1 $-1 3.814999999999999503 3.774999999999999467 -0.2399999999999999911 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1188 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 21 0 3 308 343 350 0 2 @2 21 0 3 308 344 350 0 #
-face $1635 -1 $-1 $1582 $1402 $5 $-1 $1636 reversed single #
-cone-surface $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.2399999999999999911 0 0 -1 0.02828427124746200894 0.02828427124746207486 0 1 I I 0 1 0.1600000000000001976 forward I I I I #
-vertex $-1 -1 $-1 $1637 2 $1638 #
-straight-curve $-1 -1 $-1 3.814999999999999503 3.449999999999999734 -0.19029437251522896 0 -1 0 F -9996.550000999999611 F 10003.45000100000107 #
-coedge $-1 -1 $-1 $1191 $1401 $1414 $1639 reversed $1402 0 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1192 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 6 0 3 307 343 350 0 1 @1 6 0 3 307 344 350 0 #
-plane-surface $-1 -1 $-1 3.970147186257614091 3.125 -0.03514718625761426019 0.7071067811865471286 0 -0.7071067811865477948 -0.7071067811865479058 0 -0.7071067811865472397 forward_v I I I I #
-coedge $-1 -1 $-1 $1640 $1196 $1543 $1641 reversed $1023 0 $-1 #
-coedge $-1 -1 $-1 $1196 $1640 $1410 $1639 forward $1023 0 $-1 #
-coedge $-1 -1 $-1 $1642 $1643 $1196 $1416 reversed $1644 0 $-1 #
-edge $-1 -1 $-1 $1645 -0.7853981633974478349 $1646 0.7853981633974488341 $1196 $1647 reversed @7 unknown #
-coedge $-1 -1 $-1 $1648 $1197 $1287 $1532 forward $1419 0 $-1 #
-coedge $-1 -1 $-1 $1197 $1648 $1628 $1649 reversed $1419 0 $-1 #
-loop $-1 -1 $-1 $-1 $1418 $1650 #
-straight-curve $-1 -1 $-1 0.7999999999999999334 3.814999999999999503 -0.3702943725152286758 -1 0 0 F -9999.200001000001066 F 10000.80000099999961 #
-point $-1 -1 $-1 3.774999999999999911 3.814999999999999503 -0.3702943725152286758 #
-coedge $-1 -1 $-1 $1430 $1203 $1651 $1652 forward $1423 0 $-1 #
-loop $-1 -1 $-1 $-1 $1430 $1436 #
-vertex $-1 -1 $-1 $1204 2 $1653 #
-straight-curve $-1 -1 $-1 4.535000000000000142 0.6999999999999998446 -0.1902943725152285714 0 1 0 F -10000.70000100000107 F 9999.300000999999611 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1205 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 5 307 311 312 343 350 0 #
-plane-surface $-1 -1 $-1 4.379852813742385997 1.024999999999999689 -0.03514718625761430182 -0.7071067811865475727 0 -0.7071067811865474617 -0.7071067811865474617 0 0.7071067811865475727 forward_v I I I I #
-coedge $-1 -1 $-1 $1654 $1655 $1207 $1429 reversed $1656 0 $-1 #
-edge $-1 -1 $-1 $1431 -0.7853981633974475018 $1218 0.7853981633974490562 $1207 $1657 reversed @7 unknown #
-coedge $-1 -1 $-1 $1208 $1422 $1658 $1659 forward $1423 0 $-1 #
-vertex $-1 -1 $-1 $1429 0 $1660 #
-straight-curve $-1 -1 $-1 4.535000000000000142 3.774999999999999911 -0.2399999999999999911 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1210 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 19 0 5 308 311 312 343 350 0 #
-cone-surface $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.2399999999999999911 0 0 -1 -0.02828427124746206445 0.02828427124746202281 0 1 I I 0 1 0.1600000000000001976 forward I I I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1212 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 25 0 5 308 311 312 343 350 0 #
-face $1661 -1 $-1 $1662 $1423 $5 $-1 $1663 reversed single #
-loop $-1 -1 $-1 $-1 $1664 $1212 #
-cone-surface $-1 -1 $-1 4.575000000000000178 0.375 -0.2399999999999999911 0 0 -1 -0.02828427124746188751 -0.02828427124746188751 0 1 I I 0 1 0.1599999999999999756 forward I I I I #
-coedge $-1 -1 $-1 $1665 $1374 $1666 $1667 forward $1213 0 $-1 #
-coedge $-1 -1 $-1 $1668 $1669 $1215 $1441 reversed $1670 0 $-1 #
-edge $-1 -1 $-1 $1369 -0.7853981633974478349 $1605 0.7853981633974488341 $1215 $1671 reversed @7 unknown #
-coedge $-1 -1 $-1 $1672 $1216 $1655 $1673 forward $1444 0 $-1 #
-coedge $-1 -1 $-1 $1216 $1672 $1620 $1674 reversed $1444 0 $-1 #
-loop $-1 -1 $-1 $-1 $1443 $1675 #
-straight-curve $-1 -1 $-1 5 3.814999999999999503 -0.3702943725152286758 -1 0 0 F -9995.000001000000339 F 10005.00000100000034 #
-point $-1 -1 $-1 4.575000000000000178 3.814999999999999947 -0.3702943725152287868 #
-point $-1 -1 $-1 7.974999999999999645 3.814999999999999503 -0.3702943725152286758 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1225 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 7 0 4 307 311 312 343 0 #
-face $1676 -1 $-1 $1677 $1678 $5 $-1 $1679 forward single #
-loop $-1 -1 $-1 $-1 $1680 $1225 #
-cone-surface $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.1199999999999999956 0 0 1 0.1979898987322331327 0.1979898987322336046 0 1 I I 0.7071067811865473507 0.7071067811865477948 0.2800000000000000822 forward I I I I #
-coedge $-1 -1 $-1 $1681 $1682 $1469 $1683 forward $1226 0 $-1 #
-coedge $1684 -1 $-1 $1454 $1228 $1474 $1685 reversed $1047 0 $-1 #
-coedge $-1 -1 $-1 $1228 $1453 $1686 $1687 forward $1047 0 $-1 #
-coedge $-1 -1 $-1 $1688 $1475 $1228 $1456 reversed $1689 0 $-1 #
-edge $-1 -1 $-1 $1690 -0.78539816339744839 $1691 0.4299769617072339289 $1228 $1692 forward @7 unknown #
+coedge $-1 -1 $-1 $2237 $2092 $2111 $2180 reversed $2068 0 $-1 #
+coedge $-1 -1 $-1 $2094 $2148 $2096 $2163 forward $2149 0 $-1 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 1.979999999999999982 0 0 -1 0.2651650429449553537 -0.2651650429449553537 0 1 I I #
+coedge $-1 -1 $-1 $2097 $2096 $2238 $2239 reversed $2098 0 $-1 #
+edge $-1 -1 $-1 $2240 -0.02500000000000079936 $2099 1.979999999999999982 $2096 $2241 forward @7 tangent #
+face $2242 -1 $-1 $2104 $2098 $5 $-1 $2243 forward single #
+point $-1 -1 $-1 8.349999999999999645 0.375 1.979999999999999982 #
+coedge $-1 -1 $-1 $2244 $2245 $2101 $2167 forward $2109 0 $-1 #
+edge $-1 -1 $-1 $2170 -1.570796326794900111 $2168 0 $2166 $2246 forward @7 unknown #
+vertex $-1 -1 $-1 $2167 1 $2247 #
+straight-curve $-1 -1 $-1 8.349999999999999645 3.775000000000000355 0 0 -0 -1 F -2.762501000000000317 F 1.162501000000000007 #
+vertex $-1 -1 $-1 $2180 1 $2248 #
+straight-curve $-1 -1 $-1 7.974999999999999645 4.150000000000002132 0 0 0 1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2104 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 2 0 2 316 -369 0 1 @1 2 0 3 321 342 -369 0 2 @2 15 0 2 347 -369 0 2 @2 15 0 2 348 -369 0 #
+cone-surface $-1 -1 $-1 7.974999999999999645 3.775000000000000355 0 -0 0 1 0.2651650429449553537 0.2651650429449553537 0 1 I I 0 1 0.3750000000000000555 forward I I I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2108 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 4 307 311 312 343 0 #
+face $2249 -1 $-1 $2250 $2251 $5 $-1 $2252 forward single #
+loop $-1 -1 $-1 $-1 $2238 $2108 #
+plane-surface $-1 -1 $-1 8.254999999999999005 3.125 -0.1199999999999999956 0.7071067811865471286 0 -0.7071067811865477948 -0.7071067811865479058 0 -0.7071067811865472397 forward_v I I I I #
+coedge $-1 -1 $-1 $2253 $2111 $2245 $2254 reversed $2057 0 $-1 #
+coedge $-1 -1 $-1 $2111 $2253 $2255 $2256 reversed $2057 0 $-1 #
+edge $-1 -1 $-1 $2257 1.775000000000000355 $2170 5.174999999999999822 $2111 $2258 forward @7 unknown #
 straight-curve $-1 -1 $-1 0 0.375 0 -0 -0 -1 F -2.762501000000000317 F 1.162501000000000007 #
-coedge $-1 -1 $-1 $1693 $1231 $1239 $1467 reversed $1460 0 $-1 #
-coedge $-1 -1 $-1 $1231 $1693 $1282 $1527 forward $1460 0 $-1 #
-loop $-1 -1 $-1 $-1 $1231 $1694 #
+coedge $-1 -1 $-1 $2259 $2114 $2121 $2191 reversed $2184 0 $-1 #
+coedge $-1 -1 $-1 $2114 $2259 $2155 $2234 forward $2184 0 $-1 #
+loop $-1 -1 $-1 $-1 $2114 $2260 #
 straight-curve $-1 -1 $-1 0 0.6999999999999998446 -0.02499999999999998751 0 1 0 I I #
 straight-curve $-1 -1 $-1 0 3.112500000000000266 1.979999999999999982 0 1 0 I I #
 point $-1 -1 $-1 0 3.775000000000001243 -0.02500000000000011935 #
 point $-1 -1 $-1 0 3.775000000000000355 1.979999999999999982 #
-coedge $-1 -1 $-1 $1239 $1238 $1695 $1696 forward $1240 0 $-1 #
-coedge $-1 -1 $-1 $1247 $1697 $1238 $1250 reversed $1478 0 $-1 #
-edge $-1 -1 $-1 $1698 0 $1235 0.3040559159102152464 $1239 $1699 forward @7 tangent #
-face $1700 -1 $-1 $1694 $1240 $5 $-1 $1701 forward single #
-coedge $-1 -1 $-1 $1702 $1244 $1452 $1683 reversed $1060 0 $-1 #
-coedge $-1 -1 $-1 $1521 $1703 $1244 $1471 forward $1704 0 $-1 #
-edge $-1 -1 $-1 $1705 -0.02499999999999769074 $1472 1.979999999999999982 $1244 $1706 forward @7 tangent #
-vertex $-1 -1 $-1 $1245 1 $1707 #
-straight-curve $-1 -1 $-1 6.262499999999999289 4.150000000000000355 1.979999999999999982 1 0 0 I I #
-coedge $1708 -1 $-1 $1246 $1702 $1453 $1685 forward $1060 0 $-1 #
-coedge $-1 -1 $-1 $1455 $1709 $1246 $1476 forward $1689 0 $-1 #
-edge $-1 -1 $-1 $1479 0.1414213562373049238 $1691 0.28284271247460957 $1475 $1710 forward @7 unknown #
-coedge $-1 -1 $-1 $1697 $1247 $1709 $1711 reversed $1478 0 $-1 #
-loop $-1 -1 $-1 $-1 $1247 $1712 #
-vertex $-1 -1 $-1 $1476 0 $1713 #
+coedge $-1 -1 $-1 $2121 $2120 $2261 $2262 forward $2122 0 $-1 #
+coedge $-1 -1 $-1 $2126 $2263 $2120 $2129 reversed $2197 0 $-1 #
+edge $-1 -1 $-1 $2264 0 $2117 0.3040559159102152464 $2121 $2265 forward @7 tangent #
+face $2266 -1 $-1 $2260 $2122 $5 $-1 $2267 forward single #
+coedge $-1 -1 $-1 $2125 $2268 $2269 $2270 forward $2068 0 $-1 #
+coedge $-1 -1 $-1 $2269 $2271 $2125 $2195 forward $2272 0 $-1 #
+edge $-1 -1 $-1 $2198 0.1414213562373049238 $2273 0.28284271247460957 $2194 $2274 forward @7 unknown #
+coedge $-1 -1 $-1 $2263 $2126 $2271 $2275 reversed $2197 0 $-1 #
+loop $-1 -1 $-1 $-1 $2126 $2276 #
+vertex $-1 -1 $-1 $2195 0 $2277 #
 straight-curve $-1 -1 $-1 0.6999999999999998446 4.150000000000000355 -0.02499999999999943934 1 2.337311630789803113e-16 2.337311630789801141e-16 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1249 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 6 0 2 314 -352 0 1 @1 6 0 3 319 342 -352 0 2 @2 14 0 2 347 -352 0 2 @2 14 0 2 348 -352 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2128 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 6 0 2 314 -369 0 1 @1 6 0 3 319 342 -369 0 2 @2 14 0 2 347 -369 0 2 @2 14 0 2 348 -369 0 #
 plane-surface $-1 -1 $-1 8.349999999999999645 4.150000000000000355 0 0 1 -0 -1 0 0 forward_v I I I I #
-vertex $-1 -1 $-1 $1696 0 $1714 #
+vertex $-1 -1 $-1 $2262 0 $2278 #
 straight-curve $-1 -1 $-1 0.375 4.174999999999999822 0 0 -0.7071067811865471286 -0.7071067811865477948 F 0 F 0.3394112549695426084 #
-coedge $-1 -1 $-1 $1715 $1716 $1254 $1486 forward $1717 0 $-1 #
-edge $-1 -1 $-1 $1510 0.1414213562373096145 $1491 0.2828427124746188959 $1485 $1718 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1255 @17 sketch_attrib_def 1 1 3 @13 114 0 0 0 1 1 #
-coedge $-1 -1 $-1 $1489 $1255 $1258 $1495 forward $1490 0 $-1 #
-coedge $-1 -1 $-1 $1255 $1488 $1715 $1719 forward $1490 0 $-1 #
-loop $-1 -1 $-1 $-1 $1488 $1720 #
-vertex $-1 -1 $-1 $1486 1 $1721 #
-straight-curve $-1 -1 $-1 0 0 0 1 0 0 F 0 F 8.349999999999999645 #
-coedge $-1 -1 $-1 $1494 $1257 $1722 $1723 forward $1259 0 $-1 #
-coedge $-1 -1 $-1 $1258 $1493 $1724 $1725 forward $1259 0 $-1 #
-edge $-1 -1 $-1 $1260 -0.429976961707224492 $1726 0.7853981633974478349 $1488 $1727 forward @7 unknown #
-face $1728 -1 $-1 $1729 $1259 $5 $-1 $1730 forward single #
-point $-1 -1 $-1 3.914194109070750383 2.775557561562891351e-17 4.163336342344337027e-17 #
-coedge $-1 -1 $-1 $1731 $1732 $1262 $1499 reversed $1733 0 $-1 #
-edge $-1 -1 $-1 $1501 -2.75 $1503 0.6499999999999994671 $1262 $1734 forward @7 unknown #
-coedge $-1 -1 $-1 $1263 $1282 $1735 $1736 forward $1283 0 $-1 #
-vertex $-1 -1 $-1 $1736 1 $1737 #
-straight-curve $-1 -1 $-1 0.375 0.2149999999999999689 -0.2399999999999999911 0 -0.7071067811865474617 0.7071067811865475727 F 0 F 0.339411254969542775 #
-vertex $-1 -1 $-1 $1499 1 $1738 #
-straight-curve $-1 -1 $-1 3.774999999999999467 0.2149999999999999689 -0.2399999999999999911 0 -0.7071067811865474617 0.7071067811865475727 F 0 F 0.339411254969542775 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1266 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 4 0 2 307 343 0 1 @1 4 0 2 307 344 0 #
-plane-surface $-1 -1 $-1 3.125 0.09499999999999998723 -0.1199999999999999956 0 -0.7071067811865475727 -0.7071067811865474617 -1 0 -0 forward_v I I I I #
-coedge $-1 -1 $-1 $1739 $1268 $1716 $1740 reversed $1509 0 $-1 #
-coedge $-1 -1 $-1 $1268 $1739 $1741 $1742 forward $1509 0 $-1 #
-loop $-1 -1 $-1 $-1 $1268 $1743 #
-vertex $-1 -1 $-1 $1486 0 $1744 #
-straight-curve $-1 -1 $-1 7.649999999999999467 0 -0.02499999999999998751 -1 0 -0 I I #
-coedge $-1 -1 $-1 $1271 $1270 $1745 $1746 forward $1272 0 $-1 #
-coedge $-1 -1 $-1 $1741 $1747 $1270 $1514 forward $1748 0 $-1 #
-edge $-1 -1 $-1 $1749 -1.570796326794901221 $1273 0 $1513 $1750 forward @7 unknown #
-face $1751 -1 $-1 $1752 $1272 $5 $-1 $1753 forward single #
-point $-1 -1 $-1 7.974999999999998757 0 -0.02499999999999999098 #
-coedge $-1 -1 $-1 $1745 $1754 $1275 $1518 forward $1755 0 $-1 #
-edge $-1 -1 $-1 $1756 -2.737500000000000266 $1519 0.6625000000000000888 $1517 $1757 forward @7 unknown #
-vertex $-1 -1 $-1 $1276 0 $1758 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 1.979999999999999982 0 0 -1 0.2651650429449553537 -0.2651650429449553537 0 1 I I #
-coedge $-1 -1 $-1 $1759 $1470 $1277 $1522 forward $1704 0 $-1 #
-edge $-1 -1 $-1 $1472 -0.785398163397448279 $1756 0.785398163397448279 $1521 $1760 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1278 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 4 332 334 342 352 0 #
-loop $-1 -1 $-1 $1077 $1570 $1278 #
-plane-surface $-1 -1 $-1 4.174999999999999822 2.075000000000000178 1.979999999999999982 0 0 -1 -1 0 0 forward_v I I I I #
-point $-1 -1 $-1 0 0.375 1.979999999999999982 #
-edge $-1 -1 $-1 $1761 0 $1284 0.304055915910215413 $1459 $1762 forward @7 tangent #
-face $1763 -1 $-1 $1266 $1283 $5 $-1 $1764 forward single #
-point $-1 -1 $-1 0 0.375 -0.02499999999999999098 #
-coedge $-1 -1 $-1 $1287 $1286 $1586 $1765 reversed $1288 0 $-1 #
-edge $-1 -1 $-1 $1766 0.04970562748477153764 $1087 0.06343145750507619973 $1286 $1767 forward @7 tangent #
-edge $-1 -1 $-1 $1089 0.04970562748477133641 $1768 0.0634314575050757834 $1287 $1769 forward @7 tangent #
-face $1770 -1 $-1 $675 $1288 $5 $-1 $1771 reversed single #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1293 @17 sketch_attrib_def 1 1 3 @13 114 0 0 0 1 1 #
-straight-curve $-1 -1 $-1 2.087499999999999911 0.1200000000000001066 0.1199999999999999956 -1 0 0 F -9997.912501000000702 F 10002.08750099999997 #
-coedge $-1 -1 $-1 $1537 $1295 $1640 $1637 reversed $1150 0 $-1 #
-coedge $-1 -1 $-1 $1296 $1536 $1302 $1541 forward $1150 0 $-1 #
-point $-1 -1 $-1 4.015168997615923274 0.1200000000000000233 0.1199999999999999956 #
-straight-curve $-1 -1 $-1 3.850147186257613985 0.375 -0.1551471862576142557 0.7071067811865477948 0 0.7071067811865471286 I I #
-intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 3 
-	5.884318267708581018 2 6.104450459557410724 1 8.362252985495080893 2 
-	3.775000000000000355 0.1200000000000006894 0.02470562748477115808 8.912341906893040289 
-	3.783988437169779395 0.1200000000000006894 0.0247056274847711789 8.912341906893040289 
-	3.886730122417024091 0.1200000000000007033 0.03193967607889236504 8.78769366570100452 
-	4.015168997615865543 0.1200000000000006894 0.1199999999999639411 7.509229523526297356 
+coedge $-1 -1 $-1 $2279 $2222 $2132 $2205 reversed $2280 0 $-1 #
+edge $-1 -1 $-1 $2207 0.02024588659026459875 $2281 0.2959454961951465402 $2132 $2282 forward @7 unknown #
+coedge $-1 -1 $-1 $2133 $2283 $2279 $2284 reversed $2136 0 $-1 #
+vertex $-1 -1 $-1 $2134 1 $2285 #
+intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2 
+	0.6461446690596466258 2 0.9218442786682189416 2 
+	3.914194109070750383 2.775557561562891351e-17 4.163336342344337027e-17 1.056128348075672463 
+	4.024204810219188744 3.878619218416400684e-12 0.03828210383053344545 1.074171961592376157 
+	4.174999999999999822 3.878612708785311725e-12 0.1482928049812268501 1.009885652445689841 
 	0 
 	
 	null_surface 
@@ -1608,175 +2780,71 @@ intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 3
 	0 
 	
 	0 F 1 F 0 UNEXTENDED UNEXTENDED } I I #
-edge $-1 -1 $-1 $1544 -0.04970562748477104498 $1303 0.2543502884254440488 $1302 $1772 forward @7 tangent #
-point $-1 -1 $-1 3.774999999999999467 0.1199999999999999956 0.02470562748477142523 #
-coedge $-1 -1 $-1 $1351 $1308 $1413 $1641 forward $1194 0 $-1 #
-vertex $-1 -1 $-1 $1309 2 $1773 #
-straight-curve $-1 -1 $-1 3.449999999999999734 0.3349999999999999645 -0.1902943725152285992 1 0 0 F -10003.45000100000107 F 9996.550000999999611 #
-coedge $-1 -1 $-1 $1311 $1310 $1774 $1775 reversed $1312 0 $-1 #
-coedge $-1 -1 $-1 $1776 $1314 $1311 $1548 forward $1551 0 $-1 #
-edge $-1 -1 $-1 $1112 0 $1777 0.1697056274847712209 $1311 $1778 forward @7 tangent #
-face $1779 -1 $-1 $1118 $1312 $5 $-1 $1780 reversed single #
-coedge $-1 -1 $-1 $1314 $1776 $1781 $1782 reversed $1551 0 $-1 #
-loop $-1 -1 $-1 $-1 $1776 $1783 #
-ellipse-curve $-1 -1 $-1 0.375 0.3750000000000000555 1.860000000000000098 -0 -0 1 -0.1308147545195113282 -0.1308147545195113282 0 1 I I #
-coedge $-1 -1 $-1 $1781 $1784 $1317 $1554 reversed $1785 0 $-1 #
-edge $-1 -1 $-1 $1319 -5.912499999999999645 $1616 1.687500000000000888 $1553 $1786 forward @7 unknown #
-point $-1 -1 $-1 0.375 0.1900000000000000022 1.860000000000000098 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1322 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 24 0 4 328 334 342 352 0 #
-plane-surface $-1 -1 $-1 7.975000000000000533 0.1899999999999999467 1.860000000000000098 0 -1 0 -1 -0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $1787 $1325 $1610 $1788 forward $1560 0 $-1 #
-coedge $-1 -1 $-1 $1325 $1787 $1332 $1568 reversed $1560 0 $-1 #
-loop $-1 -1 $-1 $-1 $1787 $1789 #
-ellipse-curve $-1 -1 $-1 7.975000000000001421 3.775000000000000355 1.860000000000000098 -0 -0 1 0.13081475451951044 0.1308147545195112449 0 1 I I #
-point $-1 -1 $-1 8.160000000000000142 3.775000000000000355 1.860000000000000098 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1330 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 5 0 4 327 334 342 352 0 #
-face $1790 -1 $-1 $1783 $1785 $5 $-1 $1791 reversed single #
-loop $-1 -1 $-1 $-1 $1792 $1330 #
-cone-surface $-1 -1 $-1 7.974999999999999645 0.375 1.979999999999999982 0 0 1 0.2156675682618969803 -0.215667568261896675 0 1 I I 0.7071067811865485719 0.7071067811865465735 0.3049999999999997713 forward I I I I #
-coedge $-1 -1 $-1 $1333 $1332 $1793 $1794 reversed $1334 0 $-1 #
-edge $-1 -1 $-1 $1126 0 $1795 0.1697056274847717205 $1559 $1796 forward @7 tangent #
-face $1797 -1 $-1 $1278 $1334 $5 $-1 $1798 reversed single #
-coedge $-1 -1 $-1 $1793 $1774 $1337 $1571 forward $1524 0 $-1 #
-edge $-1 -1 $-1 $1574 -0.785398163397448279 $1572 0.785398163397448057 $1570 $1799 forward @7 unknown #
-vertex $-1 -1 $-1 $1571 1 $1800 #
-straight-curve $-1 -1 $-1 0.375 4.200000000000000178 2.100000000000000089 0 -0.7071067811865465735 -0.7071067811865484609 F 0 F 0.3394112549695423309 #
-vertex $-1 -1 $-1 $1571 0 $1801 #
-straight-curve $-1 -1 $-1 0.1899999999999998357 3.775000000000000355 1.860000000000000098 -0.7071067811865473507 0 0.7071067811865477948 F 0 F 0.3394112549695427195 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1340 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 4 327 334 342 352 0 #
-face $1802 -1 $-1 $1789 $1611 $5 $-1 $1803 reversed single #
-cone-surface $-1 -1 $-1 0.3750000000000000555 3.775000000000000355 1.979999999999999982 0 0 1 -0.215667568261897119 0.2156675682618970913 0 1 I I 0.7071067811865473507 0.7071067811865477948 0.3050000000000001599 forward I I I I #
-coedge $-1 -1 $-1 $1342 $1341 $1804 $1805 reversed $1343 0 $-1 #
-coedge $-1 -1 $-1 $1345 $1806 $1341 $1581 reversed $1584 0 $-1 #
-edge $-1 -1 $-1 $1139 0.04970562748477147519 $1807 0.06343145750507622749 $1580 $1808 forward @7 tangent #
-face $1809 -1 $-1 $1810 $1343 $5 $-1 $1811 reversed single #
-coedge $-1 -1 $-1 $1806 $1345 $1812 $1813 forward $1584 0 $-1 #
-loop $-1 -1 $-1 $-1 $1580 $1810 #
-ellipse-curve $-1 -1 $-1 0.375 0.375 -0.3702943725152285093 -0 -0 1 -0.02828427124746188751 -0.02828427124746188751 0 1 I I #
-coedge $-1 -1 $-1 $1804 $1814 $1530 $1765 forward $1349 0 $-1 #
-coedge $-1 -1 $-1 $1815 $1812 $1351 $1588 reversed $1816 0 $-1 #
-edge $-1 -1 $-1 $1646 -0.4249999999999998224 $1352 2.974999999999999645 $1351 $1817 reversed @7 unknown #
-point $-1 -1 $-1 0.375 0.33500000000000002 -0.3702943725152286758 #
-edge $-1 -1 $-1 $1592 -5.884318267708585459 $1395 -3.406383549912769038 $1359 $1818 reversed @7 unknown #
-coedge $-1 -1 $-1 $1360 $1362 $1624 $1819 forward $1168 0 $-1 #
-vertex $-1 -1 $-1 $1590 2 $1820 #
-straight-curve $-1 -1 $-1 3.662500000000000089 0.1199999999999999956 0.02470562748477142523 1 0 0 F -10003.6625010000007 F 9996.337500999999975 #
-coedge $-1 -1 $-1 $1374 $1665 $1362 $1376 forward $1213 0 $-1 #
-coedge $-1 -1 $-1 $1821 $1365 $1621 $1822 forward $1597 0 $-1 #
-coedge $-1 -1 $-1 $1365 $1821 $1668 $1823 reversed $1597 0 $-1 #
-loop $-1 -1 $-1 $-1 $1596 $1824 #
-straight-curve $-1 -1 $-1 8.015000000000000568 3.349999999999999645 -0.3702943725152273435 -0 1 0 F -10003.3500010000007 F 9996.650000999999975 #
-point $-1 -1 $-1 8.015000000000000568 3.774999999999999467 -0.3702943725152287313 #
-point $-1 -1 $-1 8.015000000000000568 0.375 -0.3702943725152282317 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1372 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 8 0 5 310 311 312 343 350 0 #
-face $1825 -1 $-1 $1826 $1827 $5 $-1 $1828 reversed single #
-loop $-1 -1 $-1 $-1 $1829 $1372 #
-plane-surface $-1 -1 $-1 4.539852813742386139 1.224999999999999867 -0.3751471862576143401 -0.7071067811865480168 0 -0.7071067811865470176 -0.7071067811865470176 0 0.7071067811865480168 forward_v I I I I #
-vertex $-1 -1 $-1 $1667 0 $1830 #
-straight-curve $-1 -1 $-1 7.974999999999999645 0.3349999999999999645 -0.2399999999999999911 0 0 -1 I I #
-vertex $-1 -1 $-1 $1819 2 $1831 #
-straight-curve $-1 -1 $-1 7.650000000000000355 0.3349999999999999645 -0.190294372515228627 -1 -0 0 F -9992.350001000000702 F 10007.65000099999997 #
-coedge $-1 -1 $-1 $1832 $1378 $1833 $1834 forward $1611 0 $-1 #
-coedge $-1 -1 $-1 $1378 $1832 $1558 $1788 reversed $1611 0 $-1 #
-loop $-1 -1 $-1 $-1 $1832 $1577 #
-straight-curve $-1 -1 $-1 8.160000000000000142 3.137500000000000178 1.860000000000000098 -0 1 -0 F -3.026501000000000552 F 0.9015010000000005519 #
-coedge $-1 -1 $-1 $1835 $1833 $1380 $1614 reversed $1565 0 $-1 #
-edge $-1 -1 $-1 $1616 -0.7853981633974442822 $1381 0.7853981633974476129 $1613 $1836 forward @7 unknown #
-point $-1 -1 $-1 8.159999999999998366 0.375 1.860000000000000098 #
-vertex $-1 -1 $-1 $1554 1 $1837 #
-straight-curve $-1 -1 $-1 7.975000000000000533 0.1899999999999999467 1.860000000000000098 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1387 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 23 0 4 328 334 342 352 0 #
-cone-surface $-1 -1 $-1 7.974999999999999645 0.375 1.860000000000000098 0 0 -1 0.1308147545195109951 -0.1308147545195108008 0 1 I I 0 1 0.1849999999999994427 forward I I I I #
-coedge $-1 -1 $-1 $1838 $1389 $1443 $1674 forward $1622 0 $-1 #
-coedge $-1 -1 $-1 $1389 $1838 $1595 $1822 reversed $1622 0 $-1 #
-loop $-1 -1 $-1 $-1 $1621 $1839 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.3702943725152286758 -0 -0 1 0.02828427124746200894 0.02828427124746207486 0 1 I I #
-coedge $-1 -1 $-1 $1625 $1393 $1591 $1819 reversed $1357 0 $-1 #
-coedge $-1 -1 $-1 $1394 $1624 $1840 $1841 reversed $1357 0 $-1 #
-point $-1 -1 $-1 4.334831002384075482 0.1200000000000000233 0.1199999999999999956 #
-straight-curve $-1 -1 $-1 4.499852813742386104 0.375 -0.1551471862576143113 -0.7071067811865474617 0 0.7071067811865475727 I I #
-coedge $-1 -1 $-1 $1842 $1399 $1418 $1649 forward $1630 0 $-1 #
-coedge $-1 -1 $-1 $1399 $1842 $1843 $1844 reversed $1630 0 $-1 #
-loop $-1 -1 $-1 $-1 $1629 $1845 #
-ellipse-curve $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.3702943725152286758 -0 -0 1 0.02828427124746200894 0.02828427124746207486 0 1 I I #
-coedge $-1 -1 $-1 $1843 $1846 $1401 $1633 reversed $1847 0 $-1 #
-edge $-1 -1 $-1 $1403 -0.4249999999999998224 $1645 2.974999999999999645 $1401 $1848 reversed @7 unknown #
-point $-1 -1 $-1 3.814999999999999503 3.774999999999999467 -0.3702943725152293419 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1406 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 22 0 3 308 343 350 0 2 @2 22 0 3 308 344 350 0 #
-plane-surface $-1 -1 $-1 3.814999999999999503 3.774999999999999467 -0.2399999999999999911 1 0 0 0 -1 0 forward_v I I I I #
-edge $-1 -1 $-1 $1544 -0.7853981633974488341 $1408 0.7853981633974478349 $1536 $1849 forward @7 unknown #
-point $-1 -1 $-1 3.814999999999999503 0.375 -0.1902943725152287935 #
-edge $-1 -1 $-1 $1408 -0.04970562748477119763 $1645 0.1302943725152286847 $1410 $1850 forward @7 tangent #
-coedge $-1 -1 $-1 $1414 $1413 $1536 $1637 forward $1023 0 $-1 #
-edge $-1 -1 $-1 $1544 -0.04970562748477139192 $1646 0.1302943725152288512 $1413 $1851 forward @7 tangent #
-coedge $-1 -1 $-1 $1852 $1415 $1846 $1853 forward $1644 0 $-1 #
-coedge $-1 -1 $-1 $1415 $1852 $1815 $1854 reversed $1644 0 $-1 #
-loop $-1 -1 $-1 $-1 $1643 $1855 #
-vertex $-1 -1 $-1 $1633 1 $1856 #
-vertex $-1 -1 $-1 $1588 0 $1857 #
-ellipse-curve $-1 -1 $-1 3.774999999999999467 0.375 -0.3702943725152286758 -0 -0 1 0.02828427124746209914 -0.02828427124746207139 0 1 I I #
-coedge $-1 -1 $-1 $1418 $1417 $1814 $1858 reversed $1419 0 $-1 #
-edge $-1 -1 $-1 $1199 0.04970562748477160009 $1859 0.06343145750507611647 $1418 $1860 forward @7 tangent #
-face $1861 -1 $-1 $1533 $1419 $5 $-1 $1862 reversed single #
-coedge $-1 -1 $-1 $1840 $1664 $1422 $1652 reversed $1437 0 $-1 #
-edge $-1 -1 $-1 $1424 -0.0497056274847715307 $1863 0.1302943725152283516 $1422 $1864 forward @7 tangent #
-point $-1 -1 $-1 4.535000000000000142 0.375 -0.1902943725152284604 #
-coedge $-1 -1 $-1 $1865 $1428 $1829 $1866 reversed $1656 0 $-1 #
-coedge $-1 -1 $-1 $1428 $1865 $1442 $1673 reversed $1656 0 $-1 #
-loop $-1 -1 $-1 $-1 $1655 $1867 #
-ellipse-curve $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.3702943725152286758 -0 -0 1 -0.02828427124746206445 0.02828427124746202281 0 1 I I #
-coedge $-1 -1 $-1 $1868 $1829 $1430 $1659 reversed $1603 0 $-1 #
-edge $-1 -1 $-1 $1863 -0.4249999999999999334 $1431 2.975000000000000089 $1430 $1869 reversed @7 unknown #
-point $-1 -1 $-1 4.535000000000000142 3.774999999999999911 -0.3702943725152282317 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1436 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 26 0 5 308 311 312 343 350 0 #
-face $1870 -1 $-1 $1210 $1871 $5 $-1 $1872 reversed single #
-plane-surface $-1 -1 $-1 4.535000000000000142 0.375 -0.2399999999999999911 -1 0 0 0 1 0 forward_v I I I I #
-coedge $-1 -1 $-1 $1651 $1873 $1874 $1875 forward $1437 0 $-1 #
-coedge $-1 -1 $-1 $1594 $1439 $1873 $1876 reversed $1213 0 $-1 #
-coedge $-1 -1 $-1 $1877 $1878 $1439 $1667 reversed $1879 0 $-1 #
-edge $-1 -1 $-1 $1605 -0.4249999999999998224 $1880 2.974999999999999645 $1439 $1881 reversed @7 unknown #
-coedge $-1 -1 $-1 $1882 $1440 $1596 $1823 forward $1670 0 $-1 #
-coedge $-1 -1 $-1 $1440 $1882 $1877 $1883 reversed $1670 0 $-1 #
-loop $-1 -1 $-1 $-1 $1669 $1884 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 -0.3702943725152286758 -0 -0 1 0.02828427124746209914 -0.02828427124746207139 0 1 I I #
-coedge $-1 -1 $-1 $1443 $1442 $1885 $1886 reversed $1444 0 $-1 #
-edge $-1 -1 $-1 $1218 0.04970562748477133641 $1887 0.0634314575050757834 $1655 $1888 forward @7 tangent #
-edge $-1 -1 $-1 $1220 0.04970562748477160009 $1889 0.06343145750507611647 $1443 $1890 forward @7 tangent #
-face $1891 -1 $-1 $1867 $1444 $5 $-1 $1892 reversed single #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1449 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 4 307 311 312 343 0 #
-face $1893 -1 $-1 $1743 $1748 $5 $-1 $1894 forward single #
-loop $-1 -1 $-1 $-1 $1895 $1449 #
-plane-surface $-1 -1 $-1 8.254999999999999005 3.125 -0.1199999999999999956 0.7071067811865471286 0 -0.7071067811865477948 -0.7071067811865479058 0 -0.7071067811865472397 forward_v I I I I #
-coedge $-1 -1 $-1 $1896 $1897 $1703 $1898 forward $1450 0 $-1 #
-coedge $-1 -1 $-1 $1899 $1452 $1897 $1900 reversed $1226 0 $-1 #
-coedge $-1 -1 $-1 $1452 $1899 $1901 $1902 reversed $1226 0 $-1 #
-edge $-1 -1 $-1 $1903 1.775000000000000355 $1705 5.174999999999999822 $1452 $1904 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1453 @17 sketch_attrib_def 1 1 3 @13 116 0 0 0 1 1 #
-edge $-1 -1 $-1 $1905 3.91419410907074905 $1691 4.435805890929253259 $1474 $1906 forward @7 unknown #
-coedge $-1 -1 $-1 $1907 $1908 $1454 $1687 reversed $1909 0 $-1 #
-edge $-1 -1 $-1 $1905 -0.4299769617072282113 $1690 0.7853981633974475018 $1454 $1910 forward @7 unknown #
-coedge $-1 -1 $-1 $1911 $1455 $1912 $1913 reversed $1689 0 $-1 #
-loop $-1 -1 $-1 $-1 $1475 $1914 #
-vertex $-1 -1 $-1 $1687 1 $1915 #
-vertex $-1 -1 $-1 $1476 1 $1916 #
-ellipse-curve $-1 -1 $-1 3.774999999999999911 3.774999999999999467 0 0 0 1 0.2828427124746186738 0.28284271247461934 0 1 I I #
-coedge $-1 -1 $-1 $1459 $1458 $1917 $1918 forward $1460 0 $-1 #
-face $1919 -1 $-1 $1528 $1460 $5 $-1 $1920 forward single #
-coedge $-1 -1 $-1 $1921 $1922 $1465 $1696 reversed $1923 0 $-1 #
-edge $-1 -1 $-1 $1483 -0.7853981633974490562 $1698 0.7853981633974475018 $1465 $1924 forward @7 unknown #
-coedge $-1 -1 $-1 $1466 $1477 $1925 $1926 forward $1478 0 $-1 #
-vertex $-1 -1 $-1 $1696 1 $1927 #
+coedge $-1 -1 $-1 $2283 $2135 $2286 $2287 forward $2136 0 $-1 #
+face $2288 -1 $-1 $2289 $2136 $5 $-1 $2290 forward single #
+point $-1 -1 $-1 3.914194109070750383 2.775557561562891351e-17 4.163336342344337027e-17 #
+coedge $-1 -1 $-1 $2291 $2292 $2139 $2213 reversed $2293 0 $-1 #
+edge $-1 -1 $-1 $2215 -2.75 $2217 0.6499999999999994671 $2139 $2294 forward @7 unknown #
+coedge $-1 -1 $-1 $2140 $2155 $2295 $2296 forward $2156 0 $-1 #
+vertex $-1 -1 $-1 $2296 1 $2297 #
+straight-curve $-1 -1 $-1 0.375 0.2149999999999999689 -0.2399999999999999911 0 -0.7071067811865474617 0.7071067811865475727 F 0 F 0.339411254969542775 #
+vertex $-1 -1 $-1 $2213 1 $2298 #
+straight-curve $-1 -1 $-1 3.774999999999999467 0.2149999999999999689 -0.2399999999999999911 0 -0.7071067811865474617 0.7071067811865475727 F 0 F 0.339411254969542775 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2143 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 4 0 2 307 343 0 1 @1 4 0 2 307 344 0 #
+face $2299 -1 $-1 $2300 $2272 $5 $-1 $2301 forward single #
+plane-surface $-1 -1 $-1 3.125 0.09499999999999998723 -0.1199999999999999956 0 -0.7071067811865475727 -0.7071067811865474617 -1 0 -0 forward_v I I I I #
+coedge $-1 -1 $-1 $2204 $2302 $2145 $2223 forward $2280 0 $-1 #
+edge $-1 -1 $-1 $2227 0.1414213562373096145 $2281 0.2828427124746188959 $2222 $2303 forward @7 unknown #
+coedge $-1 -1 $-1 $2304 $2146 $2302 $2305 reversed $2226 0 $-1 #
+coedge $-1 -1 $-1 $2146 $2304 $2306 $2307 forward $2226 0 $-1 #
+loop $-1 -1 $-1 $-1 $2146 $2250 #
+vertex $-1 -1 $-1 $2223 0 $2308 #
+straight-curve $-1 -1 $-1 7.649999999999999467 0 -0.02499999999999998751 -1 0 -0 I I #
+coedge $-1 -1 $-1 $2306 $2309 $2148 $2230 forward $2251 0 $-1 #
+edge $-1 -1 $-1 $2240 -1.570796326794901221 $2150 0 $2229 $2310 forward @7 unknown #
+face $2311 -1 $-1 $2164 $2149 $5 $-1 $2312 forward single #
+point $-1 -1 $-1 7.974999999999998757 0 -0.02499999999999999098 #
+point $-1 -1 $-1 0 0.375 1.979999999999999982 #
+edge $-1 -1 $-1 $2313 0 $2157 0.304055915910215413 $2183 $2314 forward @7 tangent #
+face $2315 -1 $-1 $2143 $2156 $5 $-1 $2316 forward single #
+point $-1 -1 $-1 0 0.375 -0.02499999999999999098 #
+coedge $-1 -1 $-1 $2268 $2159 $2317 $2318 reversed $2068 0 $-1 #
+coedge $-1 -1 $-1 $2319 $2320 $2162 $2239 forward $2176 0 $-1 #
+edge $-1 -1 $-1 $2168 -0.3250000000000001776 $2240 3.075000000000000178 $2238 $2321 forward @7 unknown #
+vertex $-1 -1 $-1 $2239 1 $2322 #
+straight-curve $-1 -1 $-1 8.349999999999997868 0.374999999999999889 0 0 0 1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2164 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 5 0 2 314 -369 0 1 @1 5 0 3 319 342 -369 0 2 @2 16 0 2 347 -369 0 2 @2 16 0 2 348 -369 0 #
+plane-surface $-1 -1 $-1 8.349999999999999645 0 0 1 0 0 0 1 0 forward_v I I I I #
+coedge $-1 -1 $-1 $2323 $2166 $2320 $2324 reversed $2109 0 $-1 #
+coedge $-1 -1 $-1 $2166 $2323 $2178 $2254 forward $2109 0 $-1 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 3.775000000000001688 -0.02500000000000001527 -0 -0 -1 0.375 -1.332267629550187849e-15 0 1 I I #
+point $-1 -1 $-1 8.349999999999999645 3.775000000000000355 -0.02499999999999944975 #
+point $-1 -1 $-1 7.974999999999999645 4.150000000000002132 -0.02499999999999757971 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2175 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 5 0 4 307 311 312 343 0 #
+face $2325 -1 $-1 $2326 $2226 $5 $-1 $2327 forward single #
+loop $-1 -1 $-1 $-1 $2229 $2175 #
+cone-surface $-1 -1 $-1 7.974999999999999645 0.375 -0.1199999999999999956 0 0 1 0.1979898987322334936 -0.197989898732233327 0 1 I I 0.7071067811865472397 0.7071067811865477948 0.2800000000000001377 forward I I I I #
+coedge $-1 -1 $-1 $2179 $2178 $2328 $2329 forward $2057 0 $-1 #
+edge $-1 -1 $-1 $2330 0 $2170 0.3040559159102190212 $2245 $2331 forward @7 tangent #
+coedge $-1 -1 $-1 $2332 $2317 $2179 $2256 forward $2333 0 $-1 #
+edge $-1 -1 $-1 $2257 0.03535533905932532195 $2334 0.3394112549695426084 $2255 $2335 forward @7 tangent #
+vertex $-1 -1 $-1 $2256 0 $2336 #
+straight-curve $-1 -1 $-1 2.799999999999999822 4.150000000000001243 -0.0249999999999985581 1 2.337311630789803113e-16 2.337311630789801141e-16 I I #
+coedge $-1 -1 $-1 $2183 $2182 $2337 $2338 forward $2184 0 $-1 #
+face $2339 -1 $-1 $2235 $2184 $5 $-1 $2340 forward single #
+coedge $-1 -1 $-1 $2341 $2342 $2189 $2262 reversed $2343 0 $-1 #
+edge $-1 -1 $-1 $2202 -0.7853981633974490562 $2264 0.7853981633974475018 $2189 $2344 forward @7 unknown #
+coedge $-1 -1 $-1 $2190 $2196 $2345 $2346 forward $2197 0 $-1 #
+vertex $-1 -1 $-1 $2262 1 $2347 #
 straight-curve $-1 -1 $-1 0.2149999999999998301 3.774999999999999911 -0.2399999999999999911 -0.7071067811865473507 0 0.7071067811865477948 F 0 F 0.3394112549695427195 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1468 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 1 0 2 307 343 0 1 @1 1 0 2 307 344 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2192 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 1 0 2 307 343 0 1 @1 1 0 2 307 344 0 #
 cone-surface $-1 -1 $-1 0.375 3.774999999999999911 -0.1199999999999999956 0 0 1 -0.1979898987322335768 0.1979898987322332993 0 1 I I 0.7071067811865472397 0.7071067811865476838 0.2800000000000001932 forward I I I I #
-coedge $-1 -1 $-1 $1474 $1469 $1907 $1928 reversed $1060 0 $-1 #
-coedge $-1 -1 $-1 $1470 $1759 $1680 $1898 reversed $1704 0 $-1 #
-loop $-1 -1 $-1 $-1 $1759 $1929 #
-vertex $-1 -1 $-1 $1683 1 $1930 #
-straight-curve $-1 -1 $-1 7.974999999999999645 4.150000000000002132 0 0 0 1 I I #
-point $-1 -1 $-1 7.974999999999999645 4.150000000000000355 1.979999999999999982 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1474 @17 sketch_attrib_def 1 1 3 @13 116 0 0 0 1 1 #
-coedge $-1 -1 $-1 $1475 $1911 $1477 $1711 forward $1689 0 $-1 #
+coedge $-1 -1 $-1 $2193 $2237 $2348 $2349 forward $2068 0 $-1 #
+coedge $-1 -1 $-1 $2350 $2194 $2193 $2270 reversed $2272 0 $-1 #
+edge $-1 -1 $-1 $2351 0.02005180965260271869 $2273 0.2956911023125826099 $2193 $2352 forward @7 unknown #
+coedge $-1 -1 $-1 $2194 $2353 $2196 $2275 forward $2272 0 $-1 #
+loop $-1 -1 $-1 $-1 $2354 $2220 #
+vertex $-1 -1 $-1 $2195 1 $2355 #
 intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2 
 	0.1414213562373049238 2 0.28284271247460957 2 
 	3.774999999999999911 4.150000000000001243 -0.02499999999999863443 1.033333333333334103 
@@ -1794,13 +2862,50 @@ intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2
 	0 
 	
 	0 F 1 F 0 UNEXTENDED UNEXTENDED } I I #
-edge $-1 -1 $-1 $1931 0 $1479 0.3040559159102175224 $1709 $1932 forward @7 tangent #
-face $1933 -1 $-1 $1468 $1478 $5 $-1 $1934 forward single #
+edge $-1 -1 $-1 $2356 0 $2198 0.3040559159102175224 $2271 $2357 forward @7 tangent #
+face $2358 -1 $-1 $2192 $2197 $5 $-1 $2359 forward single #
 point $-1 -1 $-1 3.774999999999999911 4.150000000000001243 -0.02499999999999863443 #
 point $-1 -1 $-1 0.375 3.935000000000000053 -0.2399999999999999911 #
-coedge $-1 -1 $-1 $1935 $1485 $1489 $1719 reversed $1717 0 $-1 #
-coedge $-1 -1 $-1 $1485 $1936 $1507 $1740 forward $1717 0 $-1 #
-loop $-1 -1 $-1 $-1 $1485 $1729 #
+coedge $-1 -1 $-1 $2360 $2204 $2206 $2284 forward $2280 0 $-1 #
+loop $-1 -1 $-1 $-1 $2360 $2289 #
+vertex $-1 -1 $-1 $2223 1 $2361 #
+intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2 
+	0.02024588659026459875 2 0.2959454961951465402 2 
+	4.174999999999999822 3.878612708785311725e-12 0.1482928049812268501 1.009885652447413573 
+	4.325795189779597649 1.373617302946270943e-12 0.0382821038353981305 1.074171961592156999 
+	4.435805890929249706 0 0 1.056128348075689338 
+	0 
+	
+	null_surface 
+	null_surface 
+	nullbs 
+	nullbs 
+	I I 
+	0 
+	0 
+	0 
+	
+	0 F 1 F 0 UNEXTENDED UNEXTENDED } I I #
+coedge $-1 -1 $-1 $2206 $2209 $2362 $2363 forward $2136 0 $-1 #
+edge $-1 -1 $-1 $2207 1.680649265072318155 $2364 2.140950474475009635 $2206 $2365 forward @7 unknown #
+point $-1 -1 $-1 4.174999999999999822 3.878612708785311725e-12 0.1482928049812268501 #
+coedge $-1 -1 $-1 $2366 $2367 $2209 $2287 reversed $2368 0 $-1 #
+edge $-1 -1 $-1 $2217 -0.7853981633974488341 $2369 0.7853981633974478349 $2209 $2370 forward @7 unknown #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2210 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 5 0 2 307 343 0 1 @1 5 0 2 307 344 0 1 @1 3 0 5 354 356 358 360 364 0 1 @1 3 0 5 354 356 358 360 365 0 #
+face $2371 -1 $-1 $2231 $2280 $5 $-1 $2372 forward single #
+cone-surface $-1 -1 $-1 3.774999999999999467 0.375 -0.1199999999999999956 0 0 1 0.1979898987322334936 -0.197989898732233327 0 1 I I 0.7071067811865472397 0.7071067811865477948 0.2800000000000001377 forward I I I I #
+coedge $-1 -1 $-1 $2373 $2212 $2374 $2375 forward $2293 0 $-1 #
+coedge $-1 -1 $-1 $2212 $2373 $2366 $2376 reversed $2293 0 $-1 #
+loop $-1 -1 $-1 $-1 $2373 $2377 #
+straight-curve $-1 -1 $-1 3.125 0.2149999999999999689 -0.2399999999999999911 1 0 -0 F -3.01400099999999993 F 0.9140009999999998414 #
+coedge $-1 -1 $-1 $2378 $2374 $2214 $2296 reversed $2379 0 $-1 #
+edge $-1 -1 $-1 $2313 -0.785398163397448279 $2215 0.785398163397448279 $2214 $2380 forward @7 unknown #
+point $-1 -1 $-1 0.375 0.2149999999999999689 -0.2399999999999999911 #
+point $-1 -1 $-1 3.774999999999999467 0.2149999999999999689 -0.2399999999999999911 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2220 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 7 0 2 307 343 0 1 @1 7 0 2 307 344 0 1 @1 3 0 5 354 360 362 363 364 0 1 @1 3 0 5 354 361 362 363 364 0 #
+face $2381 -1 $-1 $2210 $2333 $5 $-1 $2382 forward single #
+cone-surface $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.1199999999999999956 0 0 1 0.1979898987322331327 0.1979898987322336046 0 1 I I 0.7071067811865473507 0.7071067811865477948 0.2800000000000000822 forward I I I I #
+coedge $-1 -1 $-1 $2222 $2383 $2224 $2305 forward $2280 0 $-1 #
 intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2 
 	0.1414213562373096145 2 0.2828427124746188959 2 
 	4.575000000000000178 0 -0.02499999999999999445 1.033333333333338544 
@@ -1818,110 +2923,59 @@ intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2
 	0 
 	
 	0 F 1 F 0 UNEXTENDED UNEXTENDED } I I #
-edge $-1 -1 $-1 $1726 -0.785398163397448279 $1491 0.4299769617072250472 $1489 $1937 forward @7 unknown #
-face $1938 -1 $-1 $1914 $1490 $5 $-1 $1048 reversed single #
-point $-1 -1 $-1 4.435805890929249706 0 0 #
-coedge $-1 -1 $-1 $1939 $1940 $1493 $1723 reversed $1941 0 $-1 #
-edge $-1 -1 $-1 $1503 -0.7853981633974488341 $1942 0.7853981633974478349 $1493 $1943 forward @7 unknown #
-coedge $-1 -1 $-1 $1944 $1945 $1494 $1725 reversed $1946 0 $-1 #
-edge $-1 -1 $-1 $1942 0 $1726 0.3394112549695429415 $1494 $1947 forward @7 tangent #
-vertex $-1 -1 $-1 $1948 1 $1949 #
-ellipse-curve $-1 -1 $-1 3.774999999999999467 0.375 0 0 0 1 0.2828427124746191734 -0.2828427124746188959 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1496 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 5 0 2 307 343 0 1 @1 5 0 2 307 344 0 #
-face $1950 -1 $-1 $1515 $1717 $5 $-1 $1951 forward single #
-cone-surface $-1 -1 $-1 3.774999999999999467 0.375 -0.1199999999999999956 0 0 1 0.1979898987322334936 -0.197989898732233327 0 1 I I 0.7071067811865472397 0.7071067811865477948 0.2800000000000001377 forward I I I I #
-coedge $-1 -1 $-1 $1952 $1498 $1953 $1954 forward $1733 0 $-1 #
-coedge $-1 -1 $-1 $1498 $1952 $1939 $1955 reversed $1733 0 $-1 #
-loop $-1 -1 $-1 $-1 $1952 $1956 #
-straight-curve $-1 -1 $-1 3.125 0.2149999999999999689 -0.2399999999999999911 1 0 -0 F -3.01400099999999993 F 0.9140009999999998414 #
-coedge $-1 -1 $-1 $1957 $1953 $1500 $1736 reversed $1958 0 $-1 #
-edge $-1 -1 $-1 $1761 -0.785398163397448279 $1501 0.785398163397448279 $1500 $1959 forward @7 unknown #
-point $-1 -1 $-1 0.375 0.2149999999999999689 -0.2399999999999999911 #
-point $-1 -1 $-1 3.774999999999999467 0.2149999999999999689 -0.2399999999999999911 #
-coedge $-1 -1 $-1 $1508 $1507 $1960 $1961 forward $1509 0 $-1 #
-edge $-1 -1 $-1 $1962 0 $1510 0.304055915910215413 $1716 $1963 forward @7 tangent #
-coedge $-1 -1 $-1 $1964 $1513 $1508 $1742 reversed $1748 0 $-1 #
-edge $-1 -1 $-1 $1965 0 $1273 0.304055915910215413 $1508 $1966 forward @7 tangent #
-face $1967 -1 $-1 $1968 $1509 $5 $-1 $1969 forward single #
+coedge $-1 -1 $-1 $2225 $2224 $2384 $2385 forward $2226 0 $-1 #
+edge $-1 -1 $-1 $2386 0 $2227 0.304055915910215413 $2302 $2387 forward @7 tangent #
+coedge $-1 -1 $-1 $2388 $2229 $2225 $2307 reversed $2251 0 $-1 #
+edge $-1 -1 $-1 $2389 0 $2150 0.304055915910215413 $2225 $2390 forward @7 tangent #
 point $-1 -1 $-1 4.575000000000000178 0 -0.02499999999999999445 #
-coedge $-1 -1 $-1 $1970 $1517 $1512 $1746 reversed $1755 0 $-1 #
-edge $-1 -1 $-1 $1749 -0.02500000000000079936 $1519 1.979999999999999982 $1745 $1971 forward @7 tangent #
-coedge $-1 -1 $-1 $1513 $1964 $1972 $1973 forward $1748 0 $-1 #
-loop $-1 -1 $-1 $-1 $1513 $1677 #
-vertex $-1 -1 $-1 $1974 1 $1975 #
+coedge $-1 -1 $-1 $2229 $2388 $2319 $2391 forward $2251 0 $-1 #
 ellipse-curve $-1 -1 $-1 7.974999999999999645 0.3749999999999991118 -0.02500000000000094161 -0 -0 -1 -8.881784197001252323e-16 -0.3749999999999991118 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1515 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 3 0 2 316 -352 0 1 @1 4 0 3 321 342 -352 0 2 @2 17 0 2 347 -352 0 2 @2 17 0 2 348 -352 0 #
-face $1976 -1 $-1 $1929 $1755 $5 $-1 $1977 forward single #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2231 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 3 0 2 316 -369 0 1 @1 3 0 3 321 342 -369 0 2 @2 17 0 2 347 -369 0 2 @2 17 0 2 348 -369 0 #
 cone-surface $-1 -1 $-1 7.974999999999999645 0.375 0 -0 0 1 0.2651650429449553537 -0.2651650429449553537 0 1 I I 0 1 0.3750000000000000555 forward I I I I #
-coedge $-1 -1 $-1 $1517 $1970 $1759 $1978 reversed $1755 0 $-1 #
-loop $-1 -1 $-1 $-1 $1745 $1752 #
-vertex $-1 -1 $-1 $1978 0 $1979 #
-straight-curve $-1 -1 $-1 8.349999999999999645 1.037500000000000089 1.979999999999999982 0 -1 0 I I #
-point $-1 -1 $-1 8.349999999999999645 0.375 1.979999999999999982 #
-coedge $-1 -1 $-1 $1703 $1521 $1754 $1978 forward $1704 0 $-1 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 3.775000000000000355 1.979999999999999982 0 0 -1 0.2651650429449553537 0.2651650429449553537 0 1 I I #
-vertex $-1 -1 $-1 $1918 1 $1980 #
+vertex $-1 -1 $-1 $2338 1 $2392 #
 straight-curve $-1 -1 $-1 0.2149999999999999689 0.375 -0.2399999999999999911 -0.7071067811865474617 0 0.7071067811865475727 F 0 F 0.339411254969542775 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1528 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 3 0 2 307 343 0 1 @1 3 0 2 307 344 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2235 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 3 0 2 307 343 0 1 @1 3 0 2 307 344 0 #
 cone-surface $-1 -1 $-1 0.375 0.375 -0.1199999999999999956 0 0 1 -0.197989898732233327 -0.197989898732233327 0 1 I I 0.7071067811865475727 0.7071067811865473507 0.2800000000000000266 forward I I I I #
-edge $-1 -1 $-1 $1768 -0.7853981633974490562 $1766 0.7853981633974476129 $1586 $1981 reversed @7 unknown #
-vertex $-1 -1 $-1 $1765 1 $1982 #
-straight-curve $-1 -1 $-1 0.3798528137423853313 3.774999999999999911 -0.4151471862576143756 -0.7071067811865464625 0 0.707106781186548683 I I #
-vertex $-1 -1 $-1 $1765 0 $1983 #
-straight-curve $-1 -1 $-1 0.375 3.850147186257614429 -0.3351471862576143046 0 -0.7071067811865457964 -0.7071067811865492381 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1533 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 1 0 3 310 343 350 0 1 @1 1 0 3 310 344 350 0 #
-cone-surface $-1 -1 $-1 0.375 3.774999999999999911 -0.3751471862576143956 0 0 -1 -0.02485281374238585556 0.02485281374238581392 0 1 I I -0.7071067811865464625 0.7071067811865484609 0.1200000000000003009 forward I I I I #
-straight-curve $-1 -1 $-1 3.774999999999999467 0.2998528137423857043 -0.1551471862576143113 0 -0.7071067811865474617 0.7071067811865475727 I I #
-point $-1 -1 $-1 3.774999999999999467 0.3349999999999999645 -0.1902943725152285992 #
-coedge $-1 -1 $-1 $1570 $1984 $1546 $1775 forward $1524 0 $-1 #
-edge $-1 -1 $-1 $1777 -1.168750000000000178 $1574 2.231250000000000178 $1774 $1985 forward @7 unknown #
-coedge $-1 -1 $-1 $1550 $1547 $1984 $1986 reversed $1551 0 $-1 #
-vertex $-1 -1 $-1 $1775 0 $1987 #
-straight-curve $-1 -1 $-1 0.1899999999999999467 0.375 1.860000000000000098 -0.7071067811865474617 0 0.7071067811865475727 F 0 F 0.3394112549695427195 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1549 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 4 327 334 342 352 0 #
-plane-surface $-1 -1 $-1 0.06999999999999997891 1.012500000000000178 1.979999999999999982 -0.7071067811865475727 0 -0.7071067811865474617 -0.7071067811865474617 0 0.7071067811865475727 forward_v I I I I #
-coedge $-1 -1 $-1 $1988 $1553 $1550 $1782 forward $1785 0 $-1 #
-edge $-1 -1 $-1 $1319 0 $1989 0.1697056274847712209 $1550 $1990 forward @7 tangent #
-face $1991 -1 $-1 $1549 $1551 $5 $-1 $1992 reversed single #
-coedge $-1 -1 $-1 $1553 $1988 $1835 $1993 reversed $1785 0 $-1 #
-loop $-1 -1 $-1 $-1 $1988 $1564 #
-straight-curve $-1 -1 $-1 6.287499999999999645 0.1899999999999999467 1.860000000000000098 1 0 -0 F -6.176501000000000019 F 1.951501000000000374 #
-coedge $-1 -1 $-1 $1559 $1558 $1994 $1995 reversed $1560 0 $-1 #
-edge $-1 -1 $-1 $1327 0 $1996 0.1697056274847707491 $1610 $1997 forward @7 tangent #
-face $1998 -1 $-1 $1569 $1560 $5 $-1 $1999 reversed single #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1564 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 4 327 334 342 352 0 #
-plane-surface $-1 -1 $-1 6.287499999999999645 0.06999999999999997891 1.979999999999999982 0 -0.7071067811865475727 -0.7071067811865474617 -1 0 -0 forward_v I I I I #
-coedge $-1 -1 $-1 $1833 $1835 $2000 $2001 reversed $1565 0 $-1 #
-coedge $-1 -1 $-1 $1994 $1570 $1567 $1794 forward $1524 0 $-1 #
-edge $-1 -1 $-1 $1572 -2.743749999999999467 $1795 4.856250000000001954 $1793 $2002 forward @7 unknown #
-vertex $-1 -1 $-1 $1995 0 $2003 #
-straight-curve $-1 -1 $-1 7.975000000000001421 3.95999999999999952 1.860000000000000098 0 0.7071067811865484609 0.7071067811865465735 F 0 F 0.3394112549695432746 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1569 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 8 0 4 327 334 342 352 0 #
-plane-surface $-1 -1 $-1 2.062499999999999556 4.080000000000000071 1.979999999999999982 0 0.7071067811865471286 -0.7071067811865477948 -1 0 0 forward_v I I I I #
-ellipse-curve $-1 -1 $-1 0.3750000000000000555 3.775000000000000355 1.979999999999999982 0 0 -1 -0.215667568261897119 0.2156675682618970913 0 1 I I #
-point $-1 -1 $-1 0.375 4.080000000000000071 1.979999999999999982 #
-point $-1 -1 $-1 0.07000000000000003442 3.775000000000000355 1.979999999999999982 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1577 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 4 327 334 342 352 0 #
-plane-surface $-1 -1 $-1 8.280000000000001137 3.137500000000000178 1.979999999999999982 0.7071067811865471286 0 -0.7071067811865477948 -0.7071067811865479058 0 -0.7071067811865472397 forward_v I I I I #
-coedge $-1 -1 $-1 $2004 $1586 $1579 $1805 forward $1349 0 $-1 #
-edge $-1 -1 $-1 $1766 -2.125 $1807 1.274999999999999911 $1804 $2005 reversed @7 unknown #
-coedge $-1 -1 $-1 $1580 $1583 $2004 $2006 reversed $1584 0 $-1 #
-vertex $-1 -1 $-1 $2006 0 $2007 #
-straight-curve $-1 -1 $-1 0.2998528137423857043 0.375 -0.3351471862576143601 0.7071067811865477948 0 -0.7071067811865473507 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1582 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 8 0 3 310 343 350 0 1 @1 8 0 3 310 344 350 0 #
-face $2008 -1 $-1 $2009 $1584 $5 $-1 $2010 reversed single #
-plane-surface $-1 -1 $-1 0.3398528137423857398 1.224999999999999867 -0.3751471862576143401 -0.7071067811865480168 0 -0.7071067811865470176 -0.7071067811865470176 0 0.7071067811865480168 forward_v I I I I #
-coedge $-1 -1 $-1 $1587 $2011 $1583 $1813 reversed $1816 0 $-1 #
-edge $-1 -1 $-1 $1352 0.04970562748477146825 $2012 0.06343145750507610259 $1812 $2013 forward @7 tangent #
-coedge $-1 -1 $-1 $1586 $2014 $1648 $1858 forward $1349 0 $-1 #
-coedge $-1 -1 $-1 $2011 $1587 $1643 $1854 forward $1816 0 $-1 #
-loop $-1 -1 $-1 $-1 $1812 $2009 #
-straight-curve $-1 -1 $-1 3.349999999999999645 0.3349999999999999645 -0.3702943725152285648 1 0 0 F -10003.3500010000007 F 9996.650000999999975 #
+coedge $-1 -1 $-1 $2255 $2348 $2237 $2318 forward $2333 0 $-1 #
+edge $-1 -1 $-1 $2393 0 $2257 0.1414213562373027311 $2317 $2394 forward @7 unknown #
+coedge $-1 -1 $-1 $2395 $2238 $2309 $2391 reversed $2176 0 $-1 #
+coedge $-1 -1 $-1 $2238 $2395 $2244 $2324 forward $2176 0 $-1 #
+straight-curve $-1 -1 $-1 8.349999999999997868 3.450000000000000178 -0.02500000000000120876 -5.224578939412500555e-16 -1 -5.224578939412495624e-16 I I #
+point $-1 -1 $-1 8.349999999999997868 0.3749999999999999445 -0.02500000000000078548 #
+coedge $-1 -1 $-1 $2245 $2244 $2396 $2397 forward $2109 0 $-1 #
+edge $-1 -1 $-1 $2398 0 $2168 0.3040559159102158016 $2320 $2399 forward @7 tangent #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2250 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 4 307 311 312 343 0 #
+face $2400 -1 $-1 $2401 $2402 $5 $-1 $2403 forward single #
+plane-surface $-1 -1 $-1 7.325000000000000178 0.09499999999999998723 -0.1199999999999999956 0 -0.7071067811865475727 -0.7071067811865474617 -1 0 0 forward_v I I I I #
+coedge $-1 -1 $-1 $2404 $2405 $2253 $2329 reversed $2406 0 $-1 #
+edge $-1 -1 $-1 $2330 -2.75 $2334 0.6499999999999996891 $2253 $2407 forward @7 unknown #
+vertex $-1 -1 $-1 $2254 0 $2408 #
+straight-curve $-1 -1 $-1 7.974999999999999645 3.934999999999999609 -0.2399999999999999911 0 0.7071067811865477948 0.7071067811865471286 F 0 F 0.3394112549695429415 #
+coedge $-1 -1 $-1 $2409 $2255 $2410 $2411 forward $2333 0 $-1 #
+loop $-1 -1 $-1 $-1 $2255 $2300 #
+vertex $-1 -1 $-1 $2256 1 $2412 #
+straight-curve $-1 -1 $-1 4.575000000000000178 4.174999999999999822 0 0 -0.7071067811865471286 -0.7071067811865477948 F 0 F 0.3394112549695426084 #
+point $-1 -1 $-1 4.575000000000000178 4.150000000000001243 -0.02499999999999850606 #
+coedge $-1 -1 $-1 $2413 $2414 $2259 $2338 reversed $2415 0 $-1 #
+edge $-1 -1 $-1 $2264 -2.75 $2313 0.6499999999999996891 $2259 $2416 forward @7 unknown #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2260 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 2 0 2 307 343 0 1 @1 2 0 2 307 344 0 #
+plane-surface $-1 -1 $-1 0.09499999999999998723 1.024999999999999689 -0.1199999999999999956 -0.7071067811865475727 0 -0.7071067811865474617 -0.7071067811865474617 0 0.7071067811865475727 forward_v I I I I #
+coedge $-1 -1 $-1 $2417 $2261 $2418 $2419 forward $2343 0 $-1 #
+coedge $-1 -1 $-1 $2261 $2417 $2413 $2420 reversed $2343 0 $-1 #
+loop $-1 -1 $-1 $-1 $2417 $2421 #
+ellipse-curve $-1 -1 $-1 0.375 3.774999999999999911 -0.2399999999999999911 -0 -0 1 -0.1131370849898478276 0.113137084989847661 0 1 I I #
+coedge $-1 -1 $-1 $2422 $2418 $2263 $2346 reversed $2423 0 $-1 #
+edge $-1 -1 $-1 $2356 -2.75 $2202 0.6499999999999996891 $2263 $2424 forward @7 unknown #
+point $-1 -1 $-1 0.2149999999999998301 3.774999999999999911 -0.2399999999999999911 #
+coedge $-1 -1 $-1 $2317 $2425 $2268 $2349 reversed $2333 0 $-1 #
+edge $-1 -1 $-1 $2393 0.6461446690596456266 $2351 0.9218442786682191636 $2268 $2426 forward @7 unknown #
+coedge $-1 -1 $-1 $2354 $2269 $2425 $2427 forward $2272 0 $-1 #
+vertex $-1 -1 $-1 $2270 0 $2428 #
 intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2 
-	3.406383549912769038 2 5.884318267708585459 2 
-	4.334831002382881771 0.1200000000000003009 0.1200000000008191459 7.509229523515372762 
-	4.473820975093829588 0.1200000000000003286 0.02470562748477215381 8.912341906892564225 
-	4.574999999999998401 0.1200000000000002731 0.02470562748477224055 8.912341906892562449 
+	0.02005180965260271869 2 0.2956911023125826099 2 
+	4.174999999999999822 4.14999999999612168 0.1482928049812268223 1.009792423734820144 
+	4.024204810220401995 4.149999999998626343 0.03828210383539857459 1.074103120124541455 
+	3.914194109070746386 4.150000000000000355 -2.636779683484746784e-16 1.056090476396400968 
 	0 
 	
 	null_surface 
@@ -1934,300 +2988,47 @@ intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2
 	0 
 	
 	0 F 1 F 0 UNEXTENDED UNEXTENDED } I I #
-edge $-1 -1 $-1 $1607 -0.04970562748477135029 $1592 0.2543502884254440488 $1624 $2015 forward @7 tangent #
-point $-1 -1 $-1 4.575000000000000178 0.1199999999999999956 0.02470562748477142523 #
-coedge $-1 -1 $-1 $1596 $1595 $2016 $2017 reversed $1597 0 $-1 #
-edge $-1 -1 $-1 $1367 0.04970562748477033721 $2018 0.06343145750507418745 $1621 $2019 forward @7 tangent #
-edge $-1 -1 $-1 $1369 0.04970562748477064946 $2020 0.06343145750507611647 $1668 $2021 forward @7 tangent #
-face $2022 -1 $-1 $1839 $1597 $5 $-1 $2023 reversed single #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1602 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 7 0 5 310 311 312 343 350 0 #
-face $2024 -1 $-1 $1884 $1879 $5 $-1 $2025 reversed single #
-loop $-1 -1 $-1 $-1 $2026 $1602 #
-cone-surface $-1 -1 $-1 4.575000000000000178 0.375 -0.3751471862576142291 0 0 -1 -0.02485281374238568208 -0.02485281374238568208 0 1 I I -0.7071067811865475727 0.7071067811865474617 0.1199999999999999678 forward I I I I #
-coedge $-1 -1 $-1 $1658 $2027 $1654 $1866 forward $1603 0 $-1 #
-point $-1 -1 $-1 7.974999999999999645 0.3349999999999999645 -0.3702943725152288423 #
-point $-1 -1 $-1 4.575000000000000178 0.3349999999999999645 -0.1902943725152285992 #
-coedge $-1 -1 $-1 $1610 $1609 $2028 $2029 reversed $1611 0 $-1 #
-coedge $-1 -1 $-1 $1613 $1792 $1609 $1834 reversed $1565 0 $-1 #
-edge $-1 -1 $-1 $1381 0 $2030 0.1697056274847720259 $1833 $2031 forward @7 tangent #
-coedge $-1 -1 $-1 $1792 $1613 $1784 $1993 forward $1565 0 $-1 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 1.860000000000000098 -0 -0 1 0.1308147545195109951 -0.1308147545195108008 0 1 I I #
-point $-1 -1 $-1 7.975000000000000533 0.1899999999999999467 1.860000000000000098 #
-coedge $-1 -1 $-1 $1621 $1620 $2032 $2033 reversed $1622 0 $-1 #
-face $2034 -1 $-1 $1675 $1622 $5 $-1 $2035 reversed single #
-coedge $-1 -1 $-1 $1873 $1651 $1625 $1841 forward $1437 0 $-1 #
-edge $-1 -1 $-1 $1424 -0.785398163397448279 $1607 0.785398163397448279 $1625 $2036 forward @7 unknown #
-coedge $-1 -1 $-1 $1629 $1628 $2014 $2037 reversed $1630 0 $-1 #
-coedge $-1 -1 $-1 $2038 $1632 $1629 $1844 forward $1847 0 $-1 #
-edge $-1 -1 $-1 $1403 0.04970562748477139192 $2039 0.06343145750507513114 $1629 $2040 forward @7 tangent #
-face $2041 -1 $-1 $1650 $1630 $5 $-1 $2042 reversed single #
-coedge $-1 -1 $-1 $1632 $2038 $1642 $1853 reversed $1847 0 $-1 #
-loop $-1 -1 $-1 $-1 $1846 $2043 #
-straight-curve $-1 -1 $-1 3.814999999999999503 3.349999999999999645 -0.3702943725152286758 -0 1 0 F -10003.3500010000007 F 9996.650000999999975 #
-ellipse-curve $-1 -1 $-1 3.774999999999999467 0.375 -0.1902943725152285714 -0 -0 1 0.02828427124746209914 -0.02828427124746207139 0 1 I I #
-straight-curve $-1 -1 $-1 3.814999999999999503 0.375 -0.2399999999999999911 0 0 -1 I I #
-straight-curve $-1 -1 $-1 3.774999999999999467 0.3349999999999999645 -0.2399999999999999911 0 0 -1 I I #
-coedge $-1 -1 $-1 $1643 $1642 $2044 $2045 reversed $1644 0 $-1 #
-edge $-1 -1 $-1 $1645 0.04970562748477160009 $2046 0.06343145750507611647 $1846 $2047 forward @7 tangent #
-edge $-1 -1 $-1 $1646 0.04970562748477122539 $2048 0.06343145750507561687 $1643 $2049 forward @7 tangent #
-face $2050 -1 $-1 $2043 $1644 $5 $-1 $2051 reversed single #
-point $-1 -1 $-1 3.814999999999999503 0.375 -0.3702943725152286758 #
-point $-1 -1 $-1 3.774999999999999467 0.3349999999999999645 -0.3702943725152288423 #
-edge $-1 -1 $-1 $1859 -2.124999999999999556 $1768 1.274999999999999911 $1814 $2052 reversed @7 unknown #
-vertex $-1 -1 $-1 $1858 0 $2053 #
-straight-curve $-1 -1 $-1 3.774999999999999911 3.850147186257613985 -0.3351471862576141936 -3.925231146709433849e-15 -0.7071067811865475727 -0.7071067811865475727 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1650 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 2 0 3 310 343 350 0 1 @1 2 0 3 310 344 350 0 #
-plane-surface $-1 -1 $-1 1.224999999999999867 3.810147186257613949 -0.3751471862576142291 0 0.7071067811865475727 -0.7071067811865475727 -1 0 0 forward_v I I I I #
-vertex $-1 -1 $-1 $1659 0 $2054 #
-straight-curve $-1 -1 $-1 4.535000000000000142 0.375 -0.2399999999999999911 0 0 -1 I I #
-coedge $-1 -1 $-1 $1655 $1654 $2055 $2056 reversed $1656 0 $-1 #
-edge $-1 -1 $-1 $2057 0.04970562748477114906 $1431 0.06343145750507661607 $1654 $2058 forward @7 tangent #
-face $2059 -1 $-1 $760 $1656 $5 $-1 $2060 reversed single #
-coedge $-1 -1 $-1 $2027 $1658 $2026 $2061 forward $1603 0 $-1 #
-straight-curve $-1 -1 $-1 4.535000000000000142 0.7999999999999999334 -0.3702943725152283427 -0 -1 0 F -9999.200001000001066 F 10000.80000099999961 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1662 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 5 308 311 312 343 350 0 #
-loop $-1 -1 $-1 $-1 $2055 $1662 #
-plane-surface $-1 -1 $-1 6.275000000000000355 2.074999999999999734 -0.3800000000000000044 0 0 -1 -1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $1664 $1840 $1665 $1876 forward $1437 0 $-1 #
-coedge $-1 -1 $-1 $2062 $2026 $1664 $1875 reversed $1827 0 $-1 #
-edge $-1 -1 $-1 $1880 -0.785398163397448279 $1863 0.785398163397448279 $1664 $2063 reversed @7 unknown #
-edge $-1 -1 $-1 $1607 -0.04970562748477139192 $1880 0.1302943725152286847 $1873 $2064 forward @7 tangent #
-coedge $-1 -1 $-1 $2065 $1666 $1669 $1883 forward $1879 0 $-1 #
-coedge $-1 -1 $-1 $1666 $2065 $2062 $2066 reversed $1879 0 $-1 #
-loop $-1 -1 $-1 $-1 $1878 $1826 #
-vertex $-1 -1 $-1 $1875 0 $2067 #
-straight-curve $-1 -1 $-1 7.549999999999999822 0.3349999999999999645 -0.3702943725152285648 1 0 0 F -10007.55000099999961 F 9992.450001000001066 #
-coedge $-1 -1 $-1 $1669 $1668 $2068 $2069 reversed $1670 0 $-1 #
-edge $-1 -1 $-1 $1605 0.04970562748477122539 $2070 0.06343145750507561687 $1877 $2071 forward @7 tangent #
-face $2072 -1 $-1 $1824 $1670 $5 $-1 $2073 reversed single #
-coedge $-1 -1 $-1 $2055 $2032 $1672 $1886 forward $1871 0 $-1 #
-edge $-1 -1 $-1 $1889 -2.125 $1887 1.274999999999999467 $1672 $2074 reversed @7 unknown #
-vertex $-1 -1 $-1 $1673 1 $2075 #
-straight-curve $-1 -1 $-1 4.575000000000000178 3.850147186257614429 -0.3351471862576143046 0 -0.7071067811865457964 -0.7071067811865492381 I I #
-vertex $-1 -1 $-1 $1674 1 $2076 #
-straight-curve $-1 -1 $-1 7.974999999999999645 3.850147186257613985 -0.3351471862576141936 -3.925231146709433849e-15 -0.7071067811865475727 -0.7071067811865475727 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1675 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 5 310 311 312 343 350 0 #
-plane-surface $-1 -1 $-1 5.424999999999999822 3.810147186257613949 -0.3751471862576142291 0 0.7071067811865475727 -0.7071067811865475727 -1 0 0 forward_v I I I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1677 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 5 0 4 307 311 312 343 0 #
-cone-surface $-1 -1 $-1 7.974999999999999645 0.375 -0.1199999999999999956 0 0 1 0.1979898987322334936 -0.197989898732233327 0 1 I I 0.7071067811865472397 0.7071067811865477948 0.2800000000000001377 forward I I I I #
-coedge $-1 -1 $-1 $1972 $2077 $1970 $1974 forward $1678 0 $-1 #
-coedge $-1 -1 $-1 $2078 $1680 $2077 $2079 reversed $1450 0 $-1 #
-coedge $-1 -1 $-1 $1680 $2078 $1681 $1900 forward $1450 0 $-1 #
-edge $-1 -1 $-1 $1705 -1.570796326794900111 $2080 0 $1680 $2081 forward @7 unknown #
-coedge $-1 -1 $-1 $1682 $1681 $2082 $2083 forward $1226 0 $-1 #
-edge $-1 -1 $-1 $2084 0 $1705 0.3040559159102190212 $1897 $2085 forward @7 tangent #
-coedge $-1 -1 $-1 $2086 $1907 $1682 $1902 forward $1909 0 $-1 #
-edge $-1 -1 $-1 $1903 0.03535533905932532195 $2087 0.3394112549695426084 $1901 $2088 forward @7 tangent #
-vertex $-1 -1 $-1 $1902 0 $2089 #
-straight-curve $-1 -1 $-1 2.799999999999999822 4.150000000000001243 -0.0249999999999985581 1 2.337311630789803113e-16 2.337311630789801141e-16 I I #
-vertex $-1 -1 $-1 $1685 0 $2090 #
-straight-curve $-1 -1 $-1 8.349999999999999645 4.150000000000000355 0 -1 0 0 F 0 F 8.349999999999999645 #
-coedge $-1 -1 $-1 $1901 $1686 $1702 $1928 forward $1909 0 $-1 #
-coedge $-1 -1 $-1 $1686 $2086 $2091 $2092 forward $1909 0 $-1 #
-loop $-1 -1 $-1 $-1 $1907 $2093 #
-ellipse-curve $-1 -1 $-1 4.575000000000000178 3.774999999999999911 0 0 0 1 -0.28284271247461934 0.2828427124746188959 0 1 I I #
-coedge $-1 -1 $-1 $1709 $1688 $2094 $2095 forward $1689 0 $-1 #
-coedge $-1 -1 $-1 $1945 $1944 $1688 $1913 forward $1946 0 $-1 #
-edge $-1 -1 $-1 $2096 0 $1690 0.3394112549695429415 $1912 $2097 forward @7 tangent #
-face $2098 -1 $-1 $2099 $1689 $5 $-1 $2100 forward single #
-point $-1 -1 $-1 4.174999999999999822 3.774999999999999911 0 #
+coedge $-1 -1 $-1 $2271 $2354 $2429 $2430 forward $2272 0 $-1 #
+coedge $-1 -1 $-1 $2353 $2350 $2431 $2432 reversed $2272 0 $-1 #
 point $-1 -1 $-1 3.914194109070746386 4.150000000000000355 -2.636779683484746784e-16 #
-coedge $-1 -1 $-1 $2101 $2102 $1693 $1918 reversed $2103 0 $-1 #
-edge $-1 -1 $-1 $1698 -2.75 $1761 0.6499999999999996891 $1693 $2104 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1694 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 2 0 2 307 343 0 1 @1 2 0 2 307 344 0 #
-plane-surface $-1 -1 $-1 0.09499999999999998723 1.024999999999999689 -0.1199999999999999956 -0.7071067811865475727 0 -0.7071067811865474617 -0.7071067811865474617 0 0.7071067811865475727 forward_v I I I I #
-coedge $-1 -1 $-1 $2105 $1695 $2106 $2107 forward $1923 0 $-1 #
-coedge $-1 -1 $-1 $1695 $2105 $2101 $2108 reversed $1923 0 $-1 #
-loop $-1 -1 $-1 $-1 $2105 $2109 #
-ellipse-curve $-1 -1 $-1 0.375 3.774999999999999911 -0.2399999999999999911 -0 -0 1 -0.1131370849898478276 0.113137084989847661 0 1 I I #
-coedge $-1 -1 $-1 $2110 $2106 $1697 $1926 reversed $2111 0 $-1 #
-edge $-1 -1 $-1 $1931 -2.75 $1483 0.6499999999999996891 $1697 $2112 forward @7 unknown #
-point $-1 -1 $-1 0.2149999999999998301 3.774999999999999911 -0.2399999999999999911 #
-edge $-1 -1 $-1 $1905 0 $1903 0.1414213562373027311 $1907 $2113 forward @7 unknown #
-face $2114 -1 $-1 $1249 $1704 $5 $-1 $2115 forward single #
-point $-1 -1 $-1 7.974999999999999645 4.150000000000002132 -0.02499999999999757971 #
-vertex $-1 -1 $-1 $2095 1 $2116 #
+vertex $-1 -1 $-1 $2430 1 $2433 #
 straight-curve $-1 -1 $-1 3.774999999999999911 3.934999999999999609 -0.2399999999999999911 0 0.7071067811865477948 0.7071067811865471286 F 0 F 0.3394112549695429415 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1712 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 8 0 2 307 343 0 1 @1 8 0 2 307 344 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2276 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 8 0 2 307 343 0 1 @1 8 0 2 307 344 0 #
 plane-surface $-1 -1 $-1 1.024999999999999689 4.054999999999999716 -0.1199999999999999956 0 0.7071067811865471286 -0.7071067811865477948 -1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $1936 $1715 $2117 $2118 reversed $1717 0 $-1 #
-coedge $-1 -1 $-1 $1716 $1935 $2119 $2120 forward $1717 0 $-1 #
-ellipse-curve $-1 -1 $-1 4.575000000000000178 0.375 0 0 0 1 -0.2828427124746190624 -0.2828427124746190624 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1720 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 1 314 0 #
-coedge $-1 -1 $-1 $2121 $1722 $1732 $1955 forward $1941 0 $-1 #
-coedge $-1 -1 $-1 $1722 $2121 $2122 $2123 reversed $1941 0 $-1 #
-loop $-1 -1 $-1 $-1 $2121 $2124 #
-vertex $-1 -1 $-1 $1723 1 $2125 #
+coedge $-1 -1 $-1 $2383 $2279 $2434 $2435 reversed $2280 0 $-1 #
+point $-1 -1 $-1 4.435805890929249706 0 0 #
+coedge $-1 -1 $-1 $2436 $2437 $2283 $2363 reversed $2438 0 $-1 #
+edge $-1 -1 $-1 $2369 0 $2364 0.3394112549695429415 $2283 $2439 forward @7 tangent #
+vertex $-1 -1 $-1 $2440 1 $2441 #
+intcurve-curve $-1 -1 $-1 forward { ref 16 } I I #
+coedge $-1 -1 $-1 $2442 $2286 $2292 $2376 forward $2368 0 $-1 #
+coedge $-1 -1 $-1 $2286 $2442 $2443 $2444 reversed $2368 0 $-1 #
+loop $-1 -1 $-1 $-1 $2442 $2445 #
+vertex $-1 -1 $-1 $2287 1 $2446 #
 ellipse-curve $-1 -1 $-1 3.774999999999999467 0.375 -0.2399999999999999911 -0 -0 1 0.1131370849898478415 -0.1131370849898477304 0 1 I I #
-coedge $-1 -1 $-1 $1912 $1724 $2126 $2127 forward $1946 0 $-1 #
-coedge $-1 -1 $-1 $1724 $1912 $2128 $1948 forward $1946 0 $-1 #
-loop $-1 -1 $-1 $-1 $1724 $2099 #
-straight-curve $-1 -1 $-1 3.934999999999999609 0.375 -0.2399999999999999911 0.7071067811865477948 0 0.7071067811865471286 F 0 F 0.3394112549695429415 #
-edge $-1 -1 $-1 $1690 -2.225000000000000089 $1726 1.174999999999999822 $2128 $2129 forward @7 unknown #
-point $-1 -1 $-1 4.174999999999999822 0.375 0 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1729 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 3 0 4 307 311 312 343 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2289 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  3 1 @1 3 0 4 307 311 312 343 0 1 @1 3 0 5 354 356 359 360 364 0 1 @1 3 0 5 354 356 359 360 365 0 #
 cone-surface $-1 -1 $-1 4.575000000000000178 0.375 -0.1199999999999999956 0 0 1 -0.197989898732233327 -0.197989898732233327 0 1 I I 0.7071067811865475727 0.7071067811865473507 0.2800000000000000266 forward I I I I #
-coedge $-1 -1 $-1 $1732 $1731 $2130 $2131 reversed $1733 0 $-1 #
-coedge $-1 -1 $-1 $1735 $2132 $1731 $1954 reversed $1958 0 $-1 #
-edge $-1 -1 $-1 $1501 0 $2133 0.1799999999999999378 $1731 $2134 forward @7 tangent #
-edge $-1 -1 $-1 $1503 0 $2135 0.1799999999999999933 $1939 $2136 forward @7 tangent #
-face $2137 -1 $-1 $2138 $1733 $5 $-1 $2139 forward single #
-coedge $-1 -1 $-1 $2132 $1735 $2102 $2140 forward $1958 0 $-1 #
-loop $-1 -1 $-1 $-1 $2132 $2138 #
+coedge $-1 -1 $-1 $2292 $2291 $2447 $2448 reversed $2293 0 $-1 #
+coedge $-1 -1 $-1 $2295 $2449 $2291 $2375 reversed $2379 0 $-1 #
+edge $-1 -1 $-1 $2215 0 $2450 0.1799999999999999378 $2291 $2451 forward @7 tangent #
+edge $-1 -1 $-1 $2217 0 $2452 0.1799999999999999933 $2366 $2453 forward @7 tangent #
+face $2454 -1 $-1 $2455 $2293 $5 $-1 $2456 forward single #
+coedge $-1 -1 $-1 $2449 $2295 $2414 $2457 forward $2379 0 $-1 #
+loop $-1 -1 $-1 $-1 $2449 $2455 #
 ellipse-curve $-1 -1 $-1 0.375 0.375 -0.2399999999999999911 -0 -0 1 -0.1131370849898475917 -0.1131370849898475917 0 1 I I #
-coedge $-1 -1 $-1 $2141 $2142 $1739 $1961 reversed $2143 0 $-1 #
-edge $-1 -1 $-1 $1962 -2.75 $1965 0.6499999999999994671 $1739 $2144 forward @7 unknown #
-vertex $-1 -1 $-1 $1740 0 $2145 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2300 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 1 0 4 307 311 312 343 0 1 @1 3 0 7 354 356 357 360 362 363 364 0 #
+cone-surface $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.1199999999999999956 0 0 1 -0.1979898987322335768 0.1979898987322332993 0 1 I I 0.7071067811865472397 0.7071067811865476838 0.2800000000000001932 forward I I I I #
+coedge $-1 -1 $-1 $2302 $2360 $2458 $2459 forward $2280 0 $-1 #
+coedge $-1 -1 $-1 $2460 $2461 $2304 $2385 reversed $2462 0 $-1 #
+edge $-1 -1 $-1 $2386 -2.75 $2389 0.6499999999999994671 $2304 $2463 forward @7 unknown #
+vertex $-1 -1 $-1 $2305 0 $2464 #
 straight-curve $-1 -1 $-1 4.575000000000000178 0.2149999999999999689 -0.2399999999999999911 0 -0.7071067811865474617 0.7071067811865475727 F 0 F 0.339411254969542775 #
-coedge $-1 -1 $-1 $1747 $1741 $2146 $2147 forward $1748 0 $-1 #
-vertex $-1 -1 $-1 $1961 1 $2148 #
+coedge $-1 -1 $-1 $2309 $2306 $2465 $2466 forward $2251 0 $-1 #
+vertex $-1 -1 $-1 $2385 1 $2467 #
 straight-curve $-1 -1 $-1 7.974999999999999645 0.2149999999999999689 -0.2399999999999999911 0 -0.7071067811865474617 0.7071067811865475727 F 0 F 0.339411254969542775 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1743 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 4 307 311 312 343 0 #
-face $2149 -1 $-1 $2093 $2150 $5 $-1 $2151 forward single #
-plane-surface $-1 -1 $-1 7.325000000000000178 0.09499999999999998723 -0.1199999999999999956 0 -0.7071067811865475727 -0.7071067811865474617 -1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $1754 $1745 $1895 $1974 reversed $1755 0 $-1 #
-straight-curve $-1 -1 $-1 8.349999999999997868 0.374999999999999889 0 0 0 1 I I #
-coedge $-1 -1 $-1 $2152 $1895 $1747 $1973 reversed $1678 0 $-1 #
-edge $-1 -1 $-1 $2153 0 $1749 0.3040559159102135811 $1747 $2154 forward @7 tangent #
-edge $-1 -1 $-1 $2080 -0.3250000000000001776 $1749 3.075000000000000178 $1895 $2155 forward @7 unknown #
-point $-1 -1 $-1 8.349999999999997868 0.3749999999999999445 -0.02500000000000078548 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1752 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 5 0 2 314 -352 0 1 @1 5 0 3 319 342 -352 0 2 @2 16 0 2 347 -352 0 2 @2 16 0 2 348 -352 0 #
-plane-surface $-1 -1 $-1 8.349999999999999645 0 0 1 0 0 0 1 0 forward_v I I I I #
-edge $-1 -1 $-1 $1756 -1.979999999999999982 $2080 0.02499999999999946709 $1754 $2156 forward @7 tangent #
-point $-1 -1 $-1 8.349999999999999645 3.775000000000000355 1.979999999999999982 #
+edge $-1 -1 $-1 $2468 0 $2240 0.3040559159102135811 $2309 $2469 forward @7 tangent #
 point $-1 -1 $-1 0.2149999999999999689 0.375 -0.2399999999999999911 #
-ellipse-curve $-1 -1 $-1 0.375 3.774999999999999911 -0.3800000000000000044 0 0 -1 -0.02142135623730972993 0.02142135623730969524 0 1 I I #
-point $-1 -1 $-1 0.3447056274847710711 3.774999999999999911 -0.3800000000000000044 #
-point $-1 -1 $-1 0.375 3.80529437251522884 -0.3800000000000000044 #
-coedge $-1 -1 $-1 $1774 $2157 $1776 $1986 forward $1524 0 $-1 #
-straight-curve $-1 -1 $-1 0.07000000000000028422 1.543750000000000178 1.979999999999999982 0 1 0 I I #
-edge $-1 -1 $-1 $1989 -0.785398163397448279 $1777 0.785398163397448057 $1984 $2158 forward @7 unknown #
-point $-1 -1 $-1 0.07000000000000008993 0.375 1.979999999999999982 #
-coedge $-1 -1 $-1 $1784 $1781 $2157 $2159 reversed $1785 0 $-1 #
-vertex $-1 -1 $-1 $1986 0 $2160 #
-straight-curve $-1 -1 $-1 0.375 0.1900000000000000022 1.860000000000000098 0 -0.7071067811865474617 0.7071067811865474617 F 0 F 0.339411254969542775 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1783 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 3 0 4 327 334 342 352 0 #
-cone-surface $-1 -1 $-1 0.375 0.3750000000000000555 1.979999999999999982 0 0 1 -0.2156675682618970358 -0.2156675682618970358 0 1 I I 0.7071067811865475727 0.7071067811865475727 0.3050000000000000488 forward I I I I #
-edge $-1 -1 $-1 $1616 0 $2161 0.1697056274847712209 $1784 $2162 forward @7 tangent #
-coedge $-1 -1 $-1 $2028 $1793 $1787 $1995 forward $1524 0 $-1 #
-edge $-1 -1 $-1 $1795 -0.7853981633974451704 $1996 0.7853981633974514986 $1994 $2163 forward @7 unknown #
-vertex $-1 -1 $-1 $2029 0 $2164 #
-straight-curve $-1 -1 $-1 8.160000000000000142 3.775000000000000355 1.860000000000000098 0.7071067811865477948 0 0.7071067811865471286 F 0 F 0.3394112549695429415 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1789 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 7 0 4 327 334 342 352 0 #
-cone-surface $-1 -1 $-1 7.975000000000001421 3.775000000000000355 1.979999999999999982 0 0 1 0.2156675682618961198 0.2156675682618974799 0 1 I I 0.7071067811865485719 0.7071067811865465735 0.3049999999999997158 forward I I I I #
-coedge $-1 -1 $-1 $2157 $2028 $1792 $2001 forward $1524 0 $-1 #
-edge $-1 -1 $-1 $2030 -0.7853981633974476129 $2161 0.7853981633974460586 $2000 $2165 forward @7 unknown #
-straight-curve $-1 -1 $-1 3.118749999999999467 4.080000000000000071 1.979999999999999982 1 0 0 I I #
-point $-1 -1 $-1 7.975000000000001421 4.080000000000000071 1.979999999999999982 #
-coedge $-1 -1 $-1 $2166 $1804 $1806 $2006 forward $1349 0 $-1 #
-straight-curve $-1 -1 $-1 0.3447056274847712931 1.649999999999999911 -0.3800000000000000044 0 1 0 F -10001.65000099999997 F 9998.350001000000702 #
-edge $-1 -1 $-1 $1807 -0.785398163397448279 $2012 0.785398163397448279 $2004 $2167 reversed @7 unknown #
-point $-1 -1 $-1 0.3447056274847713486 0.375 -0.3800000000000000044 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1810 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 7 0 3 310 343 350 0 1 @1 7 0 3 310 344 350 0 #
-face $2168 -1 $-1 $1855 $1816 $5 $-1 $2169 reversed single #
-cone-surface $-1 -1 $-1 0.375 0.375 -0.3751471862576142291 0 0 -1 -0.02485281374238568208 -0.02485281374238568208 0 1 I I -0.7071067811865475727 0.7071067811865474617 0.1199999999999999678 forward I I I I #
-coedge $-1 -1 $-1 $1812 $1815 $2166 $2170 reversed $1816 0 $-1 #
-vertex $-1 -1 $-1 $2170 0 $2171 #
-straight-curve $-1 -1 $-1 0.375 0.2998528137423857043 -0.3351471862576143046 0 0.7071067811865470176 -0.7071067811865480168 I I #
-coedge $-1 -1 $-1 $1814 $2172 $1842 $2037 forward $1349 0 $-1 #
-straight-curve $-1 -1 $-1 4.575000000000000178 0.2998528137423857043 -0.1551471862576143113 0 -0.7071067811865474617 0.7071067811865475727 I I #
-coedge $-1 -1 $-1 $2032 $2068 $1821 $2017 forward $1871 0 $-1 #
-edge $-1 -1 $-1 $2020 -2.125 $2018 1.274999999999999467 $1821 $2173 reversed @7 unknown #
-vertex $-1 -1 $-1 $1822 1 $2174 #
-straight-curve $-1 -1 $-1 8.050147186257614607 3.774999999999999467 -0.3351471862576143046 -0.707106781186543798 0 -0.7071067811865512365 I I #
-vertex $-1 -1 $-1 $2069 1 $2175 #
-straight-curve $-1 -1 $-1 8.050147186257614607 0.375 -0.3351471862576141936 -0.7071067811865475727 0 -0.7071067811865475727 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1824 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 5 310 311 312 343 350 0 #
-plane-surface $-1 -1 $-1 8.010147186257613683 2.924999999999999822 -0.3751471862576142291 0.7071067811865475727 0 -0.7071067811865475727 -0.7071067811865475727 0 -0.7071067811865475727 forward_v I I I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1826 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 5 310 311 312 343 350 0 #
-plane-surface $-1 -1 $-1 7.125 0.3398528137423857398 -0.3751471862576143401 0 -0.7071067811865480168 -0.7071067811865470176 -1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $1874 $2176 $1868 $2061 reversed $1827 0 $-1 #
-coedge $-1 -1 $-1 $1829 $1868 $2177 $2178 reversed $1603 0 $-1 #
-coedge $-1 -1 $-1 $2000 $1994 $1832 $2029 forward $1524 0 $-1 #
-edge $-1 -1 $-1 $1996 -1.168750000000000178 $2030 2.231250000000000178 $2028 $2179 forward @7 unknown #
-vertex $-1 -1 $-1 $2001 0 $2180 #
-straight-curve $-1 -1 $-1 8.159999999999998366 0.375 1.860000000000000098 0.7071067811865504593 0 0.7071067811865445751 F 0 F 0.3394112549695442183 #
-coedge $-1 -1 $-1 $1885 $2016 $1838 $2033 forward $1871 0 $-1 #
-edge $-1 -1 $-1 $2018 -0.7853981633974495002 $1889 0.7853981633974471688 $1838 $2181 reversed @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1839 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 3 0 5 310 311 312 343 350 0 #
-cone-surface $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.3751471862576144511 0 0 -1 0.02485281374238580698 0.02485281374238586249 0 1 I I -0.7071067811865459074 0.707106781186548905 0.1200000000000003425 forward I I I I #
-ellipse-curve $-1 -1 $-1 4.575000000000000178 0.375 -0.190294372515228627 -0 -0 1 -0.02828427124746188751 -0.02828427124746188751 0 1 I I #
-edge $-1 -1 $-1 $2039 -0.7853981633974495002 $1859 0.7853981633974618237 $2014 $2182 reversed @7 unknown #
-coedge $-1 -1 $-1 $1846 $1843 $2172 $2183 reversed $1847 0 $-1 #
-vertex $-1 -1 $-1 $2037 0 $2184 #
-straight-curve $-1 -1 $-1 3.850147186257613985 3.774999999999999467 -0.3351471862576143046 -0.707106781186543798 0 -0.7071067811865512365 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1845 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 3 0 3 310 343 350 0 1 @1 3 0 3 310 344 350 0 #
-cone-surface $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.3751471862576144511 0 0 -1 0.02485281374238580698 0.02485281374238586249 0 1 I I -0.7071067811865459074 0.707106781186548905 0.1200000000000003425 forward I I I I #
-face $2185 -1 $-1 $1845 $1847 $5 $-1 $2186 reversed single #
-coedge $-1 -1 $-1 $2172 $2166 $1852 $2045 forward $1349 0 $-1 #
-edge $-1 -1 $-1 $2048 -0.7853981633974489451 $2046 0.7853981633974477239 $2044 $2187 reversed @7 unknown #
-vertex $-1 -1 $-1 $2183 0 $2188 #
-straight-curve $-1 -1 $-1 3.850147186257613985 0.375 -0.3351471862576141936 -0.7071067811865475727 0 -0.7071067811865475727 I I #
-vertex $-1 -1 $-1 $2045 0 $2189 #
-straight-curve $-1 -1 $-1 3.774999999999999467 0.2998528137423857043 -0.3351471862576143601 0 0.7071067811865453523 -0.7071067811865496822 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1855 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 5 0 3 310 343 350 0 1 @1 5 0 3 310 344 350 0 #
-cone-surface $-1 -1 $-1 3.774999999999999467 0.375 -0.3751471862576143956 0 0 -1 0.02485281374238587637 -0.02485281374238584862 0 1 I I -0.7071067811865464625 0.707106781186548683 0.1200000000000003564 forward I I I I #
-straight-curve $-1 -1 $-1 1.649999999999999911 3.805294372515227952 -0.3800000000000000044 1 0 0 F -10001.65000099999997 F 9998.350001000000702 #
-point $-1 -1 $-1 3.774999999999999467 3.805294372515228396 -0.3800000000000000044 #
-point $-1 -1 $-1 4.535000000000000142 0.375 -0.3702943725152283427 #
-coedge $-1 -1 $-1 $2177 $1885 $1865 $2056 forward $1871 0 $-1 #
-edge $-1 -1 $-1 $1887 -0.7853981633974490562 $2057 0.7853981633974475018 $1865 $2190 reversed @7 unknown #
-vertex $-1 -1 $-1 $2056 1 $2191 #
-straight-curve $-1 -1 $-1 4.579852813742386175 3.774999999999999911 -0.4151471862576143756 -0.7071067811865464625 0 0.707106781186548683 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1867 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 5 310 311 312 343 350 0 #
-cone-surface $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.3751471862576143956 0 0 -1 -0.02485281374238585556 0.02485281374238581392 0 1 I I -0.7071067811865464625 0.7071067811865484609 0.1200000000000003009 forward I I I I #
-edge $-1 -1 $-1 $1863 0.04970562748477135029 $2192 0.06343145750507674097 $1868 $2193 forward @7 tangent #
-coedge $-1 -1 $-1 $2176 $1874 $1878 $2066 forward $1827 0 $-1 #
-ellipse-curve $-1 -1 $-1 4.575000000000000178 0.375 -0.3702943725152285093 -0 -0 1 -0.02828427124746188751 -0.02828427124746188751 0 1 I I #
-straight-curve $-1 -1 $-1 4.575000000000000178 0.3349999999999999645 -0.2399999999999999911 0 0 -1 I I #
-coedge $-1 -1 $-1 $1878 $1877 $2194 $2195 reversed $1879 0 $-1 #
-edge $-1 -1 $-1 $1880 0.04970562748477146825 $2196 0.06343145750507610259 $2062 $2197 forward @7 tangent #
-point $-1 -1 $-1 4.575000000000000178 0.33500000000000002 -0.3702943725152286758 #
-coedge $-1 -1 $-1 $2016 $2194 $1882 $2069 forward $1871 0 $-1 #
-edge $-1 -1 $-1 $2070 -0.7853981633974489451 $2020 0.7853981633974477239 $1882 $2198 reversed @7 unknown #
-vertex $-1 -1 $-1 $2195 1 $2199 #
-straight-curve $-1 -1 $-1 7.974999999999999645 0.2998528137423857043 -0.3351471862576143601 0 0.7071067811865453523 -0.7071067811865496822 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1884 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 5 0 5 310 311 312 343 350 0 #
-cone-surface $-1 -1 $-1 7.974999999999999645 0.375 -0.3751471862576143956 0 0 -1 0.02485281374238587637 -0.02485281374238584862 0 1 I I -0.7071067811865464625 0.707106781186548683 0.1200000000000003564 forward I I I I #
-straight-curve $-1 -1 $-1 5.849999999999999645 3.805294372515227952 -0.3800000000000000044 1 0 0 F -10005.8500010000007 F 9994.150000999999975 #
-point $-1 -1 $-1 4.575000000000000178 3.80529437251522884 -0.3800000000000000044 #
-point $-1 -1 $-1 7.974999999999999645 3.805294372515228396 -0.3800000000000000044 #
-coedge $-1 -1 $-1 $1895 $2152 $1896 $2079 forward $1678 0 $-1 #
-coedge $-1 -1 $-1 $1897 $1896 $2200 $2201 forward $1450 0 $-1 #
-edge $-1 -1 $-1 $2202 0 $2080 0.3040559159102158016 $2077 $2203 forward @7 tangent #
-vertex $-1 -1 $-1 $1898 1 $2204 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 3.775000000000001688 -0.02500000000000001527 -0 -0 -1 0.375 -1.332267629550187849e-15 0 1 I I #
-coedge $-1 -1 $-1 $2205 $2206 $1899 $2083 reversed $2207 0 $-1 #
-edge $-1 -1 $-1 $2084 -2.75 $2087 0.6499999999999996891 $1899 $2208 forward @7 unknown #
-vertex $-1 -1 $-1 $1900 0 $2209 #
-straight-curve $-1 -1 $-1 7.974999999999999645 3.934999999999999609 -0.2399999999999999911 0 0.7071067811865477948 0.7071067811865471286 F 0 F 0.3394112549695429415 #
-coedge $-1 -1 $-1 $1908 $1901 $2210 $2211 forward $1909 0 $-1 #
-vertex $-1 -1 $-1 $1902 1 $2212 #
-straight-curve $-1 -1 $-1 4.575000000000000178 4.174999999999999822 0 0 -0.7071067811865471286 -0.7071067811865477948 F 0 F 0.3394112549695426084 #
-point $-1 -1 $-1 4.575000000000000178 4.150000000000001243 -0.02499999999999850606 #
-point $-1 -1 $-1 4.435805890929250594 4.150000000000000355 0 #
-coedge $-1 -1 $-1 $2213 $2128 $1908 $2092 reversed $2150 0 $-1 #
-edge $-1 -1 $-1 $2214 0 $1690 0.3394112549695427195 $1908 $2215 forward @7 tangent #
-face $2216 -1 $-1 $2217 $1909 $5 $-1 $2218 forward single #
-coedge $-1 -1 $-1 $2219 $2220 $1911 $2095 reversed $2221 0 $-1 #
-edge $-1 -1 $-1 $2096 -0.7853981633974495002 $1931 0.7853981633974471688 $1911 $2222 forward @7 unknown #
-vertex $-1 -1 $-1 $2127 1 $2223 #
-straight-curve $-1 -1 $-1 3.934999999999999609 3.774999999999999467 -0.2399999999999999911 0.7071067811865477948 0 0.7071067811865471286 F 0 F 0.3394112549695429415 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1914 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 7 0 2 307 343 0 1 @1 7 0 2 307 344 0 #
-face $2224 -1 $-1 $2124 $1946 $5 $-1 $2225 forward single #
-cone-surface $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.1199999999999999956 0 0 1 0.1979898987322331327 0.1979898987322336046 0 1 I I 0.7071067811865473507 0.7071067811865477948 0.2800000000000000822 forward I I I I #
-coedge $-1 -1 $-1 $2226 $1917 $1922 $2108 forward $2103 0 $-1 #
-coedge $-1 -1 $-1 $1917 $2226 $1957 $2140 reversed $2103 0 $-1 #
-loop $-1 -1 $-1 $-1 $2226 $2227 #
-straight-curve $-1 -1 $-1 0.2149999999999999689 1.024999999999999689 -0.2399999999999999911 0 -1 -0 F -3.014001000000000374 F 0.9140009999999997303 #
-coedge $-1 -1 $-1 $1922 $1921 $2228 $2229 reversed $1923 0 $-1 #
-coedge $-1 -1 $-1 $1925 $2230 $1921 $2107 reversed $2111 0 $-1 #
-edge $-1 -1 $-1 $1483 0 $2231 0.1799999999999999933 $1921 $2232 forward @7 tangent #
-edge $-1 -1 $-1 $1698 0 $2233 0.1799999999999999933 $1922 $2234 forward @7 tangent #
-face $2235 -1 $-1 $2236 $1923 $5 $-1 $2237 forward single #
-coedge $-1 -1 $-1 $2230 $1925 $2220 $2238 forward $2111 0 $-1 #
-loop $-1 -1 $-1 $-1 $2230 $2236 #
-straight-curve $-1 -1 $-1 1.024999999999999689 3.934999999999999609 -0.2399999999999999911 -1 0 -0 F -3.014001000000000374 F 0.9140009999999999524 #
+vertex $-1 -1 $-1 $2349 0 $2470 #
 intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2 
 	0 2 0.1414213562373027311 2 
 	4.435805890929255924 4.150000000000002132 -1.11022302462515654e-16 1 
@@ -2245,549 +3046,540 @@ intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2
 	0 
 	
 	0 F 1 F 0 UNEXTENDED UNEXTENDED } I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1929 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  4 1 @1 2 0 2 316 -352 0 1 @1 2 0 3 321 342 -352 0 2 @2 15 0 2 347 -352 0 2 @2 15 0 2 348 -352 0 #
-cone-surface $-1 -1 $-1 7.974999999999999645 3.775000000000000355 0 -0 0 1 0.2651650429449553537 0.2651650429449553537 0 1 I I 0 1 0.3750000000000000555 forward I I I I #
-point $-1 -1 $-1 3.774999999999999911 3.934999999999999609 -0.2399999999999999911 #
-coedge $-1 -1 $-1 $2128 $2213 $1935 $2118 forward $2150 0 $-1 #
-edge $-1 -1 $-1 $2239 0 $1726 0.339411254969542775 $2117 $2240 forward @7 tangent #
-coedge $-1 -1 $-1 $2241 $2242 $1936 $2120 reversed $2243 0 $-1 #
-edge $-1 -1 $-1 $2239 -0.785398163397448279 $1962 0.785398163397448279 $1936 $2244 forward @7 unknown #
-coedge $-1 -1 $-1 $1940 $1939 $2245 $2246 reversed $1941 0 $-1 #
-coedge $-1 -1 $-1 $2247 $2126 $1940 $2123 forward $2248 0 $-1 #
-edge $-1 -1 $-1 $1942 0 $2249 0.1799999999999999378 $2122 $2250 forward @7 tangent #
-face $2251 -1 $-1 $1956 $1941 $5 $-1 $2252 forward single #
-point $-1 -1 $-1 3.934999999999999609 0.375 -0.2399999999999999911 #
-coedge $-1 -1 $-1 $2122 $2253 $1944 $2127 reversed $2248 0 $-1 #
-edge $-1 -1 $-1 $1942 -2.75 $2096 0.6499999999999994671 $1944 $2254 forward @7 unknown #
-coedge $-1 -1 $-1 $2091 $2117 $1945 $1948 reversed $2150 0 $-1 #
-straight-curve $-1 -1 $-1 4.174999999999999822 1.549999999999999822 -6.938893903907228378e-18 -0 -1 0 I I #
-coedge $-1 -1 $-1 $2255 $2256 $1952 $2131 forward $2257 0 $-1 #
-edge $-1 -1 $-1 $2135 -0.8499999999999996447 $2133 2.549999999999999822 $1952 $2258 forward @7 unknown #
-coedge $-1 -1 $-1 $1953 $1957 $2259 $2260 reversed $1958 0 $-1 #
-vertex $-1 -1 $-1 $2260 0 $2261 #
-straight-curve $-1 -1 $-1 0.375 0.2149999999999999689 -0.2399999999999999911 0 0 -1 I I #
-vertex $-1 -1 $-1 $2131 0 $2262 #
-straight-curve $-1 -1 $-1 3.774999999999999467 0.2149999999999999689 -0.2399999999999999911 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1956 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 24 0 2 308 343 0 2 @2 24 0 2 308 344 0 #
-face $2263 -1 $-1 $2227 $1958 $5 $-1 $2264 forward single #
-plane-surface $-1 -1 $-1 3.774999999999999467 0.2149999999999999689 -0.2399999999999999911 0 -1 0 -1 -0 0 forward_v I I I I #
-edge $-1 -1 $-1 $1761 0 $2265 0.1799999999999999933 $1957 $2266 forward @7 tangent #
-coedge $-1 -1 $-1 $2267 $1960 $2242 $2268 forward $2143 0 $-1 #
-coedge $-1 -1 $-1 $1960 $2267 $2269 $2270 reversed $2143 0 $-1 #
-loop $-1 -1 $-1 $-1 $2267 $2271 #
-straight-curve $-1 -1 $-1 7.325000000000000178 0.2149999999999999689 -0.2399999999999999911 1 0 0 F -3.01400099999999993 F 0.9140009999999998414 #
-point $-1 -1 $-1 4.575000000000000178 0.2149999999999999689 -0.2399999999999999911 #
-coedge $-1 -1 $-1 $2269 $2272 $1964 $2147 reversed $2273 0 $-1 #
-edge $-1 -1 $-1 $1965 -0.7853981633974488341 $2153 0.7853981633974478349 $1964 $2274 forward @7 unknown #
-point $-1 -1 $-1 7.974999999999999645 0.2149999999999999689 -0.2399999999999999911 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $1968 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 4 307 311 312 343 0 #
-loop $-1 -1 $-1 $-1 $2091 $1968 #
-plane-surface $-1 -1 $-1 4.294999999999999929 1.024999999999999689 -0.1199999999999999956 -0.7071067811865475727 0 -0.7071067811865474617 -0.7071067811865474617 0 0.7071067811865475727 forward_v I I I I #
-coedge $-1 -1 $-1 $2077 $1972 $2275 $2276 forward $1678 0 $-1 #
-vertex $-1 -1 $-1 $1973 0 $2277 #
-straight-curve $-1 -1 $-1 8.134999999999999787 0.375 -0.2399999999999999911 0.7071067811865477948 0 0.7071067811865471286 F 0 F 0.3394112549695429415 #
-straight-curve $-1 -1 $-1 8.349999999999997868 3.450000000000000178 -0.02500000000000120876 -5.224578939412500555e-16 -1 -5.224578939412495624e-16 I I #
-straight-curve $-1 -1 $-1 8.349999999999999645 3.775000000000000355 0 0 -0 -1 F -2.762501000000000317 F 1.162501000000000007 #
-coedge $-1 -1 $-1 $1984 $2000 $1988 $2159 forward $1524 0 $-1 #
-ellipse-curve $-1 -1 $-1 0.375 0.3750000000000000555 1.979999999999999982 0 0 -1 -0.2156675682618970358 -0.2156675682618970358 0 1 I I #
-edge $-1 -1 $-1 $2161 -2.743750000000001243 $1989 4.856249999999999289 $2157 $2278 forward @7 unknown #
-point $-1 -1 $-1 0.375 0.07000000000000011768 1.979999999999999982 #
-vertex $-1 -1 $-1 $2159 0 $2279 #
-straight-curve $-1 -1 $-1 7.975000000000000533 0.1899999999999999467 1.860000000000000098 0 -0.7071067811865474617 0.7071067811865475727 F 0 F 0.3394112549695427195 #
-ellipse-curve $-1 -1 $-1 7.975000000000001421 3.775000000000000355 1.979999999999999982 0 0 -1 0.2156675682618961198 0.2156675682618974799 0 1 I I #
-point $-1 -1 $-1 8.279999999999999361 3.775000000000000355 1.979999999999999982 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 1.979999999999999982 0 0 -1 0.2156675682618969803 -0.215667568261896675 0 1 I I #
-coedge $-1 -1 $-1 $2044 $2004 $2011 $2170 forward $1349 0 $-1 #
-ellipse-curve $-1 -1 $-1 0.375 0.375 -0.3800000000000000044 0 0 -1 -0.02142135623730943156 -0.02142135623730943156 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2009 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 6 0 3 310 343 350 0 1 @1 6 0 3 310 344 350 0 #
-plane-surface $-1 -1 $-1 2.924999999999999822 0.3398528137423857398 -0.3751471862576143401 0 -0.7071067811865480168 -0.7071067811865470176 -1 0 -0 forward_v I I I I #
-edge $-1 -1 $-1 $2012 -2.125 $2048 1.274999999999999467 $2166 $2280 reversed @7 unknown #
-point $-1 -1 $-1 0.375 0.3447056274847712931 -0.3800000000000000044 #
-coedge $-1 -1 $-1 $2014 $2044 $2038 $2183 forward $1349 0 $-1 #
-straight-curve $-1 -1 $-1 8.005294372515228574 2.5 -0.3800000000000000044 0 -1 0 F -9997.500001000000339 F 10002.50000100000034 #
-point $-1 -1 $-1 8.00529437251523035 3.774999999999999467 -0.3800000000000000044 #
-point $-1 -1 $-1 8.005294372515228574 0.375 -0.3800000000000000044 #
-coedge $-1 -1 $-1 $2026 $2062 $2281 $2282 reversed $1827 0 $-1 #
-coedge $-1 -1 $-1 $2281 $2055 $2027 $2178 forward $1871 0 $-1 #
-edge $-1 -1 $-1 $2057 -2.125 $2192 1.274999999999999911 $2027 $2283 reversed @7 unknown #
-straight-curve $-1 -1 $-1 8.280000000000001137 2.606250000000000178 1.979999999999999982 0 -1 0 I I #
-point $-1 -1 $-1 8.279999999999999361 0.375 1.979999999999999982 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.3800000000000000044 0 0 -1 0.0214213562373097334 0.02142135623730978197 0 1 I I #
-ellipse-curve $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.3800000000000000044 0 0 -1 0.0214213562373097334 0.02142135623730978197 0 1 I I #
-edge $-1 -1 $-1 $2046 -2.125 $2039 1.274999999999999467 $2172 $2284 reversed @7 unknown #
-point $-1 -1 $-1 3.80529437251522884 3.774999999999999467 -0.3800000000000000044 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2043 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 4 0 3 310 343 350 0 1 @1 4 0 3 310 344 350 0 #
-plane-surface $-1 -1 $-1 3.810147186257613949 2.924999999999999822 -0.3751471862576142291 0.7071067811865475727 0 -0.7071067811865475727 -0.7071067811865475727 0 -0.7071067811865475727 forward_v I I I I #
-ellipse-curve $-1 -1 $-1 3.774999999999999467 0.375 -0.3800000000000000044 0 0 -1 0.02142135623730975075 -0.02142135623730972646 0 1 I I #
-point $-1 -1 $-1 3.805294372515228396 0.375 -0.3800000000000000044 #
-point $-1 -1 $-1 3.774999999999999467 0.3447056274847710711 -0.3800000000000000044 #
-ellipse-curve $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.3800000000000000044 0 0 -1 -0.02142135623730972993 0.02142135623730969524 0 1 I I #
-point $-1 -1 $-1 4.544705627484772137 3.774999999999999911 -0.3800000000000000044 #
-vertex $-1 -1 $-1 $2178 1 $2285 #
-straight-curve $-1 -1 $-1 4.499852813742386104 0.375 -0.3351471862576143601 0.7071067811865477948 0 -0.7071067811865473507 I I #
-coedge $-1 -1 $-1 $2068 $2281 $2065 $2195 forward $1871 0 $-1 #
-edge $-1 -1 $-1 $2196 -2.125 $2070 1.274999999999999467 $2065 $2286 reversed @7 unknown #
-vertex $-1 -1 $-1 $2282 1 $2287 #
-straight-curve $-1 -1 $-1 4.575000000000000178 0.2998528137423857043 -0.3351471862576143046 0 0.7071067811865470176 -0.7071067811865480168 I I #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 -0.3800000000000000044 0 0 -1 0.02142135623730975075 -0.02142135623730972646 0 1 I I #
-point $-1 -1 $-1 7.974999999999999645 0.3447056274847710711 -0.3800000000000000044 #
-coedge $-1 -1 $-1 $2288 $2289 $2078 $2201 reversed $2290 0 $-1 #
-edge $-1 -1 $-1 $2202 -0.7853981633974495002 $2084 0.7853981633974471688 $2078 $2291 forward @7 unknown #
-vertex $-1 -1 $-1 $2276 1 $2292 #
+coedge $-1 -1 $-1 $2320 $2319 $2471 $2472 forward $2176 0 $-1 #
+coedge $-1 -1 $-1 $2473 $2474 $2323 $2397 reversed $2475 0 $-1 #
+edge $-1 -1 $-1 $2398 -0.7853981633974495002 $2330 0.7853981633974471688 $2323 $2476 forward @7 unknown #
+vertex $-1 -1 $-1 $2472 1 $2477 #
 straight-curve $-1 -1 $-1 8.134999999999999787 3.774999999999999467 -0.2399999999999999911 0.7071067811865477948 0 0.7071067811865471286 F 0 F 0.3394112549695429415 #
-point $-1 -1 $-1 8.349999999999999645 3.775000000000000355 -0.02499999999999944975 #
-coedge $-1 -1 $-1 $2293 $2082 $2289 $2294 forward $2207 0 $-1 #
-coedge $-1 -1 $-1 $2082 $2293 $2295 $2296 reversed $2207 0 $-1 #
-loop $-1 -1 $-1 $-1 $2293 $2297 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2326 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 4 307 311 312 343 0 #
+face $2478 -1 $-1 $2479 $2480 $5 $-1 $2481 forward single #
+loop $-1 -1 $-1 $-1 $2482 $2326 #
+plane-surface $-1 -1 $-1 4.294999999999999929 1.024999999999999689 -0.1199999999999999956 -0.7071067811865475727 0 -0.7071067811865474617 -0.7071067811865474617 0 0.7071067811865475727 forward_v I I I I #
+coedge $-1 -1 $-1 $2483 $2328 $2474 $2484 forward $2406 0 $-1 #
+coedge $-1 -1 $-1 $2328 $2483 $2485 $2486 reversed $2406 0 $-1 #
+loop $-1 -1 $-1 $-1 $2483 $2487 #
 straight-curve $-1 -1 $-1 5.224999999999999645 3.934999999999999609 -0.2399999999999999911 -1 0 0 F -3.014001000000000374 F 0.9140009999999999524 #
 point $-1 -1 $-1 7.974999999999999645 3.934999999999999609 -0.2399999999999999911 #
-coedge $-1 -1 $-1 $2295 $2298 $2086 $2211 reversed $2299 0 $-1 #
-edge $-1 -1 $-1 $2087 -0.7853981633974490562 $2214 0.7853981633974475018 $2086 $2300 forward @7 unknown #
+coedge $-1 -1 $-1 $2425 $2332 $2482 $2488 forward $2333 0 $-1 #
+coedge $-1 -1 $-1 $2485 $2489 $2332 $2411 reversed $2490 0 $-1 #
+edge $-1 -1 $-1 $2334 -0.7853981633974490562 $2491 0.7853981633974475018 $2332 $2492 forward @7 unknown #
 point $-1 -1 $-1 4.575000000000000178 3.935000000000000053 -0.2399999999999999911 #
-coedge $-1 -1 $-1 $2117 $2091 $2301 $2302 forward $2150 0 $-1 #
-vertex $-1 -1 $-1 $2092 0 $2303 #
-straight-curve $-1 -1 $-1 4.415000000000000036 3.774999999999999911 -0.2399999999999999911 -0.7071067811865473507 0 0.7071067811865477948 F 0 F 0.3394112549695427195 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2093 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 4 307 311 312 343 0 #
-face $2304 -1 $-1 $2271 $2273 $5 $-1 $2305 forward single #
-cone-surface $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.1199999999999999956 0 0 1 -0.1979898987322335768 0.1979898987322332993 0 1 I I 0.7071067811865472397 0.7071067811865476838 0.2800000000000001932 forward I I I I #
-coedge $-1 -1 $-1 $2306 $2094 $2253 $2307 forward $2221 0 $-1 #
-coedge $-1 -1 $-1 $2094 $2306 $2110 $2238 reversed $2221 0 $-1 #
-loop $-1 -1 $-1 $-1 $2306 $2308 #
-ellipse-curve $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.2399999999999999911 -0 -0 1 0.1131370849898476055 0.1131370849898478692 0 1 I I #
-point $-1 -1 $-1 3.934999999999999609 3.774999999999999467 -0.2399999999999999911 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2099 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 6 0 2 307 343 0 1 @1 6 0 2 307 344 0 #
-plane-surface $-1 -1 $-1 4.054999999999999716 3.125 -0.1199999999999999956 0.7071067811865471286 0 -0.7071067811865477948 -0.7071067811865479058 0 -0.7071067811865472397 forward_v I I I I #
-coedge $-1 -1 $-1 $2102 $2101 $2309 $2310 reversed $2103 0 $-1 #
-face $2311 -1 $-1 $2312 $2103 $5 $-1 $2313 forward single #
-coedge $-1 -1 $-1 $2314 $2315 $2105 $2229 forward $2316 0 $-1 #
-edge $-1 -1 $-1 $2233 -0.7853981633974475018 $2231 0.7853981633974490562 $2105 $2317 forward @7 unknown #
-coedge $-1 -1 $-1 $2106 $2110 $2318 $2319 reversed $2111 0 $-1 #
-vertex $-1 -1 $-1 $2229 1 $2320 #
-straight-curve $-1 -1 $-1 0.375 3.935000000000000053 -0.2399999999999999911 0 0 -1 I I #
-vertex $-1 -1 $-1 $2229 0 $2321 #
-straight-curve $-1 -1 $-1 0.2149999999999998301 3.774999999999999911 -0.2399999999999999911 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2109 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 19 0 2 308 343 0 2 @2 19 0 2 308 344 0 #
-face $2322 -1 $-1 $2308 $2111 $5 $-1 $2323 forward single #
-cone-surface $-1 -1 $-1 0.375 3.774999999999999911 -0.2399999999999999911 0 0 -1 -0.1131370849898478276 0.113137084989847661 0 1 I I 0 1 0.1600000000000001976 forward I I I I #
-edge $-1 -1 $-1 $1931 0 $2324 0.1799999999999999378 $2110 $2325 forward @7 tangent #
-vertex $-1 -1 $-1 $2302 1 $2326 #
-straight-curve $-1 -1 $-1 4.415000000000000036 0.375 -0.2399999999999999911 -0.7071067811865474617 0 0.7071067811865475727 F 0 F 0.339411254969542775 #
-coedge $-1 -1 $-1 $2327 $2119 $2328 $2329 forward $2243 0 $-1 #
-coedge $-1 -1 $-1 $2119 $2327 $2141 $2268 reversed $2243 0 $-1 #
-loop $-1 -1 $-1 $-1 $2327 $2330 #
-ellipse-curve $-1 -1 $-1 4.575000000000000178 0.375 -0.2399999999999999911 0 0 1 -0.1131370849898475917 -0.1131370849898475917 0 1 I I #
-coedge $-1 -1 $-1 $2331 $2332 $2121 $2246 forward $2333 0 $-1 #
-edge $-1 -1 $-1 $2249 -0.7853981633974478349 $2135 0.7853981633974488341 $2121 $2334 forward @7 unknown #
-coedge $-1 -1 $-1 $2253 $2122 $2335 $2336 reversed $2248 0 $-1 #
-loop $-1 -1 $-1 $-1 $2247 $2337 #
-vertex $-1 -1 $-1 $2336 1 $2338 #
-straight-curve $-1 -1 $-1 3.934999999999999609 0.375 -0.2399999999999999911 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2124 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 23 0 2 308 343 0 2 @2 23 0 2 308 344 0 #
-cone-surface $-1 -1 $-1 3.774999999999999467 0.375 -0.2399999999999999911 0 0 -1 0.1131370849898478415 -0.1131370849898477304 0 1 I I 0 1 0.1600000000000002531 forward I I I I #
-coedge $-1 -1 $-1 $2126 $2247 $2219 $2307 reversed $2248 0 $-1 #
-straight-curve $-1 -1 $-1 3.934999999999999609 3.125 -0.2399999999999999911 -0 1 -0 F -3.014001000000000374 F 0.9140009999999998414 #
-coedge $-1 -1 $-1 $2339 $2130 $2340 $2341 forward $2257 0 $-1 #
-coedge $-1 -1 $-1 $2130 $2339 $2331 $2342 reversed $2257 0 $-1 #
-loop $-1 -1 $-1 $-1 $2255 $2343 #
-straight-curve $-1 -1 $-1 2.924999999999999822 0.2149999999999999689 -0.4199999999999999289 -1 0 -0 F -0.9380009999999998627 F 2.63800100000000004 #
-coedge $-1 -1 $-1 $2344 $2340 $2132 $2260 forward $2345 0 $-1 #
-edge $-1 -1 $-1 $2133 -0.785398163397448279 $2265 0.785398163397448279 $2132 $2346 forward @7 unknown #
-point $-1 -1 $-1 0.375 0.2149999999999999689 -0.4199999999999999289 #
-point $-1 -1 $-1 3.774999999999999467 0.2149999999999999689 -0.4199999999999999845 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2138 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 25 0 2 308 343 0 2 @2 25 0 2 308 344 0 #
-cone-surface $-1 -1 $-1 0.375 0.375 -0.2399999999999999911 0 0 -1 -0.1131370849898475917 -0.1131370849898475917 0 1 I I 0 1 0.1599999999999999756 forward I I I I #
-vertex $-1 -1 $-1 $2310 0 $2347 #
-straight-curve $-1 -1 $-1 0.2149999999999999689 0.375 -0.2399999999999999911 0 0 -1 I I #
-coedge $-1 -1 $-1 $2142 $2141 $2348 $2349 reversed $2143 0 $-1 #
-edge $-1 -1 $-1 $1962 0 $2350 0.1799999999999999378 $2242 $2351 forward @7 tangent #
-coedge $-1 -1 $-1 $2352 $2146 $2142 $2270 forward $2273 0 $-1 #
-edge $-1 -1 $-1 $1965 0 $2353 0.1799999999999999933 $2142 $2354 forward @7 tangent #
-face $2355 -1 $-1 $2330 $2143 $5 $-1 $2356 forward single #
-coedge $-1 -1 $-1 $2146 $2352 $2357 $2358 reversed $2273 0 $-1 #
-loop $-1 -1 $-1 $-1 $2352 $2217 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 -0.2399999999999999911 0 0 1 0.1131370849898478415 -0.1131370849898477304 0 1 I I #
-coedge $-1 -1 $-1 $2357 $2359 $2152 $2276 reversed $2360 0 $-1 #
-edge $-1 -1 $-1 $2153 -2.75 $2202 0.6499999999999994671 $2152 $2361 forward @7 unknown #
-point $-1 -1 $-1 8.134999999999999787 0.375 -0.2399999999999999911 #
-straight-curve $-1 -1 $-1 5.231249999999999289 0.06999999999999972911 1.979999999999999982 -1 0 -0 I I #
-point $-1 -1 $-1 7.975000000000000533 0.07000000000000008993 1.979999999999999982 #
-straight-curve $-1 -1 $-1 2.5 0.3447056274847712931 -0.3800000000000000044 -1 0 -0 F -9997.500001000000339 F 10002.50000100000034 #
-coedge $-1 -1 $-1 $2194 $2177 $2176 $2282 forward $1871 0 $-1 #
-edge $-1 -1 $-1 $2192 -0.785398163397448279 $2196 0.785398163397448279 $2176 $2362 reversed @7 unknown #
-straight-curve $-1 -1 $-1 4.544705627484771249 1.649999999999999911 -0.3800000000000000044 0 1 0 F -10001.65000099999997 F 9998.350001000000702 #
-straight-curve $-1 -1 $-1 3.805294372515227952 2.5 -0.3800000000000000044 0 -1 0 F -9997.500001000000339 F 10002.50000100000034 #
-point $-1 -1 $-1 4.544705627484772137 0.375 -0.3800000000000000044 #
-straight-curve $-1 -1 $-1 6.700000000000000178 0.3447056274847712931 -0.3800000000000000044 -1 0 -0 F -9993.300000999999611 F 10006.70000100000107 #
-point $-1 -1 $-1 4.575000000000000178 0.3447056274847712931 -0.3800000000000000044 #
-coedge $-1 -1 $-1 $2363 $2200 $2359 $2364 forward $2290 0 $-1 #
-coedge $-1 -1 $-1 $2200 $2363 $2205 $2294 reversed $2290 0 $-1 #
-loop $-1 -1 $-1 $-1 $2363 $2365 #
+coedge $-1 -1 $-1 $2493 $2337 $2342 $2420 forward $2415 0 $-1 #
+coedge $-1 -1 $-1 $2337 $2493 $2378 $2457 reversed $2415 0 $-1 #
+loop $-1 -1 $-1 $-1 $2493 $2494 #
+straight-curve $-1 -1 $-1 0.2149999999999999689 1.024999999999999689 -0.2399999999999999911 0 -1 -0 F -3.014001000000000374 F 0.9140009999999997303 #
+coedge $-1 -1 $-1 $2342 $2341 $2495 $2496 reversed $2343 0 $-1 #
+coedge $-1 -1 $-1 $2345 $2497 $2341 $2419 reversed $2423 0 $-1 #
+edge $-1 -1 $-1 $2202 0 $2498 0.1799999999999999933 $2341 $2499 forward @7 tangent #
+edge $-1 -1 $-1 $2264 0 $2500 0.1799999999999999933 $2342 $2501 forward @7 tangent #
+face $2502 -1 $-1 $2503 $2343 $5 $-1 $2504 forward single #
+coedge $-1 -1 $-1 $2497 $2345 $2505 $2506 forward $2423 0 $-1 #
+loop $-1 -1 $-1 $-1 $2497 $2503 #
+straight-curve $-1 -1 $-1 1.024999999999999689 3.934999999999999609 -0.2399999999999999911 -1 0 -0 F -3.014001000000000374 F 0.9140009999999999524 #
+coedge $-1 -1 $-1 $2348 $2409 $2350 $2427 reversed $2333 0 $-1 #
+intcurve-curve $-1 -1 $-1 forward { exact_int_cur 23100 full nurbs 2 open 2 
+	0.6461446690596456266 2 0.9218442786682191636 2 
+	4.435805890929250594 4.150000000000000355 0 1.056128348075677792 
+	4.325795189780812677 4.149999999996122568 0.0382821038305327932 1.074171961592383706 
+	4.174999999999999822 4.14999999999612168 0.1482928049812268223 1.009885652445690285 
+	0 
+	
+	null_surface 
+	null_surface 
+	nullbs 
+	nullbs 
+	I I 
+	0 
+	0 
+	0 
+	
+	0 F 1 F 0 UNEXTENDED UNEXTENDED } I I #
+edge $-1 -1 $-1 $2351 1.680649265072318377 $2507 2.140950474475010079 $2350 $2508 forward @7 unknown #
+point $-1 -1 $-1 4.174999999999999822 4.14999999999612168 0.1482928049812268223 #
+coedge $-1 -1 $-1 $2509 $2505 $2353 $2430 reversed $2510 0 $-1 #
+edge $-1 -1 $-1 $2511 -0.7853981633974495002 $2356 0.7853981633974471688 $2353 $2512 forward @7 unknown #
+coedge $-1 -1 $-1 $2437 $2436 $2354 $2432 forward $2438 0 $-1 #
+edge $-1 -1 $-1 $2511 0 $2507 0.3394112549695429415 $2431 $2513 forward @7 tangent #
+point $-1 -1 $-1 3.774999999999999911 3.934999999999999609 -0.2399999999999999911 #
+coedge $-1 -1 $-1 $2514 $2515 $2360 $2435 forward $2402 0 $-1 #
+edge $-1 -1 $-1 $2516 0 $2364 0.339411254969542775 $2434 $2517 forward @7 tangent #
+coedge $-1 -1 $-1 $2431 $2362 $2518 $2519 forward $2438 0 $-1 #
+coedge $-1 -1 $-1 $2362 $2431 $2514 $2440 forward $2438 0 $-1 #
+loop $-1 -1 $-1 $-1 $2362 $2520 #
+straight-curve $-1 -1 $-1 3.934999999999999609 0.375 -0.2399999999999999911 0.7071067811865477948 0 0.7071067811865471286 F 0 F 0.3394112549695429415 #
+edge $-1 -1 $-1 $2507 -2.225000000000000089 $2364 1.174999999999999822 $2514 $2521 forward @7 unknown #
+point $-1 -1 $-1 4.174999999999999822 0.375 0 #
+coedge $-1 -1 $-1 $2367 $2366 $2522 $2523 reversed $2368 0 $-1 #
+coedge $-1 -1 $-1 $2524 $2518 $2367 $2444 forward $2525 0 $-1 #
+edge $-1 -1 $-1 $2369 0 $2526 0.1799999999999999378 $2443 $2527 forward @7 tangent #
+face $2528 -1 $-1 $2377 $2368 $5 $-1 $2529 forward single #
+point $-1 -1 $-1 3.934999999999999609 0.375 -0.2399999999999999911 #
+coedge $-1 -1 $-1 $2530 $2531 $2373 $2448 forward $2532 0 $-1 #
+edge $-1 -1 $-1 $2452 -0.8499999999999996447 $2450 2.549999999999999822 $2373 $2533 forward @7 unknown #
+coedge $-1 -1 $-1 $2374 $2378 $2534 $2535 reversed $2379 0 $-1 #
+vertex $-1 -1 $-1 $2535 0 $2536 #
+straight-curve $-1 -1 $-1 0.375 0.2149999999999999689 -0.2399999999999999911 0 0 -1 I I #
+vertex $-1 -1 $-1 $2448 0 $2537 #
+straight-curve $-1 -1 $-1 3.774999999999999467 0.2149999999999999689 -0.2399999999999999911 0 0 -1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2377 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 24 0 2 308 343 0 2 @2 24 0 2 308 344 0 #
+face $2538 -1 $-1 $2494 $2379 $5 $-1 $2539 forward single #
+plane-surface $-1 -1 $-1 3.774999999999999467 0.2149999999999999689 -0.2399999999999999911 0 -1 0 -1 -0 0 forward_v I I I I #
+edge $-1 -1 $-1 $2313 0 $2540 0.1799999999999999933 $2378 $2541 forward @7 tangent #
+coedge $-1 -1 $-1 $2542 $2543 $2383 $2459 reversed $2544 0 $-1 #
+edge $-1 -1 $-1 $2516 -0.785398163397448279 $2386 0.785398163397448279 $2383 $2545 forward @7 unknown #
+coedge $-1 -1 $-1 $2546 $2384 $2543 $2547 forward $2462 0 $-1 #
+coedge $-1 -1 $-1 $2384 $2546 $2548 $2549 reversed $2462 0 $-1 #
+loop $-1 -1 $-1 $-1 $2546 $2479 #
+straight-curve $-1 -1 $-1 7.325000000000000178 0.2149999999999999689 -0.2399999999999999911 1 0 0 F -3.01400099999999993 F 0.9140009999999998414 #
+point $-1 -1 $-1 4.575000000000000178 0.2149999999999999689 -0.2399999999999999911 #
+coedge $-1 -1 $-1 $2548 $2550 $2388 $2466 reversed $2480 0 $-1 #
+edge $-1 -1 $-1 $2389 -0.7853981633974488341 $2468 0.7853981633974478349 $2388 $2551 forward @7 unknown #
+point $-1 -1 $-1 7.974999999999999645 0.2149999999999999689 -0.2399999999999999911 #
+vertex $-1 -1 $-1 $2391 0 $2552 #
+straight-curve $-1 -1 $-1 8.134999999999999787 0.375 -0.2399999999999999911 0.7071067811865477948 0 0.7071067811865471286 F 0 F 0.3394112549695429415 #
+point $-1 -1 $-1 4.435805890929250594 4.150000000000000355 0 #
+coedge $-1 -1 $-1 $2553 $2554 $2395 $2472 reversed $2555 0 $-1 #
+edge $-1 -1 $-1 $2468 -2.75 $2398 0.6499999999999994671 $2395 $2556 forward @7 unknown #
+coedge $-1 -1 $-1 $2557 $2396 $2554 $2558 forward $2475 0 $-1 #
+coedge $-1 -1 $-1 $2396 $2557 $2404 $2484 reversed $2475 0 $-1 #
+loop $-1 -1 $-1 $-1 $2557 $2559 #
 ellipse-curve $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.2399999999999999911 0 0 1 0.1131370849898476055 0.1131370849898478692 0 1 I I #
 point $-1 -1 $-1 8.134999999999999787 3.774999999999999467 -0.2399999999999999911 #
-coedge $-1 -1 $-1 $2206 $2205 $2366 $2367 reversed $2207 0 $-1 #
-edge $-1 -1 $-1 $2084 0 $2368 0.1799999999999999378 $2205 $2369 forward @7 tangent #
-coedge $-1 -1 $-1 $2370 $2210 $2206 $2296 forward $2299 0 $-1 #
-edge $-1 -1 $-1 $2087 0 $2371 0.1799999999999999933 $2295 $2372 forward @7 tangent #
-face $2373 -1 $-1 $2365 $2207 $5 $-1 $2374 forward single #
-coedge $-1 -1 $-1 $2210 $2370 $2375 $2376 reversed $2299 0 $-1 #
-loop $-1 -1 $-1 $-1 $2370 $2377 #
-ellipse-curve $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.2399999999999999911 0 0 1 -0.1131370849898478276 0.113137084989847661 0 1 I I #
-coedge $-1 -1 $-1 $2375 $2328 $2213 $2302 reversed $2378 0 $-1 #
-edge $-1 -1 $-1 $2214 -2.75 $2239 0.6499999999999996891 $2213 $2379 forward @7 unknown #
-point $-1 -1 $-1 4.415000000000000036 3.774999999999999911 -0.2399999999999999911 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2217 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 23 0 4 308 311 312 343 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2401 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 23 0 4 308 311 312 343 0 #
+face $2560 -1 $-1 $2561 $2462 $5 $-1 $2562 forward single #
+loop $-1 -1 $-1 $-1 $2563 $2401 #
 cone-surface $-1 -1 $-1 7.974999999999999645 0.375 -0.2399999999999999911 0 0 -1 0.1131370849898478415 -0.1131370849898477304 0 1 I I 0 1 0.1600000000000002531 forward I I I I #
-coedge $-1 -1 $-1 $2220 $2219 $2380 $2381 reversed $2221 0 $-1 #
-edge $-1 -1 $-1 $2096 0 $2382 0.1799999999999999933 $2219 $2383 forward @7 tangent #
-face $2384 -1 $-1 $2337 $2221 $5 $-1 $2385 forward single #
-coedge $-1 -1 $-1 $2386 $2387 $2226 $2310 forward $2388 0 $-1 #
-edge $-1 -1 $-1 $2265 -0.8499999999999998668 $2233 2.549999999999999822 $2226 $2389 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2227 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 26 0 2 308 343 0 2 @2 26 0 2 308 344 0 #
-face $2390 -1 $-1 $2109 $2391 $5 $-1 $2392 forward single #
+coedge $-1 -1 $-1 $2515 $2514 $2409 $2488 reversed $2402 0 $-1 #
+coedge $-1 -1 $-1 $2405 $2404 $2564 $2565 reversed $2406 0 $-1 #
+edge $-1 -1 $-1 $2330 0 $2566 0.1799999999999999378 $2404 $2567 forward @7 tangent #
+coedge $-1 -1 $-1 $2568 $2410 $2405 $2486 forward $2490 0 $-1 #
+edge $-1 -1 $-1 $2334 0 $2569 0.1799999999999999933 $2485 $2570 forward @7 tangent #
+face $2571 -1 $-1 $2559 $2406 $5 $-1 $2572 forward single #
+edge $-1 -1 $-1 $2491 0 $2507 0.3394112549695427195 $2409 $2573 forward @7 tangent #
+coedge $-1 -1 $-1 $2410 $2568 $2574 $2575 reversed $2490 0 $-1 #
+loop $-1 -1 $-1 $-1 $2568 $2576 #
+vertex $-1 -1 $-1 $2488 0 $2577 #
+ellipse-curve $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.2399999999999999911 0 0 1 -0.1131370849898478276 0.113137084989847661 0 1 I I #
+coedge $-1 -1 $-1 $2414 $2413 $2578 $2579 reversed $2415 0 $-1 #
+face $2580 -1 $-1 $2581 $2415 $5 $-1 $2582 forward single #
+coedge $-1 -1 $-1 $2583 $2584 $2417 $2496 forward $2585 0 $-1 #
+edge $-1 -1 $-1 $2500 -0.7853981633974475018 $2498 0.7853981633974490562 $2417 $2586 forward @7 unknown #
+coedge $-1 -1 $-1 $2418 $2422 $2587 $2588 reversed $2423 0 $-1 #
+vertex $-1 -1 $-1 $2496 1 $2589 #
+straight-curve $-1 -1 $-1 0.375 3.935000000000000053 -0.2399999999999999911 0 0 -1 I I #
+vertex $-1 -1 $-1 $2496 0 $2590 #
+straight-curve $-1 -1 $-1 0.2149999999999998301 3.774999999999999911 -0.2399999999999999911 0 0 -1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2421 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 19 0 2 308 343 0 2 @2 19 0 2 308 344 0 #
+face $2591 -1 $-1 $2592 $2423 $5 $-1 $2593 forward single #
+cone-surface $-1 -1 $-1 0.375 3.774999999999999911 -0.2399999999999999911 0 0 -1 -0.1131370849898478276 0.113137084989847661 0 1 I I 0 1 0.1600000000000001976 forward I I I I #
+coedge $-1 -1 $-1 $2429 $2594 $2422 $2506 reversed $2510 0 $-1 #
+edge $-1 -1 $-1 $2356 0 $2595 0.1799999999999999378 $2422 $2596 forward @7 tangent #
+vertex $-1 -1 $-1 $2427 1 $2597 #
+intcurve-curve $-1 -1 $-1 forward { ref 4 } I I #
+coedge $-1 -1 $-1 $2594 $2429 $2598 $2599 forward $2510 0 $-1 #
+loop $-1 -1 $-1 $-1 $2594 $2592 #
+vertex $-1 -1 $-1 $2519 1 $2600 #
+ellipse-curve $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.2399999999999999911 -0 -0 1 0.1131370849898476055 0.1131370849898478692 0 1 I I #
+straight-curve $-1 -1 $-1 3.934999999999999609 3.774999999999999467 -0.2399999999999999911 0.7071067811865477948 0 0.7071067811865471286 F 0 F 0.3394112549695429415 #
+coedge $-1 -1 $-1 $2482 $2434 $2437 $2440 reversed $2402 0 $-1 #
+coedge $-1 -1 $-1 $2434 $2482 $2601 $2602 forward $2402 0 $-1 #
+vertex $-1 -1 $-1 $2602 1 $2603 #
+straight-curve $-1 -1 $-1 4.415000000000000036 0.375 -0.2399999999999999911 -0.7071067811865474617 0 0.7071067811865475727 F 0 F 0.339411254969542775 #
+coedge $-1 -1 $-1 $2443 $2598 $2436 $2519 reversed $2525 0 $-1 #
+edge $-1 -1 $-1 $2369 -2.75 $2511 0.6499999999999994671 $2436 $2604 forward @7 unknown #
+face $2605 -1 $-1 $2445 $2438 $5 $-1 $2606 forward single #
+straight-curve $-1 -1 $-1 4.174999999999999822 1.549999999999999822 -6.938893903907228378e-18 -0 -1 0 I I #
+coedge $-1 -1 $-1 $2607 $2608 $2442 $2523 forward $2609 0 $-1 #
+edge $-1 -1 $-1 $2526 -0.7853981633974478349 $2452 0.7853981633974488341 $2442 $2610 forward @7 unknown #
+coedge $-1 -1 $-1 $2598 $2443 $2611 $2612 reversed $2525 0 $-1 #
+loop $-1 -1 $-1 $-1 $2524 $2613 #
+vertex $-1 -1 $-1 $2612 1 $2614 #
+straight-curve $-1 -1 $-1 3.934999999999999609 0.375 -0.2399999999999999911 0 0 -1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2445 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 23 0 2 308 343 0 2 @2 23 0 2 308 344 0 #
+cone-surface $-1 -1 $-1 3.774999999999999467 0.375 -0.2399999999999999911 0 0 -1 0.1131370849898478415 -0.1131370849898477304 0 1 I I 0 1 0.1600000000000002531 forward I I I I #
+coedge $-1 -1 $-1 $2615 $2447 $2616 $2617 forward $2532 0 $-1 #
+coedge $-1 -1 $-1 $2447 $2615 $2607 $2618 reversed $2532 0 $-1 #
+loop $-1 -1 $-1 $-1 $2530 $2619 #
+straight-curve $-1 -1 $-1 2.924999999999999822 0.2149999999999999689 -0.4199999999999999289 -1 0 -0 F -0.9380009999999998627 F 2.63800100000000004 #
+coedge $-1 -1 $-1 $2620 $2616 $2449 $2535 forward $2621 0 $-1 #
+edge $-1 -1 $-1 $2450 -0.785398163397448279 $2540 0.785398163397448279 $2449 $2622 forward @7 unknown #
+point $-1 -1 $-1 0.375 0.2149999999999999689 -0.4199999999999999289 #
+point $-1 -1 $-1 3.774999999999999467 0.2149999999999999689 -0.4199999999999999845 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2455 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 25 0 2 308 343 0 2 @2 25 0 2 308 344 0 #
+cone-surface $-1 -1 $-1 0.375 0.375 -0.2399999999999999911 0 0 -1 -0.1131370849898475917 -0.1131370849898475917 0 1 I I 0 1 0.1599999999999999756 forward I I I I #
+vertex $-1 -1 $-1 $2579 0 $2623 #
+straight-curve $-1 -1 $-1 0.2149999999999999689 0.375 -0.2399999999999999911 0 0 -1 I I #
+coedge $-1 -1 $-1 $2624 $2458 $2625 $2626 forward $2544 0 $-1 #
+coedge $-1 -1 $-1 $2458 $2624 $2460 $2547 reversed $2544 0 $-1 #
+loop $-1 -1 $-1 $-1 $2624 $2561 #
+ellipse-curve $-1 -1 $-1 4.575000000000000178 0.375 -0.2399999999999999911 0 0 1 -0.1131370849898475917 -0.1131370849898475917 0 1 I I #
+coedge $-1 -1 $-1 $2461 $2460 $2627 $2628 reversed $2462 0 $-1 #
+edge $-1 -1 $-1 $2386 0 $2629 0.1799999999999999378 $2543 $2630 forward @7 tangent #
+coedge $-1 -1 $-1 $2563 $2465 $2461 $2549 forward $2480 0 $-1 #
+edge $-1 -1 $-1 $2389 0 $2631 0.1799999999999999933 $2461 $2632 forward @7 tangent #
+coedge $-1 -1 $-1 $2465 $2563 $2553 $2633 reversed $2480 0 $-1 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 -0.2399999999999999911 0 0 1 0.1131370849898478415 -0.1131370849898477304 0 1 I I #
+point $-1 -1 $-1 8.134999999999999787 0.375 -0.2399999999999999911 #
+coedge $-1 -1 $-1 $2634 $2471 $2550 $2633 forward $2555 0 $-1 #
+coedge $-1 -1 $-1 $2471 $2634 $2473 $2558 reversed $2555 0 $-1 #
+loop $-1 -1 $-1 $-1 $2634 $2635 #
+straight-curve $-1 -1 $-1 8.134999999999999787 3.125 -0.2399999999999999911 0 1 0 F -3.014001000000000374 F 0.9140009999999998414 #
+coedge $-1 -1 $-1 $2474 $2473 $2636 $2637 reversed $2475 0 $-1 #
+edge $-1 -1 $-1 $2398 0 $2638 0.1799999999999999933 $2554 $2639 forward @7 tangent #
+face $2640 -1 $-1 $2635 $2475 $5 $-1 $2641 forward single #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2479 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 24 0 4 308 311 312 343 0 #
+face $2642 -1 $-1 $2643 $2544 $5 $-1 $2644 forward single #
+plane-surface $-1 -1 $-1 7.974999999999999645 0.2149999999999999689 -0.2399999999999999911 0 -1 0 -1 0 0 forward_v I I I I #
+coedge $-1 -1 $-1 $2550 $2548 $2645 $2646 reversed $2480 0 $-1 #
+coedge $-1 -1 $-1 $2647 $2648 $2483 $2565 forward $2649 0 $-1 #
+edge $-1 -1 $-1 $2569 -0.8499999999999998668 $2566 2.549999999999999822 $2483 $2650 forward @7 unknown #
+vertex $-1 -1 $-1 $2565 1 $2651 #
+straight-curve $-1 -1 $-1 7.974999999999999645 3.934999999999999609 -0.2399999999999999911 0 0 -1 I I #
+coedge $-1 -1 $-1 $2489 $2485 $2652 $2653 reversed $2490 0 $-1 #
+vertex $-1 -1 $-1 $2653 1 $2654 #
+straight-curve $-1 -1 $-1 4.575000000000000178 3.935000000000000053 -0.2399999999999999911 0 0 -1 I I #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2487 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 20 0 4 308 311 312 343 0 #
+plane-surface $-1 -1 $-1 4.575000000000000178 3.934999999999999609 -0.2399999999999999911 0 1 0 1 0 0 forward_v I I I I #
+straight-curve $-1 -1 $-1 4.415000000000000036 3.774999999999999911 -0.2399999999999999911 -0.7071067811865473507 0 0.7071067811865477948 F 0 F 0.3394112549695427195 #
+coedge $-1 -1 $-1 $2655 $2601 $2489 $2575 forward $2656 0 $-1 #
+edge $-1 -1 $-1 $2491 0 $2657 0.1799999999999999933 $2489 $2658 forward @7 tangent #
+face $2659 -1 $-1 $2487 $2490 $5 $-1 $2660 forward single #
+point $-1 -1 $-1 4.415000000000000036 3.774999999999999911 -0.2399999999999999911 #
+coedge $-1 -1 $-1 $2661 $2662 $2493 $2579 forward $2663 0 $-1 #
+edge $-1 -1 $-1 $2540 -0.8499999999999998668 $2500 2.549999999999999822 $2493 $2664 forward @7 unknown #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2494 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 26 0 2 308 343 0 2 @2 26 0 2 308 344 0 #
+face $2665 -1 $-1 $2421 $2666 $5 $-1 $2667 forward single #
 plane-surface $-1 -1 $-1 0.2149999999999999689 0.375 -0.2399999999999999911 -1 0 -0 -0 1 0 forward_v I I I I #
-coedge $-1 -1 $-1 $2393 $2228 $2394 $2395 forward $2316 0 $-1 #
-coedge $-1 -1 $-1 $2228 $2393 $2386 $2396 forward $2316 0 $-1 #
-loop $-1 -1 $-1 $-1 $2314 $2397 #
+coedge $-1 -1 $-1 $2668 $2495 $2669 $2670 forward $2585 0 $-1 #
+coedge $-1 -1 $-1 $2495 $2668 $2661 $2671 forward $2585 0 $-1 #
+loop $-1 -1 $-1 $-1 $2583 $2672 #
 ellipse-curve $-1 -1 $-1 0.375 3.774999999999999911 -0.4199999999999999845 0 0 -1 -0.1131370849898478276 0.113137084989847661 0 1 I I #
-coedge $-1 -1 $-1 $2398 $2394 $2230 $2319 forward $2399 0 $-1 #
-edge $-1 -1 $-1 $2231 -0.8499999999999998668 $2324 2.549999999999999822 $2230 $2400 forward @7 unknown #
+coedge $-1 -1 $-1 $2673 $2669 $2497 $2588 forward $2674 0 $-1 #
+edge $-1 -1 $-1 $2498 -0.8499999999999998668 $2595 2.549999999999999822 $2497 $2675 forward @7 unknown #
 point $-1 -1 $-1 0.375 3.935000000000000053 -0.4199999999999999845 #
 point $-1 -1 $-1 0.2149999999999998301 3.774999999999999911 -0.4199999999999999845 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2236 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 20 0 2 308 343 0 2 @2 20 0 2 308 344 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2503 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 20 0 2 308 343 0 2 @2 20 0 2 308 344 0 #
+face $2676 -1 $-1 $2613 $2510 $5 $-1 $2677 forward single #
 plane-surface $-1 -1 $-1 0.375 3.934999999999999609 -0.2399999999999999911 0 1 0 1 -0 0 forward_v I I I I #
-vertex $-1 -1 $-1 $2319 1 $2401 #
+coedge $-1 -1 $-1 $2505 $2509 $2678 $2679 reversed $2510 0 $-1 #
+vertex $-1 -1 $-1 $2588 1 $2680 #
 straight-curve $-1 -1 $-1 3.774999999999999911 3.934999999999999609 -0.2399999999999999911 0 0 -1 I I #
+point $-1 -1 $-1 4.174999999999999822 3.774999999999999911 0 #
+coedge $-1 -1 $-1 $2518 $2524 $2509 $2599 reversed $2525 0 $-1 #
+edge $-1 -1 $-1 $2511 0 $2681 0.1799999999999999933 $2509 $2682 forward @7 tangent #
+point $-1 -1 $-1 3.934999999999999609 3.774999999999999467 -0.2399999999999999911 #
+coedge $-1 -1 $-1 $2574 $2625 $2515 $2602 reversed $2656 0 $-1 #
+edge $-1 -1 $-1 $2491 -2.75 $2516 0.6499999999999996891 $2515 $2683 forward @7 unknown #
 point $-1 -1 $-1 4.415000000000000036 0.375 -0.2399999999999999911 #
-coedge $-1 -1 $-1 $2242 $2241 $2402 $2403 reversed $2243 0 $-1 #
-coedge $-1 -1 $-1 $2301 $2404 $2241 $2329 reversed $2378 0 $-1 #
-edge $-1 -1 $-1 $2239 0 $2405 0.1799999999999999933 $2328 $2406 forward @7 tangent #
-face $2407 -1 $-1 $2408 $2243 $5 $-1 $2409 forward single #
-coedge $-1 -1 $-1 $2410 $2245 $2256 $2342 forward $2333 0 $-1 #
-coedge $-1 -1 $-1 $2245 $2410 $2411 $2412 reversed $2333 0 $-1 #
-loop $-1 -1 $-1 $-1 $2331 $2413 #
+straight-curve $-1 -1 $-1 3.934999999999999609 3.125 -0.2399999999999999911 -0 1 -0 F -3.014001000000000374 F 0.9140009999999998414 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2520 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 6 0 2 307 343 0 1 @1 6 0 2 307 344 0 #
+plane-surface $-1 -1 $-1 4.054999999999999716 3.125 -0.1199999999999999956 0.7071067811865471286 0 -0.7071067811865477948 -0.7071067811865479058 0 -0.7071067811865472397 forward_v I I I I #
+coedge $-1 -1 $-1 $2684 $2522 $2531 $2618 forward $2609 0 $-1 #
+coedge $-1 -1 $-1 $2522 $2684 $2685 $2686 reversed $2609 0 $-1 #
+loop $-1 -1 $-1 $-1 $2607 $2687 #
 ellipse-curve $-1 -1 $-1 3.774999999999999467 0.375 -0.4199999999999999845 0 0 -1 0.1131370849898478276 -0.1131370849898477166 0 1 I I #
-coedge $-1 -1 $-1 $2411 $2414 $2247 $2336 forward $2415 0 $-1 #
-edge $-1 -1 $-1 $2382 -0.8499999999999996447 $2249 2.549999999999999822 $2247 $2416 forward @7 unknown #
-face $2417 -1 $-1 $2418 $2248 $5 $-1 $2419 forward single #
+coedge $-1 -1 $-1 $2685 $2688 $2524 $2612 forward $2689 0 $-1 #
+edge $-1 -1 $-1 $2681 -0.8499999999999996447 $2526 2.549999999999999822 $2524 $2690 forward @7 unknown #
+face $2691 -1 $-1 $2692 $2525 $5 $-1 $2693 forward single #
 point $-1 -1 $-1 3.934999999999999609 0.375 -0.4199999999999999289 #
-coedge $-1 -1 $-1 $2256 $2255 $2420 $2421 forward $2257 0 $-1 #
-coedge $-1 -1 $-1 $2259 $2422 $2255 $2341 reversed $2345 0 $-1 #
-edge $-1 -1 $-1 $2133 0 $2423 0.1131370849898476194 $2255 $2424 forward @7 tangent #
-edge $-1 -1 $-1 $2135 0 $2425 0.1131370849898472725 $2331 $2426 forward @7 tangent #
-face $2427 -1 $-1 $2413 $2257 $5 $-1 $2428 forward single #
-coedge $-1 -1 $-1 $2422 $2259 $2387 $2429 forward $2345 0 $-1 #
-loop $-1 -1 $-1 $-1 $2344 $2430 #
+coedge $-1 -1 $-1 $2531 $2530 $2694 $2695 forward $2532 0 $-1 #
+coedge $-1 -1 $-1 $2534 $2696 $2530 $2617 reversed $2621 0 $-1 #
+edge $-1 -1 $-1 $2450 0 $2697 0.1131370849898476194 $2530 $2698 forward @7 tangent #
+edge $-1 -1 $-1 $2452 0 $2699 0.1131370849898472725 $2607 $2700 forward @7 tangent #
+face $2701 -1 $-1 $2687 $2532 $5 $-1 $2702 forward single #
+coedge $-1 -1 $-1 $2696 $2534 $2662 $2703 forward $2621 0 $-1 #
+loop $-1 -1 $-1 $-1 $2620 $2704 #
 ellipse-curve $-1 -1 $-1 0.375 0.375 -0.4199999999999999845 0 0 -1 -0.1131370849898475917 -0.1131370849898475917 0 1 I I #
 point $-1 -1 $-1 0.2149999999999999689 0.375 -0.4199999999999999845 #
-coedge $-1 -1 $-1 $2431 $2432 $2267 $2349 forward $2433 0 $-1 #
-edge $-1 -1 $-1 $2353 -0.8499999999999996447 $2350 2.549999999999999822 $2267 $2434 forward @7 unknown #
-vertex $-1 -1 $-1 $2403 0 $2435 #
+coedge $-1 -1 $-1 $2543 $2542 $2705 $2706 reversed $2544 0 $-1 #
+coedge $-1 -1 $-1 $2601 $2655 $2542 $2626 reversed $2656 0 $-1 #
+edge $-1 -1 $-1 $2516 0 $2707 0.1799999999999999933 $2625 $2708 forward @7 tangent #
+coedge $-1 -1 $-1 $2709 $2710 $2546 $2628 forward $2711 0 $-1 #
+edge $-1 -1 $-1 $2631 -0.8499999999999996447 $2629 2.549999999999999822 $2546 $2712 forward @7 unknown #
+vertex $-1 -1 $-1 $2706 0 $2713 #
 straight-curve $-1 -1 $-1 4.575000000000000178 0.2149999999999999689 -0.2399999999999999911 0 0 -1 I I #
-coedge $-1 -1 $-1 $2272 $2269 $2436 $2437 reversed $2273 0 $-1 #
-vertex $-1 -1 $-1 $2349 0 $2438 #
+vertex $-1 -1 $-1 $2628 0 $2714 #
 straight-curve $-1 -1 $-1 7.974999999999999645 0.2149999999999999689 -0.2399999999999999911 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2271 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 24 0 4 308 311 312 343 0 #
-plane-surface $-1 -1 $-1 7.974999999999999645 0.2149999999999999689 -0.2399999999999999911 0 -1 0 -1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $2439 $2275 $2272 $2358 forward $2360 0 $-1 #
-edge $-1 -1 $-1 $2153 0 $2440 0.1799999999999999378 $2272 $2441 forward @7 tangent #
-coedge $-1 -1 $-1 $2275 $2439 $2288 $2364 reversed $2360 0 $-1 #
-loop $-1 -1 $-1 $-1 $2439 $2442 #
-straight-curve $-1 -1 $-1 8.134999999999999787 3.125 -0.2399999999999999911 0 1 0 F -3.014001000000000374 F 0.9140009999999998414 #
-ellipse-curve $-1 -1 $-1 4.575000000000000178 0.375 -0.3800000000000000044 0 0 -1 -0.02142135623730943156 -0.02142135623730943156 0 1 I I #
-coedge $-1 -1 $-1 $2289 $2288 $2443 $2444 reversed $2290 0 $-1 #
-edge $-1 -1 $-1 $2202 0 $2445 0.1799999999999999933 $2359 $2446 forward @7 tangent #
-face $2447 -1 $-1 $2442 $2290 $5 $-1 $2448 forward single #
-coedge $-1 -1 $-1 $2449 $2450 $2293 $2367 forward $2451 0 $-1 #
-edge $-1 -1 $-1 $2371 -0.8499999999999998668 $2368 2.549999999999999822 $2293 $2452 forward @7 unknown #
-vertex $-1 -1 $-1 $2367 1 $2453 #
-straight-curve $-1 -1 $-1 7.974999999999999645 3.934999999999999609 -0.2399999999999999911 0 0 -1 I I #
-coedge $-1 -1 $-1 $2298 $2295 $2454 $2455 reversed $2299 0 $-1 #
-vertex $-1 -1 $-1 $2455 1 $2456 #
-straight-curve $-1 -1 $-1 4.575000000000000178 3.935000000000000053 -0.2399999999999999911 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2297 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 20 0 4 308 311 312 343 0 #
-plane-surface $-1 -1 $-1 4.575000000000000178 3.934999999999999609 -0.2399999999999999911 0 1 0 1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $2404 $2301 $2298 $2376 forward $2378 0 $-1 #
-edge $-1 -1 $-1 $2214 0 $2457 0.1799999999999999933 $2298 $2458 forward @7 tangent #
-face $2459 -1 $-1 $2297 $2299 $5 $-1 $2460 forward single #
-loop $-1 -1 $-1 $-1 $2404 $2408 #
-straight-curve $-1 -1 $-1 4.415000000000000036 1.024999999999999689 -0.2399999999999999911 0 -1 0 F -3.014001000000000374 F 0.9140009999999997303 #
-coedge $-1 -1 $-1 $2461 $2462 $2306 $2381 forward $2463 0 $-1 #
-edge $-1 -1 $-1 $2324 -0.7853981633974471688 $2382 0.7853981633974495002 $2306 $2464 forward @7 unknown #
-vertex $-1 -1 $-1 $2381 1 $2465 #
-straight-curve $-1 -1 $-1 3.934999999999999609 3.774999999999999467 -0.2399999999999999911 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2308 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 21 0 2 308 343 0 2 @2 21 0 2 308 344 0 #
-cone-surface $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.2399999999999999911 0 0 -1 0.1131370849898476055 0.1131370849898478692 0 1 I I 0 1 0.1600000000000001976 forward I I I I #
-coedge $-1 -1 $-1 $2466 $2309 $2315 $2396 reversed $2388 0 $-1 #
-coedge $-1 -1 $-1 $2309 $2466 $2344 $2429 reversed $2388 0 $-1 #
-loop $-1 -1 $-1 $-1 $2386 $2418 #
-straight-curve $-1 -1 $-1 0.2149999999999999689 1.224999999999999867 -0.4199999999999999289 0 1 0 F -0.9380009999999998627 F 2.63800100000000004 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2312 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 2 0 2 308 343 0 1 @1 2 0 2 308 344 0 #
-loop $-1 -1 $-1 $-1 $2467 $2312 #
-plane-surface $-1 -1 $-1 2.074999999999999734 2.074999999999999734 -0.5 0 0 -1 -1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $2315 $2314 $2467 $2468 forward $2316 0 $-1 #
-coedge $-1 -1 $-1 $2318 $2469 $2314 $2395 reversed $2399 0 $-1 #
-edge $-1 -1 $-1 $2231 0 $2470 0.1131370849898473419 $2314 $2471 forward @7 tangent #
-edge $-1 -1 $-1 $2472 0 $2233 0.1131370849898474529 $2315 $2473 forward @7 tangent #
-face $2474 -1 $-1 $1712 $2316 $5 $-1 $2475 forward single #
-coedge $-1 -1 $-1 $2469 $2318 $2462 $2476 forward $2399 0 $-1 #
-loop $-1 -1 $-1 $-1 $2398 $2477 #
-straight-curve $-1 -1 $-1 1.224999999999999867 3.934999999999999609 -0.4199999999999999289 1 -0 0 F -0.9380009999999998627 F 2.63800100000000004 #
-point $-1 -1 $-1 3.774999999999999911 3.934999999999999609 -0.4199999999999999289 #
-coedge $-1 -1 $-1 $2478 $2479 $2327 $2403 forward $2480 0 $-1 #
-edge $-1 -1 $-1 $2350 -0.785398163397448279 $2405 0.785398163397448279 $2327 $2481 forward @7 unknown #
-coedge $-1 -1 $-1 $2328 $2375 $2482 $2483 reversed $2378 0 $-1 #
-vertex $-1 -1 $-1 $2483 0 $2484 #
-straight-curve $-1 -1 $-1 4.415000000000000036 0.375 -0.2399999999999999911 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2330 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 25 0 4 308 311 312 343 0 #
-face $2485 -1 $-1 $2486 $2378 $5 $-1 $2487 forward single #
-cone-surface $-1 -1 $-1 4.575000000000000178 0.375 -0.2399999999999999911 0 0 -1 -0.1131370849898475917 -0.1131370849898475917 0 1 I I 0 1 0.1599999999999999756 forward I I I I #
-coedge $-1 -1 $-1 $2332 $2331 $2488 $2489 forward $2333 0 $-1 #
-coedge $-1 -1 $-1 $2490 $2335 $2332 $2412 forward $2415 0 $-1 #
-edge $-1 -1 $-1 $2249 0 $2491 0.1131370849898477166 $2411 $2492 forward @7 tangent #
-face $2493 -1 $-1 $2494 $2333 $5 $-1 $2495 forward single #
-coedge $-1 -1 $-1 $2335 $2490 $2461 $2496 reversed $2415 0 $-1 #
-loop $-1 -1 $-1 $-1 $2411 $2494 #
-straight-curve $-1 -1 $-1 3.934999999999999609 2.924999999999999822 -0.4199999999999999289 0 -1 0 F -0.9380009999999998627 F 2.63800100000000004 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2337 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 22 0 2 308 343 0 2 @2 22 0 2 308 344 0 #
-face $2497 -1 $-1 $2430 $2388 $5 $-1 $2498 forward single #
-plane-surface $-1 -1 $-1 3.934999999999999609 3.774999999999999467 -0.2399999999999999911 1 0 0 0 -1 0 forward_v I I I I #
-coedge $-1 -1 $-1 $2499 $2488 $2339 $2421 reversed $2391 0 $-1 #
-edge $-1 -1 $-1 $2423 -2.549999999999999822 $2425 0.8499999999999996447 $2420 $2500 forward @7 unknown #
-coedge $-1 -1 $-1 $2340 $2344 $2499 $2501 forward $2345 0 $-1 #
-vertex $-1 -1 $-1 $2421 0 $2502 #
-straight-curve $-1 -1 $-1 0.375 0.2149999999999999689 -0.4199999999999999289 0 0.7071067811865470176 -0.7071067811865480168 F 0 F 0.1131370849898476194 #
-vertex $-1 -1 $-1 $2489 0 $2503 #
-straight-curve $-1 -1 $-1 3.774999999999999467 0.2149999999999999689 -0.4199999999999999845 0 0.7071067811865453523 -0.7071067811865496822 F 0 F 0.1131370849898472725 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2343 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 6 0 2 310 343 0 1 @1 6 0 2 310 344 0 #
-plane-surface $-1 -1 $-1 2.924999999999999822 0.2549999999999999489 -0.4599999999999999645 0 -0.7071067811865480168 -0.7071067811865470176 -1 0 -0 forward_v I I I I #
-edge $-1 -1 $-1 $2265 0 $2504 0.1131370849898476749 $2344 $2505 forward @7 tangent #
-face $2506 -1 $-1 $2343 $2345 $5 $-1 $2507 forward single #
-coedge $-1 -1 $-1 $2508 $2348 $2479 $2509 forward $2433 0 $-1 #
-coedge $-1 -1 $-1 $2348 $2508 $2510 $2511 reversed $2433 0 $-1 #
-loop $-1 -1 $-1 $-1 $2431 $2512 #
-straight-curve $-1 -1 $-1 7.125 0.2149999999999999689 -0.4199999999999999289 -1 0 0 F -0.9380009999999998627 F 2.63800100000000004 #
-point $-1 -1 $-1 4.575000000000000178 0.2149999999999999689 -0.4199999999999999289 #
-coedge $-1 -1 $-1 $2510 $2513 $2352 $2437 forward $2514 0 $-1 #
-edge $-1 -1 $-1 $2440 -0.7853981633974478349 $2353 0.7853981633974488341 $2352 $2515 forward @7 unknown #
-point $-1 -1 $-1 7.974999999999999645 0.2149999999999999689 -0.4199999999999999845 #
-coedge $-1 -1 $-1 $2359 $2357 $2516 $2517 reversed $2360 0 $-1 #
-vertex $-1 -1 $-1 $2437 0 $2518 #
-straight-curve $-1 -1 $-1 8.134999999999999787 0.375 -0.2399999999999999911 0 0 -1 I I #
-face $2519 -1 $-1 $2520 $2360 $5 $-1 $2521 forward single #
-coedge $-1 -1 $-1 $2522 $2523 $2363 $2444 forward $2524 0 $-1 #
-edge $-1 -1 $-1 $2368 -0.7853981633974471688 $2445 0.7853981633974495002 $2363 $2525 forward @7 unknown #
-vertex $-1 -1 $-1 $2517 0 $2526 #
+edge $-1 -1 $-1 $2468 0 $2715 0.1799999999999999378 $2550 $2716 forward @7 tangent #
+coedge $-1 -1 $-1 $2554 $2553 $2717 $2718 reversed $2555 0 $-1 #
+face $2719 -1 $-1 $2720 $2555 $5 $-1 $2721 forward single #
+coedge $-1 -1 $-1 $2722 $2723 $2557 $2637 forward $2724 0 $-1 #
+edge $-1 -1 $-1 $2566 -0.7853981633974471688 $2638 0.7853981633974495002 $2557 $2725 forward @7 unknown #
+vertex $-1 -1 $-1 $2718 0 $2726 #
 straight-curve $-1 -1 $-1 8.134999999999999787 3.774999999999999467 -0.2399999999999999911 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2365 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 21 0 4 308 311 312 343 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2559 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 21 0 4 308 311 312 343 0 #
 cone-surface $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.2399999999999999911 0 0 -1 0.1131370849898476055 0.1131370849898478692 0 1 I I 0 1 0.1600000000000001976 forward I I I I #
-coedge $-1 -1 $-1 $2527 $2366 $2523 $2528 forward $2451 0 $-1 #
-coedge $-1 -1 $-1 $2366 $2527 $2529 $2530 reversed $2451 0 $-1 #
-loop $-1 -1 $-1 $-1 $2449 $2531 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2561 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 25 0 4 308 311 312 343 0 #
+face $2727 -1 $-1 $2728 $2656 $5 $-1 $2729 forward single #
+cone-surface $-1 -1 $-1 4.575000000000000178 0.375 -0.2399999999999999911 0 0 -1 -0.1131370849898475917 -0.1131370849898475917 0 1 I I 0 1 0.1599999999999999756 forward I I I I #
+coedge $-1 -1 $-1 $2730 $2731 $2563 $2646 forward $2732 0 $-1 #
+edge $-1 -1 $-1 $2715 -0.7853981633974478349 $2631 0.7853981633974488341 $2563 $2733 forward @7 unknown #
+coedge $-1 -1 $-1 $2734 $2564 $2723 $2735 forward $2649 0 $-1 #
+coedge $-1 -1 $-1 $2564 $2734 $2736 $2737 reversed $2649 0 $-1 #
+loop $-1 -1 $-1 $-1 $2647 $2738 #
 straight-curve $-1 -1 $-1 5.424999999999999822 3.934999999999999609 -0.4199999999999999289 1 0 0 F -0.9380009999999998627 F 2.63800100000000004 #
 point $-1 -1 $-1 7.974999999999999645 3.934999999999999609 -0.4199999999999999289 #
-coedge $-1 -1 $-1 $2529 $2532 $2370 $2455 forward $2533 0 $-1 #
-edge $-1 -1 $-1 $2457 -0.7853981633974475018 $2371 0.7853981633974490562 $2370 $2534 forward @7 unknown #
+coedge $-1 -1 $-1 $2736 $2739 $2568 $2653 forward $2740 0 $-1 #
+edge $-1 -1 $-1 $2657 -0.7853981633974475018 $2569 0.7853981633974490562 $2568 $2741 forward @7 unknown #
 point $-1 -1 $-1 4.575000000000000178 3.935000000000000053 -0.4199999999999999845 #
-vertex $-1 -1 $-1 $2455 0 $2535 #
+coedge $-1 -1 $-1 $2625 $2574 $2742 $2743 reversed $2656 0 $-1 #
+loop $-1 -1 $-1 $-1 $2655 $2643 #
+vertex $-1 -1 $-1 $2653 0 $2744 #
 straight-curve $-1 -1 $-1 4.415000000000000036 3.774999999999999911 -0.2399999999999999911 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2377 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 19 0 4 308 311 312 343 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2576 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 19 0 4 308 311 312 343 0 #
 cone-surface $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.2399999999999999911 0 0 -1 -0.1131370849898478276 0.113137084989847661 0 1 I I 0 1 0.1600000000000001976 forward I I I I #
-coedge $-1 -1 $-1 $2536 $2380 $2414 $2496 forward $2463 0 $-1 #
-coedge $-1 -1 $-1 $2380 $2536 $2398 $2476 reversed $2463 0 $-1 #
-loop $-1 -1 $-1 $-1 $2461 $2537 #
-ellipse-curve $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.4199999999999999845 0 0 -1 0.1131370849898476055 0.1131370849898478692 0 1 I I #
-point $-1 -1 $-1 3.934999999999999609 3.774999999999999467 -0.4199999999999999845 #
-coedge $-1 -1 $-1 $2387 $2386 $2538 $2539 forward $2388 0 $-1 #
-coedge $-1 -1 $-1 $2540 $2538 $2393 $2468 reversed $2391 0 $-1 #
-edge $-1 -1 $-1 $2470 -0.7853981633974490562 $2472 0.7853981633974476129 $2467 $2541 forward @7 unknown #
-coedge $-1 -1 $-1 $2394 $2398 $2540 $2542 forward $2399 0 $-1 #
-vertex $-1 -1 $-1 $2468 0 $2543 #
-straight-curve $-1 -1 $-1 0.375 3.935000000000000053 -0.4199999999999999845 0 -0.7071067811865457964 -0.7071067811865492381 F 0 F 0.1131370849898473419 #
-vertex $-1 -1 $-1 $2468 1 $2544 #
-straight-curve $-1 -1 $-1 0.2949999999999995959 3.774999999999999911 -0.5 -0.7071067811865464625 0 0.707106781186548683 F 0 F 0.1131370849898474529 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2397 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 1 0 2 310 343 0 1 @1 1 0 2 310 344 0 #
-cone-surface $-1 -1 $-1 0.375 3.774999999999999911 -0.4599999999999999645 0 0 -1 -0.08485281374238598517 0.0848528137423858464 0 1 I I -0.7071067811865464625 0.7071067811865484609 0.1200000000000003009 forward I I I I #
-edge $-1 -1 $-1 $2324 -0 $2545 0.1131370849898477166 $2398 $2546 forward @7 tangent #
-face $2547 -1 $-1 $2397 $2399 $5 $-1 $2548 forward single #
-coedge $-1 -1 $-1 $2549 $2402 $2550 $2551 forward $2480 0 $-1 #
-coedge $-1 -1 $-1 $2402 $2549 $2431 $2509 reversed $2480 0 $-1 #
-loop $-1 -1 $-1 $-1 $2478 $2552 #
-ellipse-curve $-1 -1 $-1 4.575000000000000178 0.375 -0.4199999999999999845 0 0 -1 -0.1131370849898475917 -0.1131370849898475917 0 1 I I #
-coedge $-1 -1 $-1 $2553 $2550 $2404 $2483 forward $2554 0 $-1 #
-edge $-1 -1 $-1 $2405 -0.8499999999999998668 $2457 2.549999999999999822 $2404 $2555 forward @7 unknown #
-point $-1 -1 $-1 4.415000000000000036 0.375 -0.4199999999999999845 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2408 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 26 0 4 308 311 312 343 0 #
-face $2556 -1 $-1 $2377 $2557 $5 $-1 $2558 forward single #
-plane-surface $-1 -1 $-1 4.415000000000000036 0.375 -0.2399999999999999911 -1 0 0 0 1 0 forward_v I I I I #
-coedge $-1 -1 $-1 $2420 $2559 $2410 $2489 reversed $2391 0 $-1 #
-edge $-1 -1 $-1 $2425 -0.7853981633974488341 $2491 0.7853981633974477239 $2488 $2560 forward @7 unknown #
-coedge $-1 -1 $-1 $2414 $2411 $2559 $2561 forward $2415 0 $-1 #
-vertex $-1 -1 $-1 $2561 0 $2562 #
-straight-curve $-1 -1 $-1 3.934999999999999609 0.375 -0.4199999999999999289 -0.7071067811865475727 0 -0.7071067811865475727 F 0 F 0.1131370849898477166 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2413 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 5 0 2 310 343 0 1 @1 5 0 2 310 344 0 #
-face $2563 -1 $-1 $2537 $2415 $5 $-1 $2564 forward single #
-cone-surface $-1 -1 $-1 3.774999999999999467 0.375 -0.4599999999999999645 0 0 -1 0.08485281374238599905 -0.08485281374238591579 0 1 I I -0.7071067811865464625 0.707106781186548683 0.1200000000000003564 forward I I I I #
-edge $-1 -1 $-1 $2382 0 $2565 0.1131370849898470365 $2461 $2566 forward @7 tangent #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2418 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 8 0 2 310 343 0 1 @1 8 0 2 310 344 0 #
-plane-surface $-1 -1 $-1 0.2549999999999999489 1.224999999999999867 -0.4599999999999999645 -0.7071067811865480168 0 -0.7071067811865470176 -0.7071067811865470176 0 0.7071067811865480168 forward_v I I I I #
-coedge $-1 -1 $-1 $2538 $2420 $2422 $2501 reversed $2391 0 $-1 #
-straight-curve $-1 -1 $-1 2.924999999999999822 0.2949999999999999289 -0.5 1 0 -0 F -2.63800100000000004 F 0.9380009999999998627 #
-edge $-1 -1 $-1 $2504 -0.785398163397448279 $2423 0.785398163397448279 $2499 $2567 forward @7 unknown #
-point $-1 -1 $-1 0.375 0.2949999999999999289 -0.5 #
-point $-1 -1 $-1 3.774999999999999467 0.2949999999999994849 -0.5 #
-vertex $-1 -1 $-1 $2501 0 $2568 #
-straight-curve $-1 -1 $-1 0.2149999999999999689 0.375 -0.4199999999999999845 0.7071067811865477948 0 -0.7071067811865473507 F 0 F 0.1131370849898476749 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2430 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 7 0 2 310 343 0 1 @1 7 0 2 310 344 0 #
-cone-surface $-1 -1 $-1 0.375 0.375 -0.4599999999999999645 0 0 -1 -0.08485281374238567986 -0.08485281374238567986 0 1 I I -0.7071067811865475727 0.7071067811865474617 0.1199999999999999678 forward I I I I #
-coedge $-1 -1 $-1 $2432 $2431 $2569 $2570 forward $2433 0 $-1 #
-edge $-1 -1 $-1 $2350 0 $2571 0.1131370849898476194 $2479 $2572 forward @7 tangent #
-coedge $-1 -1 $-1 $2573 $2436 $2432 $2511 forward $2514 0 $-1 #
-edge $-1 -1 $-1 $2353 0 $2574 0.1131370849898472725 $2432 $2575 forward @7 tangent #
-face $2576 -1 $-1 $2577 $2433 $5 $-1 $2578 forward single #
-coedge $-1 -1 $-1 $2436 $2573 $2579 $2580 reversed $2514 0 $-1 #
-loop $-1 -1 $-1 $-1 $2510 $2577 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 -0.4199999999999999845 0 0 -1 0.1131370849898478276 -0.1131370849898477166 0 1 I I #
-coedge $-1 -1 $-1 $2579 $2581 $2439 $2517 forward $2582 0 $-1 #
-edge $-1 -1 $-1 $2445 -0.8499999999999996447 $2440 2.549999999999999822 $2439 $2583 forward @7 unknown #
-point $-1 -1 $-1 8.134999999999999787 0.375 -0.4199999999999999289 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2442 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 22 0 4 308 311 312 343 0 #
-face $2584 -1 $-1 $2552 $2554 $5 $-1 $2585 forward single #
+coedge $-1 -1 $-1 $2745 $2578 $2584 $2671 reversed $2663 0 $-1 #
+coedge $-1 -1 $-1 $2578 $2745 $2620 $2703 reversed $2663 0 $-1 #
+loop $-1 -1 $-1 $-1 $2661 $2692 #
+straight-curve $-1 -1 $-1 0.2149999999999999689 1.224999999999999867 -0.4199999999999999289 0 1 0 F -0.9380009999999998627 F 2.63800100000000004 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2581 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 2 0 2 308 343 0 1 @1 2 0 2 308 344 0 #
+loop $-1 -1 $-1 $-1 $2746 $2581 #
+plane-surface $-1 -1 $-1 2.074999999999999734 2.074999999999999734 -0.5 0 0 -1 -1 0 0 forward_v I I I I #
+coedge $-1 -1 $-1 $2584 $2583 $2746 $2747 forward $2585 0 $-1 #
+coedge $-1 -1 $-1 $2587 $2748 $2583 $2670 reversed $2674 0 $-1 #
+edge $-1 -1 $-1 $2498 0 $2749 0.1131370849898473419 $2583 $2750 forward @7 tangent #
+edge $-1 -1 $-1 $2751 0 $2500 0.1131370849898474529 $2584 $2752 forward @7 tangent #
+face $2753 -1 $-1 $2276 $2585 $5 $-1 $2754 forward single #
+coedge $-1 -1 $-1 $2748 $2587 $2755 $2756 forward $2674 0 $-1 #
+loop $-1 -1 $-1 $-1 $2673 $2757 #
+straight-curve $-1 -1 $-1 1.224999999999999867 3.934999999999999609 -0.4199999999999999289 1 -0 0 F -0.9380009999999998627 F 2.63800100000000004 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2592 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 21 0 2 308 343 0 2 @2 21 0 2 308 344 0 #
+cone-surface $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.2399999999999999911 0 0 -1 0.1131370849898476055 0.1131370849898478692 0 1 I I 0 1 0.1600000000000001976 forward I I I I #
+coedge $-1 -1 $-1 $2758 $2755 $2594 $2679 forward $2759 0 $-1 #
+edge $-1 -1 $-1 $2595 -0.7853981633974471688 $2681 0.7853981633974495002 $2594 $2760 forward @7 unknown #
+point $-1 -1 $-1 3.774999999999999911 3.934999999999999609 -0.4199999999999999289 #
+vertex $-1 -1 $-1 $2679 1 $2761 #
+straight-curve $-1 -1 $-1 3.934999999999999609 3.774999999999999467 -0.2399999999999999911 0 0 -1 I I #
+straight-curve $-1 -1 $-1 4.415000000000000036 1.024999999999999689 -0.2399999999999999911 0 -1 0 F -3.014001000000000374 F 0.9140009999999997303 #
+coedge $-1 -1 $-1 $2608 $2607 $2762 $2763 forward $2609 0 $-1 #
+coedge $-1 -1 $-1 $2764 $2611 $2608 $2686 forward $2689 0 $-1 #
+edge $-1 -1 $-1 $2526 0 $2765 0.1131370849898477166 $2685 $2766 forward @7 tangent #
+face $2767 -1 $-1 $2768 $2609 $5 $-1 $2769 forward single #
+coedge $-1 -1 $-1 $2611 $2764 $2758 $2770 reversed $2689 0 $-1 #
+loop $-1 -1 $-1 $-1 $2685 $2768 #
+straight-curve $-1 -1 $-1 3.934999999999999609 2.924999999999999822 -0.4199999999999999289 0 -1 0 F -0.9380009999999998627 F 2.63800100000000004 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2613 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 2 @2 22 0 2 308 343 0 2 @2 22 0 2 308 344 0 #
+face $2771 -1 $-1 $2704 $2663 $5 $-1 $2772 forward single #
+plane-surface $-1 -1 $-1 3.934999999999999609 3.774999999999999467 -0.2399999999999999911 1 0 0 0 -1 0 forward_v I I I I #
+coedge $-1 -1 $-1 $2773 $2762 $2615 $2695 reversed $2666 0 $-1 #
+edge $-1 -1 $-1 $2697 -2.549999999999999822 $2699 0.8499999999999996447 $2694 $2774 forward @7 unknown #
+coedge $-1 -1 $-1 $2616 $2620 $2773 $2775 forward $2621 0 $-1 #
+vertex $-1 -1 $-1 $2695 0 $2776 #
+straight-curve $-1 -1 $-1 0.375 0.2149999999999999689 -0.4199999999999999289 0 0.7071067811865470176 -0.7071067811865480168 F 0 F 0.1131370849898476194 #
+vertex $-1 -1 $-1 $2763 0 $2777 #
+straight-curve $-1 -1 $-1 3.774999999999999467 0.2149999999999999689 -0.4199999999999999845 0 0.7071067811865453523 -0.7071067811865496822 F 0 F 0.1131370849898472725 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2619 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 6 0 2 310 343 0 1 @1 6 0 2 310 344 0 #
+plane-surface $-1 -1 $-1 2.924999999999999822 0.2549999999999999489 -0.4599999999999999645 0 -0.7071067811865480168 -0.7071067811865470176 -1 0 -0 forward_v I I I I #
+edge $-1 -1 $-1 $2540 0 $2778 0.1131370849898476749 $2620 $2779 forward @7 tangent #
+face $2780 -1 $-1 $2619 $2621 $5 $-1 $2781 forward single #
+coedge $-1 -1 $-1 $2782 $2783 $2624 $2706 forward $2784 0 $-1 #
+edge $-1 -1 $-1 $2629 -0.785398163397448279 $2707 0.785398163397448279 $2624 $2785 forward @7 unknown #
+vertex $-1 -1 $-1 $2743 0 $2786 #
+straight-curve $-1 -1 $-1 4.415000000000000036 0.375 -0.2399999999999999911 0 0 -1 I I #
+coedge $-1 -1 $-1 $2787 $2627 $2783 $2788 forward $2711 0 $-1 #
+coedge $-1 -1 $-1 $2627 $2787 $2730 $2789 reversed $2711 0 $-1 #
+loop $-1 -1 $-1 $-1 $2709 $2790 #
+straight-curve $-1 -1 $-1 7.125 0.2149999999999999689 -0.4199999999999999289 -1 0 0 F -0.9380009999999998627 F 2.63800100000000004 #
+point $-1 -1 $-1 4.575000000000000178 0.2149999999999999689 -0.4199999999999999289 #
+point $-1 -1 $-1 7.974999999999999645 0.2149999999999999689 -0.4199999999999999845 #
+vertex $-1 -1 $-1 $2646 0 $2791 #
+straight-curve $-1 -1 $-1 8.134999999999999787 0.375 -0.2399999999999999911 0 0 -1 I I #
+coedge $-1 -1 $-1 $2792 $2793 $2634 $2718 forward $2794 0 $-1 #
+edge $-1 -1 $-1 $2638 -0.8499999999999996447 $2715 2.549999999999999822 $2634 $2795 forward @7 unknown #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2635 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 22 0 4 308 311 312 343 0 #
+face $2796 -1 $-1 $2797 $2798 $5 $-1 $2799 forward single #
 plane-surface $-1 -1 $-1 8.134999999999999787 3.774999999999999467 -0.2399999999999999911 1 0 0 0 -1 0 forward_v I I I I #
-coedge $-1 -1 $-1 $2586 $2443 $2581 $2587 forward $2524 0 $-1 #
-coedge $-1 -1 $-1 $2443 $2586 $2449 $2528 reversed $2524 0 $-1 #
-loop $-1 -1 $-1 $-1 $2522 $2588 #
+coedge $-1 -1 $-1 $2800 $2636 $2793 $2801 forward $2724 0 $-1 #
+coedge $-1 -1 $-1 $2636 $2800 $2647 $2735 reversed $2724 0 $-1 #
+loop $-1 -1 $-1 $-1 $2722 $2802 #
 ellipse-curve $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.4199999999999999845 0 0 -1 0.1131370849898476055 0.1131370849898478692 0 1 I I #
 point $-1 -1 $-1 8.134999999999999787 3.774999999999999467 -0.4199999999999999845 #
-coedge $-1 -1 $-1 $2450 $2449 $2589 $2590 forward $2451 0 $-1 #
-edge $-1 -1 $-1 $2368 -0 $2591 0.1131370849898477166 $2449 $2592 forward @7 tangent #
-coedge $-1 -1 $-1 $2593 $2454 $2450 $2530 forward $2533 0 $-1 #
-edge $-1 -1 $-1 $2371 0 $2594 0.1131370849898473419 $2529 $2595 forward @7 tangent #
-face $2596 -1 $-1 $2597 $2451 $5 $-1 $2598 forward single #
-coedge $-1 -1 $-1 $2454 $2593 $2553 $2599 forward $2533 0 $-1 #
-loop $-1 -1 $-1 $-1 $2529 $2597 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2643 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 26 0 4 308 311 312 343 0 #
+face $2803 -1 $-1 $2576 $2804 $5 $-1 $2805 forward single #
+plane-surface $-1 -1 $-1 4.415000000000000036 0.375 -0.2399999999999999911 -1 0 0 0 1 0 forward_v I I I I #
+coedge $-1 -1 $-1 $2806 $2645 $2710 $2789 forward $2732 0 $-1 #
+coedge $-1 -1 $-1 $2645 $2806 $2792 $2807 reversed $2732 0 $-1 #
+loop $-1 -1 $-1 $-1 $2730 $2808 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 -0.4199999999999999845 0 0 -1 0.1131370849898478276 -0.1131370849898477166 0 1 I I #
+coedge $-1 -1 $-1 $2648 $2647 $2809 $2810 forward $2649 0 $-1 #
+edge $-1 -1 $-1 $2566 -0 $2811 0.1131370849898477166 $2647 $2812 forward @7 tangent #
+coedge $-1 -1 $-1 $2813 $2652 $2648 $2737 forward $2740 0 $-1 #
+edge $-1 -1 $-1 $2569 0 $2814 0.1131370849898473419 $2736 $2815 forward @7 tangent #
+face $2816 -1 $-1 $2817 $2649 $5 $-1 $2818 forward single #
+coedge $-1 -1 $-1 $2652 $2813 $2819 $2820 forward $2740 0 $-1 #
+loop $-1 -1 $-1 $-1 $2736 $2817 #
 ellipse-curve $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.4199999999999999845 0 0 -1 -0.1131370849898478276 0.113137084989847661 0 1 I I #
+coedge $-1 -1 $-1 $2819 $2821 $2655 $2743 forward $2798 0 $-1 #
+edge $-1 -1 $-1 $2707 -0.8499999999999998668 $2657 2.549999999999999822 $2655 $2822 forward @7 unknown #
 point $-1 -1 $-1 4.415000000000000036 3.774999999999999911 -0.4199999999999999845 #
-coedge $-1 -1 $-1 $2462 $2461 $2600 $2601 forward $2463 0 $-1 #
-face $2602 -1 $-1 $2477 $2463 $5 $-1 $2603 forward single #
-coedge $-1 -1 $-1 $2467 $2499 $2466 $2539 reversed $2391 0 $-1 #
-edge $-1 -1 $-1 $2472 -2.549999999999999822 $2504 0.8499999999999998668 $2538 $2604 forward @7 unknown #
-coedge $-1 -1 $-1 $2600 $2467 $2469 $2542 reversed $2391 0 $-1 #
+coedge $-1 -1 $-1 $2662 $2661 $2823 $2824 forward $2663 0 $-1 #
+coedge $-1 -1 $-1 $2825 $2823 $2668 $2747 reversed $2666 0 $-1 #
+edge $-1 -1 $-1 $2749 -0.7853981633974490562 $2751 0.7853981633974476129 $2746 $2826 forward @7 unknown #
+coedge $-1 -1 $-1 $2669 $2673 $2825 $2827 forward $2674 0 $-1 #
+vertex $-1 -1 $-1 $2747 0 $2828 #
+straight-curve $-1 -1 $-1 0.375 3.935000000000000053 -0.4199999999999999845 0 -0.7071067811865457964 -0.7071067811865492381 F 0 F 0.1131370849898473419 #
+vertex $-1 -1 $-1 $2747 1 $2829 #
+straight-curve $-1 -1 $-1 0.2949999999999995959 3.774999999999999911 -0.5 -0.7071067811865464625 0 0.707106781186548683 F 0 F 0.1131370849898474529 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2672 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 1 0 2 310 343 0 1 @1 1 0 2 310 344 0 #
+cone-surface $-1 -1 $-1 0.375 3.774999999999999911 -0.4599999999999999645 0 0 -1 -0.08485281374238598517 0.0848528137423858464 0 1 I I -0.7071067811865464625 0.7071067811865484609 0.1200000000000003009 forward I I I I #
+coedge $-1 -1 $-1 $2678 $2830 $2673 $2756 reversed $2759 0 $-1 #
+edge $-1 -1 $-1 $2595 -0 $2831 0.1131370849898477166 $2673 $2832 forward @7 tangent #
+face $2833 -1 $-1 $2672 $2674 $5 $-1 $2834 forward single #
+coedge $-1 -1 $-1 $2830 $2678 $2688 $2770 forward $2759 0 $-1 #
+loop $-1 -1 $-1 $-1 $2758 $2835 #
+ellipse-curve $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.4199999999999999845 0 0 -1 0.1131370849898476055 0.1131370849898478692 0 1 I I #
+point $-1 -1 $-1 3.934999999999999609 3.774999999999999467 -0.4199999999999999845 #
+coedge $-1 -1 $-1 $2694 $2836 $2684 $2763 reversed $2666 0 $-1 #
+edge $-1 -1 $-1 $2699 -0.7853981633974488341 $2765 0.7853981633974477239 $2762 $2837 forward @7 unknown #
+coedge $-1 -1 $-1 $2688 $2685 $2836 $2838 forward $2689 0 $-1 #
+vertex $-1 -1 $-1 $2838 0 $2839 #
+straight-curve $-1 -1 $-1 3.934999999999999609 0.375 -0.4199999999999999289 -0.7071067811865475727 0 -0.7071067811865475727 F 0 F 0.1131370849898477166 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2687 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 5 0 2 310 343 0 1 @1 5 0 2 310 344 0 #
+face $2840 -1 $-1 $2835 $2689 $5 $-1 $2841 forward single #
+cone-surface $-1 -1 $-1 3.774999999999999467 0.375 -0.4599999999999999645 0 0 -1 0.08485281374238599905 -0.08485281374238591579 0 1 I I -0.7071067811865464625 0.707106781186548683 0.1200000000000003564 forward I I I I #
+edge $-1 -1 $-1 $2681 0 $2842 0.1131370849898470365 $2758 $2843 forward @7 tangent #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2692 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 8 0 2 310 343 0 1 @1 8 0 2 310 344 0 #
+plane-surface $-1 -1 $-1 0.2549999999999999489 1.224999999999999867 -0.4599999999999999645 -0.7071067811865480168 0 -0.7071067811865470176 -0.7071067811865470176 0 0.7071067811865480168 forward_v I I I I #
+coedge $-1 -1 $-1 $2823 $2694 $2696 $2775 reversed $2666 0 $-1 #
+straight-curve $-1 -1 $-1 2.924999999999999822 0.2949999999999999289 -0.5 1 0 -0 F -2.63800100000000004 F 0.9380009999999998627 #
+edge $-1 -1 $-1 $2778 -0.785398163397448279 $2697 0.785398163397448279 $2773 $2844 forward @7 unknown #
+point $-1 -1 $-1 0.375 0.2949999999999999289 -0.5 #
+point $-1 -1 $-1 3.774999999999999467 0.2949999999999994849 -0.5 #
+vertex $-1 -1 $-1 $2775 0 $2845 #
+straight-curve $-1 -1 $-1 0.2149999999999999689 0.375 -0.4199999999999999845 0.7071067811865477948 0 -0.7071067811865473507 F 0 F 0.1131370849898476749 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2704 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 7 0 2 310 343 0 1 @1 7 0 2 310 344 0 #
+cone-surface $-1 -1 $-1 0.375 0.375 -0.4599999999999999645 0 0 -1 -0.08485281374238567986 -0.08485281374238567986 0 1 I I -0.7071067811865475727 0.7071067811865474617 0.1199999999999999678 forward I I I I #
+coedge $-1 -1 $-1 $2846 $2705 $2821 $2847 forward $2784 0 $-1 #
+coedge $-1 -1 $-1 $2705 $2846 $2709 $2788 reversed $2784 0 $-1 #
+loop $-1 -1 $-1 $-1 $2782 $2797 #
+ellipse-curve $-1 -1 $-1 4.575000000000000178 0.375 -0.4199999999999999845 0 0 -1 -0.1131370849898475917 -0.1131370849898475917 0 1 I I #
+point $-1 -1 $-1 4.415000000000000036 0.375 -0.4199999999999999845 #
+coedge $-1 -1 $-1 $2710 $2709 $2848 $2849 forward $2711 0 $-1 #
+edge $-1 -1 $-1 $2629 0 $2850 0.1131370849898476194 $2783 $2851 forward @7 tangent #
+edge $-1 -1 $-1 $2631 0 $2852 0.1131370849898472725 $2710 $2853 forward @7 tangent #
+face $2854 -1 $-1 $2808 $2711 $5 $-1 $2855 forward single #
+point $-1 -1 $-1 8.134999999999999787 0.375 -0.4199999999999999289 #
+coedge $-1 -1 $-1 $2856 $2717 $2731 $2807 forward $2794 0 $-1 #
+coedge $-1 -1 $-1 $2717 $2856 $2722 $2801 reversed $2794 0 $-1 #
+loop $-1 -1 $-1 $-1 $2792 $2857 #
+straight-curve $-1 -1 $-1 8.134999999999999787 2.924999999999999822 -0.4199999999999999289 0 -1 0 F -0.9380009999999998627 F 2.63800100000000004 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2720 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 8 0 4 310 311 312 343 0 #
+face $2858 -1 $-1 $2790 $2784 $5 $-1 $2859 forward single #
+loop $-1 -1 $-1 $-1 $2819 $2720 #
+plane-surface $-1 -1 $-1 4.455000000000000071 1.224999999999999867 -0.4599999999999999645 -0.7071067811865480168 0 -0.7071067811865470176 -0.7071067811865470176 0 0.7071067811865480168 forward_v I I I I #
+coedge $-1 -1 $-1 $2723 $2722 $2860 $2861 forward $2724 0 $-1 #
+edge $-1 -1 $-1 $2638 0 $2862 0.1131370849898470365 $2722 $2863 forward @7 tangent #
+face $2864 -1 $-1 $2738 $2724 $5 $-1 $2865 forward single #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2728 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 4 308 311 312 343 0 #
+loop $-1 -1 $-1 $-1 $2866 $2728 #
+plane-surface $-1 -1 $-1 6.275000000000000355 2.074999999999999734 -0.5 0 0 -1 -1 0 0 forward_v I I I I #
+coedge $-1 -1 $-1 $2731 $2730 $2867 $2868 forward $2732 0 $-1 #
+edge $-1 -1 $-1 $2715 0 $2869 0.1131370849898477166 $2731 $2870 forward @7 tangent #
+face $2871 -1 $-1 $2857 $2732 $5 $-1 $2872 forward single #
+coedge $-1 -1 $-1 $2860 $2866 $2734 $2810 reversed $2804 0 $-1 #
+edge $-1 -1 $-1 $2811 -2.549999999999999822 $2814 0.8499999999999998668 $2734 $2873 forward @7 unknown #
+vertex $-1 -1 $-1 $2735 1 $2874 #
+straight-curve $-1 -1 $-1 7.974999999999999645 3.934999999999999609 -0.4199999999999999289 -3.925231146709433849e-15 -0.7071067811865475727 -0.7071067811865475727 F -0 F 0.1131370849898477166 #
+coedge $-1 -1 $-1 $2739 $2736 $2866 $2875 forward $2740 0 $-1 #
+vertex $-1 -1 $-1 $2737 1 $2876 #
+straight-curve $-1 -1 $-1 4.575000000000000178 3.935000000000000053 -0.4199999999999999845 0 -0.7071067811865457964 -0.7071067811865492381 F 0 F 0.1131370849898473419 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2738 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 4 310 311 312 343 0 #
+face $2877 -1 $-1 $2520 $2740 $5 $-1 $2878 forward single #
+plane-surface $-1 -1 $-1 5.424999999999999822 3.894999999999999574 -0.4599999999999999645 0 0.7071067811865475727 -0.7071067811865475727 -1 0 0 forward_v I I I I #
+coedge $-1 -1 $-1 $2879 $2742 $2739 $2820 reversed $2798 0 $-1 #
+edge $-1 -1 $-1 $2880 0 $2657 0.1131370849898474529 $2739 $2881 forward @7 tangent #
+coedge $-1 -1 $-1 $2742 $2879 $2782 $2847 reversed $2798 0 $-1 #
+straight-curve $-1 -1 $-1 4.415000000000000036 1.224999999999999867 -0.4199999999999999289 0 1 0 F -0.9380009999999998627 F 2.63800100000000004 #
+coedge $-1 -1 $-1 $2746 $2773 $2745 $2824 reversed $2666 0 $-1 #
+edge $-1 -1 $-1 $2751 -2.549999999999999822 $2778 0.8499999999999998668 $2823 $2882 forward @7 unknown #
+coedge $-1 -1 $-1 $2883 $2746 $2748 $2827 reversed $2666 0 $-1 #
 ellipse-curve $-1 -1 $-1 0.375 3.774999999999999911 -0.5 -0 -0 1 -0.05656854249492412889 0.05656854249492404563 0 1 I I #
-edge $-1 -1 $-1 $2545 -2.549999999999999822 $2470 0.8499999999999998668 $2540 $2605 forward @7 unknown #
+edge $-1 -1 $-1 $2831 -2.549999999999999822 $2749 0.8499999999999998668 $2825 $2884 forward @7 unknown #
 point $-1 -1 $-1 0.375 3.855000000000000426 -0.5 #
 point $-1 -1 $-1 0.2949999999999995959 3.774999999999999911 -0.5 #
-vertex $-1 -1 $-1 $2542 0 $2606 #
+coedge $-1 -1 $-1 $2755 $2758 $2883 $2885 forward $2759 0 $-1 #
+vertex $-1 -1 $-1 $2827 0 $2886 #
 straight-curve $-1 -1 $-1 3.774999999999999911 3.934999999999999609 -0.4199999999999999289 -3.925231146709433849e-15 -0.7071067811865475727 -0.7071067811865475727 F -0 F 0.1131370849898477166 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2477 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 2 0 2 310 343 0 1 @1 2 0 2 310 344 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2757 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 2 0 2 310 343 0 1 @1 2 0 2 310 344 0 #
 plane-surface $-1 -1 $-1 1.224999999999999867 3.894999999999999574 -0.4599999999999999645 0 0.7071067811865475727 -0.7071067811865475727 -1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $2479 $2478 $2607 $2608 forward $2480 0 $-1 #
-coedge $-1 -1 $-1 $2482 $2609 $2478 $2551 reversed $2554 0 $-1 #
-edge $-1 -1 $-1 $2405 0 $2610 0.1131370849898476749 $2550 $2611 forward @7 tangent #
-face $2612 -1 $-1 $2512 $2480 $5 $-1 $2613 forward single #
-coedge $-1 -1 $-1 $2609 $2482 $2532 $2599 reversed $2554 0 $-1 #
-loop $-1 -1 $-1 $-1 $2553 $2520 #
-straight-curve $-1 -1 $-1 4.415000000000000036 1.224999999999999867 -0.4199999999999999289 0 1 0 F -0.9380009999999998627 F 2.63800100000000004 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2486 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 4 308 311 312 343 0 #
-loop $-1 -1 $-1 $-1 $2614 $2486 #
-plane-surface $-1 -1 $-1 6.275000000000000355 2.074999999999999734 -0.5 0 0 -1 -1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $2488 $2600 $2490 $2561 reversed $2391 0 $-1 #
+face $2887 -1 $-1 $2757 $2759 $5 $-1 $2888 forward single #
+coedge $-1 -1 $-1 $2762 $2883 $2764 $2838 reversed $2666 0 $-1 #
 ellipse-curve $-1 -1 $-1 3.774999999999999467 0.375 -0.5 -0 -0 1 0.05656854249492417053 -0.05656854249492411502 0 1 I I #
-edge $-1 -1 $-1 $2491 -2.549999999999999822 $2565 0.8499999999999996447 $2559 $2615 forward @7 unknown #
+edge $-1 -1 $-1 $2765 -2.549999999999999822 $2842 0.8499999999999996447 $2836 $2889 forward @7 unknown #
 point $-1 -1 $-1 3.854999999999999538 0.375 -0.5 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2494 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 4 0 2 310 343 0 1 @1 4 0 2 310 344 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2768 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 4 0 2 310 343 0 1 @1 4 0 2 310 344 0 #
 plane-surface $-1 -1 $-1 3.894999999999999574 2.924999999999999822 -0.4599999999999999645 0.7071067811865475727 0 -0.7071067811865475727 -0.7071067811865475727 0 -0.7071067811865475727 forward_v I I I I #
-vertex $-1 -1 $-1 $2601 0 $2616 #
+vertex $-1 -1 $-1 $2885 0 $2890 #
 straight-curve $-1 -1 $-1 3.934999999999999609 3.774999999999999467 -0.4199999999999999845 -0.707106781186543798 0 -0.7071067811865512365 F 0 F 0.1131370849898470365 #
 ellipse-curve $-1 -1 $-1 0.375 0.375 -0.5 -0 -0 1 -0.05656854249492377501 -0.05656854249492377501 0 1 I I #
 point $-1 -1 $-1 0.29500000000000004 0.375 -0.5 #
-coedge $-1 -1 $-1 $2607 $2617 $2508 $2570 reversed $2557 0 $-1 #
-edge $-1 -1 $-1 $2571 -2.549999999999999822 $2574 0.8499999999999996447 $2508 $2618 forward @7 unknown #
-vertex $-1 -1 $-1 $2608 1 $2619 #
+coedge $-1 -1 $-1 $2783 $2782 $2891 $2892 forward $2784 0 $-1 #
+edge $-1 -1 $-1 $2707 0 $2893 0.1131370849898476749 $2821 $2894 forward @7 tangent #
+coedge $-1 -1 $-1 $2891 $2867 $2787 $2849 reversed $2804 0 $-1 #
+edge $-1 -1 $-1 $2850 -2.549999999999999822 $2852 0.8499999999999996447 $2787 $2895 forward @7 unknown #
+vertex $-1 -1 $-1 $2892 1 $2896 #
 straight-curve $-1 -1 $-1 4.575000000000000178 0.2149999999999999689 -0.4199999999999999289 0 0.7071067811865470176 -0.7071067811865480168 F 0 F 0.1131370849898476194 #
-coedge $-1 -1 $-1 $2513 $2510 $2617 $2620 forward $2514 0 $-1 #
-vertex $-1 -1 $-1 $2570 1 $2621 #
+vertex $-1 -1 $-1 $2849 1 $2897 #
 straight-curve $-1 -1 $-1 7.974999999999999645 0.2149999999999999689 -0.4199999999999999845 0 0.7071067811865453523 -0.7071067811865496822 F 0 F 0.1131370849898472725 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2512 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 4 310 311 312 343 0 #
-face $2622 -1 $-1 $2623 $2514 $5 $-1 $2624 forward single #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2790 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 6 0 4 310 311 312 343 0 #
 plane-surface $-1 -1 $-1 7.125 0.2549999999999999489 -0.4599999999999999645 0 -0.7071067811865480168 -0.7071067811865470176 -1 0 0 forward_v I I I I #
-coedge $-1 -1 $-1 $2625 $2516 $2513 $2580 forward $2582 0 $-1 #
-edge $-1 -1 $-1 $2440 0 $2626 0.1131370849898477166 $2513 $2627 forward @7 tangent #
-coedge $-1 -1 $-1 $2516 $2625 $2522 $2587 reversed $2582 0 $-1 #
-loop $-1 -1 $-1 $-1 $2579 $2623 #
-straight-curve $-1 -1 $-1 8.134999999999999787 2.924999999999999822 -0.4199999999999999289 0 -1 0 F -0.9380009999999998627 F 2.63800100000000004 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2520 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 8 0 4 310 311 312 343 0 #
-plane-surface $-1 -1 $-1 4.455000000000000071 1.224999999999999867 -0.4599999999999999645 -0.7071067811865480168 0 -0.7071067811865470176 -0.7071067811865470176 0 0.7071067811865480168 forward_v I I I I #
-coedge $-1 -1 $-1 $2523 $2522 $2628 $2629 forward $2524 0 $-1 #
-edge $-1 -1 $-1 $2445 0 $2630 0.1131370849898470365 $2522 $2631 forward @7 tangent #
-face $2632 -1 $-1 $2531 $2524 $5 $-1 $2633 forward single #
-coedge $-1 -1 $-1 $2628 $2614 $2527 $2590 reversed $2557 0 $-1 #
-edge $-1 -1 $-1 $2591 -2.549999999999999822 $2594 0.8499999999999998668 $2527 $2634 forward @7 unknown #
-vertex $-1 -1 $-1 $2528 1 $2635 #
-straight-curve $-1 -1 $-1 7.974999999999999645 3.934999999999999609 -0.4199999999999999289 -3.925231146709433849e-15 -0.7071067811865475727 -0.7071067811865475727 F -0 F 0.1131370849898477166 #
-coedge $-1 -1 $-1 $2532 $2529 $2614 $2636 forward $2533 0 $-1 #
-vertex $-1 -1 $-1 $2530 1 $2637 #
-straight-curve $-1 -1 $-1 4.575000000000000178 3.935000000000000053 -0.4199999999999999845 0 -0.7071067811865457964 -0.7071067811865492381 F 0 F 0.1131370849898473419 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2531 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 4 310 311 312 343 0 #
-face $2638 -1 $-1 $1720 $2533 $5 $-1 $2639 forward single #
-plane-surface $-1 -1 $-1 5.424999999999999822 3.894999999999999574 -0.4599999999999999645 0 0.7071067811865475727 -0.7071067811865475727 -1 0 0 forward_v I I I I #
-edge $-1 -1 $-1 $2640 0 $2457 0.1131370849898474529 $2532 $2641 forward @7 tangent #
-coedge $-1 -1 $-1 $2559 $2540 $2536 $2601 reversed $2391 0 $-1 #
-edge $-1 -1 $-1 $2565 -0.7853981633974495002 $2545 0.7853981633974527199 $2600 $2642 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2537 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 3 0 2 310 343 0 1 @1 3 0 2 310 344 0 #
-cone-surface $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.4599999999999999645 0 0 -1 0.0848528137423858464 0.08485281374238604069 0 1 I I -0.7071067811865459074 0.707106781186548905 0.1200000000000003425 forward I I I I #
-straight-curve $-1 -1 $-1 0.2949999999999999289 1.224999999999999867 -0.5 -0 -1 -0 F -2.63800100000000004 F 0.9380009999999998627 #
-straight-curve $-1 -1 $-1 1.224999999999999867 3.854999999999999538 -0.5 -1 0 -0 F -2.63800100000000004 F 0.9380009999999998627 #
-point $-1 -1 $-1 3.774999999999999467 3.854999999999999538 -0.5 #
-coedge $-1 -1 $-1 $2643 $2569 $2549 $2608 reversed $2557 0 $-1 #
-edge $-1 -1 $-1 $2610 -0.785398163397448279 $2571 0.785398163397448279 $2549 $2644 forward @7 unknown #
-coedge $-1 -1 $-1 $2550 $2553 $2643 $2645 forward $2554 0 $-1 #
-vertex $-1 -1 $-1 $2645 1 $2646 #
-straight-curve $-1 -1 $-1 4.415000000000000036 0.375 -0.4199999999999999845 0.7071067811865477948 0 -0.7071067811865473507 F 0 F 0.1131370849898476749 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2552 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 7 0 4 310 311 312 343 0 #
+coedge $-1 -1 $-1 $2793 $2792 $2898 $2899 forward $2794 0 $-1 #
+face $2900 -1 $-1 $2802 $2794 $5 $-1 $2901 forward single #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2797 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 7 0 4 310 311 312 343 0 #
 cone-surface $-1 -1 $-1 4.575000000000000178 0.375 -0.4599999999999999645 0 0 -1 -0.08485281374238567986 -0.08485281374238567986 0 1 I I -0.7071067811865475727 0.7071067811865474617 0.1199999999999999678 forward I I I I #
-coedge $-1 -1 $-1 $2589 $2643 $2593 $2636 reversed $2557 0 $-1 #
-straight-curve $-1 -1 $-1 3.854999999999999538 2.924999999999999822 -0.5 -0 1 -0 F -2.63800100000000004 F 0.9380009999999998627 #
-point $-1 -1 $-1 3.855000000000000426 3.774999999999999467 -0.5 #
-coedge $-1 -1 $-1 $2569 $2647 $2573 $2620 reversed $2557 0 $-1 #
-straight-curve $-1 -1 $-1 7.125 0.2949999999999999289 -0.5 1 0 0 F -2.63800100000000004 F 0.9380009999999998627 #
-point $-1 -1 $-1 4.575000000000000178 0.2949999999999999289 -0.5 #
-edge $-1 -1 $-1 $2574 -0.7853981633974488341 $2626 0.7853981633974477239 $2573 $2648 forward @7 unknown #
-point $-1 -1 $-1 7.974999999999999645 0.2949999999999994849 -0.5 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2577 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 5 0 4 310 311 312 343 0 #
-face $2649 -1 $-1 $2588 $2582 $5 $-1 $2650 forward single #
-cone-surface $-1 -1 $-1 7.974999999999999645 0.375 -0.4599999999999999645 0 0 -1 0.08485281374238599905 -0.08485281374238591579 0 1 I I -0.7071067811865464625 0.707106781186548683 0.1200000000000003564 forward I I I I #
-coedge $-1 -1 $-1 $2581 $2579 $2647 $2651 forward $2582 0 $-1 #
-vertex $-1 -1 $-1 $2620 1 $2652 #
-straight-curve $-1 -1 $-1 8.134999999999999787 0.375 -0.4199999999999999289 -0.7071067811865475727 0 -0.7071067811865475727 F 0 F 0.1131370849898477166 #
-coedge $-1 -1 $-1 $2647 $2589 $2586 $2629 reversed $2557 0 $-1 #
-edge $-1 -1 $-1 $2630 -0.7853981633974495002 $2591 0.7853981633974527199 $2586 $2653 forward @7 unknown #
-vertex $-1 -1 $-1 $2587 1 $2654 #
+coedge $-1 -1 $-1 $2898 $2809 $2800 $2861 reversed $2804 0 $-1 #
+edge $-1 -1 $-1 $2862 -0.7853981633974495002 $2811 0.7853981633974527199 $2800 $2902 forward @7 unknown #
+vertex $-1 -1 $-1 $2801 1 $2903 #
 straight-curve $-1 -1 $-1 8.134999999999999787 3.774999999999999467 -0.4199999999999999845 -0.707106781186543798 0 -0.7071067811865512365 F 0 F 0.1131370849898470365 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2588 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 3 0 4 310 311 312 343 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2802 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 3 0 4 310 311 312 343 0 #
 cone-surface $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.4599999999999999645 0 0 -1 0.0848528137423858464 0.08485281374238604069 0 1 I I -0.7071067811865459074 0.707106781186548905 0.1200000000000003425 forward I I I I #
+coedge $-1 -1 $-1 $2809 $2904 $2813 $2875 reversed $2804 0 $-1 #
+coedge $-1 -1 $-1 $2848 $2898 $2806 $2868 reversed $2804 0 $-1 #
+edge $-1 -1 $-1 $2852 -0.7853981633974488341 $2869 0.7853981633974477239 $2806 $2905 forward @7 unknown #
+vertex $-1 -1 $-1 $2868 1 $2906 #
+straight-curve $-1 -1 $-1 8.134999999999999787 0.375 -0.4199999999999999289 -0.7071067811865475727 0 -0.7071067811865475727 F 0 F 0.1131370849898477166 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2808 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 5 0 4 310 311 312 343 0 #
+cone-surface $-1 -1 $-1 7.974999999999999645 0.375 -0.4599999999999999645 0 0 -1 0.08485281374238599905 -0.08485281374238591579 0 1 I I -0.7071067811865464625 0.707106781186548683 0.1200000000000003564 forward I I I I #
 straight-curve $-1 -1 $-1 5.424999999999999822 3.854999999999999538 -0.5 -1 0 0 F -2.63800100000000004 F 0.9380009999999998627 #
 point $-1 -1 $-1 7.974999999999999645 3.854999999999999538 -0.5 #
-edge $-1 -1 $-1 $2594 -0.7853981633974490562 $2640 0.7853981633974476129 $2593 $2655 forward @7 unknown #
+edge $-1 -1 $-1 $2814 -0.7853981633974490562 $2880 0.7853981633974476129 $2813 $2907 forward @7 unknown #
 point $-1 -1 $-1 4.575000000000000178 3.855000000000000426 -0.5 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2597 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 4 310 311 312 343 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2817 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 4 310 311 312 343 0 #
 cone-surface $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.4599999999999999645 0 0 -1 -0.08485281374238598517 0.0848528137423858464 0 1 I I -0.7071067811865464625 0.7071067811865484609 0.1200000000000003009 forward I I I I #
-vertex $-1 -1 $-1 $2636 1 $2656 #
+coedge $-1 -1 $-1 $2821 $2819 $2904 $2908 forward $2798 0 $-1 #
+vertex $-1 -1 $-1 $2875 1 $2909 #
 straight-curve $-1 -1 $-1 4.495000000000000107 3.774999999999999911 -0.5 -0.7071067811865464625 0 0.707106781186548683 F 0 F 0.1131370849898474529 #
-ellipse-curve $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.5 -0 -0 1 0.05656854249492408032 0.05656854249492421216 0 1 I I #
-coedge $-1 -1 $-1 $2614 $2607 $2609 $2645 reversed $2557 0 $-1 #
-ellipse-curve $-1 -1 $-1 4.575000000000000178 0.375 -0.5 0 0 1 -0.05656854249492377501 -0.05656854249492377501 0 1 I I #
-edge $-1 -1 $-1 $2640 -2.549999999999999822 $2610 0.8499999999999998668 $2609 $2657 forward @7 unknown #
-point $-1 -1 $-1 4.495000000000000107 0.375 -0.5 #
-coedge $-1 -1 $-1 $2617 $2628 $2625 $2651 reversed $2557 0 $-1 #
-ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 -0.5 0 0 1 0.05656854249492417053 -0.05656854249492411502 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2623 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 4 310 311 312 343 0 #
+straight-curve $-1 -1 $-1 0.2949999999999999289 1.224999999999999867 -0.5 -0 -1 -0 F -2.63800100000000004 F 0.9380009999999998627 #
+coedge $-1 -1 $-1 $2836 $2825 $2830 $2885 reversed $2666 0 $-1 #
+straight-curve $-1 -1 $-1 1.224999999999999867 3.854999999999999538 -0.5 -1 0 -0 F -2.63800100000000004 F 0.9380009999999998627 #
+edge $-1 -1 $-1 $2842 -0.7853981633974495002 $2831 0.7853981633974527199 $2883 $2910 forward @7 unknown #
+point $-1 -1 $-1 3.774999999999999467 3.854999999999999538 -0.5 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2835 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  2 1 @1 3 0 2 310 343 0 1 @1 3 0 2 310 344 0 #
+cone-surface $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.4599999999999999645 0 0 -1 0.0848528137423858464 0.08485281374238604069 0 1 I I -0.7071067811865459074 0.707106781186548905 0.1200000000000003425 forward I I I I #
+straight-curve $-1 -1 $-1 3.854999999999999538 2.924999999999999822 -0.5 -0 1 -0 F -2.63800100000000004 F 0.9380009999999998627 #
+point $-1 -1 $-1 3.855000000000000426 3.774999999999999467 -0.5 #
+coedge $-1 -1 $-1 $2904 $2848 $2846 $2892 reversed $2804 0 $-1 #
+edge $-1 -1 $-1 $2893 -0.785398163397448279 $2850 0.785398163397448279 $2846 $2911 forward @7 unknown #
+vertex $-1 -1 $-1 $2908 1 $2912 #
+straight-curve $-1 -1 $-1 4.415000000000000036 0.375 -0.4199999999999999845 0.7071067811865477948 0 -0.7071067811865473507 F 0 F 0.1131370849898476749 #
+straight-curve $-1 -1 $-1 7.125 0.2949999999999999289 -0.5 1 0 0 F -2.63800100000000004 F 0.9380009999999998627 #
+point $-1 -1 $-1 4.575000000000000178 0.2949999999999999289 -0.5 #
+point $-1 -1 $-1 7.974999999999999645 0.2949999999999994849 -0.5 #
+coedge $-1 -1 $-1 $2867 $2860 $2856 $2899 reversed $2804 0 $-1 #
+edge $-1 -1 $-1 $2869 -2.549999999999999822 $2862 0.8499999999999996447 $2856 $2913 forward @7 unknown #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $2857 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 4 0 4 310 311 312 343 0 #
 plane-surface $-1 -1 $-1 8.094999999999998863 2.924999999999999822 -0.4599999999999999645 0.7071067811865475727 0 -0.7071067811865475727 -0.7071067811865475727 0 -0.7071067811865475727 forward_v I I I I #
-edge $-1 -1 $-1 $2626 -2.549999999999999822 $2630 0.8499999999999996447 $2625 $2658 forward @7 unknown #
-point $-1 -1 $-1 8.054999999999999716 0.375 -0.5 #
 ellipse-curve $-1 -1 $-1 7.974999999999999645 3.774999999999999467 -0.5 0 0 1 0.05656854249492408032 0.05656854249492421216 0 1 I I #
 point $-1 -1 $-1 8.054999999999999716 3.774999999999999467 -0.5 #
+coedge $-1 -1 $-1 $2866 $2891 $2879 $2908 reversed $2804 0 $-1 #
+ellipse-curve $-1 -1 $-1 7.974999999999999645 0.375 -0.5 0 0 1 0.05656854249492417053 -0.05656854249492411502 0 1 I I #
+point $-1 -1 $-1 8.054999999999999716 0.375 -0.5 #
 ellipse-curve $-1 -1 $-1 4.575000000000000178 3.774999999999999911 -0.5 0 0 1 -0.05656854249492412889 0.05656854249492404563 0 1 I I #
+edge $-1 -1 $-1 $2880 -2.549999999999999822 $2893 0.8499999999999998668 $2879 $2914 forward @7 unknown #
 point $-1 -1 $-1 4.495000000000000107 3.774999999999999911 -0.5 #
-straight-curve $-1 -1 $-1 4.495000000000000107 1.224999999999999867 -0.5 -0 -1 -0 F -2.63800100000000004 F 0.9380009999999998627 #
+ellipse-curve $-1 -1 $-1 3.774999999999999911 3.774999999999999467 -0.5 -0 -0 1 0.05656854249492408032 0.05656854249492421216 0 1 I I #
+ellipse-curve $-1 -1 $-1 4.575000000000000178 0.375 -0.5 0 0 1 -0.05656854249492377501 -0.05656854249492377501 0 1 I I #
+point $-1 -1 $-1 4.495000000000000107 0.375 -0.5 #
 straight-curve $-1 -1 $-1 8.054999999999999716 2.924999999999999822 -0.5 0 1 0 F -2.63800100000000004 F 0.9380009999999998627 #
+straight-curve $-1 -1 $-1 4.495000000000000107 1.224999999999999867 -0.5 -0 -1 -0 F -2.63800100000000004 F 0.9380009999999998627 #
 End-of-ASM-data 
