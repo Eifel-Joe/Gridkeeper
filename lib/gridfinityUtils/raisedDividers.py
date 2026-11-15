@@ -133,7 +133,7 @@ def isCornerChainEdge(
     start: tuple[float, float, float],
     end: tuple[float, float, float],
     tolerance: float = 1e-3,
-    levelTolerance: float = 1e-6,
+    levelTolerance: float = 1e-5,
 ) -> bool:
     """
     Whether a straight edge of the finished bin, start to end x, y, z, belongs to the chain the corner is filleted
@@ -157,8 +157,8 @@ def isCornerChainEdge(
             return False
     # Level only when it doesn't rise at all: upstream v2.4.0.0's lower lip socket ends the lip's inner face in an edge
     # rising 3.55 um to the top, in cm below the position tolerance. Taken for level, the corner stopped short of the
-    # top in ledges of 1.40 mm2 (round 12, shape tests in Fusion). Edges along the divider or the wall are level
-    # to float noise
+    # top in ledges of 1.40 mm2 (round 12, shape tests in Fusion). 0.1 um: ten times Fusion's point resolution (about
+    # 1e-6 cm), so a level edge's noise stays level (review round 12), and 35 times below the 3.55 um rise
     return abs(start[2] - end[2]) > levelTolerance
 
 
