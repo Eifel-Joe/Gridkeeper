@@ -4,6 +4,23 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
 
 ## Unreleased
 
+### Grid and bin geometry (round 15)
+
+- **Joint origins follow the grid (p170):** the joint origins of bin feet and baseplate sockets sat in one sketch on
+  reference dimensions and stayed put when a base unit changed. Each is now a point of its own with driving
+  dimensions, so after changing `gfBinN_baseWidth` or a baseplate's base width they stay in the middle of their cells.
+  A 6x6 baseplate with joint origins builds in about 9.7 s instead of 7.0 s.
+- **Labels and sockets beside the grid (p60):** where a tab and its compartment overlap is now worked out by Fusion
+  (`max()`/`min()`), not picked once when building, for Cullenect sockets, text labels, the tab hollow and its
+  openings. The size of a Cullenect socket (1U, 2U …) is still chosen when building: if a parameter change would need
+  another size, rebuild the bin from its context menu.
+- **Raised divider corners on thick walls (p101):** a wall thicker than the lip leaves a small ledge under the lip.
+  The corners of dividers up to the top are now rounded in one go on both sides of it, at 2 and 3 mm walls, instead of
+  falling back to a smaller rounding with a step.
+- **Cullenect needs 1.2 mm walls (p35):** the Cullenect label style needs a wall of at least 1.2 mm, the Cullenect
+  standard (Joerg: thicker is fine, thinner not). Below it the bin dialog keeps OK locked and says why in the
+  Cullenect row of the dimensions table, also when a config is loaded or a bin is rebuilt. Bins built before stay.
+
 ### Labels after a text change (round 14)
 
 - **Bin labels stay put (p72):** a label text made longer through its parameter added letters at the origin, untilted

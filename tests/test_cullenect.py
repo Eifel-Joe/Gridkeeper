@@ -226,3 +226,19 @@ def test_pocket_fit_note_only_when_the_insert_no_longer_fits():
     assert cullenect.pocketFitNote("Insert in pocket", "Pocket joint origin", (36.0, 11.0), (36.3, 11.3)) is None
     note = cullenect.pocketFitNote("Insert in pocket", "Pocket joint origin", (78.0, 11.0), (36.3, 11.3))
     assert "Insert in pocket" in note and "Pocket joint origin" in note and "doesn't fit" in note
+
+
+# p35, Joerg 15.11.2026: "Standard fuer Cullenect ist 1,2mm. Dicker geht, duenner nicht."
+
+def test_walls_from_1_2_mm_take_a_socket():
+    for wall in (0.12, 0.2, 0.3):
+        assert cullenect.wallProblem(wall) is None
+
+
+def test_thinner_walls_take_none():
+    problem = cullenect.wallProblem(0.119)
+    assert problem is not None and "1.2 mm" in problem
+
+
+def test_rounding_noise_counts_as_1_2():
+    assert cullenect.wallProblem(0.12 - 1e-9) is None
