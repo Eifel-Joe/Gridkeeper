@@ -1,7 +1,7 @@
 # End-to-end check of round 18 (docs/specs/2026-11-15-runde-18-design.md, "Ende-zu-Ende-Kriterium"), run in Fusion with
-# the add-in loaded from this checkout. Set GROUP to 'a' to 'd' before running, each runs under a minute. Groups a and b
-# build and rebuild without a dialog. Groups c and d open dialogs: every command they start is ended in the same run,
-# in a finally, with ui.terminateActiveCommand(), activeCommand printed before and after. Each group builds into a
+# the add-in loaded from this checkout. Set GROUP to 'a' to 'c' before running, each runs under a minute. No group
+# opens a dialog: a script can't, execute() runs once the script is over (r18_dialog_probe). That the three dialogs open
+# after a restart is on the user's hand test list. Each group builds into a
 # document of its own, closes it when everything passes and prints OK or FAIL per point, ALL OK or N FAILED last.
 import adsk.core, adsk.fusion, sys, os, dataclasses, json
 
@@ -119,69 +119,31 @@ def groupB(run):
     run.healthy('b')
 
 
-def openDialog(run, start, name):
-    """Starts a command, waits for it, returns activeCommand; the caller ends it"""
-    ui = adsk.core.Application.get().userInterface
-    print(f'{name} before: {ui.activeCommand}')
-    start()
-    for _ in range(20):
-        adsk.doEvents()
-    active = ui.activeCommand
-    print(f'{name} opened: {active}')
-    return active
-
-
-def endDialog(name):
-    ui = adsk.core.Application.get().userInterface
-    if ui.activeCommand != SELECT:
-        print(f'{name} terminate: {ui.terminateActiveCommand()}')
-    for _ in range(10):
-        adsk.doEvents()
-    print(f'{name} after: {ui.activeCommand}')
-    return ui.activeCommand == SELECT
-
-
 def groupC(run):
-    # the config of a built insert read back and cloned into the dialog: the same values
+    # the config of a built insert read back, and cloned into the dialog's state without opening the dialog: a script
+    # can't open a dialog, execute() only runs once the script is over (r18_dialog_probe, 16.11.2026). The dialog's
+    # state is filled the way a clone fills it, readConfig and applyInputsState, read back with getInputsState, and set
+    # back to what it was after
     labelEntry = module('commands.commandCreateLabel.entry')
-    (state, settings) = run.state('label_25mm_free', textColor='#D02020', line2='DIN 912')
+    (state, settings) = run.state('label_25mm_free', textColor='#D02020', line2='DIN 912', showScrew=False, hardware='nut_nylon', surface='Debossed')
     insert = run.labelBuilder.buildLabel(run.des, state, settings)[0]
     config = run.tagUtils.readBodyTag(insert)[1]['config']
     text = run.configJson.configText(run.configJson.GENERATOR_LABEL, config)
     (read, notes) = run.configJson.readConfig(text, run.configJson.GENERATOR_LABEL, type(state), state)
     run.check('c: saved and loaded, same values', notes.isEmpty() and run.configJson.stateToJson(run.configJson.GENERATOR_LABEL, read) == config)
-    shown = None
+    kept = labelEntry.uiState.toDict()
     try:
-        active = openDialog(run, lambda: labelEntry.startWithConfig(config), 'clone')
-        run.check('c: clone opens the label dialog', active == labelEntry.CMD_ID, active)
+        cloned = labelEntry.readConfig(text, 'Cloned')
+        labelEntry.applyInputsState(cloned)
         shown = run.configJson.stateToJson(run.configJson.GENERATOR_LABEL, labelEntry.getInputsState())
     finally:
-        closed = endDialog('clone')
-    run.check('c: cloned dialog shows the same values', shown == config, f'{ {k: (config[k], shown[k]) for k in config if shown and shown[k] != config[k]} }' if shown else 'nothing read')
-    run.check('c: dialog closed again', closed)
+        labelEntry.uiState.initValues(kept)
+    differing = {name: (config[name], shown[name]) for name in config if shown.get(name) != config[name]}
+    run.check('c: the dialog state of the clone has the same values', len(differing) == 0, str(differing))
+    run.check('c: the file name names the insert', labelEntry.configFileName(config) == insert.name, f'{labelEntry.configFileName(config)} / {insert.name}')
 
 
-def groupD(run):
-    # every dialog opens after the add-in restart: started, checked, ended
-    commands = [
-        ('bin', module('commands.commandCreateBin.entry').CMD_ID),
-        ('baseplate', module('commands.commandCreateBaseplate.entry').CMD_ID),
-        ('label', module('commands.commandCreateLabel.entry').CMD_ID),
-    ]
-    ui = adsk.core.Application.get().userInterface
-    for (name, commandId) in commands:
-        active = None
-        try:
-            active = openDialog(run, lambda: ui.commandDefinitions.itemById(commandId).execute(), name)
-        finally:
-            closed = endDialog(name)
-        run.check(f'd: {name} dialog opens', active == commandId, str(active))
-        run.check(f'd: {name} dialog closed again', closed)
-        if not closed:
-            break
-
-
-GROUPS = {'a': groupA, 'b': groupB, 'c': groupC, 'd': groupD}
+GROUPS = {'a': groupA, 'b': groupB, 'c': groupC}
 
 
 def run(_context: str):
