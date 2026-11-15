@@ -1,7 +1,7 @@
 import os
 import adsk.core, adsk.fusion
 
-from . import const, commonUtils, combineUtils, appearanceUtils
+from . import const, commonUtils, combineUtils, appearanceUtils, textStyles
 from .dim import Dim, valueInput
 
 LABEL_STYLE_OUTLINE = 'Outline'
@@ -96,13 +96,22 @@ def _curveBounds(curves) -> tuple[float, float, float, float] | None:
 def _sketchCurvesBounds(sketch: adsk.fusion.Sketch) -> tuple[float, float, float, float] | None:
     return _curveBounds([curve.geometry for curve in sketch.sketchCurves])
 
+def _applyStyle(textInput: adsk.fusion.SketchTextInput, style: str):
+    """Font and boldness of the text style, see textStyles. The font stays with the sketch text, so a later change of
+    its text parameter keeps it"""
+    (fontName, isBold) = textStyles.fontAndBold(style)
+    if fontName is not None:
+        textInput.fontName = fontName
+    if isBold:
+        textInput.textStyle = adsk.fusion.TextStyles.TextStyleBold
+
 def _addText(
     sketch: adsk.fusion.Sketch,
     text: str,
     height: float,
     corner: adsk.core.Point3D,
     diagonal: adsk.core.Point3D,
-    isBold: bool,
+    style: str,
     isCentered: bool,
 ) -> adsk.fusion.SketchText:
     textInput = sketch.sketchTexts.createInput2(text, height)
@@ -113,15 +122,14 @@ def _addText(
         adsk.core.VerticalAlignments.MiddleVerticalAlignment,
         0,
     )
-    if isBold:
-        textInput.textStyle = adsk.fusion.TextStyles.TextStyleBold
+    _applyStyle(textInput, style)
     return sketch.sketchTexts.add(textInput)
 
-def _measureText(sketch: adsk.fusion.Sketch, text: str, height: float, isBold: bool) -> tuple[float, float] | None:
-    """Width and height of the letters at the given text height, measured on a throwaway text
+def _measureText(sketch: adsk.fusion.Sketch, text: str, height: float, style: str) -> tuple[float, float] | None:
+    """Width and height of the letters of the text style at the given text height, measured on a throwaway text
     with a box wide enough not to wrap"""
     origin = adsk.core.Point3D.create(0, 0, 0)
-    probe = _addText(sketch, text, height, origin, adsk.core.Point3D.create(height * len(text) * 10, height * 10, 0), isBold, False)
+    probe = _addText(sketch, text, height, origin, adsk.core.Point3D.create(height * len(text) * 10, height * 10, 0), style, False)
     bounds = _curveBounds(probe.asCurves())
     probe.deleteMe()
     return None if bounds is None else (bounds[2] - bounds[0], bounds[3] - bounds[1])
@@ -220,11 +228,12 @@ def createLabel(
     # the label allows, then everything scales down until the icon, gap and text fit the label width
     iconSize = contentHeight * const.BIN_LABEL_TEXT_HEIGHT_RATIO
     textWidth = 0
+    style = textStyles.styleOfBold(input.isBold)
     if len(text) > 0:
         textSketch: adsk.fusion.Sketch = targetComponent.sketches.add(labelPlane)
         textSketch.name = f'{name} text sketch'
         textHeight = contentHeight
-        measured = _measureText(textSketch, text, textHeight, input.isBold)
+        measured = _measureText(textSketch, text, textHeight, style)
         if measured is not None and measured[1] > 0:
             (measuredWidth, measuredHeight) = measured
             iconShare = measuredHeight * iconAspect
@@ -235,6 +244,8 @@ def createLabel(
             textHeight *= scale
             textWidth = measuredWidth * scale
             iconSize = measuredHeight * scale
+        # a long text on a short bin shrinks, the command hints at it when it gets too thin to print (p130)
+        textStyles.noteText(text, style, textHeight)
     elif iconPath is not None:
         iconSize = min(contentHeight, contentWidth / iconAspect)
 
@@ -250,7 +261,7 @@ def createLabel(
             textHeight,
             adsk.core.Point3D.create(textMinX, contentMinY, 0),
             adsk.core.Point3D.create(contentMinX + contentWidth, contentMinY + contentHeight, 0),
-            input.isBold,
+            style,
             iconPath is None,
         )
         sketchText.textParameter.expression = textParameter.name
