@@ -57,6 +57,19 @@ Punkte:
 - Die Bin-Labels nutzen die Kopien `labelIcons/*/cullenect-*.svg`. Sie sind beim Neuerzeugen mitgeschrieben worden und
   byteweise gleich den Hardware-Symbolen, die Messung lief also schon auf den gröberen Symbolen.
 
+## Snapshots neu abgelegt (Bedingung der Hauptsitzung: Ursache gewollt und belegt, Einleger-Grundkörper mit gleicher Bounding-Box)
+
+Lauf `r17_snap` (83 Fälle): rot waren nur diese fünf Einleger-Fälle, alle mit Symbol.
+
+| Fall | Ursache | Beleg |
+|---|---|---|
+| `label_2u_hardware` | p51 (gröbere Nylonmutter, 1340 → 350 Flächen) und p140 (Symbol 0,4 mm vom Rand) | Volumen 974,48 → 974,54 mm³ |
+| `label_1u_screw_text`, `_colored`, `_part` | p52: Der Text ist auf die Breite eingepasst und bekommt 1 mm weniger | Raum 19,44 mm → 18,44 mm, Faktor 0,949; text 1 bis x 13,07 → 12,45 mm (0,953) |
+| `label_25mm_free` | p52: „M3“ in Bold ist ebenfalls eingepasst, eine Schraube steht rechts daneben | Text 1,44–9,36 mm = 0,95 · 8,32 mm Raum; nachher 7,32 mm Raum, Faktor 0,88; Volumen text 1 5,43 → 4,21 mm³ (0,88² = 0,77). Der Grundkörper weicht um 2,5 mm³ ab, weil „bündig“ den kleineren Text aus ihm herausschneidet |
+
+Die Fälle sind mit `r17_refresh` neu abgelegt. Die vorhandenen Vorschaubilder bleiben dabei erhalten. Dass die Bounding-
+Box der Grundkörper gleich bleibt, ist in `git diff` der `fingerprint.json` geprüft (siehe unten).
+
 ## Fragen an Jörg (Testtermin)
 
 1. **Zweizeilig vertieft:** verbieten oder die Kerbe durch die Unterlängen hinnehmen?
