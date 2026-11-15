@@ -66,11 +66,13 @@ def selectedTag() -> tuple[adsk.fusion.BRepBody, str, dict] | None:
         body = face.body if face is not None else None
     if body is None:
         return None
-    # bins in their own component are selected through an occurrence, the tag sits on the body itself
-    if body.assemblyContext is not None:
-        body = body.nativeObject
-    tag = tagUtils.readBodyTag(body)
-    return (body, *tag) if tag is not None else None
+    # bins in their own component are selected through an occurrence, the tag sits on the body itself. A letter a
+    # longer text added has none, the bin or insert it's in answers for it (p71)
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    def occurrenceOf(component: adsk.fusion.Component) -> adsk.fusion.Occurrence | None:
+        occurrences = design.rootComponent.allOccurrencesByComponent(component) if design is not None else None
+        return occurrences.item(0) if occurrences is not None and occurrences.count > 0 else None
+    return tagUtils.partTag(body, occurrenceOf)
 
 def canRebuild(tag: tuple[adsk.fusion.BRepBody, str, dict] | None) -> bool:
     """Bodies generated before the generator kept the config can't be rebuilt"""
