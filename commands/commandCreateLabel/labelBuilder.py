@@ -208,7 +208,8 @@ def _buildLabel(
     # each line drives its text, so it can be edited later like the bin labels
     lines = labelLines(state)
     textParameters = []
-    for (index, line) in enumerate(lines):
+    # labelled by the line it was typed in, a rebuild puts it back there, see labelConfig.textLines
+    for (index, (line, label)) in enumerate(labelConfig.textLines(state.line1, state.line2)):
         textParameter = parameterUtils.addTextParameter(
             des,
             parameterUtils.parameterName(prefix, LABEL_TEXT_PARAMETERS[index]),
@@ -217,7 +218,7 @@ def _buildLabel(
             reuse,
         )
         textParameters.append(textParameter)
-        labelParameters.append([f'Text line {index + 1}', textParameter.name])
+        labelParameters.append([label, textParameter.name])
 
     (iconPath, isScrew) = labelSymbol(state)
     labelInput = cullenectLabelGenerator.CullenectLabelInput()
@@ -269,16 +270,48 @@ def _buildLabel(
         group.name = name
     return bodies
 
-def insertPocket(des: adsk.fusion.Design, body: adsk.fusion.BRepBody) -> adsk.fusion.JointOrigin | None:
-    """The pocket joint origin the insert the body is of is jointed into, as seen from the root, none when it isn't:
-    the other side of a joint on its Insert joint origin (round 18, p150)"""
+def insertComponent(des: adsk.fusion.Design, body: adsk.fusion.BRepBody) -> adsk.fusion.Component:
+    """The component of the insert a body is of: its own, or for a letter or symbol in the insert's Text component the
+    one above it. Text and symbol are tagged too, a right click on the letters starts the rebuild from them (review)"""
     component = rebuildUtils.nativeBody(body).parentComponent
+    if component.name.startswith(assembly.TEXT_COMPONENT_NAME):
+        occurrences = des.rootComponent.allOccurrencesByComponent(component)
+        parent = occurrences.item(0).assemblyContext if occurrences.count > 0 else None
+        if parent is not None:
+            return parent.component
+    return component
+
+def insertPocket(des: adsk.fusion.Design, body: adsk.fusion.BRepBody) -> adsk.fusion.JointOrigin | None:
+    """The pocket joint origin the insert the body is of was jointed into by the label command, as seen from the root,
+    none when it wasn't: the other side of its joint "... in pocket" on the Insert joint origin, when that is a pocket
+    (round 18, p150). A joint of the user's own isn't the command's, it stays a later feature (review)"""
+    component = insertComponent(des, body)
     for joint in des.rootComponent.allJoints:
+        if not joint.name.endswith(' in pocket'):
+            continue
         sides = [adsk.fusion.JointOrigin.cast(joint.geometryOrOriginOne), adsk.fusion.JointOrigin.cast(joint.geometryOrOriginTwo)]
         for (side, other) in (sides, sides[::-1]):
-            if side is not None and other is not None and side.name == INSERT_JOINT_ORIGIN and (side.nativeObject or side).parentComponent == component:
+            if side is not None and other is not None and side.name == INSERT_JOINT_ORIGIN                     and (side.nativeObject or side).parentComponent == component and pocketSizeMm(other) is not None:
                 return other
     return None
+
+def _insertBody(target: rebuildUtils.RebuildTarget) -> adsk.fusion.BRepBody:
+    """The insert itself among the tagged bodies of its group, not a letter or the symbol: the order the design finds
+    them in isn't given (review). The largest when none is outside a Text component"""
+    own = [body for body in target.bodies if not body.parentComponent.name.startswith(assembly.TEXT_COMPONENT_NAME)]
+    def area(body: adsk.fusion.BRepBody) -> float:
+        box = body.boundingBox
+        return (box.maxPoint.x - box.minPoint.x) * (box.maxPoint.y - box.minPoint.y)
+    return max(own or target.bodies, key=area)
+
+def _isAfter(target: rebuildUtils.RebuildTarget, pocket: adsk.fusion.JointOrigin | None) -> bool:
+    """Whether the pocket's bin comes after the insert in the timeline: the rebuild builds right after the old group,
+    where that pocket isn't there yet (review)"""
+    occurrence = pocket.assemblyContext if pocket is not None else None
+    if occurrence is None:
+        return False
+    item = (occurrence.nativeObject or occurrence).timelineObject
+    return item is not None and any(later == item for later in target.laterItems)
 
 def rebuildLabel(
     des: adsk.fusion.Design,
@@ -300,9 +333,17 @@ def rebuildLabel(
         raise ValueError(problem)
     # inserts aren't moved into place but drawn there, no move of this name: the placement is (0, 0)
     target = rebuildUtils.findTarget(des, body, tagUtils.TAG_LABEL, LABEL_PLACEMENT_FEATURE)
-    old = target.bodies[0]
-    box = old.boundingBox
-    corner = labelConfig.rebuildCorner((box.minPoint.x, box.minPoint.y, box.maxPoint.x, box.maxPoint.y))
+    if _isAfter(target, pocket):
+        raise ValueError('The bin of this pocket comes after the insert in the timeline, the insert can't be rebuilt into it in place')
+    old = _insertBody(target)
+    # read where it is built, right after its group: a later move of the body would be taken twice, once in the corner
+    # and once when the move gets the new body (review)
+    rebuildUtils.rollAfterGroup(target)
+    try:
+        box = old.boundingBox
+        corner = labelConfig.rebuildCorner((box.minPoint.x, box.minPoint.y, box.maxPoint.x, box.maxPoint.y))
+    finally:
+        des.timeline.moveToEnd()
     prefix = rebuildUtils.bodyId(old, LABEL_PARAMETER_BASE_NAME)
     if not isPreview:
         newConfig = configJson.stateToJson(configJson.GENERATOR_LABEL, state)

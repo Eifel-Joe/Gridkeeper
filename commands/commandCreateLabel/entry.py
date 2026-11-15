@@ -1,5 +1,4 @@
 import adsk.core, adsk.fusion, traceback
-import dataclasses
 import html
 import os
 import time
@@ -220,6 +219,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     global pendingRebuildBody
     global pendingRebuildPocket
     rebuildBodyToken = pendingRebuildBody.entityToken if pendingRebuildBody is not None else None
+    rebuildName = pendingRebuildBody.name if pendingRebuildBody is not None else None
     rebuildPocket = pendingRebuildPocket
     pendingRebuildBody = None
     pendingRebuildPocket = None
@@ -230,6 +230,9 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     infoGroup.isExpanded = uiState.getState(INFO_GROUP)
     uiState.registerCommandInput(infoGroup)
     info = infoText()
+    if rebuildName is not None:
+        # as the bin and baseplate dialogs say it (review round 18)
+        info = f'<b>Rebuilding {html.escape(rebuildName)}</b> in place, features after it in the timeline are kept.<br>' + info
     infoGroup.children.addTextBoxCommandInput("info_text", "Info", info, info.count('<br>') + 3, True)
 
     sizeGroup = inputs.addGroupCommandInput(SIZE_GROUP, 'Size')
@@ -608,10 +611,15 @@ def applyInputsState(state: InputState):
 
 def configChoices() -> dict[str, configJson.Choice]:
     """The options of the dropdowns a config can't set to anything else, with the dialog's first defaults"""
-    return {
-        'textStyle': configJson.Choice(textStyles.STYLES, textStyles.DEFAULT_INSERT_STYLE),
-        'surface': configJson.Choice(cullenectLabelGenerator.SURFACES, cullenectLabelGenerator.SURFACE_EMBOSSED),
-    }
+    options = screwOptions()
+    hardwareKeys = [os.path.splitext(os.path.basename(path))[0] for (_, path) in cullenectCatalog.listHardwareIcons(ICONS_FOLDER)]
+    defaults = configJson.stateToJson(configJson.GENERATOR_LABEL, DEFAULT_STATE)
+    # a screw block or hardware this install has no svg for is said and replaced, not reset without a word (review)
+    choices = {field: configJson.Choice(options[field], defaults[field] if defaults[field] in options[field] else options[field][0]) for field in SCREW_DROPDOWNS.values()}
+    choices['hardware'] = configJson.Choice([NO_HARDWARE] + hardwareKeys, NO_HARDWARE)
+    choices['textStyle'] = configJson.Choice(textStyles.STYLES, textStyles.DEFAULT_INSERT_STYLE)
+    choices['surface'] = configJson.Choice(cullenectLabelGenerator.SURFACES, cullenectLabelGenerator.SURFACE_EMBOSSED)
+    return choices
 
 def readConfig(text: str, source: str) -> InputState | None:
     """The state of a config, none when it can't be read, see configButtons.readConfig"""
@@ -626,8 +634,14 @@ def configFileName(settings: dict) -> str:
 def startWithConfig(settings: dict):
     """Opens the dialog with a config by field name, see configJson.stateToJson, settings it doesn't have stay"""
     global pendingConfig
+    global pendingRebuildBody
+    global pendingRebuildPocket
     pendingConfig = settings
-    ui.commandDefinitions.itemById(CMD_ID).execute()
+    if not ui.commandDefinitions.itemById(CMD_ID).execute():
+        # no dialog took them, the next one opened by hand mustn't rebuild or clone (review)
+        pendingConfig = None
+        pendingRebuildBody = None
+        pendingRebuildPocket = None
 
 def startRebuild(body: adsk.fusion.BRepBody, tag: dict):
     """
