@@ -18,9 +18,7 @@ Cullenect-Tasche setzen“, p100 „Label-Befehl legt den Einleger am Nullpunkt 
 
 ## Offen
 
-- **Dialoge von Hand öffnen:** Nach einem Skript-Reload öffnen sich die Befehle nicht mehr, auch nicht per
-  `execute()` (14.11. und 15.11. belegt). Nutzer muss Fusion neu starten und Bin, Baseplate und Label einmal öffnen. Im
-  Label-Dialog sollte die Gruppe „Pocket“ zu sehen sein.
+- Dialoge: Nutzer hat Fusion am 15.11. neu gestartet und gemeldet: „Ja, alle drei öffnen“ (Bin, Baseplate, Label).
 - **Nicht per API prüfbar:** Wandert ein eingesetzter Einleger mit, wenn Nutzer die Bin von Hand verschiebt? Das gehört in
   den Handtest.
 - Neuer Punkt in der Liste: p170 „Joint Origins an Bin-Füßen und Grundplatten-Aufnahmen folgen geänderten Rastermaßen
