@@ -156,3 +156,52 @@ def test_nothing_uses_the_removed_shared_parameters():
                 if fileName.endswith(".py"):
                     with open(os.path.join(root, fileName), encoding="utf-8") as file:
                         assert "sharedParameters" not in file.read(), os.path.join(root, fileName)
+
+
+# --- review round 12: a dialog rebuild of a Cullenect bin works the sockets out anew when the grid changes ---
+
+def _load_cullenect():
+    folder = os.path.join(PROJECT_ROOT, "lib", "gridfinityUtils")
+    package = "cullenectMergePackage"
+    if package not in sys.modules:
+        packageSpec = importlib.util.spec_from_loader(package, loader=None, is_package=True)
+        packageModule = importlib.util.module_from_spec(packageSpec)
+        packageModule.__path__ = [folder]
+        sys.modules[package] = packageModule
+    spec = importlib.util.spec_from_file_location(package + ".cullenect", os.path.join(folder, "cullenect.py"))
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+cullenect = _load_cullenect()
+
+
+@pytest.mark.parametrize("changed", [["baseWidth"], ["baseLength"], ["binHeight", "baseWidth"]])
+def test_grid_change_of_a_cullenect_tab_is_rebuilt(changed):
+    # the socket units and whether a compartment is deep enough for a socket are worked out when building
+    assert cullenect.parameterEditKeepsSockets(True, True, changed) is False
+
+
+@pytest.mark.parametrize("isCullenect, hasTab, changed", [
+    (True, True, ["binHeight"]),
+    (True, True, ["heightUnit"]),
+    (False, True, ["baseWidth"]),
+    (True, False, ["baseLength"]),
+])
+def test_other_parameter_edits_keep_the_sockets(isCullenect, hasTab, changed):
+    assert cullenect.parameterEditKeepsSockets(isCullenect, hasTab, changed) is True
+
+
+# --- review round 12: a bin without a label to color keeps the dialog's color choice ---
+
+def test_a_bin_with_a_label_brings_its_color_back():
+    assert labelColors.restoresColor("#D02020", True, False) is True
+    # a label without a color clears the dialog's
+    assert labelColors.restoresColor("", True, False) is True
+
+
+@pytest.mark.parametrize("hasLabel, isCullenect", [(False, False), (True, True), (False, True)])
+def test_a_bin_without_a_label_to_color_leaves_the_choice(hasLabel, isCullenect):
+    assert labelColors.restoresColor("", hasLabel, isCullenect) is False

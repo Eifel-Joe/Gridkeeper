@@ -110,3 +110,17 @@ def labelInputsEnabled(labelStyle: str) -> dict[str, bool]:
         'topAngle': not isCullenect,
         'socketOffset': isCullenect,
     }
+
+
+# config fields of the bin grid a socket is fitted to when building, see binBuilder.parameterEdits
+_SOCKET_GRID_FIELDS = ('baseWidth', 'baseLength')
+
+def parameterEditKeepsSockets(isCullenect: bool, hasTab: bool, changed: list[str]) -> bool:
+    """
+    Whether setting the bin's parameters builds the same sockets a rebuild would. The number of socket units and
+    whether a compartment is deep enough for a socket are worked out from the base units when building, a change of
+    them is built again (review of round 12). Height changes move the socket along its expressions
+    """
+    if not (isCullenect and hasTab):
+        return True
+    return not any(name in _SOCKET_GRID_FIELDS for name in changed)
