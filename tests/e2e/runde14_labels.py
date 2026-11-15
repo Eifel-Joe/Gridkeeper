@@ -1,7 +1,7 @@
 # End-to-end check of round 14 (docs/specs/2026-11-15-runde-14-design.md, "Ende-zu-Ende-Kriterium"), run in Fusion with
 # the add-in loaded from this checkout. Each case is built, its label text made three letters longer through its
 # parameter, and checked. The cases run in groups, each under a minute for the Fusion MCP's time limit: set GROUP to
-# 'a' to 'e' before running (all of them without). Each group builds into a document of its own, closes it when
+# 'a' to 'g' before running (all of them without). Each group builds into a document of its own, closes it when
 # everything passes and prints OK or FAIL per point, ALL OK or N FAILED last.
 import adsk.core, adsk.fusion, sys, os, dataclasses
 
@@ -230,7 +230,47 @@ def groupE(run):
         run.placed('Large icon', component, iconMoves=True)
 
 
-GROUPS = {'a': groupA, 'b': groupB, 'c': groupC, 'd': groupD, 'e': groupE}
+def tiltedTab(run):
+    """Tab settings of the steep tilted case, its angle as the case loads it"""
+    (case, _) = run.load('bin_3x2x6_tab_steep_tilted')
+    return {'tabTopAngle': case.state.tabTopAngle, 'tabWidth': case.state.tabWidth, 'tabOverhangAngle': case.state.tabOverhangAngle}
+
+
+def placedColored(run, name, icon, style):
+    """A second bin goes beside the first, moved there after building: the colored letters a longer text adds go
+    there too, on its tilted tab, cut into it when engraved"""
+    run.bin('bin_2x1x3_label_text_engraved', labelColor='', labelIcon=NO_ICON)
+    (body, component, occurrence) = run.bin('bin_2x1x3_label_text_engraved_colored', labelStyle=style, labelIcon=icon, **tiltedTab(run))
+    texts = [child for child in occurrence.childOccurrences if child.component.name.startswith('Text')]
+    run.check(f'{name}: a Text component', len(texts) == 1)
+    if not texts:
+        return
+    text = texts[0]
+    before = text.component.bRepBodies.count
+    volume = body.volume
+    run.lengthen(run.labelParameters(component))
+    letters = list(text.component.bRepBodies)
+    run.check(f'{name}: new letters in Text', len(letters) > before, f'{before} -> {len(letters)}')
+    run.check(f'{name}: only the bin body in the bin', component.bRepBodies.count == 1)
+    if style == 'Engraved':
+        run.check(f'{name}: new letters cut into the bin', (body.volume - volume) * 1000 < -0.01, f'{round((body.volume - volume) * 1000, 3)} mm3')
+    lo = [min(getattr(b.boundingBox.minPoint, a) for b in letters) for a in 'xyz']
+    hi = [max(getattr(b.boundingBox.maxPoint, a) for b in letters) for a in 'xyz']
+    run.onTab(name, body, (lo, hi), mayRunOver=True)
+    color = run.labelColors.appearanceName('#2060D0')
+    run.check(f'{name}: all of it shows the color', text.appearance is not None and text.appearance.name == color)
+    run.placed(name, component, iconMoves=icon != NO_ICON and icon != 'Hex nut')
+
+
+def groupF(run):
+    placedColored(run, 'Second bin, tilted, small icon, engraved', 'Hex nut', 'Engraved')
+
+
+def groupG(run):
+    placedColored(run, 'Second bin, tilted, large icon, embossed', 'Cullenect tnut 2', 'Embossed')
+
+
+GROUPS = {'a': groupA, 'b': groupB, 'c': groupC, 'd': groupD, 'e': groupE, 'f': groupF, 'g': groupG}
 
 
 def run(_context: str):
