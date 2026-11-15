@@ -122,3 +122,22 @@ def test_small_icons_are_held_by_dims_large_ones_moved():
     assert layout.isIconHeldByDims(40)
     assert not layout.isIconHeldByDims(41)
     assert not layout.isIconHeldByDims(263)
+
+
+# p60: the label and its Cullenect socket span the overlap of the tab and its compartment, as an expression, so a
+# changed base width that turns which of the two ends first is followed
+
+def test_span_is_the_overlap_of_tab_and_compartment():
+    (low, high) = layout.labelSpan(Dim.length(1.0), Dim.length(8.0), Dim.length(2.0), Dim.length(4.0))
+    assert (low.value, high.value) == (2.0, 6.0)
+    (low, high) = layout.labelSpan(Dim.length(3.0), Dim.length(2.0), Dim.length(2.0), Dim.length(4.0))
+    assert (low.value, high.value) == (3.0, 5.0)
+
+
+def test_span_follows_both_as_expressions():
+    tabX = Dim(1.0, "gfBin1_baseWidth * 0.25", DimKind.EXPRESSION, True)
+    compartmentX = Dim(2.0, "gfBin1_baseWidth / 2", DimKind.EXPRESSION, True)
+    (low, high) = layout.labelSpan(tabX, Dim.length(8.0), compartmentX, Dim.length(4.0))
+    assert low.isExpression and high.isExpression
+    assert low.expression.startswith("max(") and "gfBin1_baseWidth * 0.25" in low.expression and "gfBin1_baseWidth / 2" in low.expression
+    assert high.expression.startswith("min(")
