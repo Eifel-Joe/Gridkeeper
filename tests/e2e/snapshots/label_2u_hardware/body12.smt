@@ -1,38 +1,38 @@
 23200 0 2 2           
-16 Autodesk Neutron 20 ASM 232.5.0.65535 NT 24 Sun Nov 15 13:39:00 2026 
+16 Autodesk Neutron 20 ASM 232.5.0.65535 NT 24 Mon Nov 16 00:01:54 2026 
 10 9.999999999999999547e-07 1.000000000000000036e-10 
 asmheader $-1 -1 @13 232.5.0.65535 #
 body $2 -1 $-1 $3 $-1 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $4 $-1 $1 @20 Timestamp_attrib_def 1 1794746316258295 #
+ATTRIB_CUSTOM-attrib $-1 -1 $4 $-1 $1 @20 Timestamp_attrib_def 1 1794783712991084 #
 lump $-1 -1 $-1 $-1 $5 $1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $2 $1 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 322 218 0 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $2 $1 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 327 218 0 0 #
 shell $-1 -1 $-1 $-1 $-1 $6 $-1 $3 #
 face $7 -1 $-1 $8 $9 $5 $-1 $10 forward single #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $6 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 111 0 1 322 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $6 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 111 0 1 327 0 #
 face $11 -1 $-1 $12 $13 $5 $-1 $14 forward single #
 loop $-1 -1 $-1 $-1 $15 $6 #
 plane-surface $-1 -1 $-1 0.1816507488489150779 0.400034099817276001 0.1199999999999999956 1 0 0 0 -1 0 forward_v I I I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $8 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 110 0 1 322 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $8 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 110 0 1 327 0 #
 face $16 -1 $-1 $17 $18 $5 $-1 $19 forward single #
 loop $-1 -1 $-1 $-1 $20 $8 #
 plane-surface $-1 -1 $-1 0.3654843032360076682 0.125 0.1199999999999999956 -0.8313835242825419192 -0.5556990512422530504 -0 -0.5556990512422530504 0.8313835242825419192 0 forward_v I I I I #
 coedge $21 -1 $-1 $22 $23 $24 $25 forward $9 0 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $12 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 109 0 1 322 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $12 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 109 0 1 327 0 #
 face $26 -1 $-1 $27 $28 $5 $-1 $29 forward single #
 loop $-1 -1 $-1 $-1 $30 $12 #
 plane-surface $-1 -1 $-1 0.4129945397377013938 0.125 0.1199999999999999956 -0 -1 -0 -1 0 0 forward_v I I I I #
 coedge $31 -1 $-1 $32 $33 $34 $35 forward $13 0 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $15 @17 sketch_attrib_def 1 1 3 @16 4888 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $15 @17 sketch_attrib_def 1 1 3 @17 4888 1083 1 0 1 1 #
 coedge $-1 -1 $-1 $36 $15 $37 $38 forward $9 0 $-1 #
 coedge $-1 -1 $-1 $15 $36 $32 $39 reversed $9 0 $-1 #
 coedge $40 -1 $-1 $34 $41 $15 $25 reversed $42 0 $-1 #
 edge $-1 -1 $-1 $43 0 $44 0.275034099817276001 $24 $45 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $17 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 108 0 1 322 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $17 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 108 0 1 327 0 #
 face $46 -1 $-1 $47 $48 $5 $-1 $49 forward single #
 loop $-1 -1 $-1 $-1 $50 $17 #
 plane-surface $-1 -1 $-1 0.4129945397377013938 0.4749999940395355225 0.1199999999999999956 1 0 0 0 -1 0 forward_v I I I I #
 coedge $51 -1 $-1 $52 $53 $54 $55 forward $18 0 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $20 @17 sketch_attrib_def 1 1 3 @16 4885 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $20 @17 sketch_attrib_def 1 1 3 @17 4885 1083 1 0 1 1 #
 coedge $-1 -1 $-1 $56 $20 $23 $39 forward $13 0 $-1 #
 coedge $-1 -1 $-1 $20 $56 $52 $57 reversed $13 0 $-1 #
 coedge $58 -1 $-1 $54 $24 $20 $35 reversed $42 0 $-1 #
@@ -41,25 +41,25 @@ coedge $-1 -1 $-1 $23 $22 $61 $62 reversed $9 0 $-1 #
 coedge $-1 -1 $-1 $63 $64 $22 $38 reversed $65 0 $-1 #
 edge $-1 -1 $-1 $44 0 $66 0.04000000000000000777 $37 $67 forward @7 unknown #
 edge $-1 -1 $-1 $43 0 $68 0.04000000000000000777 $32 $69 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $24 @17 sketch_attrib_def 1 1 3 @16 4888 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $24 @17 sketch_attrib_def 1 1 3 @17 4888 1083 1 0 1 1 #
 coedge $70 -1 $-1 $24 $71 $63 $72 reversed $42 0 $-1 #
 loop $-1 -1 $-1 $-1 $41 $73 #
 vertex $-1 -1 $-1 $25 0 $74 #
 vertex $-1 -1 $-1 $72 0 $75 #
 straight-curve $-1 -1 $-1 0.1816507488489150779 0.400034099817276001 0.1199999999999999956 0 -1 0 F 0 F 0.275034099817276001 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $27 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 107 0 1 322 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $27 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 107 0 1 327 0 #
 face $76 -1 $-1 $77 $78 $5 $-1 $79 forward single #
 loop $-1 -1 $-1 $-1 $80 $27 #
 plane-surface $-1 -1 $-1 0.3685880064964294212 0.4749999940395355225 0.1199999999999999956 -0 1 0 1 0 0 forward_v I I I I #
 coedge $81 -1 $-1 $82 $83 $84 $85 forward $28 0 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $30 @17 sketch_attrib_def 1 1 3 @16 4882 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $30 @17 sketch_attrib_def 1 1 3 @17 4882 1083 1 0 1 1 #
 coedge $-1 -1 $-1 $86 $30 $33 $57 forward $18 0 $-1 #
 coedge $-1 -1 $-1 $30 $86 $82 $87 reversed $18 0 $-1 #
 coedge $88 -1 $-1 $84 $34 $30 $55 reversed $42 0 $-1 #
 edge $-1 -1 $-1 $89 0 $59 0.04751023650169372559 $54 $90 forward @7 unknown #
 coedge $-1 -1 $-1 $33 $32 $91 $92 reversed $13 0 $-1 #
 edge $-1 -1 $-1 $59 0 $93 0.04000000000000000777 $52 $94 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $34 @17 sketch_attrib_def 1 1 3 @16 4885 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $34 @17 sketch_attrib_def 1 1 3 @17 4885 1083 1 0 1 1 #
 vertex $-1 -1 $-1 $35 0 $95 #
 straight-curve $-1 -1 $-1 0.3654843032360076682 0.125 0.1199999999999999956 -0.5556990512422530504 0.8313835242825419192 0 F 0 F 0.3308149509633617757 #
 coedge $-1 -1 $-1 $96 $91 $36 $62 forward $97 0 $-1 #
@@ -71,25 +71,25 @@ vertex $-1 -1 $-1 $38 1 $103 #
 straight-curve $-1 -1 $-1 0.1816507488489150779 0.125 0.1199999999999999956 0 0 -1 I I #
 vertex $-1 -1 $-1 $39 1 $104 #
 straight-curve $-1 -1 $-1 0.1816507488489150501 0.400034099817276001 0.1199999999999999956 0 0 -1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $41 @17 sketch_attrib_def 1 1 3 @16 4891 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $41 @17 sketch_attrib_def 1 1 3 @17 4891 1083 1 0 1 1 #
 coedge $105 -1 $-1 $41 $106 $107 $108 reversed $42 0 $-1 #
 edge $-1 -1 $-1 $44 0 $109 0.0444065481424331665 $41 $110 forward @7 unknown #
 face $111 -1 $-1 $112 $42 $5 $-1 $113 forward single #
 point $-1 -1 $-1 0.1816507488489150501 0.400034099817276001 0.1199999999999999956 #
 point $-1 -1 $-1 0.1816507488489150779 0.125 0.1199999999999999956 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $47 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 106 0 1 322 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $47 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 106 0 1 327 0 #
 face $114 -1 $-1 $115 $116 $5 $-1 $117 forward single #
 loop $-1 -1 $-1 $-1 $118 $47 #
 plane-surface $-1 -1 $-1 0.3685880064964294212 0.2002046406269073486 0.1199999999999999956 -1 0 0 0 1 0 forward_v I I I I #
 coedge $119 -1 $-1 $120 $121 $122 $123 forward $48 0 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $50 @17 sketch_attrib_def 1 1 3 @16 4879 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $50 @17 sketch_attrib_def 1 1 3 @17 4879 1083 1 0 1 1 #
 coedge $-1 -1 $-1 $124 $50 $53 $87 forward $28 0 $-1 #
 coedge $-1 -1 $-1 $50 $124 $120 $125 reversed $28 0 $-1 #
 coedge $126 -1 $-1 $122 $54 $50 $85 reversed $42 0 $-1 #
 edge $-1 -1 $-1 $127 0 $89 0.3499999940395355225 $84 $128 forward @7 unknown #
 coedge $-1 -1 $-1 $53 $52 $129 $130 reversed $18 0 $-1 #
 edge $-1 -1 $-1 $89 0 $131 0.04000000000000000777 $82 $132 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $54 @17 sketch_attrib_def 1 1 3 @16 4882 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $54 @17 sketch_attrib_def 1 1 3 @17 4882 1083 1 0 1 1 #
 vertex $-1 -1 $-1 $55 0 $133 #
 straight-curve $-1 -1 $-1 0.4129945397377013938 0.125 0.1199999999999999956 -1 0 0 F 0 F 0.04751023650169372559 #
 coedge $-1 -1 $-1 $61 $129 $56 $92 forward $97 0 $-1 #
@@ -100,34 +100,34 @@ point $-1 -1 $-1 0.3654843032360076682 0.125 0.1199999999999999956 #
 coedge $-1 -1 $-1 $136 $61 $64 $101 forward $97 0 $-1 #
 loop $-1 -1 $-1 $-1 $96 $112 #
 straight-curve $-1 -1 $-1 0.1816507488489150779 0.400034099817276001 0.07999999999999998779 0 -1 0 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $63 @17 sketch_attrib_def 1 1 3 @16 4891 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $63 @17 sketch_attrib_def 1 1 3 @17 4891 1083 1 0 1 1 #
 coedge $-1 -1 $-1 $64 $63 $137 $138 forward $65 0 $-1 #
 edge $-1 -1 $-1 $66 0 $139 0.0444065481424331665 $64 $140 forward @7 unknown #
 face $141 -1 $-1 $73 $65 $5 $-1 $142 forward single #
 point $-1 -1 $-1 0.1816507488489150779 0.125 0.07999999999999998779 #
 point $-1 -1 $-1 0.1816507488489150501 0.400034099817276001 0.07999999999999998779 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $71 @17 sketch_attrib_def 1 1 3 @16 4864 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $71 @17 sketch_attrib_def 1 1 3 @17 4864 1083 1 0 1 1 #
 coedge $143 -1 $-1 $71 $144 $145 $146 reversed $42 0 $-1 #
 coedge $147 -1 $-1 $148 $137 $71 $108 forward $149 0 $-1 #
 edge $-1 -1 $-1 $109 0 $150 0.3499999940395355225 $71 $151 forward @7 unknown #
 vertex $-1 -1 $-1 $72 1 $152 #
 straight-curve $-1 -1 $-1 0.1816507488489150779 0.125 0.1199999999999999956 -1 0 0 F 0 F 0.0444065481424331665 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $73 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 1 322 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $73 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 1 0 1 327 0 #
 face $153 -1 $-1 $-1 $97 $5 $-1 $154 forward single #
 plane-surface $-1 -1 $-1 0.2751193702220916526 0.2999999970197677612 0.1199999999999999956 0 0 1 1 0 0 forward_v I I I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $77 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 105 0 1 322 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $77 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 105 0 1 327 0 #
 face $155 -1 $-1 $156 $157 $5 $-1 $158 forward single #
 loop $-1 -1 $-1 $-1 $159 $77 #
 plane-surface $-1 -1 $-1 0.1847544297575950401 0.4749999940395355225 0.1199999999999999956 0.8311604328879129699 0.5560326742211983975 0 0.5560326742211983975 -0.8311604328879129699 0 forward_v I I I I #
 coedge $160 -1 $-1 $161 $162 $163 $164 forward $78 0 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $80 @17 sketch_attrib_def 1 1 3 @16 4876 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $80 @17 sketch_attrib_def 1 1 3 @17 4876 1083 1 0 1 1 #
 coedge $-1 -1 $-1 $165 $80 $83 $125 forward $48 0 $-1 #
 coedge $-1 -1 $-1 $80 $165 $161 $166 reversed $48 0 $-1 #
 coedge $167 -1 $-1 $163 $84 $80 $123 reversed $42 0 $-1 #
 edge $-1 -1 $-1 $168 0 $127 0.04440653324127197266 $122 $169 forward @7 unknown #
 coedge $-1 -1 $-1 $83 $82 $170 $171 reversed $28 0 $-1 #
 edge $-1 -1 $-1 $127 0 $172 0.04000000000000000777 $120 $173 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $84 @17 sketch_attrib_def 1 1 3 @16 4879 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $84 @17 sketch_attrib_def 1 1 3 @17 4879 1083 1 0 1 1 #
 vertex $-1 -1 $-1 $85 0 $174 #
 straight-curve $-1 -1 $-1 0.4129945397377013938 0.4749999940395355225 0.1199999999999999956 0 -1 0 F 0 F 0.3499999940395355225 #
 coedge $-1 -1 $-1 $91 $170 $86 $130 forward $97 0 $-1 #
@@ -142,33 +142,33 @@ coedge $-1 -1 $-1 $107 $178 $100 $138 reversed $149 0 $-1 #
 edge $-1 -1 $-1 $109 0 $139 0.04000000000000000777 $100 $180 forward @7 unknown #
 vertex $-1 -1 $-1 $138 1 $181 #
 straight-curve $-1 -1 $-1 0.1816507488489150779 0.125 0.07999999999999998779 -1 0 0 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $102 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 102 0 1 322 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $102 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 102 0 1 327 0 #
 plane-surface $-1 -1 $-1 0.1816507488489150779 0.125 0.1199999999999999956 -0 -1 -0 -1 0 0 forward_v I I I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $106 @17 sketch_attrib_def 1 1 3 @16 4867 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $106 @17 sketch_attrib_def 1 1 3 @17 4867 1083 1 0 1 1 #
 coedge $182 -1 $-1 $106 $163 $159 $183 reversed $42 0 $-1 #
 coedge $184 -1 $-1 $185 $186 $106 $146 forward $157 0 $-1 #
 edge $-1 -1 $-1 $150 0 $187 0.04751022905111312866 $106 $188 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $107 @17 sketch_attrib_def 1 1 3 @16 4864 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $107 @17 sketch_attrib_def 1 1 3 @17 4864 1083 1 0 1 1 #
 coedge $-1 -1 $-1 $178 $107 $186 $189 forward $149 0 $-1 #
 loop $-1 -1 $-1 $-1 $107 $156 #
 vertex $-1 -1 $-1 $146 0 $190 #
 straight-curve $-1 -1 $-1 0.1372442007064819114 0.125 0.1199999999999999956 0 1 0 F 0 F 0.3499999940395355225 #
 point $-1 -1 $-1 0.1372442007064819114 0.125 0.1199999999999999956 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $112 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 1 322 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $112 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 2 0 1 327 0 #
 plane-surface $-1 -1 $-1 0.2751193702220916526 0.2999999970197677612 0.07999999999999998779 0 0 -1 -1 0 0 forward_v I I I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $115 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 104 0 1 322 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $115 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 104 0 1 327 0 #
 face $191 -1 $-1 $102 $149 $5 $-1 $192 forward single #
 loop $-1 -1 $-1 $-1 $145 $115 #
 plane-surface $-1 -1 $-1 0.1372442007064819114 0.4749999940395355225 0.1199999999999999956 -0 1 0 1 0 0 forward_v I I I I #
 coedge $193 -1 $-1 $194 $195 $144 $183 forward $116 0 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $118 @17 sketch_attrib_def 1 1 3 @16 4873 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $118 @17 sketch_attrib_def 1 1 3 @17 4873 1083 1 0 1 1 #
 coedge $-1 -1 $-1 $196 $118 $121 $166 forward $78 0 $-1 #
 coedge $-1 -1 $-1 $118 $196 $194 $197 reversed $78 0 $-1 #
 coedge $198 -1 $-1 $144 $122 $118 $164 reversed $42 0 $-1 #
 edge $-1 -1 $-1 $199 0 $168 0.2747953534126281738 $163 $200 forward @7 unknown #
 coedge $-1 -1 $-1 $121 $120 $201 $202 reversed $48 0 $-1 #
 edge $-1 -1 $-1 $168 0 $203 0.04000000000000000777 $161 $204 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $122 @17 sketch_attrib_def 1 1 3 @16 4876 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $122 @17 sketch_attrib_def 1 1 3 @17 4876 1083 1 0 1 1 #
 vertex $-1 -1 $-1 $123 0 $205 #
 straight-curve $-1 -1 $-1 0.3685880064964294212 0.4749999940395355225 0.1199999999999999956 1 0 0 F 0 F 0.04440653324127197266 #
 coedge $-1 -1 $-1 $129 $201 $124 $171 forward $97 0 $-1 #
@@ -183,23 +183,23 @@ coedge $-1 -1 $-1 $137 $148 $136 $179 reversed $149 0 $-1 #
 edge $-1 -1 $-1 $139 0 $211 0.3499999940395355225 $178 $212 forward @7 unknown #
 straight-curve $-1 -1 $-1 0.1372442007064819114 0.125 0.1199999999999999956 0 0 -1 I I #
 point $-1 -1 $-1 0.1372442007064819114 0.125 0.07999999999999998779 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $144 @17 sketch_attrib_def 1 1 3 @16 4870 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $144 @17 sketch_attrib_def 1 1 3 @17 4870 1083 1 0 1 1 #
 edge $-1 -1 $-1 $187 0 $199 0.3306165001837689799 $144 $213 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $145 @17 sketch_attrib_def 1 1 3 @16 4867 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $145 @17 sketch_attrib_def 1 1 3 @17 4867 1083 1 0 1 1 #
 coedge $-1 -1 $-1 $209 $145 $195 $214 forward $157 0 $-1 #
 coedge $-1 -1 $-1 $145 $209 $148 $189 reversed $157 0 $-1 #
 vertex $-1 -1 $-1 $183 0 $215 #
 straight-curve $-1 -1 $-1 0.1372442007064819114 0.4749999940395355225 0.1199999999999999956 1 0 0 F 0 F 0.04751022905111312866 #
 edge $-1 -1 $-1 $150 0 $211 0.04000000000000000777 $148 $216 forward @7 unknown #
 point $-1 -1 $-1 0.1372442007064819114 0.4749999940395355225 0.1199999999999999956 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $156 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 103 0 1 322 0 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $156 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 103 0 1 327 0 #
 plane-surface $-1 -1 $-1 0.1372442007064819114 0.125 0.1199999999999999956 -1 0 0 0 1 0 forward_v I I I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $159 @17 sketch_attrib_def 1 1 3 @16 4870 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $159 @17 sketch_attrib_def 1 1 3 @17 4870 1083 1 0 1 1 #
 coedge $-1 -1 $-1 $217 $159 $162 $197 forward $116 0 $-1 #
 coedge $-1 -1 $-1 $159 $217 $185 $214 reversed $116 0 $-1 #
 coedge $-1 -1 $-1 $162 $161 $218 $219 reversed $78 0 $-1 #
 edge $-1 -1 $-1 $199 0 $220 0.04000000000000000777 $194 $221 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $163 @17 sketch_attrib_def 1 1 3 @16 4873 949 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $163 @17 sketch_attrib_def 1 1 3 @17 4873 1083 1 0 1 1 #
 vertex $-1 -1 $-1 $164 0 $222 #
 straight-curve $-1 -1 $-1 0.3685880064964294212 0.2002046406269073486 0.1199999999999999956 0 1 0 F 0 F 0.2747953534126281738 #
 coedge $-1 -1 $-1 $170 $218 $165 $202 forward $97 0 $-1 #

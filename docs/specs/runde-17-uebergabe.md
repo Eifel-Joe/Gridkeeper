@@ -68,7 +68,23 @@ Lauf `r17_snap` (83 Fälle): rot waren nur diese fünf Einleger-Fälle, alle mit
 | `label_25mm_free` | p52: „M3“ in Bold ist ebenfalls eingepasst, eine Schraube steht rechts daneben | Text 1,44–9,36 mm = 0,95 · 8,32 mm Raum; nachher 7,32 mm Raum, Faktor 0,88; Volumen text 1 5,43 → 4,21 mm³ (0,88² = 0,77). Der Grundkörper weicht um 2,5 mm³ ab, weil „bündig“ den kleineren Text aus ihm herausschneidet |
 
 Die Fälle sind mit `r17_refresh` neu abgelegt. Die vorhandenen Vorschaubilder bleiben dabei erhalten. Dass die Bounding-
-Box der Grundkörper gleich bleibt, ist in `git diff` der `fingerprint.json` geprüft (siehe unten).
+Box der Grundkörper gleich bleibt, ist im `git diff` der `fingerprint.json` geprüft:
+- `label_1u_screw_text` (alle drei Varianten): 0..36 × 0..11 × 0..1,2 mm, gleich.
+- `label_25mm_free`: 0..24,9 × 0..11 × 0..1,2 mm, gleich.
+- `label_2u_hardware`: 0..78 × 0..11 × 0..1,2 mm, gleich.
+
+Vorschaubilder gab es für die fünf Fälle keine, und die Test-Palette war zu. Danach war `r17_snap_t` für alle fünf Fälle
+„pass“, der übrige Lauf (78 Fälle) bleibt grün aus `r17_snap`.
+
+## Belege, Abschluss
+
+- pytest: `779 passed`.
+- Ende-zu-Ende (Stand `r17_reload2`): a, b, c, d, e, f und g sind alle ALL OK.
+  - c: Abstand rechts, oben und unten je 0,400 mm bei der Schraube und 1,170 mm bei der Nylonmutter.
+  - d: Abstand 1,816 mm.
+  - f: Die Mutter wird über Maße gehalten, die Nylonmutter verschoben; beide bleiben an ihrer Stelle.
+  - g: Der Crimp-Ring bleibt an seiner Stelle.
+- Bauzeiten nachher: Nylonmutter 2,93 s (vorher 23,69 s), Crimp-Ring 3,04 s (vorher 33,39 s).
 
 ## Fragen an Jörg (Testtermin)
 
