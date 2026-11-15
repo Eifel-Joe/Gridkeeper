@@ -16,7 +16,7 @@ from . import cullenect, binLabelLayout
 from .cullenectSocketGenerator import createCullenectSocket, SocketPlacement
 from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput
 from .binBodyLipGenerator import createGridfinityBinBodyLip, createStackedFootCutters
-from .raisedDividers import DividerSegment, FilletCorner, filletCorners, isCornerChainEdge, chainPath, cornerPlaneAxes
+from .raisedDividers import DividerSegment, FilletCorner, filletCorners, isCornerChainEdge, chainRuns, cornerPlaneAxes
 from .dim import Dim, valueInput, applyTo
 from ... import config
 
@@ -546,48 +546,82 @@ def roundRaisedDividerCorners(
             )
             for edge in edges
         ]
-        order = chainPath(inPlane)
+        runs = chainRuns(inPlane)
         profile = sectionProfile(sketch, at)
-        if order is None or profile is None:
+        if runs is None or profile is None:
             toFillet.append((index, corner, at))
             continue
-        try:
-            path = targetComponent.features.createPath(commonUtils.objectCollectionFromList([edges[i] for i in order]), False)
-            sweepInput = targetComponent.features.sweepFeatures.createInput(profile, path, adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
-            sweepInput.orientation = adsk.fusion.SweepOrientationTypes.ParallelOrientationType
-            sweep = targetComponent.features.sweepFeatures.add(sweepInput)
-        except RuntimeError as error:
-            commonUtils.debugLog(f'{name}: sweep failed, {error}')
+        # A wall thicker than the lip leaves a level ledge under the lip, the chain falls in two runs (round 15, p101).
+        # Each is swept on its own with the corner's section at its lowest point, the one above the ledge moved over by
+        # the ledge and up to it, both by constant offsets: they follow the grid and height parameters like the first
+        (lowestOther, lowestZ) = min((point for i in runs[0] for point in inPlane[i]), key=lambda point: point[1])
+        bodies = []
+        runSweeps = []
+        for (runIndex, run) in enumerate(runs):
+            runProfile = profile
+            if runIndex > 0:
+                (runOther, runZ) = min((point for i in run for point in inPlane[i]), key=lambda point: point[1])
+                shift = Dim.length(runOther - lowestOther)
+                runAt = (cornerAt[0] + shift, cornerAt[1]) if otherAxis == 0 else (cornerAt[0], cornerAt[1] + shift)
+                runSketch = raisedCornerSectionsSketch([(corner, runAt)], bottomZ + Dim.length(runZ - lowestZ), Dim.length(cornerFilletRadius), targetComponent, name=f'{name} run {runIndex + 1}')
+                runProfile = sectionProfile(runSketch, (runAt[0].value, runAt[1].value))
+                if runProfile is None:
+                    break
+            try:
+                path = targetComponent.features.createPath(commonUtils.objectCollectionFromList([edges[i] for i in run]), False)
+                sweepInput = targetComponent.features.sweepFeatures.createInput(runProfile, path, adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
+                sweepInput.orientation = adsk.fusion.SweepOrientationTypes.ParallelOrientationType
+                sweep = targetComponent.features.sweepFeatures.add(sweepInput)
+            except RuntimeError as error:
+                commonUtils.debugLog(f'{name}: sweep of run {runIndex + 1} failed, {error}')
+                break
+            sweep.name = f'{name} sweep' if len(runs) == 1 else f'{name} sweep {runIndex + 1}'
+            runSweeps.append(sweep)
+            if sweep.bodies.count != 1:
+                # one section along one path is one body, anything else isn't the corner
+                commonUtils.debugLog(f'{name}: sweep of run {runIndex + 1} made {sweep.bodies.count} bodies')
+                sweep.deleteMe()
+                break
+            bodies.append(sweep.bodies.item(0))
+        if len(bodies) != len(runs):
+            # the runs swept so far go, the corner is filleted as a whole
+            for sweep in reversed(runSweeps):
+                if sweep.isValid:
+                    sweep.deleteMe()
             toFillet.append((index, corner, at))
             continue
-        sweep.name = f'{name} sweep'
-        if sweep.bodies.count != 1:
-            # one section along one path is one body, anything else isn't the corner
-            commonUtils.debugLog(f'{name}: sweep made {sweep.bodies.count} bodies')
-            sweep.deleteMe()
-            toFillet.append((index, corner, at))
-            continue
-        sweeps.append((index, corner, at, [sweep.bodies.item(i) for i in range(sweep.bodies.count)]))
+        sweeps.append((index, corner, at, bodies))
     if len(sweeps) > 0:
         # The corners stay sharp at worst, never the bin: a cut or join Fusion fails on leaves their corners to the
         # fillets. The cutters are kept until the last cut, see createRaisedDividers
         cutters = createStackedFootCutters(lipInput, targetComponent, name='Raised divider corners foot cutout')
         rounded: list[adsk.fusion.BRepBody] = []
-        for (position, (index, corner, at, bodies)) in enumerate(sweeps):
-            try:
-                cut = combineUtils.cutBody(
-                    bodies[0],
-                    commonUtils.objectCollectionFromList(cutters),
-                    targetComponent,
-                    isKeepToolBodies=position < len(sweeps) - 1,
-                    name=f'Raised divider corner {index + 1} foot cut',
-                )
-            except RuntimeError as error:
-                commonUtils.debugLog(f'Raised divider corner {index + 1}: foot cut failed, {error}')
+        pieceCount = sum(len(bodies) for (_, _, _, bodies) in sweeps)
+        position = 0
+        for (index, corner, at, bodies) in sweeps:
+            # a corner goes in only with all its runs cut, else it's filleted as a whole
+            cornerPieces = []
+            for body in bodies:
+                position += 1
+                try:
+                    cut = combineUtils.cutBody(
+                        body,
+                        commonUtils.objectCollectionFromList(cutters),
+                        targetComponent,
+                        isKeepToolBodies=position < pieceCount,
+                        name=f'Raised divider corner {index + 1} foot cut',
+                    )
+                except RuntimeError as error:
+                    commonUtils.debugLog(f'Raised divider corner {index + 1}: foot cut failed, {error}')
+                    cornerPieces = None
+                    continue
+                if cornerPieces is not None:
+                    # a cut keeping its tools lists them among its bodies too
+                    cornerPieces.extend(piece for piece in cut.bodies if all(piece != cutter for cutter in cutters))
+            if cornerPieces is None:
                 toFillet.append((index, corner, at))
-                continue
-            # a cut keeping its tools lists them among its bodies too
-            rounded.extend(body for body in cut.bodies if all(body != cutter for cutter in cutters))
+            else:
+                rounded.extend(cornerPieces)
         if len(rounded) > 0:
             try:
                 combineUtils.joinBodies(
@@ -607,6 +641,7 @@ def raisedCornerSectionsSketch(
     bottomZ: Dim,
     radius: Dim,
     targetComponent: adsk.fusion.Component,
+    name: str = 'Raised divider corners',
 ) -> adsk.fusion.Sketch:
     """
     The section of every corner where the corner fillet below it ends: the square of the radius in the corner less the
@@ -616,9 +651,9 @@ def raisedCornerSectionsSketch(
     planeInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
     planeInput.setByOffset(targetComponent.xYConstructionPlane, valueInput(bottomZ))
     plane = targetComponent.constructionPlanes.add(planeInput)
-    plane.name = 'Raised divider corners plane'
+    plane.name = f'{name} plane'
     sketch: adsk.fusion.Sketch = targetComponent.sketches.add(plane)
-    sketch.name = 'Raised divider corners sketch'
+    sketch.name = f'{name} sketch'
     constraints: adsk.fusion.GeometricConstraints = sketch.geometricConstraints
     dimensions: adsk.fusion.SketchDimensions = sketch.sketchDimensions
     r = radius.value
