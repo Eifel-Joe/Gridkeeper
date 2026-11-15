@@ -537,7 +537,7 @@ def test_form_change_fails():
 def test_text_label_cases():
     base = {"hasTab": True, "labelStyle": "Engraved", "labelText": "M3", "compartmentPockets": []}
     assert cases.isTextLabelCase(cases.GENERATOR_BIN, base)
-    assert cases.isTextLabelCase(cases.GENERATOR_BIN, {**base, "labelText": "", "compartmentPockets": [{"label": "A"}]})
+    assert cases.isTextLabelCase(cases.GENERATOR_BIN, {**base, "labelText": "", "compartmentPockets": [{"label": "A"}], "showCompartmentsLayout": True})
 
 
 def test_cullenect_and_plain_cases_keep_the_full_compare():
@@ -560,3 +560,23 @@ def test_a_broken_check_is_a_check_failure():
 
 def test_checks_run_in_order():
     assert cases.runChecks([("a", lambda: ["1"]), ("b", lambda: []), ("c", lambda: ["2", "3"])]) == ["1", "2", "3"]
+
+
+# review round 16: compartment labels count only where the bin builds them, with the compartment layout shown
+
+def test_hidden_compartment_layout_labels_are_no_text():
+    settings = {"hasTab": True, "labelStyle": "Engraved", "labelText": "", "compartmentPockets": [{"label": "A"}]}
+    assert not cases.isTextLabelCase(cases.GENERATOR_BIN, {**settings, "showCompartmentsLayout": False})
+    assert cases.isTextLabelCase(cases.GENERATOR_BIN, {**settings, "showCompartmentsLayout": True})
+
+
+# review round 16: a text label case still subtracts body by body, only what differs in a slab no thicker than the
+# letters may be left over, where the letters lie elsewhere; a moved tab or label leaves more
+
+def test_a_leftover_as_thin_as_the_letters_is_where_they_lie():
+    assert cases.isLetterSlab({"volume": 5.968, "pieces": 31, "min": [15.11, 29.72, 15.0], "max": [68.63, 37.59, 15.5]})
+    assert cases.isLetterSlab(None)
+
+
+def test_a_thicker_leftover_is_a_change_of_shape():
+    assert not cases.isLetterSlab({"volume": 30.0, "pieces": 2, "min": [10.0, 29.0, 12.0], "max": [20.0, 37.0, 15.5]})

@@ -275,8 +275,22 @@ def isTextLabelCase(generator: str, settings: dict) -> bool:
     Fusion version, its snapshot is compared by form (round 16, p30, see formChanges). Cullenect tabs carry no text"""
     if generator != GENERATOR_BIN or not settings.get('hasTab') or settings.get('labelStyle') == 'Cullenect':
         return False
-    pockets = settings.get('compartmentPockets') or []
+    # compartment labels as the bin builder takes them, only with the layout shown (review round 16); a creased bin
+    # drops them too, which isn't worked out here
+    pockets = (settings.get('compartmentPockets') or []) if settings.get('showCompartmentsLayout') else []
     return bool(str(settings.get('labelText') or '').strip()) or any(str(pocket.get('label') or '').strip() for pocket in pockets)
+
+
+# how thick a leftover of letters lying elsewhere can be, mm: the label depth of 0.5 mm and a little
+LETTER_SLAB = 0.6
+
+
+def isLetterSlab(leftover: dict | None) -> bool:
+    """Whether what a subtraction left over, snapshots.leftoverData, is no thicker than the letters of a label: where
+    they lie depends on the font (round 16, p30). A tab or label moved by a change leaves more (review round 16)"""
+    if leftover is None:
+        return True
+    return leftover['max'][2] - leftover['min'][2] <= LETTER_SLAB
 
 
 def _close(expected: float, actual: float) -> bool:

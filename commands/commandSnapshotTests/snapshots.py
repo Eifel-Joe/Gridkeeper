@@ -143,7 +143,6 @@ def compareSnapshot(folder: str, bodies: list[adsk.fusion.BRepBody], settings: d
     if byForm:
         changes = testCases.formChanges(list(expectedBodies.values()), [{'name': body.name, **fingerprint(body)} for body in bodies])
         results.append(BodyResult(FORM_RESULT_NAME, STATUS_FAIL if changes else STATUS_PASS, ['compared by form, not where each letter lies'] if not changes else [], changes))
-        return results
     for name in expectedBodies:
         if name not in builtBodies:
             results.append(BodyResult(name, STATUS_FAIL, ['in the snapshot, not built']))
@@ -154,7 +153,7 @@ def compareSnapshot(folder: str, bodies: list[adsk.fusion.BRepBody], settings: d
             results.append(BodyResult(name, STATUS_FAIL, ['built, not in the snapshot']))
             continue
         reference = tbm.createFromFile(os.path.join(folder, expected['file'])).item(0)
-        results.append(compareBody(name, body, expected, reference))
+        results.append(compareLetterBody(name, body, expected, reference) if byForm else compareBody(name, body, expected, reference))
     return results
 
 def compareBody(name: str, body: adsk.fusion.BRepBody, expected: dict, reference: adsk.fusion.BRepBody) -> BodyResult:
@@ -173,6 +172,24 @@ def compareBody(name: str, body: adsk.fusion.BRepBody, expected: dict, reference
     else:
         status = STATUS_PASS
     return BodyResult(name, status, [], changes, missing, extra, reference)
+
+def compareLetterBody(name: str, body: adsk.fusion.BRepBody, expected: dict, reference: adsk.fusion.BRepBody) -> BodyResult:
+    """
+    A body of a text label case against the reference: what the subtraction leaves over either way may only be a slab as
+    thin as the letters, where they lie elsewhere with another font, and the body is in as many pieces (review round 16,
+    see testCases.isLetterSlab). Its other fingerprint numbers follow where the letters lie and aren't compared
+    """
+    changes = [change for change in fingerprintChanges(expected, fingerprint(body)) if change['key'] == 'lumps']
+    try:
+        missing = leftover(reference, body)
+        extra = leftover(body, reference)
+    except RuntimeError as err:
+        return BodyResult(name, STATUS_FAIL, [f'shapes not subtracted, they differ somewhere, {err}'], changes, reference=reference)
+    isLetters = testCases.isLetterSlab(leftoverData(missing)) and testCases.isLetterSlab(leftoverData(extra))
+    status = STATUS_PASS if isLetters and len(changes) == 0 else STATUS_FAIL
+    notes = [] if isLetters else ['more left over than letters lying elsewhere']
+    # the leftovers are only shown where they fail, letters lying elsewhere aren't a difference to look at
+    return BodyResult(name, status, notes, changes, missing if status == STATUS_FAIL else None, extra if status == STATUS_FAIL else None, reference)
 
 def compareBodies(bodies: list[adsk.fusion.BRepBody], references: list[adsk.fusion.BRepBody], label: str) -> list[BodyResult]:
     """
