@@ -10,6 +10,7 @@ from typing import Callable
 from ...lib import fusion360utils as futil
 from ...lib.ui import viewportPictures
 from ...lib.gridfinityUtils import parameterUtils, cullenectLabelLayout, labelColors
+from ...lib import tagUtils, assembly
 from ... import config
 from ..commandCreateBin import binBuilder
 from ..commandCreateBin.inputState import InputState as BinInputState
@@ -599,6 +600,7 @@ def runCase(case: testCases.TestCase, keepOpen: bool) -> dict:
         notes += raisedCornerLedgeNotes(case, bodies)
         notes += insertTextNotes(case, bodies)
         notes += colorNotes(case, bodies)
+        notes += structureNotes(case, document, bodies)
     except Exception as err:
         results = [snapshots.BodyResult('', snapshots.STATUS_FAIL, [f'build failed, {buildFailure(case, err)}'])]
     if document is not None and case.parameters:
@@ -627,6 +629,37 @@ def runCase(case: testCases.TestCase, keepOpen: bool) -> dict:
             except Exception as err:
                 notes.append(f'differences not shown, {err}')
     return report.case(case.name, case.description, status, bodyReports(results), notes, view, snapshotPreviews(case.name))
+
+def structureNotes(case: testCases.TestCase, document: adsk.core.Document, bodies: list[adsk.fusion.BRepBody]) -> list[str]:
+    """
+    Why the case fails for parts not where round 13 puts them (p90): the part a component of its own directly in the
+    container of its kind, its colored text and symbol bodies in a Text component inside it, no Text component empty
+    """
+    design = adsk.fusion.Design.cast(document.products.itemByProductType('DesignProductType'))
+    root = design.rootComponent
+    kind = testCases.expectedContainer(case.generator)
+    tags = {testCases.GENERATOR_BIN: tagUtils.TAG_BIN, testCases.GENERATOR_BASEPLATE: tagUtils.TAG_BASEPLATE, testCases.GENERATOR_LABEL: tagUtils.TAG_LABEL}
+    notes = []
+    def parentOf(component: adsk.fusion.Component) -> adsk.fusion.Occurrence | None:
+        occurrences = root.allOccurrencesByComponent(component)
+        return occurrences.item(0).assemblyContext if occurrences.count > 0 else None
+    def kindOf(occurrence: adsk.fusion.Occurrence | None) -> str | None:
+        attribute = occurrence.component.attributes.itemByName(tagUtils.TAG_GROUP, tagUtils.TAG_CONTAINER) if occurrence is not None else None
+        return attribute.value if attribute is not None else None
+    parts = [body for body in bodies if body.attributes.itemByName(tagUtils.TAG_GROUP, tags[case.generator]) is not None and not body.parentComponent.name.startswith(assembly.TEXT_COMPONENT_NAME)]
+    marking = [body for body in bodies if body not in parts]
+    for body in parts:
+        if body.parentComponent == root or kindOf(parentOf(body.parentComponent)) != kind:
+            notes.append(f"{body.name} isn't in a component of its own in the container {kind}")
+    partComponents = {body.parentComponent.name for body in parts}
+    for body in marking:
+        parent = parentOf(body.parentComponent)
+        if not body.parentComponent.name.startswith(assembly.TEXT_COMPONENT_NAME) or parent is None or parent.component.name not in partComponents:
+            notes.append(f"{body.name} isn't in the Text component of its part")
+    for component in design.allComponents:
+        if component.name.startswith(assembly.TEXT_COMPONENT_NAME) and component.bRepBodies.count == 0:
+            notes.append(f'the Text component of {component.name} holds no bodies')
+    return notes
 
 def designIntentNotes(case: testCases.TestCase, document: adsk.core.Document) -> list[str]:
     """Why the case fails for a document left in another design intent than the case expects"""
