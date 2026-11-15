@@ -115,8 +115,9 @@ def binHasLabel(generateBody: bool, hasTab: bool, isShaped: bool, isSolid: bool)
 def textEditByParameter(labelColor: str) -> bool:
     """
     Whether a rebuild that only changes the label text may just set the text parameter, see binBuilder.parameterEdits.
-    Not for a colored label: Fusion makes the letters a text parameter adds in the default appearance, not the label
-    color (p120), a rebuild colors them
+    Not for a colored label: before round 14 Fusion made the letters a text parameter adds in the default appearance
+    (p120), and bins built as bodies in the root still color body by body. Since round 14 a bin in a component shows
+    the color on its Text component and new letters get it too, a rebuild still builds it anew, it's never wrong
     """
     return labelColor == ''
 

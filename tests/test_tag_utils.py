@@ -160,8 +160,9 @@ class _Attributes:
 
 
 class _Component:
-    def __init__(self, bodies=None):
+    def __init__(self, bodies=None, name='Text'):
         self.bRepBodies = bodies or []
+        self.name = name
 
 
 class _Body:
@@ -183,7 +184,7 @@ class _Occurrence:
 
 def _part(tagName):
     """A part with a tagged body, its occurrence, and a Text occurrence in it with an untagged letter"""
-    partComponent = _Component()
+    partComponent = _Component(name='Gridfinity bin 1x2x3')
     tagged = _Body(partComponent, {tagName: json.dumps({"id": "gfX"})})
     partOccurrence = _Occurrence(partComponent)
     textComponent = _Component()
@@ -227,3 +228,13 @@ def test_body_in_a_part_without_a_parent_part_has_no_part():
     # a Text occurrence straight in the root, nothing above it
     textOccurrence.assemblyContext = None
     assert tagUtils.partTag(letter, lambda component: textOccurrence) is None
+
+
+def test_untagged_body_outside_a_text_component_has_no_part():
+    # a bin nested in the user's own assembly: an untagged body of the user's isn't a letter of the part above it
+    (_, partOccurrence, _, _, _) = _part(tagUtils.TAG_BIN)
+    userComponent = _Component(name='Bracket')
+    userBody = _Body(userComponent)
+    userOccurrence = _Occurrence(userComponent, partOccurrence)
+    proxy = _Body(userComponent, native=userBody, occurrence=userOccurrence)
+    assert tagUtils.partTag(proxy, lambda component: None) is None
