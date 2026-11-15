@@ -344,7 +344,7 @@ def command_execute(args: adsk.core.CommandEventArgs):
     if wasPart and des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
         ui.messageBox(HYBRID_SWITCH_MESSAGE, CMD_NAME)
     # text fitted so small that a 0.4 mm nozzle leaves parts out (p130)
-    hint = textStyles.hintText(textStyles.notes())
+    hint = textStyles.hintText(textStyles.notes(), suggestHeavy=getInputsState().textStyle != textStyles.STYLE_HEAVY)
     if hint is not None:
         ui.messageBox(hint, CMD_NAME)
 
