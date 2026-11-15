@@ -152,7 +152,7 @@ def groupE(run):
 def binLabel(run, iconName, isHeld):
     """p180: a bin label with a Cullenect symbol takes the path the measurement says (dims up to 40 points, moved
     above), its icon and text sketches are fully constrained, and a longer text leaves the symbol where it is"""
-    (case, settings) = (lambda c: (c, run.tc.caseSettings(c)))(run.tc.loadCase(os.path.join(CASES, 'bin_2x1x3_label_icon_text_embossed.json'), run.stateClasses))
+    (case, settings) = (lambda c: (c, run.tc.caseSettings(c)))(run.tc.loadCase(os.path.join(CASES, 'bin_2x1x3_label_icon_text_embossed_colored.json'), run.stateClasses))
     body = run.binBuilder.buildBin(run.des, dataclasses.replace(case.state, labelIcon=iconName, labelText='M4'), settings)[0]
     occurrence = next(o for o in run.des.rootComponent.allOccurrences if o.component == body.parentComponent) if body.parentComponent != run.des.rootComponent else None
     components = [body.parentComponent] + ([child.component for child in occurrence.childOccurrences] if occurrence is not None else [])
@@ -165,13 +165,13 @@ def binLabel(run, iconName, isHeld):
     loose = constraints.unconstrainedSketches([sketch for sketch in sketches if 'icon' in sketch.name or 'text' in sketch.name])
     run.check(f'p180 {iconName}: label sketches fully constrained', len(loose) == 0, str(loose))
 
-    def iconBox():
-        faces = [face for component in components for feature in component.features.extrudeFeatures if ' icon' in feature.name for face in feature.faces]
-        faces += [face for component in components for feature in component.features.moveFeatures if 'icon' in feature.name.lower() for b in feature.bodies for face in b.faces]
-        if not faces:
-            return None
-        return [round(min(getattr(face.boundingBox.minPoint, a) for face in faces), 4) for a in 'xyz'] + [round(max(getattr(face.boundingBox.maxPoint, a) for face in faces), 4) for a in 'xyz']
-    before = iconBox()
+    # The colored case keeps the label bodies apart from the bin, so the symbol is a body of its own; embossed into the
+    # bin it is joined and has none (the first try looked for its extrude feature's faces and found nothing). A longer
+    # text adds letters to the right, every body there was keeps its place, the symbol with them
+    def boxes():
+        return sorted(tuple(round(v, 4) for v in (b.boundingBox.minPoint.x, b.boundingBox.minPoint.y, b.boundingBox.minPoint.z, b.boundingBox.maxPoint.x, b.boundingBox.maxPoint.y, b.boundingBox.maxPoint.z))
+                      for component in run.des.allComponents for b in component.bRepBodies)
+    before = boxes()
     names = []
     for sketch in sketches:
         for text in sketch.sketchTexts:
@@ -182,9 +182,10 @@ def binLabel(run, iconName, isHeld):
     for parameter in parameters:
         parameter.expression = textUtils.textExpression(parameter.textValue + ' Mutter')
     adsk.doEvents()
-    after = iconBox()
-    run.check(f'p180 {iconName}: symbol stays where it is after a longer text', before is not None and before == after and len(parameters) > 0,
-              f'{before} -> {after}, {len(parameters)} text parameters')
+    after = boxes()
+    moved = [box for box in before if box not in after]
+    run.check(f'p180 {iconName}: symbol and letters stay where they are after a longer text', len(moved) == 0 and len(after) > len(before) and len(parameters) > 0,
+              f'{len(before)} -> {len(after)} bodies, moved {moved[:3]}, {len(parameters)} text parameters')
 
 
 def groupF(run):
