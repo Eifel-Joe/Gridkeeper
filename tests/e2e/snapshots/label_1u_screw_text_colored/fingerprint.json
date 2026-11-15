@@ -23,8 +23,8 @@
         {
             "name": "Gridfinity label 1U M3x10 text 1",
             "file": "body2.smt",
-            "volume": 0.821457,
-            "area": 11.582998,
+            "volume": 1.642914,
+            "area": 14.951428,
             "bboxMin": [
                 9.956521,
                 3.204419,
@@ -33,7 +33,7 @@
             "bboxMax": [
                 13.069382,
                 6.530232,
-                1.4
+                1.6
             ],
             "lumps": 1,
             "faces": 17,
@@ -43,8 +43,8 @@
         {
             "name": "Gridfinity label 1U M3x10 text 2",
             "file": "body3.smt",
-            "volume": 1.056226,
-            "area": 14.869583,
+            "volume": 2.112452,
+            "area": 19.176904,
             "bboxMin": [
                 6.611918,
                 3.122996,
@@ -53,7 +53,7 @@
             "bboxMax": [
                 9.618303,
                 7.814209,
-                1.4
+                1.6
             ],
             "lumps": 1,
             "faces": 32,
@@ -63,8 +63,8 @@
         {
             "name": "Gridfinity label 1U M3x10 text 3",
             "file": "body4.smt",
-            "volume": 0.650789,
-            "area": 9.064787,
+            "volume": 1.301578,
+            "area": 11.621685,
             "bboxMin": [
                 13.814715,
                 3.204419,
@@ -73,7 +73,7 @@
             "bboxMax": [
                 15.505806,
                 7.814209,
-                1.4
+                1.6
             ],
             "lumps": 1,
             "faces": 11,
@@ -83,8 +83,8 @@
         {
             "name": "Gridfinity label 1U M3x10 text 4",
             "file": "body5.smt",
-            "volume": 1.955827,
-            "area": 26.933118,
+            "volume": 3.911653,
+            "area": 34.307969,
             "bboxMin": [
                 1.476011,
                 3.204419,
@@ -93,7 +93,7 @@
             "bboxMax": [
                 5.857191,
                 7.795419,
-                1.4
+                1.6
             ],
             "lumps": 1,
             "faces": 17,
@@ -103,8 +103,8 @@
         {
             "name": "Gridfinity label 1U M3x10 text 5",
             "file": "body6.smt",
-            "volume": 1.174285,
-            "area": 16.123475,
+            "volume": 2.348569,
+            "area": 20.504104,
             "bboxMin": [
                 16.949497,
                 3.126127,
@@ -113,7 +113,7 @@
             "bboxMax": [
                 19.943356,
                 7.814209,
-                1.4
+                1.6
             ],
             "lumps": 1,
             "faces": 22,
@@ -123,8 +123,8 @@
         {
             "name": "Gridfinity label 1U M3x10 symbol 1",
             "file": "body7.smt",
-            "volume": 18.512399,
-            "area": 199.353813,
+            "volume": 37.024799,
+            "area": 213.583631,
             "bboxMin": [
                 21.44,
                 0.5,
@@ -133,7 +133,7 @@
             "bboxMax": [
                 36.0,
                 10.5,
-                1.4
+                1.6
             ],
             "lumps": 1,
             "faces": 40,
