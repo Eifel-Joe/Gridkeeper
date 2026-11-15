@@ -213,3 +213,36 @@ def test_label_defaults_have_the_text_style_of_round_11():
     textStyles = _load("textStyles", "lib", "gridfinityUtils", "textStyles.py")
     assert defaultSettings.LABEL["textStyle"] == textStyles.DEFAULT_INSERT_STYLE
     assert "isBold" not in defaultSettings.LABEL
+
+
+# --- master's 6c2743c (root component active after building) merged into upstream's rebuild-in-place builders: the
+# wrapper that activates the root afterwards has to hand every argument of a rebuild on to the builder ---
+
+import ast
+
+
+def _function(path, name):
+    with open(os.path.join(PROJECT_ROOT, *path), encoding="utf-8") as file:
+        tree = ast.parse(file.read())
+    return next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == name)
+
+
+def _parameters(function):
+    return [argument.arg for argument in function.args.args]
+
+
+@pytest.mark.parametrize("path, outer, inner", [
+    (("commands", "commandCreateBin", "binBuilder.py"), "buildBin", "_buildBin"),
+    (("commands", "commandCreateBaseplate", "baseplateBuilder.py"), "buildBaseplate", "_buildBaseplate"),
+])
+def test_builder_wrapper_hands_every_argument_on(path, outer, inner):
+    wrapper = _function(path, outer)
+    builder = _function(path, inner)
+    assert _parameters(builder) == _parameters(wrapper)
+    calls = [node for node in ast.walk(wrapper) if isinstance(node, ast.Call) and getattr(node.func, "id", None) == inner]
+    assert len(calls) == 1
+    passed = [argument.id for argument in calls[0].args] + [keyword.value.id for keyword in calls[0].keywords]
+    assert passed == _parameters(wrapper)
+    # and the root is active again after it, also after a failed build
+    tries = [node for node in wrapper.body if isinstance(node, ast.Try)]
+    assert len(tries) == 1 and "activateRootComponent" in ast.unparse(tries[0].finalbody)

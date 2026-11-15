@@ -189,6 +189,22 @@ def buildBin(
     settingsUtils.snapshotInputs. A bin rebuilt in place keeps the placement, the parameters by their prefix and
     the transform of its component the old one had, see rebuildUtils, a new one goes to a free spot
     """
+    # The new component is active while it's built, the design's root afterwards: an active component shows every other
+    # one half transparent and the user had to switch back each time (Nutzer 15.11.2026). In finally, a failed build
+    # leaves the root active too. A rebuild in place builds through here as well, see rebuildBin
+    try:
+        return _buildBin(des, state, settings, placement, parameterPrefix, occurrenceTransform)
+    finally:
+        des.activateRootComponent()
+
+def _buildBin(
+    des: adsk.fusion.Design,
+    state: InputState,
+    settings: list[dict],
+    placement: tuple[float, float] | None = None,
+    parameterPrefix: str | None = None,
+    occurrenceTransform: adsk.core.Matrix3D | None = None,
+) -> list[adsk.fusion.BRepBody]:
     # creased bins have a single compartment and a solid tab, see creaseLayout
     creases = creaseLayout(state)
     compartmentsX: int = 1 if len(creases) > 0 else state.compartmentsX

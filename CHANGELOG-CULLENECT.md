@@ -24,6 +24,8 @@ the walls, shelled bins with rounded offsets, a clearance between baseplates glu
 - A rebuild of a bin with Cullenect sockets that changes its base units builds it again, so the number of socket
   units and the sockets of short compartments are worked out anew; setting `gfBinN_baseWidth` by hand still keeps
   them. Rebuilding a bin without a label to color leaves the dialog's color choice as it was.
+- The root component stays active (see below) also after a bin or baseplate is rebuilt in place from its context
+  menu, the rebuild builds through the same builder.
 - Known limit: colored label bodies have no tag of their own, a feature after the bin that uses one of them has to
   pick it again after a rebuild (Fusion reports it).
 - Raised dividers follow the lower lip socket of v2.4.0.0: the feet of a stacked bin are cut out of them as low as
@@ -121,6 +123,10 @@ the walls, shelled bins with rounded offsets, a clearance between baseplates glu
   Heavy runs about 20 % wider, a long text is fitted smaller by that. The text keeps its font when its text parameter
   changes. Test cases keep their font (`isBold` became `textStyle`), their snapshots changed only by the thickness;
   new case with two lines in Heavy.
+- **The root component stays active:** bin, baseplate and label commands activated the component they had just made,
+  so Fusion showed every other component half transparent until the user switched back. The new component is active
+  only while it is built, the design's root afterwards, also after a failed build. The shape tests fail on a case that
+  leaves another component active.
 - **Hint at thin text:** inserts and bin labels estimate the stroke from the fitted text height; text below 0.6 mm
   stroke (where a 0.4 mm nozzle starts leaving parts out) gives a message on OK and a note beside the preview time.
 - **Screw choices without a symbol:** the label dialog offered every head, shaft, thread and driver together, head

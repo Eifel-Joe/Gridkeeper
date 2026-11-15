@@ -233,6 +233,7 @@ def buildCase(case: testCases.TestCase) -> tuple[adsk.core.Document, list[adsk.f
     """
     (document, design) = newCaseDocument(case.name, f'{DOCUMENT_PREFIX} {case.name}', case.designIntent)
     bodies = buildBodies(design, case, case.state)
+    notes = activeComponentNotes(design)
     if case.parameters:
         setParameters(design, case.parameters)
         if not all(body.isValid for body in bodies):
@@ -250,7 +251,15 @@ def buildCase(case: testCases.TestCase) -> tuple[adsk.core.Document, list[adsk.f
         bodies = [insert] + parts
     for body in bodies:
         tagTestBody(body, case.name, ROLE_RECEIVED)
-    return (document, bodies, unhealthyFeatures(design.timeline))
+    return (document, bodies, notes + unhealthyFeatures(design.timeline))
+
+def activeComponentNotes(design: adsk.fusion.Design) -> list[str]:
+    """Why the case fails for a generator that leaves its new component active: Fusion then shows every other
+    component half transparent and the user has to switch back (Nutzer 15.11.2026)"""
+    active = design.activeComponent
+    if active == design.rootComponent:
+        return []
+    return [f'component {active.name} left active, the root component should be']
 
 def buildWithParameters(case: testCases.TestCase) -> tuple[list[adsk.fusion.BRepBody], list[str]]:
     """

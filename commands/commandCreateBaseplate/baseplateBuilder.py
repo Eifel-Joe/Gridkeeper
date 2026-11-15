@@ -125,6 +125,23 @@ def buildBaseplate(
     rebuilt in place keeps the placement, the parameters by their prefix and the transform of its component the old
     one had, see rebuildUtils, a new one goes to a free spot
     """
+    # The new component is active while it's built, the design's root afterwards: an active component shows every other
+    # one half transparent and the user had to switch back each time (Nutzer 15.11.2026). In finally, a failed build
+    # leaves the root active too. A rebuild in place builds through here as well, see rebuildBaseplate
+    try:
+        return _buildBaseplate(des, inputsState, settings, isPreview, placement, parameterPrefix, occurrenceTransform)
+    finally:
+        des.activateRootComponent()
+
+def _buildBaseplate(
+    des: adsk.fusion.Design,
+    inputsState: InputState,
+    settings: list[dict],
+    isPreview: bool = False,
+    placement: tuple[float, float] | None = None,
+    parameterPrefix: str | None = None,
+    occurrenceTransform: adsk.core.Matrix3D | None = None,
+) -> list[adsk.fusion.BRepBody]:
     if des.designType == 0:
         raise UnsupportedDesignTypeException('Timeline must be enabled for the generator to work, projects with disabled design history currently are not supported')
     root = adsk.fusion.Component.cast(des.rootComponent)
