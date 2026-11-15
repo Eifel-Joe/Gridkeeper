@@ -11,6 +11,8 @@ import re
 import tempfile
 from typing import Callable
 
+from ..gridfinityUtils import appearanceUtils
+
 # what a picture shows of a design, the bodies only
 HIDDEN_FOLDERS = [
     'isOriginFolderLightBulbOn',
@@ -68,14 +70,21 @@ def libraryAppearance(name: str) -> adsk.core.Appearance:
     raise PictureError(f'no appearance named {name!r} in the material libraries')
 
 def firstLibraryAppearance(prefixes: list[str]) -> adsk.core.Appearance:
-    """The first appearance of Fusion's libraries starting with one of the prefixes, by their order"""
+    """
+    The first appearance of Fusion's libraries starting with one of the prefixes, by their order. Library names are in
+    the user's language, a German one has no 'Plastic' (round 16, p31): then the one the label colors are copied from,
+    found by the library's id, see appearanceUtils.baseAppearance
+    """
     for prefix in prefixes:
         for library in app.materialLibraries:
             appearances = library.appearances
             for index in range(appearances.count):
                 if appearances.item(index).name.startswith(prefix):
                     return appearances.item(index)
-    raise PictureError(f'no appearance starting with {" or ".join(prefixes)} in the material libraries')
+    try:
+        return appearanceUtils.baseAppearance()
+    except appearanceUtils.AppearanceError as err:
+        raise PictureError(f'no appearance starting with {" or ".join(prefixes)} in the material libraries, {err}') from err
 
 def colorAppearance(design: adsk.fusion.Design, base: adsk.core.Appearance, color: str | None) -> adsk.core.Appearance:
     """The appearance in the color, '#rrggbb', none keeps its own, copied into the design as Fusion does when one is dragged onto a body"""
