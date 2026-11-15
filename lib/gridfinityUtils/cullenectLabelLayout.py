@@ -20,9 +20,9 @@ MIN_TEXT_SPACE = 0.3
 # largest correction of width and height, like a printer is off
 MAX_OFFSET = 0.1
 # Round 17, p140: debossed text and symbol are cut 0.4 mm deep, the whole top layer. Reaching the edge they cut the
-# rim over the latch through, the 0.2 mm the top layer stands over it, and the insert no longer holds. Debossed they
-# keep this far from the edge: the overhang and one line of a 0.4 mm nozzle over the latch. Flush and embossed don't
-# cut the rim and stay as they are
+# rim over the latch through, the 0.2 mm the top layer stands over it, and the insert no longer holds. Debossed the
+# symbol keeps this far from the edge: the overhang and one line of a 0.4 mm nozzle over the latch. Flush and embossed
+# don't cut the rim and stay as they are. Descenders of a lower line may still reach into it, see labelLayout
 DEBOSS_RIM = const.CULLENECT_LATCH_INSET + 0.02
 
 
@@ -93,7 +93,8 @@ def labelLayout(
 ) -> LabelLayout:
     """Where text and symbol go on an insert. A screw ends at the right edge like in Cullenect, other symbols keep the
     margin to the right they have to top and bottom. The text runs from the left margin to a gap before the symbol.
-    Two lines shrink to keep their descenders on the insert, see descenderLineHeight"""
+    Two lines shrink to keep their descenders on the insert, see descenderLineHeight. `rim`: debossed the symbol keeps
+    off the edges, see DEBOSS_RIM"""
     if lineCount < 0 or lineCount > MAX_LINES:
         raise ValueError(f'An insert takes up to {MAX_LINES} text lines')
     iconMaxX = None
@@ -113,7 +114,10 @@ def labelLayout(
         # the line centers stay where they are, only the letters get smaller
         pitch = const.CULLENECT_TWO_LINE_TEXT_HEIGHT + const.CULLENECT_LINE_GAP
         lineCenters = [middle + pitch / 2, middle - pitch / 2]
-        (lineHeight, descenderLimit) = descenderLineHeight(const.CULLENECT_TWO_LINE_TEXT_HEIGHT, lineCenters[1], rim, textStyle)
+        # to the bottom edge also when debossed: the rim is kept by the symbol only, as the spec says. Keeping it for
+        # the descenders too was taken back (Hauptsitzung 15.11.2026), two debossed lines would no longer build in
+        # Regular and Bold, Joerg decides (round 17 hand-over)
+        (lineHeight, descenderLimit) = descenderLineHeight(const.CULLENECT_TWO_LINE_TEXT_HEIGHT, lineCenters[1], 0, textStyle)
         lineHeights = [lineHeight] * 2
     else:
         lineHeights = []

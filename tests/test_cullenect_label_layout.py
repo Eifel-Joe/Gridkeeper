@@ -398,23 +398,16 @@ class TestDebossedRim:
         assert layout.iconSize(path, 2.5, 1.1, True) == approx((1.456, 1.1))
         assert layout.labelLayout(2.5, 1.1, (1.456, 1.1), True, 1).iconMaxX == approx(2.5)
 
-    def test_debossed_descenders_keep_the_rim(self):
-        # Hauptsitzung 15.11.2026: the descenders are the same cut on a sister path, they keep the same rim
-        result = layout.labelLayout(3.6, 1.1, None, False, 2, 'Heavy', rim=RIM)
-        assert _lowestDescender(result) >= RIM - 1e-9
-        assert result.lineHeights[0] < 0.35
-
-    def test_debossed_heavy_with_minus_1mm_is_reported(self):
-        assert 'Two lines' in layout.insertProblem(3.6, 1.0, None, False, False, 2, 0, -0.1, textStyle='Heavy', isDebossed=True)
-
-    def test_debossed_two_lines_of_heavy_fit_without_correction(self):
-        result = layout.labelLayout(3.6, 1.1, None, False, 2, 'Heavy', rim=RIM)
+    def test_debossed_text_keeps_its_height(self):
+        # the spec limits the symbol only. The descenders keeping the rim too was taken back (Hauptsitzung
+        # 15.11.2026): two debossed lines would need 3.27 mm letters, below Regular's 3.5 and Bold's floor, Joerg decides
+        result = layout.labelLayout(3.6, 1.1, None, False, 2, 'Regular', rim=RIM)
+        assert result.lineHeights == approx([0.35, 0.35])
         assert layout.layoutProblem(result) is None
 
-    @pytest.mark.parametrize('style', ['Regular', 'Bold'])
-    def test_debossed_two_thin_lines_are_reported(self, style):
-        # their descenders would need letters below the least height of the style
-        assert 'Two lines' in layout.insertProblem(3.6, 1.1, None, False, False, 2, 0, 0, textStyle=style, isDebossed=True)
+    @pytest.mark.parametrize('style', ['Regular', 'Bold', 'Heavy'])
+    def test_debossed_two_lines_build_without_correction(self, style):
+        assert layout.insertProblem(3.6, 1.1, None, False, False, 2, 0, 0, textStyle=style, isDebossed=True) is None
 
 
 class TestTextFitWidth:
