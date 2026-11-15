@@ -10,6 +10,18 @@ from .dim import Dim
 # measured along its face. Sizes of the letters and icon are measured in Fusion and fixed at build time.
 
 
+# An icon's imported curves come fixed where they are, so they don't follow the label's x. Let go and held by dims
+# from one anchor they do, but every dim costs more the more there are: in Fusion 15.11.2026 the hex nut's 10 points
+# took 20 dims in 0.3 s, the 263 points of cullenect-crimp-ring-closed hadn't all of their dims after a minute. Up to
+# this many points an icon is held by dims, more and its bodies are moved into place, the text never is (Hauptsitzung
+# 15.11.2026, proposal A). Counted when building, so coarser symbols (p51) fall under it by themselves
+ICON_POINTS_HELD_BY_DIMS = 40
+
+
+def isIconHeldByDims(pointCount: int) -> bool:
+    return pointCount <= ICON_POINTS_HELD_BY_DIMS
+
+
 @dataclass
 class BinLabelPlacement:
     # height of the label plane
