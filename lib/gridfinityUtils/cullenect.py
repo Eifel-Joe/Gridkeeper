@@ -106,6 +106,30 @@ def socketSummary(
     }
     return [describeSocket(item, baseWidth, socketOffset) for item in sorted(units, key=lambda item: -1 if item is None else item)]
 
+def socketCounts(
+    compartmentWidths: list[float],
+    tabStart: float,
+    tabLength: float,
+    baseWidth: float,
+    socketOffset: float,
+) -> list[list[str]]:
+    """
+    The settings' rows of the sockets, one per size, smallest first, with how many the bin has (round 16, p33): a bin of
+    eight like compartments showed 'Socket 1: 1U' as if it had one. Compartments too short for a socket come first
+    """
+    counts: dict[float | None, int] = {}
+    for width in compartmentWidths:
+        units = socketUnits(tabSpanInCompartment(width, tabStart, tabLength), baseWidth, socketOffset)
+        counts[units] = counts.get(units, 0) + 1
+    rows = []
+    for units in sorted(counts, key=lambda item: -1 if item is None else item):
+        count = counts[units]
+        if units is None:
+            rows.append(['No socket', f'{count} compartment{"s" if count != 1 else ""} too short for a Cullenect pocket'])
+        else:
+            rows.append([f'{units:g}U', f'{count} socket{"s" if count != 1 else ""}, pocket {_mm(socketWidth(units, baseWidth, socketOffset))} mm, insert {_mm(labelWidth(units, baseWidth))} mm'])
+    return rows
+
 def labelInputsEnabled(labelStyle: str) -> dict[str, bool]:
     """Which label tab inputs of the bin dialog apply to the style, a socket takes no text, icon or tilted top but its
     play. Inputs are only switched off, the values typed in stay for when the style changes back"""

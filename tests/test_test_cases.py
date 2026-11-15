@@ -497,3 +497,86 @@ def test_part_design_cases_turn_hybrid():
             data = json.load(file)
         if data.get("designIntent") == "part":
             assert data.get("designIntentAfter") == "hybrid", fileName
+
+
+# round 16, p30: a snapshot older than a setting doesn't have it, the case at its default was built the same way
+
+def test_a_setting_newer_than_the_snapshot_at_its_default_is_no_change():
+    defaults = {"labelColor": "", "hasDividersToTop": False, "cullenectSocketOffset": 0.3}
+    actual = {"binHeight": 3, "labelColor": "", "hasDividersToTop": False, "cullenectSocketOffset": 0.3}
+    assert cases.settingChanges({"binHeight": 3}, actual, defaults) == []
+
+
+def test_a_newer_setting_off_its_default_is_a_change():
+    defaults = {"labelColor": ""}
+    assert cases.settingChanges({"binHeight": 3}, {"binHeight": 3, "labelColor": "#FF0000"}, defaults) == [
+        {"key": "labelColor", "expected": None, "actual": "#FF0000"}
+    ]
+
+
+# round 16, p30: text label cases are compared by their form, where the letters lie depends on the font and Fusion
+
+def _entry(volume, low, high, name="Gridfinity bin 1x2x3"):
+    return {"name": name, "volume": volume, "bboxMin": low, "bboxMax": high}
+
+
+def test_letters_moved_keep_the_form():
+    expected = [_entry(32466.29, [0, 0, -5], [83.5, 41.5, 19.8]), _entry(0.84, [15.06, 29.93, 15.0], [22.53, 37.67, 15.5], "Label text 1")]
+    built = [_entry(32466.29, [0, 0, -5], [83.5, 41.5, 19.8]), _entry(0.84, [15.11, 29.85, 15.0], [22.58, 37.59, 15.5], "Label text 1")]
+    assert cases.formChanges(expected, built) == []
+
+
+def test_form_change_fails():
+    expected = [_entry(32466.29, [0, 0, -5], [83.5, 41.5, 19.8])]
+    assert [c["key"] for c in cases.formChanges(expected, [_entry(32460.0, [0, 0, -5], [83.5, 41.5, 19.8])])] == ["volume"]
+    assert [c["key"] for c in cases.formChanges(expected, [_entry(32466.29, [0, 0, -5], [83.5, 42.5, 19.8])])] == ["bboxMax"]
+    two = [_entry(32466.29, [0, 0, -5], [83.5, 41.5, 19.8]), _entry(0.1, [1, 1, 1], [2, 2, 2], "Körper2")]
+    assert [c["key"] for c in cases.formChanges(expected, two)] == ["bodies", "volume"]
+
+
+def test_text_label_cases():
+    base = {"hasTab": True, "labelStyle": "Engraved", "labelText": "M3", "compartmentPockets": []}
+    assert cases.isTextLabelCase(cases.GENERATOR_BIN, base)
+    assert cases.isTextLabelCase(cases.GENERATOR_BIN, {**base, "labelText": "", "compartmentPockets": [{"label": "A"}], "showCompartmentsLayout": True})
+
+
+def test_cullenect_and_plain_cases_keep_the_full_compare():
+    base = {"hasTab": True, "labelStyle": "Engraved", "labelText": "M3", "compartmentPockets": []}
+    assert not cases.isTextLabelCase(cases.GENERATOR_BIN, {**base, "labelStyle": "Cullenect"})
+    assert not cases.isTextLabelCase(cases.GENERATOR_BIN, {**base, "labelText": " "})
+    assert not cases.isTextLabelCase(cases.GENERATOR_BIN, {**base, "hasTab": False})
+    assert not cases.isTextLabelCase(cases.GENERATOR_LABEL, base)
+
+
+# round 16, p34: a check that breaks is a check failure, not a build failure
+
+def test_a_broken_check_is_a_check_failure():
+    def broken():
+        raise RuntimeError("no sketches")
+    notes = cases.runChecks([("fine", lambda: ["a note"]), ("sketches", broken)])
+    assert notes[0] == "a note"
+    assert notes[1].startswith("check sketches failed") and "no sketches" in notes[1] and "build" not in notes[1]
+
+
+def test_checks_run_in_order():
+    assert cases.runChecks([("a", lambda: ["1"]), ("b", lambda: []), ("c", lambda: ["2", "3"])]) == ["1", "2", "3"]
+
+
+# review round 16: compartment labels count only where the bin builds them, with the compartment layout shown
+
+def test_hidden_compartment_layout_labels_are_no_text():
+    settings = {"hasTab": True, "labelStyle": "Engraved", "labelText": "", "compartmentPockets": [{"label": "A"}]}
+    assert not cases.isTextLabelCase(cases.GENERATOR_BIN, {**settings, "showCompartmentsLayout": False})
+    assert cases.isTextLabelCase(cases.GENERATOR_BIN, {**settings, "showCompartmentsLayout": True})
+
+
+# review round 16: a text label case still subtracts body by body, only what differs in a slab no thicker than the
+# letters may be left over, where the letters lie elsewhere; a moved tab or label leaves more
+
+def test_a_leftover_as_thin_as_the_letters_is_where_they_lie():
+    assert cases.isLetterSlab({"volume": 5.968, "pieces": 31, "min": [15.11, 29.72, 15.0], "max": [68.63, 37.59, 15.5]})
+    assert cases.isLetterSlab(None)
+
+
+def test_a_thicker_leftover_is_a_change_of_shape():
+    assert not cases.isLetterSlab({"volume": 30.0, "pieces": 2, "min": [10.0, 29.0, 12.0], "max": [20.0, 37.0, 15.5]})
