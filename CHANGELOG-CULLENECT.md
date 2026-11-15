@@ -123,6 +123,10 @@ the walls, shelled bins with rounded offsets, a clearance between baseplates glu
   Heavy runs about 20 % wider, a long text is fitted smaller by that. The text keeps its font when its text parameter
   changes. Test cases keep their font (`isBold` became `textStyle`), their snapshots changed only by the thickness;
   new case with two lines in Heavy.
+- **Bin dialog opens again:** since the label color check of round 10 the bin dialog ran into endless recursion when
+  opened (its state asked for the label color, which asked whether the bin is shaped, which built the state again):
+  no bin could be made and the label tab inputs stayed greyed out. The color is now worked out from the finished
+  state. A test checks that no dialog's state reaches itself again.
 - **The root component stays active:** bin, baseplate and label commands activated the component they had just made,
   so Fusion showed every other component half transparent until the user switched back. The new component is active
   only while it is built, the design's root afterwards, also after a failed build. The shape tests fail on a case that
