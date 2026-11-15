@@ -40,7 +40,7 @@ def wrapperScad(combination) -> str:
     (_, shaft, _, driver, _, security) = combination
     return '\n'.join([
         'use <SetScrew.scad>',
-        cullenectIcons.RESOLUTION,
+        cullenectIcons.SCREW_RESOLUTION,
         'projection(cut = false) {',
         f'    set_screw(shaft="{shaft}", driver="{driver}", security={"true" if security else "false"});',
         '}',
