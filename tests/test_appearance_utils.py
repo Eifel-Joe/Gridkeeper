@@ -102,3 +102,13 @@ def test_without_occurrence_only_bodies_are_colored(appearances):
 def test_nothing_to_color_asks_for_no_appearance(appearances):
     appearanceUtils.colorPart([], None, RED, colorBodiesToo=True)
     assert appearances == []
+
+
+def test_by_default_only_the_occurrence_is_colored(appearances):
+    # Fusion 15.11.2026 (round 14 probe): with the color on the Text occurrence alone the letters a longer text adds
+    # show it and the 3MF export carries it, so the bodies don't need it themselves (spec, decision 2)
+    occurrence = _Colorable()
+    bodies = [_Colorable()]
+    appearanceUtils.colorPart(bodies, occurrence, RED)
+    assert occurrence.appearance == f"appearance {RED}"
+    assert bodies[0].appearance is None

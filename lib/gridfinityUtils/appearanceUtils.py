@@ -58,10 +58,11 @@ def labelAppearance(design: adsk.fusion.Design, color: str) -> adsk.core.Appeara
     commonUtils.debugLog(f'appearance {name} copied from {base.name}, its {property.id}')
     return appearance
 
-# Whether the color also stays on each body, beside the Text occurrence. Kept while it isn't shown that the 3MF export
-# takes the occurrence's color (round 14 spec, decision 2, checked in Fusion by tests/e2e/runde14_labels.py): a body
-# with it exports colored either way, a letter a longer text adds shows the occurrence's color
-COLOR_BODIES_TOO = True
+# Whether the color also goes on each body, beside the Text occurrence (round 14 spec, decision 2). Not needed: in
+# Fusion 15.11.2026 a bin colored on its Text occurrence alone showed the color on the letters a longer text added, and
+# its 3MF export, of the bin and of Text alone, gave each letter the color (#2060D0). Checked again by
+# tests/e2e/runde14_labels.py
+COLOR_BODIES_TOO = False
 
 def colorPart(bodies: list[adsk.fusion.BRepBody], occurrence: adsk.fusion.Occurrence | None, color: str, *, colorBodiesToo: bool = COLOR_BODIES_TOO):
     """
