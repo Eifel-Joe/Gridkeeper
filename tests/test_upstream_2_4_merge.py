@@ -248,3 +248,13 @@ def test_builder_wrapper_hands_every_argument_on(path, outer, inner):
     # and the root is active again after it, also after a failed build
     tries = [node for node in wrapper.body if isinstance(node, ast.Try)]
     assert len(tries) == 1 and "activateRootComponent" in ast.unparse(tries[0].finalbody)
+
+
+# --- review of the recursion fix: the label color of a state comes from that state, not from the dialog, so a
+# config, clone or rebuild state that differs from the inputs gets its own (only the color choice is the dialog's) ---
+
+def test_state_label_color_reads_the_state_not_the_dialog():
+    function = _function(("commands", "commandCreateBin", "entry.py"), "stateLabelColor")
+    read = {node.id for node in ast.walk(function) if isinstance(node, ast.Name)}
+    for inputId in ("BIN_GENERATE_BODY_INPUT_ID", "BIN_HAS_TAB_INPUT_ID", "BIN_TYPE_DROPDOWN_ID", "BIN_TAB_LABEL_STYLE_INPUT_ID"):
+        assert inputId not in read, inputId
