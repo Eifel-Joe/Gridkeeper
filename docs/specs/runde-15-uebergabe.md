@@ -1,6 +1,6 @@
-# Runde 15 – Übergabe (Zwischenstand)
+# Runde 15 – Übergabe
 
-Stand 2026-11-15. Branch `runde-15` (von `runde-14-18` 629e85e…fba00ef), nicht gepusht. Spec
+Stand 2026-11-15. Branch `runde-15` (von `runde-14-18`), nicht gepusht, nicht gemergt. Spec
 `docs/specs/2026-11-15-runde-15-design.md` (von Jörg freigegeben), Plan `docs/plans/2026-11-15-runde-15.md`
 (121d8eb, von der Hauptsitzung freigegeben).
 Punkte: p170 „Joint Origins an Bin-Füßen und Grundplatten-Aufnahmen folgen geänderten Rastermaßen nicht“, p60
@@ -12,39 +12,61 @@ Wänden im Druck prüfen“.
 
 | Punkt | Stand | Beleg |
 |---|---|---|
-| p35 | umgesetzt (8918029): Cullenect erst ab 1,2 mm Wand, der Bin-Dialog sperrt OK und nennt den Grund in der Cullenect-Zeile der Maßtabelle; Konfiguration laden und Neubau per Rechtsklick öffnen denselben Dialog | pytest; E2E d ALL OK (1,2 / 2 / 3 mm bauen mit Tasche). Dialog selbst nur von Hand prüfbar → Jörgs Testliste |
-| p170 | umgesetzt (a0d2189): jeder Joint Origin eine Skizze mit treibenden Maßen, eine Ebene je Höhe | E2E a vorher 6 FAILED (20,75/62,75 mm bei 50 mm, Skizzen unbestimmt), nachher ALL OK |
-| p60 | umgesetzt laut Spec (0351fc1): Spanne aus Lasche und Fach als `max()`/`min()`, auch Laschen-Hohlraum, seine Öffnungen und das Label der geschalten Bin (Schwester-Pfade) | pytest; E2E b/c/e ausstehend |
-| p101 | Versuch A im Code (nicht committet bis E2E f): Kette in Abschnitte, jeder Abschnitt eigener Sweep | E2E f ausstehend |
+| p35 | umgesetzt (8918029): Cullenect erst ab 1,2 mm Wand, der Bin-Dialog sperrt OK und nennt den Grund in der Cullenect-Zeile der Maßtabelle; Konfiguration laden und Neubau per Rechtsklick öffnen denselben Dialog | pytest; E2E d ALL OK (1,2 / 2 / 3 mm bauen mit Tasche). Dialog nur von Hand prüfbar → Jörgs Testliste |
+| p170 | umgesetzt (a0d2189): jeder Joint Origin eine Skizze mit treibenden Maßen, eine Ebene je Höhe, Namen unverändert | E2E a vorher 6 FAILED (20,75/62,75 mm bei 50 mm, Skizzen unbestimmt), nachher ALL OK |
+| p60 | umgesetzt laut Spec (0351fc1): Spanne aus Lasche und Fach als `max()`/`min()`, auch Laschen-Hohlraum, seine Öffnungen und Label der geschalten Bin (Schwester-Pfade) | pytest; E2E b, c, e ALL OK; Symptom auf dem Ausgangsstand nicht nachstellbar (unten) |
+| p101 | umgesetzt (452a47e Versuch A, a73e76c Versuch B): bei 2 und 3 mm Wand jede Ecke in zwei Abschnitten gesweept, kein Fillet-Ausweg, keine Reststufe | E2E f vorher 4 FAILED (nur Fillets, Stufenflächen 0,18–0,70 mm² bei z 15,5), nach B ALL OK |
+
+## Belege
+
+- **pytest:** `python -m pytest -q` → `722 passed`.
+- **Ende-zu-Ende** `tests/e2e/runde15_grid.py`, Gruppen unter 50 s: a, b, c, d, e ALL OK (Stand reload1/reload2, die
+  p101-Änderung betrifft sie nicht), f ALL OK (Stand reload3 = a73e76c). Vorher-Läufe auf dem Ausgangsstand: a 6 FAILED,
+  b 0,0 mm³ (OK), f 4 FAILED. Ausgaben in `D:\Entwicklung\Gridfinity\fusion-auftraege\r15_*.out`.
+- **Snapshot-Lauf** (`r15_snap`, 18 Häppchen, Stand a73e76c): 79 von 83 grün, rot nur die vier p30-Fälle
+  (`bin_2x1x3_label_icon_text_embossed`, `bin_2x1x3_label_text_engraved`, `bin_2x3x5_features`,
+  `bin_2x3x5_features_params_all`). Kein Snapshot neu abgelegt.
 
 ## Messungen
 
 - **Bauzeit p170** (`r15_timing` / `r15_timing_after`, je Mittel aus 2 Läufen): Bin 4x2 5,01 s → 4,39 s; Grundplatte
   6x6 7,02 s → 9,69 s (+38 %, unter der 50-%-Grenze der Spec).
-- **Taschenstufen p60** (`r15_span`, frisch gebaut, 4x2, 3 Fächer): bei 38/40/42/44/46 mm je Fach eine Einheit
+- **Taschenstufen p60** (`r15_span`, 4x2, 3 Fächer, frisch gebaut): bei 38/40/42/44/46 mm je Fach eine Einheit
   (32,3 / 34,3 / 36,3 / 38,3 / 40,3 mm breit), kein Stufensprung → Paar 42→40 wie in der Spec.
-- **p60 auf dem Ausgangsstand** (`r15_e2e_b_red`): 42→40 mm per Parameter gegen frisch gebaut: 0,0 mm³ Unterschied,
-  Cullenect und Text-Label. Das Symptom aus Runde 5 (0,02 mm³) zeigt sich auf `runde-14-18` nicht mehr. Nachgerechnet:
-  der Laschenanfang ist immer ≥ dem Fachanfang, das Ende kippt bei 3 Fächern in 4 Einheiten nur bei einer
-  Laschenlänge um 1,290 Einheiten (Fenster 0,002). Der Ausdruck-Fix ist trotzdem gebaut (Spec, Entscheidung 2).
-- **Befund p101** (`r15_ledge`): Unter der Lippe ist die Wand bis z = 16,0 mm so dick wie eingestellt, darüber 1,9 mm
-  (Lippe): ein waagerechter Absatz von 0,1 mm (2 mm Wand) bzw. 1,1 mm (3 mm Wand). Die Kettenkanten jeder Ecke zerfallen
-  daran in zwei Abschnitte, alle 8 Ecken gingen in den Fillet-Ausweg, bei 3 mm scheitert der bis 1,08 mm Radius
-  (ASM_BL_CAP_COMPLEX).
+- **p60 auf dem Ausgangsstand** (`r15_e2e_b_red`): 42→40 mm per Parameter gegen frisch gebaut 0,0 mm³ (Cullenect und
+  Text-Label). Das Runde-5-Symptom (0,02 mm³) zeigt sich auf `runde-14-18` nicht mehr. Nachgerechnet: Laschenanfang
+  immer ≥ Fachanfang, das Ende kippt bei 3 Fächern in 4 Einheiten nur bei einer Laschenlänge um 1,290 Einheiten
+  (Fenster 0,002). Der Ausdruck-Fix ist gebaut (Spec, Entscheidung 2), E2E e prüft zusätzlich den gemischten Fall.
+- **Befund p101** (`r15_ledge`): Unter der Lippe ist die Wand bis z = 16,0 mm so dick wie eingestellt, darüber 1,9 mm:
+  ein waagerechter Absatz von 0,1 mm (2 mm Wand) bzw. 1,1 mm (3 mm Wand). Die Kettenkanten jeder Ecke zerfallen daran in
+  zwei Abschnitte, alle 8 Ecken gingen in den Fillet-Ausweg, bei 3 mm scheiterte der bis 1,08 mm Radius.
 
 ## p101 – Versuche
 
-- **Versuch A** (im Code): `raisedDividers.chainRuns` teilt die Kette in Abschnitte (pytest mit den gemessenen Kanten
-  der 3-mm-Wand). Jeder Abschnitt wird mit dem Eckenquerschnitt an seinem unteren Ende gesweept; der obere Querschnitt
-  liegt um den Absatz versetzt und um die Absatzhöhe höher, beides als feste Abstände zu den parametrischen Größen.
-  Foot-Cut je Abschnitt, eine Ecke kommt nur ganz hinein. Prüfung: E2E f.
-
-## Offene Aufträge (Fusion)
-
-In dieser Reihenfolge, ohne Reload bis zum markierten Schritt: `r15_e2e_b`, `r15_e2e_c`, `r15_e2e_e`, `r15_e2e_f_red`,
-dann `r15_reload2`, dann `r15_e2e_f`. Danach der Snapshot-Lauf `r15_snap` (wiederholen bis DONE).
+- **Versuch A** (452a47e): `raisedDividers.chainRuns` teilt die Kette, jeder Abschnitt eigener Sweep mit dem
+  Eckquerschnitt an seinem unteren Ende, der obere um den Absatz versetzt (feste Abstände zu den parametrischen
+  Größen). Ergebnis: 16 Sweeps, kein Fillet; 2 mm grün, bei 3 mm je Ecke eine Fläche von 0,594 mm² bei z 15,896.
+- **Befund** (`r15_corner`): die Fläche zeigt nach unten und grenzt an die Fach-Eckrundung, die ungeschnitten bis
+  16,0 mm reicht: der Fuß-Schnitt kürzte das untere Stück um 0,104 mm.
+- **Versuch B** (a73e76c): nur der oberste Abschnitt einer Ecke bekommt den Fuß-Schnitt; unter dem Absatz kommt kein
+  Fuß an der dicken Wand vorbei. Scheitert der Schnitt, bleiben keine losen Stücke. Ergebnis: E2E f ALL OK.
+- E2E-Kriterium korrigiert (in a73e76c): gezählt werden nur die eigenen Eck-Fillets („Raised divider corner N fillet“,
+  nicht der Fillet des Fuß-Schneidkörpers) und waagerechte Flächen < 1 mm² (Eckquerschnitt ≈ 0,7 mm²); der Wandabsatz
+  entlang der Wand (3,9 mm² bei 2 mm) ist keine Stufe.
 
 ## Gesammelte Abweichungen
 
 - Der Bin-Dialog lässt höchstens 2 mm Wand zu; 3 mm entstehen nur über Konfiguration bzw. Builder. Nicht geändert
   (Hauptsitzung 15.11.).
+
+## Review (Opus)
+
+Folgt.
+
+## Handtest für Jörg (Testtermin)
+
+1. Bin-Dialog, Label-Stil Cullenect, Wand 1,1 mm: OK gesperrt, Cullenect-Zeile nennt „at least 1.2 mm“; 1,2 mm: OK frei.
+2. Bin 4x2 und Grundplatte 3x3 mit Joint Origins, `gfBinN_baseWidth` bzw. die Grundplatten-Basisbreite auf 50 mm: die
+   Joint Origins sitzen in den Zellmitten, ein Joint Bin–Grundplatte sitzt weiter.
+3. Bin mit Trennwänden bis oben und 3 mm Wand (über eine Konfiguration): Ecken durchgehend gerundet, der kleine Absatz
+   unter der Lippe gehört zur Wand.
