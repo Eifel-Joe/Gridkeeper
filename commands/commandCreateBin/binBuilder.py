@@ -6,6 +6,7 @@ from ...lib import tagUtils
 from ...lib import configJson
 from ...lib import placementUtils
 from ...lib import rebuildUtils
+from ...lib import assembly
 from ...lib.gridfinityUtils import combineUtils
 from ...lib.gridfinityUtils import geometryUtils
 from ...lib.gridfinityUtils import faceUtils
@@ -14,6 +15,7 @@ from ...lib.gridfinityUtils import commonUtils
 from ...lib.gridfinityUtils import const
 from ...lib.gridfinityUtils import raisedDividers
 from ...lib.gridfinityUtils import parameterUtils
+from ...lib.gridfinityUtils import designIntent
 from ...lib.gridfinityUtils.dim import Dim
 from ...lib.gridfinityUtils.baseGenerator import createFootGrid, cutBaseClearance, cutWallJunctionPockets, footCenters, createCellJointOrigins, keepBodiesInCells, cutOutsideShape, cutShapeWallJunctionPockets
 from ...lib.gridfinityUtils.baseGeneratorInput import BaseGeneratorInput
@@ -183,19 +185,22 @@ def buildBin(
     placement: tuple[float, float] | None = None,
     parameterPrefix: str | None = None,
     occurrenceTransform: adsk.core.Matrix3D | None = None,
+    oldPlace: assembly.OldPlace | None = None,
+    mayChangeDocument: bool = True,
 ) -> list[adsk.fusion.BRepBody]:
     """
     Builds the bin into the design at the timeline marker, tagged with the settings to show later, see
-    settingsUtils.snapshotInputs. A bin rebuilt in place keeps the placement, the parameters by their prefix and
-    the transform of its component the old one had, see rebuildUtils, a new one goes to a free spot
+    settingsUtils.snapshotInputs. A new bin is a component of its own in the container Bins, a part design is switched
+    to hybrid for it unless the document may not change (a preview). A bin rebuilt in place keeps the placement, the
+    parameters by their prefix, the transform of its component and the place the old one had, see rebuildUtils and
+    assembly.OldPlace, a new one goes to a free spot
     """
-    # The new component is active while it's built, the design's root afterwards: an active component shows every other
-    # one half transparent and the user had to switch back each time (Joerg 15.11.2026). In finally, a failed build
-    # leaves the root active too. A rebuild in place builds through here as well, see rebuildBin
-    try:
-        return _buildBin(des, state, settings, placement, parameterPrefix, occurrenceTransform)
-    finally:
-        des.activateRootComponent()
+    if des.designType == adsk.fusion.DesignTypes.DirectDesignType:
+        raise UnsupportedDesignTypeException('Timeline must be enabled for the generator to work, projects with disabled design history currently are not supported')
+    plan = designIntent.structurePlan(des.designIntent, mayChangeDocument, assembly.rebuildKind(oldPlace))
+    # the root is active afterwards, also after a failed build, see assembly.buildWithStructure. A rebuild in place
+    # builds through here as well, see rebuildBin
+    return assembly.buildWithStructure(des, plan, lambda: _buildBin(des, state, settings, placement, parameterPrefix, occurrenceTransform, plan, oldPlace))
 
 def _buildBin(
     des: adsk.fusion.Design,
@@ -204,6 +209,8 @@ def _buildBin(
     placement: tuple[float, float] | None = None,
     parameterPrefix: str | None = None,
     occurrenceTransform: adsk.core.Matrix3D | None = None,
+    plan: designIntent.StructurePlan | None = None,
+    oldPlace: assembly.OldPlace | None = None,
 ) -> list[adsk.fusion.BRepBody]:
     # creased bins have a single compartment and a solid tab, see creaseLayout
     creases = creaseLayout(state)
@@ -226,22 +233,21 @@ def _buildBin(
 
     if shapeError(state) is not None:
         raise ValueError(shapeError(state))
-    if des.designType == adsk.fusion.DesignTypes.DirectDesignType:
-        raise UnsupportedDesignTypeException('Timeline must be enabled for the generator to work, projects with disabled design history currently are not supported')
     root = adsk.fusion.Component.cast(des.rootComponent)
 
     xyClearance = state.xyClearance
     binName = binDisplayName(state)
 
+    # the container comes before the bin's timeline group, a rebuild deletes the group, see assembly.partPlace
+    place = assembly.partPlace(des, plan or designIntent.structurePlan(des.designIntent, False), tagUtils.KIND_BINS, oldPlace)
     # the marker is before the features after a bin rebuilt in place, at the end otherwise
     originalTimelinePosition = des.timeline.markerPosition
-    if des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
-        # create new component, only allowed in hybrid intent type
-        newCmpOcc = adsk.fusion.Occurrences.cast(root.occurrences).addNewComponent(occurrenceTransform or adsk.core.Matrix3D.create())
-        newCmpOcc.component.name = binName
+    if place.isComponent:
+        newCmpOcc = assembly.addOccurrence(des, place.parent, binName, occurrenceTransform)
         newCmpOcc.activate()
         gridfinityBinComponent: adsk.fusion.Component = newCmpOcc.component
     else:
+        newCmpOcc = None
         gridfinityBinComponent: adsk.fusion.Component = des.rootComponent
     features: adsk.fusion.Features = gridfinityBinComponent.features
 
@@ -703,7 +709,7 @@ def rebuildBin(
         BIN_PARAMETER_BASE_NAME,
         isPreview,
         # colored labels are bodies of their own beside the bin, only the bin bodies take the place of the old ones
-        lambda placement, parameterPrefix, transform: tagUtils.taggedBodies(buildBin(des, state, settings, placement, parameterPrefix, transform), tagUtils.TAG_BIN),
+        lambda placement, parameterPrefix, transform, oldPlace: tagUtils.taggedBodies(buildBin(des, state, settings, placement, parameterPrefix, transform, oldPlace, not isPreview), tagUtils.TAG_BIN),
         'bin',
     )
 

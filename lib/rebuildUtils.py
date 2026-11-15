@@ -5,6 +5,7 @@ from typing import Callable
 
 from . import configJson
 from . import tagUtils
+from . import assembly
 from .gridfinityUtils import commonUtils
 
 # Rebuilding a generated body at its place in the timeline: the new one is built right after the old one's timeline
@@ -21,7 +22,7 @@ class RebuildTarget:
     group: adsk.fusion.TimelineGroup
     # native bodies the group generated with the tag, the ones features after it may use
     bodies: list[adsk.fusion.BRepBody]
-    # the component the group made in a hybrid design, none in a part design where it builds into the root
+    # the component the group made, none for a part built as bodies into the root
     occurrence: adsk.fusion.Occurrence | None
     # the offset the group moved its bodies by, in cm
     placement: tuple[float, float]
@@ -30,6 +31,8 @@ class RebuildTarget:
     laterHealth: list[int] = field(default_factory=list)
     # the group's items before the rebuild, the only ones it deletes, see removeOldGroup
     groupItems: list[adsk.fusion.TimelineObject] = field(default_factory=list)
+    # where the part is, the new one goes there too (round 13: old parts stay where they are)
+    oldPlace: assembly.OldPlace | None = None
 
 def nativeBody(body: adsk.fusion.BRepBody) -> adsk.fusion.BRepBody:
     return body.nativeObject if body.assemblyContext is not None else body
@@ -120,6 +123,7 @@ def findTarget(design: adsk.fusion.Design, body: adsk.fusion.BRepBody, tagName: 
         laterItems,
         [item.healthState for item in laterItems],
         items,
+        assembly.oldPlaceOf(design, occurrence),
     )
 
 def rollAfterGroup(target: RebuildTarget):
@@ -181,7 +185,7 @@ def replaceBodies(
         if body.assemblyContext is None:
             return newBody
         # a body of the old component is now one of the new component, a body of a copy of it stays in that copy
-        context = newOccurrence if target.occurrence is not None and body.assemblyContext == target.occurrence else body.assemblyContext
+        context = newOccurrence if assembly.isSameOccurrence(body.assemblyContext, target.occurrence) else body.assemblyContext
         return newBody.createForAssemblyContext(context) if context is not None else newBody
 
     def replaced(entities: list) -> list | None:
@@ -402,12 +406,12 @@ def rebuild(
     prefix: str | None,
     baseName: str,
     isPreview: bool,
-    build: Callable[[tuple[float, float], str | None, adsk.core.Matrix3D | None], list[adsk.fusion.BRepBody]],
+    build: Callable[[tuple[float, float], str | None, adsk.core.Matrix3D | None, assembly.OldPlace | None], list[adsk.fusion.BRepBody]],
     title: str,
 ) -> tuple[list[adsk.fusion.BRepBody], list[str]]:
     """
     Builds the replacement of the target in its place, keeping the features after it. build gets the placement, the
-    prefix of the parameters to keep, none for new ones, and the transform of the component in a hybrid design, and
+    prefix of the parameters to keep, none for new ones, the transform of the component and where the old part is, and
     returns the new bodies. Returns them with what of the later features needs a look, title names the body in it.
     A preview is undone anyway, it builds at the end of the timeline with the old body suppressed, rolling the
     timeline back and forth for each would be slow
@@ -415,11 +419,11 @@ def rebuild(
     transform = target.occurrence.transform2 if target.occurrence is not None else None
     if isPreview:
         hideOldBody(target)
-        return (build(target.placement, None, transform), [])
+        return (build(target.placement, None, transform, target.oldPlace), [])
 
     oldNames = tagParameterNames(target.bodies[0])
     rollAfterGroup(target)
-    newBodies = build(target.placement, prefix, transform)
+    newBodies = build(target.placement, prefix, transform, target.oldPlace)
     newOccurrence = None
     if len(newBodies) > 0 and newBodies[0].parentComponent != design.rootComponent:
         occurrences = design.rootComponent.allOccurrencesByComponent(newBodies[0].parentComponent)
