@@ -4,6 +4,21 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
 
 ## Unreleased
 
+### Tests and the settings window (round 16)
+
+- **Shape tests green on any font (p30):** bins with a text label are compared by their form, the number of bodies,
+  their volume and the box around them, not by where each letter lies, which depends on the font and the Fusion
+  version. A setting newer than a snapshot counts as a change only when the case has it off its default. The whole
+  run is green again, 83 of 83, without recording those snapshots anew.
+- **Previews in any language (p31):** the color of the snapshot previews and model pictures is found through the
+  appearance library's id, as for the label colors, so a Fusion with a German library takes previews too; without
+  any, the picture is taken in Fusion's own look.
+- **Checks in the test run (p34):** a check after a build that breaks shows as a check failure, not as a build failure,
+  and the build with a case's parameters from the start gets its sketches checked as well.
+- **Gridfinity settings of a Cullenect bin (p32, p33):** the Cullenect section shows the label tab width as built,
+  widened for the socket, and a row per socket size with how many sockets of it the bin has, e.g. "1U: 8 sockets".
+  Bins built before keep the list they were built with.
+
 ### Grid and bin geometry (round 15)
 
 - **Joint origins follow the grid (p170):** the joint origins of bin feet and baseplate sockets sat in one sketch on
