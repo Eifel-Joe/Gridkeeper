@@ -326,10 +326,23 @@ def repointJoints(
         return (0, [])
     oldComponent = (target.occurrence.nativeObject or target.occurrence).component
     newComponent = newOccurrence.component
+    def pocketTag(jointOrigin: adsk.fusion.JointOrigin) -> str | None:
+        attribute = jointOrigin.attributes.itemByName(tagUtils.TAG_GROUP, tagUtils.TAG_POCKET)
+        return attribute.value if attribute is not None else None
+    # pockets only: a joint on a foot's joint origin, a bin onto a baseplate, is the user's own and stays as it is (review)
     remap = cullenect.pocketRemap(
-        [jointOrigin.name for jointOrigin in oldComponent.jointOrigins],
-        [jointOrigin.name for jointOrigin in newComponent.jointOrigins],
+        cullenect.pocketNames([(jointOrigin.name, pocketTag(jointOrigin)) for jointOrigin in oldComponent.jointOrigins]),
+        cullenect.pocketNames([(jointOrigin.name, pocketTag(jointOrigin)) for jointOrigin in newComponent.jointOrigins]),
     )
+
+    def insertSizeMm(jointOrigin: adsk.fusion.JointOrigin) -> tuple[float, float] | None:
+        """Width and height of the insert the joint origin is on, from its tagged body, the insert lies flat along X"""
+        component = (jointOrigin.nativeObject or jointOrigin).parentComponent
+        bodies = [body for body in component.bRepBodies if body.attributes.itemByName(tagUtils.TAG_GROUP, tagUtils.TAG_LABEL) is not None]
+        if len(bodies) == 0:
+            return None
+        box = bodies[0].boundingBox
+        return (round((box.maxPoint.x - box.minPoint.x) * 10, 4), round((box.maxPoint.y - box.minPoint.y) * 10, 4))
     moved = 0
     notes = []
     # items of a collapsed group can't be rolled to ("Associated feature is invalid", Fusion 15.11.2026), the group of
@@ -338,9 +351,9 @@ def repointJoints(
     for joint in list(design.rootComponent.allJoints):
         for side in ('geometryOrOriginOne', 'geometryOrOriginTwo'):
             jointOrigin = adsk.fusion.JointOrigin.cast(getattr(joint, side))
-            if jointOrigin is None or (jointOrigin.nativeObject or jointOrigin).parentComponent != oldComponent:
+            if jointOrigin is None or (jointOrigin.nativeObject or jointOrigin).parentComponent != oldComponent or jointOrigin.name not in remap:
                 continue
-            newName = remap.get(jointOrigin.name)
+            newName = remap[jointOrigin.name]
             if newName is None:
                 notes.append(f'{joint.name}: the new {newComponent.name} has no {jointOrigin.name}, the joint goes with the old one')
                 continue
@@ -351,9 +364,19 @@ def repointJoints(
                     group.isCollapsed = False
                     collapsedGroups.append(group)
                 item.rollTo(True)
-                setattr(joint, side, newComponent.jointOrigins.itemByName(newName).createForAssemblyContext(newOccurrence))
+                newPocket = newComponent.jointOrigins.itemByName(newName)
+                setattr(joint, side, newPocket.createForAssemblyContext(newOccurrence))
                 moved += 1
                 commonUtils.debugLog(f'{LOG_PREFIX} {joint.name} now uses {newName} of the new part')
+                # a narrower pocket of the same name, after other base units or compartments, may no longer take the
+                # insert, the label command wouldn't joint it there (spec 12), the rebuild says so (review)
+                otherSide = adsk.fusion.JointOrigin.cast(getattr(joint, 'geometryOrOriginTwo' if side == 'geometryOrOriginOne' else 'geometryOrOriginOne'))
+                insertSize = insertSizeMm(otherSide) if otherSide is not None else None
+                pocketSize = cullenect.readPocketTagValue(pocketTag(newPocket) or '')
+                if insertSize is not None and pocketSize is not None:
+                    fitNote = cullenect.pocketFitNote(joint.name, newName, insertSize, pocketSize)
+                    if fitNote is not None:
+                        notes.append(fitNote)
             except Exception as err:
                 commonUtils.fileLog(f'{LOG_PREFIX} {joint.name} couldn\'t be moved over to {newName}, {err}')
                 notes.append(f'{joint.name}: couldn\'t be moved over to {newName} of the new {newComponent.name}, it goes with the old one')

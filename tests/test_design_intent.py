@@ -49,3 +49,22 @@ def test_rebuild_of_an_occurrence_keeps_its_parent():
     for designIntent in (intent.PART, intent.HYBRID):
         for mayChange in (True, False):
             assert intent.structurePlan(designIntent, mayChange, intent.REBUILD_OLD_OCCURRENCE) == intent.StructurePlan(switchToHybrid=False, place=intent.PLACE_OLD_PARENT)
+
+
+# --- review of round 13: bins and baseplates switch a part design to hybrid too, they tell the user like the label
+# command does (it can't be switched back)
+
+import ast
+
+
+def test_every_command_tells_about_the_switch_to_hybrid():
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    for command in ("commandCreateBin", "commandCreateBaseplate", "commandCreateLabel"):
+        with open(os.path.join(project_root, "commands", command, "entry.py"), encoding="utf-8") as file:
+            tree = ast.parse(file.read())
+        execute = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "command_execute")
+        assert "HYBRID_SWITCH_MESSAGE" in ast.unparse(execute), command
+
+
+def test_hybrid_switch_message_names_the_part():
+    assert "part design" in intent.hybridSwitchMessage("bin") and "bin" in intent.hybridSwitchMessage("bin")
