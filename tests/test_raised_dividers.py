@@ -270,3 +270,28 @@ def test_one_run_without_a_ledge():
 def test_a_branching_chain_has_no_runs():
     edges = [((1.0, 0.0), (1.0, 1.0)), ((1.0, 1.0), (1.0, 2.0)), ((1.0, 1.0), (2.0, 1.5))]
     assert raised.chainRuns(edges) is None
+
+
+def test_three_runs_up_a_double_ledge():
+    edges = [((3.0, 15.5), (3.0, 16.0)), ((2.5, 16.0), (2.5, 17.0)), ((1.9, 17.0), (1.9, 19.8))]
+    assert raised.chainRuns(edges) == [[0], [1], [2]]
+
+
+def test_runs_that_dont_meet_at_a_ledge_are_no_runs():
+    # a stray edge beside the chain, overlapping it in height: filleted as before, not swept on its own
+    edges = [((3.0, 15.5), (3.0, 16.0)), ((1.9, 16.0), (1.9, 19.8)), ((5.0, 17.0), (5.0, 18.0))]
+    assert raised.chainRuns(edges) is None
+
+
+def test_runs_at_one_spot_are_no_ledge():
+    # a gap in height with no step aside isn't a ledge
+    edges = [((3.0, 15.5), (3.0, 16.0)), ((3.0, 16.5), (3.0, 19.8))]
+    assert raised.chainRuns(edges) is None
+
+
+def test_the_run_above_the_ledge_moves_over_by_it_and_up_to_it():
+    runs = raised.chainRuns(LEDGE_3MM)
+    assert raised.runOffset(LEDGE_3MM, runs, 0) == (0, 0)
+    (shift, rise) = raised.runOffset(LEDGE_3MM, runs, 1)
+    assert shift == pytest.approx(1.9 - 3.0)
+    assert rise == pytest.approx(16.0 - 15.5)
