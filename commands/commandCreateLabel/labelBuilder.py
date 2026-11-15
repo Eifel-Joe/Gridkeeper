@@ -334,7 +334,7 @@ def rebuildLabel(
     # inserts aren't moved into place but drawn there, no move of this name: the placement is (0, 0)
     target = rebuildUtils.findTarget(des, body, tagUtils.TAG_LABEL, LABEL_PLACEMENT_FEATURE)
     if _isAfter(target, pocket):
-        raise ValueError('The bin of this pocket comes after the insert in the timeline, the insert can't be rebuilt into it in place')
+        raise ValueError("The bin of this pocket comes after the insert in the timeline, the insert can't be rebuilt into it in place")
     old = _insertBody(target)
     # read where it is built, right after its group: a later move of the body would be taken twice, once in the corner
     # and once when the move gets the new body (review)
