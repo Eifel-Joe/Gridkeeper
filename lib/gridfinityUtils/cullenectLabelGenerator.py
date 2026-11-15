@@ -174,12 +174,20 @@ def createCullenectLabel(
     *,
     name: str,
     origin: tuple[float, float] = (0, 0),
+    markingComponent: adsk.fusion.Component | None = None,
+    baseOccurrence: adsk.fusion.Occurrence | None = None,
+    markingOccurrence: adsk.fusion.Occurrence | None = None,
 ) -> tuple[adsk.fusion.BRepBody, list[adsk.fusion.BRepBody]]:
     """The insert with its bottom left corner at `origin`, and the text and symbol as bodies of their own so they can
     be printed in another colour: on top of the insert when embossed, set into it when debossed or flush. Debossed keeps
     the filling but hides it, flush shows it. The outline follows the width dim, the symbol is moved along with it.
+    The text and symbol are built in the marking component, the Text component of the insert (round 13, p90), the
+    insert's own one without. Built there rather than moved there: letters a later text adds come from the same
+    extrusion and land in Text too, a move would leave them behind. Cuts into the insert from there take the bodies as
+    seen from the root through the occurrences, Fusion refused them otherwise (15.11.2026), see assembly.inContext.
     Returns the insert and the text and symbol bodies, one per letter or symbol part, none without text and symbol"""
     timer = commonUtils.StepTimer(name)
+    markingComponent = markingComponent or targetComponent
     width = input.width
     height = input.height
     thickness = const.CULLENECT_LABEL_THICKNESS
@@ -204,33 +212,35 @@ def createCullenectLabel(
     timer.step('insert')
 
     isEmbossed = input.surface == SURFACE_EMBOSSED
-    plane = _offsetPlane(thickness, targetComponent, f'{name} text plane')
+    plane = _offsetPlane(thickness, markingComponent, f'{name} text plane')
+    # the insert as seen from the marking component's features, see the docstring
+    baseInContext = base.createForAssemblyContext(baseOccurrence) if baseOccurrence is not None else base
     depth = const.CULLENECT_MARKING_DEPTH
     textBodies = []
     iconBodies = []
     if len(lines) > 0:
-        textSketch: adsk.fusion.Sketch = targetComponent.sketches.add(plane)
+        textSketch: adsk.fusion.Sketch = markingComponent.sketches.add(plane)
         textSketch.name = f'{name} text sketch'
         (texts, twins) = _texts(textSketch, layout, lines, input.textParameters, input.textStyle, not isEmbossed, timer)
         if len(texts) > 0:
             if not isEmbossed:
                 # cut by the twin texts, not by the bodies of the filling: a combine takes the letter bodies there
                 # are, a later text with more letters would lose them as tools
-                _cutExtrude(twins, depth, base, targetComponent, f'{name} text cut')
-            textBodies = list(_extrude(texts, depth, isEmbossed, targetComponent, f'{name} text').bodies)
+                _cutExtrude(twins, depth, baseInContext, markingComponent, f'{name} text cut')
+            textBodies = list(_extrude(texts, depth, isEmbossed, markingComponent, f'{name} text').bodies)
             timer.step('text extruded')
     if size is not None:
-        iconSketch: adsk.fusion.Sketch = targetComponent.sketches.add(plane)
+        iconSketch: adsk.fusion.Sketch = markingComponent.sketches.add(plane)
         iconSketch.name = f'{name} icon sketch'
         profiles = _iconProfilesPlaced(iconSketch, input.iconPath, layout, size, timer)
         if len(profiles) > 0:
-            iconBodies = list(_extrude(profiles, depth, isEmbossed, targetComponent, f'{name} icon').bodies)
+            iconBodies = list(_extrude(profiles, depth, isEmbossed, markingComponent, f'{name} icon').bodies)
             # the symbol stays at the right edge when the width parameter changes
             shiftX = width - Dim.length(width.value)
             if shiftX.isExpression:
-                moveInput = targetComponent.features.moveFeatures.createInput2(commonUtils.objectCollectionFromList(iconBodies))
+                moveInput = markingComponent.features.moveFeatures.createInput2(commonUtils.objectCollectionFromList(iconBodies))
                 moveInput.defineAsTranslateXYZ(valueInput(shiftX), valueInput(Dim.length(0)), valueInput(Dim.length(0)), True)
-                targetComponent.features.moveFeatures.add(moveInput).name = f'{name} icon placement'
+                markingComponent.features.moveFeatures.add(moveInput).name = f'{name} icon placement'
             timer.step('icon extruded and placed')
 
     parts = textBodies + iconBodies
@@ -245,7 +255,8 @@ def createCullenectLabel(
     if not isEmbossed:
         if len(iconBodies) > 0:
             # the symbol is fixed, its bodies stay the same
-            combineUtils.cutBody(base, commonUtils.objectCollectionFromList(iconBodies), targetComponent, True, name=f'{name} symbol cut')
+            iconTools = [body.createForAssemblyContext(markingOccurrence) for body in iconBodies] if markingOccurrence is not None else iconBodies
+            combineUtils.cutBody(baseInContext, commonUtils.objectCollectionFromList(iconTools), targetComponent, True, name=f'{name} symbol cut')
         if input.surface == SURFACE_DEBOSSED:
             for part in parts:
                 part.isLightBulbOn = False

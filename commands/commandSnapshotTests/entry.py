@@ -327,10 +327,12 @@ def setTexts(design: adsk.fusion.Design, texts: dict[str, str]):
     adsk.doEvents()
 
 def labelPartBodies(insert: adsk.fusion.BRepBody) -> list[adsk.fusion.BRepBody]:
-    """The text and symbol bodies beside an insert in its component of its own, letters a longer text added have
-    names Fusion gave them, see cullenectLabelGenerator. Every label case builds the insert in a component of its own
-    (a part design is switched to hybrid), in the root this would take every other body too"""
-    return [body for body in insert.parentComponent.bRepBodies if body != insert]
+    """The text and symbol bodies of an insert, in the Text component inside its own component (round 13), letters a
+    longer text added have names Fusion gave them, see cullenectLabelGenerator. Every label case builds the insert in a
+    component of its own (a part design is switched to hybrid), in the root this would take every other body too"""
+    component = insert.parentComponent
+    textComponents = [occurrence.component for occurrence in component.occurrences if occurrence.component.name.startswith('Text')]
+    return [body for body in component.bRepBodies if body != insert] + [body for text in textComponents for body in text.bRepBodies]
 
 # what Fusion found wrong with a timeline feature. Groups and some other items are of unknown health, nothing to report
 HEALTH_NAMES = {
