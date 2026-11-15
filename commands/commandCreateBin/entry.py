@@ -1482,7 +1482,7 @@ def generateBin(args: adsk.core.CommandEventArgs, isPreview: bool):
         if rebuildBodyToken is not None:
             (builtBodies, rebuildNotes) = binBuilder.rebuildBin(des, findRebuildBody(des), state, settings, isPreview)
         else:
-            builtBodies = binBuilder.buildBin(des, state, settings)
+            builtBodies = binBuilder.buildBin(des, state, settings, mayChangeDocument=not isPreview)
         futil.log(f'{CMD_NAME} {binBuilder.binDisplayName(state)} generated in {time.perf_counter() - startTime:.3f}s')
     except UnsupportedDesignTypeException as err:
         args.executeFailed = True

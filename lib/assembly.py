@@ -81,20 +81,45 @@ def addOccurrence(
     return inContext(native, parent)
 
 
-def partOccurrence(
+@dataclass
+class PartPlace:
+    """Where a part is built: a component of its own in the parent (None for the root), or bodies in the root"""
+    isComponent: bool
+    parent: adsk.fusion.Occurrence | None = None
+
+
+def partPlace(
     des: adsk.fusion.Design,
     plan: designIntent.StructurePlan,
     kind: str,
     oldPlace: OldPlace | None,
-    name: str,
-    transform: adsk.core.Matrix3D | None = None,
-) -> adsk.fusion.Occurrence | None:
-    """The component a part is built in, None for bodies in the root, see designIntent.structurePlan"""
+) -> PartPlace:
+    """
+    Where the part goes, see designIntent.structurePlan. Makes the container if needed, so it's called before the
+    part's timeline group starts, and the part's component is added after, see addOccurrence
+    """
     if plan.place == designIntent.PLACE_ROOT_BODIES:
-        return None
+        return PartPlace(isComponent=False)
     if plan.place == designIntent.PLACE_OLD_PARENT:
-        return addOccurrence(des, oldPlace.parent if oldPlace is not None else None, name, transform)
-    return addOccurrence(des, containerOccurrence(des, kind), name, transform)
+        return PartPlace(isComponent=True, parent=oldPlace.parent if oldPlace is not None else None)
+    return PartPlace(isComponent=True, parent=containerOccurrence(des, kind))
+
+
+def oldPlaceOf(des: adsk.fusion.Design, occurrence: adsk.fusion.Occurrence | None) -> OldPlace:
+    """Where a part with that component, none for bodies in the root, is: its parent as a proxy with the full path"""
+    if occurrence is None:
+        return OldPlace(isComponent=False)
+    native = occurrence.nativeObject or occurrence
+    proxies = des.rootComponent.allOccurrencesByComponent(native.component)
+    proxy = proxies.item(0) if proxies.count > 0 else None
+    return OldPlace(isComponent=True, parent=proxy.assemblyContext if proxy is not None else None)
+
+
+def isSameOccurrence(a: adsk.fusion.Occurrence | None, b: adsk.fusion.Occurrence | None) -> bool:
+    """Native and proxy of an occurrence count as the same"""
+    if a is None or b is None:
+        return False
+    return (a.nativeObject or a) == (b.nativeObject or b)
 
 
 class TextOccurrence:
