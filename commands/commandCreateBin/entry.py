@@ -15,6 +15,7 @@ from ...lib.gridfinityUtils import const
 from ...lib.gridfinityUtils import sharedParameters
 from ...lib.gridfinityUtils import labelGenerator
 from ...lib.gridfinityUtils import labelColors
+from ...lib.gridfinityUtils import textStyles
 from ...lib.gridfinityUtils import cullenect
 from ...lib.gridfinityUtils.binBodyTabGenerator import tabFilletAllowance
 from ...lib.gridfinityUtils import compartmentLayout
@@ -998,7 +999,7 @@ def command_preview(args: adsk.core.CommandEventArgs):
         args.executeFailedMessage = "Some inputs are invalid, unable to generate preview"
 
 def showPreviewTime(inputs: adsk.core.CommandInputs, seconds: float, isValid: bool):
-    inputs.itemById(PREVIEW_TIME_INPUT).text = f'{seconds:.2f} s' if isValid else f'failed after {seconds:.2f} s'
+    inputs.itemById(PREVIEW_TIME_INPUT).text = f'{seconds:.2f} s{textStyles.previewNote(textStyles.notes())}' if isValid else f'failed after {seconds:.2f} s'
 
 def command_input_changed(args: adsk.core.InputChangedEventArgs):
     changed_input = args.input
@@ -1104,6 +1105,13 @@ def pageHandlers(browserId: str, command: adsk.core.Command) -> dict[str, browse
 def command_destroy(args: adsk.core.CommandEventArgs):
     # General logging for debug.
     futil.log(f'{CMD_NAME} Command Destroy Event "{args.terminationReason}"')
+    if args.terminationReason == adsk.core.CommandTerminationReason.CompletedTerminationReason:
+        # A label text fitted so small that a 0.4 mm nozzle leaves parts out (p130). Told here and not on execute: a
+        # valid preview is kept on OK (isValidResult) and execute doesn't run then. The notes are those of the last
+        # build, the preview kept or the execute
+        hint = textStyles.hintText(textStyles.notes(), suggestHeavy=False)
+        if hint is not None:
+            ui.messageBox(hint, CMD_NAME)
     global local_handlers
     local_handlers = []
 
@@ -1282,6 +1290,8 @@ def generateBin(args: adsk.core.CommandEventArgs):
     # the settings come first, so a failing build can be reproduced from the log
     commonUtils.fileLog(f'{CMD_NAME} generating with settings:\n{settingsUtils.settingsText(settings)}')
     state = getInputsState()
+    # notes of an earlier build, a preview or a failed one, are not this one's
+    textStyles.clearNotes()
 
     try:
         des = adsk.fusion.Design.cast(app.activeProduct)

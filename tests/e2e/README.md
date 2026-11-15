@@ -102,6 +102,7 @@ This page is written from the case files, run `python3 tests/e2e/write_readme.py
 |  | [label_1u_screw_text_colored](cases/label_1u_screw_text_colored.json) | The baseline insert with its text and symbol in red (p86), the bodies carry the label appearance |
 |  | [label_1u_screw_text_part](cases/label_1u_screw_text_part.json) | 1U insert with a screw and text built in a part design: the document turns hybrid and the insert is a component of its own, as the bodies of label_1u_screw_text |
 |  | [label_1u_set_screw_hex](cases/label_1u_set_screw_hex.json) | 1U insert with a hex set screw (p85), headless, and one line of text, raised |
+|  | [label_1u_two_lines_heavy](cases/label_1u_two_lines_heavy.json) | 1U insert with two lines in the Heavy style, flush - lettering printable with a 0.4 mm nozzle (p130) |
 |  | [label_1u_welle_6mm](cases/label_1u_welle_6mm.json) | Joerg's 1U insert "Welle 6mm", flush, no symbol: Fusion broke the line in two and hung it off the insert (p84), the text stays one line on it |
 |  | [label_1u_welle_6mm_text_edited](cases/label_1u_welle_6mm_text_edited.json) | Joerg's 1U insert "Welle 6mm" with its text made longer once built (p70): the line isn't fitted again and stays one line, it runs on to the right past the insert. Sets `gfLabel1_text1` "Welle 6mm h6 lang" once built |
 |  | [label_25mm_free](cases/label_25mm_free.json) | Insert 25 mm wide given in mm with a width correction of -0.1 mm, a flanged pan head screw, flush, bold text |

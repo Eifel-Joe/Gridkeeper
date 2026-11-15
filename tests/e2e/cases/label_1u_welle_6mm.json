@@ -10,7 +10,7 @@
         "offsetY": 0.0,
         "line1": "Welle 6mm",
         "line2": "",
-        "isBold": false,
+        "textStyle": "Regular",
         "showScrew": false,
         "head": "socket",
         "shaft": "machine",

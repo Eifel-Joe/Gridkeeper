@@ -3,8 +3,8 @@
         {
             "name": "Gridfinity label 2U M4",
             "file": "body1.smt",
-            "volume": 991.309585,
-            "area": 2052.80847,
+            "volume": 974.540691,
+            "area": 2107.556233,
             "bboxMin": [
                 0.0,
                 0.0,
@@ -23,12 +23,12 @@
         {
             "name": "Gridfinity label 2U M4 text 1",
             "file": "body2.smt",
-            "volume": 0.514574,
-            "area": 7.817412,
+            "volume": 1.029147,
+            "area": 10.489088,
             "bboxMin": [
                 25.234993,
                 1.25,
-                1.0
+                0.8
             ],
             "bboxMax": [
                 27.295361,
@@ -43,12 +43,12 @@
         {
             "name": "Gridfinity label 2U M4 text 2",
             "file": "body3.smt",
-            "volume": 0.300819,
-            "area": 4.580082,
+            "volume": 0.601637,
+            "area": 6.151978,
             "bboxMin": [
                 15.171896,
                 1.25,
-                1.0
+                0.8
             ],
             "bboxMax": [
                 15.601637,
@@ -63,12 +63,12 @@
         {
             "name": "Gridfinity label 2U M4 text 3",
             "file": "body4.smt",
-            "volume": 0.524308,
-            "area": 8.034012,
+            "volume": 1.048616,
+            "area": 10.824945,
             "bboxMin": [
                 4.609822,
                 0.22101,
-                1.0
+                0.8
             ],
             "bboxMax": [
                 6.93281,
@@ -83,12 +83,12 @@
         {
             "name": "Gridfinity label 2U M4 text 4",
             "file": "body5.smt",
-            "volume": 0.300819,
-            "area": 4.580082,
+            "volume": 0.601637,
+            "area": 6.151978,
             "bboxMin": [
                 7.28854,
                 1.25,
-                1.0
+                0.8
             ],
             "bboxMax": [
                 7.718281,
@@ -103,12 +103,12 @@
         {
             "name": "Gridfinity label 2U M4 text 5",
             "file": "body6.smt",
-            "volume": 0.554142,
-            "area": 8.257224,
+            "volume": 1.108284,
+            "area": 10.973027,
             "bboxMin": [
                 16.107776,
                 1.192701,
-                1.0
+                0.8
             ],
             "bboxMax": [
                 18.483287,
@@ -123,12 +123,12 @@
         {
             "name": "Gridfinity label 2U M4 text 6",
             "file": "body7.smt",
-            "volume": 0.512542,
-            "area": 7.797695,
+            "volume": 1.025083,
+            "area": 10.469972,
             "bboxMin": [
                 27.944747,
                 1.192701,
-                1.0
+                0.8
             ],
             "bboxMax": [
                 30.000341,
@@ -143,12 +143,12 @@
         {
             "name": "Gridfinity label 2U M4 text 7",
             "file": "body8.smt",
-            "volume": 1.136715,
-            "area": 16.989453,
+            "volume": 2.273431,
+            "area": 22.611753,
             "bboxMin": [
                 1.362892,
                 6.25,
-                1.0
+                0.8
             ],
             "bboxMax": [
                 4.702933,
@@ -163,12 +163,12 @@
         {
             "name": "Gridfinity label 2U M4 text 8",
             "file": "body9.smt",
-            "volume": 0.611276,
-            "area": 9.181902,
+            "volume": 1.222552,
+            "area": 12.251043,
             "bboxMin": [
                 5.135061,
                 6.25,
-                1.0
+                0.8
             ],
             "bboxMax": [
                 7.555934,
@@ -183,12 +183,12 @@
         {
             "name": "Gridfinity label 2U M4 text 9",
             "file": "body10.smt",
-            "volume": 0.585175,
-            "area": 8.877555,
+            "volume": 1.17035,
+            "area": 11.903358,
             "bboxMin": [
                 21.434174,
                 1.25,
-                1.0
+                0.8
             ],
             "bboxMax": [
                 23.535129,
@@ -203,12 +203,12 @@
         {
             "name": "Gridfinity label 2U M4 text 10",
             "file": "body11.smt",
-            "volume": 0.514574,
-            "area": 7.817412,
+            "volume": 1.029147,
+            "area": 10.489088,
             "bboxMin": [
                 11.103683,
                 1.25,
-                1.0
+                0.8
             ],
             "bboxMax": [
                 13.164052,
@@ -223,12 +223,12 @@
         {
             "name": "Gridfinity label 2U M4 text 11",
             "file": "body12.smt",
-            "volume": 0.919481,
-            "area": 13.385001,
+            "volume": 1.838963,
+            "area": 17.57519,
             "bboxMin": [
                 1.372442,
                 1.25,
-                1.0
+                0.8
             ],
             "bboxMax": [
                 4.129945,
@@ -243,12 +243,12 @@
         {
             "name": "Gridfinity label 2U M4 text 12",
             "file": "body13.smt",
-            "volume": 0.554142,
-            "area": 8.257224,
+            "volume": 1.108284,
+            "area": 10.973027,
             "bboxMin": [
                 8.22442,
                 1.192701,
-                1.0
+                0.8
             ],
             "bboxMax": [
                 10.599931,
@@ -263,12 +263,12 @@
         {
             "name": "Gridfinity label 2U M4 text 13",
             "file": "body14.smt",
-            "volume": 0.459295,
-            "area": 7.067632,
+            "volume": 0.918591,
+            "area": 9.54231,
             "bboxMin": [
                 18.85573,
                 1.192701,
-                1.0
+                0.8
             ],
             "bboxMax": [
                 21.06412,
@@ -283,12 +283,12 @@
         {
             "name": "Gridfinity label 2U M4 text 14",
             "file": "body15.smt",
-            "volume": 0.361939,
-            "area": 5.555447,
+            "volume": 0.723878,
+            "area": 7.491505,
             "bboxMin": [
                 30.437244,
                 1.216576,
-                1.0
+                0.8
             ],
             "bboxMax": [
                 31.673942,
@@ -303,12 +303,12 @@
         {
             "name": "Gridfinity label 2U M4 symbol 1",
             "file": "body16.smt",
-            "volume": 7.335815,
-            "area": 83.127996,
+            "volume": 14.67163,
+            "area": 92.897843,
             "bboxMin": [
                 66.83012,
                 1.16988,
-                1.0
+                0.8
             ],
             "bboxMax": [
                 76.83012,
@@ -323,12 +323,12 @@
         {
             "name": "Gridfinity label 2U M4 symbol 2",
             "file": "body17.smt",
-            "volume": 1.583278,
-            "area": 21.110567,
+            "volume": 3.166557,
+            "area": 26.388351,
             "bboxMin": [
                 69.43013,
                 3.10001,
-                1.0
+                0.8
             ],
             "bboxMax": [
                 74.23011,

@@ -10,7 +10,7 @@
         "offsetY": 0.0,
         "line1": "Assorted screws",
         "line2": "M2 to M5",
-        "isBold": false,
+        "textStyle": "Regular",
         "showScrew": false,
         "head": "socket",
         "shaft": "machine",

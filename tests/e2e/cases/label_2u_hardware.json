@@ -10,7 +10,7 @@
         "offsetY": 0.0,
         "line1": "M4",
         "line2": "Nylon lock nut",
-        "isBold": false,
+        "textStyle": "Regular",
         "showScrew": false,
         "head": "socket",
         "shaft": "machine",
