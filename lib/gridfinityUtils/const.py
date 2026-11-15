@@ -95,6 +95,9 @@ CULLENECT_MARKING_DEPTH = 0.04
 # least material left around the socket on the tab top
 CULLENECT_POCKET_MARGIN = 0.1
 CULLENECT_MIN_TAB_WIDTH = 1.4
+# the thinnest bin wall a Cullenect socket goes into, Joerg 15.11.2026 (p35): "Standard fuer Cullenect ist 1,2mm. Dicker
+# geht, duenner nicht."
+CULLENECT_MIN_WALL_THICKNESS = 0.12
 # sockets come in standard label widths, in steps of half a unit
 CULLENECT_UNIT_STEP = 0.5
 # insert of the label command: text from the left margin to a gap before the symbol. Fusion's text height is the
