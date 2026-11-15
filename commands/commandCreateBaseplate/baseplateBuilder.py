@@ -93,6 +93,20 @@ def buildBaseplate(
     Builds the baseplate into the design, tagged with the settings to show later, see settingsUtils.snapshotInputs.
     A preview spreads fill pieces apart and goes without joint origins
     """
+    # The new component is active while it's built, the design's root afterwards: an active component shows every other
+    # one half transparent and the user had to switch back each time (Nutzer 15.11.2026). In finally, a failed build
+    # leaves the root active too
+    try:
+        return _buildBaseplate(des, inputsState, settings, isPreview)
+    finally:
+        des.activateRootComponent()
+
+def _buildBaseplate(
+    des: adsk.fusion.Design,
+    inputsState: InputState,
+    settings: list[dict],
+    isPreview: bool = False,
+) -> list[adsk.fusion.BRepBody]:
     if des.designType == 0:
         raise UnsupportedDesignTypeException('Timeline must be enabled for the generator to work, projects with disabled design history currently are not supported')
     root = adsk.fusion.Component.cast(des.rootComponent)
