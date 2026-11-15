@@ -267,8 +267,9 @@ def createTabHollowCuts(
 
     flatMinX = cavity.minX + Dim.length(cavity.cornerRadius)
     flatMaxX = cavity.maxX - Dim.length(cavity.cornerRadius)
-    openingMinX = hollowMinX if hollowMinX.value >= flatMinX.value else flatMinX
-    openingMaxX = hollowMaxX if hollowMaxX.value <= flatMaxX.value else flatMaxX
+    # as expressions, so they follow a changed base width (round 15, p60)
+    openingMinX = Dim.max(hollowMinX, flatMinX)
+    openingMaxX = Dim.min(hollowMaxX, flatMaxX)
     if openings.back and (openingMaxX - openingMinX).value > 0:
         cuts.back = createBackOpening(openingMinX, openingMaxX, 'back opening')
     # a side opened along with the back also takes the back wall at the corner between them, so no pillar is left

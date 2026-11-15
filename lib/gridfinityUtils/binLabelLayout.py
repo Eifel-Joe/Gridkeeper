@@ -22,6 +22,14 @@ def isIconHeldByDims(pointCount: int) -> bool:
     return pointCount <= ICON_POINTS_HELD_BY_DIMS
 
 
+def labelSpan(tabOriginX: Dim, tabLength: Dim, compartmentX: Dim, compartmentWidth: Dim) -> tuple[Dim, Dim]:
+    """From where to where across a compartment its label or Cullenect socket goes: the overlap of the tab and the
+    compartment, a tab is trimmed to its compartment. As Fusion's max() and min() of both (round 15, p60): picked by
+    their values when building, a base width changed afterwards could turn which ends first, and the socket of a
+    compartment beside the grid stayed off its middle"""
+    return (Dim.max(tabOriginX, compartmentX), Dim.min(tabOriginX + tabLength, compartmentX + compartmentWidth))
+
+
 @dataclass
 class BinLabelPlacement:
     # height of the label plane

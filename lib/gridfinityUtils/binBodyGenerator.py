@@ -12,7 +12,7 @@ from .binBodyGeneratorInput import BinBodyGeneratorInput, BinBodyCompartmentDefi
 from .binBodyTabGeneratorInput import BinBodyTabGeneratorInput
 from .binBodyTabGenerator import createGridfinityBinBodyTab, createTabHollowCuts, TabCavity, TabWallOpenings, TabHollowCuts
 from .labelGenerator import BinLabelDefinition, BinLabelInput, createLabel, LABEL_STYLE_EMBOSSED, LABEL_STYLE_ENGRAVED, LABEL_STYLE_CULLENECT
-from . import cullenect
+from . import cullenect, binLabelLayout
 from .cullenectSocketGenerator import createCullenectSocket, SocketPlacement
 from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput
 from .binBodyLipGenerator import createGridfinityBinBodyLip, createStackedFootCutters
@@ -351,11 +351,8 @@ def createGridfinityBinBody(
                 continue
             (compartmentX, compartmentY, compartmentWidth, compartmentLength) = compartmentPlacement(compartment)
             (tabOriginX, tabOriginY, tabLength) = tabPlacement(compartmentX, compartmentY, compartmentLength)
-            # tabs are trimmed to their compartment
-            labelMinX = tabOriginX if tabOriginX.value >= compartmentX.value else compartmentX
-            tabMaxX = tabOriginX + tabLength
-            compartmentMaxX = compartmentX + compartmentWidth
-            labelMaxX = tabMaxX if tabMaxX.value <= compartmentMaxX.value else compartmentMaxX
+            # tabs are trimmed to their compartment, as an expression (p60)
+            (labelMinX, labelMaxX) = binLabelLayout.labelSpan(tabOriginX, tabLength, compartmentX, compartmentWidth)
             labelName = 'Label' if len(input.compartments) == 1 else f'Compartment {compartmentIndex + 1} label'
             if isCullenect:
                 if not cullenect.socketFitsDepth(compartmentLength.value, input.tabWidth, input.cullenectSocketOffset):
@@ -939,11 +936,9 @@ def createCompartment(
         intersectTabFeature.name = f'{name} label tab trim'
         tabBodies = [body for body in list(intersectTabFeature.bodies) if not body.revisionId == innerCutoutBody.revisionId]
         if tabHollowWallThickness is not None and len(tabBodies) > 0:
-            # the tab is trimmed to the compartment
-            tabMinX = tabInput.originX if tabInput.originX.value >= originX.value else originX
-            tabMaxX = tabInput.originX + tabInput.length
+            # the tab is trimmed to the compartment, as an expression like the label on it (p60)
+            (tabMinX, tabMaxX) = binLabelLayout.labelSpan(tabInput.originX, tabInput.length, originX, width)
             maxX = originX + width
-            tabMaxX = tabMaxX if tabMaxX.value <= maxX.value else maxX
             hollowCuts = createTabHollowCuts(
                 tabInput,
                 tabMinX,
