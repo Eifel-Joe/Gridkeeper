@@ -6,6 +6,7 @@ Cullenect labels by CullenJWebb (MIT), https://github.com/CullenJWebb/Cullenect-
 an insert is `label_width * units - 6` mm wide and 11 mm high, its socket `socket_offset` larger in X and Y.
 """
 
+import json
 import math
 
 from . import const
@@ -124,3 +125,31 @@ def parameterEditKeepsSockets(isCullenect: bool, hasTab: bool, changed: list[str
     if not (isCullenect and hasTab):
         return True
     return not any(name in _SOCKET_GRID_FIELDS for name in changed)
+
+
+# --- joint origins of the pockets (round 13, p160): one on the floor of each pocket, the label command finds them by
+# their tag and checks in mm whether an insert fits, inserts and bins have base units of their own
+
+def pocketJointOriginName(compartmentIndex: int, compartmentCount: int) -> str:
+    if compartmentCount == 1:
+        return 'Pocket joint origin'
+    return f'Compartment {compartmentIndex + 1} pocket joint origin'
+
+def pocketSizeMm(units: float, baseWidth: float, socketOffset: float) -> tuple[float, float]:
+    """Width and height of the pocket in mm"""
+    return (round(socketWidth(units, baseWidth, socketOffset) * 10, 6), round(socketHeight(socketOffset) * 10, 6))
+
+def pocketTagValue(widthMm: float, heightMm: float) -> str:
+    return json.dumps({'widthMm': widthMm, 'heightMm': heightMm})
+
+def readPocketTagValue(value: str) -> tuple[float, float] | None:
+    """The pocket size in mm, none for a value that can't be read"""
+    try:
+        data = json.loads(value)
+        width = data['widthMm']
+        height = data['heightMm']
+    except (ValueError, KeyError, TypeError):
+        return None
+    if any(isinstance(item, bool) or not isinstance(item, (int, float)) for item in (width, height)):
+        return None
+    return (float(width), float(height))
