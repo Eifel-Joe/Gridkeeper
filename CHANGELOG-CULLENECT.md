@@ -4,6 +4,18 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
 
 ## Unreleased
 
+### Bin label text made longer (round 19)
+
+- **Rebuild fits a longer text again (p181):** a bin label text made longer through its parameter keeps the height of
+  its letters and can run past the tab. "Gridfinity rebuild" now builds such a bin anew and fits the text to its
+  label, also when only the parameter was changed; before, it just set the parameter again. Fusion can't make a
+  sketch text's height follow the length of its text by parameters (tried 16.11.2026), so the fit happens on rebuild.
+- **Least text height on bin labels:** a text shrinks for the width of its label only down to the height where the
+  thinnest stroke is one 0.4 mm nozzle line (Regular 4.43 mm, Bold 3.42 mm, round 17). A text that doesn't fit even
+  then isn't built, the dialog says which text; a tab lower than that keeps its own height.
+- **Umlauts on two-line inserts (p210):** measured, the dots of Ä, Ö and Ü stay inside the insert in every style, also
+  with -1 mm height correction; nothing to change.
+
 ### Rebuilding inserts and their settings (round 18)
 
 - **Inserts like bins (p150):** an insert of the Gridfinity label command can be rebuilt in its place from the context
