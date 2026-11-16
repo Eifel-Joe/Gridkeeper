@@ -89,3 +89,20 @@ def test_cell_joint_origins_sit_in_the_sockets():
 def test_parameter_fields():
     assert boxConfig.PARAMETERS == ["baseWidth", "baseLength", "heightU"]
     assert boxConfig.PARAMETER_FIELDS == {"Width (units)": "gridX", "Length (units)": "gridY", "Height (units)": "heightU"}
+
+
+def test_floor_pads_keep_preds_size_without_magnets():
+    """Review R27: the pads around the magnet holes grow with the diameter; without magnets a diameter left typed in
+    (0 or 15 mm) must neither break the build nor change Pred's 8 mm pads"""
+    for diameter in (0.0, 1.5, 0.8):
+        options = boxConfig.boxOptions(state(hasMagnets=False, magnetDiameter=diameter))
+        assert (options.hasMagnets, round(options.magnetDiameter * 10, 6)) == (False, 6.5)
+    options = boxConfig.boxOptions(state(hasMagnets=True, magnetDepth=0.26, magnetDiameter=0.8))
+    assert (options.hasMagnets, round(options.magnetDepth * 10, 6), round(options.magnetDiameter * 10, 6)) == (True, 2.6, 8.0)
+
+
+@pytest.mark.parametrize("value, limits", [(6, (6, 30)), (5, (5, 30)), (35, (6, 35)), (0, (1, 30))])
+def test_spinner_takes_a_parameter_beyond_its_limits(value, limits):
+    """Review R27: a rebuild opens the dialog with the size parameters, which may have been set to 5 or 35 in Change
+    Parameters; the spinner widens to show it, boxProblem names what's wrong instead of the dialog not opening"""
+    assert boxConfig.spinnerLimits(6, 30, value) == limits

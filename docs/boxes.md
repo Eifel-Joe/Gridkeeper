@@ -49,6 +49,8 @@ into the box like onto a baseplate. These are always there:
 | *Stack top joint origin* | Middle of the lid's top: joint the bottom of another box onto it to stack them |
 | *Lid joint origin* | In box and lid at the middle of the joint between them, used by the joint *Lid on box* |
 
+*Lid on box* is part of the box: a rebuild makes it anew as a rigid joint, changes of yours to it are not kept.
+
 ## Parameters
 
 The size is in three user parameters, see [Changing parameters](working/parameters.md):

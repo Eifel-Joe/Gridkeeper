@@ -4,6 +4,7 @@ Tests for the magnet size choice before the free "Magnet cutout depth" field (ro
 read back from it, so settings files with other depths still load.
 """
 
+import ast
 import pytest
 
 from tests.test_joint_origin_layout import _load
@@ -59,3 +60,34 @@ def test_magnet_size_choice_comes_before_the_depth(folder, depthInput):
     added = max(source.find("'Magnet size'"), source.find('addMagnetSizeInput('))
     assert added != -1 and added < depthField.start(), "the choice is added before the depth field"
     assert ("choiceForDepth" in source or "syncMagnetSize" in source) and ("depthForChoice" in source or "onMagnetSizeChanged" in source)
+
+
+def _moduleImports(tree):
+    names = set()
+    for node in tree.body:
+        if isinstance(node, (ast.Import, ast.ImportFrom)):
+            names |= {(alias.asname or alias.name).split(".")[0] for alias in node.names}
+    return names
+
+
+@pytest.mark.parametrize("folder", ["commandCreateBin", "commandCreateBaseplate", "commandCreateBox"])
+def test_no_function_shadows_an_imported_module(folder):
+    """Review R27: the bin dialog named its diameter input magnetSizeInput, the module's name, so addMagnetSizeInput
+    was called on the input and the dialog didn't open"""
+    tree = ast.parse(open(os.path.join(ROOT, "commands", folder, "entry.py"), encoding="utf-8").read())
+    imported = _moduleImports(tree)
+    shadowed = []
+    for function in [node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]:
+        for node in ast.walk(function):
+            if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store) and node.id in imported:
+                shadowed.append(f"{function.name}: {node.id}")
+    assert shadowed == []
+
+
+def test_baseplate_depth_field_follows_the_choice_whenever_the_inputs_are_refreshed():
+    """Review R27: the depth field was enabled by the choice only on an input change, not when the dialog opened or
+    after defaults or a config were loaded. updateSizingModeInputs runs in all of those"""
+    source = open(os.path.join(ROOT, "commands", "commandCreateBaseplate", "entry.py"), encoding="utf-8").read()
+    function = source[source.index("def updateSizingModeInputs"):]
+    function = function[:function.index("\ndef ", 1)]
+    assert "BASEPLATE_MAGNET_HEIGHT_INPUT).isEnabled = magnetSizeInput.isDepthTyped(" in function

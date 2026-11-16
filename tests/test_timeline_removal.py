@@ -79,3 +79,17 @@ def test_nothing_left_still_ends_at_the_end():
     timeline = Timeline()
     assert timelineRemoval.deleteOneByOne([], timeline, log=lambda message: None) == []
     assert timeline.calls == ["moveToEnd"]
+
+
+def test_the_marker_goes_back_to_the_end_when_a_delete_breaks():
+    """Review R27: an error other than Fusion's RuntimeError left the marker before the new part"""
+    import pytest
+    timeline = Timeline()
+    old = items(timeline, "Sketch1", "Extrude1")
+
+    def broken():
+        raise ValueError("broken")
+    old[1].deleteObject = broken
+    with pytest.raises(ValueError):
+        timelineRemoval.deleteOneByOne(old, timeline, log=lambda message: None)
+    assert timeline.calls[-1] == "moveToEnd"

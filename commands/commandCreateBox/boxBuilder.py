@@ -124,7 +124,7 @@ def _buildBox(
         parameters.append(parameter)
         boxParameters.append([label, parameter.name])
     dims = PredBoxDims(*[Dim.parameter(parameter) for parameter in parameters])
-    options = PredBoxOptions(state.hasMagnets, state.magnetDepth, state.magnetDiameter)
+    options = PredBoxOptions(*predBoxConfig.boxOptions(state))
     bodies = createPredBox(setComponent, dims, options)
     base, lid = bodies.base, bodies.lid
 
@@ -161,7 +161,7 @@ def _buildBox(
     if boxOccurrence is not None:
         (boxSide,) = createPointJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], boxComponent, name=LID_JOINT_ORIGIN)
         (lidSide,) = createPointJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], lidComponent, name=LID_JOINT_ORIGIN)
-        # the lid shut on the box, rigid like Pred's closed box; a user may change it into a hinge later
+        # the lid shut on the box, rigid like Pred's closed box; it's part of the set, a rebuild makes it anew (rigid)
         jointInput = des.rootComponent.joints.createInput(assembly.inContext(lidSide, lidOccurrence), assembly.inContext(boxSide, boxOccurrence))
         jointInput.setAsRigidJointMotion()
         joint = des.rootComponent.joints.add(jointInput)
