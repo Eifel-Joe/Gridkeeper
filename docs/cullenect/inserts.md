@@ -42,6 +42,8 @@ Text and symbol are always bodies of their own, two layers (0.4 mm) thick, to pr
 
 ![Three inserts with the text and symbol in red: flush, set in (its text body shown) and raised](../assets/images/insert-surfaces.png)
 
+<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/cullenect-insert-text-dark.gif"><img src="../../assets/gif/cullenect-insert-text-light.gif" alt="An insert with one line of text, two lines, the text set in and the text raised"></picture>
+
 ### Text size
 
 The text is fitted to the insert when it is built: one line up to 5 mm high, two lines up to 3.5 mm each, smaller

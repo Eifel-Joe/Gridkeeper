@@ -9,6 +9,9 @@ Gridkeeper is our further development of GridfinityGenerator. It stands on the w
 | **ostat / Chris Heazlewood** | [gridfinity_extended_openscad](https://github.com/ostat/gridfinity_extended_openscad), reference for the Cullenect tab | used as a reference |
 | **Zack Freedman** | [Gridfinity](https://www.youtube.com/watch?v=ra_9zU-mnl8), the system itself | |
 
+All pictures and animations of this documentation are Gridkeeper's own, made with Gridkeeper in Fusion; the
+animations follow the layout of GridfinityGenerator's README animations (model, dialog, caption).
+
 The set screw symbols are own work of Gridkeeper under MIT, using Cullenect's thread and driver shapes.
 
 ## License
