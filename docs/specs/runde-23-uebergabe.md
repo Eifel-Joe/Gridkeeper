@@ -67,3 +67,30 @@ Stand 2026-11-16. Branch `runde-23` von `master` (fce1f12), nicht gepusht, nicht
 - Die Menüs zeigen „Gridkeeper …“.
 - Ein alter Bin, vor R23 gebaut, lässt sich per Rechtsklick › „Gridkeeper rebuild“ neu bauen.
 - Ein alter Einleger lässt sich per Rechtsklick › „Gridkeeper settings“ öffnen.
+
+## Umsetzung
+
+7f8390d (Umbenennung), danach die Review-Funde. pytest: `950 passed`.
+
+## Review (Opus)
+
+Kein kritischer Fund. Umgang:
+- **(I1) behoben:** Zwei Fehlermeldungen beim Start (Bin, Grundplatte) verlinkten die Issues des Originals. Sie nehmen
+  jetzt `errorReport.ISSUES_URL`, der auf den Fork zeigt. Ein Test prüft `commands/` und `lib/` samt HTML.
+- **(M1) behoben:** Der erste Abschnitt der gespeicherten Einstellungen hieß nach dem Befehl („Gridkeeper bin“) unter
+  dem Fenstertitel „Gridfinity bin“. Jetzt heißt er wie das Teil (`SETTINGS_TITLE`, mit Test). Teile von vor R23
+  zeigen ohnehin „Gridfinity …“.
+- **(M6) behoben:** Der Test prüft jetzt alle `PALETTE_TITLE`, alte IDs auch in HTML/JS und die Issue-Links.
+- **Für Nutzer und die Release-Notes (R24):**
+  - (M2) Die Version springt von 2.4.0.0 auf 1.0.0. Teile zeigen „Generated with version …“ mit der Version ihres
+    Baus; nichts vergleicht Versionen.
+  - (M3) Mit den neuen Befehls-IDs verliert Fusion einmal angepinnte Werkzeuge, Tastenkürzel und Palettenpositionen
+    der alten Befehle.
+  - (M4) Läuft das alte Add-in (`GridfinityGenerator/` v2.2) parallel, sieht es Gridkeeper-Teile wegen der gleichen
+    Tag-Gruppe auch und hängt seine eigenen Kontextmenü-Einträge an. Für die Klicktests das alte Add-in abschalten.
+- **(M5):** Der Ordner im ZIP bleibt bis zur Umbenennung der Dateien (Rückfrage 1).
+- **(M7) Hinweis für den Merge:** `runde-24` verschiebt `docs/` nach `dev-notes/`. Diese Übergabe gehört dann nach
+  `dev-notes/specs/`.
+- **(M8):** Die Projekt-`CLAUDE.md` nennt noch „Gridfinity tests: run“; das ist nach dem Merge Sache der Hauptsitzung.
+  Alte Fusion-Aufträge (`r18_dialog_probe.py`) haben noch die alten IDs.
+- Für R24 notiert: README, Wiki-Hilfetexte („Here on our GitHub“), `tools/screenshots`, `documentation/PRIVACY_POLICY.md`.

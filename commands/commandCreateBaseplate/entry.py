@@ -58,6 +58,8 @@ ui = app.userInterface
 # The command identity information. ***
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdBaseplate'
 CMD_NAME = 'Gridkeeper baseplate'
+# the first section of a part's settings names the part, as the settings window does (review round 23)
+SETTINGS_TITLE = 'Gridfinity baseplate'
 # shown on hover over the button, the first paragraph says what it makes, the second how
 CMD_Description = ('Creates a gridfinity baseplate for bins to sit in.\n\n'
     'Set its size in base units, or fill an area such as a drawer, split into pieces that fit the print bed, '
@@ -263,7 +265,7 @@ def start():
     except Exception as err:
         futil.log(f'{CMD_NAME} Error occurred at the start, {err}, {getErrorMessage()}')
         ui.statusMessage = f"{CMD_NAME} failed to initialize"
-        showErrorInMessageBox(f"{CMD_NAME} Critical error occurred at the start, the command will be unavailable, if the issue persists use <a href=\"https://github.com/Le0Michine/FusionGridfinityGenerator/issues/new\">this link</a> to report it")
+        showErrorInMessageBox(f"{CMD_NAME} Critical error occurred at the start, the command will be unavailable, if the issue persists use <a href=\"{errorReport.ISSUES_URL}\">this link</a> to report it")
 
 
 # Executed when add-in is stopped.
@@ -868,7 +870,7 @@ def updateSizingModeInputs(inputs: adsk.core.CommandInputs):
     browserPages.sendUpdate(inputs.itemById(LAYOUT_BROWSER), layoutData(getInputsState()))
 
 def snapshotSettings(inputs: adsk.core.CommandInputs) -> list[dict]:
-    return settingsUtils.snapshotInputs(inputs, [INFO_GROUP, INPUT_CHANGES_GROUP, PREVIEW_GROUP], CMD_NAME)
+    return settingsUtils.snapshotInputs(inputs, [INFO_GROUP, INPUT_CHANGES_GROUP, PREVIEW_GROUP], SETTINGS_TITLE)
 
 def generateBaseplate(args: adsk.core.CommandEventArgs, isPreview: bool = False):
     startTime = time.perf_counter()
