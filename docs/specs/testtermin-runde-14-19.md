@@ -2,6 +2,20 @@
 
 **Englische Wörter in fett** = genau so steht es im Add-in. Fusions eigene Menüs stehen deutsch.
 
+## Was du noch selbst machen musst
+
+Am 16.11. wurde schon geprüft:
+- Testskripte in Fusion: Tests 1, 2, 3, 5, 7, 8, 9 und 18, alle grün.
+- Desktop-Steuerung im echten Dialog: Tests 6, 10, 11, 12, 16, 17 und 19, alle OK. Fotos hast du bekommen.
+- Test 16 war zuerst rot und ist in Runde 20 behoben.
+
+Für dich bleiben:
+- **Test 4:** farbiges Label im Slicer;
+- **Test 13:** Einleger mit vertieftem Symbol drucken und einrasten;
+- **Test 14:** Nylonmutter-Einleger drucken;
+- **Test 15:** kleinste Schrift im Slicer;
+- die **Fragen** unten.
+
 ## Vorbereitung
 
 1. Fusion ganz beenden und neu starten. Erst dann lädt Fusion den neuen Stand.
