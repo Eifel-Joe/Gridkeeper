@@ -87,9 +87,14 @@ def binLabelPlacement(
     )
 
 
-def _labelTexts(config: dict) -> tuple[str, list[str]]:
-    pockets = config.get('compartmentPockets') or []
-    return (config.get('labelText', ''), [pocket.get('label', '') if isinstance(pocket, dict) else '' for pocket in pockets])
+def _labelTexts(config: dict) -> tuple[str, dict]:
+    """The bin label and the compartment labels that are set, by their cell: a tag without pockets and the empty ones
+    the dialog fills the grid with say the same (review round 19)"""
+    labels = {}
+    for (index, pocket) in enumerate(config.get('compartmentPockets') or []):
+        if isinstance(pocket, dict) and pocket.get('label'):
+            labels[(pocket.get('x', index), pocket.get('y', 0))] = pocket['label']
+    return (config.get('labelText', ''), labels)
 
 
 def textChangedSinceBuild(builtConfig: dict, newConfig: dict) -> bool:
@@ -97,3 +102,10 @@ def textChangedSinceBuild(builtConfig: dict, newConfig: dict) -> bool:
     (round 19, p181). Set by its parameter alone, a longer text keeps the height of its letters and runs past the tab, a
     rebuild fits it anew instead. The bin's own label and those of its compartments"""
     return _labelTexts(builtConfig) != _labelTexts(newConfig)
+
+
+def sharedText(built: str, values: list[str]) -> str:
+    """The text of a label several parameters hold, compartments showing the bin's label each have one: the first that
+    differs from the built text, edited in Fusion, else the built one. Taken in turn, an unchanged parameter after the
+    edited one undid the edit (review round 19)"""
+    return next((value for value in values if value != built), built)

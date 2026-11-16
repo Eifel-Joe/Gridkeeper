@@ -554,7 +554,7 @@ def createLabel(
             # it would print past the tab or the bin (round 19, p181)
             (fitted, overflows) = textStyles.fittedHeight(textHeight * heightScale, textHeight * widthScale, style)
             if overflows:
-                raise ValueError(textStyles.overflowProblem(text, fitted))
+                raise ValueError(textStyles.overflowProblem(text, fitted, style))
             scale = fitted / textHeight
             textHeight *= scale
             lettersHeight = measuredHeight * scale

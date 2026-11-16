@@ -754,7 +754,8 @@ def parameterEdits(
 ) -> tuple[list[adsk.fusion.UserParameter], list[adsk.core.ValueInput]] | None:
     """
     The parameters to set and their new expressions when every setting the rebuild changes is one of the bin's own
-    parameters, so setting them builds the same bin a rebuild would. None when it has to be rebuilt: a shared unit,
+    parameters, so setting them builds the same bin a rebuild would. None when it has to be rebuilt: a label text
+    changed since the bin was built, it is fitted anew (round 19, p181), a shared unit,
     of a bin built before bins had units of their own, would change every bin built on it, a blank label has no
     parameter, a height can turn the creases on or off
     """
@@ -818,5 +819,11 @@ def retag(target: rebuildUtils.RebuildTarget, state: InputState, settings: list[
         target.occurrence.component.name = binDisplayName(state)
 
 def configWithParameters(config: dict, parameters: list, findParameter) -> dict:
-    """The config a bin was built with, with the values its parameters have now, see rebuildUtils.configWithParameters"""
-    return rebuildUtils.configWithParameters(configJson.GENERATOR_BIN, config, parameters, findParameter, PARAMETER_FIELDS)
+    """The config a bin was built with, with the values its parameters have now, see rebuildUtils.configWithParameters.
+    Compartments showing the bin's label each have a parameter of their own, the one edited in Fusion gives the text
+    (review round 19, see binLabelLayout.sharedText)"""
+    filled = rebuildUtils.configWithParameters(configJson.GENERATOR_BIN, config, parameters, findParameter, PARAMETER_FIELDS)
+    texts = [parameter.textValue for (field, parameter) in rebuildUtils.parameterFields(parameters, findParameter, PARAMETER_FIELDS) if field == 'labelText']
+    if len(texts) > 0 and 'labelText' in config:
+        filled['labelText'] = binLabelLayout.sharedText(config['labelText'], texts)
+    return filled

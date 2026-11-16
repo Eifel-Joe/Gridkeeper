@@ -1260,7 +1260,8 @@ def command_destroy(args: adsk.core.CommandEventArgs):
         # A label text fitted so small that a 0.4 mm nozzle leaves parts out (p130). Told here and not on execute: a
         # valid preview is kept on OK (isValidResult) and execute doesn't run then. The notes are those of the last
         # build, the preview kept or the execute. After the warning of a rebuild, which asks for action. A rebuild
-        # that only sets the label's text parameter builds no label and notes nothing, see binBuilder.parameterEdits
+        # that only sets parameters builds no label and notes nothing; one with a label text changed since the bin was
+        # built builds it anew (round 19, see binBuilder.parameterEdits)
         hint = textStyles.hintText(textStyles.notes(), suggestHeavy=False)
         if hint is not None:
             ui.messageBox(hint, CMD_NAME)
