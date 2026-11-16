@@ -1,7 +1,7 @@
 # Runde 14 – Übergabe
 
 Stand 2026-11-15. Branch `runde-14` (von `runde-14-18` 6321253), nicht gepusht, nicht gemergt. Spec
-`docs/specs/2026-11-15-runde-14-design.md` (von Nutzer freigegeben), Plan `docs/plans/2026-11-15-runde-14.md` (5f3e381,
+`dev-notes/specs/2026-11-15-runde-14-design.md` (von Nutzer freigegeben), Plan `dev-notes/plans/2026-11-15-runde-14.md` (5f3e381,
 von der Hauptsitzung freigegeben).
 Punkte: p72 „Bin-Labels: Text mit mehr Buchstaben kann beim Ändern verrutschen“, p120 „Eingefärbte Beschriftung: nach
 Textänderung sind neue Buchstaben nicht eingefärbt“, p71 „Einleger: nach Textänderung neue Buchstaben ohne Namen und

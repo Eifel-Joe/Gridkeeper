@@ -1,8 +1,8 @@
 # Runde 18 – Übergabe
 
 Stand 2026-11-16. Branch `runde-18` (von `runde-14-18` 96815d7), nicht gepusht, nicht gemergt.
-- Spec: `docs/specs/2026-11-15-runde-18-design.md`, von Nutzer freigegeben.
-- Plan: `docs/plans/2026-11-15-runde-18.md` (626c893), von der Hauptsitzung freigegeben, mit diesen Antworten:
+- Spec: `dev-notes/specs/2026-11-15-runde-18-design.md`, von Nutzer freigegeben.
+- Plan: `dev-notes/plans/2026-11-15-runde-18.md` (626c893), von der Hauptsitzung freigegeben, mit diesen Antworten:
   - Einleger werden immer neu gebaut.
   - Die Tasche ist vorbelegt.
   - Die neue Komponente sitzt an der alten Stelle.

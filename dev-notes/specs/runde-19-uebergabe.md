@@ -2,9 +2,9 @@
 
 Stand 2026-11-16. Branch `runde-19`, abgezweigt von `runde-14-18` (976fd0f) und mit `runde-14-18` (6c1a32f, Ergänzung
 p210) gemergt. Nicht gepusht, nicht gemergt.
-- Spec: `docs/specs/2026-11-15-runde-19-design.md`. Die Hauptsitzung hat sie auf des Nutzers Auftrag geschrieben, Nutzer sieht
+- Spec: `dev-notes/specs/2026-11-15-runde-19-design.md`. Die Hauptsitzung hat sie auf des Nutzers Auftrag geschrieben, Nutzer sieht
   sie beim Testtermin.
-- Plan: `docs/plans/2026-11-16-runde-19.md`, von der Hauptsitzung freigegeben, mit diesen Antworten:
+- Plan: `dev-notes/plans/2026-11-16-runde-19.md`, von der Hauptsitzung freigegeben, mit diesen Antworten:
   1. Die Untergrenze bremst nur das Verkleinern für die Breite.
   2. Kein Nachführen über ein Ereignis in dieser Runde.
   3. Ein Text, der auch auf der Untergrenze nicht passt, wird nicht gebaut, die Meldung nennt ihn.

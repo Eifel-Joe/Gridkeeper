@@ -1,4 +1,4 @@
-# End-to-end check of round 13 (docs/specs/2026-11-15-runde-13-design.md, "Ende-zu-Ende-Kriterium"), run in Fusion
+# End-to-end check of round 13 (dev-notes/specs/2026-11-15-runde-13-design.md, "Ende-zu-Ende-Kriterium"), run in Fusion
 # with the add-in loaded from this checkout: Utilities > Scripts, or the content via the Fusion MCP as a script. It builds
 # into new documents of its own, closes them when everything passes and prints OK or FAIL per point.
 import adsk.core, adsk.fusion, sys, os, dataclasses

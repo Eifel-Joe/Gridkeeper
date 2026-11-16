@@ -14,7 +14,7 @@ Einheiten ist um bis zu (Wand/2 + Spiel) versetzt).
 
 **Tech Stack:** Python, Fusion 360 API, pytest mit `tests/stubs`.
 
-**Spec:** `docs/specs/2026-11-14-trennwaende-bis-oben-design.md`
+**Spec:** `dev-notes/specs/2026-11-14-trennwaende-bis-oben-design.md`
 
 ## Global Constraints
 

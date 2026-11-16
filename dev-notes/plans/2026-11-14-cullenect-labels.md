@@ -8,7 +8,7 @@
 
 **Tech Stack:** Python 3.14 in Fusion, Tests auf 3.13 und 3.14 (Fusion-API `adsk`), pytest mit Stubs in `tests/stubs`, Fusion-Snapshot-Tests (`tests/e2e`), OpenSCAD (`C:\Program Files\OpenSCAD`) nur für das Symbol-Werkzeug.
 
-**Spec:** `docs/specs/2026-11-14-cullenect-labels-design.md` (freigegeben). Bei Widerspruch gilt die Spec; Maße aus `Cullenect.scad` (CullenJWebb/Cullenect-Labels, Commit `d6dc0bb2a6491f53c27e5f9db2dfc38ebb07f8db`, MIT).
+**Spec:** `dev-notes/specs/2026-11-14-cullenect-labels-design.md` (freigegeben). Bei Widerspruch gilt die Spec; Maße aus `Cullenect.scad` (CullenJWebb/Cullenect-Labels, Commit `d6dc0bb2a6491f53c27e5f9db2dfc38ebb07f8db`, MIT).
 
 ## Global Constraints
 
@@ -240,7 +240,7 @@ Ungültig: Flansch bei `countersunk` oder `none`; Antrieb ≠ `none` bei Kopf `n
 
 ### Task 8: Spike — Text- und SVG-Skizzen vollständig bestimmt
 
-Klärt vor dem Generator, wie `SketchText` und importierte SVG-Kurven in Fusion `isFullyConstrained` werden (Spec: SVG `isFixed`, Text an bemaßte Konstruktion). Ergebnis: kurze Notiz in `docs/specs/2026-11-14-cullenect-labels-design.md` (Abschnitt „Vollständig bestimmte Skizzen“, Befund mit Datum) und ein Wegwerf-Skript im Scratchpad. Kein Produktionscode. Gleichzeitig Befund zu den bestehenden Text/Icon-Labels (Outline/Engraved/Embossed) für Nutzer.
+Klärt vor dem Generator, wie `SketchText` und importierte SVG-Kurven in Fusion `isFullyConstrained` werden (Spec: SVG `isFixed`, Text an bemaßte Konstruktion). Ergebnis: kurze Notiz in `dev-notes/specs/2026-11-14-cullenect-labels-design.md` (Abschnitt „Vollständig bestimmte Skizzen“, Befund mit Datum) und ein Wegwerf-Skript im Scratchpad. Kein Produktionscode. Gleichzeitig Befund zu den bestehenden Text/Icon-Labels (Outline/Engraved/Embossed) für Nutzer.
 
 - [ ] **Step 1:** In Fusion: Skizze mit Mehrzeilen-Text, Eckpunkte des Textrahmens bemaßen/fixieren ⇒ `isFullyConstrained`? SVG importieren, alle Kurven `isFixed = True` ⇒ `isFullyConstrained`? Außerdem messen: welche Fusion-Texthöhe ergibt Großbuchstaben so hoch wie Cullenects `text(size = 5)` in Open Sans (OpenSCAD-`size` ist nicht die Fusion-Texthöhe) — Ergebnis legt `CULLENECT_TEXT_HEIGHT` in Task 9 fest.
 - [ ] **Step 2:** Befund notieren, Commit (nur Spec-Notiz).
