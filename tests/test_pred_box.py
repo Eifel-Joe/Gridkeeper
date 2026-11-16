@@ -94,13 +94,3 @@ def test_expressions_reference_parameters():
     assert "gfBox1_heightU" in dims.bodyTop.expression
     assert dims.labelWidth.expression.startswith("min(")
     assert dims.catchSlideDepth.expression.startswith("min(")
-
-
-@pytest.mark.parametrize("heightU, radius", [(5, 0.01), (6, 3.75), (10, 3.75)])
-def test_holder_top_blend_is_square_at_height_5(heightU, radius):
-    """Jörg 16.11.2026, "Rundung weglassen (2)": at height 5 the top rounding of the handle holders would reach 1.3 mm
-    past the lid joint, there it is square (0.01 mm), from height 6 Pred's 3.75 mm; as an expression, so a parameter
-    change between 5 and 6 follows"""
-    blend = _dims(heightU=heightU).holderTopBlend
-    assert mm(blend) == radius
-    assert "gfBox1_heightU" in blend.expression and blend.expression.startswith("max(")

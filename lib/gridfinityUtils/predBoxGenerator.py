@@ -136,30 +136,20 @@ class _Builder:
         self.step(step)
         return feature
 
-    def fillet(self, step, name=None, body=None, split=None, splitRadius=None, splitName=None):
-        """Pred's fillet of the step. split picks edges that get splitRadius in a fillet of their own (made first)"""
+    def fillet(self, step, name=None, body=None):
         [edgeSet] = predBoxEdges.PRED_EDGES[step]
         items = self._pick(step, self.dims.values(), body=body)
         fillets = self.features.filletFeatures
 
-        def make(edges, radius):
-            def add(tangentChain):
-                filletInput = fillets.createInput()
-                filletInput.edgeSetInputs.addConstantRadiusEdgeSet(collection(edges), valueInput(radius), tangentChain)
-                return fillets.add(filletInput)
-            return _withTangentChainFallback(add)
-        made = []
-        if split is not None:
-            own = [edge for edge in items if split(edge)]
-            items = [edge for edge in items if not split(edge)]
-            first = make(own, splitRadius)
-            first.name = splitName
-            made.append(first)
-        feature = make(items, Dim.length(edgeSet['radius']))
+        def add(tangentChain):
+            filletInput = fillets.createInput()
+            filletInput.edgeSetInputs.addConstantRadiusEdgeSet(
+                collection(items), valueInput(Dim.length(edgeSet['radius'])), tangentChain)
+            return fillets.add(filletInput)
+        feature = _withTangentChainFallback(add)
         feature.name = name or step.split(' ')[1]
-        made.append(feature)
         self.step(step)
-        return made if split is not None else feature
+        return feature
 
     def mirror(self, features, plane, step):
         mirrors = self.features.mirrorFeatures
@@ -376,14 +366,7 @@ class _Builder:
         handleHolders = self.along(list(blocks.sketch.profiles), join, 1, mm(-7.5), name='Handle holders')
         self.step('#31 Extrude46')
         chamfer26 = self.chamfer('#32 Chamfer26')
-        # Jörg 16.11.2026, "Rundung weglassen (2)": the rounding at the top of the holders, along the wall, is square at
-        # height 5 (predBox.holderTopBlend), a fillet of its own so its radius can follow the height parameter
-        topZ = self.mid(38.45).value
-
-        def isTop(edge):
-            a, b = edge.startVertex.geometry, edge.endVertex.geometry
-            return abs(a.z - topZ) < 1e-6 and abs(b.z - topZ) < 1e-6 and abs(a.y - 0.75) < 1e-6
-        fillet10 = self.fillet('#33 Fillet10', split=isTop, splitRadius=self.dims.holderTopBlend, splitName='Handle holder top')
+        fillet10 = self.fillet('#33 Fillet10')
 
         def P(x, z):
             return (x if isinstance(x, Dim) else lab(x), y, mid(z))
@@ -428,7 +411,7 @@ class _Builder:
         self.step('#39 Extrude48')
         chamfer29 = self.chamfer('#40 Chamfer29')
         chamfer30 = self.chamfer('#41 Chamfer30')
-        self.mirror([handleHolders, chamfer26] + fillet10 + [railJoin, railCut, hole, sink, chamfer29, chamfer30, pinHole],
+        self.mirror([handleHolders, chamfer26, fillet10, railJoin, railCut, hole, sink, chamfer29, chamfer30, pinHole],
                     self.midXPlane, '#42 Mirror6')
 
     # -- Pred #44 to #59: catch tabs, catch slides, stacking tabs ------------------------------------------------

@@ -171,37 +171,10 @@ def matchItems(expected, candidates, key):
     picked = []
     for item in expected:
         found = index.get(_signature(item))
-        if found is None and item['kind'] == 'line':
-            found = _sameLineOtherLength(item, candidates, key)
         if found is None:
             raise EdgeNotFound(f"{item['kind']} not found: {item}; near it: {_near(item, candidates, key)}")
         picked.append(found)
     return picked
-
-
-def _sameLineOtherLength(item, candidates, key):
-    """A line from one of the expected ends along the expected direction, a neighbour having moved its other end. At
-    height 5 the holders' top rounding is square (Jörg 16.11.2026: "Rundung weglassen (2)") and the slanted line of
-    the chamfer beside it reaches further than in Pred's box at height 6"""
-    start, end = item['start'], item['end']
-    direction = [b - a for a, b in zip(start, end)]
-    length = sum(v * v for v in direction) ** 0.5
-    direction = [v / length for v in direction]
-    found = []
-    for candidate in candidates:
-        other = key(candidate)
-        if other['kind'] != 'line':
-            continue
-        for fixed in (start, end):
-            for (a, b) in ((other['start'], other['end']), (other['end'], other['start'])):
-                if _key(a) != _key(fixed):
-                    continue
-                along = [y - x for x, y in zip(a, b)]
-                size = sum(v * v for v in along) ** 0.5
-                sign = 1 if fixed is start else -1
-                if size > 0 and all(abs(sign * u / size - v) < 1e-6 for u, v in zip(along, direction)):
-                    found.append(candidate)
-    return found[0] if len(found) == 1 else None
 
 
 def _near(item, candidates, key, distance=0.3):
