@@ -244,3 +244,23 @@ def test_old_bin_config_keeps_the_dialog_color(current):
 def test_derived_empty_color_would_reset_it(current):
     # what the dialog passed before: the color of a state without a tab, '', which turned the choice to None
     assert _dialog_choice_after_loading(current, "") == (labelColors.NO_COLOR_CHOICE, "")
+
+
+# --- round 20, p221: the note after "Load from file" named the wall thickness ten times too large (12 mm for 1.2 mm)
+
+def test_hand_test_10_file_keeps_lengths_in_mm_in_the_note(current):
+    # the dialog with a wall of 1.2 mm typed in (0.12 cm, as Fusion's inputs keep lengths), then the file of hand test
+    # 10 loaded, which has only the bin size: every kept length shows in mm as the dialog does. Not reproduced: this
+    # path shows 1.2 mm, see docs/specs/runde-20-uebergabe.md
+    path = os.path.join(PROJECT_ROOT, "docs", "specs", "testdateien", "handtest-10-alte-bin-ohne-farbe.json")
+    with open(path, encoding="utf-8") as file:
+        text = file.read()
+    dialog = dataclasses.replace(current, wallThickness=0.12, xyClearance=0.025, baseWidth=4.2)
+    (state, notes) = read(text, dialog)
+    kept = dict(notes.missing)
+    assert kept["wallThickness"] == pytest.approx(1.2)
+    note = configJson.notesText(BIN, notes)
+    assert "wallThickness (1.2 mm)" in note
+    assert "xyClearance (0.25 mm)" in note
+    assert "baseWidth (42 mm)" in note
+    assert state.wallThickness == pytest.approx(0.12)
