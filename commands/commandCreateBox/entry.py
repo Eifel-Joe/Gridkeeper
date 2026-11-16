@@ -74,7 +74,7 @@ PREVIEW_TIME_INPUT = 'preview_time'
 INFO_TEXT = ("<b>Help:</b> every input is explained "
              "<a href=\"https://eifel-joe.github.io/Gridkeeper/boxes/\">in the Gridkeeper documentation</a>. "
              "Based on Pred's Gridfinity Storage Box v1.1, "
-             "<a href=\"https://www.printables.com/model/543553\">Printables 543553</a> (CC BY-NC), "
+             "<a href=\"https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric\">Printables 543553</a> (CC BY-NC), "
              "rebuilt in code for Gridkeeper.")
 
 INPUTS_VALID = True

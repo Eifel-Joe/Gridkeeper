@@ -21,6 +21,7 @@ Gridkeeper is licensed under a
 [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-nc-sa/4.0/),
 like the GridfinityGenerator it is built on. The Cullenect symbols keep their MIT license, see `LICENSE-Cullenect` in
 `lib/gridfinityUtils/cullenectIcons/`.
+The storage box follows [Pred's parametric Gridfinity Storage Box v1.1](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric) (CC BY-NC): Gridkeeper rebuilds its shape in code, with the changes noted on [Storage boxes](../boxes.md), and credits Pred for it; the rebuild is part of Gridkeeper under CC BY-NC-SA, Pred's own files stay under Pred's license.
 
 ## How it is made
 

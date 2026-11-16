@@ -10,8 +10,8 @@ Every new box is a component of its own in the container *Boxes*, holding the co
 is jointed shut on the box, see [Components and joints](working/components.md).
 
 !!! note "This round builds box and lid"
-    The latches, hinges, handle with its pins and the label come in the next versions. Box and lid already have
-    every seat for them.
+    The latches, hinges, handle with its pins and the label follow with the next version. Box and lid already
+    have every seat for them. Magnet holes are for 6 × 2 mm magnets only: 6 × 3 mm ones would break through the floor.
 
 ## Info
 
@@ -24,7 +24,7 @@ A link to this page, the credit to Pred and the version of the add-in. When the 
 |---|---|---|
 | **Width (u)** | 5 | Grid cells of 42 mm across, at least 4 |
 | **Length (u)** | 4 | Grid cells of 42 mm from front to back, at least 3 |
-| **Height (u)** | 6 | Height units of 7 mm, at least 6 like Pred; the lid adds 10 mm |
+| **Height (u)** | 6 | Height units of 7 mm, at least 6 for now (Pred's file goes down to 5, that comes later); the lid adds 10 mm |
 
 The line below shows the outer size: width and length are the cells plus a 10 mm rim on every side
 (5 × 4 → 230 × 188 mm).
