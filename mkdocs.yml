@@ -1,0 +1,100 @@
+site_name: Gridkeeper
+site_description: Gridkeeper, a Fusion add-in for Gridfinity bins, baseplates and Cullenect label inserts, our further development of GridfinityGenerator
+# placeholder, the repository is still to be renamed
+site_url: https://eifel-joe.github.io/Gridkeeper/
+repo_name: Eifel-Joe/FusionGridfinityGenerator
+repo_url: https://github.com/Eifel-Joe/FusionGridfinityGenerator
+edit_uri: ""
+
+theme:
+  name: material
+  # No web fonts: the browser's own fonts, so a visit loads nothing from
+  # another host.
+  font: false
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue grey
+      accent: deep orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue grey
+      accent: deep orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to the browser's setting
+  features:
+    - navigation.tabs
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - search.highlight
+    - content.code.copy
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Eifel-Joe/FusionGridfinityGenerator
+      name: Gridkeeper on GitHub
+
+copyright: >-
+  Gridkeeper by Eifel-Joe, CC BY-NC-SA 4.0 · Based on
+  <a href="https://github.com/Le0Michine/FusionGridfinityGenerator">GridfinityGenerator</a> by Le0Michine ·
+  Cullenect labels by <a href="https://github.com/CullenJWebb/Cullenect-Labels">CullenJWebb</a> (MIT) ·
+  Gridfinity by Zack Freedman
+
+# the list of pictures still to be taken, for the maintainers, not a page of the site
+exclude_docs: |
+  assets/images/NEEDED.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - pymdownx.details
+  - pymdownx.superfences
+  - toc:
+      permalink: true
+      toc_depth: 3
+
+nav:
+  - Home: index.md
+  - Getting started:
+    - Installation and updates: getting-started/installation.md
+    - First bin: getting-started/first-bin.md
+    - What's new: getting-started/whats-new.md
+  - Baseplates: baseplates.md
+  - Bins:
+    - bins/index.md
+    - Size and shape: bins/size.md
+    - Body, walls and lip: bins/body.md
+    - Compartments and scoop: bins/compartments.md
+    - Label tab and labels: bins/labels.md
+    - Base, magnets and screws: bins/base.md
+  - Cullenect labels:
+    - cullenect/index.md
+    - Pockets in bins: cullenect/pockets.md
+    - Label inserts: cullenect/inserts.md
+    - Symbols: cullenect/symbols.md
+  - Working with models:
+    - Settings, rebuild and clone: working/settings-rebuild-clone.md
+    - Saving and loading settings: working/save-load.md
+    - Changing parameters: working/parameters.md
+    - Colors and multicolor printing: working/colors.md
+    - Components and joints: working/components.md
+  - Reference:
+    - Known deviations from the Gridfinity specification: reference/deviations.md
+    - Credits and license: reference/credits.md
+  - Developers:
+    - Snapshot tests: developers/snapshot-tests.md
