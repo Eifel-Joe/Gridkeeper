@@ -4,6 +4,9 @@ on:
       # only Gridkeeper's own tags; the tags of GridfinityGenerator (v1.0.0.0 ...) must not start a release
       - 'gridkeeper-v*'
 name: Handle Release
+# the repository's token is read-only by default; creating the release and uploading the ZIP need write access
+permissions:
+  contents: write
 jobs:
   generate-installer:
     name: Create release-artifacts

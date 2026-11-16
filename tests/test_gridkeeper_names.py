@@ -92,6 +92,8 @@ def test_release_zip_is_named_gridkeeper():
     # tag gridkeeper-v1.0.0 gives Gridkeeper-v1.0.0.zip, only Gridkeeper's own tags start a release (16.11.2026)
     assert 'zip="dist/Gridkeeper-${GITHUB_REF_NAME#gridkeeper-}.zip"' in workflow
     assert "- 'gridkeeper-v*'" in workflow and "- '*'" not in workflow
+    # review 16.11.2026: the repository's token is read-only by default, the release step needs write access
+    assert 'permissions:\n  contents: write' in workflow
     # round 25: the files are named like the folder, Fusion loads the add-in only then
     assert 'cp -r Gridkeeper.manifest Gridkeeper.py' in workflow and '7z a' in workflow and 'Gridkeeper/' in workflow
 

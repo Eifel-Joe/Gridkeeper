@@ -1,8 +1,8 @@
 # Changelog — Cullenect labels
 
 Changes of Gridkeeper (`Eifel-Joe/Gridkeeper`, until 16.11.2026 `Eifel-Joe/FusionGridfinityGenerator`) on top of
-GridfinityGenerator v2.4.0.0 by Le0Michine (rounds 1 to 11 were built on v2.2.0.0). Gridkeeper counts its own versions
-from 1.0.0; its tags are `gridkeeper-vX.Y.Z`, the `vX.Y.Z.W` tags belong to GridfinityGenerator.
+GridfinityGenerator v2.4.2.0 by Le0Michine (rounds 1 to 11 were built on v2.2.0.0, round 22 merged v2.4.2.0).
+Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`, the `vX.Y.Z.W` tags belong to GridfinityGenerator.
 
 ## 1.0.0 (2026-11-16)
 
@@ -38,7 +38,7 @@ Six commits of FusionGridfinityGenerator by Le0Michine (CC BY-NC-SA 4.0) merged 
 - **Label icon keeps its full size** (Joerg: "as the original"): only the text shrinks to the width left after the
   icon, the letters stand on the icon's bottom. Rebuilt in this fork's label code, the least text height of round 19
   still applies.
-- Not taken over, decided in this fork: the version bumps (the version stays 2.4.0.0); rebuilding with a new label
+- Not taken over, decided in this fork: the version bumps (the version stayed 2.4.0.0 until the rename to Gridkeeper 1.0.0); rebuilding with a new label
   text, which this fork does since round 19 for compartment labels too.
 
 ### Thin text hint and room on inserts (round 21)
