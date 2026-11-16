@@ -1,0 +1,10 @@
+{
+    "description": "2x1x3 bin with magnet holes for 6 x 3 mm magnets, 3.4 mm deep (p263)",
+    "generator": "bin",
+    "settings": {
+        "binLength": 1,
+        "binHeight": 3,
+        "hasMagnetCutouts": true,
+        "magnetCutoutDepth": 3.4
+    }
+}
