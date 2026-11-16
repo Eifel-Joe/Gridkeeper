@@ -1,6 +1,6 @@
 """
-Tests for the text styles of the labels (p130): font and bold of each style, the stroke width estimated from the text
-height, and the notes and hint for text too thin for a 0.4 mm nozzle.
+Tests for the text styles of the labels (p130): font and bold of each style, the least height each prints at
+(round 17), and the notes and hint for text below it (round 21).
 """
 
 import os
@@ -105,17 +105,24 @@ def test_preview_note():
     assert styles.previewNote([('Hex key', 0.2, 'Regular')]) == ', text below the print limit'
 
 
-def test_hint_text_for_a_bin_label_offers_no_heavy_style():
-    # the bin dialog only has a bold switch
-    assert styles.hintText([('Schrauben M4', 0.3, 'Bold')], suggestHeavy=False) == (
+def test_hint_text_for_a_bin_label_names_the_tab():
+    # review round 21: a bin label is below the limit only on a tab lower than it (a text too wide isn't built, round
+    # 19), shortening the text or a wider bin doesn't help there, a wider tab does
+    assert styles.hintText([('Schrauben M4', 0.3, 'Bold')], suggestHeavy=False, isBinLabel=True) == (
         '"Schrauben M4": 3.0 mm high, below the 3.42 mm a 0.4 mm nozzle prints in Bold. '
-        'Shorten the text or make it wider.'
+        'Make the tab wider.'
+    )
+
+
+def test_hint_text_for_a_regular_bin_label_offers_bold():
+    assert styles.hintText([('M3', 0.4, 'Regular')], suggestHeavy=False, isBinLabel=True).endswith(
+        'Make the tab wider or use the Bold style.'
     )
 
 
 def test_hint_text_names_a_repeated_text_once():
     # a bin labels each compartment, the same text on all of them is one sentence
-    hint = styles.hintText([('Schrauben M4', 0.3, 'Bold')] * 8, suggestHeavy=False)
+    hint = styles.hintText([('Schrauben M4', 0.3, 'Bold')] * 8, suggestHeavy=False, isBinLabel=True)
     assert hint.count('"Schrauben M4"') == 1
 
 
