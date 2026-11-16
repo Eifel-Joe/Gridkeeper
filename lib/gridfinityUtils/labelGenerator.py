@@ -538,9 +538,9 @@ def createLabel(
     (iconAspect, iconPoints) = (0, 0)
     if iconPath is not None:
         (iconAspect, iconPoints) = _iconMeasure(sketch, iconPath) or (1, 0)
-    gap = const.BIN_LABEL_ICON_GAP if iconPath is not None else 0
-    # the icon is as tall as the letters, so both grow and shrink together. Letters start as tall as the label
-    # allows, then everything scales down until the icon, gap and text fit the label width
+    # the icon keeps its full size, as tall as the letters can be at most, only the text shrinks to the width left after
+    # it, not below the least height that prints (round 22, p13, Joerg: "Wie das Original", upstream f1cb49b by
+    # Le0Michine; round 19, p181), see binLabelLayout.fitBinLabel
     iconSize = contentHeight * const.BIN_LABEL_TEXT_HEIGHT_RATIO
     textHeight = contentHeight
     lettersHeight = iconSize
@@ -548,18 +548,14 @@ def createLabel(
         measured = _measureText(sketch, text, textHeight, style)
         if measured is not None and measured[1] > 0:
             (measuredWidth, measuredHeight) = measured
-            heightScale = contentHeight * const.BIN_LABEL_TEXT_HEIGHT_RATIO / measuredHeight
-            widthScale = (contentWidth - gap) / (measuredWidth + measuredHeight * iconAspect)
-            # not smaller than a 0.4 mm nozzle prints for the width; a text that doesn't fit even then isn't built,
-            # it would print past the tab or the bin (round 19, p181)
-            (fitted, overflows) = textStyles.fittedHeight(textHeight * heightScale, textHeight * widthScale, style)
-            if overflows:
-                raise ValueError(textStyles.overflowProblem(text, fitted, style))
-            scale = fitted / textHeight
-            textHeight *= scale
-            lettersHeight = measuredHeight * scale
-            iconSize = lettersHeight
-        # a long text on a short bin shrinks, the command hints at it when it gets too thin to print (p130)
+            fit = binLabelLayout.fitBinLabel(contentWidth, contentHeight, iconAspect if iconPath is not None else None, measuredWidth, measuredHeight, style)
+            # a text that doesn't fit even at the least height isn't built, it would print past the tab or the bin
+            if fit.overflows:
+                raise ValueError(textStyles.overflowProblem(text, fit.textHeight, style))
+            textHeight = fit.textHeight
+            lettersHeight = fit.lettersHeight
+            iconSize = fit.iconSize
+        # text on a tab lower than the print limit, the command hints at it (p130, round 21)
         textStyles.noteText(text, style, textHeight)
     elif iconPath is not None:
         iconSize = min(contentHeight, contentWidth / iconAspect)
