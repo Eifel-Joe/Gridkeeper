@@ -1,4 +1,4 @@
-# End-to-end check of round 21 (docs/specs/2026-11-16-runde-21-design.md), run in Fusion with the add-in loaded from
+# End-to-end check of round 21 (dev-notes/specs/2026-11-16-runde-21-design.md), run in Fusion with the add-in loaded from
 # this checkout. Set GROUP to 'a' to 'c' before running, each runs under a minute, no dialog. Each group builds into a
 # document of its own, closes it when everything passes and prints OK or FAIL per point, ALL OK or N FAILED last.
 import adsk.core, adsk.fusion, sys, os, dataclasses

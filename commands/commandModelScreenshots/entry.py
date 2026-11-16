@@ -29,7 +29,7 @@ CMD_NAME = 'Gridkeeper docs: render models'
 # shown on hover over the button, the first paragraph says what it does, the second how, like the generator commands
 CMD_Description = ('Saves pictures of bins and baseplates for the docs.\n\n'
     'Lists the presets of tools/screenshots/models with their pictures. A preset asked for is built in a new '
-    'document, shown from the preset\'s view and saved as a picture, by default to documentation/assets/models.')
+    'document, shown from the preset\'s view and saved as a picture, by default to docs/assets/models.')
 
 # Utilities > Add-ins, out of the way of the generator commands
 WORKSPACE_ID = 'FusionSolidEnvironment'
@@ -48,7 +48,7 @@ SCREENSHOTS_FOLDER = os.path.join(ROOT_FOLDER, 'tools', 'screenshots')
 GIF_PYTHON = os.path.join(SCREENSHOTS_FOLDER, '.venv', 'Scripts', 'python.exe') if sys.platform == 'win32' else os.path.join(SCREENSHOTS_FOLDER, '.venv', 'bin', 'python')
 GIF_COMMAND = [GIF_PYTHON, os.path.join(SCREENSHOTS_FOLDER, 'modelGifs.py'), '--dialogs']
 GIFS_FILE = os.path.join(SCREENSHOTS_FOLDER, 'modelGifs.json')
-GIF_FOLDER = os.path.join(ROOT_FOLDER, 'documentation', 'assets', 'gif')
+GIF_FOLDER = os.path.join(ROOT_FOLDER, 'docs', 'assets', 'gif')
 # dialog animations the GIFs are made from, recorded by screenshots.py and not kept in the repo
 DIALOGS_FOLDER = os.path.join(SCREENSHOTS_FOLDER, 'dialogs')
 GIF_THEMES = ['light', 'dark']
@@ -281,7 +281,7 @@ def makeGifs(names: list[str]) -> str:
     seconds = int(time.monotonic() - started)
     if failed:
         return f'Made {made} GIFs in {seconds} s, {len(failed)} failed: {", ".join(failed)}'
-    return f'Made {made} GIFs in {seconds} s, in documentation/assets/gif'
+    return f'Made {made} GIFs in {seconds} s, in docs/assets/gif'
 
 def makeGif(name: str, message: str, started: float) -> str | None:
     """A GIF with its dialog animation by running modelGifs.py, what kept it from being made, if anything"""

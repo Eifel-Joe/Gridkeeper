@@ -1,4 +1,4 @@
-# End-to-end check of round 18 (docs/specs/2026-11-15-runde-18-design.md, "Ende-zu-Ende-Kriterium"), run in Fusion with
+# End-to-end check of round 18 (dev-notes/specs/2026-11-15-runde-18-design.md, "Ende-zu-Ende-Kriterium"), run in Fusion with
 # the add-in loaded from this checkout. Set GROUP to 'a' to 'c' before running, each runs under a minute. No group
 # opens a dialog: a script can't, execute() runs once the script is over (r18_dialog_probe). That the three dialogs open
 # after a restart is on Joerg's hand test list. Each group builds into a
