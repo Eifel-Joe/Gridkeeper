@@ -56,6 +56,22 @@ def minTextHeight(style: str) -> float:
     return NOZZLE_LINE / THINNEST_STROKE_FACTORS[style]
 
 
+def fittedHeight(labelHeight: float, widthHeight: float, style: str) -> tuple[float, bool]:
+    """Height of a bin label text and whether it runs over the label (round 19, p181). labelHeight is what the tab
+    allows, widthHeight where the text fills the width. The text shrinks for the width, but not below the floor of
+    its style; a tab lower than the floor keeps its own height (Hauptsitzung 16.11.2026: the floor only holds the shrink
+    for the width). Over the label it would print past the tab or the bin, the dialog refuses it, see overflowProblem"""
+    floor = min(labelHeight, minTextHeight(style))
+    height = min(labelHeight, max(widthHeight, floor))
+    return (height, widthHeight < height - 1e-9)
+
+
+def overflowProblem(text: str, height: float) -> str:
+    """Why a bin label isn't built: its text doesn't fit even at the least height"""
+    return (f'"{text}" doesn\'t fit the label even at {height * 10:.1f} mm, the least height a 0.4 mm nozzle prints. '
+            'Shorten it or make the bin wider.')
+
+
 _notes: list[tuple[str, float, float]] = []
 
 

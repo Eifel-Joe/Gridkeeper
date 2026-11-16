@@ -548,10 +548,14 @@ def createLabel(
         measured = _measureText(sketch, text, textHeight, style)
         if measured is not None and measured[1] > 0:
             (measuredWidth, measuredHeight) = measured
-            scale = min(
-                contentHeight * const.BIN_LABEL_TEXT_HEIGHT_RATIO / measuredHeight,
-                (contentWidth - gap) / (measuredWidth + measuredHeight * iconAspect),
-            )
+            heightScale = contentHeight * const.BIN_LABEL_TEXT_HEIGHT_RATIO / measuredHeight
+            widthScale = (contentWidth - gap) / (measuredWidth + measuredHeight * iconAspect)
+            # not smaller than a 0.4 mm nozzle prints for the width; a text that doesn't fit even then isn't built,
+            # it would print past the tab or the bin (round 19, p181)
+            (fitted, overflows) = textStyles.fittedHeight(textHeight * heightScale, textHeight * widthScale, style)
+            if overflows:
+                raise ValueError(textStyles.overflowProblem(text, fitted))
+            scale = fitted / textHeight
             textHeight *= scale
             lettersHeight = measuredHeight * scale
             iconSize = lettersHeight
