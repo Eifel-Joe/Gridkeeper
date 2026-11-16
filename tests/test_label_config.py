@@ -126,3 +126,13 @@ def test_a_text_only_in_line_2_is_labelled_line_2():
 def test_both_lines_keep_their_labels():
     assert labelConfig.textLines("M3x10", "DIN 912") == [("M3x10", "Text line 1"), ("DIN 912", "Text line 2")]
     assert labelConfig.textLines("M3x10", "  ") == [("M3x10", "Text line 1")]
+
+
+def test_a_numbered_pocket_joint_is_the_commands():
+    # round 20: a rebuild with the same name made "... in pocket (1)", the old joint was still there; insertPocket
+    # looked for the name ending in " in pocket" and lost the pocket on the next rebuild
+    assert labelConfig.isPocketJointName("Gridfinity label 1U M3x10 in pocket")
+    assert labelConfig.isPocketJointName("Gridfinity label 1U M3x10 in pocket (1)")
+    assert labelConfig.isPocketJointName("Gridfinity label 1U M3x10 in pocket (12)")
+    assert not labelConfig.isPocketJointName("Starr1")
+    assert not labelConfig.isPocketJointName("in pocket of mine (x)")

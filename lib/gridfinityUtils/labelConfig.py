@@ -7,6 +7,8 @@ Cullenect names. The dialog shows those by their display names, the surface by i
 and a custom text.
 """
 
+import re
+
 from . import cullenectCatalog, labelColors
 
 NO_HARDWARE = 'none'
@@ -20,6 +22,17 @@ PARAMETER_FIELDS = {
     'Text line 1': 'line1',
     'Text line 2': 'line2',
 }
+
+
+# the joint the label command makes into a pocket, "<insert> in pocket"; Fusion numbers a name still taken, a rebuild
+# with the same name gives "<insert> in pocket (1)" while the old joint is there yet (round 20)
+POCKET_JOINT_SUFFIX = ' in pocket'
+_POCKET_JOINT = re.compile(r' in pocket( \(\d+\))?$')
+
+
+def isPocketJointName(name: str) -> bool:
+    """Whether the joint is one the label command made into a pocket"""
+    return _POCKET_JOINT.search(name) is not None
 
 
 def textLines(line1: str, line2: str) -> list[tuple[str, str]]:

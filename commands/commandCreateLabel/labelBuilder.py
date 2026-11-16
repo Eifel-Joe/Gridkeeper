@@ -263,7 +263,7 @@ def _buildLabel(
         jointInput = root.joints.createInput(assembly.inContext(insertJointOrigin, occurrence), pocket)
         jointInput.setAsRigidJointMotion()
         joint = root.joints.add(jointInput)
-        joint.name = f'{name} in pocket'
+        joint.name = f'{name}{labelConfig.POCKET_JOINT_SUFFIX}'
 
     if des.designType == adsk.fusion.DesignTypes.ParametricDesignType:
         group = des.timeline.timelineGroups.add(originalTimelinePosition, des.timeline.markerPosition - 1)
@@ -287,7 +287,7 @@ def insertPocket(des: adsk.fusion.Design, body: adsk.fusion.BRepBody) -> adsk.fu
     (round 18, p150). A joint of the user's own isn't the command's, it stays a later feature (review)"""
     component = insertComponent(des, body)
     for joint in des.rootComponent.allJoints:
-        if not joint.name.endswith(' in pocket'):
+        if not labelConfig.isPocketJointName(joint.name):
             continue
         sides = [
             (adsk.fusion.JointOrigin.cast(joint.geometryOrOriginOne), joint.occurrenceOne),
