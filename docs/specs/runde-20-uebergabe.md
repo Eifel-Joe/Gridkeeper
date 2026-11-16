@@ -22,3 +22,24 @@ Punkte:
    richtig als „1.2 mm“ (lokal nachgestellt). Die „12 mm“ entstehen also mit einem anderen aktuellen Wert oder einer
    anderen Datei. Ursache klären, dann Test (rot) und Fix; alle Längenfelder und den Label-Dialog mitprüfen.
 4. Review (Opus), pytest, Snapshot-Lauf über die Hauptsitzung, Übergabe.
+
+## Befunde
+
+**p220: Ursache belegt** (`r20_pocket_probe`).
+- Die Seiten des gespeicherten Joints und damit `insertPocket` liefern den Joint Origin der Tasche ohne
+  Baugruppen-Bezug (`assemblyContext` None). `ui.activeSelections.add` lehnt ihn ab: „3 : invalid argument entity“.
+- Der Proxy über die Bin-Occurrence (`createForAssemblyContext`) lässt sich auswählen.
+- Fix: `labelBuilder._inRoot` gibt die Tasche als Proxy über die Occurrence ihrer Komponente zurück.
+- Nebenwirkung, gewollt: `_isAfter` (Tasche einer später gebauten Bin, Review Runde 18) las `assemblyContext` und war
+  mit dem Joint Origin ohne Bezug immer falsch. Jetzt greift die Prüfung.
+- Die Absicherung `selectionPrefill` bleibt als Netz.
+
+**p221: Nicht nachgestellt.**
+- Der Weg „Wand 1,2 mm im Dialog (0,12 cm im Zustand), dann die Datei aus Handtest 10 laden“ ergibt „wallThickness
+  (1.2 mm)“. Das gilt in pytest (`test_hand_test_10_file_keeps_lengths_in_mm_in_the_note`, alle Längenfelder in mm) und
+  in Fusion (`r20_wall_probe`: Rohzustand 0,12, Meldung 1.2 mm).
+- Im Code schreibt nichts einen mm-Wert in den Zustand der Wandstärke.
+- Mögliche Erklärung: Im Dialog stand vor dem Laden tatsächlich 12 mm, etwa nach dem Laden einer anderen Datei oder
+  einer Eingabe in einem Dokument mit cm als Einheit. Die Meldung zeigt dann richtig den behaltenen Wert.
+- Die Testsitzung wiederholt Handtest 10 mit Bildschirmfoto. Bis dahin bleibt p221 offen, der Test bleibt als
+  Absicherung.

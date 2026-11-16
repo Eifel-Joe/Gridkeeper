@@ -292,8 +292,19 @@ def insertPocket(des: adsk.fusion.Design, body: adsk.fusion.BRepBody) -> adsk.fu
         sides = [adsk.fusion.JointOrigin.cast(joint.geometryOrOriginOne), adsk.fusion.JointOrigin.cast(joint.geometryOrOriginTwo)]
         for (side, other) in (sides, sides[::-1]):
             if side is not None and other is not None and side.name == INSERT_JOINT_ORIGIN                     and (side.nativeObject or side).parentComponent == component and pocketSizeMm(other) is not None:
-                return other
+                return _inRoot(des, other)
     return None
+
+def _inRoot(des: adsk.fusion.Design, jointOrigin: adsk.fusion.JointOrigin) -> adsk.fusion.JointOrigin:
+    """The joint origin as seen from the root, through the occurrence of its component. The sides of a joint came
+    without one (assemblyContext None), a selection input refused them: "3 : invalid argument selection", the label
+    dialog stopped half built (round 20, p220, r20_pocket_probe: the proxy through the bin's occurrence selects)"""
+    if jointOrigin.assemblyContext is not None:
+        return jointOrigin
+    native = jointOrigin.nativeObject or jointOrigin
+    occurrences = des.rootComponent.allOccurrencesByComponent(native.parentComponent)
+    # a bin's component is in the design once, see assembly.addOccurrence; one in the root has no occurrence
+    return native.createForAssemblyContext(occurrences.item(0)) if occurrences.count > 0 else native
 
 def _insertBody(target: rebuildUtils.RebuildTarget) -> adsk.fusion.BRepBody:
     """The insert itself among the tagged bodies of its group, not a letter or the symbol: the order the design finds
