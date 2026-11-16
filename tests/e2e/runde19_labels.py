@@ -8,8 +8,6 @@ ADDIN = '__main__D%3A%2FEntwicklung%2FGridfinity%2FFusionGridfinityGenerator%2FG
 CASES = r'D:\Entwicklung\Gridfinity\FusionGridfinityGenerator\tests\e2e\cases'
 TOLERANCE = 0.001  # cm, 0.01 mm
 MORE = ' M4x2'  # five characters
-# text height the tab of these bins allows, measured on a short text (group b)
-LABEL_HEIGHT = 0.7736
 
 
 def module(name):
@@ -82,13 +80,18 @@ def heights(run, body):
 def groupA(run):
     # p181: two compartments, the text fills the label, made 5 characters longer by its parameter, rebuilt: every
     # letter in its compartment, not below the floor, sketches fully constrained
-    # Test data (first run 16.11.2026): "Schrauben M4x2", 14 characters, doesn't fit a compartment of a 2x1 bin even at
-    # Bold's 3.42 mm and was refused, rightly. "Bolzen" (6) fills the compartment below the 7.74 mm the tab allows
-    # (group b: "M3" at 7.736 mm), "Bolzen M4x2" (11) needs about 4 mm, above the floor
-    (state, settings) = run.state('bin_2x1x3_label_text_engraved_colored', compartmentsX=2, labelText='Bolzen', isLabelBold=True)
+    # Test data (runs of 16.11.2026): "Schrauben M4x2", 14 characters, doesn't fit a compartment of a 2x1 bin even at
+    # Bold's 3.42 mm and was refused, rightly. "Bolzen" (6) was still limited by the tab, not the width: the tab
+    # limits the height of the letters themselves, "Bolzen" with its ascenders came out 7.773 mm, "M3" 7.736 mm, so the
+    # height of a short text is no measure for another one. "Bolzen M4x2" (11) fitted at 4.385 mm: a compartment takes
+    # about 48 mm of text height per character count, a text fills it from 7 characters at 7.77 mm and still fits at
+    # the floor of 3.42 mm with 14. "Muttern" (7) fills it, "Muttern M4x2" (12) fits
+    (state, settings) = run.state('bin_2x1x3_label_text_engraved_colored', compartmentsX=2, labelText='Muttern', isLabelBold=True)
     body = run.binBuilder.buildBin(run.des, state, settings)[0]
     before = heights(run, body)
-    run.check('a: the built text fills the width, lower than the tab allows', len(before) > 0 and max(before) < LABEL_HEIGHT - 1e-4, f'{before}, tab allows {LABEL_HEIGHT}')
+    short = run.binBuilder.buildBin(run.des, dataclasses.replace(state, labelText='Mu'), settings)[0]
+    tabHeight = max(heights(run, short))
+    run.check('a: the built text fills the width, lower than the tab lets "Mu" be', len(before) > 0 and max(before) < tabHeight - 1e-4, f'{before}, "Mu" {tabHeight}')
     names = run.lengthen(body, MORE)
     run.check('a: text parameters made longer', len(names) > 0, str(names))
     try:
