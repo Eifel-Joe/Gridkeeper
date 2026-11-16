@@ -5,6 +5,8 @@ The symbols of the label inserts are svg files drawn from Cullenect's own OpenSC
 
 ![Inserts with a threaded insert, a set screw, countersunk, pan and socket head screws, a crimp ring, a washer and a nut](../assets/images/insert-symbols.png)
 
+<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/cullenect-insert-symbol-dark.gif"><img src="../../assets/gif/cullenect-insert-symbol-light.gif" alt="An insert without a symbol, then with a socket head screw, a nylon nut and a washer"></picture>
+
 ## Screws
 
 With **Screw** ticked, the symbol is put together from:

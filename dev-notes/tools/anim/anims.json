@@ -1,0 +1,390 @@
+{
+ "baseplate-types": [
+  {
+   "caption": "Light",
+   "cursor": [
+    378,
+    44
+   ]
+  },
+  {
+   "caption": "Skeletonized",
+   "cursor": [
+    378,
+    44
+   ]
+  },
+  {
+   "caption": "Full",
+   "cursor": [
+    378,
+    44
+   ]
+  }
+ ],
+ "baseplate-fill-area": [
+  {
+   "caption": "2x3 grid",
+   "cursor": [
+    378,
+    44
+   ]
+  },
+  {
+   "caption": "450x200 mm area, Prusa MK4",
+   "cursor": [
+    378,
+    103
+   ]
+  },
+  {
+   "caption": "450x300 mm area",
+   "cursor": [
+    378,
+    103
+   ]
+  },
+  {
+   "caption": "Prusa MINI",
+   "cursor": [
+    378,
+    253
+   ]
+  },
+  {
+   "caption": "Prusa XL",
+   "cursor": [
+    378,
+    253
+   ]
+  }
+ ],
+ "baseplate-connection-holes": [
+  {
+   "caption": "No connection holes",
+   "cursor": [
+    216,
+    102
+   ]
+  },
+  {
+   "caption": "3.2 mm connection holes",
+   "cursor": [
+    216,
+    102
+   ]
+  },
+  {
+   "caption": "5 mm connection holes",
+   "cursor": [
+    378,
+    131
+   ]
+  }
+ ],
+ "bin-bottom-options": [
+  {
+   "caption": "Solid bottom",
+   "cursor": [
+    194,
+    103
+   ]
+  },
+  {
+   "caption": "With screw holes",
+   "cursor": [
+    194,
+    103
+   ]
+  },
+  {
+   "caption": "With magnet cutouts",
+   "cursor": [
+    194,
+    164
+   ]
+  },
+  {
+   "caption": "Combined, with pull tabs",
+   "cursor": [
+    194,
+    194
+   ]
+  }
+ ],
+ "bin-compartments": [
+  {
+   "caption": "3x2 compartments",
+   "cursor": [
+    194,
+    76
+   ]
+  },
+  {
+   "caption": "Merged",
+   "cursor": [
+    212,
+    239
+   ]
+  },
+  {
+   "caption": "Labeled",
+   "cursor": [
+    378,
+    290
+   ]
+  }
+ ],
+ "bin-creases": [
+  {
+   "caption": "Flat walls",
+   "cursor": [
+    194,
+    15
+   ]
+  },
+  {
+   "caption": "Folded in",
+   "cursor": [
+    194,
+    15
+   ]
+  },
+  {
+   "caption": "Panels of 2 units",
+   "cursor": [
+    378,
+    104
+   ]
+  }
+ ],
+ "bin-features": [
+  {
+   "caption": "2 wide",
+   "cursor": [
+    378,
+    44
+   ]
+  },
+  {
+   "caption": "3 wide",
+   "cursor": [
+    378,
+    44
+   ]
+  },
+  {
+   "caption": "Shelled",
+   "cursor": [
+    378,
+    305
+   ]
+  },
+  {
+   "caption": "0.8 mm walls",
+   "cursor": [
+    378,
+    335
+   ]
+  }
+ ],
+ "bin-half-grid": [
+  {
+   "caption": "Whole bases",
+   "cursor": [
+    194,
+    103
+   ]
+  },
+  {
+   "caption": "Half grid",
+   "cursor": [
+    194,
+    103
+   ]
+  },
+  {
+   "caption": "2.5 wide, a row of half bases",
+   "cursor": [
+    378,
+    44
+   ]
+  }
+ ],
+ "bin-custom-shape": [
+  {
+   "caption": "Every cell",
+   "cursor": [
+    194,
+    164
+   ]
+  },
+  {
+   "caption": "Cells left out",
+   "cursor": [
+    269,
+    266
+   ]
+  }
+ ],
+ "bin-label-options": [
+  {
+   "caption": "Blank",
+   "cursor": [
+    378,
+    16
+   ]
+  },
+  {
+   "caption": "Engraved text",
+   "cursor": [
+    378,
+    16
+   ]
+  },
+  {
+   "caption": "Engraved text and icon",
+   "cursor": [
+    378,
+    46
+   ]
+  },
+  {
+   "caption": "Embossed text and icon",
+   "cursor": [
+    378,
+    76
+   ]
+  }
+ ],
+ "bin-label-tab-options": [
+  {
+   "caption": "Full length",
+   "cursor": [
+    378,
+    73
+   ]
+  },
+  {
+   "caption": "Single slot",
+   "cursor": [
+    378,
+    73
+   ]
+  },
+  {
+   "caption": "With offset",
+   "cursor": [
+    378,
+    132
+   ]
+  }
+ ],
+ "bin-solid-tool": [
+  {
+   "caption": "Hollow",
+   "cursor": [
+    378,
+    305
+   ]
+  },
+  {
+   "caption": "Solid",
+   "cursor": [
+    378,
+    305
+   ]
+  },
+  {
+   "caption": "Solid, a tool cut into it",
+   "cursor": [
+    378,
+    305
+   ],
+   "dialog": "2-dialog.png"
+  }
+ ],
+ "cullenect-pocket": [
+  {
+   "caption": "Plain label tab",
+   "cursor": [
+    378,
+    343
+   ]
+  },
+  {
+   "caption": "Cullenect pocket",
+   "cursor": [
+    378,
+    343
+   ]
+  },
+  {
+   "caption": "Pocket over 2 units",
+   "cursor": [
+    378,
+    73
+   ]
+  }
+ ],
+ "cullenect-insert-text": [
+  {
+   "caption": "One line",
+   "cursor": [
+    328,
+    44
+   ]
+  },
+  {
+   "caption": "Two lines",
+   "cursor": [
+    328,
+    74
+   ]
+  },
+  {
+   "caption": "Set in",
+   "cursor": [
+    328,
+    133
+   ]
+  },
+  {
+   "caption": "Raised",
+   "cursor": [
+    328,
+    133
+   ]
+  }
+ ],
+ "cullenect-insert-symbol": [
+  {
+   "caption": "No symbol",
+   "cursor": [
+    158,
+    44
+   ]
+  },
+  {
+   "caption": "Socket head screw",
+   "cursor": [
+    158,
+    44
+   ]
+  },
+  {
+   "caption": "Nylon nut",
+   "cursor": [
+    328,
+    253
+   ]
+  },
+  {
+   "caption": "Washer",
+   "cursor": [
+    328,
+    253
+   ]
+  }
+ ]
+}

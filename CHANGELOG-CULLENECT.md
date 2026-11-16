@@ -4,6 +4,17 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
 
 ## Unreleased
 
+### Own pictures and animations (round 26)
+
+- Every picture and animation of the documentation is Gridkeeper's own now. The 25 animations and 55 pictures taken
+  over from GridfinityGenerator are replaced or, where no page used them, removed.
+- 15 animations in the layout of the original (model, dialog part, caption), built from Fusion renders and dialog
+  screenshots by `dev-notes/tools/anim/compose.py`; new ones for Cullenect pockets, insert text and symbols, and a
+  solid bin with a tool cut in place of the nozzle screen recording.
+- Seven pictures (five dialogs, the settings window, the test report) retaken without the reddish edge the
+  screen-control glow left on them. `tools/screenshots` and "Gridkeeper docs: render models" now write to
+  `tools/screenshots/out/` so they cannot overwrite the documentation pictures.
+
 ### Merged from upstream (round 22)
 
 Six commits of FusionGridfinityGenerator by Le0Michine (CC BY-NC-SA 4.0) merged as they are, his authorship kept:

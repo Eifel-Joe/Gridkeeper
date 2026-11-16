@@ -1,5 +1,9 @@
 # Dialog screenshots
 
+> **Gridkeeper:** these tools come from GridfinityGenerator and write to `tools/screenshots/out/` (ignored by git), not
+> into the documentation. The pictures and animations of the docs are made with `dev-notes/tools/anim/compose.py`,
+> see `docs/assets/images/NEEDED.md`.
+
 Screenshots of the bin and baseplate dialogs for the docs and release notes, in Fusion's dark and light themes, without
 opening Fusion. Each command's own `command_created` runs against a fake of the Fusion API (`fakeAdsk`), so the inputs,
 their values, what's enabled or hidden and what the drawings show all come from the add-in's code. `page/dialog.js` draws
@@ -80,7 +84,7 @@ wait their turn. Click a picture to see it large, **Open file** opens it in the 
 
 A picture is made by building the preset in a new document with the add-in's own builders, hiding everything but the
 bodies, setting up the view in Fusion's Photo Booth lighting and saving it, by default to
-`docs/assets/models/<preset>.png`. The document is closed without saving.
+`tools/screenshots/out/models/<preset>.png`. The document is closed without saving.
 
 The palette also finishes the pictures, Fusion's Python has no imaging. Fusion renders the view at the viewport's
 proportions and `supersample` times the picture's size, the palette's page cuts that to the model, fits it in the
@@ -127,7 +131,7 @@ first, then
 
     tools/screenshots/.venv/bin/python tools/screenshots/modelGifs.py [--only bin-bottom-options]
 
-writes `docs/assets/gif/<name>-light.gif` and `-dark.gif`, on GitHub's page colors as GIFs can't be partly
+writes `tools/screenshots/out/gif/<name>-light.gif` and `-dark.gif`, on GitHub's page colors as GIFs can't be partly
 transparent. `--pictures` takes the pictures from another folder, `--dialogs` records the dialog animations of
 `loopWith` first. A GIF missing a picture is reported and the others are still made.
 

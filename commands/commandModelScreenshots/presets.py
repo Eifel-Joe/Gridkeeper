@@ -18,7 +18,7 @@ STYLES = {
     'wireframe': 'WireframeVisualStyle',
 }
 CAMERAS = ['perspective', 'orthographic']
-DEFAULT_OUTPUT = os.path.join('docs', 'assets', 'models')
+DEFAULT_OUTPUT = os.path.join('tools', 'screenshots', 'out', 'models')
 
 # options of the picture, what a preset doesn't set
 DEFAULT_OPTIONS = {
