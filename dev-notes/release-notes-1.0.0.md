@@ -28,10 +28,10 @@ and clone; settings files; the snapshot tests. All of that is Le0Michine's work.
 - **Gridkeeper label**, a command for the Cullenect inserts that click into those pockets: text in one or two lines,
   raised, set in or flush, text colour, 480 screw symbols plus set screws and hardware (nuts, washers, inserts, crimp
   terminals).
-- **Inserts placed in their pockets:** bins, baseplates and inserts become components, an insert is jointed into the
-  pocket it was made for; inserts can be rebuilt, cloned and opened in the settings window like bins.
+- **Inserts placed in their pockets:** bins, baseplates and inserts are always components, sorted into containers,
+  and an insert is jointed into the pocket it was made for; inserts can be rebuilt, cloned and opened in the settings window like bins.
 - **Dividers up to the top** on grid lines, and a label colour for bin labels.
-- **More shape tests**, also checking that every sketch is fully constrained.
+- **More shape tests**; Cullenect and label cases also fail on a sketch that is not fully constrained.
 - **Own documentation** with every dialog and option explained, in English.
 
 The full list is in [CHANGELOG-CULLENECT.md](https://github.com/Eifel-Joe/Gridkeeper/blob/master/CHANGELOG-CULLENECT.md).
