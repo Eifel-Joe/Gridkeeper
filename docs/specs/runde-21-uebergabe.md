@@ -40,7 +40,18 @@ Kein kritischer Fund. Umgang:
 ## Belege
 
 - pytest: `920 passed`.
-- Fusion: ausstehend (`r21_reload1`, `r21_e2e_a`–`c`, `r21_snap`).
+- Fusion auf dd194b9 (`r21_reload1`): E2E a, b und c sind ALL OK.
+- Snapshots:
+  - Gelaufen sind die Fälle 0–58 und 73–82. Die Fälle 59–72 sind reine Bin- und Grundplatten-Fälle, die R21 nicht
+    berührt; auf Jörgs Wunsch übersprungen.
+  - Rot waren nur `label_1u_welle_6mm` und `label_1u_welle_6mm_text_edited`, wie im Plan erwartet.
+- **Neu abgelegt mit belegter Ursache p233** (`r21_refresh`, danach `r21_snap_t`: beide pass):
+  - Der Einleger-Grundkörper behält die Bounding-Box 0..36 × 0..11 × 0..1,2 mm.
+  - Sein Volumen ändert sich leicht (444,596 → 445,710 mm³ bzw. → 444,613 mm³), weil „bündig“ den kleineren Text aus
+    ihm herausschneidet.
+  - Der Text endet bei „Welle 6mm“ 0,958 mm weiter links (33,499 → 32,541 mm), also 0,95 der zusätzlichen 1 mm.
+  - Beim nachträglich verlängerten Text läuft die kleinere Schrift entsprechend weiter (56,913 → 55,264 mm).
+  - Vorschaubilder gab es für beide Fälle nicht, verloren ging keines.
 
 ## Für Jörg
 
