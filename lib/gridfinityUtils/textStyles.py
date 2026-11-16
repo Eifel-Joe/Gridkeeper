@@ -98,8 +98,10 @@ def notes() -> list[tuple[str, float, str]]:
     return list(_notes)
 
 
-def hintText(noted: list[tuple[str, float, str]], suggestHeavy: bool = True) -> str | None:
-    """What the command tells about thin text, none without any. suggestHeavy: the dialog offers the Heavy style"""
+def hintText(noted: list[tuple[str, float, str]], suggestHeavy: bool = True, isBinLabel: bool = False) -> str | None:
+    """What the command tells about thin text, none without any. suggestHeavy: the dialog offers the Heavy style.
+    isBinLabel: a bin label is below the limit only on a tab lower than it, a text too wide isn't built (round 19), a
+    wider tab helps there, Bold for Regular (review round 21)"""
     if len(noted) == 0:
         return None
     # a bin labels each compartment, the same text there is said once
@@ -108,7 +110,10 @@ def hintText(noted: list[tuple[str, float, str]], suggestHeavy: bool = True) -> 
         for (text, height, style) in noted
     )
     lines = ' '.join(sentences)
-    remedy = 'Shorten the text, make it wider or use the Heavy style' if suggestHeavy else 'Shorten the text or make it wider'
+    if isBinLabel:
+        remedy = 'Make the tab wider or use the Bold style' if any(style == STYLE_REGULAR for (_, _, style) in noted) else 'Make the tab wider'
+    else:
+        remedy = 'Shorten the text, make it wider or use the Heavy style' if suggestHeavy else 'Shorten the text or make it wider'
     return f'{lines} {remedy}.'
 
 

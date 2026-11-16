@@ -44,31 +44,46 @@ def groupA(run):
         (state, settings) = run.state('bin_2x1x3_label_text_engraved', labelText='M3', isLabelBold=False, tabWidth=tabWidth)
         run.binBuilder.buildBin(run.des, state, settings)
         noted = run.textStyles.notes()
-        hint = run.textStyles.hintText(noted, suggestHeavy=False) or ''
+        hint = run.textStyles.hintText(noted, suggestHeavy=False, isBinLabel=True) or ''
         heights = [round(height * 10, 2) for (_, height, _) in noted]
         if expected:
-            run.check(f'a: tab {tabWidth * 10:g} mm, Regular below 4.43 mm is hinted', len(noted) > 0 and 'below the 4.43 mm' in hint, f'{heights} mm: {hint}')
+            run.check(f'a: tab {tabWidth * 10:g} mm, Regular below 4.43 mm is hinted, a wider tab or Bold advised', len(noted) > 0 and 'below the 4.43 mm' in hint and 'Make the tab wider or use the Bold style' in hint, f'{heights} mm: {hint}')
         else:
             run.check(f'a: tab {tabWidth * 10:g} mm, no hint', len(noted) == 0, f'{heights} mm')
     run.healthy('a')
 
 
 def groupB(run):
-    # p233: an insert without a symbol, its long text fitted, the width made 1 mm smaller after: the text stays inside
+    # p233: an insert without a symbol, its long text fitted, the width made 1 mm smaller after: the text stays inside.
+    # Review: without p233 the text kept 1.7 mm anyway by the 5 % reserve, so the same insert is built once without the
+    # 1 mm (SHRINK_ROOM 0, read when fitting) and the letters have to end about 1 mm (0.95 of it) further left
+    layout = module('lib.gridfinityUtils.cullenectLabelLayout')
     (state, settings) = run.state('label_1u_welle_6mm', line1='Zylinderschraube DIN912', textStyle='Heavy')
-    bodies = run.labelBuilder.buildLabel(run.des, state, settings)
+
+    def rightEnd():
+        bodies = run.labelBuilder.buildLabel(run.des, state, settings)
+        return (bodies, max(body.boundingBox.maxPoint.x for body in bodies[1:]) - bodies[0].boundingBox.minPoint.x)
+    kept = layout.SHRINK_ROOM
+    layout.SHRINK_ROOM = 0
+    try:
+        (_, without) = rightEnd()
+    finally:
+        layout.SHRINK_ROOM = kept
+    (bodies, withRoom) = rightEnd()
+    run.check('b: the text ends about 1 mm further left than without p233', without - withRoom >= 0.95 * kept - 0.01, f'{without * 10:.3f} -> {withRoom * 10:.3f} mm from the left edge')
     insertName = bodies[0].name
     letterNames = [body.name for body in bodies[1:]]
     component = bodies[0].parentComponent
-    textComponent = bodies[1].parentComponent if len(bodies) > 1 else component
-    width = next(parameter for parameter in run.des.userParameters if parameter.name.endswith('_width'))
+    textComponent = bodies[1].parentComponent
+    widths = [parameter for parameter in run.des.userParameters if parameter.name.endswith('_width')]
+    width = widths[-1]
     width.expression = f'{width.expression} - 1 mm'
     adsk.doEvents()
     insert = next(body for body in component.bRepBodies if body.name == insertName)
     letters = [body for body in textComponent.bRepBodies if body.name in letterNames]
     right = max(body.boundingBox.maxPoint.x for body in letters)
     edge = insert.boundingBox.maxPoint.x
-    run.check('b: text inside the insert after -1 mm', right <= edge + TOLERANCE, f'letters to {right * 10:.3f} mm, edge {edge * 10:.3f} mm, {(edge - right) * 10:.3f} mm to spare')
+    run.check('b: text inside the insert after -1 mm', right <= edge + 0.001, f'letters to {right * 10:.3f} mm, edge {edge * 10:.3f} mm, {(edge - right) * 10:.3f} mm to spare')
     run.healthy('b')
 
 
@@ -82,6 +97,11 @@ def groupC(run):
         hint = run.textStyles.hintText(noted) or ''
         run.check(f'c: {style} insert hinted with {limit} mm', len(noted) > 0 and f'below the {limit} mm' in hint and f'in {style}' in hint, hint)
         run.check(f'c: {style} preview note', run.textStyles.previewNote(noted) == ', text below the print limit')
+    # a short text at the insert's 5 mm, above 4.43 mm: no hint
+    run.textStyles.clearNotes()
+    (state, settings) = run.state('label_1u_screw_text', line1='M3', textStyle='Regular')
+    run.labelBuilder.buildLabel(run.des, state, settings)
+    run.check('c: Regular above 4.43 mm, no hint', run.textStyles.notes() == [], str(run.textStyles.notes()))
     run.healthy('c')
 
 
