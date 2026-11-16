@@ -18,7 +18,7 @@ Yes, see [Beside the original](../getting-started/installation.md#beside-the-ori
 
 **I installed GridfinityGenerator from the Autodesk App Store, is that Gridkeeper?**
 No. The App Store has the original add-in by Le0Michine. Gridkeeper comes only from the
-[GitHub releases](https://github.com/Eifel-Joe/FusionGridfinityGenerator/releases).
+[GitHub releases](https://github.com/Eifel-Joe/Gridkeeper/releases).
 
 ## Building
 

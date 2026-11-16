@@ -2,8 +2,8 @@ site_name: Gridkeeper
 site_description: Gridkeeper, a Fusion add-in for Gridfinity bins, baseplates and Cullenect label inserts, our further development of GridfinityGenerator
 # placeholder, the repository is still to be renamed
 site_url: https://eifel-joe.github.io/Gridkeeper/
-repo_name: Eifel-Joe/FusionGridfinityGenerator
-repo_url: https://github.com/Eifel-Joe/FusionGridfinityGenerator
+repo_name: Eifel-Joe/Gridkeeper
+repo_url: https://github.com/Eifel-Joe/Gridkeeper
 edit_uri: ""
 
 theme:
@@ -41,7 +41,7 @@ theme:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/Eifel-Joe/FusionGridfinityGenerator
+      link: https://github.com/Eifel-Joe/Gridkeeper
       name: Gridkeeper on GitHub
 
 copyright: >-
