@@ -4,7 +4,7 @@ come from Fusion, see the model pictures section of README.md, so they share a v
 
     tools/screenshots/.venv/bin/python tools/screenshots/modelGifs.py [--only bin-bottom-options] [--dialogs]
 
-GIFs are listed in modelGifs.json, each is written for the light and the dark theme to documentation/assets/gif.
+GIFs are listed in modelGifs.json, each is written for the light and the dark theme to docs/assets/gif.
 A GIF with loopWith changes its pictures when the dialog animation it's shown beside does, by the timeline recording it
 saved, see animation.py. With combine, the dialog animation is put beside the pictures in the same GIF. --dialogs first
 records the dialog animations, from shots.json. Fusion's palette of model pictures runs it with --dialogs after its pictures.
@@ -24,8 +24,8 @@ from screenshots import DEFAULT_SHOTS_FILE, findFonts, outputPath, takeShots
 TOOL_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(os.path.dirname(TOOL_DIR))
 GIFS_FILE = os.path.join(TOOL_DIR, 'modelGifs.json')
-PICTURES_DIR = os.path.join(ROOT_DIR, 'documentation', 'assets', 'models')
-OUTPUT_DIR = os.path.join(ROOT_DIR, 'documentation', 'assets', 'gif')
+PICTURES_DIR = os.path.join(ROOT_DIR, 'docs', 'assets', 'models')
+OUTPUT_DIR = os.path.join(ROOT_DIR, 'docs', 'assets', 'gif')
 # GitHub's text colors of the themes
 CAPTION_COLORS = {'light': '#1f2328', 'dark': '#e6edf3'}
 DEFAULTS = {'size': 640, 'hold': 1600, 'fade': 400, 'captionSize': 30}
@@ -124,7 +124,7 @@ def dialogFrames(gif: dict, theme: str) -> list[tuple[Image.Image, int]]:
     shot = next((shot for shot in config['shots'] if shot['name'] == gif['loopWith']), None)
     if shot is None:
         raise GifError(f'{gif["name"]}: no dialog animation {gif["loopWith"]} in {DEFAULT_SHOTS_FILE}')
-    folder = os.path.join(ROOT_DIR, shot.get('output') or config.get('output', 'documentation/assets/ui'))
+    folder = os.path.join(ROOT_DIR, shot.get('output') or config.get('output', 'docs/assets/ui'))
     path = outputPath(folder, shot, theme, shot.get('themes') or config.get('themes') or ['dark', 'light'])
     if not os.path.exists(path):
         raise GifError(f'{gif["name"]}: no recording of {gif["loopWith"]}, record it first with --dialogs')

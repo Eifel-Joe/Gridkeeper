@@ -1,6 +1,6 @@
 """
 Round 12 (p13): the inputs of this fork in upstream's config, rebuild and per bin parameter mechanism of v2.4.0.0.
-See docs/specs/2026-11-15-upstream-2-4-merge.md
+See dev-notes/specs/2026-11-15-upstream-2-4-merge.md
 """
 
 import os

@@ -1,4 +1,4 @@
-# End-to-end check of round 14 (docs/specs/2026-11-15-runde-14-design.md, "Ende-zu-Ende-Kriterium"), run in Fusion with
+# End-to-end check of round 14 (dev-notes/specs/2026-11-15-runde-14-design.md, "Ende-zu-Ende-Kriterium"), run in Fusion with
 # the add-in loaded from this checkout. Each case is built, its label text made three letters longer through its
 # parameter, and checked. The cases run in groups, each under a minute for the Fusion MCP's time limit: set GROUP to
 # 'a' to 'g' before running (all of them without). Each group builds into a document of its own, closes it when

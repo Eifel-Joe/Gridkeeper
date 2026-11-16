@@ -251,8 +251,8 @@ def test_derived_empty_color_would_reset_it(current):
 def test_hand_test_10_file_keeps_lengths_in_mm_in_the_note(current):
     # the dialog with a wall of 1.2 mm typed in (0.12 cm, as Fusion's inputs keep lengths), then the file of hand test
     # 10 loaded, which has only the bin size: every kept length shows in mm as the dialog does. Not reproduced: this
-    # path shows 1.2 mm, see docs/specs/runde-20-uebergabe.md
-    path = os.path.join(PROJECT_ROOT, "docs", "specs", "testdateien", "handtest-10-alte-bin-ohne-farbe.json")
+    # path shows 1.2 mm, see dev-notes/specs/runde-20-uebergabe.md
+    path = os.path.join(PROJECT_ROOT, "dev-notes", "specs", "testdateien", "handtest-10-alte-bin-ohne-farbe.json")
     with open(path, encoding="utf-8") as file:
         text = file.read()
     dialog = dataclasses.replace(current, wallThickness=0.12, xyClearance=0.025, baseWidth=4.2)
