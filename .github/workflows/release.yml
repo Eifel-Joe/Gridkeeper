@@ -1,8 +1,12 @@
 on:
   push:
     tags:
-      - '*'
+      # only Gridkeeper's own tags; the tags of GridfinityGenerator (v1.0.0.0 ...) must not start a release
+      - 'gridkeeper-v*'
 name: Handle Release
+# the repository's token is read-only by default; creating the release and uploading the ZIP need write access
+permissions:
+  contents: write
 jobs:
   generate-installer:
     name: Create release-artifacts
@@ -16,8 +20,10 @@ jobs:
           mkdir -p Gridkeeper/documentation dist
           cp -r Gridkeeper.manifest Gridkeeper.py config.py LICENSE.md lib commands Gridkeeper/
           cp documentation/PRIVACY_POLICY.md Gridkeeper/documentation/
-          7z a "dist/Gridkeeper-${{ github.ref_name }}.zip" Gridkeeper
-          7z l "dist/Gridkeeper-${{ github.ref_name }}.zip"
+          # gridkeeper-v1.0.0 -> Gridkeeper-v1.0.0.zip
+          zip="dist/Gridkeeper-${GITHUB_REF_NAME#gridkeeper-}.zip"
+          7z a "$zip" Gridkeeper
+          7z l "$zip"
       - name: Upload the artifacts
         uses: svenstaro/upload-release-action@v2
         with:
@@ -25,5 +31,4 @@ jobs:
           file: dist/*
           file_glob: true
           tag: ${{ github.ref }}
-          body: TBD
-          prerelease: true
+          prerelease: false

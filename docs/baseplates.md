@@ -9,7 +9,7 @@ The dialog has these sections, from top to bottom.
 
 ## Info
 
-A help link and the version of the add-in. When the dialog was opened by **Gridkeeper rebuild**, it says which
+A link to this page and the version of the add-in. When the dialog was opened by **Gridkeeper rebuild**, it says which
 baseplate is rebuilt in place.
 
 ## Basic size

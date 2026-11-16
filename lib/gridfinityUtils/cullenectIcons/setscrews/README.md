@@ -2,7 +2,7 @@
 
 The svg files here are set screws (grub screws) for the Cullenect labels: no head, threaded all along, the
 driver in their end. Cullenect has no such symbol, they are **own work of this fork**
-(Eifel-Joe/FusionGridfinityGenerator), not Cullenect code.
+(Eifel-Joe/Gridkeeper), not Cullenect code.
 
 - Drawing: the thread as Cullenect draws it, beside it a gap apart a disc for the end of the screw with the driver
   cut out (slot, hex or torx, at 70 % of Cullenect's size), with or without a security pin (hex, torx). Shaft
