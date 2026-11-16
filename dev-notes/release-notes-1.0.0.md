@@ -17,16 +17,22 @@ settings, rebuild and clone.
 
 ## What's in it
 
-- **Cullenect labels:** label tabs with a Cullenect pocket, and a label command for the inserts that click into them,
-  with text in one or two lines, raised, set in or flush, screw and hardware symbols, and joints that put the insert
-  into its pocket.
-- **Compartments:** merge cells into pockets by dragging, give each a label and a depth; dividers up to the top.
-- **Bins:** custom shapes (cells left out), half grid, creased walls for long thin bins, shelled and solid bins.
-- **Baseplates:** fill an area, cut into pieces for your printer's bed, half cells, connection holes.
-- **Settings in the design:** right-click a bin, baseplate or insert for **Gridkeeper settings**, **rebuild** and
-  **clone**; save and load dialog settings as files.
-- **Snapshot tests** in Fusion that compare every generator against saved shapes.
-- Merged from GridfinityGenerator up to its current state, including clone in the context menu and its new label icons.
+**Everything of GridfinityGenerator**, merged up to its current state: bins with compartments, custom shapes, half grid
+and creased walls; baseplates that fill an area and are cut for your printer's bed; the settings window with rebuild
+and clone; settings files; the snapshot tests. All of that is Le0Michine's work.
+
+**New in Gridkeeper:**
+
+- **Cullenect pockets in label tabs:** label style „Cullenect“ for bin and compartment tabs, with socket play and the
+  socket sizes in the dialog.
+- **Gridkeeper label**, a command for the Cullenect inserts that click into those pockets: text in one or two lines,
+  raised, set in or flush, text colour, 480 screw symbols plus set screws and hardware (nuts, washers, inserts, crimp
+  terminals).
+- **Inserts placed in their pockets:** bins, baseplates and inserts become components, an insert is jointed into the
+  pocket it was made for; inserts can be rebuilt, cloned and opened in the settings window like bins.
+- **Dividers up to the top** on grid lines, and a label colour for bin labels.
+- **More shape tests**, also checking that every sketch is fully constrained.
+- **Own documentation** with every dialog and option explained, in English.
 
 The full list is in [CHANGELOG-CULLENECT.md](https://github.com/Eifel-Joe/Gridkeeper/blob/master/CHANGELOG-CULLENECT.md).
 
