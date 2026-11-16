@@ -126,3 +126,32 @@ def test_min_text_height_keeps_a_04mm_stroke(style):
 def test_descenders_reach_below_the_baseline():
     # measured in Fusion 15.11.2026 on "gjpqy", the same for all three styles, the text height is the capitals' height
     assert styles.DESCENT_FACTOR == approx(0.294, abs=1e-3)
+
+
+# --- round 19, p181: bin label text fitted to the width, not below the floor
+
+def test_short_text_keeps_the_label_height():
+    assert styles.fittedHeight(0.5, 0.8, 'Bold') == (approx(0.5), False)
+
+
+def test_long_text_shrinks_to_the_width_above_the_floor():
+    assert styles.fittedHeight(0.5, 0.4, 'Bold') == (approx(0.4), False)
+
+
+def test_long_text_stops_at_the_floor():
+    (height, overflows) = styles.fittedHeight(0.5, 0.2, 'Regular')
+    assert height == approx(styles.minTextHeight('Regular'))
+    assert overflows
+
+
+def test_label_height_below_the_floor_stays():
+    # a small tab gives letters lower than the floor, they stay, only the shrink for the width is held at the floor
+    assert styles.fittedHeight(0.3, 0.8, 'Regular') == (approx(0.3), False)
+    assert styles.fittedHeight(0.3, 0.2, 'Regular') == (approx(0.3), True)
+
+
+def test_overflow_problem_names_text_and_floor():
+    assert styles.overflowProblem('Schrauben M4x20 DIN 912', 0.443) == (
+        '"Schrauben M4x20 DIN 912" doesn\'t fit the label even at 4.4 mm, the least height a 0.4 mm nozzle prints. '
+        'Shorten it or make the bin wider.'
+    )
