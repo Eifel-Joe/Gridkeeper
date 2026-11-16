@@ -11,6 +11,8 @@ GENERATOR_BIN = 'bin'
 GENERATOR_BASEPLATE = 'baseplate'
 # Cullenect inserts of the label command, only the shape test cases use their configs so far
 GENERATOR_LABEL = 'label'
+# storage box after Pred's parametric Gridfinity Storage Box v1.1 (round 27, p260)
+GENERATOR_BOX = 'box'
 
 # the rest are counts, base or height units, flags and names, kept as they are
 MM_FIELDS = {
@@ -27,20 +29,23 @@ MM_FIELDS = {
         'bedWidth', 'bedLength', 'bedMargin',
     },
     GENERATOR_LABEL: {'baseWidth', 'freeWidth', 'offsetX', 'offsetY'},
+    GENERATOR_BOX: {'magnetDepth', 'magnetDiameter'},
 }
 DEGREE_FIELDS = {
     GENERATOR_BIN: {'tabOverhangAngle', 'tabTopAngle'},
     GENERATOR_BASEPLATE: set(),
     GENERATOR_LABEL: set(),
+    GENERATOR_BOX: set(),
 }
 # lists of cells, JSON has no tuples
 CELL_LIST_FIELDS = {
     GENERATOR_BIN: {'shapeCells'},
     GENERATOR_BASEPLATE: set(),
     GENERATOR_LABEL: set(),
+    GENERATOR_BOX: set(),
 }
 
-GENERATOR_TITLES = {GENERATOR_BIN: 'bin', GENERATOR_BASEPLATE: 'baseplate', GENERATOR_LABEL: 'label'}
+GENERATOR_TITLES = {GENERATOR_BIN: 'bin', GENERATOR_BASEPLATE: 'baseplate', GENERATOR_LABEL: 'label', GENERATOR_BOX: 'box'}
 
 class ConfigError(Exception):
     pass

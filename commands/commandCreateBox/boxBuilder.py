@@ -1,0 +1,196 @@
+import adsk.core, adsk.fusion
+
+from ...lib import tagUtils
+from ...lib import placementUtils
+from ...lib import assembly
+from ...lib import configJson
+from ...lib import rebuildUtils
+from ...lib.gridfinityUtils import commonUtils, designIntent, parameterUtils
+from ...lib.gridfinityUtils import predBoxConfig
+from ...lib.gridfinityUtils.predBox import PredBoxDims
+from ...lib.gridfinityUtils.predBoxGenerator import createPredBox, PredBoxOptions
+from ...lib.gridfinityUtils.baseGenerator import createPointJointOrigins
+from ...lib.gridfinityUtils.jointOriginLayout import cellJointOriginPoints
+from ...lib.gridfinityUtils.dim import Dim
+from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
+from .inputState import InputState
+
+# Builds the storage box after Pred's parametric Gridfinity Storage Box v1.1 from an InputState, without the dialog.
+# Pred: https://www.printables.com/model/543553 (CC BY-NC), rebuilt in code for Gridkeeper (round 27, p260).
+
+LOG_PREFIX = 'Gridfinity box'
+
+# User parameter names are stored in user documents, keep these literal
+BOX_PARAMETER_BASE_NAME = 'gfBox'
+# boxes are built where they stand, no move of this name, see rebuildUtils.findTarget
+BOX_PLACEMENT_FEATURE = 'Box placement'
+# name the boxes start with, so ones without a tag still count when placing new ones
+BOX_NAME_PREFIX = 'Box '
+# the components of a set in the box's own component, the lid is split off the box like in Pred's file
+BOX_COMPONENT_NAME = 'Box'
+LID_COMPONENT_NAME = 'Lid'
+# joint origins (Jörg 16.11.2026: "Mit Joint origins."), the seats of the small parts follow in round 28
+CELL_JOINT_ORIGIN = 'Cell joint origin'
+STACK_BOTTOM_JOINT_ORIGIN = 'Stack bottom joint origin'
+STACK_TOP_JOINT_ORIGIN = 'Stack top joint origin'
+LID_JOINT_ORIGIN = 'Lid joint origin'
+LID_JOINT_NAME = 'Lid on box'
+# placement grid for new boxes, beside bins, baseplates, inserts and other boxes
+PLACEMENT_CELL_LENGTH = 4.2
+
+
+def boxProblem(state: InputState) -> str | None:
+    return predBoxConfig.boxProblem(state)
+
+
+def boxName(state: InputState) -> str:
+    return predBoxConfig.boxName(state)
+
+
+def outerSize(state: InputState) -> tuple[float, float]:
+    return (state.gridX * 4.2 + 2.0, state.gridY * 4.2 + 2.0)
+
+
+def buildBox(
+    des: adsk.fusion.Design,
+    state: InputState,
+    settings: list[dict],
+    mayChangeDocument: bool = True,
+    parameterPrefix: str | None = None,
+    occurrenceTransform: adsk.core.Matrix3D | None = None,
+    oldPlace: assembly.OldPlace | None = None,
+) -> list[adsk.fusion.BRepBody]:
+    """
+    Builds box and lid into the design, tagged with the settings to show later, see settingsUtils.snapshotInputs.
+    Returns the box body and the lid body. The set is a component of its own in the container Boxes with the
+    components Box and Lid, the lid jointed shut on the box; a part design is switched to hybrid for it unless the
+    document may not change (a preview), see designIntent.structurePlan. A rebuild in place (rebuildBox) gives the
+    prefix of the parameters it keeps, the transform of the old set and where the old one is
+    """
+    if des.designType == 0:
+        raise UnsupportedDesignTypeException('Timeline must be enabled for the generator to work, projects with disabled design history currently are not supported')
+    problem = boxProblem(state)
+    if problem is not None:
+        raise ValueError(problem)
+    plan = designIntent.structurePlan(des.designIntent, mayChangeDocument, assembly.rebuildKind(oldPlace))
+    return assembly.buildWithStructure(des, plan, lambda: _buildBox(des, state, settings, plan, parameterPrefix, occurrenceTransform, oldPlace))
+
+
+def _buildBox(
+    des: adsk.fusion.Design,
+    state: InputState,
+    settings: list[dict],
+    plan: designIntent.StructurePlan,
+    parameterPrefix: str | None,
+    occurrenceTransform: adsk.core.Matrix3D | None,
+    oldPlace: assembly.OldPlace | None,
+) -> list[adsk.fusion.BRepBody]:
+    name = boxName(state)
+    # the container comes before the box's timeline group, see assembly.partPlace
+    place = assembly.partPlace(des, plan, tagUtils.KIND_BOXES, oldPlace)
+    originalTimelinePosition = des.timeline.markerPosition
+    (width, length) = outerSize(state)
+    if place.isComponent and occurrenceTransform is None:
+        # a new set goes beside the parts there are, moved there as a whole
+        (x, y) = placementUtils.findPlacement(
+            des,
+            [tagUtils.TAG_BOX, tagUtils.TAG_LABEL, tagUtils.TAG_BIN, tagUtils.TAG_BASEPLATE],
+            BOX_NAME_PREFIX,
+            (0, 0, width, length),
+            PLACEMENT_CELL_LENGTH,
+            PLACEMENT_CELL_LENGTH,
+        )
+        occurrenceTransform = adsk.core.Matrix3D.create()
+        occurrenceTransform.translation = adsk.core.Vector3D.create(x, y, 0)
+    if place.isComponent:
+        setOccurrence = assembly.addOccurrence(des, place.parent, name, occurrenceTransform, isMovable=True)
+        setOccurrence.activate()
+        setComponent = setOccurrence.component
+    else:
+        setOccurrence = None
+        setComponent = des.rootComponent
+
+    reuse = parameterPrefix is not None
+    prefix = parameterPrefix or parameterUtils.nextFreePrefix(des, BOX_PARAMETER_BASE_NAME, predBoxConfig.PARAMETERS, tagUtils.usedBodyIds(des, tagUtils.TAG_BOX))
+    parameters = []
+    boxParameters = []
+    for (field, label, value) in [
+        ('baseWidth', 'Width (units)', state.gridX),
+        ('baseLength', 'Length (units)', state.gridY),
+        ('heightU', 'Height (units)', state.heightU),
+    ]:
+        parameter = parameterUtils.addUnitlessParameter(des, parameterUtils.parameterName(prefix, field), value, f'{name} {label.lower()}', reuse)
+        tagUtils.tagParameterField(parameter, predBoxConfig.PARAMETER_FIELDS[label], prefix)
+        parameters.append(parameter)
+        boxParameters.append([label, parameter.name])
+    dims = PredBoxDims(*[Dim.parameter(parameter) for parameter in parameters])
+    options = PredBoxOptions(state.hasMagnets, state.magnetDepth, state.magnetDiameter)
+    bodies = createPredBox(setComponent, dims, options)
+    base, lid = bodies.base, bodies.lid
+
+    boxComponent = lidComponent = setComponent
+    boxOccurrence = lidOccurrence = None
+    if setOccurrence is not None:
+        # the lid split off the box like in Pred's file, each into its own component (Task 1, r27_spike: stays parametric)
+        nativeSet = setOccurrence.nativeObject or setOccurrence
+        boxNative = nativeSet.component.occurrences.addNewComponent(adsk.core.Matrix3D.create())
+        boxNative.component.name = BOX_COMPONENT_NAME
+        lidNative = nativeSet.component.occurrences.addNewComponent(adsk.core.Matrix3D.create())
+        lidNative.component.name = LID_COMPONENT_NAME
+        base = base.moveToComponent(boxNative)
+        lid = lid.moveToComponent(lidNative)
+        boxComponent, lidComponent = boxNative.component, lidNative.component
+        boxOccurrence = assembly.inContext(boxNative, setOccurrence)
+        lidOccurrence = assembly.inContext(lidNative, setOccurrence)
+        if lidOccurrence.isGroundToParent:
+            lidOccurrence.isGroundToParent = False
+
+    config = configJson.stateToJson(configJson.GENERATOR_BOX, state)
+    for body in (base, lid):
+        tagUtils.tagBody(rebuildUtils.nativeBody(body), tagUtils.TAG_BOX, settings, boxParameters, config, prefix)
+
+    # joint origins last, their sketches don't follow moves (as binBuilder)
+    if state.hasJointOrigins:
+        centers = [(column, row, Dim.length(x), Dim.length(y)) for (column, row, x, y) in predBoxConfig.cellCenters(state.gridX, state.gridY)]
+        createPointJointOrigins(cellJointOriginPoints(centers, CELL_JOINT_ORIGIN, Dim.length(predBoxConfig.CELL_JOINT_Z)), boxComponent, name=CELL_JOINT_ORIGIN)
+    (stackBottom,) = createPointJointOrigins([(STACK_BOTTOM_JOINT_ORIGIN, dims.midX, dims.midY, dims.bottom)], boxComponent, name=STACK_BOTTOM_JOINT_ORIGIN)
+    (stackTop,) = createPointJointOrigins([(STACK_TOP_JOINT_ORIGIN, dims.midX, dims.midY, dims.bodyTop)], lidComponent, name=STACK_TOP_JOINT_ORIGIN)
+    if boxOccurrence is not None:
+        (boxSide,) = createPointJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], boxComponent, name=LID_JOINT_ORIGIN)
+        (lidSide,) = createPointJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], lidComponent, name=LID_JOINT_ORIGIN)
+        # the lid shut on the box, rigid like Pred's closed box; a user may change it into a hinge later
+        jointInput = des.rootComponent.joints.createInput(assembly.inContext(lidSide, lidOccurrence), assembly.inContext(boxSide, boxOccurrence))
+        jointInput.setAsRigidJointMotion()
+        joint = des.rootComponent.joints.add(jointInput)
+        joint.name = f'{name} {LID_JOINT_NAME}'
+
+    if des.designType == adsk.fusion.DesignTypes.ParametricDesignType:
+        group = des.timeline.timelineGroups.add(originalTimelinePosition, des.timeline.markerPosition - 1)
+        group.name = name
+    return [base, lid]
+
+
+def rebuildBox(
+    des: adsk.fusion.Design,
+    body: adsk.fusion.BRepBody,
+    state: InputState,
+    settings: list[dict],
+    isPreview: bool,
+) -> tuple[list[adsk.fusion.BRepBody], list[str]]:
+    """
+    Builds the set anew in place of the one the body (box or lid) is of, keeping the features after it, see
+    rebuildUtils.rebuild; the new set takes the old one's transform, the joints of the user on its joint origins move
+    over to those of the same name. Returns the bodies and what of the later features needs a look
+    """
+    problem = boxProblem(state)
+    if problem is not None:
+        raise ValueError(problem)
+    target = rebuildUtils.findTarget(des, body, tagUtils.TAG_BOX, BOX_PLACEMENT_FEATURE)
+    prefix = rebuildUtils.bodyId(target.bodies[0], BOX_PARAMETER_BASE_NAME)
+    if not isPreview:
+        newConfig = configJson.stateToJson(configJson.GENERATOR_BOX, state)
+        commonUtils.fileLog(f'{LOG_PREFIX} rebuilding {target.group.name}, {rebuildUtils.configChanges(configJson.GENERATOR_BOX, target.bodies[0], newConfig)}')
+
+    def build(placement, parameterPrefix, transform, oldPlace):
+        return buildBox(des, state, settings, not isPreview, parameterPrefix, transform, oldPlace)
+    return rebuildUtils.rebuild(des, target, prefix, BOX_PARAMETER_BASE_NAME, isPreview, build, 'box', jointsByName=True)

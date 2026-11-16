@@ -12,6 +12,7 @@ from ... import config
 from ..commandCreateBin import entry as binEntry
 from ..commandCreateBaseplate import entry as baseplateEntry
 from ..commandCreateLabel import entry as labelEntry
+from ..commandCreateBox import entry as boxEntry
 
 app = adsk.core.Application.get()
 ui = app.userInterface
@@ -32,7 +33,7 @@ CLONE_CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdClone'
 CLONE_CMD_NAME = 'Gridkeeper clone'
 # a bin with two sheets, a copy
 CLONE_ICON_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources', 'clone', '')
-CLONE_CMD_DESCRIPTION = 'Open the generator dialog with the settings of this bin, baseplate or label to build a new one'
+CLONE_CMD_DESCRIPTION = 'Open the generator dialog with the settings of this bin, baseplate, label or box to build a new one'
 
 SETTINGS_TEXT_INPUT = 'settings_text'
 SETTINGS_BROWSER = 'settings'
@@ -41,6 +42,7 @@ TAG_TITLES = {
     tagUtils.TAG_BIN: 'Gridfinity bin',
     tagUtils.TAG_BASEPLATE: 'Gridfinity baseplate',
     tagUtils.TAG_LABEL: 'Gridfinity label',
+    tagUtils.TAG_BOX: 'Gridfinity box',
 }
 # the dialog each generator opens with a cloned config, see startWithConfig
 CLONE_COMMANDS = {
@@ -48,12 +50,15 @@ CLONE_COMMANDS = {
     tagUtils.TAG_BASEPLATE: baseplateEntry,
     # inserts since round 18 (p150)
     tagUtils.TAG_LABEL: labelEntry,
+    # storage boxes after Pred (round 27)
+    tagUtils.TAG_BOX: boxEntry,
 }
 # generators that rebuild a body in place, see binEntry.startRebuild, baseplateEntry.startRebuild and labelEntry.startRebuild
 REBUILD_COMMANDS = {
     tagUtils.TAG_BIN: binEntry,
     tagUtils.TAG_BASEPLATE: baseplateEntry,
     tagUtils.TAG_LABEL: labelEntry,
+    tagUtils.TAG_BOX: boxEntry,
 }
 REBUILD_ACTION = 'rebuild'
 # the page's height, what the dialog has room for at its initial size. Fusion makes a page as tall as its content up

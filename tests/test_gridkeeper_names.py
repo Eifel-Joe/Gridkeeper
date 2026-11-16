@@ -76,6 +76,10 @@ def test_what_built_parts_carry_stays():
     assert _constants('commands/commandCreateLabel/labelBuilder.py')['LABEL_NAME_PREFIX'] == 'Gridfinity label'
     generators = _constants('lib/configJson.py')
     assert (generators['GENERATOR_BIN'], generators['GENERATOR_BASEPLATE'], generators['GENERATOR_LABEL']) == ('bin', 'baseplate', 'label')
+    # the storage box after Pred (round 27)
+    assert _constants('commands/commandCreateBox/boxBuilder.py')['BOX_PARAMETER_BASE_NAME'] == 'gfBox'
+    assert generators['GENERATOR_BOX'] == 'box'
+    assert _constants('lib/tagUtils.py')['TAG_BOX'] == 'box'
 
 
 def test_manifest_is_gridkeepers():
@@ -129,7 +133,7 @@ def test_every_palette_title_says_gridkeeper():
     assert found >= 3
 
 
-@pytest.mark.parametrize('folder', ['commandCreateBin', 'commandCreateBaseplate', 'commandCreateLabel'])
+@pytest.mark.parametrize('folder', ['commandCreateBin', 'commandCreateBaseplate', 'commandCreateLabel', 'commandCreateBox'])
 def test_settings_of_a_part_are_titled_by_the_part(folder):
     # review round 23: the first section of the settings window took the command's name, "Gridkeeper bin" under the
     # window title "Gridfinity bin"; it names the part like the window does
@@ -154,3 +158,5 @@ def test_dialog_help_links_go_to_the_gridkeeper_docs():
     assert 'https://eifel-joe.github.io/Gridkeeper/baseplates/' in plates
     labels = open(os.path.join(ROOT, 'commands/commandCreateLabel/entry.py'), encoding='utf-8').read()
     assert 'https://eifel-joe.github.io/Gridkeeper/cullenect/inserts/' in labels
+    boxes = open(os.path.join(ROOT, 'commands/commandCreateBox/entry.py'), encoding='utf-8').read()
+    assert 'https://eifel-joe.github.io/Gridkeeper/boxes/' in boxes

@@ -124,9 +124,22 @@ LABEL = {
     'textColor': '',
 }
 
+# a storage box after Pred's parametric Gridfinity Storage Box v1.1, see commandCreateBox/inputState.py (round 27)
+BOX = {
+    'gridX': 5,
+    'gridY': 4,
+    'heightU': 6,
+    'hasMagnets': False,
+    # 6x2 mm magnets (Joerg 16.11.2026: "Box nur 6x2"), Pred's diameter
+    'magnetDepth': 2.4,
+    'magnetDiameter': 6.5,
+    'hasJointOrigins': True,
+}
+
 # by generator, see configJson.GENERATOR_BIN
 SETTINGS = {
     'bin': BIN,
     'baseplate': BASEPLATE,
     'label': LABEL,
+    'box': BOX,
 }
