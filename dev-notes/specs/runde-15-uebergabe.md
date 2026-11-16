@@ -1,7 +1,7 @@
 # Runde 15 – Übergabe
 
 Stand 2026-11-15. Branch `runde-15` (von `runde-14-18`), nicht gepusht, nicht gemergt. Spec
-`docs/specs/2026-11-15-runde-15-design.md` (von Jörg freigegeben), Plan `docs/plans/2026-11-15-runde-15.md`
+`dev-notes/specs/2026-11-15-runde-15-design.md` (von Jörg freigegeben), Plan `dev-notes/plans/2026-11-15-runde-15.md`
 (121d8eb, von der Hauptsitzung freigegeben).
 Punkte: p170 „Joint Origins an Bin-Füßen und Grundplatten-Aufnahmen folgen geänderten Rastermaßen nicht“, p60
 „Cullenect-Taschen folgen einer geänderten Rasterbreite nicht ganz, wenn Fächer neben dem Raster liegen“, p101

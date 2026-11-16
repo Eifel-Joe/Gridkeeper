@@ -2,8 +2,8 @@
 
 Stand 2026-11-15. Branch `runde-17`, abgezweigt von `runde-14-18` (82f15f8), mit `runde-14-18` (38af627) gemergt. Der
 Branch ist nicht gepusht und nicht gemergt.
-- Spec: `docs/specs/2026-11-15-runde-17-design.md`, mit der Ergänzung zu p180.
-- Plan: `docs/plans/2026-11-15-runde-17.md`, von der Hauptsitzung freigegeben.
+- Spec: `dev-notes/specs/2026-11-15-runde-17-design.md`, mit der Ergänzung zu p180.
+- Plan: `dev-notes/plans/2026-11-15-runde-17.md`, von der Hauptsitzung freigegeben.
 
 Punkte:
 - p110 „Einleger mit zwei Zeilen und negativer Höhenkorrektur: Unterlängen ragen unten über den Rand“

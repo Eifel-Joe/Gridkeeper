@@ -1,4 +1,4 @@
-# End-to-end check of round 19 (docs/specs/2026-11-15-runde-19-design.md, "Ende-zu-Ende-Kriterium" and the p210
+# End-to-end check of round 19 (dev-notes/specs/2026-11-15-runde-19-design.md, "Ende-zu-Ende-Kriterium" and the p210
 # addition), run in Fusion with the add-in loaded from this checkout. Set GROUP to 'a' to 'f' before running, each runs
 # under a minute, no dialog. Each group builds into a document of its own, closes it when everything passes and prints
 # OK or FAIL per point, ALL OK or N FAILED last.

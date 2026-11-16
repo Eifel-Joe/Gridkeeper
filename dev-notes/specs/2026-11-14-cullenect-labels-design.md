@@ -47,7 +47,7 @@ und passt auch in Bins/Einleger aus dem originalen Cullenect-Ökosystem.
   Symbole/Geometrie dürfen mit Namensnennung übernommen werden; Attribution in README/Lizenzhinweis
   des Icon-Ordners.
 - **Upstream-tauglich bauen:** Code-Stil, Struktur, Testart und Namensgebung des Projekts
-  übernehmen, damit ein späterer PR an Le0Michine möglich bleibt. Diese Spec liegt in `docs/specs/`
+  übernehmen, damit ein späterer PR an Le0Michine möglich bleibt. Diese Spec liegt in `dev-notes/specs/`
   als eigener Commit, der bei einem PR weggelassen werden kann.
 - **Fusion-Dokumenttyp:** Ab Generator 2.x funktioniert auch eine Bauteil-Konstruktion (Jörg, 14.11.:
   „Mit der aktuellen Version des Generator muss man nichts mehr umstellen auf Hybrid. Es geht jetzt

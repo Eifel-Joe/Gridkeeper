@@ -302,7 +302,7 @@ Schick mir deine Antworten und die Nummern der Handtests, die nicht gepasst habe
 - Passt alles, merge ich auf dein Ja `runde-14-18` nach `master` und hake die Punkte in der Liste ab.
 - Was du bei den Fragen anders entscheidest als gebaut, wird eine neue Runde.
 
-<sub>Stand 16.11.2026, Sammelbranch `runde-14-18`. Belege je Runde in `docs/specs/runde-NN-uebergabe.md`.</sub>
+<sub>Stand 16.11.2026, Sammelbranch `runde-14-18`. Belege je Runde in `dev-notes/specs/runde-NN-uebergabe.md`.</sub>
 
 ## Ergebnis (Jörg, 16.11.2026)
 

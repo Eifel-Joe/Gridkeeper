@@ -3,7 +3,7 @@
 Stand 2026-11-14, von Jörg freigegeben („Ja, freigegeben“). Listenpunkt p17
 „Trennwände auf Rasterlinien bis zur Oberkante hochziehen“. Liegt vorerst außerhalb des Forks,
 weil Runde 2 im Fork-Ordner arbeitet; die umsetzende Runde übernimmt die Datei nach
-`docs/specs/` im Fork.
+`dev-notes/specs/` im Fork.
 
 ## Warum
 Jörg (zur 4x2-Bin mit Fächern): „Ich kann einen 4x2 auch auf zwei 2x2 draufstellen. Wo gehen

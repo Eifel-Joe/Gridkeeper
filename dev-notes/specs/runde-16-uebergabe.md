@@ -1,7 +1,7 @@
 # Runde 16 – Übergabe
 
 Stand 2026-11-15. Branch `runde-16` (von `runde-14-18` 51a1bb4), nicht gepusht, nicht gemergt. Spec
-`docs/specs/2026-11-15-runde-16-design.md` (von Jörg freigegeben), Plan `docs/plans/2026-11-15-runde-16.md`
+`dev-notes/specs/2026-11-15-runde-16-design.md` (von Jörg freigegeben), Plan `dev-notes/plans/2026-11-15-runde-16.md`
 (023fe0a, von der Hauptsitzung freigegeben).
 Punkte: p30 „Snapshot-Tests der Text-Labels passen auf diesem Rechner nicht“, p31 „Vorschaubilder der Snapshot-Tests
 fehlen“, p34 „Skizzen-Prüfung im Testlauf robuster machen“, p32 „Gridfinity settings zeigen bei Cullenect die echte

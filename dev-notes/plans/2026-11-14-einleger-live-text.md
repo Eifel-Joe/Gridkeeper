@@ -11,7 +11,7 @@ fixiert Textrahmen und übrige Skizzenpunkte (`_fixSketch`) und extrudiert die `
 Kurven. Der Constraint-Check der Shape-Tests (`commands/commandSnapshotTests/constraints.py`) zählt eine Skizze mit
 Live-Text als bestimmt, wenn alle ihre Kurven und Punkte bestimmt oder fixiert sind.
 
-**Spec:** `docs/specs/2026-11-14-cullenect-labels-design.md`, Abschnitt „Vollständig bestimmte Skizzen“.
+**Spec:** `dev-notes/specs/2026-11-14-cullenect-labels-design.md`, Abschnitt „Vollständig bestimmte Skizzen“.
 
 ## Global Constraints
 

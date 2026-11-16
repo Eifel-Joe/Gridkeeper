@@ -1,7 +1,7 @@
 # Runde 13 – Übergabe
 
 Stand 2026-11-15. Branch `runde-13` (von `master` b4577a1), nicht gepusht. Spec
-`docs/specs/2026-11-15-runde-13-design.md` (von Jörg freigegeben), Plan `docs/plans/2026-11-15-runde-13.md`.
+`dev-notes/specs/2026-11-15-runde-13-design.md` (von Jörg freigegeben), Plan `dev-notes/plans/2026-11-15-runde-13.md`.
 Punkte: p90 „Bin und Baseplate in einer Baugruppe als Komponente anlegen“, p160 „Einleger per Joint in seine
 Cullenect-Tasche setzen“, p100 „Label-Befehl legt den Einleger am Nullpunkt mitten in die Bin“.
 

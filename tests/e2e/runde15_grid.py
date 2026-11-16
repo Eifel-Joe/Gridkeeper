@@ -1,4 +1,4 @@
-# End-to-end check of round 15 (docs/specs/2026-11-15-runde-15-design.md, "Ende-zu-Ende-Kriterium"), run in Fusion with
+# End-to-end check of round 15 (dev-notes/specs/2026-11-15-runde-15-design.md, "Ende-zu-Ende-Kriterium"), run in Fusion with
 # the add-in loaded from this checkout. The groups run each under a minute for the Fusion MCP's time limit: set GROUP
 # to 'a' to 'g' before running (all without). Each group builds into a document of its own, closes it when everything
 # passes and prints OK or FAIL per point, ALL OK or N FAILED last.

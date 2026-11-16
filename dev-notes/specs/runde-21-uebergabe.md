@@ -1,8 +1,8 @@
 # Runde 21 – Übergabe
 
 Stand 2026-11-16. Branch `runde-21` von `master` (c27c32c), nicht gepusht, nicht gemergt.
-- Spec: `docs/specs/2026-11-16-runde-21-design.md`.
-- Plan: `docs/plans/2026-11-16-runde-21.md`, beide von der Hauptsitzung freigegeben.
+- Spec: `dev-notes/specs/2026-11-16-runde-21-design.md`.
+- Plan: `dev-notes/plans/2026-11-16-runde-21.md`, beide von der Hauptsitzung freigegeben.
 
 Punkte:
 - p232 „Hinweis „zu kleine Schrift“ an die gemessene Druckgrenze anpassen“
@@ -32,7 +32,7 @@ Kein kritischer Fund. Umgang:
     auf einer 6- gegen eine 13-mm-Lasche. Die Grenze Heavy 3,0/3,1 mm prüft der Unit-Test, die Einleger E2E c, mit
     einem Fall ohne Hinweis.
   - Das ist eine Abweichung vom freigegebenen Kriterium und steht auf Jörgs Liste.
-- **(M2):** Test-Docstring und CHANGELOG ergänzt. Das Testtermin-Skript `docs/specs/testtermin-runde-14-19.md` zitiert
+- **(M2):** Test-Docstring und CHANGELOG ergänzt. Das Testtermin-Skript `dev-notes/specs/testtermin-runde-14-19.md` zitiert
   noch den alten Wortlaut; es ist historisch und bleibt.
 - **(M3):** Zweizeilige Einleger in Regular (3,5 mm) bekommen den Hinweis immer. Das war schon vorher so und ist kein
   Rückschritt.
