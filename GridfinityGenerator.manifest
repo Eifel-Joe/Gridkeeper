@@ -1,12 +1,12 @@
 {
 	"autodeskProduct":	"Fusion360",
 	"type":	"addin",
-	"id":	"bbbd3c0a-34f1-4bcf-b9f9-accd46c35cd0",
-	"author":	"LevMishin",
+	"id":	"fc0f92db-de63-4c01-ace1-3ac52cac0824",
+	"author":	"Eifel-Joe",
 	"description":	{
-		"":	""
+		"":	"Gridkeeper: Gridfinity bins, baseplates and Cullenect label inserts for Fusion. Based on FusionGridfinityGenerator by Le0Michine (CC BY-NC-SA 4.0)."
 	},
-	"version":	"2.4.0.0",
+	"version":	"1.0.0",
 	"runOnStartup":	true,
 	"supportedOS":	"windows|mac",
 	"editEnabled":	true

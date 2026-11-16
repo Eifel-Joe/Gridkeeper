@@ -51,7 +51,9 @@ ui = app.userInterface
 
 # *** The command identity information. ***
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdBin'
-CMD_NAME = 'Gridfinity bin'
+CMD_NAME = 'Gridkeeper bin'
+# the first section of a part's settings names the part, as the settings window does (review round 23)
+SETTINGS_TITLE = 'Gridfinity bin'
 # shown on hover over the button, the first paragraph says what it makes, the second how
 CMD_Description = ('Creates a gridfinity bin that drops into a baseplate.\n\n'
     'Set its size in base and height units, then pick a hollow, shelled or solid body with a stacking lip, '
@@ -413,7 +415,7 @@ def start():
     except Exception as err:
         futil.log(f'{CMD_NAME} Error occurred at the start, {err}, {getErrorMessage()}')
         ui.statusMessage = f"{CMD_NAME} failed to initialize"
-        showErrorInMessageBox(f"{CMD_NAME} Critical error occurred at the start, the command will be unavailable, if the issue persists use <a href=\"https://github.com/Le0Michine/FusionGridfinityGenerator/issues/new\">this link</a> to report it")
+        showErrorInMessageBox(f"{CMD_NAME} Critical error occurred at the start, the command will be unavailable, if the issue persists use <a href=\"{errorReport.ISSUES_URL}\">this link</a> to report it")
 
 # Executed when add-in is stopped.
 def stop():
@@ -1358,7 +1360,7 @@ def snapshotSettings(inputs: adsk.core.CommandInputs) -> list[dict]:
     settings = settingsUtils.snapshotInputs(
         inputs,
         [INFO_GROUP, USER_CHANGES_GROUP_ID, PREVIEW_GROUP_ID, BIN_REAL_DIMENSIONS_TABLE],
-        CMD_NAME,
+        SETTINGS_TITLE,
     )
     # the drawing isn't an input with a value, it holds the grid size too
     items = [['Grid', f'{commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID)} x {commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID)}']]
