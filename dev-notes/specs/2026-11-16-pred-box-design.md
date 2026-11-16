@@ -14,7 +14,7 @@ bringt leider nichts.“).
 ## Ziele
 
 - Neuer Befehl **Gridkeeper box** baut den ganzen Satz einer Box nach Preds v1.1: Box (Unterteil), Deckel, zwei
-  Scharniere M3x30, Riegel, Griff mit Haltestift, Schild.
+  Scharniere M3x30, vier Riegel, Griff mit zwei Haltestiften, Schild.
 - Maßgleich zu Preds v1.1, damit neue und gedruckte Boxen stapeln und verriegeln.
 - Einstellbar: Breite und Tiefe in Rastereinheiten (mindestens 4 × 3), Höhe in Höheneinheiten zu 7 mm (mindestens 5).
 - Schild mit Gridkeeper-Text und Cullenect-Symbolen, Aufbau wie unten.
@@ -126,6 +126,9 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
 - Der Satz enthält **4 Riegel** (Jörg: „Je Box werden auch 4 Latches gebraucht.“ und „Latches 2 vorne und 2 jeweils
   einer seitlich hinten“): 2 vorn und an jeder Seite einer, jeweils an der hinteren Seitenaufnahme (`SideCatchTabs`,
   Lage misst der Builder in Preds Datei). Dazu 2 Scharniere M3x30.
+- **2 Haltestifte** für den Griff (Jörg: „Handle_Pins werden auch zwei gebraucht. In der Konstruktion ist nur einer.“):
+  einer je Griffseite. In Preds Datei steckt nur einer (`HandlePin:1` bei x 58 … 78 mm, links); der zweite sitzt
+  gespiegelt an der rechten Griffaufnahme (Lage misst der Builder an `HandleBoltHoles`).
 - Eigener Feature-Branch je Runde, Ziel `master` laut Release-Steckbrief (der Sammelbetrieb R14–R19 ist beendet).
 
 ## Bauweise (Weg B)
