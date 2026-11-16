@@ -164,3 +164,24 @@ def test_measured_symbols_held_under_2s_take_the_dims():
 def test_measured_slow_symbols_are_moved():
     slow = [points for (points, seconds) in MEASURED_HELD_SECONDS.values() if seconds >= 2]
     assert not any(layout.isIconHeldByDims(points) for points in slow)
+
+
+# round 19, p181: a label text changed since the bin was built is fitted anew by a rebuild, not set by its parameter
+
+BUILT = {"labelText": "Schrauben", "binHeight": 3, "compartmentPockets": [{"label": "M3"}, {"label": ""}]}
+
+
+def test_text_changed_by_parameter_rebuilds():
+    assert layout.textChangedSinceBuild(BUILT, {**BUILT, "labelText": "Schrauben M4x20"})
+
+
+def test_compartment_label_changed_rebuilds():
+    assert layout.textChangedSinceBuild(BUILT, {**BUILT, "compartmentPockets": [{"label": "M3x20"}, {"label": ""}]})
+
+
+def test_unchanged_text_keeps_the_parameter_edit():
+    assert not layout.textChangedSinceBuild(BUILT, {**BUILT, "binHeight": 4})
+
+
+def test_a_config_without_compartments_compares_the_bin_label():
+    assert not layout.textChangedSinceBuild({"labelText": "A"}, {"labelText": "A", "compartmentPockets": []})

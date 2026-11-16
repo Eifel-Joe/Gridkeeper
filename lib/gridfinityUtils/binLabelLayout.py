@@ -85,3 +85,15 @@ def binLabelPlacement(
         iconMinX=iconMinX,
         iconMinFromBack=baselineFromBack if hasText else length / 2 + iconHeight / 2,
     )
+
+
+def _labelTexts(config: dict) -> tuple[str, list[str]]:
+    pockets = config.get('compartmentPockets') or []
+    return (config.get('labelText', ''), [pocket.get('label', '') if isinstance(pocket, dict) else '' for pocket in pockets])
+
+
+def textChangedSinceBuild(builtConfig: dict, newConfig: dict) -> bool:
+    """Whether a label text differs from the one the bin was built with, the config of its tag without its parameters
+    (round 19, p181). Set by its parameter alone, a longer text keeps the height of its letters and runs past the tab, a
+    rebuild fits it anew instead. The bin's own label and those of its compartments"""
+    return _labelTexts(builtConfig) != _labelTexts(newConfig)
