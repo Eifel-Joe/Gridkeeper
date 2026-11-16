@@ -1,0 +1,450 @@
+[
+ {
+  "step": null
+ },
+ {
+  "step": "#1 BaseWithGridfinityBinFootprint"
+ },
+ {
+  "step": "#2 Extrude1",
+  "base": 120600.91,
+  "baseFaces": 10
+ },
+ {
+  "step": "#3 Extrude4",
+  "base": 2368946.37,
+  "baseFaces": 10
+ },
+ {
+  "step": "#4 Extrude3",
+  "base": 859550.21,
+  "baseFaces": 20
+ },
+ {
+  "step": "#5 LidCutPlane",
+  "base": 859550.21,
+  "baseFaces": 20
+ },
+ {
+  "step": "#6 GridfinitySweepSketchPlane",
+  "base": 859550.21,
+  "baseFaces": 20
+ },
+ {
+  "step": "#7 BoxMidplane_Y",
+  "base": 859550.21,
+  "baseFaces": 20
+ },
+ {
+  "step": "#8 BoxMidplane_X",
+  "base": 859550.21,
+  "baseFaces": 20
+ },
+ {
+  "step": "#9 GridfinityBinSweepProfile",
+  "base": 859550.21,
+  "baseFaces": 20
+ },
+ {
+  "step": "#10 Sweep1",
+  "base": 845459.19,
+  "baseFaces": 86
+ },
+ {
+  "step": "#11 Sweep2",
+  "base": 852323.76,
+  "baseFaces": 112
+ },
+ {
+  "step": "#12 Sweep4",
+  "base": 847835.4,
+  "baseFaces": 136
+ },
+ {
+  "step": "#13 Sketch21",
+  "base": 847835.4,
+  "baseFaces": 136
+ },
+ {
+  "step": "#14 Extrude56",
+  "base": 846299.35,
+  "baseFaces": 156
+ },
+ {
+  "step": "#15 Extrude57",
+  "base": 846299.33,
+  "baseFaces": 164
+ },
+ {
+  "step": "#16 R-Pattern1",
+  "base": 594532.74,
+  "baseFaces": 2831
+ },
+ {
+  "step": "#17 Extrude5",
+  "base": 594126.4,
+  "baseFaces": 2729
+ },
+ {
+  "step": "#18 FrontFeatures",
+  "base": 594126.4,
+  "baseFaces": 2729
+ },
+ {
+  "step": "#19 Extrude7",
+  "base": 528951.4,
+  "baseFaces": 2741
+ },
+ {
+  "step": "#20 Extrude17",
+  "base": 532123.9,
+  "baseFaces": 2746
+ },
+ {
+  "step": "#21 Extrude21",
+  "base": 531141.4,
+  "baseFaces": 2750
+ },
+ {
+  "step": "#22 Chamfer7",
+  "base": 530260.15,
+  "baseFaces": 2750
+ },
+ {
+  "step": "#23 Fillet4",
+  "base": 530286.66,
+  "baseFaces": 2752
+ },
+ {
+  "step": "#24 Chamfer10",
+  "base": 530285.61,
+  "baseFaces": 2758
+ },
+ {
+  "step": "#25 SideCutouts",
+  "base": 530285.61,
+  "baseFaces": 2758
+ },
+ {
+  "step": "#26 Extrude8",
+  "base": 482435.61,
+  "baseFaces": 2770
+ },
+ {
+  "step": "#27 Extrude9",
+  "base": 434585.61,
+  "baseFaces": 2782
+ },
+ {
+  "step": "#28 BackCutouts",
+  "base": 434585.61,
+  "baseFaces": 2782
+ },
+ {
+  "step": "#29 Extrude10",
+  "base": 394160.61,
+  "baseFaces": 2786
+ },
+ {
+  "step": "#30 LabelAndHandleHolder",
+  "base": 394160.61,
+  "baseFaces": 2786
+ },
+ {
+  "step": "#31 Extrude46",
+  "base": 395660.61,
+  "baseFaces": 2796
+ },
+ {
+  "step": "#32 Chamfer26",
+  "base": 395660.61,
+  "baseFaces": 2796
+ },
+ {
+  "step": "#33 Fillet10",
+  "base": 395660.61,
+  "baseFaces": 2804
+ },
+ {
+  "step": "#34 HandleBoltHoles",
+  "base": 395660.61,
+  "baseFaces": 2804
+ },
+ {
+  "step": "#35 Extrude49",
+  "base": 396041.6,
+  "baseFaces": 2815
+ },
+ {
+  "step": "#36 Extrude51",
+  "base": 395936.46,
+  "baseFaces": 2820
+ },
+ {
+  "step": "#37 Extrude47",
+  "base": 395888.35,
+  "baseFaces": 2821
+ },
+ {
+  "step": "#38 Extrude55",
+  "base": 395853.01,
+  "baseFaces": 2822
+ },
+ {
+  "step": "#39 Extrude48",
+  "base": 395803.53,
+  "baseFaces": 2824
+ },
+ {
+  "step": "#40 Chamfer29",
+  "base": 395765.81,
+  "baseFaces": 2852
+ },
+ {
+  "step": "#41 Chamfer30",
+  "base": 395762.5,
+  "baseFaces": 2852
+ },
+ {
+  "step": "#42 Mirror6",
+  "base": 397364.38,
+  "baseFaces": 2911
+ },
+ {
+  "step": "#43 Fillet11",
+  "base": 397364.38,
+  "baseFaces": 2919
+ },
+ {
+  "step": "#44 FrontCatchTabs",
+  "base": 397364.38,
+  "baseFaces": 2919
+ },
+ {
+  "step": "#45 FrontCatchTabExtrude",
+  "base": 397924.38,
+  "baseFaces": 2995
+ },
+ {
+  "step": "#46 Chamfer1",
+  "base": 397892.38,
+  "baseFaces": 3027
+ },
+ {
+  "step": "#47 SideCatchTabs",
+  "base": 397892.38,
+  "baseFaces": 3027
+ },
+ {
+  "step": "#48 Extrude12",
+  "base": 398452.38,
+  "baseFaces": 3103
+ },
+ {
+  "step": "#49 Chamfer2",
+  "base": 398420.38,
+  "baseFaces": 3135
+ },
+ {
+  "step": "#50 TopFeaturesAndCatchSlides",
+  "base": 398420.38,
+  "baseFaces": 3135
+ },
+ {
+  "step": "#51 Extrude13",
+  "base": 398228.38,
+  "baseFaces": 3159
+ },
+ {
+  "step": "#52 Extrude14",
+  "base": 396164.38,
+  "baseFaces": 3189
+ },
+ {
+  "step": "#53 Extrude15",
+  "base": 395972.38,
+  "baseFaces": 3213
+ },
+ {
+  "step": "#54 Fillet2",
+  "base": 396054.78,
+  "baseFaces": 3221
+ },
+ {
+  "step": "#55 Extrude16",
+  "base": 396110.74,
+  "baseFaces": 3226
+ },
+ {
+  "step": "#56 Chamfer3",
+  "base": 396106.55,
+  "baseFaces": 3230
+ },
+ {
+  "step": "#57 BottomFeatures",
+  "base": 396106.55,
+  "baseFaces": 3230
+ },
+ {
+  "step": "#58 Extrude20",
+  "base": 395961.92,
+  "baseFaces": 3239
+ },
+ {
+  "step": "#59 Chamfer9",
+  "base": 395956.74,
+  "baseFaces": 3247
+ },
+ {
+  "step": "#60 LidAndBasePlaneFeatures",
+  "base": 395956.74,
+  "baseFaces": 3247
+ },
+ {
+  "step": "#61 Extrude22",
+  "base": 395851.74,
+  "baseFaces": 3253
+ },
+ {
+  "step": "#62 Extrude23",
+  "base": 395537.89,
+  "baseFaces": 3269
+ },
+ {
+  "step": "#63 Extrude24",
+  "base": 394528.09,
+  "baseFaces": 3274
+ },
+ {
+  "step": "#64 Extrude25",
+  "base": 392601.37,
+  "baseFaces": 3296
+ },
+ {
+  "step": "#65 Extrude26",
+  "base": 392380.73,
+  "baseFaces": 3308
+ },
+ {
+  "step": "#66 Extrude27",
+  "base": 392468.09,
+  "baseFaces": 3314
+ },
+ {
+  "step": "#67 Chamfer13",
+  "base": 392496.43,
+  "baseFaces": 3322
+ },
+ {
+  "step": "#68 Chamfer14",
+  "base": 392464.43,
+  "baseFaces": 3324
+ },
+ {
+  "step": "#69 Fillet5",
+  "base": 392481.81,
+  "baseFaces": 3332
+ },
+ {
+  "step": "#70 Chamfer18",
+  "base": 392483.1,
+  "baseFaces": 3340
+ },
+ {
+  "step": "#71 SideGroove",
+  "base": 392483.1,
+  "baseFaces": 3340
+ },
+ {
+  "step": "#72 Mirror1",
+  "base": 392808.06,
+  "baseFaces": 3480
+ },
+ {
+  "step": "#73 Mirror2",
+  "base": 388251.74,
+  "baseFaces": 4041
+ },
+ {
+  "step": "#74 Sweep3",
+  "base": 387645.31,
+  "baseFaces": 4149
+ },
+ {
+  "step": "#75 Split1",
+  "base": 277079.68,
+  "baseFaces": 2102,
+  "lid": 110565.63,
+  "lidFaces": 2155
+ },
+ {
+  "step": "#76 Extrude31",
+  "base": 277169.83,
+  "baseFaces": 2112,
+  "lid": 110565.63,
+  "lidFaces": 2155
+ },
+ {
+  "step": "#77 Chamfer20",
+  "base": 277163.99,
+  "baseFaces": 2120,
+  "lid": 110565.63,
+  "lidFaces": 2155
+ },
+ {
+  "step": "#78 Extrude32",
+  "base": 277195.24,
+  "baseFaces": 2125,
+  "lid": 110565.63,
+  "lidFaces": 2155
+ },
+ {
+  "step": "#79 Chamfer19",
+  "base": 277193.53,
+  "baseFaces": 2129,
+  "lid": 110565.63,
+  "lidFaces": 2155
+ },
+ {
+  "step": "#80 Mirror3",
+  "base": 277223.07,
+  "baseFaces": 2138,
+  "lid": 110565.63,
+  "lidFaces": 2155
+ },
+ {
+  "step": "#81 Mirror4",
+  "base": 277366.47,
+  "baseFaces": 2174,
+  "lid": 110565.63,
+  "lidFaces": 2155
+ },
+ {
+  "step": "#82 Chamfer21",
+  "base": 277366.47,
+  "baseFaces": 2174,
+  "lid": 110544.29,
+  "lidFaces": 2235
+ },
+ {
+  "step": "#83 Chamfer11",
+  "base": 276676.35,
+  "baseFaces": 2252,
+  "lid": 110544.29,
+  "lidFaces": 2235
+ },
+ {
+  "step": "#84 Chamfer12",
+  "base": 276676.35,
+  "baseFaces": 2252,
+  "lid": 109851.32,
+  "lidFaces": 2319
+ },
+ {
+  "step": "#85 Chamfer16",
+  "base": 276676.35,
+  "baseFaces": 2252,
+  "lid": 109757.55,
+  "lidFaces": 2327
+ }
+]
