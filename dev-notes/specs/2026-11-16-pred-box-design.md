@@ -58,6 +58,13 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
 - Skizzen der Kleinteile: Riegel (Experimental), Haltestift und leeres Schild vollständig bestimmt. Scharnier M3x30:
   `HingeTabDetails` (4 freie Kurven) und `Sketch3` (6 freie Kurven) nicht. Griff: keine eigene Skizze, seine Extrusion
   hängt an einer Skizze der Box.
+- **Druck- statt Einbauposition** (Nutzer: „Obacht bei den Scharnieren. Die sind in Druckposition ausgerichtet. Das ist
+  nicht die Einbauposition!“): In Preds Datei liegen alle Scharniere neben der Box in Druckposition (Hinge_M3x30 bei
+  x −61 … −43 mm, z −12,2 … 19,4 mm, stehend), ebenso `Latch_Experimental` flach am Ursprung (z 0 … 7 mm). Nur der
+  normale `Latch` und der Griff sitzen an der Box. Die Einbaulage von Scharnier und Riegel lässt sich also **nicht** aus
+  ihrer Lage in Preds Datei übernehmen, sondern muss aus den Aufnahmen der Box abgeleitet werden (Scharnierschlitz:
+  `HingeSlotLength`, `HingeSlotFromBack`, `HingeSlotDepth`, `HingeSlotWidth`; Riegel: Lage von `Latch:1`, gleiche
+  Skizzen wie `Latch_Experimental`).
 - Riegel „Latch_Experimental“: gleiche Skizzen wie „Latch“, dazu ein Rechteckmuster (`R-Pattern2`).
 
 ## Wege (Nutzer hat B gewählt)
@@ -123,7 +130,10 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
    aus den vorhandenen Generatoren (`baseplateGenerator`, `baseGenerator`), soweit maßgleich zu Pred.
 2. **Kleinteile** (Riegel Experimental, Scharnier M3x30, Griff, Haltestift): einmal aus Preds Datei als eigene
    Fusion-Dateien ins Add-in übernommen, Skizzen dabei nachbestimmt (Scharnier) bzw. neu angelegt (Griff), dann beim Bau
-   eingefügt und per Gelenk an ihren Platz gesetzt. Keine Benutzerparameter.
+   eingefügt und per Gelenk an ihren Platz gesetzt. Keine Benutzerparameter. Die Gelenke setzen Scharnier und Riegel in
+   **Einbaulage**, nicht in Preds Druckposition (siehe Befund); im Maßvergleich wird die Einbaulage gegen die Aufnahmen
+   der Box geprüft (Scharnierhälften im Schlitz von Unterteil und Deckel, Riegel auf den Haken wie `Latch:1`). Die
+   Druckausrichtung macht der Slicer.
 3. **Schild:** gebaut vom Gridkeeper-Schildgenerator (Text, Cullenect-Symbole), Plattengröße nach Preds Formel.
 4. Struktur wie bisher: jedes Teil eine Komponente, im Container „Gridkeeper boxes“ o. ä., Gelenke zwischen Teilen.
 
