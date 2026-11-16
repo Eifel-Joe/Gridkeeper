@@ -23,7 +23,7 @@ colored labels for multicolor printing, an assembly of components with joints, a
 - **Cullenect pockets** in the label tabs and the **Gridkeeper label** command for the inserts: text and a screw or
   hardware symbol, jointed into their pocket
 - **Storage boxes** with lid after Pred's parametric Gridfinity Storage Box v1.1, the **Gridkeeper box** command:
-  any size from 4 × 3 cells and 5 units high, stacking and latching with boxes printed from Pred's file
+  any size from 4 × 3 cells and 6 units high, stacking and latching with boxes printed from Pred's file
 - **Settings, rebuild and clone** from the right-click menu of every model, settings saved to and loaded from JSON
   files, user parameters to change a model without building it again
 

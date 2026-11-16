@@ -13,11 +13,11 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   (CC BY-NC), measure for measure: outer size, grooves, latch catches and slides, hinge slots, handle and label
   holders, lid pins and stacking rim, checked step by step against Pred's file (5 × 4 × 6: the lid's volume is the
   same, the box's differs by Pred's 0.0001 mm deep "switched off" magnet holes). Width and length from 4 × 3 cells,
-  height from 5 units, in the parameters `gfBox1_baseWidth`, `gfBox1_baseLength`, `gfBox1_heightU`. Every sketch is
+  height from 6 units like Pred, in the parameters `gfBox1_baseWidth`, `gfBox1_baseLength`, `gfBox1_heightU`. Every sketch is
   fully constrained. The set is a component in the container *Boxes* with the components *Box* and *Lid*, the lid
   jointed shut; joint origins in every cell, for stacking and for the lid. Settings, rebuild and clone as for bins.
-  Changes to Pred's box: at height 5 the latch slides end 6 mm over the bottom (Pred's would cut through the floor),
-  magnet holes of a size of your choice, the floor pads and the stacking rim drawn from circles instead of arcs.
+  Changes to Pred's box: magnet holes of a size of your choice, the floor pads and the stacking rim drawn from circles
+  instead of arcs. Height 5 is left for later (p264).
   Latches, hinges, handle and label follow in the next rounds.
 - **Magnet size (p263):** bins, baseplates and boxes have a choice before the magnet cutout depth: 6 × 2 mm magnets
   (2.4 mm deep), 6 × 3 mm magnets (3.4 mm, not for boxes: it would break through the floor) or *Custom*. Only the

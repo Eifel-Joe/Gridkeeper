@@ -1,0 +1,8 @@
+{
+  "description": "Smallest box, 4 x 3 cells, height 6 (the minimum, Joerg 16.11.2026: \"Mindesthöhe 6. vorerst.\")",
+  "generator": "box",
+  "settings": {
+    "gridX": 4,
+    "gridY": 3
+  }
+}

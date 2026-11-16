@@ -52,6 +52,6 @@ right; shorten it or rebuild the insert.
 |---|---|
 | `gfBox1_baseWidth` | Width in grid cells of 42 mm, at least 4 |
 | `gfBox1_baseLength` | Length in grid cells, at least 3 |
-| `gfBox1_heightU` | Height in units of 7 mm, at least 5 |
+| `gfBox1_heightU` | Height in units of 7 mm, at least 6 |
 
 The cell joint origins of a box keep the cells it was built with, see [Storage boxes](../boxes.md).
