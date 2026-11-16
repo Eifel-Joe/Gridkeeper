@@ -32,7 +32,8 @@ PRED = {
     'catchSlideBottomRoom': 0.6, # at least 6 mm left below the slot (plan decision 1, Pred at height 6)
     'holderHalfHeight': 1.25,    # LabelAndHandleHolder d1770 = 25 mm, centred on the box middle
     'lowerGrooveTop': 0.82,      # SideGroove: the lower groove from 6.2 to 8.2 mm
-    'magnetPadExtra': 0.075,     # Sketch21 d1789 = MagnetHoleDiameter / 2 + 0.75 mm
+    'magnetPadExtra': 0.075,
+    'holderBlend': 0.375,        # Fillet10, the rounding of the handle holders     # Sketch21 d1789 = MagnetHoleDiameter / 2 + 0.75 mm
 }
 
 
@@ -63,6 +64,11 @@ class PredBoxDims:
             Dim.length(PRED['catchSlideLength']),
             self.bodyTop - Dim.length(round(PRED['catchSlideTop'] + PRED['catchSlideBottomRoom'] - PRED['bottomThickness'], 6)))
         self.holderBottom = self.midZ - Dim.length(PRED['holderHalfHeight'])
+        # Nutzer 16.11.2026, "Rundung weglassen (2)": at height 5 the top rounding of the handle holders would reach past
+        # the lid joint, there it is square (0.01 mm), from height 6 Pred's 3.75 mm. An expression, Fusion has no
+        # parameter to switch a feature off: max(0.01 mm; min(3.75 mm; (height units - 5) * 1000 mm))
+        self.holderTopBlend = Dim.max(Dim.length(0.001), Dim.min(
+            Dim.length(PRED['holderBlend']), (heightU - Dim.number(5)) * Dim.length(100)))
 
     def values(self) -> dict:
         """The plain numbers (cm) for edge selection and placement math"""
