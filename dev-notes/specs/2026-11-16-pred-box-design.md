@@ -104,8 +104,11 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
 - **Joint origins** (Nutzer bei der Freigabe: „Ja, freigegeben. Mit Joint origins.“), wie bei Bins und Baseplates:
   - Option **Add joint origins**: je ein Joint origin unten mittig in jeder Zelle des Box-Bodens, um Bins in die Box zu
     jointen (wie die Sockel der Baseplate, mit dem Raster mitwandernd).
-  - An jedem Sitz eines Kleinteils (Scharniere, Riegel, Griff, Haltestift, Schild) ein Joint origin; die Kleinteile
-    werden daran gejointet, auch der Deckel ans Scharnier.
+  - An jedem Sitz eines Kleinteils außer den Scharnieren (Riegel, Griff, Haltestift, Schild) ein Joint origin; diese
+    Kleinteile werden daran gejointet. Der Deckel wird geschlossen auf die Box gejointet.
+- **Scharniere bleiben in Druckposition** (Nutzer: „Ich würde die Scharniere in Druckposition belassen.“): Die beiden
+  Scharniere M3x30 liegen neben der Box in Preds Druckausrichtung (stehend, beide Hälften verbunden wie in Preds Datei)
+  und werden nicht in die Box gejointet.
   - Festlegung der Hauptsitzung: je ein Joint origin mittig auf der Unterseite der Box und oben auf dem Deckel, um Boxen
     aufeinander zu jointen.
 - des Nutzers gedruckte Boxen sind keine Messreferenz („Ignoriere meine Boxen“); Referenz ist Preds Datei v1.1.
@@ -132,10 +135,10 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
    aus den vorhandenen Generatoren (`baseplateGenerator`, `baseGenerator`), soweit maßgleich zu Pred.
 2. **Kleinteile** (Riegel Experimental, Scharnier M3x30, Griff, Haltestift): einmal aus Preds Datei als eigene
    Fusion-Dateien ins Add-in übernommen, Skizzen dabei nachbestimmt (Scharnier) bzw. neu angelegt (Griff), dann beim Bau
-   eingefügt und per Gelenk an ihren Platz gesetzt. Keine Benutzerparameter. Die Gelenke setzen Scharnier und Riegel in
-   **Einbaulage**, nicht in Preds Druckposition (siehe Befund); im Maßvergleich wird die Einbaulage gegen die Aufnahmen
-   der Box geprüft (Scharnierhälften im Schlitz von Unterteil und Deckel, Riegel auf den Haken wie `Latch:1`). Die
-   Druckausrichtung macht der Slicer.
+   eingefügt. Keine Benutzerparameter. Riegel, Griff und Haltestift setzen Gelenke in **Einbaulage**, nicht in Preds
+   Druckposition (siehe Befund); im Maßvergleich wird die Einbaulage gegen die Aufnahmen der Box geprüft (Riegel auf den
+   Haken wie `Latch:1`). Die Scharniere bleiben in Druckposition neben der Box; ihre Passung zum Schlitz prüft der
+   Maßvergleich über die Maße (Länge, Tiefe, Breite der Laschen gegen `HingeSlot…`).
 3. **Schild:** gebaut vom Gridkeeper-Schildgenerator (Text, Cullenect-Symbole), Plattengröße nach Preds Formel.
 4. Struktur wie bisher: jedes Teil eine Komponente, im Container „Gridkeeper boxes“ o. ä., Gelenke zwischen Teilen.
 
