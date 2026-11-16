@@ -80,7 +80,7 @@ wait their turn. Click a picture to see it large, **Open file** opens it in the 
 
 A picture is made by building the preset in a new document with the add-in's own builders, hiding everything but the
 bodies, setting up the view in Fusion's Photo Booth lighting and saving it, by default to
-`documentation/assets/models/<preset>.png`. The document is closed without saving.
+`docs/assets/models/<preset>.png`. The document is closed without saving.
 
 The palette also finishes the pictures, Fusion's Python has no imaging. Fusion renders the view at the viewport's
 proportions and `supersample` times the picture's size, the palette's page cuts that to the model, fits it in the
@@ -127,7 +127,7 @@ first, then
 
     tools/screenshots/.venv/bin/python tools/screenshots/modelGifs.py [--only bin-bottom-options]
 
-writes `documentation/assets/gif/<name>-light.gif` and `-dark.gif`, on GitHub's page colors as GIFs can't be partly
+writes `docs/assets/gif/<name>-light.gif` and `-dark.gif`, on GitHub's page colors as GIFs can't be partly
 transparent. `--pictures` takes the pictures from another folder, `--dialogs` records the dialog animations of
 `loopWith` first. A GIF missing a picture is reported and the others are still made.
 

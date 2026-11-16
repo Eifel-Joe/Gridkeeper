@@ -121,7 +121,7 @@ def takeShots(shotsFile: str, only: list[str], outputDir: str | None, themes: li
             shotThemes = themes or shot.get('themes') or config.get('themes') or THEMES
             for theme in shotThemes:
                 # paths in the shots file are from the add-in folder
-                folder = os.path.join(ROOT_DIR, outputDir or shot.get('output') or config.get('output', 'documentation/assets/ui'))
+                folder = os.path.join(ROOT_DIR, outputDir or shot.get('output') or config.get('output', 'docs/assets/ui'))
                 path = outputPath(folder, shot, theme, shotThemes)
                 os.makedirs(os.path.dirname(path), exist_ok=True)
                 shotScale = scale or shot.get('scale') or config.get('scale', 2)
