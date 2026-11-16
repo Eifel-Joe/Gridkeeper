@@ -47,5 +47,3 @@ which model is rebuilt.
 
 Opens the model's dialog with its settings for a **new** model, the original stays as it is. Handy for a second bin
 like the first, only higher.
-
-<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/ui/context-menu-gridfinity-scene-dark.png"><img src="../../assets/ui/context-menu-gridfinity-scene-light.png" alt="The right-click menu of the original add-in, which Gridkeeper's resembles" width="508"></picture>

@@ -34,7 +34,7 @@ without it and without them. A `git worktree`, where `.git` is a file, doesn't g
 **Gridkeeper tests: update snapshots** records new snapshots after an intended change; it shows what it will replace
 and remove before it writes.
 
-![The report of a test run with passed and failed cases](../assets/images/snapshot-test-report.png)
+![The test palette after running one case: the case passed, its document is left open for Diff, Built and Snapshot](../assets/images/snapshot-test-report.png)
 
 ### What a case can check
 
