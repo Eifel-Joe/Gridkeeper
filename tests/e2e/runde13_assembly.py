@@ -3,8 +3,8 @@
 # into new documents of its own, closes them when everything passes and prints OK or FAIL per point.
 import adsk.core, adsk.fusion, sys, os, dataclasses
 
-ADDIN = '__main__D%3A%2FEntwicklung%2FGridfinity%2FFusionGridfinityGenerator%2FGridfinityGenerator_py'
-CASES = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cases') if '__file__' in globals() else r'D:\Entwicklung\Gridfinity\FusionGridfinityGenerator\tests\e2e\cases'
+ADDIN = '__main__D%3A%2FEntwicklung%2FGridfinity%2FGridkeeper%2FGridkeeper_py'
+CASES = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cases') if '__file__' in globals() else r'D:\Entwicklung\Gridfinity\Gridkeeper\tests\e2e\cases'
 TOLERANCE_MM = 0.001
 
 

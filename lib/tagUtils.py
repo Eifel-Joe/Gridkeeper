@@ -26,7 +26,7 @@ TAG_POCKET = 'pocket'
 # Bump only on incompatible changes to the tag value, readers ignore fields they don't know
 TAG_SCHEMA_VERSION = 1
 
-MANIFEST_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'GridfinityGenerator.manifest')
+MANIFEST_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'Gridkeeper.manifest')
 
 _generatorVersion = None
 

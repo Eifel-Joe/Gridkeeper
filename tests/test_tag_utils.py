@@ -54,7 +54,7 @@ def test_generator_version_matches_manifest():
 
 
 def test_missing_manifest_gives_empty_version(monkeypatch):
-    monkeypatch.setattr(tagUtils, "MANIFEST_PATH", "/nonexistent/GridfinityGenerator.manifest")
+    monkeypatch.setattr(tagUtils, "MANIFEST_PATH", "/nonexistent/Gridkeeper.manifest")
     monkeypatch.setattr(tagUtils, "_generatorVersion", None)
     assert tagUtils.getGeneratorVersion() == ""
 

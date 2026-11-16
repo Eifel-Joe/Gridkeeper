@@ -40,9 +40,10 @@ Gridkeeper is installed from a GitHub release, **not** from the Autodesk App Sto
 
 1. Download the ZIP file of the latest release from the
    [releases page](https://github.com/Eifel-Joe/FusionGridfinityGenerator/releases).
-2. Unpack it into a folder of its own that stays where it is.
-3. In Fusion open **Utilities › Add-Ins › Scripts and Add-Ins**, click **+** on the **Add-Ins** tab and pick that
-   folder.
+2. Unpack it to a place that stays where it is. It holds a folder `Gridkeeper`; keep that name, Fusion loads the
+   add-in only from a folder named like its manifest.
+3. In Fusion open **Utilities › Add-Ins › Scripts and Add-Ins**, click **+** on the **Add-Ins** tab and pick the
+   `Gridkeeper` folder.
 4. Select Gridkeeper, tick **Run on Startup** and click **Run**.
 
 **Gridkeeper bin**, **Gridkeeper baseplate** and **Gridkeeper label** now show in **Solid › Create**.
