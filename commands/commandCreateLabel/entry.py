@@ -428,6 +428,11 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
     if changed_input.id in (PREVIEW_TIME_INPUT, SIZE_TEXT, SYMBOL_TEXT):
         return
     uiState.onInputUpdate(changed_input)
+    if changed_input.id == POCKET_INPUT:
+        # the note that the old pocket couldn't be picked goes once one is picked (review round 20)
+        note = changed_input.parentCommand.commandInputs.itemById(POCKET_NOTE)
+        if note is not None:
+            note.isVisible = adsk.core.SelectionCommandInput.cast(changed_input).selectionCount == 0
     if isinstance(changed_input, adsk.core.GroupCommandInput) and changed_input.isExpanded == True:
         for input in changed_input.children:
             uiState.registerCommandInput(input)

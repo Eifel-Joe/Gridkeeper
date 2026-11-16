@@ -43,3 +43,18 @@ Punkte:
   einer Eingabe in einem Dokument mit cm als Einheit. Die Meldung zeigt dann richtig den behaltenen Wert.
 - Die Testsitzung wiederholt Handtest 10 mit Bildschirmfoto. Bis dahin bleibt p221 offen, der Test bleibt als
   Absicherung.
+
+## Review (Opus)
+
+Kein kritischer Fund. Umgang:
+- **(I1) behoben:** `insertPocket` nimmt die Occurrence aus dem Joint selbst (`occurrenceOne`/`occurrenceTwo`). Sonst
+  bekäme bei einer in Fusion kopierten Bin, also einer zweiten Occurrence derselben Komponente, die erste Bin den
+  Einleger. `_inRoot` bleibt nur der Rückfall. E2E c prüft das.
+- **(I2) offen bis Dialogtest:** Belegt ist das Auswählen per `ui.activeSelections.add`, nicht `addSelection` im
+  Dialog. Den echten Pfad prüft die Sitzung gf-dialogtests (Handtest 16): Tasche vorgewählt, kein Hinweis.
+- **(I3) Fusion-Lauf:** `_isAfter` greift erst jetzt. E2E a prüft den normalen Neubau, E2E b die Ablehnung der Tasche
+  einer später gebauten Bin. Dazu läuft `r20_e2e_r18a`, das ist E2E a aus Runde 18.
+- Klein:
+  - (M1) Der Hinweis verschwindet, sobald eine Tasche gewählt ist.
+  - (M2) `_inRoot` ähnelt `lib/ui/selection._inRootContext` für Körper; das Zusammenlegen bleibt für später.
+  - (M3) `prefillSelection` fängt alle Ausnahmen ab und schreibt sie ins Log. So gewollt als Netz.
