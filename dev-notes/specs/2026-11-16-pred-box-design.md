@@ -120,7 +120,9 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
   ≈ 28,5 mm breit).
 - Erhabene Schrift Vorgabe 0,4 mm, höchstens so viel, wie der Halter Luft lässt (Builder misst in Preds Halter nach).
   Text und Symbole bleiben im Mittelfeld; der Rand bleibt frei, nach Preds Hinweis 2–3 mm (Builder misst die Lippen).
-- Der Satz enthält 6 Riegel (2 vorn, 4 seitlich), wie Pred für gestapelte Boxen empfiehlt, und 2 Scharniere M3x30.
+- Der Satz enthält **4 Riegel** (Jörg: „Je Box werden auch 4 Latches gebraucht.“): 2 vorn und je 1 an jeder Seite,
+  Preds Variante mit 4 Riegeln (er nennt 2 für eine einzelne Box, 4 oder 6 zum Stapeln). Welche Seitenaufnahme der
+  Builder belegt, misst er in Preds Datei (`SideCatchTabs`). Dazu 2 Scharniere M3x30.
 - Eigener Feature-Branch je Runde, Ziel `master` laut Release-Steckbrief (der Sammelbetrieb R14–R19 ist beendet).
 
 ## Bauweise (Weg B)
