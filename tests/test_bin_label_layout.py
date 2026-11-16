@@ -103,6 +103,13 @@ def test_baseline_is_middle_of_the_label_minus_half_the_letters():
 def test_icon_stands_on_the_baseline():
     withText = placement(hasIcon=True, textHeight=0.5)
     assert withText.iconMinFromBack == approx(withText.baselineFromBack)
+
+
+def test_letters_stand_on_the_bottom_of_a_taller_icon():
+    # round 22, upstream f1cb49b: the icon keeps its full size, smaller letters stand on its bottom, the icon centered
+    result = placement(hasIcon=True, textHeight=0.3, iconHeight=0.7)
+    assert result.iconMinFromBack == approx(LENGTH / 2 + 0.7 / 2)
+    assert result.baselineFromBack == approx(result.iconMinFromBack)
     alone = placement(hasIcon=True, hasText=False, iconHeight=0.7)
     assert alone.iconMinFromBack == approx(LENGTH / 2 + 0.7 / 2)
 
@@ -209,3 +216,43 @@ def test_a_shared_text_takes_the_edited_parameter():
     assert layout.sharedText("Bolzen", ["Bolzen", "Bolzen M4"]) == "Bolzen M4"
     assert layout.sharedText("Bolzen", ["Bolzen", "Bolzen"]) == "Bolzen"
     assert layout.sharedText("Bolzen", []) == "Bolzen"
+
+
+
+# round 22, p13 (Nutzer: "Wie das Original", upstream f1cb49b by Le0Michine): the label icon keeps its full size, as tall
+# as the letters can be at most, only the text shrinks to the width left after it
+
+RATIO = const.BIN_LABEL_TEXT_HEIGHT_RATIO
+
+
+def test_icon_keeps_its_full_size_with_a_long_text():
+    fit = layout.fitBinLabel(8.0, 1.1, 1.0, 20.0, 1.0, 'Bold')
+    assert fit.iconSize == approx(1.1 * RATIO)
+    width = 8.0 - 1.1 * RATIO - GAP
+    assert fit.textHeight == approx(1.1 * min(1.1 * RATIO / 1.0, width / 20.0))
+    assert fit.lettersHeight == approx(1.0 * fit.textHeight / 1.1)
+    assert not fit.overflows
+
+
+def test_a_wide_icon_is_limited_by_the_label_width():
+    fit = layout.fitBinLabel(2.0, 1.1, 4.0, 0.5, 1.0, 'Bold')
+    assert fit.iconSize == approx(min(1.1 * RATIO, 2.0 / 4.0))
+
+
+def test_a_short_text_keeps_the_height_the_tab_allows():
+    fit = layout.fitBinLabel(8.0, 1.1, 1.0, 2.0, 1.0, 'Bold')
+    assert fit.textHeight == approx(1.1 * 1.1 * RATIO)
+    assert fit.iconSize == approx(1.1 * RATIO)
+
+
+def test_text_alone_fills_the_width():
+    fit = layout.fitBinLabel(3.0, 1.1, None, 5.0, 1.0, 'Bold')
+    assert fit.textHeight == approx(1.1 * 3.0 / 5.0)
+    assert not fit.overflows
+
+
+def test_a_text_too_long_beside_the_icon_overflows_at_the_floor():
+    # the full size icon takes room, the text left beside it can't reach the print limit
+    fit = layout.fitBinLabel(4.0, 1.1, 1.0, 40.0, 1.0, 'Bold')
+    assert fit.overflows
+    assert fit.textHeight == approx(0.04 / 0.1170)
