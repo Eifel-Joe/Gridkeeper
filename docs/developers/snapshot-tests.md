@@ -22,8 +22,8 @@ preview picture. The list of cases with their previews is in
 
 ### Running them
 
-The test commands are there only when the add-in runs from a **git checkout**; releases ship without the `.git`
-folder and without them.
+The test commands are there only when the add-in runs from a **git checkout** with a `.git` folder; releases ship
+without it and without them. A `git worktree`, where `.git` is a file, doesn't get them either.
 
 1. Add the checkout as the add-in in **Scripts and Add-Ins**, as in [Installation](../getting-started/installation.md).
 2. **Utilities › Add-Ins › Gridkeeper tests: run** opens the test report and builds every case in a document of its
@@ -40,8 +40,8 @@ and remove before it writes.
 
 - **Parameters:** a case can set user parameters once built; the run compares the recomputed bodies with the case
   built with those values from the start.
-- **Constraints:** every sketch the generator makes must be fully constrained; Cullenect cases fail otherwise, other
-  cases log such sketches.
+- **Constraints:** every sketch the generator makes must be fully constrained; label cases and Cullenect cases fail
+  otherwise, other cases log such sketches.
 - **Part designs:** a case can be built in a part design (`"designIntent": "part"`).
 - **Labels:** bins with a text label are compared by their form, not by where each letter lies, which depends on the
   font and the Fusion version. Colored cases check the look of their bodies.

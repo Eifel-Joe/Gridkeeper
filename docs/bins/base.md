@@ -5,7 +5,7 @@ The **Base interface features** section of the bin dialog: the feet that sit in 
 | Input | Default | What it does |
 |---|---|---|
 | **Generate base** | on | Off builds the body alone, without feet |
-| **Add joint origins** | off | A joint origin at the bottom center of every foot, to joint the bin into baseplate sockets |
+| **Add joint origins** | off | A joint origin at the bottom center of every foot, to joint the bin into baseplate sockets; only with the base |
 | **Add screw holes** | off | A screw hole in every foot |
 | **Screw hole diameter** | 3 mm | 1 to 10 mm |
 | **Add magnet sockets** | off | A magnet socket in every foot |

@@ -9,7 +9,7 @@ The dialog is long, its sections are described on these pages:
 
 | Section | Page |
 |---|---|
-| **Info**, the **Actual dimensions** table, **Basic sizes**, **Main dimensions** | [Size and shape](size.md) |
+| **Info**, **Basic sizes**, **Main dimensions** with the **Actual dimensions** table | [Size and shape](size.md) |
 | **Bin features**: body, type, walls, lip, creases | [Body, walls and lip](body.md) |
 | **Bin compartments**: layout, dividers, **Scoop** | [Compartments and scoop](compartments.md) |
 | **Bin compartments › Label tab** | [Label tab and labels](labels.md), for the Cullenect style also [Pockets in bins](../cullenect/pockets.md) |
@@ -27,6 +27,6 @@ Building a bin takes a few seconds, so the preview is off by default.
 - **Update preview once** builds it once with the inputs as they are.
 - **Last preview** shows how long the last preview took and notes text that is too thin to print.
 
-**OK** builds the bin. If the inputs don't make a bin (a wall too thin for a Cullenect pocket, a text that doesn't fit
-its label), **OK** stays locked and the dialog says why. If a build fails, a panel shows the error with the settings,
-to copy them into a bug report.
+**OK** builds the bin. Some inputs lock **OK** and the dialog says why, for example walls too thin for a Cullenect
+pocket or a custom color that isn't `#rrggbb`. If a build fails, for example on a label text that doesn't fit its
+label, a panel shows the error with the settings, to copy them into a bug report.

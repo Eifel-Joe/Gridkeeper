@@ -13,7 +13,8 @@ Every Gridkeeper dialog has a section with buttons for its settings: **Inputs** 
 | **Reset to defaults** | Sets the inputs back to the saved defaults |
 | **Clear defaults** | Wipes the saved defaults and sets the inputs back to the original ones |
 
-Without saved defaults a dialog opens with the inputs it had last time. The defaults are stored in the add-in folder
+Without saved defaults a dialog opens with the inputs it had last time in this Fusion session, after a restart with
+the original ones. The defaults are stored in the add-in folder
 and survive an [update](../getting-started/installation.md#update).
 
 ## Settings files

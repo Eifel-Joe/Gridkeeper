@@ -7,7 +7,7 @@ top, for a label. With several compartments every compartment gets its own tab.
 
 | Input | Default | What it does |
 |---|---|---|
-| **Add label tab (along bin width)** | off | Adds the tab |
+| **Add label tab (along bin width)** | off | Adds the tab; the other inputs of the group are locked without it |
 | **Tab length (u)** | 1 | Length along the bin width, in base units |
 | **Tab width (mm)** | 13 mm | How far the tab reaches from the back wall |
 | **Tab offset (u)** | 0 | Where the tab starts along the bin width |
@@ -37,7 +37,7 @@ top, for a label. With several compartments every compartment gets its own tab.
 | **Outline** | Splits the tab face along the letters, so a slicer can paint them in another color |
 | **Engraved** | Cuts the letters into the tab |
 | **Embossed** | Raises the letters from a lowered tab |
-| **Cullenect** | A pocket for an exchangeable [Cullenect](../cullenect/index.md) insert instead of a printed label. The tab is widened to at least 14 mm and kept flat; text, icon, bold and tab top angle are switched off but keep their values |
+| **Cullenect** | A pocket for an exchangeable [Cullenect](../cullenect/index.md) insert instead of a printed label. The tab is widened to at least 14 mm and kept flat; text, icon, bold, label color and tab top angle are switched off but keep their values |
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/bin-label-options-dark.gif"><img src="../../assets/gif/bin-label-options-light.gif" alt="Typing label text, picking an icon and each label style, with the bin at each change"></picture>
 
@@ -55,8 +55,10 @@ add-in is restarted.
 
 The text is fitted to the label: as high as the tab allows, smaller when it is long. It never shrinks below the height
 where its thinnest stroke is still one 0.4 mm nozzle line: 4.43 mm for regular, 3.42 mm for bold text. A text that
-doesn't fit even then isn't built, the dialog names it and **OK** stays locked; make the tab longer or the text
-shorter. Text near that limit gets a hint to make the tab wider or use bold.
+doesn't fit even then makes the build fail with a message naming it: shorten it or make the bin wider.
+
+A tab lower than that limit keeps its own height for the text; after building, a message suggests to make the tab
+wider, or to use bold for regular text.
 
 ### Changing the text later
 

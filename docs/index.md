@@ -33,7 +33,7 @@ After [installation](getting-started/installation.md) Gridkeeper adds these comm
 | **Gridkeeper settings** | right-click a generated body | Shows what it was built with, saves, copies or clones it |
 | **Gridkeeper rebuild** | right-click a generated body | Opens its dialog to build it again in its place |
 | **Gridkeeper clone** | right-click a generated body | Opens its dialog with its settings for a new one |
-| **Gridkeeper tests: run** | Utilities › Add-Ins, git checkouts only | Shape snapshot tests for developers, see [Snapshot tests](developers/snapshot-tests.md) |
+| **Gridkeeper tests: run** | Utilities › Add-Ins, git checkouts with a `.git` folder only | Shape snapshot tests for developers, see [Snapshot tests](developers/snapshot-tests.md) |
 
 ## Vibe-coded, tested by printing
 

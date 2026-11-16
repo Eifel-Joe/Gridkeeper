@@ -20,12 +20,13 @@ Its buttons:
 
 | Button | What it does |
 |---|---|
-| **Rebuild** | The same as **Gridkeeper rebuild** |
 | **Save to file** | Saves the settings to a JSON file, see [Saving and loading settings](save-load.md) |
 | **Copy** | Copies them to the clipboard as JSON |
 | **Clone into new bin** (baseplate, label) | The same as **Gridkeeper clone** |
+| **Rebuild** | The same as **Gridkeeper rebuild** |
 
-Models built by older versions without stored settings show what they have, without buttons.
+Models built by older versions without stored settings show what they have, without buttons; they can't be rebuilt
+or cloned.
 
 ## Gridkeeper rebuild
 
@@ -39,9 +40,8 @@ which model is rebuilt.
 - Inserts in the pockets of a rebuilt bin are jointed into the pockets of the same name again.
 - A rebuilt insert is drawn from the bottom left corner of the old one; if it was in a pocket, the dialog has that
   pocket picked already and the new insert is jointed into it.
-- For a bin, changing only what its [parameters](parameters.md) hold, like the height or a label text that still fits,
-  sets the parameters instead of building it again. A longer label text, or any text of a colored label, builds the bin
-  anew so the text is fitted and colored.
+- For a bin, changing only what its [parameters](parameters.md) hold, the height and the units, sets the parameters
+  instead of building it again. Any change of a label text builds the bin anew, so the text is fitted to its label.
 
 ## Gridkeeper clone
 

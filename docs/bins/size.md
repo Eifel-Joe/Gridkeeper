@@ -1,20 +1,16 @@
 # Size and shape
 
-## Info and actual dimensions
+## Info
 
 **Info** has help on the dialog; when it was opened by **Gridkeeper rebuild**, it says which bin is rebuilt in place.
-
-The **Actual dimensions (mm)** table shows the outer width, length and height the bin will have. With the Cullenect
-label style a second row lists the pocket sizes and the insert width that fits each, e.g.
-`Cullenect: 2U: pocket 78.3 mm, insert 78 mm`, see [Pockets in bins](../cullenect/pockets.md).
 
 ## Basic sizes
 
 | Input | Default | What it does |
 |---|---|---|
-| **Base width unit (mm)** | 42 mm | Size of one grid cell along X |
-| **Base length unit (mm)** | 42 mm | Size of one grid cell along Y |
-| **Bin height unit (mm)** | 7 mm | One unit of height |
+| **Base width unit (mm)** | 42 mm | Size of one grid cell along X, at least 10 mm |
+| **Base length unit (mm)** | 42 mm | Size of one grid cell along Y, at least 10 mm |
+| **Bin height unit (mm)** | 7 mm | One unit of height, at least 5 mm |
 | **Bin xy clearance (mm)** | 0.25 mm | Gap on each side between the bin and its cell, 0.1 to 0.5 mm. Keep it the same as the baseplate's |
 
 Each bin keeps its units as [user parameters](../working/parameters.md) of its own, so changing one bin changes no
@@ -27,8 +23,14 @@ other.
 | **Bin width, X (u)** | 2 | In whole or half base units, 0.5 to 100 |
 | **Bin length, Y (u)** | 3 | In whole or half base units, 0.5 to 100 |
 | **Half grid** | off | Puts the bin on half size feet, for a half grid baseplate; the bin keeps its size in base units |
-| **Bin height, Z (u)** | 5 | In height units, at least 1. One more unit is added for the bin bottom |
+| **Bin height, Z (u)** | 5 | Total height in height units, base included, at least 1; the stacking lip adds 3.8 mm on top |
 | **Custom shape** | off | Shows a drawing of the bin cells to leave some out |
+
+### Actual dimensions
+
+At the end of the section, the **Actual dimensions (mm)** table shows the outer width, length and height the bin will
+have. With the Cullenect label style a second row lists the pocket sizes and the insert width that fits each, e.g.
+`Cullenect: 2U: pocket 78.3 mm, insert 78 mm`, see [Pockets in bins](../cullenect/pockets.md).
 
 ### Half sizes and half grid
 
