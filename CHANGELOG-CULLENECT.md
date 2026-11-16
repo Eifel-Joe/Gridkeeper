@@ -9,7 +9,8 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
 Six commits of FusionGridfinityGenerator by Le0Michine (CC BY-NC-SA 4.0) merged as they are, his authorship kept:
 - **"Gridfinity clone" in the context menu**, beside the Clone button of the settings window. With this fork it clones
   inserts too.
-- **More label icons:** button head Phillips and self-tapping screws and a hex locknut.
+- **More label icons:** button head and countersunk screws (Phillips, slotted, self-tapping, Phillips self-tapping), a
+  grub screw and a hex locknut.
 - **Label icon keeps its full size** (Joerg: "as the original"): only the text shrinks to the width left after the
   icon, the letters stand on the icon's bottom. Rebuilt in this fork's label code, the least text height of round 19
   still applies.

@@ -26,7 +26,7 @@ abgebrochen. Vorgehen je Stelle:
    baut bei jeder Änderung von `labelText` neu, wir seit R19 bei einem Text, der vom gebauten abweicht
    (`textChangedSinceBuild`, auch für Fach-Labels, mit `sharedText`). Unsere Fassung deckt Upstreams Fall ab
    (geänderter Text → Neubau) und zusätzlich den Text, der vorher über den Parameter geändert wurde, sowie die
-   Fach-Labels. Upstreams Zweig im Loop würde damit nie erreicht; er entfällt, der Docstring wird zusammengeführt.
+   Fach-Labels. Upstreams Zweig im Loop entfällt; unser Docstring bleibt, er nennt den Grund schon.
 3. **`labelGenerator.createLabel` (4 Konflikte): Rückfrage, siehe unten.** Upstream ändert die Regel des Bin-Labels: Das
    Icon behält seine volle Größe (so hoch, wie die Buchstaben höchstens sein dürfen), nur der Text schrumpft auf die
    Restbreite. Bei uns schrumpfen Icon und Text gemeinsam. Unser Code ist seit R14 ein anderer: Er zeichnet am fertigen
@@ -87,3 +87,18 @@ Merge-Commit 1e5d9e4 (`git merge upstream/master`). Die sechs Commits von Lev Mi
     Unterlängen reichen damit unter die Icon-Unterkante.
 - Tests in `tests/test_bin_label_layout.py`, alle mit Unit-Tests. Die OPEN-Markierung ist entfernt.
 - Erwartet ändern sich die Snapshots der Bins mit Icon und Text (`bin_2x1x3_label_icon_text_embossed`, `…_colored`).
+
+## Review (Opus) des Merges
+
+Kein kritischer Fund. Umgang:
+- **(I1) erledigt:** Der Arbeitsstand war beim Review noch nicht committet und rot. Er ist in bff0966 fertig und grün.
+- **(M1) behoben:** Neu ist `tests/test_context_menu_commands.py`. Er prüft im Quelltext:
+  - Clone und Rebuild kennen Bin, Grundplatte und Einleger;
+  - `stop()` löscht alle drei Befehle;
+  - Clone braucht die Config im Tag;
+  - ein Clone-Eintrag im Menü.
+- **(M2) behoben:** Das CHANGELOG nennt alle elf neuen Icons.
+- **(M3) Notiz für Handtest 3:** „Hex locknut“ (Upstream) und „Cullenect nut nylon“ (unser) zeigen dasselbe Teil.
+  Beide bleiben in der Liste.
+- **(M4) behoben:** Satz zu `parameterEdits` korrigiert. Die README des Originals nennt beim Kontextmenü nur Bin und
+  Grundplatte; sie bleibt wie übernommen.
