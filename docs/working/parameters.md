@@ -4,7 +4,7 @@ Each model gets user parameters of its own, numbered per model: the first bin is
 same for `gfPlate1_…` and `gfLabel1_…`. Change them in **Modify › Change Parameters** and the model follows without
 building it again; changing one model's parameters changes no other.
 
-![Fusion's Change Parameters window with the parameters of a bin and an insert](../assets/images/change-parameters.png)
+![Fusion's Parameters window with the user parameters gfBin1_baseWidth, gfBin1_baseLength, gfBin1_heightU and gfBin1_heightUnit of a bin](../assets/images/change-parameters.png)
 
 ## Bins
 

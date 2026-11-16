@@ -3,13 +3,13 @@
 **Solid › Create › Gridkeeper baseplate** builds a plate of sockets the bins sit in. Every new baseplate is a
 component of its own in the container *Grid*, see [Components and joints](working/components.md).
 
-![The Gridkeeper baseplate dialog](assets/images/dialog-baseplate.png)
+![The top of the Gridkeeper baseplate dialog: Info, Basic size and Main dimensions in Fill area mode](assets/images/dialog-baseplate.png)
 
 The dialog has these sections, from top to bottom.
 
 ## Info
 
-Help on the dialog with a link to the help of the original add-in. When the dialog was opened by **Gridkeeper rebuild**, it says which
+A help link and the version of the add-in. When the dialog was opened by **Gridkeeper rebuild**, it says which
 baseplate is rebuilt in place.
 
 ## Basic size

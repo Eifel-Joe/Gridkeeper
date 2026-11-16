@@ -2,7 +2,7 @@
 
 ## Info
 
-**Info** has help on the dialog; when it was opened by **Gridkeeper rebuild**, it says which bin is rebuilt in place.
+**Info** has a help link and the version of the add-in; when it was opened by **Gridkeeper rebuild**, it says which bin is rebuilt in place.
 
 ## Basic sizes
 

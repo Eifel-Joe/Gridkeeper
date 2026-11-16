@@ -4,7 +4,7 @@ In the bin dialog, **Bin compartments › Label tab**: tick **Add label tab (alo
 **Cullenect**. Every label tab gets a pocket instead of a printed label, with several compartments every compartment
 tab.
 
-![The label tab section of the bin dialog with label style Cullenect and the Cullenect row of the actual dimensions](../assets/images/dialog-bin-cullenect.png)
+![The label tab section of the bin dialog with label style Cullenect: text, icon, bold, color and tab top angle greyed out, Socket play shown](../assets/images/dialog-bin-cullenect.png)
 
 ## Pocket size
 
