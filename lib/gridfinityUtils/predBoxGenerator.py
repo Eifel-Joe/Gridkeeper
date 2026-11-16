@@ -88,11 +88,11 @@ class _Builder:
             feature.name = name
         return feature
 
-    def sweep(self, sketch: adsk.fusion.Sketch, path: adsk.fusion.Path, operation, name):
+    def sweep(self, sketch: adsk.fusion.Sketch, path: adsk.fusion.Path, operation, name, bodies):
         sweeps = self.features.sweepFeatures
         sweepInput = sweeps.createInput(collection(list(sketch.profiles)), path, operation)
         sweepInput.orientation = adsk.fusion.SweepOrientationTypes.PerpendicularOrientationType
-        sweepInput.participantBodies = [self.base]
+        sweepInput.participantBodies = bodies
         feature = sweeps.add(sweepInput)
         feature.name = name
         return feature
@@ -218,19 +218,21 @@ class _Builder:
         pathSketch = path.close()
         cellPath = self.features.createPath(pathSketch.sketchCurves.item(0), True)
 
-        sweep1 = self.sweep(cut1.sketch, cellPath, adsk.fusion.FeatureOperations.CutFeatureOperation, 'Sweep1')
+        # the grid comes after the lid is split off (createPredBox): sockets in the floor, bin seats under the lid
+        sweep1 = self.sweep(cut1.sketch, cellPath, adsk.fusion.FeatureOperations.CutFeatureOperation, 'Sweep1',
+                            [self.base, self.lid])
         self.step('#10 Sweep1')
         join = WorldSketch(self.component, self.sweepPlane, 'SweepJoin')
         join.polyline(xz([(31, self.top(10)), (48.8, self.top(10)), (49.6, self.top(9.2)), (49.6, self.top(7.4)),
                           (51.75, self.top(5.25)), (31, self.top(5.25))]))
         join.close()
-        sweep2 = self.sweep(join.sketch, cellPath, adsk.fusion.FeatureOperations.JoinFeatureOperation, 'Sweep2')
+        sweep2 = self.sweep(join.sketch, cellPath, adsk.fusion.FeatureOperations.JoinFeatureOperation, 'Sweep2', [self.lid])
         self.step('#11 Sweep2')
         cut2 = WorldSketch(self.component, self.sweepPlane, 'SweepCut2')
         cut2.polyline(xz([(31, self.top(8.8)), (48.3, self.top(8.8)), (48.8, self.top(8.3)), (48.8, self.top(5.6)),
                           (49.15, self.top(5.25)), (31, self.top(5.25))]))
         cut2.close()
-        sweep4 = self.sweep(cut2.sketch, cellPath, adsk.fusion.FeatureOperations.CutFeatureOperation, 'Sweep4')
+        sweep4 = self.sweep(cut2.sketch, cellPath, adsk.fusion.FeatureOperations.CutFeatureOperation, 'Sweep4', [self.lid])
         self.step('#12 Sweep4')
 
         floor, magnets, blends = self.floorPads()
@@ -264,7 +266,7 @@ class _Builder:
         # Pred's Extrude5: from the top down to the plane of the socket lip (0.5 mm over the arc centre)
         innerProfile = self.footprint.profiles([((1, 1, 0), (d.outerWidth - mm(10), d.outerLength - mm(10), 0))])
         self.extrude(innerProfile, adsk.fusion.FeatureOperations.CutFeatureOperation, mm(-(ARC_CENTER_BELOW_TOP - 0.5)),
-                     start=d.bodyTop, bodies=[self.base], name='Cell ridges')
+                     start=d.bodyTop, bodies=[self.lid], name='Cell ridges')
         self.step('#17 Extrude5')
 
     # -- Pred #18 to #43: wall recesses, opening tab, handle and label holders ----------------------------------
@@ -595,7 +597,6 @@ class _Builder:
         self.chamfer('#82 Chamfer21', body=self.lid)
         self.chamfer('#83 Chamfer11', body=self.base)
         self.chamfer('#84 Chamfer12', body=self.lid)
-        self.chamfer('#85 Chamfer16', body=self.lid)
 
     def floorPads(self):
         """Pred's Sketch21 for the first cell, built the way Nutzer chose ("Versuche b", 16.11.2026): floor inside
@@ -675,8 +676,12 @@ def _faceItem(face):
 def createPredBox(component: adsk.fusion.Component, dims: PredBoxDims, options: PredBoxOptions, onStep=None) -> PredBoxBodies:
     builder = _Builder(component, dims, options, onStep)
     builder.body()
-    builder.floorGrid()
+    # Pred's order, except the cell grid (#9 to #17): it comes after the split, so the many chamfers before it work on a
+    # body of a few hundred faces instead of 2800 (7 to 8 s each, fusion-auftraege/r27_steps.out). The grid lies inside
+    # the walls and touches none of the faces those features use, the shape stays the same.
     builder.walls()
     builder.catches()
     builder.lidAndHinge()
+    builder.floorGrid()
+    builder.chamfer('#85 Chamfer16', body=builder.lid)
     return PredBoxBodies(builder.base, builder.lid)
