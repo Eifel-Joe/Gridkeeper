@@ -212,9 +212,9 @@ STATE_INPUT_IDS = [
 SHOW_PREVIEW_INPUT = 'show_preview'
 PREVIEW_TIME_INPUT = 'preview_time'
 
-INFO_TEXT = ("<b>Help:</b> Info for inputs can be found "
-             "<a href=\"https://github.com/Le0Michine/FusionGridfinityGenerator/wiki/Baseplate-generator-options\">"
-             "Here on our GitHub</a>.")
+INFO_TEXT = ("<b>Help:</b> every input is explained "
+             "<a href=\"https://eifel-joe.github.io/Gridkeeper/baseplates/\">"
+             "in the Gridkeeper documentation</a>.")
 
 def infoText():
     version = tagUtils.getGeneratorVersion()

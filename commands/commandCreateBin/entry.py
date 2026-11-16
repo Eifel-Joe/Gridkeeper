@@ -254,9 +254,9 @@ SHOW_PREVIEW_INPUT = 'show_preview'
 SHOW_PREVIEW_MANUAL_INPUT = 'show_preview_manual'
 PREVIEW_TIME_INPUT = 'preview_time'
 
-INFO_TEXT = ("<b>Help:</b> Info for inputs can be found "
-             "<a href=\"https://github.com/Le0Michine/FusionGridfinityGenerator/wiki/Bin-generator-options\">"
-             "Here on our GitHub</a>.")
+INFO_TEXT = ("<b>Help:</b> every input is explained "
+             "<a href=\"https://eifel-joe.github.io/Gridkeeper/bins/\">"
+             "in the Gridkeeper documentation</a>.")
 
 def infoText():
     version = tagUtils.getGeneratorVersion()
