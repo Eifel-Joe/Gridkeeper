@@ -58,9 +58,13 @@ def test_opening_tab_follows_the_label_width_6x3():
     assert _find("#22 Chamfer7", _values(6, 3, 6), (150.25, 2.5, 51.2)) == [(178.5, 2.5, 51.2), (93.5, 2.5, 51.2)]
 
 
-def test_handle_holder_keeps_its_distance_to_the_middle():
+def test_handle_holder_keeps_its_distance_to_the_label_edge():
+    """Pred at 6 x 5 x 8 (r27_pred_size_6x5x8.txt): the handle holders move with the label edge (+13.75 mm), not
+    with the middle (+21 mm)"""
+    points = _find("#32 Chamfer26", _values(6, 5, 8), (60.25, 0, 34.7))
+    assert points == [(74, 0, 41.7), (79, 0, 41.7)]
     points = _find("#32 Chamfer26", _values(7, 4, 5), (60.25, 0, 34.7))
-    assert points == [(102.25, 0, 31.2), (107.25, 0, 31.2)]
+    assert points == [(95, 0, 31.2), (100, 0, 31.2)]
 
 
 def test_label_holder_line_ends_in_the_middle():
