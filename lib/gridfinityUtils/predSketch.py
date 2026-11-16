@@ -211,6 +211,20 @@ class WorldSketch:
             found.append(match[0])
         return found
 
+    def profilesWhere(self, inside):
+        """The profiles whose centroid lies where inside(x, y) holds, x and y the world coordinates along the sketch's
+        axes (cm); for shapes cut out of circles, which split into pieces"""
+        self.close()
+        found = []
+        for profile in self.sketch.profiles:
+            centroid = self.sketch.sketchToModelSpace(profile.areaProperties().centroid)
+            world = (centroid.x, centroid.y, centroid.z)
+            if inside(world[self.xAxis[0]], world[self.yAxis[0]]):
+                found.append(profile)
+        if not found:
+            raise ValueError(f'{self.sketch.name}: no profile in the region')
+        return found
+
     def profilesByArea(self, areas, tolerance=1e-3):
         """The profiles with the given areas (mm2), in that order; for regions whose area does not change with the box"""
         self.close()
