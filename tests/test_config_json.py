@@ -215,3 +215,32 @@ def test_notes_list_every_change_by_kind(current):
 
 def test_no_notes_without_changes(current):
     assert configJson.notesText(BIN, configJson.ConfigNotes()) == ""
+
+
+# --- round 18, p151: an old bin config without a label color keeps the dialog's color choice
+
+labelColors = _load("labelColorsForConfig", "lib", "gridfinityUtils", "labelColors.py")
+
+
+def _old_config_without_color(current):
+    settings = configJson.stateToJson(BIN, dataclasses.replace(current, hasTab=True, labelText="Bolts"))
+    del settings["labelColor"]
+    return configJson.configText(BIN, settings)
+
+
+def _dialog_choice_after_loading(current, currentColor):
+    # the bin dialog has no tab, its state keeps '' for the color (stateLabelColor), the choice in the dialog is Red
+    (state, notes) = read(_old_config_without_color(current), dataclasses.replace(current, hasTab=False, labelColor=currentColor))
+    assert ("labelColor", currentColor) in notes.missing
+    assert labelColors.restoresColor(state.labelColor, True, False)
+    return labelColors.choiceOf(state.labelColor)
+
+
+def test_old_bin_config_keeps_the_dialog_color(current):
+    color = labelColors.configCurrentColor("Red", "")
+    assert _dialog_choice_after_loading(current, color) == ("Red", "")
+
+
+def test_derived_empty_color_would_reset_it(current):
+    # what the dialog passed before: the color of a state without a tab, '', which turned the choice to None
+    assert _dialog_choice_after_loading(current, "") == (labelColors.NO_COLOR_CHOICE, "")

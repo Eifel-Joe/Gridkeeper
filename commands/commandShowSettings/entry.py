@@ -11,6 +11,7 @@ from ...lib.ui.buttonRow import Button
 from ... import config
 from ..commandCreateBin import entry as binEntry
 from ..commandCreateBaseplate import entry as baseplateEntry
+from ..commandCreateLabel import entry as labelEntry
 
 app = adsk.core.Application.get()
 ui = app.userInterface
@@ -25,7 +26,7 @@ REBUILD_CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdRebuild'
 REBUILD_CMD_NAME = 'Gridfinity rebuild'
 # a bin with a wrench
 REBUILD_ICON_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources', 'rebuild', '')
-REBUILD_CMD_DESCRIPTION = 'Open the generator dialog with the settings of this bin or baseplate to build it again in its place, keeping the features after it'
+REBUILD_CMD_DESCRIPTION = 'Open the generator dialog with the settings of this bin, baseplate or label to build it again in its place, keeping the features after it'
 
 SETTINGS_TEXT_INPUT = 'settings_text'
 SETTINGS_BROWSER = 'settings'
@@ -39,11 +40,14 @@ TAG_TITLES = {
 CLONE_COMMANDS = {
     tagUtils.TAG_BIN: binEntry,
     tagUtils.TAG_BASEPLATE: baseplateEntry,
+    # inserts since round 18 (p150)
+    tagUtils.TAG_LABEL: labelEntry,
 }
-# generators that rebuild a body in place, see binEntry.startRebuild and baseplateEntry.startRebuild
+# generators that rebuild a body in place, see binEntry.startRebuild, baseplateEntry.startRebuild and labelEntry.startRebuild
 REBUILD_COMMANDS = {
     tagUtils.TAG_BIN: binEntry,
     tagUtils.TAG_BASEPLATE: baseplateEntry,
+    tagUtils.TAG_LABEL: labelEntry,
 }
 REBUILD_ACTION = 'rebuild'
 # the page's height, what the dialog has room for at its initial size. Fusion makes a page as tall as its content up
@@ -129,7 +133,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     command.isOKButtonVisible = False
     command.cancelButtonText = 'Close'
     if tag is None:
-        command.commandInputs.addTextBoxCommandInput(SETTINGS_TEXT_INPUT, '', 'Select a generated bin or baseplate.', 1, True)
+        command.commandInputs.addTextBoxCommandInput(SETTINGS_TEXT_INPUT, '', 'Select a generated bin, baseplate or label.', 1, True)
         return
     (body, tagName, value) = tag
     command.setDialogInitialSize(450, 500)
@@ -144,7 +148,7 @@ def rebuild_command_created(args: adsk.core.CommandCreatedEventArgs):
     tag = selectedTag() or menuTag
     try:
         if not canRebuild(tag):
-            ui.messageBox('Select a generated bin or baseplate to rebuild.', REBUILD_CMD_NAME)
+            ui.messageBox('Select a generated bin, baseplate or label to rebuild.', REBUILD_CMD_NAME)
             return
         startRebuild(tag)
     except Exception as err:

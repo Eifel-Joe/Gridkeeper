@@ -4,6 +4,17 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
 
 ## Unreleased
 
+### Rebuilding inserts and their settings (round 18)
+
+- **Inserts like bins (p150):** an insert of the Gridfinity label command can be rebuilt in its place from the context
+  menu, "Gridfinity rebuild", and its settings saved to a file, loaded, copied and cloned from "Gridfinity settings", as
+  bins and baseplates since upstream v2.4. This reuses the rebuild and config mechanism of FusionGridfinityGenerator
+  by Le0Michine (CC BY-NC-SA 4.0). A rebuilt insert is drawn from the bottom left corner of the old one and keeps its
+  parameters; an insert jointed into a Cullenect pocket gets a new joint into the same pocket. Inserts built before
+  this version have no config in their tag and can't be rebuilt, their settings still show.
+- **Old bin configs keep the label color (p151):** loading a bin config saved before bins had a label color keeps the
+  color chosen in the dialog instead of setting it to None.
+
 ### Insert geometry (round 17)
 
 - **Descenders stay on the insert (p110):** two lines on an insert made lower by its height correction shrink so that
