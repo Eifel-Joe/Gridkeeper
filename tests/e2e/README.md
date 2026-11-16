@@ -116,16 +116,11 @@ This page is written from the case files, run `python3 tests/e2e/write_readme.py
 
 | Preview | Case | Description |
 | --- | --- | --- |
-|  | [box_4x3x5](cases/box_4x3x5.json) | Smallest box after Pred, 4 x 3 cells, height 5 |
-|  | [box_4x3x5_magnets_custom](cases/box_4x3x5_magnets_custom.json) | Smallest box with the deepest custom magnet holes, 2.6 mm, 8 mm wide |
 |  | [box_4x3x8](cases/box_4x3x8.json) | Narrow box 4 x 3, height 8 |
 |  | [box_5x3x9](cases/box_5x3x9.json) | Box 5 x 3, height 9 |
-|  | [box_5x4x5](cases/box_5x4x5.json) | Pred's box 5 x 4 at height 5, the catch slides end 6 mm over the bottom |
-|  | [box_5x4x5_params_height6](cases/box_5x4x5_params_height6.json) | Box 5 x 4 x 5 with square holder tops, its height parameter changed to 6: Pred's rounding comes back. Sets `gfBox1_heightU` 6 mm once built, a run compares that with a build using those values from the start |
 |  | [box_5x4x6](cases/box_5x4x6.json) | Pred's own box 5 x 4 x 6 |
 |  | [box_5x4x6_magnets](cases/box_5x4x6_magnets.json) | Box 5 x 4 x 6 with magnet holes for 6 x 2 mm magnets |
 |  | [box_5x4x6_params_7x5x10](cases/box_5x4x6_params_7x5x10.json) | Box 5 x 4 x 6, its parameters changed to 7 x 5 x 10. Sets `gfBox1_baseWidth` 7 mm, `gfBox1_baseLength` 5 mm, `gfBox1_heightU` 10 mm once built, a run compares that with a build using those values from the start |
-|  | [box_5x4x6_params_height5](cases/box_5x4x6_params_height5.json) | Box 5 x 4 x 6, its height parameter changed to 5. Sets `gfBox1_heightU` 5 mm once built, a run compares that with a build using those values from the start |
 |  | [box_6x5x7](cases/box_6x5x7.json) | Box 6 x 5 x 7, the label holder at its widest (85 mm) |
 |  | [box_6x5x7_params_4x3x6](cases/box_6x5x7_params_4x3x6.json) | Box 6 x 5 x 7, its parameters changed to 4 x 3 x 6. Sets `gfBox1_baseWidth` 4 mm, `gfBox1_baseLength` 3 mm, `gfBox1_heightU` 6 mm once built, a run compares that with a build using those values from the start |
 |  | [box_7x5x10](cases/box_7x5x10.json) | Large box 7 x 5 x 10 |
