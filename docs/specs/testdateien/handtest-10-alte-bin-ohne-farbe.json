@@ -1,0 +1,8 @@
+{
+    "generator": "bin",
+    "settings": {
+        "binWidth": 1,
+        "binLength": 1,
+        "binHeight": 3
+    }
+}
