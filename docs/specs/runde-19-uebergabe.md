@@ -67,12 +67,19 @@ Kein kritischer Fund. Umgang:
 
 ## Belege
 
-- pytest: `910 passed`.
+- pytest: `910 passed`. Nach den Review-Funden ist ein neuer voller Snapshot-Lauf fällig (`r19_snap2`).
 - Fusion (nach `r19_reload1`):
   - E2E b, c und d sind ALL OK.
   - `r19_snap` ist DONE, 83 Fälle, nicht grün `[]`.
-  - E2E a scheiterte zuerst an den Testdaten: „Schrauben M4x2“ passt in ein Fach auch auf der Untergrenze nicht und
-    wurde zu Recht abgelehnt. Jetzt laufen „Bolzen“ und „Bolzen M4x2“.
+  - E2E a scheiterte zweimal an den Testdaten, nicht am Code:
+    - „Schrauben M4x2“ passt in ein Fach auch auf der Untergrenze nicht und wurde zu Recht abgelehnt.
+    - „Bolzen“ war von der Lasche begrenzt, nicht von der Breite. Die Lasche begrenzt die Höhe der Buchstaben selbst:
+      „Bolzen“ mit seinen Oberlängen kam auf 7,773 mm, „M3“ auf 7,736 mm. Die Schrift überragt die Lasche also nicht,
+      der Vergleichswert aus Gruppe b passte nur nicht zu diesem Text.
+    - Jetzt: „Muttern“ gegen „Mu“ (gleiche Buchstabenhöhe) im selben Dokument, verlängert zu „Muttern M4x2“.
+    - Der Rest von a war schon grün: Die Buchstaben liegen in ihren Fächern, 7,773 → 4,385 mm, über der Untergrenze
+      3,419 mm.
+  - Nach den Review-Funden (`r19_reload2`): E2E e ALL OK (7,773 → 4,385 mm, neuer Text in beiden Fächern), E2E f ALL OK.
 
 ## Bekannte Grenze
 
