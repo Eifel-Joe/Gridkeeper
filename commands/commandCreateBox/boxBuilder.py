@@ -196,4 +196,22 @@ def rebuildBox(
 
     def build(placement, parameterPrefix, transform, oldPlace):
         return buildBox(des, state, settings, not isPreview, parameterPrefix, transform, oldPlace)
-    return rebuildUtils.rebuild(des, target, prefix, BOX_PARAMETER_BASE_NAME, isPreview, build, 'box', jointsByName=True)
+    (bodies, notes) = rebuildUtils.rebuild(des, target, prefix, BOX_PARAMETER_BASE_NAME, isPreview, build, 'box', jointsByName=True)
+    if not isPreview:
+        _renameParts(bodies)
+    return (bodies, notes)
+
+
+def _renameParts(bodies: list[adsk.fusion.BRepBody]):
+    """
+    The new set is built while the old one still has its components, Fusion names the new ones "Box (2)", "Lid (2)"
+    (r27_cmd 17.11.2026). With the old set gone the names are free again, a name another set still holds stays taken
+    """
+    for body in bodies:
+        component = rebuildUtils.nativeBody(body).parentComponent
+        role = rebuildUtils.partRole(component)
+        if role and component.name != role:
+            try:
+                component.name = role
+            except RuntimeError as err:
+                commonUtils.fileLog(f'{LOG_PREFIX} {component.name} kept its name, {err}')
