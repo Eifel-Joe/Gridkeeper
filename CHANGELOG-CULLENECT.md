@@ -10,9 +10,11 @@ Six commits of FusionGridfinityGenerator by Le0Michine (CC BY-NC-SA 4.0) merged 
 - **"Gridfinity clone" in the context menu**, beside the Clone button of the settings window. With this fork it clones
   inserts too.
 - **More label icons:** button head Phillips and self-tapping screws and a hex locknut.
+- **Label icon keeps its full size** (Joerg: "as the original"): only the text shrinks to the width left after the
+  icon, the letters stand on the icon's bottom. Rebuilt in this fork's label code, the least text height of round 19
+  still applies.
 - Not taken over, decided in this fork: the version bumps (the version stays 2.4.0.0); rebuilding with a new label
-  text, which this fork does since round 19 for compartment labels too. The rule "label icon keeps its full size" waits
-  for a decision, this fork's rule stays until then.
+  text, which this fork does since round 19 for compartment labels too.
 
 ### Thin text hint and room on inserts (round 21)
 

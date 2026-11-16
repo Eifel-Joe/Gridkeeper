@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from . import const
+from . import const, textStyles
 from .dim import Dim
 
 # Where the text and icon of a bin label go (round 14, p72). They are drawn at the finished spot, on planes that follow
@@ -68,12 +68,14 @@ def binLabelPlacement(
     hasText: bool,
 ) -> BinLabelPlacement:
     """Text height is of its capitals, it stands on a line below the middle of the label by half of it, as the middle
-    alignment of a text box did, and an icon stands on that line too. Icon alone sits in the middle"""
+    alignment of a text box did, and an icon stands on that line too. Icon alone sits in the middle. An icon taller than
+    the letters, it keeps its full size since round 22 (upstream f1cb49b), sits in the middle and the letters stand on
+    its bottom"""
     side = Dim.length(const.BIN_LABEL_SIDE_MARGIN)
     iconMinX = originX + side if hasIcon else None
     baselineStartX = iconMinX + Dim.length(iconWidth + const.BIN_LABEL_ICON_GAP) if hasIcon else originX + side
     baselineEndX = originX + width - side
-    baselineFromBack = length / 2 + textHeight / 2
+    baselineFromBack = length / 2 + (max(textHeight, iconHeight) if hasIcon else textHeight) / 2
     return BinLabelPlacement(
         planeZ=originZ,
         hingeY=originY + Dim.length(length),
@@ -109,3 +111,27 @@ def sharedText(built: str, values: list[str]) -> str:
     differs from the built text, edited in Fusion, else the built one. Taken in turn, an unchanged parameter after the
     edited one undid the edit (review round 19)"""
     return next((value for value in values if value != built), built)
+
+
+@dataclass
+class BinLabelFit:
+    # text height given to Fusion, the height of the letters as measured, the icon's height
+    textHeight: float
+    lettersHeight: float
+    iconSize: float
+    # the text doesn't fit even at the least height that prints, see textStyles.fittedHeight
+    overflows: bool
+
+
+def fitBinLabel(contentWidth: float, contentHeight: float, iconAspect: float | None, measuredWidth: float, measuredHeight: float, style: str) -> BinLabelFit:
+    """Sizes of the text and icon of a bin label, the text measured at a text height of contentHeight (round 22, p13,
+    Joerg: "Wie das Original", upstream f1cb49b by Le0Michine). The icon keeps its full size, as tall as the letters can
+    be at most, only limited by the label width; the text shrinks to the width left after the icon and gap, not below
+    the least height that prints (round 19). Before, icon and letters shrank together"""
+    tallest = contentHeight * const.BIN_LABEL_TEXT_HEIGHT_RATIO
+    iconSize = min(tallest, contentWidth / iconAspect) if iconAspect is not None else tallest
+    room = contentWidth - (iconSize * iconAspect + const.BIN_LABEL_ICON_GAP if iconAspect is not None else 0)
+    heightScale = tallest / measuredHeight
+    widthScale = max(room, 0) / measuredWidth
+    (fitted, overflows) = textStyles.fittedHeight(contentHeight * heightScale, contentHeight * widthScale, style)
+    return BinLabelFit(fitted, measuredHeight * fitted / contentHeight, iconSize, overflows)

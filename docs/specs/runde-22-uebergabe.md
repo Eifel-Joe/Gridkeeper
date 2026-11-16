@@ -75,3 +75,15 @@ Merge-Commit 1e5d9e4 (`git merge upstream/master`). Die sechs Commits von Lev Mi
 - **5 (Manifest):** Git hatte es ohne Konflikt auf 2.4.2.0 gemergt, zurück auf 2.4.0.0.
 - **6 (README, Screenshots, `tools/labelIcons.py`):** übernommen.
 - pytest: `920 passed`.
+
+## Punkt 3 entschieden: Variante A (Jörg: „Wie das Original“)
+
+- Upstreams Regel ist in unserem Code nachgebaut, die Hunks selbst passten nicht.
+  - `binLabelLayout.fitBinLabel`: Das Icon behält seine volle Größe (so hoch, wie die Buchstaben höchstens sein dürfen),
+    begrenzt nur durch die Label-Breite. Der Text schrumpft auf die Restbreite nach Icon und Abstand.
+  - Untergrenze und Ablehnung aus R19 bleiben.
+  - `binLabelPlacement`: Ist das Icon höher als die Buchstaben, sitzt es in der Mitte, und die Buchstaben stehen auf
+    seiner Unterkante. Upstream richtet die Unterkante der Buchstaben am Icon aus, wir die Grundlinie, wie seit R14;
+    Unterlängen reichen damit unter die Icon-Unterkante.
+- Tests in `tests/test_bin_label_layout.py`, alle mit Unit-Tests. Die OPEN-Markierung ist entfernt.
+- Erwartet ändern sich die Snapshots der Bins mit Icon und Text (`bin_2x1x3_label_icon_text_embossed`, `…_colored`).
