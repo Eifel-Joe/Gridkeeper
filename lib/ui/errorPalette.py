@@ -16,7 +16,7 @@ app = adsk.core.Application.get()
 ui = app.userInterface
 
 PALETTE_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_errorReport'
-PALETTE_TITLE = 'Gridfinity error'
+PALETTE_TITLE = 'Gridkeeper error'
 PAGE_URL = browserPages.pageUrl(__file__, 'errorReport.html')
 WIDTH = 520
 HEIGHT = 480

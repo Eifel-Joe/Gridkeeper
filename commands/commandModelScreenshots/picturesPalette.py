@@ -17,7 +17,7 @@ app = adsk.core.Application.get()
 ui = app.userInterface
 
 PALETTE_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_modelPictures'
-PALETTE_TITLE = 'Gridfinity model pictures'
+PALETTE_TITLE = 'Gridkeeper model pictures'
 PAGE_URL = browserPages.pageUrl(__file__, 'pictures.html')
 WIDTH = 380
 HEIGHT = 700

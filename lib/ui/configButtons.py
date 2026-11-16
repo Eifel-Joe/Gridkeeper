@@ -13,7 +13,7 @@ CONFIG_SAVE = 'saveConfig'
 CONFIG_LOAD = 'loadConfig'
 CONFIG_COPY = 'copyConfig'
 CONFIG_CLONE = 'cloneConfig'
-FILE_FILTER = 'Gridfinity config (*.json);;All files (*.*)'
+FILE_FILTER = 'Gridkeeper config (*.json);;All files (*.*)'
 COPIED = 'Copied'
 
 app = adsk.core.Application.get()
@@ -67,7 +67,7 @@ def configButtonsHandlers(
 def saveConfigFile(text: str, fileName: str) -> None:
     global _lastFolder
     dialog = ui.createFileDialog()
-    dialog.title = 'Save Gridfinity config'
+    dialog.title = 'Save Gridkeeper config'
     dialog.filter = FILE_FILTER
     dialog.initialFilename = f'{fileName}.json'
     if _lastFolder:
@@ -80,13 +80,13 @@ def saveConfigFile(text: str, fileName: str) -> None:
             file.write(text)
         futil.log(f'Saved config to {dialog.filename}')
     except OSError as err:
-        ui.messageBox(f'Couldn\'t save the config to {dialog.filename}:\n{err}', 'Gridfinity config')
+        ui.messageBox(f'Couldn\'t save the config to {dialog.filename}:\n{err}', 'Gridkeeper config')
 
 def openConfigFile() -> tuple[str, str] | None:
     """Text and name of the file picked, none when the dialog was cancelled or the file can't be read"""
     global _lastFolder
     dialog = ui.createFileDialog()
-    dialog.title = 'Load Gridfinity config'
+    dialog.title = 'Load Gridkeeper config'
     dialog.filter = FILE_FILTER
     dialog.isMultiSelectEnabled = False
     if _lastFolder:
@@ -98,7 +98,7 @@ def openConfigFile() -> tuple[str, str] | None:
         with open(dialog.filename, encoding='utf-8') as file:
             return (file.read(), os.path.basename(dialog.filename))
     except (OSError, UnicodeDecodeError) as err:
-        ui.messageBox(f'Couldn\'t read {dialog.filename}:\n{err}', 'Gridfinity config')
+        ui.messageBox(f'Couldn\'t read {dialog.filename}:\n{err}', 'Gridkeeper config')
         return None
 
 def copyConfig(text: str) -> str | None:
@@ -108,7 +108,7 @@ def copyConfig(text: str) -> str | None:
         return COPIED
     except Exception as err:
         futil.log(f'Couldn\'t copy the config, {err}')
-        ui.messageBox(f'Couldn\'t copy to the clipboard:\n{err}', 'Gridfinity config')
+        ui.messageBox(f'Couldn\'t copy to the clipboard:\n{err}', 'Gridkeeper config')
         return None
 
 def readConfig(
@@ -126,10 +126,10 @@ def readConfig(
     try:
         (state, notes) = configJson.readConfig(text, generator, stateClass, current, choices)
     except configJson.ConfigError as err:
-        ui.messageBox(f'Couldn\'t read the config. {err}', 'Gridfinity config')
+        ui.messageBox(f'Couldn\'t read the config. {err}', 'Gridkeeper config')
         return None
     if not notes.isEmpty():
         details = configJson.notesText(generator, notes)
         futil.log(f'{source} config with changes:\n{details}')
-        ui.messageBox(f'{source} with changes:\n\n{details}', 'Gridfinity config', adsk.core.MessageBoxButtonTypes.OKButtonType, adsk.core.MessageBoxIconTypes.WarningIconType)
+        ui.messageBox(f'{source} with changes:\n\n{details}', 'Gridkeeper config', adsk.core.MessageBoxButtonTypes.OKButtonType, adsk.core.MessageBoxIconTypes.WarningIconType)
     return state

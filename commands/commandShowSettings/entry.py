@@ -17,19 +17,19 @@ app = adsk.core.Application.get()
 ui = app.userInterface
 
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdShowSettings'
-CMD_NAME = 'Gridfinity settings'
+CMD_NAME = 'Gridkeeper settings'
 CMD_Description = 'Show the settings this bin, baseplate or label was generated with'
 # a bin with a cog, shown beside the context menu item
 ICON_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources', '')
 # the context menu item opening the generator's dialog to rebuild the body, as the Rebuild button of the window does
 REBUILD_CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdRebuild'
-REBUILD_CMD_NAME = 'Gridfinity rebuild'
+REBUILD_CMD_NAME = 'Gridkeeper rebuild'
 # a bin with a wrench
 REBUILD_ICON_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources', 'rebuild', '')
 REBUILD_CMD_DESCRIPTION = 'Open the generator dialog with the settings of this bin, baseplate or label to build it again in its place, keeping the features after it'
 # the context menu item opening the generator's dialog with these settings for a new body, as the Clone button of the window does
 CLONE_CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdClone'
-CLONE_CMD_NAME = 'Gridfinity clone'
+CLONE_CMD_NAME = 'Gridkeeper clone'
 # a bin with two sheets, a copy
 CLONE_ICON_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources', 'clone', '')
 CLONE_CMD_DESCRIPTION = 'Open the generator dialog with the settings of this bin, baseplate or label to build a new one'

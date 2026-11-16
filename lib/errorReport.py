@@ -4,7 +4,8 @@ import urllib.parse
 # What a failed build shows in the error palette, see lib/ui/errorPalette.py, and the text copied from it to report
 # the error. Kept free of Fusion imports so it can be unit tested
 
-ISSUES_URL = 'https://github.com/Le0Michine/FusionGridfinityGenerator/issues/new'
+# reports about Gridkeeper go to the fork (round 23)
+ISSUES_URL = 'https://github.com/Eifel-Joe/FusionGridfinityGenerator/issues/new'
 # tells reports from the add-in apart from issues opened by hand
 ISSUE_TITLE_PREFIX = '[Error report]'
 # GitHub only sets them for people who can triage the repo, others get the issue without

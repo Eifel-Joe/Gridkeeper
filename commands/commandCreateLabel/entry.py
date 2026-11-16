@@ -36,7 +36,7 @@ app = adsk.core.Application.get()
 ui = app.userInterface
 
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdLabel'
-CMD_NAME = 'Gridfinity label'
+CMD_NAME = 'Gridkeeper label'
 # shown on hover over the button, the first paragraph says what it makes, the second how
 CMD_Description = ('Creates a Cullenect label insert for the label sockets of bins.\n\n'
     'Set its width in base units or in mm, up to two lines of text and a screw or hardware symbol. The text and symbol '

@@ -51,7 +51,7 @@ ui = app.userInterface
 
 # *** The command identity information. ***
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdBin'
-CMD_NAME = 'Gridfinity bin'
+CMD_NAME = 'Gridkeeper bin'
 # shown on hover over the button, the first paragraph says what it makes, the second how
 CMD_Description = ('Creates a gridfinity bin that drops into a baseplate.\n\n'
     'Set its size in base and height units, then pick a hollow, shelled or solid body with a stacking lip, '

@@ -6,7 +6,7 @@ defaults in [lib/defaultSettings.py](../../lib/defaultSettings.py), lengths in m
 were built with and a preview picture. A run tells when the settings changed, a default changing among them, even
 when the shapes stay the same.
 
-Run them in Fusion from Utilities > Add-ins with **Gridfinity tests: run**, record new snapshots with **Gridfinity
+Run them in Fusion from Utilities > Add-ins with **Gridkeeper tests: run**, record new snapshots with **Gridkeeper
 tests: update snapshots**. The commands are there when the add-in runs from a git checkout.
 
 A case with parameters sets those user parameters once built, the snapshot is of the bodies Fusion recomputed,
