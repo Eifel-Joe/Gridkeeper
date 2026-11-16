@@ -54,14 +54,16 @@ _LABEL_ZONE = 0.25
 _SLIDE_END = 0.32
 _EPS = 1e-6
 
-# x rule, y rule, z rule per step (see _carry)
+# x rule, y rule, z rule per step (see _carry). The handle and label holders hang on the label edge, measured in
+# Pred's file at 6 x 5 x 8 (fusion-auftraege/r27_pred_size_6x5x8.txt: +13.75 mm with the label edge, not +21 mm
+# with the middle).
 RULES = {
     '#22 Chamfer7': ('label', 'sides', 'auto'),
     '#23 Fillet4': ('label', 'sides', 'auto'),
     '#24 Chamfer10': ('label', 'sides', 'auto'),
-    '#32 Chamfer26': ('mid', 'sides', 'midZ'),
-    '#33 Fillet10': ('mid', 'sides', 'midZ'),
-    '#40 Chamfer29': ('mid', 'sides', 'midZ'),
+    '#32 Chamfer26': ('label', 'sides', 'midZ'),
+    '#33 Fillet10': ('label', 'sides', 'midZ'),
+    '#40 Chamfer29': ('label', 'sides', 'midZ'),
     '#41 Chamfer30': ('label', 'sides', 'midZ'),
     '#43 Fillet11': ('sides', 'sides', 'auto'),
     '#46 Chamfer1': ('sides', 'sides', 'auto'),
@@ -105,8 +107,6 @@ def _carryX(rule, x, values):
         rule = 'label' if abs(x - PRED_VALUES['midX']) <= PRED_VALUES['labelWidth'] / 2 + _LABEL_ZONE + _EPS else 'sides'
     if rule == 'sides':
         return _sides(x, PRED_VALUES['midX'], PRED_VALUES['outerWidth'], values['outerWidth'])
-    if rule == 'mid':
-        return values['midX'] + (x - PRED_VALUES['midX'])
     if rule == 'label':
         return _label(x, values)
     raise ValueError(rule)
