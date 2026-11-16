@@ -32,8 +32,9 @@ PRED = {
     'catchSlideBottomRoom': 0.6, # at least 6 mm left below the slot (plan decision 1, Pred at height 6)
     'holderHalfHeight': 1.25,    # LabelAndHandleHolder d1770 = 25 mm, centred on the box middle
     'lowerGrooveTop': 0.82,      # SideGroove: the lower groove from 6.2 to 8.2 mm
-    'magnetPadExtra': 0.075,
-    'holderBlend': 0.375,        # Fillet10, the rounding of the handle holders     # Sketch21 d1789 = MagnetHoleDiameter / 2 + 0.75 mm
+    'magnetPadExtra': 0.075,     # Sketch21 d1789 = MagnetHoleDiameter / 2 + 0.75 mm
+    'holderBlend': 0.375,        # Fillet10, the rounding of the handle holders
+    'lidChamfer': 0.1,           # Chamfer11 and Chamfer12, the chamfers along the lid joint
 }
 
 
@@ -69,6 +70,11 @@ class PredBoxDims:
         # parameter to switch a feature off: max(0.01 mm; min(3.75 mm; (height units - 5) * 1000 mm))
         self.holderTopBlend = Dim.max(Dim.length(0.001), Dim.min(
             Dim.length(PRED['holderBlend']), (heightU - Dim.number(5)) * Dim.length(100)))
+        # Jörg 16.11.2026, "Ja, 0,2 mm (a)": at height 5 the holders and the label rail end 0.25 mm under the lid
+        # joint, the box's chamfer along the front middle recess there is 0.2 mm instead of Pred's 1 mm:
+        # min(1 mm; 0.2 mm + (height units - 5) * 1000 mm)
+        self.frontLidChamfer = Dim.min(Dim.length(PRED['lidChamfer']),
+                                       Dim.length(0.02) + (heightU - Dim.number(5)) * Dim.length(100))
 
     def values(self) -> dict:
         """The plain numbers (cm) for edge selection and placement math"""

@@ -104,3 +104,12 @@ def test_holder_top_blend_is_square_at_height_5(heightU, radius):
     blend = _dims(heightU=heightU).holderTopBlend
     assert mm(blend) == radius
     assert "gfBox1_heightU" in blend.expression and blend.expression.startswith("max(")
+
+
+@pytest.mark.parametrize("heightU, distance", [(5, 0.2), (6, 1), (10, 1)])
+def test_front_lid_chamfer_clears_the_holders_at_height_5(heightU, distance):
+    """Jörg 16.11.2026, "Ja, 0,2 mm (a)": at height 5 the holders and the label rail end 0.25 mm under the lid joint,
+    the box's chamfer along the front middle recess there is 0.2 mm, from height 6 Pred's 1 mm"""
+    chamfer = _dims(heightU=heightU).frontLidChamfer
+    assert mm(chamfer) == distance
+    assert "gfBox1_heightU" in chamfer.expression and chamfer.expression.startswith("min(")
