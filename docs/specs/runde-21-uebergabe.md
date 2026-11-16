@@ -39,7 +39,7 @@ Kein kritischer Fund. Umgang:
 
 ## Belege
 
-- pytest: siehe Commit.
+- pytest: `920 passed`.
 - Fusion: ausstehend (`r21_reload1`, `r21_e2e_a`–`c`, `r21_snap`).
 
 ## Für Jörg
