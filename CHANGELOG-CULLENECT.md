@@ -4,6 +4,15 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
 
 ## Unreleased
 
+### Thin text hint and room on inserts (round 21)
+
+- **Hint at the print limit (p232):** the hint on text too thin to print follows the measured least height of each
+  style (Regular 4.43 mm, Bold 3.42 mm, Heavy 3.05 mm, round 17), the same number the fitting stops at, instead of an
+  estimated mean stroke under 0.6 mm. Heavy is hinted from 3.05 mm instead of 2.79 mm, Regular and Bold a little later
+  than before. On a bin the hint now says to make the tab wider (or use Bold), a text too wide isn't built anyway.
+- **Room without a symbol (p233):** an insert's text is fitted with 1 mm room at the right edge also without a symbol,
+  as before a symbol (round 17), so an insert made up to 1 mm narrower afterwards keeps the text inside.
+
 ### Bin label text made longer (round 19)
 
 - **Rebuild fits a longer text again (p181):** a bin label text made longer through its parameter keeps the height of

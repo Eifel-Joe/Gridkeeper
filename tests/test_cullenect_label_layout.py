@@ -418,9 +418,15 @@ class TestTextFitWidth:
         assert layout.SHRINK_ROOM == approx(0.1)
         assert layout.textFitWidth(result) == approx(result.textMaxX - result.textMinX - 0.1)
 
-    def test_without_symbol_the_text_room_stays(self):
+    def test_without_symbol_the_text_keeps_1mm_too(self):
+        # round 21, p233 (Nutzer, test day question 3): without a symbol the right edge comes closer the same way
+        for lines in (1, 2):
+            result = layout.labelLayout(3.6, 1.1, None, False, lines)
+            assert layout.textFitWidth(result) == approx(result.textMaxX - result.textMinX - 0.1)
+
+    def test_a_short_text_without_symbol_keeps_its_height(self):
         result = layout.labelLayout(3.6, 1.1, None, False, 1)
-        assert layout.textFitWidth(result) == approx(result.textMaxX - result.textMinX)
+        assert layout.fittedLineHeight(0.5, 1.5, layout.textFitWidth(result)) == approx(0.5)
 
 
 def test_bold_two_lines_at_minus_1mm_are_reported():
