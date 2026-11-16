@@ -148,3 +148,5 @@ def test_dialog_help_links_go_to_the_gridkeeper_docs():
     plates = open(os.path.join(ROOT, 'commands/commandCreateBaseplate/entry.py'), encoding='utf-8').read()
     assert 'https://eifel-joe.github.io/Gridkeeper/bins/' in bins
     assert 'https://eifel-joe.github.io/Gridkeeper/baseplates/' in plates
+    labels = open(os.path.join(ROOT, 'commands/commandCreateLabel/entry.py'), encoding='utf-8').read()
+    assert 'https://eifel-joe.github.io/Gridkeeper/cullenect/inserts/' in labels
