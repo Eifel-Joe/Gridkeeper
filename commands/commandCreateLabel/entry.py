@@ -106,7 +106,9 @@ SURFACE_NAMES = {
 SCREW_DROPDOWNS = {HEAD_DROPDOWN: 'head', SHAFT_DROPDOWN: 'shaft', THREADS_DROPDOWN: 'threads', DRIVER_DROPDOWN: 'driver'}
 SCREW_INPUTS = list(SCREW_DROPDOWNS.keys()) + [FLANGE_INPUT, SECURITY_INPUT]
 
-INFO_TEXT = ("<b>Help:</b> The insert clicks into the Cullenect pockets of bin label tabs, label style Cullenect. "
+INFO_TEXT = ("<b>Help:</b> every input is explained "
+             "<a href=\"https://eifel-joe.github.io/Gridkeeper/cullenect/inserts/\">in the Gridkeeper documentation</a>. "
+             "The insert clicks into the Cullenect pockets of bin label tabs, label style Cullenect. "
              "Cullenect labels by CullenJWebb, "
              "<a href=\"https://github.com/CullenJWebb/Cullenect-Labels\">Cullenect-Labels</a> (MIT).")
 

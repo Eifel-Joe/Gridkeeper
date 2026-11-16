@@ -7,7 +7,7 @@ hardware symbol at its right edge. Every insert is a component of its own in the
 
 ## Info
 
-Help and the Cullenect credit. When the dialog was opened by **Gridkeeper rebuild**, it says which insert is rebuilt
+A link to this page, the Cullenect credit and the version of the add-in. When the dialog was opened by **Gridkeeper rebuild**, it says which insert is rebuilt
 in place.
 
 ## Size

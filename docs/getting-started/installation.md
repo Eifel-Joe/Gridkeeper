@@ -6,7 +6,7 @@ GridfinityGenerator you may find there is the original add-in by Le0Michine.
 ## Install
 
 1. Download the ZIP file of the latest release from the
-   [releases page](https://github.com/Eifel-Joe/FusionGridfinityGenerator/releases).
+   [releases page](https://github.com/Eifel-Joe/Gridkeeper/releases).
 2. Unpack it to a place that stays where it is, for example `Documents\Fusion add-ins`. The ZIP holds a folder
    `Gridkeeper` with `Gridkeeper.manifest` and `Gridkeeper.py`; keep that folder name, Fusion loads an add-in only
    from a folder named like its manifest. Fusion loads it from there every time it starts.

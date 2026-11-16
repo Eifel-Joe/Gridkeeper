@@ -30,8 +30,9 @@ See [What's new compared to GridfinityGenerator](https://eifel-joe.github.io/Gri
 ## Vibe-coded
 
 Gridkeeper is vibe-coded: its code is written by an AI, Claude, under the lead of Eifel-Joe, who designs the features,
-tests them in Fusion and prints the results. Every change is checked by automated tests and by real prints. Still,
-expect rough edges, and please [open an issue](https://github.com/Eifel-Joe/FusionGridfinityGenerator/issues) when you
+tests them in Fusion and prints the results. Every change is checked by automated tests, by shape tests in Fusion and
+by clicking through the dialogs; prints follow. Still,
+expect rough edges, and please [open an issue](https://github.com/Eifel-Joe/Gridkeeper/issues) when you
 find one.
 
 ## Installation
@@ -39,7 +40,7 @@ find one.
 Gridkeeper is installed from a GitHub release, **not** from the Autodesk App Store.
 
 1. Download the ZIP file of the latest release from the
-   [releases page](https://github.com/Eifel-Joe/FusionGridfinityGenerator/releases).
+   [releases page](https://github.com/Eifel-Joe/Gridkeeper/releases).
 2. Unpack it to a place that stays where it is. It holds a folder `Gridkeeper`; keep that name, Fusion loads the
    add-in only from a folder named like its manifest.
 3. In Fusion open **Utilities › Add-Ins › Scripts and Add-Ins**, click **+** on the **Add-Ins** tab and pick the
@@ -53,13 +54,18 @@ original GridfinityGenerator.
 
 Details in the [installation guide](https://eifel-joe.github.io/Gridkeeper/getting-started/installation/).
 
+## Versions
+
+Gridkeeper counts its own versions, starting with 1.0.0. Releases are tagged `gridkeeper-vX.Y.Z` and their ZIP is
+`Gridkeeper-vX.Y.Z.zip`; the four-part versions such as v2.4.0.0 are GridfinityGenerator's.
+
 ## Development
 
 - Unit tests: `python -m pytest -q`, with a stand-in for the Fusion API in `tests/stubs`
 - Shape snapshot tests: in Fusion, **Gridkeeper tests: run**, when the add-in runs from a git checkout, see
   [Snapshot tests](https://eifel-joe.github.io/Gridkeeper/developers/snapshot-tests/)
 - Documentation: `docs/`, built with [MkDocs Material](https://squidfunk.github.io/mkdocs-material/), preview with
-  `mkdocs serve`
+  `pip install mkdocs-material` and then `python -m mkdocs serve`
 - Changes of this project: [CHANGELOG-CULLENECT.md](CHANGELOG-CULLENECT.md)
 
 ## Credits

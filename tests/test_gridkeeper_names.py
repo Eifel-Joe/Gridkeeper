@@ -89,7 +89,11 @@ def test_manifest_is_gridkeepers():
 
 def test_release_zip_is_named_gridkeeper():
     workflow = open(os.path.join(ROOT, '.github', 'workflows', 'release.yml'), encoding='utf-8').read()
-    assert 'dist/Gridkeeper-${{ github.ref_name }}.zip' in workflow
+    # tag gridkeeper-v1.0.0 gives Gridkeeper-v1.0.0.zip, only Gridkeeper's own tags start a release (16.11.2026)
+    assert 'zip="dist/Gridkeeper-${GITHUB_REF_NAME#gridkeeper-}.zip"' in workflow
+    assert "- 'gridkeeper-v*'" in workflow and "- '*'" not in workflow
+    # review 16.11.2026: the repository's token is read-only by default, the release step needs write access
+    assert 'permissions:\n  contents: write' in workflow
     # round 25: the files are named like the folder, Fusion loads the add-in only then
     assert 'cp -r Gridkeeper.manifest Gridkeeper.py' in workflow and '7z a' in workflow and 'Gridkeeper/' in workflow
 
@@ -133,3 +137,20 @@ def test_settings_of_a_part_are_titled_by_the_part(folder):
     call = re.search(r'snapshotInputs\(\s*inputs,\s*\[[^\]]*\],\s*([A-Z_]+),?\s*\)', source)
     assert call is not None and call.group(1) == 'SETTINGS_TITLE'
     assert _constants(f'commands/{folder}/entry.py')['SETTINGS_TITLE'].startswith('Gridfinity ')
+
+
+def test_error_reports_go_to_the_renamed_repository():
+    from lib import errorReport
+    assert errorReport.ISSUES_URL == 'https://github.com/Eifel-Joe/Gridkeeper/issues/new'
+
+
+def test_dialog_help_links_go_to_the_gridkeeper_docs():
+    # Nutzer, 16.11.2026: "Here on our GitHub" in the bin dialog still opened the original's wiki
+    for (path, source) in _sources('commands/**/*.py', 'lib/**/*.py', 'commands/**/*.html', 'lib/**/*.html'):
+        assert 'Le0Michine/FusionGridfinityGenerator/wiki' not in source, path
+    bins = open(os.path.join(ROOT, 'commands/commandCreateBin/entry.py'), encoding='utf-8').read()
+    plates = open(os.path.join(ROOT, 'commands/commandCreateBaseplate/entry.py'), encoding='utf-8').read()
+    assert 'https://eifel-joe.github.io/Gridkeeper/bins/' in bins
+    assert 'https://eifel-joe.github.io/Gridkeeper/baseplates/' in plates
+    labels = open(os.path.join(ROOT, 'commands/commandCreateLabel/entry.py'), encoding='utf-8').read()
+    assert 'https://eifel-joe.github.io/Gridkeeper/cullenect/inserts/' in labels

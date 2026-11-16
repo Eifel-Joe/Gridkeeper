@@ -38,8 +38,9 @@ After [installation](getting-started/installation.md) Gridkeeper adds these comm
 ## Vibe-coded, tested by printing
 
 Gridkeeper is vibe-coded: its code is written by an AI, Claude, under the lead of Eifel-Joe, who designs the features,
-tests them in Fusion and prints the results. Every change is checked by automated tests and by real prints. Still,
-expect rough edges, and please [report what you find](https://github.com/Eifel-Joe/FusionGridfinityGenerator/issues).
+tests them in Fusion and prints the results. Every change is checked by automated tests, by shape tests in Fusion and
+by clicking through the dialogs; prints follow. Still,
+expect rough edges, and please [report what you find](https://github.com/Eifel-Joe/Gridkeeper/issues).
 
 ## Credits
 
