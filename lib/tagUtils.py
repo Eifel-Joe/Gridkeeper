@@ -25,6 +25,9 @@ KIND_BOXES = 'boxes'
 CONTAINER_NAMES = {KIND_GRID: 'Grid', KIND_BINS: 'Bins', KIND_LABELS: 'Label', KIND_BOXES: 'Boxes'}
 # on the joint origin of a Cullenect pocket, the value holds its size in mm, see cullenect.pocketTagValue
 TAG_POCKET = 'pocket'
+# on a component inside a part, its role there (a box set: 'Box', 'Lid'). Fusion names the components of a second
+# set "Box (1)", "Lid (1)", a rebuild finds the matching one by the role (round 27)
+TAG_PART_ROLE = 'partRole'
 
 # Bump only on incompatible changes to the tag value, readers ignore fields they don't know
 TAG_SCHEMA_VERSION = 1

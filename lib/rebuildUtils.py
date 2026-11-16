@@ -386,6 +386,11 @@ def repointJoints(
         group.isCollapsed = True
     return (moved, notes)
 
+def partRole(component: adsk.fusion.Component) -> str:
+    """The role of a component inside a part, its tag (a box set's 'Box', 'Lid'), else its name"""
+    attribute = component.attributes.itemByName(tagUtils.TAG_GROUP, tagUtils.TAG_PART_ROLE)
+    return attribute.value if attribute is not None else component.name
+
 def repointJointsByName(
     design: adsk.fusion.Design,
     target: RebuildTarget,
@@ -408,7 +413,7 @@ def repointJointsByName(
     if oldNative.component.occurrences.count > 0 and newPart.assemblyContext is not None:
         newPart = newPart.assemblyContext
     newJointOrigins = {}
-    for (occurrence, place) in [(newPart, '')] + [(child, child.component.name) for child in newPart.childOccurrences]:
+    for (occurrence, place) in [(newPart, '')] + [(child, partRole(child.component)) for child in newPart.childOccurrences]:
         for jointOrigin in occurrence.component.jointOrigins:
             newJointOrigins[(place, jointOrigin.name)] = jointOrigin.createForAssemblyContext(occurrence)
     moved = 0
@@ -425,7 +430,7 @@ def repointJointsByName(
             component = (jointOrigin.nativeObject or jointOrigin).parentComponent
             if not any(component == old for old in oldComponents):
                 continue
-            place = '' if component == oldNative.component else component.name
+            place = '' if component == oldNative.component else partRole(component)
             newJointOrigin = newJointOrigins.get((place, jointOrigin.name))
             if newJointOrigin is None:
                 notes.append(f'{joint.name}: the new part has no {jointOrigin.name}, the joint goes with the old one')
