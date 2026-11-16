@@ -121,30 +121,20 @@ class _Builder:
             picked += predBoxEdges.matchItems(faceItems, list(body.faces), _faceItem)
         return picked
 
-    def chamfer(self, step, name=None, body=None, split=None, splitDistance=None, splitName=None):
-        """Pred's chamfer of the step. split picks edges that get splitDistance in a chamfer of their own (made first)"""
+    def chamfer(self, step, name=None, body=None):
         [edgeSet] = predBoxEdges.PRED_EDGES[step]
         items = self._pick(step, self.dims.values(), body=body)
         chamfers = self.features.chamferFeatures
 
-        def make(edges, distance):
-            def add(tangentChain):
-                chamferInput = chamfers.createInput2()
-                chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(collection(edges), valueInput(distance), tangentChain)
-                return chamfers.add(chamferInput)
-            return _withTangentChainFallback(add)
-        made = []
-        if split is not None:
-            own = [edge for edge in items if split(edge)]
-            items = [edge for edge in items if not split(edge)]
-            first = make(own, splitDistance)
-            first.name = splitName
-            made.append(first)
-        feature = make(items, Dim.length(edgeSet['distance']))
+        def add(tangentChain):
+            chamferInput = chamfers.createInput2()
+            chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(
+                collection(items), valueInput(Dim.length(edgeSet['distance'])), tangentChain)
+            return chamfers.add(chamferInput)
+        feature = _withTangentChainFallback(add)
         feature.name = name or step.split(' ')[1]
-        made.append(feature)
         self.step(step)
-        return made if split is not None else feature
+        return feature
 
     def fillet(self, step, name=None, body=None, split=None, splitRadius=None, splitName=None):
         """Pred's fillet of the step. split picks edges that get splitRadius in a fillet of their own (made first)"""
@@ -631,16 +621,7 @@ class _Builder:
         mirror3 = self.mirror([sidePin, sidePinChamfer], self.midYPlane, '#80 Mirror3')
         self.mirror([frontPin, frontPinChamfer, sidePin, sidePinChamfer, mirror3], self.midXPlane, '#81 Mirror4')
         self.chamfer('#82 Chamfer21', body=self.lid)
-        # Nutzer 16.11.2026, "Ja, 0,2 mm (a)": along the front middle recess the box's chamfer at the lid joint is
-        # predBox.frontLidChamfer, 0.2 mm at height 5 where the holders end just under the joint
-        lidZ = d.lidCut.value
-
-        def isFrontMiddle(edge):
-            a, b = edge.startVertex.geometry, edge.endVertex.geometry
-            return (abs(a.z - lidZ) < 1e-6 and abs(b.z - lidZ) < 1e-6 and abs(a.y - 0.75) < 1e-6 and abs(b.y - 0.75) < 1e-6
-                    and min(a.x, b.x) < d.midX.value < max(a.x, b.x))
-        self.chamfer('#83 Chamfer11', body=self.base, split=isFrontMiddle, splitDistance=d.frontLidChamfer,
-                     splitName='Lid joint chamfer front')
+        self.chamfer('#83 Chamfer11', body=self.base)
         self.chamfer('#84 Chamfer12', body=self.lid)
 
     def floorPads(self):
