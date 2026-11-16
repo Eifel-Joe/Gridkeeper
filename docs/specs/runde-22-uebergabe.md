@@ -117,4 +117,26 @@ Kein kritischer Fund. Umgang:
   - E2E R14 e: Fehler an den Testdaten, nicht am Code. „Cullenect tnut 2“ hat seit den gröberen Symbolen (R17) 26
     Punkte und wird über Maße gehalten statt verschoben. Gruppe e und g nehmen jetzt „Cullenect magnet“ (50 Punkte,
     verschoben).
-  - E2E R19 a und e: ALL OK. f folgt.
+  - E2E R19 a, e und f: ALL OK.
+  - E2E R14 e und g mit „Cullenect magnet“: ALL OK.
+
+## p250 „Neue Schrauben-Icons des Originals bauen langsam (bis 19 s)“: erledigt ohne Codeänderung
+
+- Messung `r22_icon_dims` (alle 12 neuen Icons, je eine Bin 2x1x3 mit Label, Grenze für das Halten über Maße
+  unverändert):
+
+| Icons | Punkte | Weg | Bin gebaut |
+|---|---|---|---|
+| hex-locknut, countersunk-slotted, grub-screw | 18 | über Maße | 4,7–5,4 s |
+| countersunk-self-tapping, countersunk-screw | 19–20 | über Maße | 4,8–4,9 s |
+| countersunk-phillips(-self-tapping) | 25–26 | über Maße | 5,1–5,3 s |
+| button-head-slotted, button-head-self-tapping | 39–40 | über Maße | 6,1–6,5 s |
+| button-head, button-head-phillips(-self-tapping) | 41–47 | verschoben (0,72–0,78 s) | 4,6 s |
+
+- Eine Bin ohne Label braucht rund 4,5 s. Das Icon kostet also höchstens etwa 2 s, bei 39–40 Punkten über Maße;
+  das ist die Grenze aus p180.
+- Die 12,2 s und 19,2 s aus `r22_icons` ließen sich nicht wiederholen. Sie stammen aus dem ersten Lauf nach dem
+  Reload. Vermutlich hat Fusion die SVGs und Schriften dort zum ersten Mal geladen.
+- Die Zeichnungen sind schon schlank (18–47 Punkte, 2 Bögen). Gröber zeichnen brächte nichts, eine Codeänderung ist
+  nicht nötig.
+- Nebenbei: Der Zeitstempel für den Weg „über Maße“ blieb in diesem Auftrag leer, die Bin-Zeiten zeigen den Aufwand.
