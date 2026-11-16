@@ -116,6 +116,8 @@ This page is written from the case files, run `python3 tests/e2e/write_readme.py
 
 | Preview | Case | Description |
 | --- | --- | --- |
+|  | [box_4x3x6](cases/box_4x3x6.json) | Smallest box, 4 x 3 cells, height 6 (the minimum, Nutzer 16.11.2026: "Mindesthöhe 6. vorerst.") |
+|  | [box_4x3x6_magnets_custom](cases/box_4x3x6_magnets_custom.json) | Smallest box with the deepest custom magnet holes, 2.6 mm, 8 mm wide |
 |  | [box_4x3x8](cases/box_4x3x8.json) | Narrow box 4 x 3, height 8 |
 |  | [box_5x3x9](cases/box_5x3x9.json) | Box 5 x 3, height 9 |
 |  | [box_5x4x6](cases/box_5x4x6.json) | Pred's own box 5 x 4 x 6 |

@@ -7,7 +7,9 @@ from .predBox import PRED
 
 MIN_GRID_X = 4
 MIN_GRID_Y = 3
-MIN_HEIGHT_U = 5
+# Nutzer 16.11.2026: "Mindesthöhe 6. vorerst." At 5 the holders reach the lid joint and Pred's chamfer there fails
+# (dev-notes/plans/2026-11-16-runde-27.md, p264)
+MIN_HEIGHT_U = 6
 # Pred's magnet hole sits in a 2.8 mm pad, 0.2 mm of floor stays under it (Nutzer 16.11.2026: "Box nur 6×2", custom up
 # to 2.6 mm); the pad's radius is the magnet's plus 0.75 mm and fits into the cell corner up to 8.5 mm
 MAGNET_DEPTH_MAX = 0.26

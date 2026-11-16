@@ -182,7 +182,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     sizeGroup = addGroup(inputs, SIZE_GROUP, 'Size')
     addSpinner(sizeGroup.children, GRID_X_INPUT, 'Width (u)', predBoxConfig.MIN_GRID_X, 20, 'Grid cells of 42 mm across, at least 4 like Pred')
     addSpinner(sizeGroup.children, GRID_Y_INPUT, 'Length (u)', predBoxConfig.MIN_GRID_Y, 20, 'Grid cells of 42 mm front to back, at least 3')
-    addSpinner(sizeGroup.children, HEIGHT_U_INPUT, 'Height (u)', predBoxConfig.MIN_HEIGHT_U, 30, 'Height units of 7 mm, at least 5; the lid adds 10 mm')
+    addSpinner(sizeGroup.children, HEIGHT_U_INPUT, 'Height (u)', predBoxConfig.MIN_HEIGHT_U, 30, 'Height units of 7 mm, at least 6; the lid adds 10 mm')
     sizeGroup.children.addTextBoxCommandInput(SIZE_TEXT, 'Box', '', 2, True)
 
     magnetGroup = addGroup(inputs, MAGNET_GROUP, 'Magnet holes')

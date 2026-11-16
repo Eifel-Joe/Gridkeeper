@@ -54,7 +54,8 @@ def test_config_round_trip_in_mm():
 @pytest.mark.parametrize("changes, message", [
     ({"gridX": 3}, "Width must be at least 4 units"),
     ({"gridY": 2}, "Length must be at least 3 units"),
-    ({"heightU": 4}, "Height must be at least 5 units"),
+    # Nutzer 16.11.2026: "Mindesthöhe 6. vorerst." (height 5 is p264)
+    ({"heightU": 5}, "Height must be at least 6 units"),
     ({"hasMagnets": True, "magnetDepth": 0.27}, "Magnet holes deeper than 2.6 mm would break through the floor"),
     ({"hasMagnets": True, "magnetDepth": 0}, "The magnet holes need a depth"),
     ({"hasMagnets": True, "magnetDiameter": 0.29}, "The magnet diameter is 3 to 8.5 mm"),
@@ -69,7 +70,7 @@ def test_magnets_off_ignore_their_size():
 
 
 def test_smallest_box_and_deepest_magnets_build():
-    assert boxConfig.boxProblem(state(gridX=4, gridY=3, heightU=5, hasMagnets=True, magnetDepth=0.26, magnetDiameter=0.85)) is None
+    assert boxConfig.boxProblem(state(gridX=4, gridY=3, heightU=6, hasMagnets=True, magnetDepth=0.26, magnetDiameter=0.85)) is None
 
 
 def test_name():

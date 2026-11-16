@@ -24,13 +24,10 @@ A link to this page, the credit to Pred and the version of the add-in. When the 
 |---|---|---|
 | **Width (u)** | 5 | Grid cells of 42 mm across, at least 4 |
 | **Length (u)** | 4 | Grid cells of 42 mm from front to back, at least 3 |
-| **Height (u)** | 6 | Height units of 7 mm, at least 5; the lid adds 10 mm |
+| **Height (u)** | 6 | Height units of 7 mm, at least 6 like Pred; the lid adds 10 mm |
 
 The line below shows the outer size: width and length are the cells plus a 10 mm rim on every side
 (5 × 4 → 230 × 188 mm).
-
-At height 5 the slots the latches slide in end 6 mm above the bottom, like at height 6; Pred's file would cut them
-through the floor there. From height 6 on they are Pred's 43 mm.
 
 ## Magnet holes
 
@@ -74,5 +71,5 @@ yours on its joint origins move over to the joint origins of the same name.
 ## Credits
 
 Pred's Gridfinity Storage Box v1.1 is licensed CC BY-NC. Gridkeeper rebuilds its box and lid in code, with fully
-constrained sketches and parameters, and changes it where noted on this page (the latch slots at height 5, the
-magnet holes, the joint origins).
+constrained sketches and parameters, and changes it where noted on this page (the magnet holes, the floor pads and
+the stacking rim drawn from circles, the joint origins).
