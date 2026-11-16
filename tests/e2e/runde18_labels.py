@@ -5,8 +5,8 @@
 # document of its own, closes it when everything passes and prints OK or FAIL per point, ALL OK or N FAILED last.
 import adsk.core, adsk.fusion, sys, os, dataclasses, json
 
-ADDIN = '__main__D%3A%2FEntwicklung%2FGridfinity%2FFusionGridfinityGenerator%2FGridfinityGenerator_py'
-CASES = r'D:\Entwicklung\Gridfinity\FusionGridfinityGenerator\tests\e2e\cases'
+ADDIN = '__main__D%3A%2FEntwicklung%2FGridfinity%2FGridkeeper%2FGridkeeper_py'
+CASES = r'D:\Entwicklung\Gridfinity\Gridkeeper\tests\e2e\cases'
 TOLERANCE = 0.001  # cm, 0.01 mm
 SELECT = 'SelectCommand'
 
