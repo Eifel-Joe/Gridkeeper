@@ -6,6 +6,7 @@
 from .commandCreateBin import entry as commandCreateBin
 from .commandCreateBaseplate import entry as commandCreateBaseplate
 from .commandCreateLabel import entry as commandCreateLabel
+from .commandCreateBox import entry as commandCreateBox
 from .commandShowSettings import entry as commandShowSettings
 from .commandSnapshotTests import entry as commandSnapshotTests
 from .commandModelScreenshots import entry as commandModelScreenshots
@@ -19,6 +20,7 @@ commands = [
     commandCreateBin,
     commandCreateBaseplate,
     commandCreateLabel,
+    commandCreateBox,
     commandShowSettings,
 ]
 # development only, see config.DEV_TOOLS
