@@ -97,19 +97,17 @@ class _Builder:
         feature.name = name
         return feature
 
-    def along(self, profiles, operation, axis: int, distance: Dim, start: Dim = None, bodies=None, name=None):
-        """Extrude along a world axis: distance signed in world direction, start a world coordinate on that axis
-        (the sketch planes here are all parallel to base planes through the origin)"""
+    def along(self, profiles, operation, axis: int, distance: Dim, offset: Dim = None, bodies=None, name=None):
+        """Extrude along a world axis: distance and the start offset from the sketch plane are signed in the world
+        direction. The offset is relative to the plane, so it follows a plane that moves with the parameters: an
+        absolute start had the top plane's height of the build in it and missed after a height change
+        (fusion-auftraege/r27_diff.out, the catch slides)"""
         sketch = profiles[0].parentSketch
         normal = sketch.xDirection.crossProduct(sketch.yDirection)
         sign = 1 if (normal.x, normal.y, normal.z)[axis] > 0 else -1
-        planeAt = sketch.origin
-        planeValue = (planeAt.x, planeAt.y, planeAt.z)[axis]
-        startOffset = None
-        if start is not None:
-            startOffset = (start - Dim.length(planeValue)) * sign if abs(planeValue) > 1e-9 else start * sign
         bodies = bodies if bodies is not None else [self.base]
-        return self.extrude(profiles, operation, distance * sign, start=startOffset, bodies=bodies, name=name)
+        return self.extrude(profiles, operation, distance * sign, start=offset * sign if offset is not None else None,
+                            bodies=bodies, name=name)
 
     def _pick(self, step, values, faces=False, body=None):
         body = body or self.base
@@ -335,7 +333,7 @@ class _Builder:
         sideProfiles = list(side.sketch.profiles)
         self.along(sideProfiles, cut, 0, mm(7.5), name='Left recesses')
         self.step('#26 Extrude8')
-        self.along(sideProfiles, cut, 0, mm(-7.5), start=W, name='Right recesses')
+        self.along(sideProfiles, cut, 0, mm(-7.5), offset=W, name='Right recesses')  # from the YZ plane at x = 0
         self.step('#27 Extrude9')
 
         backPlane = self.offsetPlane(c.xZConstructionPlane, 1, L, 'BackPlane')
@@ -461,9 +459,9 @@ class _Builder:
         slideProfiles = list(slides.sketch.profiles)
         self.slideTop = self.along(slideProfiles, cut, 2, mm(-4), name='Catch slides top')
         self.step('#51 Extrude13')
-        self.slide = self.along(slideProfiles, cut, 2, d.catchSlideDepth * -1, start=self.top(6), name='Catch slides')
+        self.slide = self.along(slideProfiles, cut, 2, d.catchSlideDepth * -1, offset=mm(-6), name='Catch slides')
         self.step('#52 Extrude14')
-        self.slideBottom = self.along(slideProfiles, cut, 2, mm(4), start=d.bottom, name='Catch slides bottom')
+        self.slideBottom = self.along(slideProfiles, cut, 2, mm(4), offset=d.bottom - d.bodyTop, name='Catch slides bottom')
         self.step('#53 Extrude15')
         self.slideFillet = self.fillet('#54 Fillet2')
 
