@@ -122,7 +122,7 @@ def _texts(sketch: adsk.fusion.Sketch, layout: cullenectLabelLayout.LabelLayout,
     The twins are there for a second extrusion: Fusion refuses to extrude the same text twice in one run ("invalid
     input argument"), and cutting with the bodies of the first instead loses letters a later text adds.
     Returns the texts and their twins, no twins without"""
-    # 1 mm more before a symbol, so a width made a little smaller later doesn't push it onto the text (p52)
+    # 1 mm more before a symbol or the right edge, so a width made a little smaller later keeps them apart (p52, p233)
     available = cullenectLabelLayout.textFitWidth(layout)
     texts = []
     twins = []
