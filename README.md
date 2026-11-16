@@ -31,7 +31,7 @@ See [What's new compared to GridfinityGenerator](https://eifel-joe.github.io/Gri
 
 Gridkeeper is vibe-coded: its code is written by an AI, Claude, under the lead of Eifel-Joe, who designs the features,
 tests them in Fusion and prints the results. Every change is checked by automated tests and by real prints. Still,
-expect rough edges, and please [open an issue](https://github.com/Eifel-Joe/FusionGridfinityGenerator/issues) when you
+expect rough edges, and please [open an issue](https://github.com/Eifel-Joe/Gridkeeper/issues) when you
 find one.
 
 ## Installation
@@ -39,7 +39,7 @@ find one.
 Gridkeeper is installed from a GitHub release, **not** from the Autodesk App Store.
 
 1. Download the ZIP file of the latest release from the
-   [releases page](https://github.com/Eifel-Joe/FusionGridfinityGenerator/releases).
+   [releases page](https://github.com/Eifel-Joe/Gridkeeper/releases).
 2. Unpack it to a place that stays where it is. It holds a folder `Gridkeeper`; keep that name, Fusion loads the
    add-in only from a folder named like its manifest.
 3. In Fusion open **Utilities › Add-Ins › Scripts and Add-Ins**, click **+** on the **Add-Ins** tab and pick the

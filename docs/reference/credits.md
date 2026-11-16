@@ -26,4 +26,4 @@ like the GridfinityGenerator it is built on. The Cullenect symbols keep their MI
 Gridkeeper is vibe-coded: its code is written by an AI, Claude, under the lead of Eifel-Joe, who designs the features,
 tests them in Fusion and prints the results. Every change is checked by automated tests and real prints. Still,
 expect rough edges, and please
-[report what you find](https://github.com/Eifel-Joe/FusionGridfinityGenerator/issues).
+[report what you find](https://github.com/Eifel-Joe/Gridkeeper/issues).

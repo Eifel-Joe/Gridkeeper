@@ -5,7 +5,7 @@ import urllib.parse
 # the error. Kept free of Fusion imports so it can be unit tested
 
 # reports about Gridkeeper go to the fork (round 23)
-ISSUES_URL = 'https://github.com/Eifel-Joe/FusionGridfinityGenerator/issues/new'
+ISSUES_URL = 'https://github.com/Eifel-Joe/Gridkeeper/issues/new'
 # tells reports from the add-in apart from issues opened by hand
 ISSUE_TITLE_PREFIX = '[Error report]'
 # GitHub only sets them for people who can triage the repo, others get the issue without

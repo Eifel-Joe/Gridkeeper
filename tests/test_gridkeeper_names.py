@@ -133,3 +133,8 @@ def test_settings_of_a_part_are_titled_by_the_part(folder):
     call = re.search(r'snapshotInputs\(\s*inputs,\s*\[[^\]]*\],\s*([A-Z_]+),?\s*\)', source)
     assert call is not None and call.group(1) == 'SETTINGS_TITLE'
     assert _constants(f'commands/{folder}/entry.py')['SETTINGS_TITLE'].startswith('Gridfinity ')
+
+
+def test_error_reports_go_to_the_renamed_repository():
+    from lib import errorReport
+    assert errorReport.ISSUES_URL == 'https://github.com/Eifel-Joe/Gridkeeper/issues/new'

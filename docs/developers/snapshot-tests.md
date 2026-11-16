@@ -18,7 +18,7 @@ Each case in `tests/e2e/cases/` is a JSON file holding the settings of a bin, ba
 dialog defaults in `lib/defaultSettings.py`, lengths in mm and angles in degrees. Its snapshot in
 `tests/e2e/snapshots/<case>/` has the shapes it built, their fingerprints, every setting they were built with and a
 preview picture. The list of cases with their previews is in
-[tests/e2e/README.md](https://github.com/Eifel-Joe/FusionGridfinityGenerator/blob/master/tests/e2e/README.md).
+[tests/e2e/README.md](https://github.com/Eifel-Joe/Gridkeeper/blob/master/tests/e2e/README.md).
 
 ### Running them
 

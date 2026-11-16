@@ -30,7 +30,7 @@ A file holds every setting by name, lengths in mm and angles in degrees, and whi
 ```json
 {
     "generator": "label",
-    "generatorVersion": "2.4.0.0",
+    "generatorVersion": "1.0.0",
     "settings": {
         "baseWidth": 42.0,
         "useUnits": true,
@@ -51,4 +51,4 @@ A file holds every setting by name, lengths in mm and angles in degrees, and whi
 - Settings this version doesn't know are skipped, and a dropdown choice it doesn't offer becomes its default; the
   message lists both.
 
-Files saved by GridfinityGenerator v2.4 load the same way.
+Bin and baseplate files saved by GridfinityGenerator v2.3 or later load the same way.
