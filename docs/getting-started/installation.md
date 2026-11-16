@@ -7,11 +7,11 @@ GridfinityGenerator you may find there is the original add-in by Le0Michine.
 
 1. Download the ZIP file of the latest release from the
    [releases page](https://github.com/Eifel-Joe/FusionGridfinityGenerator/releases).
-2. Unpack it into a folder of its own that stays where it is, for example `Documents\Fusion add-ins\Gridkeeper`.
-   Fusion loads the add-in from this folder every time it starts.
+2. Unpack it to a place that stays where it is, for example `Documents\Fusion add-ins`. The ZIP holds a folder
+   `Gridkeeper` with `Gridkeeper.manifest` and `Gridkeeper.py`; keep that folder name, Fusion loads an add-in only
+   from a folder named like its manifest. Fusion loads it from there every time it starts.
 3. In Fusion open **Utilities › Add-Ins › Scripts and Add-Ins** (or press <kbd>Shift</kbd>+<kbd>S</kbd>).
-4. On the **Add-Ins** tab click the **+** next to *My Add-Ins* and pick the folder from step 2, the one holding
-   the `.manifest` and `.py` files.
+4. On the **Add-Ins** tab click the **+** next to *My Add-Ins* and pick the `Gridkeeper` folder from step 2.
 5. Select Gridkeeper in the list, tick **Run on Startup** and click **Run**.
 
 **Gridkeeper bin**, **Gridkeeper baseplate** and **Gridkeeper label** now show in **Solid › Create** of the Design
@@ -21,7 +21,7 @@ workspace.
 
 ## Update
 
-Download the ZIP of the new release and unpack it over the old folder, replacing its files. Restart Fusion, or stop
+Download the ZIP of the new release and unpack it over the old `Gridkeeper` folder, replacing its files. Restart Fusion, or stop
 and run the add-in again in **Scripts and Add-Ins**. Your saved dialog defaults are kept, they are stored in the add-in folder and not part of the ZIP.
 
 ## Beside the original
