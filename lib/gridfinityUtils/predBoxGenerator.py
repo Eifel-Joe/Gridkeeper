@@ -276,6 +276,9 @@ class _Builder:
                                             valueInput(d.gridX), valueInput(mm(42)),
                                             adsk.fusion.PatternDistanceType.SpacingPatternDistanceType)
         patternInput.setDirectionTwo(self.component.yConstructionAxis, valueInput(d.gridY), valueInput(mm(42)))
+        # every cell is the same, identical copies instead of each computed anew: the slowest step of the build
+        # (11 s of 69 s at 5 x 4 x 6, fusion-auftraege/r27_timing.out)
+        patternInput.patternComputeOption = adsk.fusion.PatternComputeOptions.IdenticalPatternCompute
         pattern = patterns.add(patternInput)
         pattern.name = 'Cells'
         self.step('#16 R-Pattern1')
