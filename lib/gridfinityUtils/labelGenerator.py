@@ -539,6 +539,9 @@ def createLabel(
     if iconPath is not None:
         (iconAspect, iconPoints) = _iconMeasure(sketch, iconPath) or (1, 0)
     gap = const.BIN_LABEL_ICON_GAP if iconPath is not None else 0
+    # OPEN (round 22, p13): upstream f1cb49b keeps the icon full size and fits only the text to the width left after it.
+    # Its hunks don't fit this code (drawn at its spot since round 14), the rule would be built here, see
+    # docs/specs/runde-22-uebergabe.md; until Nutzer decides, the rule of this fork stays:
     # the icon is as tall as the letters, so both grow and shrink together. Letters start as tall as the label
     # allows, then everything scales down until the icon, gap and text fit the label width
     iconSize = contentHeight * const.BIN_LABEL_TEXT_HEIGHT_RATIO
