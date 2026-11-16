@@ -67,7 +67,13 @@ Kein kritischer Fund. Umgang:
 
 ## Belege
 
-- pytest: `910 passed`. Nach den Review-Funden ist ein neuer voller Snapshot-Lauf fällig (`r19_snap2`).
+- pytest: `910 passed`.
+- Abschluss auf c35f3b9 (`r19_reload3`):
+  - E2E a ALL OK. „Muttern“ füllt die Breite: 7,376 gegen „Mu“ 7,773 mm. Verlängert zu „Muttern M4x2“ liegen die
+    Buchstaben links bis 39,44 mm (Mitte 41,75) und rechts bis 80,59 mm (Bin-Ende 83,50). Die Schrift geht von 7,376
+    auf 4,114 mm, über der Untergrenze 3,419 mm. Skizzen bestimmt, Farbe erhalten.
+  - `r19_snap2`: DONE, 83 Fälle, nicht grün `[]`.
+  - Zusammen mit den Läufen davor sind alle Gruppen a bis f grün.
 - Fusion (nach `r19_reload1`):
   - E2E b, c und d sind ALL OK.
   - `r19_snap` ist DONE, 83 Fälle, nicht grün `[]`.
