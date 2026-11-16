@@ -1,5 +1,5 @@
 # End-to-end check of round 19 (docs/specs/2026-11-15-runde-19-design.md, "Ende-zu-Ende-Kriterium" and the p210
-# addition), run in Fusion with the add-in loaded from this checkout. Set GROUP to 'a' to 'd' before running, each runs
+# addition), run in Fusion with the add-in loaded from this checkout. Set GROUP to 'a' to 'f' before running, each runs
 # under a minute, no dialog. Each group builds into a document of its own, closes it when everything passes and prints
 # OK or FAIL per point, ALL OK or N FAILED last.
 import adsk.core, adsk.fusion, sys, os, dataclasses
@@ -152,7 +152,35 @@ def groupD(run):
     run.healthy('d')
 
 
-GROUPS = {'a': groupA, 'b': groupB, 'c': groupC, 'd': groupD}
+def groupE(run):
+    # the text changed in the rebuild dialog of an uncolored bin, the way the old code only set the parameter (review)
+    (state, settings) = run.state('bin_2x1x3_label_text_engraved', compartmentsX=2, labelText='Bolzen', isLabelBold=True)
+    body = run.binBuilder.buildBin(run.des, state, settings)[0]
+    before = heights(run, body)
+    (bodies, notes) = run.binBuilder.rebuildBin(run.des, body, dataclasses.replace(state, labelText='Bolzen' + MORE), settings, False)
+    after = heights(run, bodies[0])
+    floor = run.textStyles.minTextHeight('Bold')
+    run.check('e: rebuilt and fitted anew, not below the floor', len(after) > 0 and max(after) < max(before) and min(after) >= floor - 1e-6, f'{before} -> {after}')
+    texts = [t.text for t in run.texts(bodies[0])]
+    run.check('e: the new text', len(texts) > 0 and all(text == 'Bolzen' + MORE for text in texts), str(texts))
+    run.healthy('e')
+
+
+def groupF(run):
+    # only one of the two compartments' parameters made longer: the edit isn't lost (review)
+    (state, settings) = run.state('bin_2x1x3_label_text_engraved_colored', compartmentsX=2, labelText='Bolzen', isLabelBold=True)
+    body = run.binBuilder.buildBin(run.des, state, settings)[0]
+    names = sorted({text.textParameter.expression for text in run.texts(body) if text.textParameter is not None})
+    first = run.des.userParameters.itemByName(names[0])
+    first.expression = run.parameterUtils.textExpression(first.textValue + MORE)
+    adsk.doEvents()
+    (bodies, _) = run.rebuild(body, settings)
+    texts = sorted({t.text for t in run.texts(bodies[0])})
+    run.check('f: the edited text is built', texts == ['Bolzen' + MORE], f'{names}: {texts}')
+    run.healthy('f')
+
+
+GROUPS = {'a': groupA, 'b': groupB, 'c': groupC, 'd': groupD, 'e': groupE, 'f': groupF}
 
 
 def run(_context: str):

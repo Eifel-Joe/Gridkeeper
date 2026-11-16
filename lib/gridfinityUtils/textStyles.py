@@ -66,10 +66,11 @@ def fittedHeight(labelHeight: float, widthHeight: float, style: str) -> tuple[fl
     return (height, widthHeight < height - 1e-9)
 
 
-def overflowProblem(text: str, height: float) -> str:
-    """Why a bin label isn't built: its text doesn't fit even at the least height"""
-    return (f'"{text}" doesn\'t fit the label even at {height * 10:.1f} mm, the least height a 0.4 mm nozzle prints. '
-            'Shorten it or make the bin wider.')
+def overflowProblem(text: str, height: float, style: str) -> str:
+    """Why a bin label isn't built: its text doesn't fit even at the least height, or on a tab lower than that at the
+    tab's own height (review round 19)"""
+    reason = 'as high as its tab lets it be' if height < minTextHeight(style) - 1e-9 else 'the least height a 0.4 mm nozzle prints'
+    return f'"{text}" doesn\'t fit the label even at {height * 10:.1f} mm, {reason}. Shorten it or make the bin wider.'
 
 
 _notes: list[tuple[str, float, float]] = []

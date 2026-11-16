@@ -185,3 +185,27 @@ def test_unchanged_text_keeps_the_parameter_edit():
 
 def test_a_config_without_compartments_compares_the_bin_label():
     assert not layout.textChangedSinceBuild({"labelText": "A"}, {"labelText": "A", "compartmentPockets": []})
+
+
+def test_empty_compartment_labels_filled_in_by_the_dialog_are_no_change():
+    # review round 19 (I2): a tag without pockets, the dialog fills the grid with empty ones; nothing is labelled
+    built = {"labelText": "A", "compartmentPockets": []}
+    filled = {"labelText": "A", "compartmentPockets": [{"x": 0, "y": 0, "label": ""}, {"x": 1, "y": 0, "label": ""}]}
+    assert not layout.textChangedSinceBuild(built, filled)
+    assert not layout.textChangedSinceBuild({"labelText": "A"}, filled)
+    assert not layout.textChangedSinceBuild(built, {**filled, "compartmentPockets": [{"x": 0, "y": 0, "label": None}]})
+
+
+def test_a_compartment_label_is_keyed_by_its_cell():
+    built = {"labelText": "", "compartmentPockets": [{"x": 0, "y": 0, "label": "M3"}]}
+    moved = {"labelText": "", "compartmentPockets": [{"x": 1, "y": 0, "label": "M3"}]}
+    assert layout.textChangedSinceBuild(built, moved)
+
+
+def test_a_shared_text_takes_the_edited_parameter():
+    # review round 19 (I1): two compartments show the bin label, each by a parameter of its own; one edited in Fusion
+    # wins over the other, unchanged one, whichever comes last
+    assert layout.sharedText("Bolzen", ["Bolzen M4", "Bolzen"]) == "Bolzen M4"
+    assert layout.sharedText("Bolzen", ["Bolzen", "Bolzen M4"]) == "Bolzen M4"
+    assert layout.sharedText("Bolzen", ["Bolzen", "Bolzen"]) == "Bolzen"
+    assert layout.sharedText("Bolzen", []) == "Bolzen"

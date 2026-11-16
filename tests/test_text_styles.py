@@ -151,7 +151,15 @@ def test_label_height_below_the_floor_stays():
 
 
 def test_overflow_problem_names_text_and_floor():
-    assert styles.overflowProblem('Schrauben M4x20 DIN 912', 0.443) == (
+    assert styles.overflowProblem('Schrauben M4x20 DIN 912', 0.443, 'Regular') == (
         '"Schrauben M4x20 DIN 912" doesn\'t fit the label even at 4.4 mm, the least height a 0.4 mm nozzle prints. '
+        'Shorten it or make the bin wider.'
+    )
+
+
+def test_overflow_problem_on_a_low_tab_names_the_tab():
+    # review round 19: the tab is lower than the floor, the text stops at the tab's height, not at the floor
+    assert styles.overflowProblem('Bolzen M4x20', 0.3, 'Regular') == (
+        '"Bolzen M4x20" doesn\'t fit the label even at 3.0 mm, as high as its tab lets it be. '
         'Shorten it or make the bin wider.'
     )
