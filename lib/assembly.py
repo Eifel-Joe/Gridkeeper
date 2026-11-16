@@ -18,7 +18,7 @@ LOG_PREFIX = 'Gridfinity assembly'
 
 T = TypeVar('T')
 
-TEXT_COMPONENT_NAME = 'Text'
+TEXT_COMPONENT_NAME = tagUtils.TEXT_COMPONENT_NAME
 
 
 @dataclass

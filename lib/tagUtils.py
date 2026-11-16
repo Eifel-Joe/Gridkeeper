@@ -10,6 +10,9 @@ TAG_BASEPLATE = 'baseplate'
 TAG_LABEL = 'label'
 # on a user parameter of a bin, the config field its value is, see tagParameterField
 TAG_PARAMETER_FIELD = 'parameterField'
+# name of the component of a part holding its colored text and symbol bodies (round 13, p90), a copy is named
+# "Text (1)", see assembly.TextOccurrence
+TEXT_COMPONENT_NAME = 'Text'
 # on the component holding the parts of a kind, the value is the kind, see lib/gridfinityUtils/assembly.py (round 13)
 TAG_CONTAINER = 'container'
 KIND_GRID = 'grid'
@@ -86,6 +89,31 @@ def readBodyTag(body: adsk.fusion.BRepBody) -> tuple[str, dict] | None:
         attribute = body.attributes.itemByName(TAG_GROUP, tagName)
         if attribute is not None:
             return (tagName, parseTagValue(attribute.value))
+    return None
+
+def partTag(body: adsk.fusion.BRepBody, occurrenceOf) -> tuple[adsk.fusion.BRepBody, str, dict] | None:
+    """
+    The generated body that answers for the body, native, with its tag: the body itself when it has one, else for a body
+    in a Text component the first tagged body of the part one level up, none when there's neither. Letters a longer text adds come out of the
+    extrusion untagged, in the Text component of their bin or insert (round 14, p71), the part answers for them.
+    A body selected in the design is a proxy whose occurrence is its assemblyContext, a native one is looked up by its
+    component with occurrenceOf, which gives None for the root
+    """
+    native = body.nativeObject or body
+    tag = readBodyTag(native)
+    if tag is not None:
+        return (native, *tag)
+    # only a letter in Text: a bin nested in the user's own assembly would answer for the user's bodies otherwise
+    if not native.parentComponent.name.startswith(TEXT_COMPONENT_NAME):
+        return None
+    occurrence = body.assemblyContext if body.nativeObject is not None else occurrenceOf(native.parentComponent)
+    part = occurrence.assemblyContext if occurrence is not None else None
+    if part is None:
+        return None
+    for partBody in part.component.bRepBodies:
+        partBodyTag = readBodyTag(partBody)
+        if partBodyTag is not None:
+            return (partBody, *partBodyTag)
     return None
 
 def taggedBodies(bodies: list[adsk.fusion.BRepBody], tagName: str) -> list[adsk.fusion.BRepBody]:

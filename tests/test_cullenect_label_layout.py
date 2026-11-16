@@ -321,3 +321,108 @@ def test_insert_with_printer_offset_up_to_the_pocket_fits():
 
 def test_pocket_misfit_text_is_literal():
     assert layout.POCKET_MISFIT == "This pocket is too small for the insert, pick one that fits"
+
+
+DESCENT = 0.294
+
+
+def _lowestDescender(result):
+    # the lower line's baseline is under its middle by half its height, the descenders go below by DESCENT
+    height = result.lineHeights[-1]
+    return result.lineCenters[-1] - height / 2 - DESCENT * height
+
+
+class TestDescenders:
+    # round 17, p110: two lines on an insert made lower by its height correction, the descenders stay on it
+    def test_descenders_stay_inside_with_minus_1mm(self):
+        result = layout.labelLayout(3.6, 1.0, None, False, 2, 'Heavy')
+        assert _lowestDescender(result) >= -1e-9
+        assert result.lineHeights[0] == approx(result.lineHeights[1])
+        assert result.lineHeights[0] < 0.35
+        assert layout.layoutProblem(result) is None
+
+    @pytest.mark.parametrize('style', ['Regular', 'Bold', 'Heavy'])
+    def test_without_correction_two_lines_keep_their_height(self, style):
+        assert layout.labelLayout(3.6, 1.1, None, False, 2, style).lineHeights == approx([0.35, 0.35])
+
+    def test_one_line_is_unchanged(self):
+        assert layout.labelLayout(3.6, 1.0, None, False, 1, 'Heavy').lineHeights == approx([0.5])
+
+    def test_floor_stops_the_descender_shrink(self):
+        # 9 mm high: the descenders would need 2.5 mm letters, Heavy goes down to 3.05 mm only
+        result = layout.labelLayout(3.6, 0.9, None, False, 2, 'Heavy')
+        assert result.lineHeights == approx([0.04 / 0.1313] * 2)
+        assert 'Two lines' in layout.layoutProblem(result)
+
+    def test_text_already_below_its_floor_is_not_shrunk(self):
+        # Regular at 3.5 mm is below its 4.43 mm floor already, at 10 mm high its descenders would need it smaller
+        result = layout.labelLayout(3.6, 1.0, None, False, 2, 'Regular')
+        assert result.lineHeights == approx([0.35, 0.35])
+        assert 'Two lines' in layout.layoutProblem(result)
+
+    def test_insert_problem_reports_the_floor(self):
+        assert 'Two lines' in layout.insertProblem(3.6, 1.0, None, False, False, 2, 0, -0.1, textStyle='Regular')
+        assert layout.insertProblem(3.6, 1.0, None, False, False, 2, 0, -0.1, textStyle='Heavy') is None
+
+
+RIM = 0.04
+
+
+class TestDebossedRim:
+    # round 17, p140: set in 0.4 mm, as deep as the whole top layer, a symbol or descender reaching the edge cut the rim
+    # over the latch through. Debossed they keep 0.4 mm from the edge, the 0.2 mm overhang and a nozzle line with it
+    def test_the_rim_is_the_overhang_and_a_nozzle_line(self):
+        assert layout.DEBOSS_RIM == approx(0.04)
+
+    def test_debossed_screw_keeps_the_rim(self, tmp_path):
+        size = layout.iconSize(_svg(tmp_path, 14.56, 11), 2.5, 1.1, True, rim=RIM)
+        assert size[1] <= 1.1 - 2 * RIM + 1e-9
+        result = layout.labelLayout(2.5, 1.1, size, True, 1, rim=RIM)
+        assert result.iconMaxX == approx(2.5 - RIM)
+        assert result.iconCenterY - size[1] / 2 >= RIM - 1e-9
+
+    def test_debossed_hardware_keeps_the_rim(self, tmp_path):
+        size = layout.iconSize(_svg(tmp_path, 12, 12), 3.6, 1.1, False, rim=RIM)
+        assert size[1] <= 1.1 - 2 * RIM + 1e-9
+        result = layout.labelLayout(3.6, 1.1, size, False, 1, rim=RIM)
+        assert result.iconMaxX <= 3.6 - RIM + 1e-9
+
+    def test_a_narrow_debossed_screw_keeps_the_rim(self, tmp_path):
+        size = layout.iconSize(_svg(tmp_path, 14.56, 10), 1.0, 1.1, True, rim=RIM)
+        result = layout.labelLayout(1.0, 1.1, size, True, 0, rim=RIM)
+        assert result.iconMaxX == approx(1.0 - RIM)
+        assert result.iconMaxX - size[0] >= 0.1 - 1e-9
+
+    def test_flush_and_embossed_keep_the_symbol_size(self, tmp_path):
+        path = _svg(tmp_path, 14.56, 11)
+        assert layout.iconSize(path, 2.5, 1.1, True) == approx((1.456, 1.1))
+        assert layout.labelLayout(2.5, 1.1, (1.456, 1.1), True, 1).iconMaxX == approx(2.5)
+
+    def test_debossed_text_keeps_its_height(self):
+        # the spec limits the symbol only. The descenders keeping the rim too was taken back (Hauptsitzung
+        # 15.11.2026): two debossed lines would need 3.27 mm letters, below Regular's 3.5 and Bold's floor, Joerg decides
+        result = layout.labelLayout(3.6, 1.1, None, False, 2, 'Regular', rim=RIM)
+        assert result.lineHeights == approx([0.35, 0.35])
+        assert layout.layoutProblem(result) is None
+
+    @pytest.mark.parametrize('style', ['Regular', 'Bold', 'Heavy'])
+    def test_debossed_two_lines_build_without_correction(self, style):
+        assert layout.insertProblem(3.6, 1.1, None, False, False, 2, 0, 0, textStyle=style, isDebossed=True) is None
+
+
+class TestTextFitWidth:
+    # round 17, p52: the text is fitted once, a width made smaller later moves the symbol towards it. 1 mm more room
+    # before the symbol keeps them apart when the insert gets up to 1 mm narrower
+    def test_text_keeps_1mm_more_before_the_symbol(self):
+        result = layout.labelLayout(3.6, 1.1, SCREW, True, 1)
+        assert layout.SHRINK_ROOM == approx(0.1)
+        assert layout.textFitWidth(result) == approx(result.textMaxX - result.textMinX - 0.1)
+
+    def test_without_symbol_the_text_room_stays(self):
+        result = layout.labelLayout(3.6, 1.1, None, False, 1)
+        assert layout.textFitWidth(result) == approx(result.textMaxX - result.textMinX)
+
+
+def test_bold_two_lines_at_minus_1mm_are_reported():
+    # reachable in the dialog: Bold's floor is 3.42 mm, its descenders at 10 mm high would need 3.15 mm
+    assert 'Two lines' in layout.insertProblem(3.6, 1.0, None, False, False, 2, 0, -0.1, textStyle='Bold')

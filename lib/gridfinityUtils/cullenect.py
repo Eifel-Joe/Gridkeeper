@@ -52,6 +52,13 @@ def effectiveTabWidth(userTabWidth: float, overhangAngle: float, filletAllowance
     inset = socketFrontInset(overhangAngle, filletAllowance)
     return max(userTabWidth, const.CULLENECT_MIN_TAB_WIDTH, socketHeight(socketOffset) + 2 * inset)
 
+def wallProblem(wallThickness: float) -> str | None:
+    """Why a bin with these walls takes no Cullenect socket, none if it does (p35). A wall entered as 1.2 mm may come back
+    a hair under it from the units, so the check has a tolerance"""
+    if wallThickness < const.CULLENECT_MIN_WALL_THICKNESS - 1e-6:
+        return f'Cullenect sockets need walls of at least {const.CULLENECT_MIN_WALL_THICKNESS * 10:g} mm'
+    return None
+
 def hollowTabWallThickness(wallThickness: float) -> float:
     """Top of a hollow tab with a socket, thick enough for the socket not to cut through"""
     return max(wallThickness, const.CULLENECT_LABEL_THICKNESS + const.BIN_TAB_HOLLOW_MIN_SKIN)
@@ -98,6 +105,30 @@ def socketSummary(
         for width in compartmentWidths
     }
     return [describeSocket(item, baseWidth, socketOffset) for item in sorted(units, key=lambda item: -1 if item is None else item)]
+
+def socketCounts(
+    compartmentWidths: list[float],
+    tabStart: float,
+    tabLength: float,
+    baseWidth: float,
+    socketOffset: float,
+) -> list[list[str]]:
+    """
+    The settings' rows of the sockets, one per size, smallest first, with how many the bin has (round 16, p33): a bin of
+    eight like compartments showed 'Socket 1: 1U' as if it had one. Compartments too short for a socket come first
+    """
+    counts: dict[float | None, int] = {}
+    for width in compartmentWidths:
+        units = socketUnits(tabSpanInCompartment(width, tabStart, tabLength), baseWidth, socketOffset)
+        counts[units] = counts.get(units, 0) + 1
+    rows = []
+    for units in sorted(counts, key=lambda item: -1 if item is None else item):
+        count = counts[units]
+        if units is None:
+            rows.append(['No socket', f'{count} compartment{"s" if count != 1 else ""} too short for a Cullenect pocket'])
+        else:
+            rows.append([f'{units:g}U', f'{count} socket{"s" if count != 1 else ""}, pocket {_mm(socketWidth(units, baseWidth, socketOffset))} mm, insert {_mm(labelWidth(units, baseWidth))} mm'])
+    return rows
 
 def labelInputsEnabled(labelStyle: str) -> dict[str, bool]:
     """Which label tab inputs of the bin dialog apply to the style, a socket takes no text, icon or tilted top but its
