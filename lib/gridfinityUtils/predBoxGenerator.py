@@ -233,12 +233,21 @@ class _Builder:
         sweep4 = self.sweep(cut2.sketch, cellPath, adsk.fusion.FeatureOperations.CutFeatureOperation, 'Sweep4')
         self.step('#12 Sweep4')
 
-        floor, magnets = self.floorPads()
+        floor, magnets, blends = self.floorPads()
         self.step('#13 Sketch21')
         floorCut = self.extrude([floor], adsk.fusion.FeatureOperations.CutFeatureOperation, mm(-1.6), bodies=[self.base],
                                 name='Floor')
+        # Nutzer: "Versuche b" - the 5.05 mm blends of the pads into the floor edges as a fillet, not as sketch arcs
+        edges = [edge for edge in self.base.edges if _isVerticalAt(edge, blends, -0.16, 0.0)]
+        if len(edges) != len(blends):
+            raise ValueError(f'floor pads: {len(edges)} blend edges found, {len(blends)} expected')
+        fillets = self.features.filletFeatures
+        filletInput = fillets.createInput()
+        filletInput.edgeSetInputs.addConstantRadiusEdgeSet(collection(edges), valueInput(mm(5.05)), False)
+        blend = fillets.add(filletInput)
+        blend.name = 'Floor pad blends'
         self.step('#14 Extrude56')
-        patterned = [sweep1, sweep2, sweep4, floorCut]
+        patterned = [sweep1, sweep2, sweep4, floorCut, blend]
         if self.options.hasMagnets:
             magnetCut = self.extrude(magnets, adsk.fusion.FeatureOperations.CutFeatureOperation,
                                      Dim.length(-self.options.magnetDepth), bodies=[self.base], name='Magnets')
@@ -449,28 +458,35 @@ class _Builder:
         self.slideFillet = self.fillet('#54 Fillet2')
 
         # stacking: a quarter ring on top of each corner, a matching groove under each corner
+        # Nutzer: "Versuche b" - full circles and two radius lines instead of concentric arcs
         stack = WorldSketch(c, self.topPlane, 'StackingTab')
         corner = (mm(14), mm(14), top)
-        stack.arc(corner, (mm(3.25), mm(14), top), (mm(14), mm(3.25), top))
-        stack.line((mm(14), mm(3.25), top), (mm(14), mm(5.75), top))
-        stack.arc(corner, (mm(14), mm(5.75), top), (mm(5.75), mm(14), top))
-        stack.line((mm(5.75), mm(14), top), (mm(3.25), mm(14), top))
+        stack.circle(corner, mm(21.5))
+        stack.circle(corner, mm(16.5))
+        stack.line(corner, (mm(14), mm(3.25), top))
+        stack.line(corner, (mm(3.25), mm(14), top))
         stack.close()
-        self.stackTab = self.along(list(stack.sketch.profiles), join, 2, mm(1.5), name='Stacking tab')
+        tabProfiles = stack.profilesWhere(lambda x, y: x < 1.4 and y < 1.4 and 0.825 < math.hypot(x - 1.4, y - 1.4) < 1.075)
+        self.stackTab = self.along(tabProfiles, join, 2, mm(1.5), name='Stacking tab')
         self.step('#55 Extrude16')
         self.stackChamfer = self.chamfer('#56 Chamfer3')
         bottomPlane = self.offsetPlane(c.xYConstructionPlane, 2, d.bottom, 'BottomPlane')
         groove = WorldSketch(c, bottomPlane, 'BottomFeatures')
         z = d.bottom
         corner = (mm(14), mm(14), z)
-        groove.polyline([(mm(3), mm(15), z), (mm(3), mm(14), z)], closed=False)
-        groove.arc(corner, (mm(3), mm(14), z), (mm(14), mm(3), z))
+        # as the stacking tab: circles and radius lines, the 1 mm straight ends as open polylines on the radius lines
+        groove.circle(corner, mm(22))
+        groove.circle(corner, mm(15))
+        groove.line(corner, (mm(14), mm(3), z))
+        groove.line(corner, (mm(3), mm(14), z))
         groove.polyline([(mm(14), mm(3), z), (mm(15), mm(3), z), (mm(15), mm(6.5), z), (mm(14), mm(6.5), z)], closed=False)
-        groove.arc(corner, (mm(14), mm(6.5), z), (mm(6.5), mm(14), z))
-        groove.polyline([(mm(6.5), mm(14), z), (mm(6.5), mm(15), z), (mm(3), mm(15), z)], closed=False)
+        groove.polyline([(mm(3), mm(14), z), (mm(3), mm(15), z), (mm(6.5), mm(15), z), (mm(6.5), mm(14), z)], closed=False)
         groove.close()
         self.step('#57 BottomFeatures')
-        self.stackGroove = self.along(list(groove.sketch.profiles), cut, 2, mm(2.5), name='Stacking groove')
+        def inGroove(x, y):
+            ring = x < 1.4 and y < 1.4 and 0.75 < math.hypot(x - 1.4, y - 1.4) < 1.1
+            return ring or (1.4 < x < 1.5 and 0.3 < y < 0.65) or (0.3 < x < 0.65 and 1.4 < y < 1.5)
+        self.stackGroove = self.along(groove.profilesWhere(inGroove), cut, 2, mm(2.5), name='Stacking groove')
         self.step('#58 Extrude20')
         self.grooveChamfer = self.chamfer('#59 Chamfer9')
 
@@ -582,43 +598,50 @@ class _Builder:
         self.chamfer('#85 Chamfer16', body=self.lid)
 
     def floorPads(self):
-        """Pred's Sketch21 for the first cell: floor inside 12.85..49.15 mm with 1.15 mm corners, a pad around
-        each magnet (radius magnet / 2 + 0.75 mm) blended into the floor edges with 5.05 mm arcs"""
+        """Pred's Sketch21 for the first cell, built the way Nutzer chose ("Versuche b", 16.11.2026): floor inside
+        12.85..49.15 mm with 1.15 mm corners; each pad is a circle (magnet / 2 + 0.75 mm) and two lines from the circle
+        to the floor edges, the 5.05 mm blends of Pred's arcs follow as a fillet after the cut (floorGrid).
+        Returns the floor profile, the magnet profiles and the places (x, y in cm) of the edges to blend."""
         R = self.options.magnetDiameter * 10 / 2 + 0.75
-        b = 5.05
         e0, e1 = 12.85, 49.15
+        b = 5.05
         z = mm(0)
 
         def p(x, y):
             return (mm(x), mm(y), z)
 
         sketch = WorldSketch(self.component, self.component.xYConstructionPlane, 'FloorPads')
+        sketch.roundedRectangle(mm(e0), mm(e0), mm(e1), mm(e1), z, mm(1.15))
         pads = [(e0 + b, e0 + b, 1, 1), (e1 - b, e0 + b, -1, 1), (e1 - b, e1 - b, -1, -1), (e0 + b, e1 - b, 1, -1)]
+        blends = []
         for px, py, sx, sy in pads:
-            tangentA, tangentB = p(px + sx * R, py), p(px, py + sy * R)
-            sketch.arc(p(px, py), tangentA, tangentB)
-            sketch.arc(p(px + sx * (R + b), py), tangentA, p(px + sx * (R + b), py - sy * b))
-            sketch.arc(p(px, py + sy * (R + b)), tangentB, p(px - sx * b, py + sy * (R + b)))
+            wallY = e0 if sy > 0 else e1
+            wallX = e0 if sx > 0 else e1
+            sketch.circle(p(px, py), mm(2 * R))
             sketch.circle(p(px, py), Dim.length(self.options.magnetDiameter))
-        # outline, split where the blends meet it
-        r = 1.15
-        a = e0 + b + R + b   # 26.95 at 6.5 mm magnets
-        bb = e1 - b - R - b  # 35.05
-        corners = [((e0 + r, e0 + r), (e0, e0 + r), (e0 + r, e0)), ((e1 - r, e0 + r), (e1 - r, e0), (e1, e0 + r)),
-                   ((e1 - r, e1 - r), (e1, e1 - r), (e1 - r, e1)), ((e0 + r, e1 - r), (e0 + r, e1), (e0, e1 - r))]
-        edges = [[(e0 + r, e0), (a, e0), (bb, e0), (e1 - r, e0)], [(e1, e0 + r), (e1, a), (e1, bb), (e1, e1 - r)],
-                 [(e1 - r, e1), (bb, e1), (a, e1), (e0 + r, e1)], [(e0, e1 - r), (e0, bb), (e0, a), (e0, e0 + r)]]
-        for center, start, end in corners:
-            sketch.arc(p(*center), p(*start), p(*end))
-        for edge in edges:
-            for first, second in zip(edge, edge[1:]):
-                sketch.line(p(*first), p(*second))
+            # the pad reaches the floor edges along the circle's tangents (Pred's blends start where they meet it)
+            sketch.line(p(px + sx * R, wallY), p(px + sx * R, py))
+            sketch.line(p(wallX, py + sy * R), p(px, py + sy * R))
+            blends += [((px + sx * R) / 10, wallY / 10), (wallX / 10, (py + sy * R) / 10)]
         sketch.close()
         floor = sketch.profiles([((mm(e0), mm(e0), 0), (mm(e1), mm(e1), 0))])[0]
-        half = self.options.magnetDiameter / 2
-        magnets = sketch.profiles([((mm(px) - Dim.length(half), mm(py) - Dim.length(half), 0),
-                                    (mm(px) + Dim.length(half), mm(py) + Dim.length(half), 0)) for px, py, _, _ in pads])
-        return floor, magnets
+        magnet = math.pi * (self.options.magnetDiameter * 10 / 2) ** 2
+        magnets = [profile for profile in sketch.sketch.profiles if abs(profile.areaProperties().area * 100 - magnet) < 1e-3]
+        if len(magnets) != 4:
+            raise ValueError(f'FloorPads: {len(magnets)} magnet profiles')
+        return floor, magnets, blends
+
+
+def _isVerticalAt(edge, places, zLow, zHigh, tolerance=1e-6):
+    geometry = edge.geometry
+    if geometry.objectType != adsk.core.Line3D.classType():
+        return False
+    a, b = edge.startVertex.geometry, edge.endVertex.geometry
+    if abs(a.x - b.x) > tolerance or abs(a.y - b.y) > tolerance:
+        return False
+    if abs(min(a.z, b.z) - zLow) > tolerance or abs(max(a.z, b.z) - zHigh) > tolerance:
+        return False
+    return any(abs(a.x - x) < tolerance and abs(a.y - y) < tolerance for x, y in places)
 
 
 def _worldHeight(sketch, profile):
