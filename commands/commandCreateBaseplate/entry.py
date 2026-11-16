@@ -8,6 +8,8 @@ import time
 
 
 from ...lib.gridfinityUtils import designIntent
+from ...lib.gridfinityUtils import magnetSizes
+from ...lib.ui import magnetSizeInput
 from ...lib import configUtils
 from ...lib import tagUtils
 from ...lib import settingsUtils
@@ -152,6 +154,8 @@ FILL_AREA_MODE_INPUTS = [FILL_AREA_WIDTH_INPUT, FILL_AREA_LENGTH_INPUT, FILL_ALI
 BASEPLATE_WITH_MAGNETS_INPUT = 'with_magnet_cutouts'
 BASEPLATE_MAGNET_DIAMETER_INPUT = 'magnet_diameter'
 BASEPLATE_MAGNET_HEIGHT_INPUT = 'magnet_height'
+# the magnet size choice before the depth (round 27, p263)
+BASEPLATE_MAGNET_SIZE_INPUT = 'magnet_size'
 
 BASEPLATE_WITH_SCREWS_INPUT = 'with_screw_holes'
 BASEPLATE_SCREW_DIAMETER_INPUT = 'screw_diameter'
@@ -434,6 +438,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     uiState.registerCommandInput(generateMagnetSocketInput)
     magnetSocketDiameterInput = magnetCutoutGroup.children.addValueInput(BASEPLATE_MAGNET_DIAMETER_INPUT, 'Magnet cutout diameter', defaultLengthUnits, adsk.core.ValueInput.createByReal(uiState.getState(BASEPLATE_MAGNET_DIAMETER_INPUT)))
     uiState.registerCommandInput(magnetSocketDiameterInput)
+    magnetSizeInput.addMagnetSizeInput(magnetCutoutGroup.children, BASEPLATE_MAGNET_SIZE_INPUT, uiState, magnetSizes.ALL_CHOICES)
     magnetSocketDepthInput = magnetCutoutGroup.children.addValueInput(BASEPLATE_MAGNET_HEIGHT_INPUT, 'Magnet cutout depth', defaultLengthUnits, adsk.core.ValueInput.createByReal(uiState.getState(BASEPLATE_MAGNET_HEIGHT_INPUT)))
     uiState.registerCommandInput(magnetSocketDepthInput)
 
@@ -579,6 +584,11 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
         return
     global uiState
     uiState.onInputUpdate(changed_input)
+
+    if changed_input.id == BASEPLATE_MAGNET_SIZE_INPUT and magnetSizeInput.onMagnetSizeChanged(uiState, BASEPLATE_MAGNET_SIZE_INPUT, BASEPLATE_MAGNET_HEIGHT_INPUT):
+        # 6x2 or 6x3 mm magnets set the depth, Custom leaves it to be typed (p263)
+        uiState.forceUIRefresh()
+    changed_input.parentCommand.commandInputs.itemById(BASEPLATE_MAGNET_HEIGHT_INPUT).isEnabled = magnetSizeInput.isDepthTyped(uiState, BASEPLATE_MAGNET_SIZE_INPUT)
 
     global isApplyingBedPreset
     if changed_input.id == PRINT_BED_PRESET_DROPDOWN:
@@ -965,6 +975,7 @@ def initUiState():
 
     uiState.initValue(BASEPLATE_MAGNET_DIAMETER_INPUT, DEFAULT_STATE.magnetSocketSize, adsk.core.ValueCommandInput.classType())
     uiState.initValue(BASEPLATE_MAGNET_HEIGHT_INPUT, DEFAULT_STATE.magnetSocketDepth, adsk.core.ValueCommandInput.classType())
+    uiState.initValue(BASEPLATE_MAGNET_SIZE_INPUT, magnetSizes.choiceForDepth(DEFAULT_STATE.magnetSocketDepth, magnetSizes.ALL_CHOICES), adsk.core.DropDownCommandInput.classType())
     uiState.initValue(BASEPLATE_WITH_SCREWS_INPUT, DEFAULT_STATE.hasScrewHoles, adsk.core.BoolValueCommandInput.classType())
 
     uiState.initValue(BASEPLATE_WITH_SIDE_PADDING_INPUT, DEFAULT_STATE.hasPadding, adsk.core.BoolValueCommandInput.classType())
@@ -989,6 +1000,8 @@ def initUiState():
 
         try:
             uiState.initValues(recordedDefaults)
+            # saved defaults of an older version have the depth only, the choice is read back from it
+            magnetSizeInput.syncMagnetSize(uiState, BASEPLATE_MAGNET_SIZE_INPUT, BASEPLATE_MAGNET_HEIGHT_INPUT, magnetSizes.ALL_CHOICES)
             futil.log(f'{CMD_NAME} Successfully restored default values')
         except Exception as err:
             futil.log(f'{CMD_NAME} Failed to restore default values, err: {err}')
@@ -1013,6 +1026,8 @@ def applyInputsState(inputsState: InputState):
     """Sets the dialog state to a state from getInputsState, the inputs follow on forceUIRefresh"""
     for (field, inputId) in zip(dataclasses.fields(InputState), STATE_INPUT_IDS):
         uiState.setValue(inputId, getattr(inputsState, field.name))
+    # only the depth is saved, the magnet size shown is read back from it (p263)
+    magnetSizeInput.syncMagnetSize(uiState, BASEPLATE_MAGNET_SIZE_INPUT, BASEPLATE_MAGNET_HEIGHT_INPUT, magnetSizes.ALL_CHOICES)
     # the bed size of a config is the preset's only when it matches
     presetBedSize = printBeds.presetBedSize(uiState.getState(PRINT_BED_PRESET_DROPDOWN))
     bedSize = (inputsState.bedWidth, inputsState.bedLength)

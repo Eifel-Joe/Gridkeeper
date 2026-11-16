@@ -35,3 +35,27 @@ def test_names_say_magnet_and_depth():
     assert sizes.SIZE_6X2 == "6×2 mm (2.4 mm deep)"
     assert sizes.SIZE_6X3 == "6×3 mm (3.4 mm deep)"
     assert sizes.ALL_CHOICES == [sizes.SIZE_6X2, sizes.SIZE_6X3, sizes.CUSTOM]
+
+
+import os
+import re
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+@pytest.mark.parametrize("folder, depthInput", [
+    ("commandCreateBin", "BIN_MAGNET_HEIGHT_INPUT"),
+    ("commandCreateBaseplate", "BASEPLATE_MAGNET_HEIGHT_INPUT"),
+    ("commandCreateBox", "MAGNET_DEPTH_INPUT"),
+])
+def test_magnet_size_choice_comes_before_the_depth(folder, depthInput):
+    """p263: bins, baseplates and boxes get the choice right before the free depth field, and read it back from the
+    depth when settings are loaded"""
+    source = open(os.path.join(ROOT, "commands", folder, "entry.py"), encoding="utf-8").read()
+    choice = source.find("magnetSizes.")
+    depthField = re.search(r"add(?:ValueInput|Length)\([^)]*?\b" + depthInput + r"\b", source)
+    assert choice != -1 and depthField is not None
+    # the box adds its own dropdown, bin and baseplate the shared one of lib/ui/magnetSizeInput.py
+    added = max(source.find("'Magnet size'"), source.find('addMagnetSizeInput('))
+    assert added != -1 and added < depthField.start(), "the choice is added before the depth field"
+    assert ("choiceForDepth" in source or "syncMagnetSize" in source) and ("depthForChoice" in source or "onMagnetSizeChanged" in source)

@@ -11,7 +11,8 @@ The **Base interface features** section of the bin dialog: the feet that sit in 
 | **Add magnet sockets** | off | A magnet socket in every foot |
 | **Add tabs to magnet sockets** | off | Opens each magnet socket to the side, to pull the magnet out |
 | **Magnet cutout diameter** | 6.5 mm | 1 to 10 mm |
-| **Magnet cutout depth** | 2.4 mm | At least 1 mm |
+| **Magnet size** | 6×2 mm (2.4 mm deep) | Sets the depth for 6 × 2 mm or 6 × 3 mm (3.4 mm) magnets; *Custom* to type the depth |
+| **Magnet cutout depth** | 2.4 mm | At least 1 mm, typed with *Custom* |
 
 With magnet sockets and screw holes together, a groove bridges each magnet socket to its screw hole for
 printability; it is left out where the sockets are too deep for it. Half size feet have no magnet or screw holes: on the **Half grid** the hole inputs are locked, as they are without
