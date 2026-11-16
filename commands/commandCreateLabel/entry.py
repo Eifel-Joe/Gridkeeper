@@ -26,6 +26,7 @@ from ...lib.ui.commandUiState import CommandUiState
 from ...lib.ui.defaultsButtons import addDefaultsButtonRow, defaultsButtonsHandlers, DEFAULTS_SAVE, DEFAULTS_FACTORY_RESET
 from ...lib.ui.buttonRow import addButtonRow
 from ...lib.ui import configButtons
+from ...lib.ui import selectionPrefill
 from ...lib.ui import browserPages
 from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
 
@@ -89,6 +90,8 @@ SHOW_PREVIEW_INPUT = 'show_preview'
 # a Cullenect pocket of a bin to joint the insert into (round 13, p100), its joint origin
 POCKET_GROUP = 'pocket_group'
 POCKET_INPUT = 'pocket'
+# why the pocket of a rebuilt insert isn't picked (round 20, p220)
+POCKET_NOTE = 'pocket_note'
 PREVIEW_TIME_INPUT = 'preview_time'
 
 SIZING_MODE_UNITS = 'Base units'
@@ -290,9 +293,17 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     pocketInput.addSelectionFilter(adsk.core.SelectionCommandInput.JointOrigins)
     pocketInput.setSelectionLimits(0, 1)
     pocketInput.tooltip = 'Optional: pick the joint origin of a Cullenect pocket of a bin, the insert goes into it. Without, it goes beside the bins, baseplates and inserts there are'
-    if rebuildPocket is not None:
-        # a rebuilt insert goes into its pocket again unless it's picked off (Hauptsitzung 15.11.2026)
-        pocketInput.addSelection(rebuildPocket)
+    # a rebuilt insert goes into its pocket again unless it's picked off (Hauptsitzung 15.11.2026). Fusion may refuse
+    # the pocket, the dialog stopped half built then (round 20, p220): the input stays empty and the dialog says so
+    note = selectionPrefill.prefillSelection(pocketInput, rebuildPocket)
+    if note is not None:
+        futil.log(f'{CMD_NAME} pocket {rebuildPocket.name} of the rebuilt insert not picked, {note}')
+        pocketGroup.children.addTextBoxCommandInput(
+            POCKET_NOTE, '',
+            f'The pocket the insert was in, {html.escape(rebuildPocket.name)}, couldn\'t be picked. Pick it again, '
+            'otherwise the insert is built where it was without a joint.',
+            3, True,
+        )
 
     inputChangesGroup = inputs.addGroupCommandInput(INPUT_CHANGES_GROUP, 'Inputs')
     inputChangesGroup.isExpanded = uiState.getState(INPUT_CHANGES_GROUP)
