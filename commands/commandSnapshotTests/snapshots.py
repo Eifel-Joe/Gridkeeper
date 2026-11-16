@@ -134,7 +134,7 @@ def compareSnapshot(folder: str, bodies: list[adsk.fusion.BRepBody], settings: d
     lie where the font puts them (round 16, p30, see testCases.formChanges)
     """
     if not hasSnapshot(folder):
-        return [BodyResult('', STATUS_FAIL, ['no snapshot, run Gridfinity tests: update snapshots'])]
+        return [BodyResult('', STATUS_FAIL, ['no snapshot, run Gridkeeper tests: update snapshots'])]
     with open(os.path.join(folder, FINGERPRINT_FILE), encoding='utf-8') as file:
         expectedBodies = {entry['name']: entry for entry in json.load(file)['bodies']}
     builtBodies = {body.name: body for body in bodies}

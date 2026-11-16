@@ -57,7 +57,7 @@ ui = app.userInterface
 
 # The command identity information. ***
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdBaseplate'
-CMD_NAME = 'Gridfinity baseplate'
+CMD_NAME = 'Gridkeeper baseplate'
 # shown on hover over the button, the first paragraph says what it makes, the second how
 CMD_Description = ('Creates a gridfinity baseplate for bins to sit in.\n\n'
     'Set its size in base units, or fill an area such as a drawer, split into pieces that fit the print bed, '

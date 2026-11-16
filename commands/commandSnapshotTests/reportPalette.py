@@ -13,7 +13,7 @@ app = adsk.core.Application.get()
 ui = app.userInterface
 
 PALETTE_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_snapshotTestsReport'
-PALETTE_TITLE = 'Gridfinity tests'
+PALETTE_TITLE = 'Gridkeeper tests'
 PAGE_URL = browserPages.pageUrl(__file__, 'report.html')
 WIDTH = 700
 HEIGHT = 640
