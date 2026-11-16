@@ -8,6 +8,7 @@ from . import tagUtils
 from . import assembly
 from .gridfinityUtils import commonUtils
 from .gridfinityUtils import cullenect
+from .gridfinityUtils import timelineRemoval
 
 # Rebuilding a generated body at its place in the timeline: the new one is built right after the old one's timeline
 # group, the features after it that use the old bodies get the new ones and the old group goes. Features picking a
@@ -292,25 +293,10 @@ def removeOldGroup(target: RebuildTarget, oneByOne: bool = False) -> list[str]:
     except RuntimeError as err:
         commonUtils.fileLog(f'{LOG_PREFIX} the timeline group {groupName} wasn\'t deleted, {err}, deleting its items one by one')
     # items of a group can't be deleted on their own, the group goes and they stay in the timeline
+    timeline = group.parentTimeline
     if group.isValid:
         group.deleteMe(False)
-    kept = []
-    for item in reversed(target.groupItems):
-        if not item.isValid:
-            continue
-        name = item.name
-        try:
-            if item.isDeletable and item.deleteObject():
-                continue
-            commonUtils.fileLog(f'{LOG_PREFIX} {name} of {groupName} wasn\'t deleted, deletable: {item.isDeletable}')
-        except RuntimeError as err:
-            commonUtils.fileLog(f'{LOG_PREFIX} {name} of {groupName} wasn\'t deleted, {err}')
-        try:
-            item.isSuppressed = True
-        except RuntimeError as err:
-            commonUtils.fileLog(f'{LOG_PREFIX} {name} of {groupName} wasn\'t suppressed either, {err}')
-        kept.append(name)
-    return kept
+    return timelineRemoval.deleteOneByOne(target.groupItems, timeline, lambda message: commonUtils.fileLog(f'{LOG_PREFIX} {message} ({groupName})'))
 
 def repointJoints(
     design: adsk.fusion.Design,
