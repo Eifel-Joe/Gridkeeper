@@ -145,3 +145,96 @@ def test_container_names_are_literal():
 
 def test_pocket_tag_is_literal():
     assert tagUtils.TAG_POCKET == "pocket"
+
+
+# ── p71: a letter of a longer text in Text has no tag of its own, the part it's of answers for it ──────────────────
+
+
+class _Attributes:
+    def __init__(self, tags=None):
+        self.tags = tags or {}
+
+    def itemByName(self, group, name):
+        value = self.tags.get(name) if group == tagUtils.TAG_GROUP else None
+        return types.SimpleNamespace(value=value) if value is not None else None
+
+
+class _Component:
+    def __init__(self, bodies=None, name='Text'):
+        self.bRepBodies = bodies or []
+        self.name = name
+
+
+class _Body:
+    """A native body, or a proxy of one through an occurrence"""
+    def __init__(self, component, tags=None, native=None, occurrence=None):
+        self.parentComponent = component
+        self.attributes = _Attributes(tags)
+        self.nativeObject = native
+        self.assemblyContext = occurrence
+        if native is None:
+            component.bRepBodies.append(self)
+
+
+class _Occurrence:
+    def __init__(self, component, parent=None):
+        self.component = component
+        self.assemblyContext = parent
+
+
+def _part(tagName):
+    """A part with a tagged body, its occurrence, and a Text occurrence in it with an untagged letter"""
+    partComponent = _Component(name='Gridfinity bin 1x2x3')
+    tagged = _Body(partComponent, {tagName: json.dumps({"id": "gfX"})})
+    partOccurrence = _Occurrence(partComponent)
+    textComponent = _Component()
+    letter = _Body(textComponent)
+    textOccurrence = _Occurrence(textComponent, partOccurrence)
+    return (tagged, partOccurrence, textComponent, letter, textOccurrence)
+
+
+def test_tagged_body_is_its_own_part():
+    (tagged, partOccurrence, *_) = _part(tagUtils.TAG_BIN)
+    proxy = _Body(tagged.parentComponent, native=tagged, occurrence=partOccurrence)
+    assert tagUtils.partTag(proxy, lambda component: None) == (tagged, tagUtils.TAG_BIN, {"id": "gfX"})
+
+
+def test_untagged_letter_in_text_finds_the_insert_base():
+    (base, _, _, letter, textOccurrence) = _part(tagUtils.TAG_LABEL)
+    proxy = _Body(letter.parentComponent, native=letter, occurrence=textOccurrence)
+    assert tagUtils.partTag(proxy, lambda component: None) == (base, tagUtils.TAG_LABEL, {"id": "gfX"})
+
+
+def test_untagged_letter_of_a_bin_finds_the_bin_body():
+    (binBody, _, _, letter, textOccurrence) = _part(tagUtils.TAG_BIN)
+    proxy = _Body(letter.parentComponent, native=letter, occurrence=textOccurrence)
+    (found, tagName, _) = tagUtils.partTag(proxy, lambda component: None)
+    assert found is binBody and tagName == tagUtils.TAG_BIN
+
+
+def test_native_letter_uses_the_occurrence_of_its_component():
+    (base, _, textComponent, letter, textOccurrence) = _part(tagUtils.TAG_LABEL)
+    occurrenceOf = lambda component: textOccurrence if component is textComponent else None
+    assert tagUtils.partTag(letter, occurrenceOf)[0] is base
+
+
+def test_root_body_without_tag_has_no_part():
+    loose = _Body(_Component())
+    assert tagUtils.partTag(loose, lambda component: None) is None
+
+
+def test_body_in_a_part_without_a_parent_part_has_no_part():
+    (_, _, _, letter, textOccurrence) = _part(tagUtils.TAG_BIN)
+    # a Text occurrence straight in the root, nothing above it
+    textOccurrence.assemblyContext = None
+    assert tagUtils.partTag(letter, lambda component: textOccurrence) is None
+
+
+def test_untagged_body_outside_a_text_component_has_no_part():
+    # a bin nested in the user's own assembly: an untagged body of the user's isn't a letter of the part above it
+    (_, partOccurrence, _, _, _) = _part(tagUtils.TAG_BIN)
+    userComponent = _Component(name='Bracket')
+    userBody = _Body(userComponent)
+    userOccurrence = _Occurrence(userComponent, partOccurrence)
+    proxy = _Body(userComponent, native=userBody, occurrence=userOccurrence)
+    assert tagUtils.partTag(proxy, lambda component: None) is None

@@ -226,3 +226,37 @@ def test_pocket_fit_note_only_when_the_insert_no_longer_fits():
     assert cullenect.pocketFitNote("Insert in pocket", "Pocket joint origin", (36.0, 11.0), (36.3, 11.3)) is None
     note = cullenect.pocketFitNote("Insert in pocket", "Pocket joint origin", (78.0, 11.0), (36.3, 11.3))
     assert "Insert in pocket" in note and "Pocket joint origin" in note and "doesn't fit" in note
+
+
+# p35, Nutzer 15.11.2026: "Standard fuer Cullenect ist 1,2mm. Dicker geht, duenner nicht."
+
+def test_walls_from_1_2_mm_take_a_socket():
+    for wall in (0.12, 0.2, 0.3):
+        assert cullenect.wallProblem(wall) is None
+
+
+def test_thinner_walls_take_none():
+    problem = cullenect.wallProblem(0.119)
+    assert problem is not None and "1.2 mm" in problem
+
+
+def test_rounding_noise_counts_as_1_2():
+    assert cullenect.wallProblem(0.12 - 1e-9) is None
+
+
+# round 16, p33: the settings list a line per socket size with how many there are
+
+
+
+def test_counts_per_size():
+    rows = cullenect.socketCounts([CELL] * 8, 0, 4.2, 4.2, 0.03)
+    assert rows == [["1U", "8 sockets, pocket 36.3 mm, insert 36 mm"]]
+
+
+def test_one_socket_is_singular():
+    assert cullenect.socketCounts([CELL], 0, 4.2, 4.2, 0.03) == [["1U", "1 socket, pocket 36.3 mm, insert 36 mm"]]
+
+
+def test_too_short_compartments_are_counted():
+    rows = cullenect.socketCounts([0, 0, CELL], 0, 4.2, 4.2, 0.03)
+    assert rows == [["No socket", "2 compartments too short for a Cullenect pocket"], ["1U", "1 socket, pocket 36.3 mm, insert 36 mm"]]

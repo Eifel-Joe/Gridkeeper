@@ -499,6 +499,21 @@ def update_actual_bin_dimensions():
 
 def cullenectSockets() -> list[str]:
     """Socket and insert width of each Cullenect socket the bin gets, the same way binBuilder lays out the tabs"""
+    return cullenect.socketSummary(*cullenectSocketLayout())
+
+def cullenectTabWidth() -> float:
+    """The width of the tab a Cullenect socket gets, widened from the one entered as binBuilder does (p32)"""
+    overhangAngle = app.activeProduct.unitsManager.evaluateExpression(str(commandUIState.getState(BIN_TAB_ANGLE_INPUT_ID)), 'deg')
+    return cullenect.effectiveTabWidth(
+        commandUIState.getState(BIN_TAB_WIDTH_INPUT_ID),
+        overhangAngle,
+        tabFilletAllowance(overhangAngle, 0),
+        commandUIState.getState(BIN_TAB_CULLENECT_OFFSET_INPUT_ID),
+    )
+
+def cullenectSocketLayout() -> tuple[list[float], float, float, float, float]:
+    """The compartment widths that get a socket (0 for one too short), where the tab starts in them, its length, the
+    base width and the socket play, as cullenect.socketSummary and socketCounts take them"""
     baseWidth: float = commandUIState.getState(BIN_BASE_WIDTH_UNIT_INPUT_ID)
     binWidth: float = commandUIState.getState(BIN_WIDTH_INPUT_ID)
     wallThickness: float = commandUIState.getState(BIN_WALL_THICKNESS_INPUT_ID)
@@ -509,7 +524,7 @@ def cullenectSockets() -> list[str]:
     if commandUIState.getState(BIN_TYPE_DROPDOWN_ID) == BIN_TYPE_SHELLED:
         # one tab along the back wall inside the shell
         interiorWidth = baseWidth * binWidth - (wallThickness + xyClearance) * 2
-        return cullenect.socketSummary([interiorWidth], 0, tabLength - (wallThickness + xyClearance) * 2, baseWidth, socketOffset)
+        return ([interiorWidth], 0, tabLength - (wallThickness + xyClearance) * 2, baseWidth, socketOffset)
     # creased bins are built with a single cavity whatever grid the dialog keeps, see binBuilder.buildBin
     creased = len(creaseLayout()) > 0
     columns = 1 if creased else commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID)
@@ -523,12 +538,11 @@ def cullenectSockets() -> list[str]:
     interiorLength = commandUIState.getState(BIN_BASE_LENGTH_UNIT_INPUT_ID) * commandUIState.getState(BIN_LENGTH_INPUT_ID) - (wallThickness + xyClearance) * 2
     widths = cullenect.compartmentWidths(interiorWidth, columns, [item['width'] for item in pockets], wallThickness)
     lengths = cullenect.compartmentWidths(interiorLength, rows, [item['length'] for item in pockets], wallThickness)
-    overhangAngle = app.activeProduct.unitsManager.evaluateExpression(str(commandUIState.getState(BIN_TAB_ANGLE_INPUT_ID)), 'deg')
-    tabWidth = cullenect.effectiveTabWidth(commandUIState.getState(BIN_TAB_WIDTH_INPUT_ID), overhangAngle, tabFilletAllowance(overhangAngle, 0), socketOffset)
+    tabWidth = cullenectTabWidth()
     # a compartment too short from front to back gets no socket, like one too narrow
     widths = [width if cullenect.socketFitsDepth(length, tabWidth, socketOffset) else 0 for (width, length) in zip(widths, lengths)]
     tabStart = baseWidth * max(0, min(commandUIState.getState(BIN_TAB_POSITION_INPUT_ID), binWidth - tabLengthUnits))
-    return cullenect.socketSummary(widths, tabStart, tabLength, baseWidth, socketOffset)
+    return (widths, tabStart, tabLength, baseWidth, socketOffset)
 
 def hasCullenectSockets() -> bool:
     return (
@@ -542,7 +556,9 @@ def hasCullenectSockets() -> bool:
 def updateCullenectSockets():
     """Second row of the dimensions table, which inserts fit the sockets"""
     try:
-        text = f'Cullenect: {"; ".join(cullenectSockets())}' if hasCullenectSockets() else ''
+        problem = cullenect.wallProblem(commandUIState.getState(BIN_WALL_THICKNESS_INPUT_ID)) if hasCullenectSockets() else None
+        # the reason OK is locked, in place of the sockets (p35)
+        text = f'Cullenect: {problem}' if problem is not None else f'Cullenect: {"; ".join(cullenectSockets())}' if hasCullenectSockets() else ''
         socketsInput = actualDimensionsTableUiState.getInput(BIN_REAL_DIMENSIONS_TABLE_CULLENECT)
         actualDimensionsTableUiState.updateValue(BIN_REAL_DIMENSIONS_TABLE_CULLENECT, text)
         socketsInput.tooltip = 'Socket width of the label tabs and the width of the Cullenect insert that fits them'
@@ -764,6 +780,9 @@ def is_all_input_valid(inputs: adsk.core.CommandInputs):
         result = result and bin_magnet_cutout_depth.value > 0
 
     result = result and shapeError() is None
+    # Cullenect only from 1.2 mm walls (p35), a loaded config and a rebuild open this dialog too
+    if hasCullenectSockets():
+        result = result and cullenect.wallProblem(bin_wall_thickness.value) is None
     result = result and labelColors.isColor(binLabelColor())
     if inputs.itemById(BIN_CREASES_INPUT_ID).value:
         result = result and inputs.itemById(BIN_CREASE_DEPTH_INPUT_ID).value > 0
@@ -1241,7 +1260,8 @@ def command_destroy(args: adsk.core.CommandEventArgs):
         # A label text fitted so small that a 0.4 mm nozzle leaves parts out (p130). Told here and not on execute: a
         # valid preview is kept on OK (isValidResult) and execute doesn't run then. The notes are those of the last
         # build, the preview kept or the execute. After the warning of a rebuild, which asks for action. A rebuild
-        # that only sets the label's text parameter builds no label and notes nothing, see binBuilder.parameterEdits
+        # that only sets parameters builds no label and notes nothing; one with a label text changed since the bin was
+        # built builds it anew (round 19, see binBuilder.parameterEdits)
         hint = textStyles.hintText(textStyles.notes(), suggestHeavy=False)
         if hint is not None:
             ui.messageBox(hint, CMD_NAME)
@@ -1347,7 +1367,9 @@ def snapshotSettings(inputs: adsk.core.CommandInputs) -> list[dict]:
     settings.append({'title': 'Compartments', 'items': items})
     if hasCullenectSockets():
         # the dimensions table isn't kept, the insert widths are needed later to make inserts that fit
-        settings.append({'title': 'Cullenect', 'items': [[f'Socket {index}', text] for (index, text) in enumerate(cullenectSockets(), 1)]})
+        # the tab as built, widened for the socket (p32), and each socket size with how many of it (p33)
+        tabWidth = [['Label tab width', f'{round(cullenectTabWidth() * 10, 2):g} mm (built)']]
+        settings.append({'title': 'Cullenect', 'items': tabWidth + cullenect.socketCounts(*cullenectSocketLayout())})
     if isShaped():
         # the drawing as text, front row last like it's shown
         cells = set(shapeCells())
@@ -1461,7 +1483,11 @@ def configChoices() -> dict[str, configJson.Choice]:
 
 def readConfig(text: str, source: str) -> InputState | None:
     """The state of a config, none when it can't be read, see configButtons.readConfig"""
-    return configButtons.readConfig(text, source, configJson.GENERATOR_BIN, InputState, getInputsState(), configChoices())
+    # a setting the config doesn't have keeps the dialog's value; the label color of the state is derived, '' without a
+    # label, the dialog's choice is what stays (round 18, p151)
+    color = labelColors.configCurrentColor(commandUIState.getState(BIN_TAB_LABEL_COLOR_INPUT_ID), commandUIState.getState(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID))
+    current = dataclasses.replace(getInputsState(), labelColor=color)
+    return configButtons.readConfig(text, source, configJson.GENERATOR_BIN, InputState, current, configChoices())
 
 def applyPendingConfig():
     global pendingConfig

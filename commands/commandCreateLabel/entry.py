@@ -1,4 +1,5 @@
 import adsk.core, adsk.fusion, traceback
+import html
 import os
 import time
 
@@ -16,9 +17,16 @@ from ...lib.gridfinityUtils import cullenectLabelLayout
 from ...lib.gridfinityUtils import labelColors
 from ...lib.gridfinityUtils import textStyles
 from .inputState import InputState
-from .labelBuilder import buildLabel, labelName, labelProblem, labelSize, labelSymbol, pocketProblem, pocketSizeMm, ICONS_FOLDER, NO_HARDWARE
+from .labelBuilder import buildLabel, rebuildLabel, insertPocket, labelName, labelProblem, labelSize, labelSymbol, pocketProblem, pocketSizeMm, ICONS_FOLDER, NO_HARDWARE
+from ...lib import configJson
+from ...lib import defaultSettings
+from ...lib import rebuildUtils
+from ...lib.gridfinityUtils import labelConfig
 from ...lib.ui.commandUiState import CommandUiState
 from ...lib.ui.defaultsButtons import addDefaultsButtonRow, defaultsButtonsHandlers, DEFAULTS_SAVE, DEFAULTS_FACTORY_RESET
+from ...lib.ui.buttonRow import addButtonRow
+from ...lib.ui import configButtons
+from ...lib.ui import selectionPrefill
 from ...lib.ui import browserPages
 from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
 
@@ -82,6 +90,8 @@ SHOW_PREVIEW_INPUT = 'show_preview'
 # a Cullenect pocket of a bin to joint the insert into (round 13, p100), its joint origin
 POCKET_GROUP = 'pocket_group'
 POCKET_INPUT = 'pocket'
+# why the pocket of a rebuilt insert isn't picked (round 20, p220)
+POCKET_NOTE = 'pocket_note'
 PREVIEW_TIME_INPUT = 'preview_time'
 
 SIZING_MODE_UNITS = 'Base units'
@@ -99,6 +109,20 @@ INFO_TEXT = ("<b>Help:</b> The insert clicks into the Cullenect pockets of bin l
              "<a href=\"https://github.com/CullenJWebb/Cullenect-Labels\">Cullenect-Labels</a> (MIT).")
 
 INPUTS_VALID = True
+
+# Saving, loading, cloning and rebuilding an insert like a bin (round 18, p150), the workflow of upstream v2.4 by
+# Le0Michine, see commandCreateBaseplate.entry
+CONFIG_BUTTONS_BROWSER = 'config_buttons'
+# config the dialog opens with next, see startWithConfig
+pendingConfig: dict | None = None
+# the insert the dialog opens to rebuild next and the pocket it is jointed into, see startRebuild; the entity token of
+# the one the open dialog rebuilds, every preview is undone, the token finds the body again. None for a new insert
+pendingRebuildBody: adsk.fusion.BRepBody | None = None
+pendingRebuildPocket: adsk.fusion.JointOrigin | None = None
+rebuildBodyToken: str | None = None
+# what of the features after a rebuilt insert needs a look, shown when the dialog closes
+rebuildNotes: list[str] = []
+DEFAULT_STATE = configJson.stateFromJson(configJson.GENERATOR_LABEL, InputState, defaultSettings.SETTINGS[configJson.GENERATOR_LABEL])
 
 def infoText():
     version = tagUtils.getGeneratorVersion()
@@ -194,11 +218,24 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     futil.log(f'{CMD_NAME} Command Created Event')
     args.command.setDialogInitialSize(400, 500)
     inputs = args.command.commandInputs
+    global rebuildBodyToken
+    global pendingRebuildBody
+    global pendingRebuildPocket
+    rebuildBodyToken = pendingRebuildBody.entityToken if pendingRebuildBody is not None else None
+    rebuildName = pendingRebuildBody.name if pendingRebuildBody is not None else None
+    rebuildPocket = pendingRebuildPocket
+    pendingRebuildBody = None
+    pendingRebuildPocket = None
+    # before the inputs, they take the dialog state
+    applyPendingConfig()
 
     infoGroup = inputs.addGroupCommandInput(INFO_GROUP, 'Info')
     infoGroup.isExpanded = uiState.getState(INFO_GROUP)
     uiState.registerCommandInput(infoGroup)
     info = infoText()
+    if rebuildName is not None:
+        # as the bin and baseplate dialogs say it (review round 18)
+        info = f'<b>Rebuilding {html.escape(rebuildName)}</b> in place, features after it in the timeline are kept.<br>' + info
     infoGroup.children.addTextBoxCommandInput("info_text", "Info", info, info.count('<br>') + 3, True)
 
     sizeGroup = inputs.addGroupCommandInput(SIZE_GROUP, 'Size')
@@ -256,11 +293,23 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     pocketInput.addSelectionFilter(adsk.core.SelectionCommandInput.JointOrigins)
     pocketInput.setSelectionLimits(0, 1)
     pocketInput.tooltip = 'Optional: pick the joint origin of a Cullenect pocket of a bin, the insert goes into it. Without, it goes beside the bins, baseplates and inserts there are'
+    # a rebuilt insert goes into its pocket again unless it's picked off (Hauptsitzung 15.11.2026). Fusion may refuse
+    # the pocket, the dialog stopped half built then (round 20, p220): the input stays empty and the dialog says so
+    note = selectionPrefill.prefillSelection(pocketInput, rebuildPocket)
+    if note is not None:
+        futil.log(f'{CMD_NAME} pocket {rebuildPocket.name} of the rebuilt insert not picked, {note}')
+        pocketGroup.children.addTextBoxCommandInput(
+            POCKET_NOTE, '',
+            f'The pocket the insert was in, {html.escape(rebuildPocket.name)}, couldn\'t be picked. Pick it again, '
+            'otherwise the insert is built where it was without a joint.',
+            3, True,
+        )
 
     inputChangesGroup = inputs.addGroupCommandInput(INPUT_CHANGES_GROUP, 'Inputs')
     inputChangesGroup.isExpanded = uiState.getState(INPUT_CHANGES_GROUP)
     uiState.registerCommandInput(inputChangesGroup)
     addDefaultsButtonRow(inputChangesGroup.children, INPUT_CHANGES_BUTTONS_BROWSER)
+    addButtonRow(inputChangesGroup.children, CONFIG_BUTTONS_BROWSER)
 
     previewGroup = inputs.addGroupCommandInput(PREVIEW_GROUP, 'Preview')
     previewGroup.isExpanded = uiState.getState(PREVIEW_GROUP)
@@ -379,6 +428,11 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
     if changed_input.id in (PREVIEW_TIME_INPUT, SIZE_TEXT, SYMBOL_TEXT):
         return
     uiState.onInputUpdate(changed_input)
+    if changed_input.id == POCKET_INPUT:
+        # the note that the old pocket couldn't be picked goes once one is picked (review round 20)
+        note = changed_input.parentCommand.commandInputs.itemById(POCKET_NOTE)
+        if note is not None:
+            note.isVisible = adsk.core.SelectionCommandInput.cast(changed_input).selectionCount == 0
     if isinstance(changed_input, adsk.core.GroupCommandInput) and changed_input.isExpanded == True:
         for input in changed_input.children:
             uiState.registerCommandInput(input)
@@ -408,13 +462,41 @@ def command_incoming_from_html(args: adsk.core.HTMLEventArgs):
         if uiState.getInput(SHOW_PREVIEW_INPUT).value:
             command.doExecutePreview()
 
+    def onLoadConfig(text: str, fileName: str):
+        state = readConfig(text, f'Loaded "{fileName}"')
+        if state is None:
+            return
+        applyInputsState(state)
+        fixDropdownStates()
+        uiState.forceUIRefresh()
+        updateInputs(command.commandInputs)
+        if uiState.getInput(SHOW_PREVIEW_INPUT).value:
+            command.doExecutePreview()
+
     if args.browserCommandInput.id == INPUT_CHANGES_BUTTONS_BROWSER:
         browserPages.handleMessage(args, defaultsButtonsHandlers(onDefaults))
+    elif args.browserCommandInput.id == CONFIG_BUTTONS_BROWSER:
+        browserPages.handleMessage(args, configButtons.configButtonsHandlers(
+            'label',
+            lambda: configJson.configText(configJson.GENERATOR_LABEL, configJson.stateToJson(configJson.GENERATOR_LABEL, getInputsState()), tagUtils.getGeneratorVersion()),
+            lambda: labelName(getInputsState()),
+            onLoad=onLoadConfig,
+        ))
 
 def command_destroy(args: adsk.core.CommandEventArgs):
     futil.log(f'{CMD_NAME} Command Destroy Event')
     global local_handlers
+    global rebuildBodyToken
     local_handlers = []
+    rebuildBodyToken = None
+    if args.terminationReason == adsk.core.CommandTerminationReason.CompletedTerminationReason and len(rebuildNotes) > 0:
+        ui.messageBox(
+            'The insert was rebuilt. These features after it need a look, ones using a face or an edge of the old '
+            'insert need them picked again:\n\n' + '\n'.join(rebuildNotes),
+            CMD_NAME,
+            adsk.core.MessageBoxButtonTypes.OKButtonType,
+            adsk.core.MessageBoxIconTypes.WarningIconType,
+        )
 
 def snapshotSettings(inputs: adsk.core.CommandInputs) -> list[dict]:
     return settingsUtils.snapshotInputs(inputs, [INFO_GROUP, INPUT_CHANGES_GROUP, PREVIEW_GROUP, POCKET_GROUP], CMD_NAME)
@@ -426,9 +508,16 @@ def generateLabel(args: adsk.core.CommandEventArgs, mayChangeDocument: bool = Tr
     state = getInputsState()
     # notes of an earlier build, a preview or a failed one, are not this one's
     textStyles.clearNotes()
+    global rebuildNotes
+    rebuildNotes = []
     try:
         des = adsk.fusion.Design.cast(app.activeProduct)
-        buildLabel(des, state, settings, mayChangeDocument, selectedPocket(args.command.commandInputs))
+        pocket = selectedPocket(args.command.commandInputs)
+        if rebuildBodyToken is not None:
+            body = rebuildUtils.findBodyByToken(des, rebuildBodyToken)
+            (_, rebuildNotes) = rebuildLabel(des, body, state, settings, not mayChangeDocument, pocket)
+        else:
+            buildLabel(des, state, settings, mayChangeDocument, pocket)
         futil.log(f'{CMD_NAME} {labelName(state)} generated in {time.perf_counter() - startTime:.3f}s')
     except UnsupportedDesignTypeException:
         args.executeFailed = True
@@ -511,3 +600,85 @@ def getInputsState() -> InputState:
         surface=next((key for (key, name) in SURFACE_NAMES.items() if name == surfaceName), cullenectLabelGenerator.SURFACE_EMBOSSED),
         textColor=labelColors.dialogColor(uiState.getState(TEXT_COLOR_DROPDOWN), uiState.getState(CUSTOM_COLOR_INPUT)),
     )
+
+# --- saving, loading, cloning and rebuilding (round 18, p150), as commandCreateBaseplate.entry of upstream v2.4
+
+def applyInputsState(state: InputState):
+    """Sets the dialog state to a state, the way back of getInputsState, the inputs follow on forceUIRefresh"""
+    values = labelConfig.dialogValues(configJson.stateToJson(configJson.GENERATOR_LABEL, state), SURFACE_NAMES)
+    uiState.setValue(BASE_WIDTH_INPUT, state.baseWidth)
+    uiState.setValue(SIZING_MODE_DROPDOWN, SIZING_MODE_UNITS if state.useUnits else SIZING_MODE_FREE)
+    uiState.setValue(WIDTH_UNITS_INPUT, state.widthUnits)
+    uiState.setValue(FREE_WIDTH_INPUT, state.freeWidth)
+    uiState.setValue(OFFSET_X_INPUT, state.offsetX)
+    uiState.setValue(OFFSET_Y_INPUT, state.offsetY)
+    uiState.setValue(LINE_1_INPUT, state.line1)
+    uiState.setValue(LINE_2_INPUT, state.line2)
+    uiState.setValue(TEXT_STYLE_DROPDOWN, state.textStyle)
+    uiState.setValue(SHOW_SCREW_INPUT, state.showScrew)
+    for (inputId, field) in SCREW_DROPDOWNS.items():
+        uiState.setValue(inputId, values[field])
+    uiState.setValue(FLANGE_INPUT, state.flange)
+    uiState.setValue(SECURITY_INPUT, state.security)
+    uiState.setValue(HARDWARE_DROPDOWN, values['hardware'])
+    uiState.setValue(SURFACE_DROPDOWN, values['surface'])
+    uiState.setValue(TEXT_COLOR_DROPDOWN, values['colorChoice'])
+    uiState.setValue(CUSTOM_COLOR_INPUT, values['customColor'])
+
+def configChoices() -> dict[str, configJson.Choice]:
+    """The options of the dropdowns a config can't set to anything else, with the dialog's first defaults"""
+    options = screwOptions()
+    hardwareKeys = [os.path.splitext(os.path.basename(path))[0] for (_, path) in cullenectCatalog.listHardwareIcons(ICONS_FOLDER)]
+    defaults = configJson.stateToJson(configJson.GENERATOR_LABEL, DEFAULT_STATE)
+    # a screw block or hardware this install has no svg for is said and replaced, not reset without a word (review)
+    choices = {field: configJson.Choice(options[field], defaults[field] if defaults[field] in options[field] else options[field][0]) for field in SCREW_DROPDOWNS.values()}
+    choices['hardware'] = configJson.Choice([NO_HARDWARE] + hardwareKeys, NO_HARDWARE)
+    choices['textStyle'] = configJson.Choice(textStyles.STYLES, textStyles.DEFAULT_INSERT_STYLE)
+    choices['surface'] = configJson.Choice(cullenectLabelGenerator.SURFACES, cullenectLabelGenerator.SURFACE_EMBOSSED)
+    return choices
+
+def readConfig(text: str, source: str) -> InputState | None:
+    """The state of a config, none when it can't be read, see configButtons.readConfig"""
+    return configButtons.readConfig(text, source, configJson.GENERATOR_LABEL, InputState, getInputsState(), configChoices())
+
+def configFileName(settings: dict) -> str:
+    """The name a saved file of these settings starts with, as the dialog's Save to file names it"""
+    defaults = configJson.stateToJson(configJson.GENERATOR_LABEL, DEFAULT_STATE)
+    known = {name: value for (name, value) in settings.items() if name in defaults}
+    return labelName(configJson.stateFromJson(configJson.GENERATOR_LABEL, InputState, {**defaults, **known}))
+
+def startWithConfig(settings: dict):
+    """Opens the dialog with a config by field name, see configJson.stateToJson, settings it doesn't have stay"""
+    global pendingConfig
+    global pendingRebuildBody
+    global pendingRebuildPocket
+    pendingConfig = settings
+    if not ui.commandDefinitions.itemById(CMD_ID).execute():
+        # no dialog took them, the next one opened by hand mustn't rebuild or clone (review)
+        pendingConfig = None
+        pendingRebuildBody = None
+        pendingRebuildPocket = None
+
+def startRebuild(body: adsk.fusion.BRepBody, tag: dict):
+    """
+    Opens the dialog with the settings of the insert the body is of, its tag value, to rebuild it in place, see
+    labelBuilder.rebuildLabel. Its text and base width parameters may have been changed since, their values replace
+    the settings. An insert in a pocket has it picked again
+    """
+    global pendingRebuildBody
+    global pendingRebuildPocket
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    settings = rebuildUtils.configWithParameters(configJson.GENERATOR_LABEL, tag['config'], tag.get('parameters'), design.userParameters.itemByName, labelConfig.PARAMETER_FIELDS)
+    pendingRebuildBody = body
+    pendingRebuildPocket = insertPocket(design, body)
+    startWithConfig(settings)
+
+def applyPendingConfig():
+    global pendingConfig
+    if pendingConfig is None:
+        return
+    state = readConfig(configJson.configText(configJson.GENERATOR_LABEL, pendingConfig), 'Rebuilding' if rebuildBodyToken is not None else 'Cloned')
+    pendingConfig = None
+    if state is not None:
+        applyInputsState(state)
+        fixDropdownStates()

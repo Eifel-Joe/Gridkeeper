@@ -100,6 +100,13 @@ def dialogColor(choice: str, custom: str) -> str:
     return custom.strip() or CUSTOM_CHOICE
 
 
+def configCurrentColor(choice: str, custom: str) -> str:
+    """The color a loaded config keeps when it has none, saved before bins had label colors (round 18, p151): the
+    dialog's choice as it is. The bin state's own color is '' without a label to color (labelColorFor), an old config
+    with a label took that and the choice jumped to None"""
+    return dialogColor(choice, custom)
+
+
 def labelColorFor(color: str, hasLabel: bool, isCullenect: bool) -> str:
     """The color a bin's state keeps: none where there is no label to color, without a tab or with a Cullenect socket,
     so a remembered color doesn't go into the bin's settings"""
@@ -115,8 +122,9 @@ def binHasLabel(generateBody: bool, hasTab: bool, isShaped: bool, isSolid: bool)
 def textEditByParameter(labelColor: str) -> bool:
     """
     Whether a rebuild that only changes the label text may just set the text parameter, see binBuilder.parameterEdits.
-    Not for a colored label: Fusion makes the letters a text parameter adds in the default appearance, not the label
-    color (p120), a rebuild colors them
+    Not for a colored label: before round 14 Fusion made the letters a text parameter adds in the default appearance
+    (p120), and bins built as bodies in the root still color body by body. Since round 14 a bin in a component shows
+    the color on its Text component and new letters get it too, a rebuild still builds it anew, it's never wrong
     """
     return labelColor == ''
 

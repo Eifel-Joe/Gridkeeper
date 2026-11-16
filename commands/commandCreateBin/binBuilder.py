@@ -22,6 +22,7 @@ from ...lib.gridfinityUtils.baseGeneratorInput import BaseGeneratorInput
 from ...lib.gridfinityUtils.binBodyGenerator import createGridfinityBinBody, createShapeCavity, binBodyTopHeight, createCompartmentCutout, compartmentCutoutFilletRadius, tabTopClearance, createTabLabel, hollowTabWallThickness
 from ...lib.gridfinityUtils import labelGenerator
 from ...lib.gridfinityUtils import labelColors
+from ...lib.gridfinityUtils import binLabelLayout
 from ...lib.gridfinityUtils import compartmentLayout
 from ...lib.gridfinityUtils import binShape
 from ...lib.gridfinityUtils import binGrid
@@ -74,7 +75,6 @@ PARAMETER_FIELDS = {
 # the move placing the bin, rebuilding in place reads the spot from it, see rebuildUtils
 BIN_PLACEMENT_FEATURE = 'Bin placement'
 # the same move of the colored labels in the bin's Text component (round 13)
-TEXT_PLACEMENT_FEATURE = 'Text placement'
 
 def binDisplayName(state: InputState) -> str:
     return 'Gridfinity bin {}x{}x{}{}'.format(
@@ -365,6 +365,7 @@ def _buildBin(
     # colored labels go into a Text component of the bin, made with the first of them
     binBodyInput.binOccurrence = newCmpOcc
     binBodyInput.textOccurrence = assembly.TextOccurrence(des, newCmpOcc)
+    binBodyInput.binPlacement = binPlacement
     binBodyInput.cullenectSocketOffset = state.cullenectSocketOffset
     binBodyInput.cullenectUnitWidth = baseWidth
     isCullenect = state.labelStyle == labelGenerator.LABEL_STYLE_CULLENECT
@@ -593,8 +594,9 @@ def _buildBin(
                 tabMaxX = tabOriginX + compartmentTabInput.length
                 tabHollowCuts = createTabHollowCuts(
                     compartmentTabInput,
-                    tabOriginX if tabOriginX.value >= shellThickness.value else shellThickness,
-                    tabMaxX if tabMaxX.value <= shellInteriorMaxX.value else shellInteriorMaxX,
+                    # as expressions, so they follow a changed base width (round 15, p60)
+                    Dim.max(tabOriginX, shellThickness),
+                    Dim.min(tabMaxX, shellInteriorMaxX),
                     hollowTabWallThickness(shellThickness.value, binBodyInput.labelStyle),
                     shellInterior,
                     TabCavity(shellThickness, shellInteriorMaxX, bodyLength - shellThickness, compartmentCutoutFilletRadius(shellInteriorCornerFilletRadius)),
@@ -648,20 +650,18 @@ def _buildBin(
                     name='Label',
                     textOccurrence=binBodyInput.textOccurrence,
                     targetOccurrence=binBodyInput.binOccurrence,
+                    binPlacement=binPlacement,
                 )
 
     generatedBodies: list[adsk.fusion.BRepBody] = []
     if state.generateBody or state.generateBase:
         generatedBodies = [binBody] if state.generateBody else baseBodies
-        # colored labels stand apart from the bin body, they move with it and are part of what was built
+        # colored labels stand apart from the bin body and are part of what was built. They are drawn where the bin ends
+        # up and aren't moved with it: a move takes the bodies there are, the letters a longer text adds stayed behind
+        # (round 14, p72)
         movedBodies = generatedBodies + labelBodies
         if binPlacement != (0, 0):
-            # labels in the Text component move there, a move only takes bodies of its own component
-            ownBodies = [body for body in movedBodies if body.parentComponent == gridfinityBinComponent]
-            textBodies = [body for body in movedBodies if body.parentComponent != gridfinityBinComponent]
-            placementUtils.moveBodies(ownBodies, *binPlacement, gridfinityBinComponent, name=BIN_PLACEMENT_FEATURE)
-            if len(textBodies) > 0:
-                placementUtils.moveBodies(textBodies, *binPlacement, textBodies[0].parentComponent, name=TEXT_PLACEMENT_FEATURE)
+            placementUtils.moveBodies(generatedBodies, *binPlacement, gridfinityBinComponent, name=BIN_PLACEMENT_FEATURE)
         # mark generated geometry so later bins can tell it apart from the rest of the design,
         # with the settings it was generated with to show later. Labels aren't bins, they'd count as bins of their own
         for body in generatedBodies:
@@ -754,7 +754,8 @@ def parameterEdits(
 ) -> tuple[list[adsk.fusion.UserParameter], list[adsk.core.ValueInput]] | None:
     """
     The parameters to set and their new expressions when every setting the rebuild changes is one of the bin's own
-    parameters, so setting them builds the same bin a rebuild would. None when it has to be rebuilt: a shared unit,
+    parameters, so setting them builds the same bin a rebuild would. None when it has to be rebuilt: a label text
+    changed since the bin was built, it is fitted anew (round 19, p181), a shared unit,
     of a bin built before bins had units of their own, would change every bin built on it, a blank label has no
     parameter, a height can turn the creases on or off
     """
@@ -764,6 +765,10 @@ def parameterEdits(
     tagParameters = tag[1].get('parameters')
     oldConfig = configWithParameters(tag[1]['config'], tagParameters, des.userParameters.itemByName)
     newConfig = configJson.stateToJson(configJson.GENERATOR_BIN, state)
+    # a text changed since the bin was built, here or by its parameter before, is fitted anew by a rebuild: set by the
+    # parameter it keeps the height of its letters and runs past the tab (round 19, p181)
+    if binLabelLayout.textChangedSinceBuild(tag[1]['config'], newConfig):
+        return None
     changed = [name for (name, value) in newConfig.items() if not isSameSetting(oldConfig.get(name), value)]
     # compartments without a label of their own show the bin's, each has a parameter holding it
     parametersByField: dict[str, list[adsk.fusion.UserParameter]] = {}
@@ -814,5 +819,11 @@ def retag(target: rebuildUtils.RebuildTarget, state: InputState, settings: list[
         target.occurrence.component.name = binDisplayName(state)
 
 def configWithParameters(config: dict, parameters: list, findParameter) -> dict:
-    """The config a bin was built with, with the values its parameters have now, see rebuildUtils.configWithParameters"""
-    return rebuildUtils.configWithParameters(configJson.GENERATOR_BIN, config, parameters, findParameter, PARAMETER_FIELDS)
+    """The config a bin was built with, with the values its parameters have now, see rebuildUtils.configWithParameters.
+    Compartments showing the bin's label each have a parameter of their own, the one edited in Fusion gives the text
+    (review round 19, see binLabelLayout.sharedText)"""
+    filled = rebuildUtils.configWithParameters(configJson.GENERATOR_BIN, config, parameters, findParameter, PARAMETER_FIELDS)
+    texts = [parameter.textValue for (field, parameter) in rebuildUtils.parameterFields(parameters, findParameter, PARAMETER_FIELDS) if field == 'labelText']
+    if len(texts) > 0 and 'labelText' in config:
+        filled['labelText'] = binLabelLayout.sharedText(config['labelText'], texts)
+    return filled

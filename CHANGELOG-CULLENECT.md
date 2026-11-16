@@ -4,6 +4,96 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
 
 ## Unreleased
 
+### Bin label text made longer (round 19)
+
+- **Rebuild fits a longer text again (p181):** a bin label text made longer through its parameter keeps the height of
+  its letters and can run past the tab. "Gridfinity rebuild" now builds such a bin anew and fits the text to its
+  label, also when only the parameter was changed; before, it just set the parameter again. Fusion can't make a
+  sketch text's height follow the length of its text by parameters (tried 16.11.2026), so the fit happens on rebuild.
+- **Least text height on bin labels:** a text shrinks for the width of its label only down to the height where the
+  thinnest stroke is one 0.4 mm nozzle line (Regular 4.43 mm, Bold 3.42 mm, round 17). A text that doesn't fit even
+  then isn't built, the dialog says which text; a tab lower than that keeps its own height.
+- **Umlauts on two-line inserts (p210):** measured, the dots of Ä, Ö and Ü stay inside the insert in every style, also
+  with -1 mm height correction; nothing to change.
+
+### Rebuilding inserts and their settings (round 18)
+
+- **Inserts like bins (p150):** an insert of the Gridfinity label command can be rebuilt in its place from the context
+  menu, "Gridfinity rebuild", and its settings saved to a file, loaded, copied and cloned from "Gridfinity settings", as
+  bins and baseplates since upstream v2.4. This reuses the rebuild and config mechanism of FusionGridfinityGenerator
+  by Le0Michine (CC BY-NC-SA 4.0). A rebuilt insert is drawn from the bottom left corner of the old one and keeps its
+  parameters; an insert jointed into a Cullenect pocket gets a new joint into the same pocket. Inserts built before
+  this version have no config in their tag and can't be rebuilt, their settings still show.
+- **Old bin configs keep the label color (p151):** loading a bin config saved before bins had a label color keeps the
+  color chosen in the dialog instead of setting it to None.
+
+### Insert geometry (round 17)
+
+- **Descenders stay on the insert (p110):** two lines on an insert made lower by its height correction shrink so that
+  g, j, p and y end above the bottom edge. They never shrink below the least height of their style, where the
+  thinnest stroke of the font is one line of a 0.4 mm nozzle (Regular 4.43 mm, Bold 3.42 mm, Heavy 3.05 mm, measured
+  on the letters in Fusion, `tools/fontStroke.py`). Where that isn't enough the dialog says so and won't build: two
+  lines in Regular from about -0.45 mm correction, in Bold from about -0.57 mm.
+- **Debossed rim stays whole (p140):** set in, the symbol keeps 0.4 mm off the edges, so the top layer over the latch
+  isn't cut through and the insert still holds. Flush and embossed are as before.
+- **Room before the symbol (p52):** a text is fitted with 1 mm more room before the symbol, so an insert made up to
+  1 mm narrower afterwards doesn't push the symbol onto the text.
+- **Faster hardware symbols (p51):** the hardware symbols are rendered with coarser circles, about a tenth of the
+  points, the contour within 0.05 mm. An insert with a nylon lock nut builds in about 3 s instead of 24 s, with a closed
+  crimp ring in about 4 s instead of 33 s. The symbols are still derived from Cullenect-Labels by CullenJWebb (MIT).
+- **Symbols on bin labels (p180):** measured again on the coarser symbols, the limit of symbols held by dims on a bin
+  label stays at 40 points: up to the hex nut (36 points) that takes under 2 s, from the magnet (50 points) on 3 s and
+  more, those are still moved into place.
+
+### Tests and the settings window (round 16)
+
+- **Shape tests green on any font (p30):** bins with a text label are compared by their form, the number of bodies,
+  their volume and the box around them, not by where each letter lies, which depends on the font and the Fusion
+  version. A setting newer than a snapshot counts as a change only when the case has it off its default. The whole
+  run is green again, 83 of 83, without recording those snapshots anew.
+- **Previews in any language (p31):** the color of the snapshot previews and model pictures is found through the
+  appearance library's id, as for the label colors, so a Fusion with a German library takes previews too; without
+  any, the picture is taken in Fusion's own look.
+- **Checks in the test run (p34):** a check after a build that breaks shows as a check failure, not as a build failure,
+  and the build with a case's parameters from the start gets its sketches checked as well.
+- **Gridfinity settings of a Cullenect bin (p32, p33):** the Cullenect section shows the label tab width as built,
+  widened for the socket, and a row per socket size with how many sockets of it the bin has, e.g. "1U: 8 sockets".
+  Bins built before keep the list they were built with.
+
+### Grid and bin geometry (round 15)
+
+- **Joint origins follow the grid (p170):** the joint origins of bin feet and baseplate sockets sat in one sketch on
+  reference dimensions and stayed put when a base unit changed. Each is now a point of its own with driving
+  dimensions, so after changing `gfBinN_baseWidth` or a baseplate's base width they stay in the middle of their cells.
+  A 6x6 baseplate with joint origins builds in about 9.7 s instead of 7.0 s.
+- **Labels and sockets beside the grid (p60):** where a tab and its compartment overlap is now worked out by Fusion
+  (`max()`/`min()`), not picked once when building, for Cullenect sockets, text labels, the tab hollow and its
+  openings. The size of a Cullenect socket (1U, 2U …) is still chosen when building: if a parameter change would need
+  another size, rebuild the bin from its context menu.
+- **Raised divider corners on thick walls (p101):** a wall thicker than the lip leaves a small ledge under the lip.
+  The corners of dividers up to the top are now rounded in one go on both sides of it, at 2 and 3 mm walls, instead of
+  falling back to a smaller rounding with a step.
+- **Cullenect needs 1.2 mm walls (p35):** the Cullenect label style needs a wall of at least 1.2 mm, the Cullenect
+  standard (Nutzer: thicker is fine, thinner not). Below it the bin dialog keeps OK locked and says why in the
+  Cullenect row of the dimensions table, also when a config is loaded or a bin is rebuilt. Bins built before stay.
+
+### Labels after a text change (round 14)
+
+- **Bin labels stay put (p72):** a label text made longer through its parameter added letters at the origin, untilted
+  and outside the bin, because the label was laid out at the current spot and moved there body by body. The text of a
+  bin and compartment label is now drawn where it ends up: on planes that follow the bin's parameters, a tilted tab
+  through three points, standing on a baseline whose ends follow the label's width. The cut into the bin (engraved,
+  outline) or the join (embossed) is the extrusion's own operation, so new letters are cut or joined too. Small icons
+  (up to 40 points, e.g. the hex nut and screws) are held there by dimensions; the large Cullenect symbols are still
+  moved into place, as their bodies never change with the text (p180). Bins built before stay as they are until they
+  are rebuilt from their context menu.
+- **New letters show the color (p120):** the label color goes on the Text component of a bin or insert instead of on
+  each body, so letters a longer text adds show it, also in the 3MF export.
+- **Context menu on a new letter (p71):** "Gridfinity settings" and "Gridfinity rebuild" now find the bin or insert
+  from a letter in its Text component that has no tag of its own. New letters keep Fusion's body names.
+- Found in this round: a 3MF export lists every letter as an object of its own, not the Text component as one part
+  (p53 stays open); a label text that already fills its label runs past it when made longer (p181).
+
 ### An assembly of components, inserts jointed into their pockets (round 13)
 
 - **Containers Grid, Bins and Label:** every new baseplate, bin and Cullenect insert is a component of its own in the
