@@ -13,7 +13,7 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   (CC BY-NC), measure for measure: outer size, grooves, latch catches and slides, hinge slots, handle and label
   holders, lid pins and stacking rim, checked step by step against Pred's file (5 × 4 × 6: the lid's volume is the
   same, the box's differs by Pred's 0.0001 mm deep "switched off" magnet holes). Width and length from 4 × 3 cells,
-  height from 6 units like Pred, in the parameters `gfBox1_baseWidth`, `gfBox1_baseLength`, `gfBox1_heightU`. Every sketch is
+  height from 6 units for now (Pred goes down to 5, p264), in the parameters `gfBox1_baseWidth`, `gfBox1_baseLength`, `gfBox1_heightU`. Every sketch is
   fully constrained. The set is a component in the container *Boxes* with the components *Box* and *Lid*, the lid
   jointed shut; joint origins in every cell, for stacking and for the lid. Settings, rebuild and clone as for bins.
   Changes to Pred's box: magnet holes of a size of your choice, the floor pads and the stacking rim drawn from circles
@@ -339,4 +339,6 @@ the walls, shelled bins with rounded offsets, a clearance between baseplates glu
   Cullenect's thread and driver shapes (CullenJWebb, MIT).
 - **ostat / Chris Heazlewood** — [gridfinity_extended_openscad](https://github.com/ostat/gridfinity_extended_openscad),
   reference for the Cullenect tab.
+- **Pred** — [Gridfinity Storage Box v1.1 (parametric)](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric), size and shape of the
+  storage box and its lid, rebuilt in code with changes, CC BY-NC.
 - **Zack Freedman** — [Gridfinity](https://gridfinity.xyz).

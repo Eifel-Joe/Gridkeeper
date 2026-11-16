@@ -88,6 +88,7 @@ Gridkeeper counts its own versions, starting with 1.0.0. Releases are tagged `gr
 This work is licensed under a
 [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License][cc-by-nc-sa], like
 GridfinityGenerator. The Cullenect symbols in `lib/gridfinityUtils/cullenectIcons/` keep their MIT license.
+The storage box follows [Pred's parametric Gridfinity Storage Box v1.1](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric) (CC BY-NC): Gridkeeper rebuilds its shape in code, with the changes noted on [Storage boxes](https://eifel-joe.github.io/Gridkeeper/boxes/), and credits Pred for it; the rebuild is part of Gridkeeper under CC BY-NC-SA, Pred's own files stay under Pred's license.
 
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-image]][cc-by-nc-sa]
 
