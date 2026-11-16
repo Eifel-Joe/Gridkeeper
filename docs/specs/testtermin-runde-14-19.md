@@ -303,3 +303,17 @@ Schick mir deine Antworten und die Nummern der Handtests, die nicht gepasst habe
 - Was du bei den Fragen anders entscheidest als gebaut, wird eine neue Runde.
 
 <sub>Stand 16.11.2026, Sammelbranch `runde-14-18`. Belege je Runde in `docs/specs/runde-NN-uebergabe.md`.</sub>
+
+## Ergebnis (Jörg, 16.11.2026)
+
+- **Handtests:** alle bestanden. Tests 4, 13, 14 und 15 hat Jörg gedruckt bzw. im Slicer geprüft. Die übrigen liefen per Skript oder per Desktop-Steuerung.
+- **Antworten:**
+  - **1A:** Kerbe hinnehmen.
+  - **2A:** Hinweis ab der Druckgrenze, als p232 neu.
+  - **3A:** 1 mm Luft auch ohne Symbol, als p233 neu.
+  - **4A:** sperren.
+  - **5A:** reicht so.
+  - **6A:** nur Rebuild.
+  - **7A:** ablehnen.
+  - **8A:** neuer Joint in Ordnung.
+- **Doku (p230):** vollständig, nur Englisch, im Ordner `docs/` des Forks. Start nach dem Merge nach `master`; vorher wird noch anderes festgelegt.
