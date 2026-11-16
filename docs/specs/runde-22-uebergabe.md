@@ -63,3 +63,15 @@ abgebrochen. Vorgehen je Stelle:
   2. Dasselbe für eine Grundplatte und einen Einleger.
   3. Bin-Dialog › Label icon: „Hex locknut“ und die neuen Schrauben stehen in der Liste und haben Vorschaubilder.
   4. Rechtsklick › „Gridfinity settings“: Der Clone-Knopf im Fenster funktioniert weiter.
+
+## Umsetzung
+
+Merge-Commit 1e5d9e4 (`git merge upstream/master`). Die sechs Commits von Lev Mishin bleiben mit Urheber erhalten.
+- **1 (Kontextmenü Clone):** übernommen, Texte auf „bin, baseplate or label“.
+- **2 (`parameterEdits`):** unsere Fassung.
+- **3 (`createLabel`):** vorerst unsere Fassung, Stelle im Code mit „OPEN (round 22, p13)“ markiert. Entscheidung A/B
+  steht aus (Hauptsitzung fragt Jörg).
+- **4 (Icons):** übernommen.
+- **5 (Manifest):** Git hatte es ohne Konflikt auf 2.4.2.0 gemergt, zurück auf 2.4.0.0.
+- **6 (README, Screenshots, `tools/labelIcons.py`):** übernommen.
+- pytest: `920 passed`.
