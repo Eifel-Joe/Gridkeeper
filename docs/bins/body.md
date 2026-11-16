@@ -25,7 +25,7 @@ Hollow bin | Shelled bin | Solid bin
   shelled bin's label tab is hollow by default.
 - **Solid:** a solid block, a start for tool bins: cut the shape of your tools into it.
 
-![A 4x2 solid bin with the shape of an oversized volcano nozzle cut into it](../assets/gif/specialized-bin-nozzle-creation.gif)
+<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/bin-solid-tool-dark.gif"><img src="../../assets/gif/bin-solid-tool-light.gif" alt="A 2x1 bin turned from hollow to solid, then two round tool pockets cut into its top"></picture>
 
 ## Creased walls
 

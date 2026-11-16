@@ -21,6 +21,8 @@ Cullenect: 1U: pocket 36.3 mm, insert 36 mm; 2U: pocket 78.3 mm, insert 78 mm
 
 The same list, with how many pockets of each size the bin has, is in its **Gridkeeper settings** under *Cullenect*.
 
+<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/cullenect-pocket-dark.gif"><img src="../../assets/gif/cullenect-pocket-light.gif" alt="A bin with a plain label tab, then the same tab with a Cullenect pocket, then the pocket over 2 units"></picture>
+
 ## The tab with a pocket
 
 - The tab is widened to at least 14 mm, more under steep overhangs, and kept flat: **Tab top angle** is switched off.
