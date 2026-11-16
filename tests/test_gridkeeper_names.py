@@ -89,7 +89,9 @@ def test_manifest_is_gridkeepers():
 
 def test_release_zip_is_named_gridkeeper():
     workflow = open(os.path.join(ROOT, '.github', 'workflows', 'release.yml'), encoding='utf-8').read()
-    assert 'dist/Gridkeeper-${{ github.ref_name }}.zip' in workflow
+    # tag gridkeeper-v1.0.0 gives Gridkeeper-v1.0.0.zip, only Gridkeeper's own tags start a release (16.11.2026)
+    assert 'zip="dist/Gridkeeper-${GITHUB_REF_NAME#gridkeeper-}.zip"' in workflow
+    assert "- 'gridkeeper-v*'" in workflow and "- '*'" not in workflow
     # round 25: the files are named like the folder, Fusion loads the add-in only then
     assert 'cp -r Gridkeeper.manifest Gridkeeper.py' in workflow and '7z a' in workflow and 'Gridkeeper/' in workflow
 
