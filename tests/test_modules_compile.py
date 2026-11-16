@@ -11,7 +11,7 @@ import pytest
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FOLDERS = ['commands', 'lib']
 FILES = [os.path.join(root, name) for folder in FOLDERS for (root, _, names) in os.walk(os.path.join(PROJECT_ROOT, folder)) for name in names if name.endswith('.py')]
-FILES.append(os.path.join(PROJECT_ROOT, 'GridfinityGenerator.py'))
+FILES.append(os.path.join(PROJECT_ROOT, 'Gridkeeper.py'))
 
 
 @pytest.mark.parametrize('path', FILES, ids=lambda path: os.path.relpath(path, PROJECT_ROOT))

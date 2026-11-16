@@ -79,7 +79,7 @@ def test_what_built_parts_carry_stays():
 
 
 def test_manifest_is_gridkeepers():
-    manifest = json.load(open(os.path.join(ROOT, 'GridfinityGenerator.manifest'), encoding='utf-8'))
+    manifest = json.load(open(os.path.join(ROOT, 'Gridkeeper.manifest'), encoding='utf-8'))
     assert manifest['id'] != 'bbbd3c0a-34f1-4bcf-b9f9-accd46c35cd0'
     assert re.fullmatch(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', manifest['id'])
     assert manifest['version'] == '1.0.0'
@@ -90,6 +90,13 @@ def test_manifest_is_gridkeepers():
 def test_release_zip_is_named_gridkeeper():
     workflow = open(os.path.join(ROOT, '.github', 'workflows', 'release.yml'), encoding='utf-8').read()
     assert 'dist/Gridkeeper-${{ github.ref_name }}.zip' in workflow
+    # round 25: the files are named like the folder, Fusion loads the add-in only then
+    assert 'cp -r Gridkeeper.manifest Gridkeeper.py' in workflow and '7z a' in workflow and 'Gridkeeper/' in workflow
+
+
+def test_add_in_files_are_named_like_the_folder():
+    assert os.path.isfile(os.path.join(ROOT, 'Gridkeeper.manifest')) and os.path.isfile(os.path.join(ROOT, 'Gridkeeper.py'))
+    assert not os.path.exists(os.path.join(ROOT, 'GridfinityGenerator.manifest'))
 
 
 def _sources(*patterns):
