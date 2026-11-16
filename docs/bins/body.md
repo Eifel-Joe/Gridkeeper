@@ -8,7 +8,7 @@ The **Bin features** section of the bin dialog.
 | **Bin type** | Hollow | *Hollow*, *Shelled* or *Solid*, see below |
 | **Bin wall thickness** | 1.2 mm | 0.4 to 2 mm. Not for solid bins. Cullenect pockets need at least 1.2 mm |
 | **Generate lip for stackability** | on | The lip at the top another bin stacks on. Off gives a straight wall |
-| **Generate lip notches** | off | Notches in the lip that keep stacked bins from sliding |
+| **Generate lip notches** | off | Notches in the lip that keep stacked bins from sliding; only with the lip |
 | **Fold long walls for stiffness** | on | Creases, see below |
 
 With **Generate base** off in [Base interface features](base.md) the body is built alone, to combine it with an

@@ -28,11 +28,11 @@ The full list of changes, round by round, is in
   [Colors and multicolor printing](../working/colors.md).
 - **Text styles for inserts:** Regular, Bold and Heavy (Arial Black). Heavy prints cleanly with a 0.4 mm nozzle and is
   the default.
-- **Printable text heights:** a text is never shrunk below the height where its thinnest stroke is still one 0.4 mm
-  nozzle line (Regular 4.43 mm, Bold 3.42 mm, Heavy 3.05 mm, measured). A text that doesn't fit then isn't built and the
-  dialog says which one.
+- **Printable text heights:** a bin label text is never shrunk below the height where its thinnest stroke is still
+  one 0.4 mm nozzle line (Regular 4.43 mm, Bold 3.42 mm, measured); inserts tell you after building when their text
+  is below it (Heavy 3.05 mm).
 - **Hardware symbols on bin labels:** the Cullenect hardware symbols can be picked as label icons of normal bins too.
-- **Labels follow their text:** a bin label text changed through its user parameter stays on the tab, new letters get
+- **Labels follow their text:** a bin label text changed through its user parameter follows the tab, new letters get
   the label color, and **Gridkeeper rebuild** fits a longer text to the tab again.
 
 ## Bins

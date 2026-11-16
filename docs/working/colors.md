@@ -21,8 +21,8 @@ own, *Raised*, *Set in* or *Flush*; the color only sets their look.
 
 The colored bodies are in a component **Text** inside the bin or insert, so they export together and apart from the
 bin. Their appearance is a library plastic recolored and named `Gridfinity label RRGGBB`. It is set on the Text
-component, so letters a longer text adds later get the color too. Engraved or uncolored bin labels have no bodies of
-their own and get no Text component.
+component, so letters a longer text adds later get the color too. Uncolored bin labels have no bodies of their own
+and get no Text component.
 
 ![A bin with a red embossed label and its Text component in the browser](../assets/images/colored-label.png)
 
@@ -37,6 +37,7 @@ text objects of each bin or insert.
 
 ## Printable text
 
-A 0.4 mm nozzle lays lines about 0.42 to 0.45 mm wide. Text is never fitted below the height where its thinnest
-stroke is one such line: Regular 4.43 mm, Bold 3.42 mm, Heavy 3.05 mm, measured on the letters in Fusion. Near that
-limit the dialog gives a hint. For small inserts use **Heavy**, it has about twice the stroke of Regular.
+A 0.4 mm nozzle lays lines about 0.42 to 0.45 mm wide. Below the height where the thinnest stroke of a text is one
+such line, a slicer leaves parts of the letters out: Regular 4.43 mm, Bold 3.42 mm, Heavy 3.05 mm, measured on the
+letters in Fusion. Bin labels are never fitted below it; inserts can be, and a message after building says so. For
+small inserts use **Heavy**, its strokes are about 1.5 times as wide as Regular's.

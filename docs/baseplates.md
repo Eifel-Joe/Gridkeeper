@@ -9,7 +9,7 @@ The dialog has these sections, from top to bottom.
 
 ## Info
 
-Help on the dialog and a link to report a problem. When the dialog was opened by **Gridkeeper rebuild**, it says which
+Help on the dialog with a link to the help of the original add-in. When the dialog was opened by **Gridkeeper rebuild**, it says which
 baseplate is rebuilt in place.
 
 ## Basic size
@@ -23,7 +23,7 @@ baseplate is rebuilt in place.
 
 ## Main dimensions
 
-**Sizing mode** chooses how the size is given.
+**Sizing mode** chooses how the size is given: *Fill area* (the default) or *Grid units*.
 
 ### Grid units
 
@@ -57,9 +57,9 @@ side of the bed. **Result** draws the area, the grid and how it is split into pi
 
 | Type | What it is |
 |---|---|
-| **Light** | A thin plate of sockets, the least filament. No magnets or screws. |
-| **Full** | A thick plate with room for magnets and screws under every socket. |
+| **Light** | A thin plate of sockets, the least filament. Magnet, screw and connection hole inputs are ignored. |
 | **Skeletonized** | A thick plate with its bottom cut away to save weight, leaving room for magnets, screws and connection holes. |
+| **Full** | A thick plate with room for magnets and screws under every socket. |
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../assets/gif/baseplate-types-dark.gif"><img src="../assets/gif/baseplate-types-light.gif" alt="Picking each baseplate type, with light, skeletonized and full baseplates"></picture>
 

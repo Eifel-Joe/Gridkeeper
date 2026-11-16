@@ -26,3 +26,24 @@ Commits je Teil.
 - Die Projekt-`CLAUDE.md` (außerhalb des Forks) nennt die Spec noch unter `FusionGridfinityGenerator/docs/specs/…`,
   nach dem Merge heißt der Pfad `dev-notes/specs/…`.
 - Doku-Adresse ist ein Platzhalter (`https://eifel-joe.github.io/Gridkeeper/`), Repo wird noch umbenannt.
+
+## Ergebnis (16.11.2026)
+
+- `mkdocs build --strict` fehlerfrei, alle 59 Bildpfade der gebauten Seiten (auch die `<picture>`-Pfade, die MkDocs
+  nicht prüft) zeigen auf vorhandene Dateien. `python -m pytest -q`: 930 passed.
+- Review per Opus-Subagent, Inhalt gegen Code: 12 Abweichungen gefunden und eingearbeitet (u. a. Einleger-Text hat
+  keine Untergrenze, nur einen Hinweis nach OK; Bin-Text, der nicht passt, lässt den Bau scheitern statt OK zu sperren;
+  Bin-Höhe ohne Zusatz-Einheit, Lippe +3,8 mm; jede Label-Textänderung baut beim Rebuild neu; Cullenect schaltet auch
+  Label color ab; Heavy ~1,5-fache Strichstärke).
+- Bilder: 20 Platzhalter, Liste in `docs/assets/images/NEEDED.md`.
+
+## Offen / Folgepunkte (nicht in dieser Runde, Code)
+
+- Projekt-`CLAUDE.md` (außerhalb des Forks) nennt noch `FusionGridfinityGenerator/docs/specs/…`, jetzt `dev-notes/specs/…`.
+- „Läuft neben dem Original“ stimmt erst, wenn Runde 23 auch `config.ADDIN_NAME`/`COMPANY_NAME` (Befehls-IDs
+  `LevMishin_GridfinityGenerator_cmd*`) und die Manifest-`id` ändert; heute sind sie gleich wie beim Original.
+- Info-Links der Bin- und Baseplate-Dialoge zeigen auf das Wiki des Originals, nicht auf die neue Doku.
+- Info-Zeile im Bin-Rebuild-Dialog (`commandCreateBin/entry.py` ~834) sagt „like its height or label“, ein Label-Text
+  baut aber neu (binBuilder.parameterEdits).
+- Release-ZIP heißt noch `GridfinityGenerator-<tag>.zip` (`release.yml`); Doku nennt keinen Dateinamen.
+- „Gridkeeper tests: update snapshots“ in der Doku angenommen (Runde 23 nannte nur „tests: run“).

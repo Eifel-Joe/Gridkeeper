@@ -3,7 +3,7 @@
 A quick tour: a baseplate, a bin on it with a Cullenect label pocket, and an insert in the pocket.
 
 1. **New design.** Start a new design in Fusion. Gridkeeper works in part and hybrid designs; a part design is
-   switched to a hybrid design when the first model is built, Fusion shows a short message.
+   switched to a hybrid design when the first model is built, Gridkeeper says so in a short message.
 2. **Baseplate.** Open **Solid › Create › Gridkeeper baseplate**. Set *Sizing mode* to *Grid units*, *Plate width* 3
    and *Plate length* 2, click **OK**. The plate lands in the component *Grid*.
 3. **Bin.** Open **Solid › Create › Gridkeeper bin**. Set *Bin width* 2, *Bin length* 1 and *Bin height* 4. In
