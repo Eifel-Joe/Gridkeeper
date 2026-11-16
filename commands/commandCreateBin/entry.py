@@ -1055,12 +1055,12 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     commandUIState.registerCommandInput(generateMagnetSocketCheckboxInput)
     generateMagnetsTabCheckboxInput = baseFeaturesGroup.children.addBoolValueInput(BIN_MAGNET_CUTOUTS_TABS_INPUT_ID, 'Add tabs to magnet sockets', True, '', commandUIState.getState(BIN_MAGNET_CUTOUTS_TABS_INPUT_ID))
     commandUIState.registerCommandInput(generateMagnetsTabCheckboxInput)
-    magnetSizeInput = baseFeaturesGroup.children.addValueInput(BIN_MAGNET_DIAMETER_INPUT, 'Magnet cutout diameter', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_MAGNET_DIAMETER_INPUT)))
-    magnetSizeInput.minimumValue = 0.1
-    magnetSizeInput.isMinimumInclusive = True
-    magnetSizeInput.maximumValue = 1
-    magnetSizeInput.isMaximumInclusive = True
-    commandUIState.registerCommandInput(magnetSizeInput)
+    magnetDiameterInput = baseFeaturesGroup.children.addValueInput(BIN_MAGNET_DIAMETER_INPUT, 'Magnet cutout diameter', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_MAGNET_DIAMETER_INPUT)))
+    magnetDiameterInput.minimumValue = 0.1
+    magnetDiameterInput.isMinimumInclusive = True
+    magnetDiameterInput.maximumValue = 1
+    magnetDiameterInput.isMaximumInclusive = True
+    commandUIState.registerCommandInput(magnetDiameterInput)
     magnetSizeInput.addMagnetSizeInput(baseFeaturesGroup.children, BIN_MAGNET_SIZE_INPUT, commandUIState, magnetSizes.ALL_CHOICES)
     magnetHeightInput = baseFeaturesGroup.children.addValueInput(BIN_MAGNET_HEIGHT_INPUT, 'Magnet cutout depth', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_MAGNET_HEIGHT_INPUT)))
     magnetHeightInput.minimumValue = 0.1

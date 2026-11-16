@@ -588,7 +588,6 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
     if changed_input.id == BASEPLATE_MAGNET_SIZE_INPUT and magnetSizeInput.onMagnetSizeChanged(uiState, BASEPLATE_MAGNET_SIZE_INPUT, BASEPLATE_MAGNET_HEIGHT_INPUT):
         # 6x2 or 6x3 mm magnets set the depth, Custom leaves it to be typed (p263)
         uiState.forceUIRefresh()
-    changed_input.parentCommand.commandInputs.itemById(BASEPLATE_MAGNET_HEIGHT_INPUT).isEnabled = magnetSizeInput.isDepthTyped(uiState, BASEPLATE_MAGNET_SIZE_INPUT)
 
     global isApplyingBedPreset
     if changed_input.id == PRINT_BED_PRESET_DROPDOWN:
@@ -877,6 +876,8 @@ def updateSizingModeInputs(inputs: adsk.core.CommandInputs):
         inputs.itemById(inputId).isVisible = not isFillArea
     for inputId in FILL_AREA_MODE_INPUTS:
         inputs.itemById(inputId).isVisible = isFillArea
+    # the depth is typed only with Custom; here, so it holds when the dialog opens and after defaults or a config too
+    inputs.itemById(BASEPLATE_MAGNET_HEIGHT_INPUT).isEnabled = magnetSizeInput.isDepthTyped(uiState, BASEPLATE_MAGNET_SIZE_INPUT)
     browserPages.sendUpdate(inputs.itemById(LAYOUT_BROWSER), layoutData(getInputsState()))
 
 def snapshotSettings(inputs: adsk.core.CommandInputs) -> list[dict]:

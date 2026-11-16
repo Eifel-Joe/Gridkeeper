@@ -15,20 +15,23 @@ def deleteOneByOne(items: list, timeline, log: Callable[[str], None]) -> list[st
     if left:
         left[-1].rollTo(False)
     kept = []
-    for item in reversed(left):
-        if not item.isValid:
-            continue
-        name = item.name
-        try:
-            if item.isDeletable and item.deleteObject():
+    try:
+        for item in reversed(left):
+            if not item.isValid:
                 continue
-            log(f'{name} wasn\'t deleted, deletable: {item.isDeletable}')
-        except RuntimeError as err:
-            log(f'{name} wasn\'t deleted, {err}')
-        try:
-            item.isSuppressed = True
-        except RuntimeError as err:
-            log(f'{name} wasn\'t suppressed either, {err}')
-        kept.append(name)
-    timeline.moveToEnd()
+            name = item.name
+            try:
+                if item.isDeletable and item.deleteObject():
+                    continue
+                log(f'{name} wasn\'t deleted, deletable: {item.isDeletable}')
+            except RuntimeError as err:
+                log(f'{name} wasn\'t deleted, {err}')
+            try:
+                item.isSuppressed = True
+            except RuntimeError as err:
+                log(f'{name} wasn\'t suppressed either, {err}')
+            kept.append(name)
+    finally:
+        # also when something breaks, the marker before the new part would leave the design looking broken
+        timeline.moveToEnd()
     return kept

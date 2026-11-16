@@ -134,7 +134,9 @@ def stop():
 
 
 def addSpinner(inputs, inputId, label, minimum, maximum, tooltip):
-    spinner = inputs.addIntegerSpinnerCommandInput(inputId, label, minimum, maximum, 1, uiState.getState(inputId))
+    value = uiState.getState(inputId)
+    (minimum, maximum) = predBoxConfig.spinnerLimits(minimum, maximum, value)
+    spinner = inputs.addIntegerSpinnerCommandInput(inputId, label, minimum, maximum, 1, value)
     spinner.tooltip = tooltip
     uiState.registerCommandInput(spinner)
     return spinner

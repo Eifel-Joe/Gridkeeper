@@ -2,6 +2,8 @@
 Settings checks, names and joint origin places of the storage box after Pred (round 27, p260). Fusion-free, cm.
 """
 
+from typing import NamedTuple
+
 from . import const
 from .predBox import PRED
 
@@ -15,6 +17,14 @@ MIN_HEIGHT_U = 6
 MAGNET_DEPTH_MAX = 0.26
 MAGNET_DIAMETER_MIN = 0.3
 MAGNET_DIAMETER_MAX = 0.85
+# Pred's magnet holes, the floor pads around them are this plus 1.5 mm wide
+PRED_MAGNET_DIAMETER = 0.65
+
+
+class BoxOptions(NamedTuple):
+    hasMagnets: bool
+    magnetDepth: float
+    magnetDiameter: float
 
 # user parameter names after the numbered prefix, stored in user documents, keep them literal
 PARAMETERS = ['baseWidth', 'baseLength', 'heightU']
@@ -44,6 +54,26 @@ def boxProblem(state) -> str | None:
         if not MAGNET_DIAMETER_MIN - _EPS <= state.magnetDiameter <= MAGNET_DIAMETER_MAX + _EPS:
             return f'The magnet diameter is {MAGNET_DIAMETER_MIN * 10:g} to {MAGNET_DIAMETER_MAX * 10:g} mm'
     return None
+
+
+
+def boxOptions(state) -> BoxOptions:
+    """
+    The magnet settings the generator builds with. The floor pads grow with the magnet diameter, without magnets they
+    keep Pred's size: a diameter left typed in (0 or 15 mm, not checked with the magnets off) broke the build or made
+    the pads of a box without magnets other than Pred's (review R27)
+    """
+    diameter = state.magnetDiameter if state.hasMagnets else PRED_MAGNET_DIAMETER
+    return BoxOptions(state.hasMagnets, state.magnetDepth, diameter)
+
+
+
+def spinnerLimits(minimum: int, maximum: int, value: int) -> tuple[int, int]:
+    """
+    The limits of a size spinner that opens with this value: a rebuild takes the size parameters, which may have been
+    set beyond the limits in Change Parameters; shown as they are, boxProblem names what's wrong (review R27)
+    """
+    return (max(1, min(minimum, value)), max(maximum, value))
 
 
 def boxName(state) -> str:
