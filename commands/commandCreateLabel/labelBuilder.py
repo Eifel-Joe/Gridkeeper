@@ -4,7 +4,9 @@ import adsk.core, adsk.fusion
 from ...lib import tagUtils
 from ...lib import placementUtils
 from ...lib import assembly
-from ...lib.gridfinityUtils import cullenectLabelGenerator, cullenectLabelLayout
+from ...lib import configJson
+from ...lib import rebuildUtils
+from ...lib.gridfinityUtils import cullenectLabelGenerator, cullenectLabelLayout, labelConfig
 from ...lib.gridfinityUtils import commonUtils, designIntent, labelColors, appearanceUtils
 from ...lib.gridfinityUtils import parameterUtils
 from ...lib.gridfinityUtils import const
@@ -31,6 +33,10 @@ LABEL_BASE_WIDTH_PARAMETER = 'baseWidth'
 LABEL_WIDTH_PARAMETER = 'width'
 LABEL_TEXT_PARAMETERS = ['text1', 'text2']
 LABEL_PARAMETERS = [LABEL_BASE_WIDTH_PARAMETER, LABEL_WIDTH_PARAMETER] + LABEL_TEXT_PARAMETERS
+
+# inserts are drawn at their spot and have no placement move, rebuildUtils.findTarget looks for one of this name and
+# finds none (round 18)
+LABEL_PLACEMENT_FEATURE = 'Label placement'
 
 # name the inserts start with, so ones without a tag still count when placing new ones
 LABEL_NAME_PREFIX = 'Gridfinity label'
@@ -105,8 +111,14 @@ def buildLabel(
     settings: list[dict],
     mayChangeDocument: bool = True,
     pocket: adsk.fusion.JointOrigin | None = None,
+    corner: tuple[float, float] | None = None,
+    parameterPrefix: str | None = None,
+    occurrenceTransform: adsk.core.Matrix3D | None = None,
+    oldPlace: assembly.OldPlace | None = None,
 ) -> list[adsk.fusion.BRepBody]:
     """
+    A rebuild in place (round 18, p150, see rebuildLabel) gives the corner the insert is drawn from, the prefix of the
+    parameters it keeps, the transform of its component and where the old one is; a new insert finds its own spot.
     Builds the insert into the design, tagged with the settings to show later, see settingsUtils.snapshotInputs.
     Returns the insert body first, then the text and symbol bodies. The insert is a component of its own in the
     container Label, its text and symbol bodies in a component Text inside it (round 13, p90), a part design is switched
@@ -123,10 +135,10 @@ def buildLabel(
     root = adsk.fusion.Component.cast(des.rootComponent)
     name = labelName(state)
 
-    plan = designIntent.structurePlan(des.designIntent, mayChangeDocument)
+    plan = designIntent.structurePlan(des.designIntent, mayChangeDocument, assembly.rebuildKind(oldPlace))
     # the root is active afterwards, also after a failed build, a part design switched for it goes back then, see
     # assembly.buildWithStructure
-    return assembly.buildWithStructure(des, plan, lambda: _buildLabel(des, state, settings, root, name, width, height, plan, pocket))
+    return assembly.buildWithStructure(des, plan, lambda: _buildLabel(des, state, settings, root, name, width, height, plan, pocket, corner, parameterPrefix, occurrenceTransform, oldPlace))
 
 def _buildLabel(
     des: adsk.fusion.Design,
@@ -138,12 +150,17 @@ def _buildLabel(
     height: float,
     plan: designIntent.StructurePlan,
     pocket: adsk.fusion.JointOrigin | None = None,
+    corner: tuple[float, float] | None = None,
+    parameterPrefix: str | None = None,
+    occurrenceTransform: adsk.core.Matrix3D | None = None,
+    oldPlace: assembly.OldPlace | None = None,
 ) -> list[adsk.fusion.BRepBody]:
     # the container comes before the insert's timeline group, see assembly.partPlace
-    place = assembly.partPlace(des, plan, tagUtils.KIND_LABELS, None)
-    originalTimelineCount = des.timeline.count
+    place = assembly.partPlace(des, plan, tagUtils.KIND_LABELS, oldPlace)
+    # the marker is right after the old insert's group when rebuilding in place, at the end otherwise (as binBuilder)
+    originalTimelinePosition = des.timeline.markerPosition
     if place.isComponent:
-        occurrence = assembly.addOccurrence(des, place.parent, name, isMovable=True)
+        occurrence = assembly.addOccurrence(des, place.parent, name, occurrenceTransform, isMovable=True)
         occurrence.activate()
         labelComponent: adsk.fusion.Component = occurrence.component
     else:
@@ -151,8 +168,8 @@ def _buildLabel(
         labelComponent: adsk.fusion.Component = des.rootComponent
 
     # pick the spot before generating, so none of this insert's geometry can count as an obstacle
-    # beside bins and baseplates too, not into the first bin at the origin (p100)
-    placement = placementUtils.findPlacement(
+    # beside bins and baseplates too, not into the first bin at the origin (p100). A rebuilt one stays where it was
+    placement = corner if corner is not None else placementUtils.findPlacement(
         des,
         [tagUtils.TAG_LABEL, tagUtils.TAG_BIN, tagUtils.TAG_BASEPLATE],
         LABEL_NAME_PREFIX,
@@ -161,7 +178,9 @@ def _buildLabel(
         PLACEMENT_CELL_LENGTH,
     )
 
-    prefix = parameterUtils.nextFreePrefix(des, LABEL_PARAMETER_BASE_NAME, LABEL_PARAMETERS)
+    # a rebuilt insert keeps its parameters, the old ones are still there and are taken over, see rebuildUtils.rebuild
+    reuse = parameterPrefix is not None
+    prefix = parameterPrefix or parameterUtils.nextFreePrefix(des, LABEL_PARAMETER_BASE_NAME, LABEL_PARAMETERS)
     labelParameters = []
     baseWidthName = None
     if state.useUnits:
@@ -172,33 +191,34 @@ def _buildLabel(
             parameterUtils.parameterName(prefix, LABEL_BASE_WIDTH_PARAMETER),
             state.baseWidth,
             f'{name} base width unit',
+            reuse,
         )
         baseWidthName = baseWidthParameter.name
         labelParameters.append(['Base width unit', baseWidthName])
-    widthParameter = des.userParameters.add(
-        parameterUtils.parameterName(prefix, LABEL_WIDTH_PARAMETER),
-        adsk.core.ValueInput.createByString(cullenectLabelLayout.widthExpression(
-            state.widthUnits if state.useUnits else None,
-            None if state.useUnits else state.freeWidth,
-            baseWidthName,
-            state.offsetX,
-        )),
-        'mm',
-        f'{name} width',
+    widthName = parameterUtils.parameterName(prefix, LABEL_WIDTH_PARAMETER)
+    widthExpression = cullenectLabelLayout.widthExpression(
+        state.widthUnits if state.useUnits else None,
+        None if state.useUnits else state.freeWidth,
+        baseWidthName,
+        state.offsetX,
     )
+    reusedWidth = parameterUtils.reusedParameter(des, widthName, lambda parameter: parameter.expression == widthExpression, widthExpression) if reuse else None
+    widthParameter = reusedWidth or des.userParameters.add(widthName, adsk.core.ValueInput.createByString(widthExpression), 'mm', f'{name} width')
     labelParameters.append(['Insert width', widthParameter.name])
     # each line drives its text, so it can be edited later like the bin labels
     lines = labelLines(state)
     textParameters = []
-    for (index, line) in enumerate(lines):
+    # labelled by the line it was typed in, a rebuild puts it back there, see labelConfig.textLines
+    for (index, (line, label)) in enumerate(labelConfig.textLines(state.line1, state.line2)):
         textParameter = parameterUtils.addTextParameter(
             des,
             parameterUtils.parameterName(prefix, LABEL_TEXT_PARAMETERS[index]),
             line,
             f'{name} text line {index + 1}',
+            reuse,
         )
         textParameters.append(textParameter)
-        labelParameters.append([f'Text line {index + 1}', textParameter.name])
+        labelParameters.append([label, textParameter.name])
 
     (iconPath, isScrew) = labelSymbol(state)
     labelInput = cullenectLabelGenerator.CullenectLabelInput()
@@ -228,7 +248,8 @@ def _buildLabel(
 
     # mark generated geometry so it can be told apart from the rest of the design
     for body in bodies:
-        tagUtils.tagBody(body, tagUtils.TAG_LABEL, settings, labelParameters)
+        # with the config, so the insert can be rebuilt, cloned and its config saved like a bin (round 18, p150)
+        tagUtils.tagBody(body, tagUtils.TAG_LABEL, settings, labelParameters, configJson.stateToJson(configJson.GENERATOR_LABEL, state), prefix)
 
     # at the middle of the bottom, following the width parameter, X along the width like the pockets' (p160)
     (insertJointOrigin,) = createPointJointOrigins(
@@ -245,6 +266,92 @@ def _buildLabel(
         joint.name = f'{name} in pocket'
 
     if des.designType == adsk.fusion.DesignTypes.ParametricDesignType:
-        group = des.timeline.timelineGroups.add(originalTimelineCount, des.timeline.count - 1)
+        group = des.timeline.timelineGroups.add(originalTimelinePosition, des.timeline.markerPosition - 1)
         group.name = name
     return bodies
+
+def insertComponent(des: adsk.fusion.Design, body: adsk.fusion.BRepBody) -> adsk.fusion.Component:
+    """The component of the insert a body is of: its own, or for a letter or symbol in the insert's Text component the
+    one above it. Text and symbol are tagged too, a right click on the letters starts the rebuild from them (review)"""
+    component = rebuildUtils.nativeBody(body).parentComponent
+    if component.name.startswith(assembly.TEXT_COMPONENT_NAME):
+        occurrences = des.rootComponent.allOccurrencesByComponent(component)
+        parent = occurrences.item(0).assemblyContext if occurrences.count > 0 else None
+        if parent is not None:
+            return parent.component
+    return component
+
+def insertPocket(des: adsk.fusion.Design, body: adsk.fusion.BRepBody) -> adsk.fusion.JointOrigin | None:
+    """The pocket joint origin the insert the body is of was jointed into by the label command, as seen from the root,
+    none when it wasn't: the other side of its joint "... in pocket" on the Insert joint origin, when that is a pocket
+    (round 18, p150). A joint of the user's own isn't the command's, it stays a later feature (review)"""
+    component = insertComponent(des, body)
+    for joint in des.rootComponent.allJoints:
+        if not joint.name.endswith(' in pocket'):
+            continue
+        sides = [adsk.fusion.JointOrigin.cast(joint.geometryOrOriginOne), adsk.fusion.JointOrigin.cast(joint.geometryOrOriginTwo)]
+        for (side, other) in (sides, sides[::-1]):
+            if side is not None and other is not None and side.name == INSERT_JOINT_ORIGIN                     and (side.nativeObject or side).parentComponent == component and pocketSizeMm(other) is not None:
+                return other
+    return None
+
+def _insertBody(target: rebuildUtils.RebuildTarget) -> adsk.fusion.BRepBody:
+    """The insert itself among the tagged bodies of its group, not a letter or the symbol: the order the design finds
+    them in isn't given (review). The largest when none is outside a Text component"""
+    own = [body for body in target.bodies if not body.parentComponent.name.startswith(assembly.TEXT_COMPONENT_NAME)]
+    def area(body: adsk.fusion.BRepBody) -> float:
+        box = body.boundingBox
+        return (box.maxPoint.x - box.minPoint.x) * (box.maxPoint.y - box.minPoint.y)
+    return max(own or target.bodies, key=area)
+
+def _isAfter(target: rebuildUtils.RebuildTarget, pocket: adsk.fusion.JointOrigin | None) -> bool:
+    """Whether the pocket's bin comes after the insert in the timeline: the rebuild builds right after the old group,
+    where that pocket isn't there yet (review)"""
+    occurrence = pocket.assemblyContext if pocket is not None else None
+    if occurrence is None:
+        return False
+    item = (occurrence.nativeObject or occurrence).timelineObject
+    return item is not None and any(later == item for later in target.laterItems)
+
+def rebuildLabel(
+    des: adsk.fusion.Design,
+    body: adsk.fusion.BRepBody,
+    state: InputState,
+    settings: list[dict],
+    isPreview: bool,
+    pocket: adsk.fusion.JointOrigin | None = None,
+) -> tuple[list[adsk.fusion.BRepBody], list[str]]:
+    """
+    Builds the insert in place of the one the body is of, keeping the features after it, see rebuildUtils.rebuild
+    (upstream v2.4 by Le0Michine, as binBuilder.rebuildBin). Always built anew, not by its parameters: a text set by
+    its parameter would come uncolored and unfitted (Hauptsitzung 15.11.2026). It is drawn from the old insert's bottom
+    left corner in a new component where the old one was. Its joint into a pocket goes with the old group, the pocket
+    given joints the new one into it again. Returns the bodies and what of the later features needs a look
+    """
+    problem = labelProblem(state) or pocketProblem(state, pocket)
+    if problem is not None:
+        raise ValueError(problem)
+    # inserts aren't moved into place but drawn there, no move of this name: the placement is (0, 0)
+    target = rebuildUtils.findTarget(des, body, tagUtils.TAG_LABEL, LABEL_PLACEMENT_FEATURE)
+    if _isAfter(target, pocket):
+        raise ValueError("The bin of this pocket comes after the insert in the timeline, the insert can't be rebuilt into it in place")
+    old = _insertBody(target)
+    # read where it is built, right after its group: a later move of the body would be taken twice, once in the corner
+    # and once when the move gets the new body (review)
+    rebuildUtils.rollAfterGroup(target)
+    try:
+        box = old.boundingBox
+        corner = labelConfig.rebuildCorner((box.minPoint.x, box.minPoint.y, box.maxPoint.x, box.maxPoint.y))
+    finally:
+        des.timeline.moveToEnd()
+    prefix = rebuildUtils.bodyId(old, LABEL_PARAMETER_BASE_NAME)
+    if not isPreview:
+        newConfig = configJson.stateToJson(configJson.GENERATOR_LABEL, state)
+        commonUtils.fileLog(f'{LOG_PREFIX} rebuilding {target.group.name} at {corner}, {rebuildUtils.configChanges(configJson.GENERATOR_LABEL, old, newConfig)}')
+
+    def build(placement, parameterPrefix, transform, oldPlace):
+        # a jointed insert is placed by its joint, a free one keeps the transform of its old component
+        bodies = buildLabel(des, state, settings, not isPreview, pocket, corner, parameterPrefix, None if pocket is not None else transform, oldPlace)
+        # only the insert itself takes the place of the old one, its text and symbol are bodies of their own
+        return bodies[:1]
+    return rebuildUtils.rebuild(des, target, prefix, LABEL_PARAMETER_BASE_NAME, isPreview, build, 'insert')
