@@ -17,7 +17,7 @@ The sizes follow Cullenect's own OpenSCAD code, so Gridkeeper inserts fit Cullen
 | Insert thickness | 1.2 mm |
 | Pocket | 1.2 mm deep, larger than the insert by the socket play (0.3 mm) in width and height, with latch ribs along both long sides |
 
-![A bin with Cullenect pockets and two-color inserts, one insert half out of its pocket](../assets/images/cullenect-overview.png)
+![A bin with three compartments, each with a Cullenect pocket and an insert in red, blue and black, the black one lifted out of its pocket](../assets/images/cullenect-overview.png)
 
 To relabel a bin, print a new insert and press it into the pocket, the latch holds it. Text and symbol are bodies of
 their own, ready for a second filament, see [Colors and multicolor printing](../working/colors.md).
