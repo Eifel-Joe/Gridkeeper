@@ -138,3 +138,13 @@ def test_settings_of_a_part_are_titled_by_the_part(folder):
 def test_error_reports_go_to_the_renamed_repository():
     from lib import errorReport
     assert errorReport.ISSUES_URL == 'https://github.com/Eifel-Joe/Gridkeeper/issues/new'
+
+
+def test_dialog_help_links_go_to_the_gridkeeper_docs():
+    # Nutzer, 16.11.2026: "Here on our GitHub" in the bin dialog still opened the original's wiki
+    for (path, source) in _sources('commands/**/*.py', 'lib/**/*.py', 'commands/**/*.html', 'lib/**/*.html'):
+        assert 'Le0Michine/FusionGridfinityGenerator/wiki' not in source, path
+    bins = open(os.path.join(ROOT, 'commands/commandCreateBin/entry.py'), encoding='utf-8').read()
+    plates = open(os.path.join(ROOT, 'commands/commandCreateBaseplate/entry.py'), encoding='utf-8').read()
+    assert 'https://eifel-joe.github.io/Gridkeeper/bins/' in bins
+    assert 'https://eifel-joe.github.io/Gridkeeper/baseplates/' in plates
