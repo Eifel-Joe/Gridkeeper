@@ -18,6 +18,8 @@ from ..commandCreateBaseplate import baseplateBuilder
 from ..commandCreateBaseplate.inputState import InputState as BaseplateInputState
 from ..commandCreateLabel import labelBuilder
 from ..commandCreateLabel.inputState import InputState as LabelInputState
+from ..commandCreateBox import boxBuilder
+from ..commandCreateBox.inputState import InputState as BoxInputState
 from . import testCases
 from . import constraints
 from . import snapshots
@@ -58,6 +60,7 @@ STATE_CLASSES = {
     testCases.GENERATOR_BIN: BinInputState,
     testCases.GENERATOR_BASEPLATE: BaseplateInputState,
     testCases.GENERATOR_LABEL: LabelInputState,
+    testCases.GENERATOR_BOX: BoxInputState,
 }
 
 # bodies the tests add are tagged with their role and case, apart from the generator's own tag, see tagUtils
@@ -309,6 +312,8 @@ def buildBodies(design: adsk.fusion.Design, case: testCases.TestCase, state: obj
         return binBuilder.buildBin(design, state, settings)
     if case.generator == testCases.GENERATOR_LABEL:
         return labelBuilder.buildLabel(design, state, settings)
+    if case.generator == testCases.GENERATOR_BOX:
+        return boxBuilder.buildBox(design, state, settings)
     return baseplateBuilder.buildBaseplate(design, state, settings)
 
 def setParameters(design: adsk.fusion.Design, parameters: dict[str, float]):
@@ -317,7 +322,8 @@ def setParameters(design: adsk.fusion.Design, parameters: dict[str, float]):
         parameter = design.userParameters.itemByName(name)
         if parameter is None:
             raise ValueError(f'the design has no user parameter {name}')
-        parameter.expression = f'{round(value * 10, 6):g} mm'
+        # a box's size parameters are counts (round 27)
+        parameter.expression = f'{value:g}' if testCases.isUnitless(name) else f'{round(value * 10, 6):g} mm'
     adsk.doEvents()
 
 def setTexts(design: adsk.fusion.Design, texts: dict[str, str]):
@@ -651,7 +657,8 @@ def structureNotes(case: testCases.TestCase, document: adsk.core.Document, bodie
     design = adsk.fusion.Design.cast(document.products.itemByProductType('DesignProductType'))
     root = design.rootComponent
     kind = testCases.expectedContainer(case.generator)
-    tags = {testCases.GENERATOR_BIN: tagUtils.TAG_BIN, testCases.GENERATOR_BASEPLATE: tagUtils.TAG_BASEPLATE, testCases.GENERATOR_LABEL: tagUtils.TAG_LABEL}
+    tags = {testCases.GENERATOR_BIN: tagUtils.TAG_BIN, testCases.GENERATOR_BASEPLATE: tagUtils.TAG_BASEPLATE, testCases.GENERATOR_LABEL: tagUtils.TAG_LABEL,
+            testCases.GENERATOR_BOX: tagUtils.TAG_BOX}
     notes = []
     def parentOf(component: adsk.fusion.Component) -> adsk.fusion.Occurrence | None:
         occurrences = root.allOccurrencesByComponent(component)
@@ -662,7 +669,11 @@ def structureNotes(case: testCases.TestCase, document: adsk.core.Document, bodie
     parts = [body for body in bodies if body.attributes.itemByName(tagUtils.TAG_GROUP, tags[case.generator]) is not None and not body.parentComponent.name.startswith(assembly.TEXT_COMPONENT_NAME)]
     marking = [body for body in bodies if body not in parts]
     for body in parts:
-        if body.parentComponent == root or kindOf(parentOf(body.parentComponent)) != kind:
+        parent = parentOf(body.parentComponent)
+        if case.generator == testCases.GENERATOR_BOX:
+            # a box set: Box and Lid components in the set's own component in the container (round 27)
+            parent = parentOf(parent.component) if parent is not None else None
+        if body.parentComponent == root or kindOf(parent) != kind:
             notes.append(f"{body.name} isn't in a component of its own in the container {kind}")
     partComponents = {body.parentComponent.name for body in parts}
     for body in marking:

@@ -6,6 +6,14 @@ rebuilding and cloning from the right-click menu, settings saved to JSON files. 
 The full list of changes, round by round, is in
 [CHANGELOG-CULLENECT.md](https://github.com/Eifel-Joe/Gridkeeper/blob/master/CHANGELOG-CULLENECT.md).
 
+## Storage boxes
+
+- **Gridkeeper box:** a storage box with lid after Pred's parametric Gridfinity Storage Box v1.1, rebuilt in code
+  with fully constrained sketches: any size from 4 × 3 cells and 5 units, stacking and latching with Pred's printed
+  boxes, size parameters `gfBox1_…`, joint origins in the floor, for stacking and for the lid. See
+  [Storage boxes](../boxes.md).
+- **Magnet size** to choose in the box dialog: 6 × 2 mm magnets or a custom depth.
+
 ## Cullenect labels
 
 - **Cullenect label style for bins:** the label tab, or every compartment tab, gets a pocket for an exchangeable

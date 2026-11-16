@@ -1,0 +1,9 @@
+{
+  "description": "Box 6 x 5 x 7, the label holder at its widest (85 mm)",
+  "generator": "box",
+  "settings": {
+    "gridX": 6,
+    "gridY": 5,
+    "heightU": 7
+  }
+}

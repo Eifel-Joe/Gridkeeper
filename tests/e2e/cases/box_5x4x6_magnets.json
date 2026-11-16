@@ -1,0 +1,7 @@
+{
+  "description": "Box 5 x 4 x 6 with magnet holes for 6 x 2 mm magnets",
+  "generator": "box",
+  "settings": {
+    "hasMagnets": true
+  }
+}

@@ -172,6 +172,20 @@ def matchItems(expected, candidates, key):
     for item in expected:
         found = index.get(_signature(item))
         if found is None:
-            raise EdgeNotFound(f"{item['kind']} not found: {item}")
+            raise EdgeNotFound(f"{item['kind']} not found: {item}; near it: {_near(item, candidates, key)}")
         picked.append(found)
     return picked
+
+
+def _near(item, candidates, key, distance=0.3):
+    """Candidates of the same kind with a point within distance (cm) of one of the item's, for the error message"""
+    points = [item[k] for k in ('start', 'end', 'center', 'min', 'max') if k in item]
+    near = []
+    for candidate in candidates:
+        other = key(candidate)
+        if other['kind'] != item['kind']:
+            continue
+        otherPoints = [other[k] for k in ('start', 'end', 'center', 'min', 'max') if k in other]
+        if any(sum((a - b) ** 2 for a, b in zip(p, q)) ** 0.5 < distance for p in points for q in otherPoints):
+            near.append({k: ([round(v * 10, 3) for v in other[k]] if isinstance(other[k], list) else other[k]) for k in other})
+    return near[:8]

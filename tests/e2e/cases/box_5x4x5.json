@@ -1,0 +1,7 @@
+{
+  "description": "Pred's box 5 x 4 at height 5, the catch slides end 6 mm over the bottom",
+  "generator": "box",
+  "settings": {
+    "heightU": 5
+  }
+}

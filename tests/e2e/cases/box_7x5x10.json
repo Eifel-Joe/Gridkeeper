@@ -1,0 +1,9 @@
+{
+  "description": "Large box 7 x 5 x 10",
+  "generator": "box",
+  "settings": {
+    "gridX": 7,
+    "gridY": 5,
+    "heightU": 10
+  }
+}

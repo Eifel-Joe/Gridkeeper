@@ -1,0 +1,8 @@
+{
+  "description": "Box 5 x 4 x 6, its height parameter changed to 5",
+  "generator": "box",
+  "settings": {},
+  "parameters": {
+    "gfBox1_heightU": 5
+  }
+}

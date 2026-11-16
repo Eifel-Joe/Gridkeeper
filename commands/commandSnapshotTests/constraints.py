@@ -2,7 +2,8 @@
 # can break when its parameters change. Sketches of the Cullenect code and of label cases have to be, those of the
 # older generator code are only reported. Kept free of Fusion imports so it can be unit tested
 
-STRICT_GENERATORS = {'label'}
+# boxes after Pred are built fully constrained from the start (round 27, Jörg: every sketch fully constrained)
+STRICT_GENERATORS = {'label', 'box'}
 STRICT_CASE_MARKER = 'cullenect'
 
 def _isBound(entity) -> bool:
