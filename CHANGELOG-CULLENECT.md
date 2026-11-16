@@ -4,6 +4,16 @@ Changes of this fork (`Eifel-Joe/FusionGridfinityGenerator`) on top of Gridfinit
 
 ## Unreleased
 
+### Merged from upstream (round 22)
+
+Six commits of FusionGridfinityGenerator by Le0Michine (CC BY-NC-SA 4.0) merged as they are, his authorship kept:
+- **"Gridfinity clone" in the context menu**, beside the Clone button of the settings window. With this fork it clones
+  inserts too.
+- **More label icons:** button head Phillips and self-tapping screws and a hex locknut.
+- Not taken over, decided in this fork: the version bumps (the version stays 2.4.0.0); rebuilding with a new label
+  text, which this fork does since round 19 for compartment labels too. The rule "label icon keeps its full size" waits
+  for a decision, this fork's rule stays until then.
+
 ### Thin text hint and room on inserts (round 21)
 
 - **Hint at the print limit (p232):** the hint on text too thin to print follows the measured least height of each
