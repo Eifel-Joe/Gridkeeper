@@ -93,6 +93,9 @@ nav:
     - Changing parameters: working/parameters.md
     - Colors and multicolor printing: working/colors.md
     - Components and joints: working/components.md
+  - Help:
+    - Messages and locked OK: help/messages.md
+    - Troubleshooting and FAQ: help/faq.md
   - Reference:
     - Known deviations from the Gridfinity specification: reference/deviations.md
     - Credits and license: reference/credits.md

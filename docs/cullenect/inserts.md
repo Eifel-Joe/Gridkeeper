@@ -15,12 +15,12 @@ in place.
 | Input | Default | What it does |
 |---|---|---|
 | **Width** | Base units | *Base units* or *Width in mm* |
-| **Width (u)** | 1 | Width of the pocket it goes into, 0.5 to 7 base units; 1u is 36 mm with 42 mm units, like Cullenect |
-| **Width** (in mm) | 25 mm | A free width, 10 to 300 mm, e.g. for the pocket of a compartment tab; the bin dialog shows its insert width |
+| **Width (u)** | 1 | Shown with *Base units*: width of the pocket it goes into, 0.5 to 7 base units in half steps; 1u is 36 mm with 42 mm units, like Cullenect |
+| **Width** (in mm) | 25 mm | Shown with *Width in mm*: a free width, 10 to 300 mm, e.g. for the pocket of a compartment tab; the bin dialog shows its insert width |
 | **Base width unit (mm)** | 42 mm | The grid of the bins the width in base units is counted in; with *Base units* only |
 | **Correction width** | 0 mm | Added to the width, for printers printing too wide or too narrow, Cullenect's `offset_xy`, at most 1 mm either way |
 | **Correction height** | 0 mm | Added to the height of 11 mm, at most 1 mm either way |
-| **Insert** | | Shows the size the insert will have |
+| **Insert** | | Shows the size the insert will have, e.g. `36.00 x 11.00 mm`, and in red why it can't be built |
 
 ## Text
 
@@ -61,10 +61,10 @@ dialog says so and **OK** stays locked.
 | Input | Default | What it does |
 |---|---|---|
 | **Screw** | on | A screw put together from head, shaft, threads and driver, at the right edge |
-| **Head**, **Shaft**, **Threads**, **Driver** | Socket, Machine, Full, Hex | The parts of the screw |
+| **Head**, **Shaft**, **Threads**, **Driver** | Socket, Machine, Full, Hex | The parts of the screw; locked without **Screw** |
 | **Flange**, **Security pin** | off | Locked where no symbol has them |
 | **Hardware** | None | A washer, nut, insert, magnet or crimp terminal instead of a screw; untick **Screw** to pick it |
-| **Symbol** | | Shows which symbol is used |
+| **Symbol** | | Shows the svg file of the symbol, *None*, or *No svg for this symbol* |
 
 See [Symbols](symbols.md) for all choices.
 

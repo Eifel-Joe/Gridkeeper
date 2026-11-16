@@ -9,7 +9,7 @@ The **Bin features** section of the bin dialog.
 | **Bin wall thickness** | 1.2 mm | 0.4 to 2 mm. Not for solid bins. Cullenect pockets need at least 1.2 mm |
 | **Generate lip for stackability** | on | The lip at the top another bin stacks on. Off gives a straight wall |
 | **Generate lip notches** | off | Notches in the lip that keep stacked bins from sliding; only with the lip |
-| **Fold long walls for stiffness** | on | Creases, see below |
+| **Fold long walls for stiffness** | on | Creases, see below. Hollow and shelled bins with a body only |
 
 With **Generate base** off in [Base interface features](base.md) the body is built alone, to combine it with an
 existing model.
@@ -32,7 +32,10 @@ Hollow bin | Shelled bin | Solid bin
 Long walls of tall hollow and shelled bins are folded in along shallow creases, origami style, so they bow less. Bins
 from the min height with a wall from the min length get them; walls are split into even panels up to the max panel
 length, walls shorter than a panel of the longest one stay flat. The scoop wall stays flat, the scoop braces it. A
-creased bin has a single compartment and a solid label tab.
+creased bin has a single compartment and a solid label tab: **Edit compartment layout** and **Hollow tab** are locked
+for it, the compartment layout is kept for when the bin no longer gets creases.
+
+The four inputs below are locked while **Fold long walls for stiffness** is off.
 
 | Input | Default | What it does |
 |---|---|---|
