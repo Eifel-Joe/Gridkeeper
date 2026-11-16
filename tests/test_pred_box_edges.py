@@ -108,3 +108,19 @@ def test_reversed_line_matches():
     [line] = edges.expectedItems("#22 Chamfer7", _values())
     reversed_ = dict(line, start=line["end"], end=line["start"])
     assert edges.matchItems([line], [reversed_], key=lambda candidate: candidate) == [reversed_]
+
+
+def test_a_line_shortened_at_one_end_still_matches():
+    """At height 5 the holders' top rounding is square (Jörg: "Rundung weglassen (2)"), the slanted line of the chamfer
+    beside it reaches further: same start, same direction, other end"""
+    [line] = edges.expectedItems("#22 Chamfer7", _values())
+    longer = dict(line, end=[line["end"][0] - 0.05, line["end"][1], line["end"][2]])
+    other = dict(line, start=[v + 0.01 for v in line["start"]])
+    assert edges.matchItems([line], [other, longer], key=lambda candidate: candidate) == [longer]
+
+
+def test_a_line_off_its_direction_does_not_match():
+    [line] = edges.expectedItems("#22 Chamfer7", _values())
+    bent = dict(line, end=[line["end"][0], line["end"][1] + 0.05, line["end"][2]])
+    with pytest.raises(edges.EdgeNotFound):
+        edges.matchItems([line], [bent], key=lambda candidate: candidate)
