@@ -181,15 +181,14 @@ def fittedLineHeight(lineHeight: float, measuredWidth: float, availableWidth: fl
 
 # Round 17, p52: room kept free before the symbol when a text is fitted. The text is fitted once, when the insert is
 # built; a width made smaller later moves the symbol to the left towards it. Up to this much narrower they don't touch,
-# much narrower the insert is to be built anew. Without a symbol the text room stays (Hauptsitzung 15.11.2026: the
-# spec names the symbol only, the right edge is collected for Nutzer)
+# much narrower the insert is to be built anew. Without a symbol the right edge comes closer the same way, the room is
+# kept there too (round 21, p233, Nutzer at the test day)
 SHRINK_ROOM = 0.1
 
 
 def textFitWidth(layout: LabelLayout) -> float:
-    """Width a text line is fitted to, see fittedLineHeight: its room, less SHRINK_ROOM before a symbol"""
-    room = layout.textMaxX - layout.textMinX
-    return room - SHRINK_ROOM if layout.iconMaxX is not None else room
+    """Width a text line is fitted to, see fittedLineHeight: its room less SHRINK_ROOM, before a symbol or the edge"""
+    return layout.textMaxX - layout.textMinX - SHRINK_ROOM
 
 
 def _mm(value: float) -> str:
