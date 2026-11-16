@@ -68,3 +68,18 @@ Kein kritischer Fund. Umgang:
 - Das ist ein Fehler im Code, nicht im Test. Er trifft jeden Neubau in eine Tasche, bei dem der Name gleich bleibt, auch
   bei einer nicht kopierten Bin. E2E a und r18a änderten den Text und damit den Namen.
 - Fix: `labelConfig.isPocketJointName` erkennt auch die Nummerierung, mit Unit-Test.
+
+## Belege und Stand
+
+- pytest: `916 passed`.
+- Fusion auf a6ffc3f (`r20_reload2`):
+  - E2E a, b, c und r18a je ALL OK;
+  - `r20_snap`: DONE, 83 Fälle, nicht grün `[]`.
+  - Ausgaben: `fusion-auftraege/r20_*.out`.
+- **Offen:**
+  - p221 ist nicht nachgestellt. Die Meldung zeigt in pytest und Fusion 1,2 mm. gf-dialogtests wiederholt Handtest 10
+    mit Bildschirmfoto.
+  - Der echte Dialogpfad von p220 ist noch nicht geprüft (Review I2). gf-dialogtests prüft Handtest 16: Tasche
+    vorgewählt, kein Hinweis.
+- **Nebenbefund, nicht behoben:** Nach einem Neubau mit gleichem Namen heißt auch die neue Komponente „… (1)“. Das ist
+  nur kosmetisch.
