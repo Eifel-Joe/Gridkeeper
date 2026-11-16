@@ -10,7 +10,7 @@ colored labels for multicolor printing, an assembly of components with joints, a
 
 **Documentation: [eifel-joe.github.io/Gridkeeper](https://eifel-joe.github.io/Gridkeeper/)**
 
-![A drawer of Gridkeeper bins on a baseplate, some with Cullenect label inserts](docs/assets/images/home-hero.png)
+![Three Gridkeeper bins on a baseplate, with labels and symbols in red and blue](docs/assets/images/home-hero.png)
 
 ## Features
 

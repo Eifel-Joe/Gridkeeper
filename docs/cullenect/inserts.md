@@ -40,7 +40,7 @@ Text and symbol are always bodies of their own, two layers (0.4 mm) thick, to pr
   A set in symbol keeps 0.4 mm off the edges, so the latch still holds.
 - **Flush** is cut in the same way and the text body is shown, flush with the face.
 
-![Three inserts, raised, set in and flush](../assets/images/insert-surfaces.png)
+![Three inserts with the text and symbol in red: flush, set in (its text body shown) and raised](../assets/images/insert-surfaces.png)
 
 ### Text size
 

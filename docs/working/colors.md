@@ -24,7 +24,7 @@ bin. Their appearance is a library plastic recolored and named `Gridfinity label
 component, so letters a longer text adds later get the color too. Uncolored bin labels have no bodies of their own
 and get no Text component.
 
-![A bin with a red embossed label and its Text component in the browser](../assets/images/colored-label.png)
+![A bin with a red embossed label of a nut icon and the text Bolts](../assets/images/colored-label.png)
 
 ## Exporting
 

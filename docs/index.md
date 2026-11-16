@@ -7,7 +7,7 @@ Le0Michine (Lev Mishin): everything GridfinityGenerator does is still there, ext
 inserts, colored labels for multicolor printing, an assembly of components with joints, and a number of fixes and
 smaller features, see [What's new](getting-started/whats-new.md).
 
-![A drawer of Gridkeeper bins on a baseplate, some with Cullenect label inserts](assets/images/home-hero.png)
+![Three Gridkeeper bins on a baseplate, with labels and symbols in red and blue](assets/images/home-hero.png)
 
 ## What it builds
 

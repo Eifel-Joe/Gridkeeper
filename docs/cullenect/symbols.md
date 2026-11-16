@@ -3,7 +3,7 @@
 The symbols of the label inserts are svg files drawn from Cullenect's own OpenSCAD code, in
 `lib/gridfinityUtils/cullenectIcons/` of the add-in. The names and their order are Cullenect's.
 
-![A sheet of inserts with different screw and hardware symbols](../assets/images/insert-symbols.png)
+![Inserts with a threaded insert, a set screw, countersunk, pan and socket head screws, a crimp ring, a washer and a nut](../assets/images/insert-symbols.png)
 
 ## Screws
 
