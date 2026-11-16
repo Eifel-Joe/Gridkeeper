@@ -127,9 +127,13 @@ class _Builder:
         [edgeSet] = predBoxEdges.PRED_EDGES[step]
         items = self._pick(step, self.dims.values(), body=body)
         chamfers = self.features.chamferFeatures
-        chamferInput = chamfers.createInput2()
-        chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(collection(items), valueInput(Dim.length(edgeSet['distance'])), False)
-        feature = chamfers.add(chamferInput)
+
+        def add(tangentChain):
+            chamferInput = chamfers.createInput2()
+            chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(
+                collection(items), valueInput(Dim.length(edgeSet['distance'])), tangentChain)
+            return chamfers.add(chamferInput)
+        feature = _withTangentChainFallback(add)
         feature.name = name or step.split(' ')[1]
         self.step(step)
         return feature
@@ -138,9 +142,13 @@ class _Builder:
         [edgeSet] = predBoxEdges.PRED_EDGES[step]
         items = self._pick(step, self.dims.values(), body=body)
         fillets = self.features.filletFeatures
-        filletInput = fillets.createInput()
-        filletInput.edgeSetInputs.addConstantRadiusEdgeSet(collection(items), valueInput(Dim.length(edgeSet['radius'])), False)
-        feature = fillets.add(filletInput)
+
+        def add(tangentChain):
+            filletInput = fillets.createInput()
+            filletInput.edgeSetInputs.addConstantRadiusEdgeSet(
+                collection(items), valueInput(Dim.length(edgeSet['radius'])), tangentChain)
+            return fillets.add(filletInput)
+        feature = _withTangentChainFallback(add)
         feature.name = name or step.split(' ')[1]
         self.step(step)
         return feature
@@ -631,6 +639,18 @@ class _Builder:
         if len(magnets) != 4:
             raise ValueError(f'FloorPads: {len(magnets)} magnet profiles')
         return floor, magnets, blends
+
+
+def _withTangentChainFallback(add):
+    """Pred's edges as they are; where Fusion cannot end the chamfer there (#40 Chamfer29, ASM_BL_END_TOO_CMPLX,
+    fusion-auftraege/r27_chamfer29.out) the same edges as a tangent chain, which the Fusion UI selects by default and
+    which gives Pred's volume"""
+    try:
+        return add(False)
+    except RuntimeError as error:
+        if 'ASM_BL_END_TOO_CMPLX' not in str(error):
+            raise
+        return add(True)
 
 
 def _isVerticalAt(edge, places, zLow, zHigh, tolerance=1e-6):
