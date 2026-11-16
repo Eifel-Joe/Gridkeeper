@@ -263,7 +263,7 @@ def _buildLabel(
         jointInput = root.joints.createInput(assembly.inContext(insertJointOrigin, occurrence), pocket)
         jointInput.setAsRigidJointMotion()
         joint = root.joints.add(jointInput)
-        joint.name = f'{name} in pocket'
+        joint.name = f'{name}{labelConfig.POCKET_JOINT_SUFFIX}'
 
     if des.designType == adsk.fusion.DesignTypes.ParametricDesignType:
         group = des.timeline.timelineGroups.add(originalTimelinePosition, des.timeline.markerPosition - 1)
@@ -287,13 +287,31 @@ def insertPocket(des: adsk.fusion.Design, body: adsk.fusion.BRepBody) -> adsk.fu
     (round 18, p150). A joint of the user's own isn't the command's, it stays a later feature (review)"""
     component = insertComponent(des, body)
     for joint in des.rootComponent.allJoints:
-        if not joint.name.endswith(' in pocket'):
+        if not labelConfig.isPocketJointName(joint.name):
             continue
-        sides = [adsk.fusion.JointOrigin.cast(joint.geometryOrOriginOne), adsk.fusion.JointOrigin.cast(joint.geometryOrOriginTwo)]
-        for (side, other) in (sides, sides[::-1]):
+        sides = [
+            (adsk.fusion.JointOrigin.cast(joint.geometryOrOriginOne), joint.occurrenceOne),
+            (adsk.fusion.JointOrigin.cast(joint.geometryOrOriginTwo), joint.occurrenceTwo),
+        ]
+        for ((side, _), (other, otherOccurrence)) in (sides, sides[::-1]):
             if side is not None and other is not None and side.name == INSERT_JOINT_ORIGIN                     and (side.nativeObject or side).parentComponent == component and pocketSizeMm(other) is not None:
-                return other
+                return _inRoot(des, other, otherOccurrence)
     return None
+
+def _inRoot(des: adsk.fusion.Design, jointOrigin: adsk.fusion.JointOrigin, occurrence: adsk.fusion.Occurrence | None = None) -> adsk.fusion.JointOrigin:
+    """The joint origin as seen from the root, through the occurrence of its component. The sides of a joint came
+    without one (assemblyContext None), a selection input refused them: "3 : invalid argument selection", the label
+    dialog stopped half built (round 20, p220, r20_pocket_probe: the proxy through the bin's occurrence selects)"""
+    if jointOrigin.assemblyContext is not None:
+        return jointOrigin
+    native = jointOrigin.nativeObject or jointOrigin
+    # the joint's own occurrence of that side: a bin copied in Fusion has a second occurrence of its component, the
+    # first one would put the insert into the other bin (review round 20)
+    if occurrence is not None and occurrence.component == native.parentComponent and (occurrence.assemblyContext is not None or occurrence.nativeObject is None):
+        return native.createForAssemblyContext(occurrence)
+    occurrences = des.rootComponent.allOccurrencesByComponent(native.parentComponent)
+    # a bin's component is in the design once, see assembly.addOccurrence; one in the root has no occurrence
+    return native.createForAssemblyContext(occurrences.item(0)) if occurrences.count > 0 else native
 
 def _insertBody(target: rebuildUtils.RebuildTarget) -> adsk.fusion.BRepBody:
     """The insert itself among the tagged bodies of its group, not a letter or the symbol: the order the design finds
