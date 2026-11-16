@@ -1,0 +1,9 @@
+{
+  "description": "Narrow box 4 x 3, height 8",
+  "generator": "box",
+  "settings": {
+    "gridX": 4,
+    "gridY": 3,
+    "heightU": 8
+  }
+}

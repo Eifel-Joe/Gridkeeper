@@ -1,0 +1,10 @@
+{
+  "description": "Box 5 x 4 x 6, its parameters changed to 7 x 5 x 10",
+  "generator": "box",
+  "settings": {},
+  "parameters": {
+    "gfBox1_baseWidth": 7,
+    "gfBox1_baseLength": 5,
+    "gfBox1_heightU": 10
+  }
+}

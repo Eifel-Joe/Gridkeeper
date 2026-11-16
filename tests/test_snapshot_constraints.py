@@ -86,3 +86,8 @@ def test_live_text_sketch_with_a_loose_curve_is_listed():
 def test_loose_sketch_without_text_is_listed_even_with_bound_entities():
     sketch = FakeTextSketch("Label icon sketch", [], [FakeEntity(False, True)], [])
     assert constraints.unconstrainedSketches([sketch]) == ["Label icon sketch"]
+
+
+def test_box_sketches_have_to_be_fully_constrained():
+    # round 27: every sketch of a box after Pred is fully constrained
+    assert constraints.constraintFailure('box', 'box_5x4x6', ['FloorPads']) == 'sketches not fully constrained: FloorPads'

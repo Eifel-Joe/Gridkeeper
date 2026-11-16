@@ -27,6 +27,7 @@ except ImportError:
 GENERATOR_BIN = configJson.GENERATOR_BIN
 GENERATOR_BASEPLATE = configJson.GENERATOR_BASEPLATE
 GENERATOR_LABEL = configJson.GENERATOR_LABEL
+GENERATOR_BOX = configJson.GENERATOR_BOX
 stateFromJson = configJson.stateFromJson
 stateToJson = configJson.stateToJson
 # by generator
@@ -39,7 +40,14 @@ PARAMETER_FIELDS = {
     GENERATOR_BIN: {'gfBin1_baseWidth': 'baseWidth', 'gfBin1_baseLength': 'baseLength', 'gfBin1_heightUnit': 'heightUnit'},
     GENERATOR_BASEPLATE: {'gfPlate1_baseWidth': 'baseWidth', 'gfPlate1_baseLength': 'baseLength'},
     GENERATOR_LABEL: {'gfLabel1_baseWidth': 'baseWidth'},
+    # storage boxes after Pred (round 27): grid cells and height units, counts
+    GENERATOR_BOX: {'gfBox1_baseWidth': 'gridX', 'gfBox1_baseLength': 'gridY', 'gfBox1_heightU': 'heightU'},
 }
+# parameters that are counts, set without a unit
+UNITLESS_PARAMETERS = set(PARAMETER_FIELDS[GENERATOR_BOX])
+
+def isUnitless(name: str) -> bool:
+    return name in UNITLESS_PARAMETERS
 
 # the design intent of the document a case is built in, hybrid unless the case says otherwise. In part design the
 # generators build into the root component, as for a user whose documents are parts
@@ -67,14 +75,17 @@ class TestCase:
     texts: dict[str, str] = dataclasses.field(default_factory=dict)
 
 def parametersFromJson(generator: str, parameters: dict) -> dict[str, float]:
-    """Values in mm of the generator's parameters, in cm"""
+    """Values in mm of the generator's parameters, in cm; counts (a box's size) stay as they are"""
     unknown = [name for name in parameters if name not in PARAMETER_FIELDS[generator]]
     if unknown:
         raise TestCaseError(f'unknown parameters {unknown}, a {generator} has {sorted(PARAMETER_FIELDS[generator])}')
     for (name, value) in parameters.items():
-        if isinstance(value, bool) or not isinstance(value, (int, float)) or value <= 0:
+        if isUnitless(name):
+            if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+                raise TestCaseError(f'parameter {name} has to be a whole count, not {value!r}')
+        elif isinstance(value, bool) or not isinstance(value, (int, float)) or value <= 0:
             raise TestCaseError(f'parameter {name} has to be a length in mm, not {value!r}')
-    return {name: value / 10 for (name, value) in parameters.items()}
+    return {name: value if isUnitless(name) else value / 10 for (name, value) in parameters.items()}
 
 # the text parameters of an insert, see commandCreateLabel/labelBuilder.py
 TEXT_PARAMETER_PATTERN = re.compile(r'gfLabel\d+_text[12]')
@@ -157,11 +168,11 @@ def caseJson(case: TestCase) -> str:
     return json.dumps(data, indent=4, ensure_ascii=False) + '\n'
 
 # the case list in tests/e2e/README.md, see tests/e2e/write_readme.py
-GENERATOR_TITLES = {GENERATOR_BIN: 'Bins', GENERATOR_BASEPLATE: 'Baseplates', GENERATOR_LABEL: 'Labels'}
+GENERATOR_TITLES = {GENERATOR_BIN: 'Bins', GENERATOR_BASEPLATE: 'Baseplates', GENERATOR_LABEL: 'Labels', GENERATOR_BOX: 'Boxes'}
 
 # the container each generator builds into, the kind tagged on it, see tagUtils.KIND_* (round 13, p90). Every case builds
 # a new part, so it goes there also in a part design, which turns hybrid for it
-CONTAINER_KINDS = {GENERATOR_BIN: 'bins', GENERATOR_BASEPLATE: 'grid', GENERATOR_LABEL: 'labels'}
+CONTAINER_KINDS = {GENERATOR_BIN: 'bins', GENERATOR_BASEPLATE: 'grid', GENERATOR_LABEL: 'labels', GENERATOR_BOX: 'boxes'}
 
 def expectedContainer(generator: str) -> str:
     return CONTAINER_KINDS[generator]

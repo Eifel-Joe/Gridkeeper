@@ -1,0 +1,14 @@
+{
+  "description": "Box 6 x 5 x 7, its parameters changed to 4 x 3 x 6",
+  "generator": "box",
+  "settings": {
+    "gridX": 6,
+    "gridY": 5,
+    "heightU": 7
+  },
+  "parameters": {
+    "gfBox1_baseWidth": 4,
+    "gfBox1_baseLength": 3,
+    "gfBox1_heightU": 6
+  }
+}
