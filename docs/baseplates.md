@@ -69,8 +69,9 @@ side of the bed. **Result** draws the area, the grid and how it is split into pi
 
 ### Magnet cutouts
 
-Full and skeletonized plates only. **Add magnet cutouts** (on), **Magnet cutout diameter** (6.5 mm, up to 10 mm) and
-**Magnet cutout depth** (2.4 mm, more than 0).
+Full and skeletonized plates only. **Add magnet cutouts** (on), **Magnet cutout diameter** (6.5 mm, up to 10 mm),
+**Magnet size** (6×2 mm magnets need 2.4 mm, 6×3 mm ones 3.4 mm, or *Custom*) and **Magnet cutout depth** (2.4 mm,
+more than 0, typed with *Custom*). Only the depth is saved; settings files with other depths load as *Custom*.
 
 ### Screw holes
 

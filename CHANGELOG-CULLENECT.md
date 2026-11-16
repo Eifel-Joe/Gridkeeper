@@ -19,8 +19,9 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   Changes to Pred's box: at height 5 the latch slides end 6 mm over the bottom (Pred's would cut through the floor),
   magnet holes of a size of your choice, the floor pads and the stacking rim drawn from circles instead of arcs.
   Latches, hinges, handle and label follow in the next rounds.
-- **Magnet size for boxes (p263):** a choice of 6 × 2 mm magnets or a custom depth before the depth field; 6 × 3 mm
-  would break through the box floor.
+- **Magnet size (p263):** bins, baseplates and boxes have a choice before the magnet cutout depth: 6 × 2 mm magnets
+  (2.4 mm deep), 6 × 3 mm magnets (3.4 mm, not for boxes: it would break through the floor) or *Custom*. Only the
+  depth is saved, older settings files load unchanged.
 
 ## 1.0.0 (2026-11-16)
 

@@ -12,7 +12,7 @@ The full list of changes, round by round, is in
   with fully constrained sketches: any size from 4 × 3 cells and 5 units, stacking and latching with Pred's printed
   boxes, size parameters `gfBox1_…`, joint origins in the floor, for stacking and for the lid. See
   [Storage boxes](../boxes.md).
-- **Magnet size** to choose in the box dialog: 6 × 2 mm magnets or a custom depth.
+- **Magnet size** to choose in the bin, baseplate and box dialogs: 6 × 2 or 6 × 3 mm magnets set the depth.
 
 ## Cullenect labels
 
