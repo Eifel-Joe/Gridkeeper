@@ -137,6 +137,9 @@ def _buildBox(
         boxNative.component.name = BOX_COMPONENT_NAME
         lidNative = nativeSet.component.occurrences.addNewComponent(adsk.core.Matrix3D.create())
         lidNative.component.name = LID_COMPONENT_NAME
+        # Fusion names a second set's components "Box (1)", the role tells them apart, see rebuildUtils
+        boxNative.component.attributes.add(tagUtils.TAG_GROUP, tagUtils.TAG_PART_ROLE, BOX_COMPONENT_NAME)
+        lidNative.component.attributes.add(tagUtils.TAG_GROUP, tagUtils.TAG_PART_ROLE, LID_COMPONENT_NAME)
         base = base.moveToComponent(boxNative)
         lid = lid.moveToComponent(lidNative)
         boxComponent, lidComponent = boxNative.component, lidNative.component
