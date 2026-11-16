@@ -32,13 +32,13 @@ app = adsk.core.Application.get()
 ui = app.userInterface
 
 RUN_CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdRunSnapshotTests'
-RUN_CMD_NAME = 'Gridfinity tests: run'
+RUN_CMD_NAME = 'Gridkeeper tests: run'
 # shown on hover over the button, the first paragraph says what it does, the second how, like the generator commands
 RUN_CMD_Description = ('Checks generated bins, baseplates and labels against their snapshots.\n\n'
     'Opens the test window listing the cases of tests/e2e/cases, run them all or one at a time. Each builds in a new '
     'document and is compared with its snapshot, documents of cases that didn\'t pass are left open.')
 UPDATE_CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdUpdateSnapshots'
-UPDATE_CMD_NAME = 'Gridfinity tests: update snapshots'
+UPDATE_CMD_NAME = 'Gridkeeper tests: update snapshots'
 UPDATE_CMD_Description = ('Records new snapshots of the test cases.\n\n'
     'Opens the snapshots window listing the cases of tests/e2e/cases, refresh them all or one at a time. Each shows '
     'how it differs from its current snapshot, the changed ones are replaced once confirmed.')
@@ -89,14 +89,14 @@ PREVIEW_STYLE = 'ShadedWithVisibleEdgesOnlyVisualStyle'
 PREVIEW_VIEW = 'isoTopRight'
 PREVIEW_COLOR = '#4e79a7'
 # the tabs of the test documents, before the case name
-DOCUMENT_PREFIX = 'Gridfinity test'
+DOCUMENT_PREFIX = 'Gridkeeper test'
 # what the bodies of a case with parameters are compared with besides its snapshot, see buildWithParameters
 PARAMETERS_LABEL = 'vs built with the parameters'
 TEST_VISUAL_STYLE = adsk.core.VisualStyles.ShadedWithVisibleEdgesOnlyVisualStyle
 # appearances the test documents add for the differences, by role
 DIFF_APPEARANCES = {
-    ROLE_MISSING: ('Gridfinity test missing', (220, 40, 40)),
-    ROLE_UNEXPECTED: ('Gridfinity test unexpected', (40, 180, 70)),
+    ROLE_MISSING: ('Gridkeeper test missing', (220, 40, 40)),
+    ROLE_UNEXPECTED: ('Gridkeeper test unexpected', (40, 180, 70)),
 }
 # a plain appearance to copy and recolor, the first found, names differ between Fusion versions
 BASE_APPEARANCE_NAMES = ['Paint - Enamel Glossy (White)', 'Paint - Enamel Glossy (Yellow)', 'Plastic - Matte (White)', 'Plastic - Glossy (White)', 'Plastic - Translucent Matte (White)']
@@ -169,7 +169,7 @@ def commandPanel() -> adsk.core.ToolbarPanel:
     panels = ui.workspaces.itemById(WORKSPACE_ID).toolbarPanels
     panel = panels.itemById(PANEL_ID)
     if panel is None:
-        futil.log(f'Gridfinity tests panel {PANEL_ID} not found, using {FALLBACK_PANEL_ID}', force_console=True)
+        futil.log(f'Gridkeeper tests panel {PANEL_ID} not found, using {FALLBACK_PANEL_ID}', force_console=True)
         panel = panels.itemById(FALLBACK_PANEL_ID)
     return panel
 

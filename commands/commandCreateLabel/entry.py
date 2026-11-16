@@ -36,7 +36,9 @@ app = adsk.core.Application.get()
 ui = app.userInterface
 
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdLabel'
-CMD_NAME = 'Gridfinity label'
+CMD_NAME = 'Gridkeeper label'
+# the first section of a part's settings names the part, as the settings window does (review round 23)
+SETTINGS_TITLE = 'Gridfinity label'
 # shown on hover over the button, the first paragraph says what it makes, the second how
 CMD_Description = ('Creates a Cullenect label insert for the label sockets of bins.\n\n'
     'Set its width in base units or in mm, up to two lines of text and a screw or hardware symbol. The text and symbol '
@@ -499,7 +501,7 @@ def command_destroy(args: adsk.core.CommandEventArgs):
         )
 
 def snapshotSettings(inputs: adsk.core.CommandInputs) -> list[dict]:
-    return settingsUtils.snapshotInputs(inputs, [INFO_GROUP, INPUT_CHANGES_GROUP, PREVIEW_GROUP, POCKET_GROUP], CMD_NAME)
+    return settingsUtils.snapshotInputs(inputs, [INFO_GROUP, INPUT_CHANGES_GROUP, PREVIEW_GROUP, POCKET_GROUP], SETTINGS_TITLE)
 
 def generateLabel(args: adsk.core.CommandEventArgs, mayChangeDocument: bool = True):
     startTime = time.perf_counter()

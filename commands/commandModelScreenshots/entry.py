@@ -25,7 +25,7 @@ app = adsk.core.Application.get()
 ui = app.userInterface
 
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdRenderModelScreenshots'
-CMD_NAME = 'Gridfinity docs: render models'
+CMD_NAME = 'Gridkeeper docs: render models'
 # shown on hover over the button, the first paragraph says what it does, the second how, like the generator commands
 CMD_Description = ('Saves pictures of bins and baseplates for the docs.\n\n'
     'Lists the presets of tools/screenshots/models with their pictures. A preset asked for is built in a new '
