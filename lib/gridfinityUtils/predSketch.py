@@ -1,20 +1,21 @@
 """
 Fully constrained sketches drawn from world coordinates, for the box after Pred (round 27).
 
-Shapes are given with points as three dims in the box's frame (cm). The sketch collects them and, on close(), draws
-them and binds them the way the existing generators do (Jörg: "Ja, Formen-Weg"): lines horizontal or vertical, arcs
-tangent, radii and diameters, one anchor per shape and lengths between its points. sketchPlan picks exactly as many of
-those as the sketch has degrees of freedom. Dimensions get the expression abs(a - b) of the world dims, so the sketch
-follows the box parameters. Sketch planes must be the component's base planes or offsets of them, so the sketch origin
-lies on the world axes of the plane.
+Shapes are given with points as three dims in the box's frame (cm). The sketch collects them and, on close(), draws and
+binds them the way the existing generators do (Jörg: "Ja, Formen-Weg"):
+- rounded rectangles as in baseGenerator: sketchUtils.createRectangle, four fillets, equal radii, one radius dimension;
+- every other shape as a chain (sketchChain): its first point from the origin, every further point with dimensions to
+  points already fixed, real horizontal and vertical lines with that condition; circles by centre and diameter.
+Dimensions get the expression abs(a - b) of the world dims, so the sketch follows the box parameters. Sketch planes must
+be the component's base planes or offsets of them, so the sketch origin lies on the world axes of the plane.
 """
 
 import math
 import adsk.core, adsk.fusion
 
 from .dim import Dim, applyTo
-from .sketchUtils import deferSketchCompute
-from . import sketchPlan
+from .sketchUtils import deferSketchCompute, createRectangle
+from . import sketchChain
 
 _EPS = 1e-7
 
@@ -47,6 +48,7 @@ class WorldSketch:
         self.worldPoints = []
         self.pointIndex = {}
         self.curves = []
+        self.roundedRectangles = []
         self.closed = False
 
     # -- collecting ------------------------------------------------------------------------------------------------
@@ -79,17 +81,7 @@ class WorldSketch:
 
     def roundedRectangle(self, x0, y0, x1, y1, z, radius: Dim):
         """Axis-parallel rectangle with rounded corners in a plane parallel to XY; coordinates are dims"""
-        r = radius
-        corners = [
-            ((x0 + r, y0 + r), (x0, y0 + r), (x0 + r, y0)),
-            ((x1 - r, y0 + r), (x1 - r, y0), (x1, y0 + r)),
-            ((x1 - r, y1 - r), (x1, y1 - r), (x1 - r, y1)),
-            ((x0 + r, y1 - r), (x0 + r, y1), (x0, y1 - r)),
-        ]
-        for index, (center, start, end) in enumerate(corners):
-            self.arc((*center, z), (*start, z), (*end, z))
-            nextStart = corners[(index + 1) % 4][1]
-            self.line((*end, z), (*nextStart, z))
+        self.roundedRectangles.append((_dim(x0), _dim(y0), _dim(x1), _dim(y1), _dim(z), _dim(radius)))
 
     # -- drawing -----------------------------------------------------------------------------------------------------
 
@@ -105,66 +97,79 @@ class WorldSketch:
         if self.closed:
             return self.sketch
         self.closed = True
-        geometry = [self._sketchPoint3D(world) for world in self.worldPoints]
-        points2d = [(g.x, g.y) for g in geometry]
-        planCurves = [{k: v for k, v in curve.items() if k in ('kind', 'a', 'b', 'center', 'start', 'end')}
-                      for curve in self.curves]
-        plan = sketchPlan.planConstraints(points2d, planCurves)
-        H = adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation
-        V = adsk.fusion.DimensionOrientations.VerticalDimensionOrientation
         with deferSketchCompute(self.sketch):
-            sketchPoints = {}
-            arcCenters = {curve['center'] for curve in self.curves if curve['kind'] == 'arc'}
-            used = set()
-            for curve in self.curves:
-                for key in ('a', 'b', 'start', 'end'):
-                    if key in curve:
-                        used.add(curve[key])
-                if curve['kind'] == 'circle':
-                    used.add(curve['center'])
-            for index in sorted(used):
-                sketchPoints[index] = self.sketch.sketchPoints.add(geometry[index])
-            drawn = []
-            for curve in self.curves:
-                if curve['kind'] == 'line':
-                    item = self.sketch.sketchCurves.sketchLines.addByTwoPoints(sketchPoints[curve['a']], sketchPoints[curve['b']])
-                    item.isConstruction = curve['construction']
-                elif curve['kind'] == 'arc':
-                    c, s, e = geometry[curve['center']], geometry[curve['start']], geometry[curve['end']]
-                    a0 = math.atan2(s.y - c.y, s.x - c.x)
-                    a1 = math.atan2(e.y - c.y, e.x - c.x)
-                    sweep = (a1 - a0 + math.pi) % (2 * math.pi) - math.pi
-                    item = self.sketch.sketchCurves.sketchArcs.addByCenterStartSweep(c, sketchPoints[curve['start']], sweep)
-                    self.sketch.geometricConstraints.addCoincident(item.endSketchPoint, sketchPoints[curve['end']])
-                    if curve['center'] in sketchPoints:
-                        self.sketch.geometricConstraints.addCoincident(item.centerSketchPoint, sketchPoints[curve['center']])
-                    else:
-                        sketchPoints[curve['center']] = item.centerSketchPoint
-                else:
-                    item = self.sketch.sketchCurves.sketchCircles.addByCenterRadius(
-                        sketchPoints[curve['center']], curve['diameter'].value / 2)
-                drawn.append(item)
-            del arcCenters
-            self._apply(plan, drawn, sketchPoints, geometry, H, V)
+            for rectangle in self.roundedRectangles:
+                self._roundedRectangle(*rectangle)
+            if self.curves:
+                self._chain()
         return self.sketch
 
-    def _apply(self, plan, drawn, sketchPoints, geometry, H, V):
+    def _roundedRectangle(self, x0, y0, x1, y1, z, radius):
+        """As baseGenerator's rounded cut: rectangle, four fillets, equal radii, one radius dimension"""
+        corner = self._sketchPoint3D((x0, y0, z))
+        corner.z = 0
+        if self.xAxis != (0, 1) or self.yAxis != (1, 1):
+            raise ValueError(f'{self.sketch.name}: rounded rectangles only on planes parallel to XY')
+        sides = list(createRectangle(x1 - x0, y1 - y0, corner, self.sketch,
+                                     x0 if abs(x0.value) > _EPS else None, y0 if abs(y0.value) > _EPS else None))
+        arcs = self.sketch.sketchCurves.sketchArcs
+        fillets = []
+        for first, second in zip(sides, sides[1:] + sides[:1]):
+            fillets.append(arcs.addFillet(first, first.endSketchPoint.geometry, second, second.startSketchPoint.geometry, radius.value))
+        for fillet in fillets[1:]:
+            self.sketch.geometricConstraints.addEqual(fillets[0], fillet)
+        applyTo(self.sketch.sketchDimensions.addRadialDimension(fillets[0], fillets[0].startSketchPoint.geometry, True).parameter, radius)
+
+    def _chain(self):
+        geometry = [self._sketchPoint3D(world) for world in self.worldPoints]
+        plan = sketchChain.chain([(g.x, g.y) for g in geometry],
+                                 [{k: v for k, v in curve.items() if k in ('kind', 'a', 'b', 'center', 'start', 'end')}
+                                  for curve in self.curves])
+        sketchPoints = {}
+        used = set()
+        for curve in self.curves:
+            for key in ('a', 'b', 'start', 'end'):
+                if key in curve:
+                    used.add(curve[key])
+            if curve['kind'] == 'circle':
+                used.add(curve['center'])
+        for index in sorted(used):
+            sketchPoints[index] = self.sketch.sketchPoints.add(geometry[index])
+        drawn = []
+        for curve in self.curves:
+            if curve['kind'] == 'line':
+                item = self.sketch.sketchCurves.sketchLines.addByTwoPoints(sketchPoints[curve['a']], sketchPoints[curve['b']])
+                item.isConstruction = curve['construction']
+            elif curve['kind'] == 'arc':
+                c, s, e = geometry[curve['center']], geometry[curve['start']], geometry[curve['end']]
+                a0 = math.atan2(s.y - c.y, s.x - c.x)
+                a1 = math.atan2(e.y - c.y, e.x - c.x)
+                sweep = (a1 - a0 + math.pi) % (2 * math.pi) - math.pi
+                item = self.sketch.sketchCurves.sketchArcs.addByCenterStartSweep(c, sketchPoints[curve['start']], sweep)
+                self.sketch.geometricConstraints.addCoincident(item.endSketchPoint, sketchPoints[curve['end']])
+                if curve['center'] in sketchPoints:
+                    self.sketch.geometricConstraints.addCoincident(item.centerSketchPoint, sketchPoints[curve['center']])
+                else:
+                    sketchPoints[curve['center']] = item.centerSketchPoint
+            else:
+                item = self.sketch.sketchCurves.sketchCircles.addByCenterRadius(
+                    sketchPoints[curve['center']], curve['diameter'].value / 2)
+            drawn.append(item)
+        self._apply(plan, drawn, sketchPoints, geometry)
+
+    def _apply(self, plan, drawn, sketchPoints, geometry):
         constraints = self.sketch.geometricConstraints
         dimensions = self.sketch.sketchDimensions
+        H = adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation
+        V = adsk.fusion.DimensionOrientations.VerticalDimensionOrientation
         for number, item in enumerate(plan):
             kind = item[0]
             if kind == 'horizontal':
                 constraints.addHorizontal(drawn[item[1]])
             elif kind == 'vertical':
                 constraints.addVertical(drawn[item[1]])
-            elif kind == 'originOnLine':
-                constraints.addCoincident(self.sketch.originPoint, drawn[item[1]])
-            elif kind == 'tangent':
-                constraints.addTangent(drawn[item[1]], drawn[item[2]])
-            elif kind == 'radius':
-                arc = drawn[item[1]]
-                c = arc.centerSketchPoint.geometry
-                dimensions.addRadialDimension(arc, adsk.core.Point3D.create(c.x + 0.3, c.y + 0.3, 0), True)
+            elif kind == 'originAt':
+                constraints.addCoincident(self.sketch.originPoint, sketchPoints[item[1]])
             elif kind == 'diameter':
                 circle = drawn[item[1]]
                 c = circle.centerSketchPoint.geometry
@@ -173,13 +178,12 @@ class WorldSketch:
             else:
                 i, j = item[1], item[2]
                 axis = 0 if kind == 'hdim' else 1
-                first = sketchPoints[i]
                 second = self.sketch.originPoint if j is None else sketchPoints[j]
-                a, b = geometry[i], (adsk.core.Point3D.create(0, 0, 0) if j is None else geometry[j])
-                # spread the texts so no two dimensions share a text point
+                a = geometry[i]
+                b = adsk.core.Point3D.create(0, 0, 0) if j is None else geometry[j]
                 shift = 0.05 * (number % 7)
                 text = adsk.core.Point3D.create((a.x + b.x) / 2 + 0.25 + shift, (a.y + b.y) / 2 + 0.25 + shift, 0)
-                dimension = dimensions.addDistanceDimension(second, first, H if axis == 0 else V, text, True)
+                dimension = dimensions.addDistanceDimension(second, sketchPoints[i], H if axis == 0 else V, text, True)
                 value = self._coordinate(i, axis) if j is None else self._coordinate(i, axis) - self._coordinate(j, axis)
                 applyTo(dimension.parameter, value.abs())
 
