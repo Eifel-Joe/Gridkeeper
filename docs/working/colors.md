@@ -26,14 +26,31 @@ and get no Text component.
 
 ![A bin with a red embossed label and its Text component in the browser](../assets/images/colored-label.png)
 
-## Exporting and slicing
+## Exporting
 
-Export as **3MF**: every body is an object of its own in its color. In the slicer, assign the label filament to the
-text objects of each bin or insert.
+Right-click the bin or insert **component** in the browser and pick **Save As Mesh**, format **3MF**, or use **File ›
+Export** with 3MF. Exporting the component takes the model with its Text component; every body is an object of its own
+in its color.
 
 !!! note "Known limit"
     A 3MF export lists every letter as an object of its own, not the Text component as one part. Select them together
     in the slicer.
+
+## Bambu Studio
+
+1. Open the 3MF, or drag it onto the plate. If Bambu Studio asks whether to load the file as a single object with
+   multiple parts, answer **Yes**: the bin and its letters stay together as one object, the letters as parts of it.
+2. In the **Objects** list, open the object: the bin body and the letter bodies are listed as its parts.
+3. Select the letter parts (click the first, shift-click the last) and set their filament to your label color, in the
+   filament column of the list or with right-click › **Change Filament**. The bin body keeps the base filament.
+4. Slice and check in the preview that every letter has the label color.
+
+Raised letters print on top of the bin or insert. Engraved, outline, set in and flush letters fill their cut flush, so
+the color change happens within the top layers.
+
+Other slicers work the same way: load the 3MF as one object with parts and give the letter parts a filament of their
+own. If a slicer loads the parts as separate objects, they keep their positions; group or assemble them before
+assigning filaments.
 
 ## Printable text
 

@@ -45,8 +45,10 @@ print bed.
 | **Grid position, Y** | Center | *Front*, *Center* or *Back* |
 | **Fill gaps with half cells** | on | Where the space left past the grid fits a row of half size sockets, adds one instead of solid padding |
 
-In the **Print bed** group pick your **Printer** from the list (Bambu Lab, Prusa, Creality, Elegoo, Voron) or
-*Custom*, then **Bed width, X** and **Bed length, Y** are yours to enter. **Bed margin** (5 mm) is kept clear on every
+In the **Print bed** group pick your **Printer** from the list or *Custom*, then **Bed width, X** and **Bed length, Y** are yours to enter. The list: Bambu Lab A1 mini (180 x 180 mm), Bambu Lab A1, P1, X1 (256 x 256), Prusa MINI
+(180 x 180), Prusa MK3, MK4 (250 x 210), Prusa CORE One (250 x 220), Prusa XL (360 x 360), Creality Ender-3
+(220 x 220), Creality K1, K1C (220 x 220), Creality K1 Max (300 x 300), Elegoo Neptune 4 (225 x 225), Voron 0
+(120 x 120), Voron 250, 300 and 350. **Bed margin** (5 mm) is kept clear on every
 side of the bed. **Result** draws the area, the grid and how it is split into pieces.
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../assets/gif/baseplate-fill-area-dark.gif"><img src="../assets/gif/baseplate-fill-area-light.gif" alt="Switching to fill area, entering the area length and switching between Prusa printers, with the baseplate pieces for each"></picture>
@@ -67,13 +69,13 @@ side of the bed. **Result** draws the area, the grid and how it is split into pi
 
 ### Magnet cutouts
 
-Full and skeletonized plates only. **Add magnet cutouts** (on), **Magnet cutout diameter** (6.5 mm) and **Magnet
-cutout depth** (2.4 mm).
+Full and skeletonized plates only. **Add magnet cutouts** (on), **Magnet cutout diameter** (6.5 mm, up to 10 mm) and
+**Magnet cutout depth** (2.4 mm, more than 0).
 
 ### Screw holes
 
-Full and skeletonized plates only. **Add screw holes** (on), **Screw hole diameter** (3.2 mm) and **Screw head cutout
-diameter** (6 mm, larger than the screw hole).
+Full and skeletonized plates only. **Add screw holes** (on), **Screw hole diameter** (3.2 mm, up to 10 mm) and
+**Screw head cutout diameter** (6 mm, larger than the screw hole, up to 15 mm).
 
 ### Side padding
 
@@ -99,3 +101,6 @@ Buttons for the dialog's defaults and for settings files, the same in every Grid
 ## Preview
 
 **Show preview (slow)** builds the plate while you change the inputs; **Last preview** shows how long the last one took.
+
+The plate is named after its size, *Gridfinity baseplate 3x2* or *Gridfinity baseplate fill 400x300 mm*. **OK** stays locked while an input is out of range, see
+[Messages and locked OK](help/messages.md#ok-stays-locked).

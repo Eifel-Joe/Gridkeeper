@@ -24,7 +24,7 @@ The dialog is long, its sections are described on these pages:
 Building a bin takes a few seconds, so the preview is off by default.
 
 - **Show auto update preview (slow)** builds the bin again after every change.
-- **Update preview once** builds it once with the inputs as they are.
+- **Update preview once** builds it once with the inputs as they are; it is hidden while the auto update is on.
 - **Last preview** shows how long the last preview took and notes text that is too thin to print.
 
 **OK** builds the bin. Some inputs lock **OK** and the dialog says why, for example walls too thin for a Cullenect

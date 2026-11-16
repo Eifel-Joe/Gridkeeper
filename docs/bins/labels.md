@@ -13,7 +13,7 @@ top, for a label. With several compartments every compartment gets its own tab.
 | **Tab offset (u)** | 0 | Where the tab starts along the bin width |
 | **Tab overhang angle** | 45° | Slope under the tab, 30° to 65° |
 | **Tab top angle** | 0° | Tilts the tab top down towards the front, so the label faces the front, up to 45° |
-| **Hollow tab** | off | Shells the tab with the wall thickness. With a single compartment it is opened through the back wall of the bin, with more compartments it is left closed. On by default for shelled bins |
+| **Hollow tab** | off | Shells the tab with the wall thickness. With a single compartment it is opened through the back wall of the bin, with more compartments it is left closed. On by default for shelled bins, locked off for bins with creased walls |
 | **Open through side walls** | off | Also opens a hollow tab through the side walls where it runs into them. Single compartment only |
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/bin-label-tab-options-dark.gif"><img src="../../assets/gif/bin-label-tab-options-light.gif" alt="Changing the label tab length and position in the dialog, with the bin for each"></picture>
@@ -27,8 +27,8 @@ top, for a label. With several compartments every compartment gets its own tab.
 | **Label style** | Outline | *Outline*, *Engraved*, *Embossed* or *Cullenect*, see below |
 | **Bold label text** | on | Bold or regular Arial |
 | **Label color** | None | A color for the label bodies, see [Colors and multicolor printing](../working/colors.md) |
-| **Custom label color** | | `#rrggbb` for *Label color* *Custom*, e.g. `#D02020` |
-| **Socket play (mm)** | 0.3 mm | Cullenect style only, see [Pockets in bins](../cullenect/pockets.md) |
+| **Custom label color** | | Shown for *Label color* *Custom*: `#rrggbb`, e.g. `#D02020`. Another value locks **OK** |
+| **Socket play (mm)** | 0.3 mm | Shown for the Cullenect style only, 0 to 1 mm, see [Pockets in bins](../cullenect/pockets.md) |
 
 ### Label styles
 

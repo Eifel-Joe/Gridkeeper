@@ -17,7 +17,9 @@ Tick **Edit compartment layout** for a drawing of the grid:
   **Done** finishes editing that pocket, changes are applied right away.
 - **Reset all** goes back to single cells, without labels or depths.
 
-Unticking **Edit compartment layout** resets the compartments to the uniform grid. Cells under the size the
+Unticking **Edit compartment layout** resets the compartments to the uniform grid. Bins with a
+[custom shape](size.md#custom-shape) or [creased walls](body.md#creased-walls) have a single compartment: the grid and
+the layout are hidden and keep their values for later. Cells under the size the
 compartment corners need are reported.
 
 Uniform compartments | Custom compartments A | Custom compartments B
@@ -40,8 +42,8 @@ on it. Dividers between grid lines stay below the lip. Hollow bins with a lip an
 
 ## Scoop
 
-**Add scoop (along bin width)** adds a rounded scoop along the bin width, so small parts slide out. **Scoop max radius
-(mm)** (25 mm) limits its size.
+**Add scoop (along bin width)** adds a rounded scoop along the bin width, so small parts slide out. **Scoop max radius (mm)** (25 mm, more than 0) limits its size; it is locked while the scoop is off. Bins with a custom shape get no
+scoop.
 
 Scoop enabled | Scoop disabled
 :-------------------------:|:-------------------------:

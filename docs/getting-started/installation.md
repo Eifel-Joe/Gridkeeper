@@ -27,7 +27,18 @@ and run the add-in again in **Scripts and Add-Ins**. Your saved dialog defaults 
 ## Beside the original
 
 Gridkeeper runs beside the original GridfinityGenerator: its commands have names of their own, so both can be loaded
-at the same time.
+at the same time. **Solid › Create** then lists *Gridfinity bin* and *Gridfinity baseplate* of the original next to
+*Gridkeeper bin*, *Gridkeeper baseplate* and *Gridkeeper label*.
+
+- Models keep working whichever add-in built them; they are ordinary Fusion bodies and components.
+- Right-click a model for the commands of each loaded add-in. Use **Gridkeeper settings**, **rebuild** and **clone**
+  for models built by Gridkeeper.
+- Settings files saved by GridfinityGenerator v2.4 load in Gridkeeper's dialogs; settings Gridkeeper added keep the
+  dialog's value, see [Saving and loading settings](../working/save-load.md#loading-older-or-other-files).
+- Each add-in keeps its own dialog defaults.
+
+If you don't need the original any more, stop and remove it as below, or uninstall it the way you installed it (the
+App Store version through Autodesk's installer).
 
 ## Units
 
@@ -36,5 +47,9 @@ in this documentation are in millimeters.
 
 ## Remove
 
-In **Scripts and Add-Ins** select Gridkeeper, click **Stop** and remove it with the menu of its row, then delete its
-folder. Models built with it stay as they are.
+1. In **Scripts and Add-Ins** select Gridkeeper and click **Stop**; untick **Run on Startup**.
+2. Remove it from the list with the menu of its row.
+3. Delete its folder. This also deletes your saved dialog defaults.
+
+Models built with Gridkeeper stay as they are, with their user parameters; only the right-click commands to show,
+rebuild or clone them are gone until you install it again.
