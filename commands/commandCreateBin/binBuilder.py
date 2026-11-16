@@ -22,6 +22,7 @@ from ...lib.gridfinityUtils.baseGeneratorInput import BaseGeneratorInput
 from ...lib.gridfinityUtils.binBodyGenerator import createGridfinityBinBody, createShapeCavity, binBodyTopHeight, createCompartmentCutout, compartmentCutoutFilletRadius, tabTopClearance, createTabLabel, hollowTabWallThickness
 from ...lib.gridfinityUtils import labelGenerator
 from ...lib.gridfinityUtils import labelColors
+from ...lib.gridfinityUtils import binLabelLayout
 from ...lib.gridfinityUtils import compartmentLayout
 from ...lib.gridfinityUtils import binShape
 from ...lib.gridfinityUtils import binGrid
@@ -763,6 +764,10 @@ def parameterEdits(
     tagParameters = tag[1].get('parameters')
     oldConfig = configWithParameters(tag[1]['config'], tagParameters, des.userParameters.itemByName)
     newConfig = configJson.stateToJson(configJson.GENERATOR_BIN, state)
+    # a text changed since the bin was built, here or by its parameter before, is fitted anew by a rebuild: set by the
+    # parameter it keeps the height of its letters and runs past the tab (round 19, p181)
+    if binLabelLayout.textChangedSinceBuild(tag[1]['config'], newConfig):
+        return None
     changed = [name for (name, value) in newConfig.items() if not isSameSetting(oldConfig.get(name), value)]
     # compartments without a label of their own show the bin's, each has a parameter holding it
     parametersByField: dict[str, list[adsk.fusion.UserParameter]] = {}
