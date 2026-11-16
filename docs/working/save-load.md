@@ -3,7 +3,7 @@
 Every Gridkeeper dialog has a section with buttons for its settings: **Inputs** in the baseplate and label dialogs,
 **Changes** in the bin dialog.
 
-![The buttons for defaults and settings files in the bin dialog](../assets/images/dialog-settings-buttons.png)
+![The Changes section of the bin dialog with its buttons for defaults and settings files](../assets/images/dialog-settings-buttons.png)
 
 ## Dialog defaults
 

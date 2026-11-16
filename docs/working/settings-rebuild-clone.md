@@ -3,18 +3,18 @@
 Every baseplate, bin and insert remembers the settings it was built with. Right-click it, in the canvas or in the
 browser, for three commands:
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/images/context-menu-dark.png"><img src="../../assets/images/context-menu-light.png" alt="Fusion's right-click menu on a bin with Gridkeeper settings, Gridkeeper rebuild and Gridkeeper clone"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/images/context-menu-dark.png"><img src="../../assets/images/context-menu-light.png" alt="Fusion's right-click menu on a face of a bin, with Gridkeeper settings, Gridkeeper rebuild and Gridkeeper clone at its end"></picture>
 
 A letter of a label or a face of the model works as well as the body: Gridkeeper finds the bin or insert it belongs
 to. In the browser, right-click the **body**, not the component.
 
 ## Gridkeeper settings
 
-Opens a window with everything the model was built with, grouped like its dialog, and the user parameters that drive
+Opens a window with the version that built the model and everything it was built with, grouped like its dialog, and the user parameters that drive
 it with their current values. For a bin with Cullenect pockets it lists the built tab width and each pocket size with
 how many pockets of it the bin has.
 
-![The Gridkeeper settings window of a bin](../assets/images/settings-window.png)
+![The Gridkeeper settings window of a bin: the buttons, the version it was built with, its parameters and settings](../assets/images/settings-window.png)
 
 Its buttons:
 

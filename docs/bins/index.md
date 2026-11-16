@@ -3,7 +3,7 @@
 **Solid › Create › Gridkeeper bin** builds a bin that drops into a baseplate. Every new bin is a component of its
 own in the container *Bins*, see [Components and joints](../working/components.md).
 
-![The Gridkeeper bin dialog](../assets/images/dialog-bin.png)
+![The top of the Gridkeeper bin dialog: Info, Basic sizes, Main dimensions with the actual dimensions and the Cullenect row](../assets/images/dialog-bin.png)
 
 The dialog is long, its sections are described on these pages:
 

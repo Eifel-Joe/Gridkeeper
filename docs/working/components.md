@@ -15,7 +15,7 @@ The containers are found by a tag, so you may rename them. They are grounded, so
 part only, not the container with everything in it. The colored letters of a bin or insert are in a component
 **Text** inside it, see [Colors and multicolor printing](colors.md).
 
-![The browser with the containers Grid, Bins and Label and a bin's Text component](../assets/images/browser-components.png)
+![The browser with the container Bins and the component of a 3x2x5 bin in it](../assets/images/browser-components.png)
 
 ## Part designs
 
