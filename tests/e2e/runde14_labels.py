@@ -225,7 +225,9 @@ def groupD(run):
 
 
 def groupE(run):
-    (body, component) = withIcon(run, 'Large icon', 'Cullenect tnut 2') or (None, None)
+    # a symbol above the dims limit (binLabelLayout.ICON_POINTS_HELD_BY_DIMS): tnut 2 has 26 points since the coarser
+    # symbols of round 17 and is held by dims now, the magnet (50 points) is moved (round 22)
+    (body, component) = withIcon(run, 'Large icon', 'Cullenect magnet') or (None, None)
     if component is not None:
         run.placed('Large icon', component, iconMoves=True)
 
@@ -267,7 +269,7 @@ def groupF(run):
 
 
 def groupG(run):
-    placedColored(run, 'Second bin, tilted, large icon, embossed', 'Cullenect tnut 2', 'Embossed')
+    placedColored(run, 'Second bin, tilted, large icon, embossed', 'Cullenect magnet', 'Embossed')
 
 
 GROUPS = {'a': groupA, 'b': groupB, 'c': groupC, 'd': groupD, 'e': groupE, 'f': groupF, 'g': groupG}

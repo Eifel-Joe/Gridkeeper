@@ -102,3 +102,19 @@ Kein kritischer Fund. Umgang:
   Beide bleiben in der Liste.
 - **(M4) behoben:** Satz zu `parameterEdits` korrigiert. Die README des Originals nennt beim Kontextmenü nur Bin und
   Grundplatte; sie bleibt wie übernommen.
+
+## Belege
+
+- pytest: `930 passed`.
+- Fusion auf 1f9e0b4 (`r22_reload1`):
+  - `r22_snap_t`: alle vier Bin-Label-Fälle pass, auch die zwei mit Icon. Bei ihrem kurzen Text („Bolts“) ist das Icon
+    schon voll groß, nichts neu abgelegt.
+  - `r22_icons`: alle vier neuen Icons gebaut, Timeline gesund. Bauzeiten der Bin mit Label: Hex locknut 5,8 s, Button
+    head phillips 8,3 s, Button head phillips self tapping 12,2 s, Button head self tapping 19,2 s.
+    - Die selbstschneidenden Schrauben sind langsam, wie die Cullenect-Hardware vor p51: Ihre SVGs haben viele Punkte.
+    - Neuer Punkt für die Liste: die Upstream-Icons ebenfalls gröber machen (nicht in dieser Runde).
+  - E2E R14 d: ALL OK.
+  - E2E R14 e: Fehler an den Testdaten, nicht am Code. „Cullenect tnut 2“ hat seit den gröberen Symbolen (R17) 26
+    Punkte und wird über Maße gehalten statt verschoben. Gruppe e und g nehmen jetzt „Cullenect magnet“ (50 Punkte,
+    verschoben).
+  - E2E R19 a und e: ALL OK. f folgt.
