@@ -89,6 +89,7 @@ In `gfLabel2_text1` zählt nichts ab 0:
   den Text-Parametern (`LABEL_TEXT_PARAMETERS`), die Namen stehen in Jörgs Dokumenten und bleiben deshalb.
 - Ein Einleger nur mit Zeile 2 hat also einen Parameter `…_text1` mit dem Label „Text line 2“. Das Label sagt die
   Zeile, und der Neubau richtet sich danach (`labelConfig.textLines`).
+- Jörg (16.11.2026, über die Hauptsitzung): „Passt so“, die Namen bleiben, wie sie sind.
 - Bins benennen ihre Label-Parameter nach eigenem Schema (`gfBinN_…`) und sind davon nicht berührt.
 
 ## Für Jörg (Testtermin)
