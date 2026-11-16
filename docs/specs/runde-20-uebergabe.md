@@ -58,3 +58,13 @@ Kein kritischer Fund. Umgang:
   - (M1) Der Hinweis verschwindet, sobald eine Tasche gewählt ist.
   - (M2) `_inRoot` ähnelt `lib/ui/selection._inRootContext` für Körper; das Zusammenlegen bleibt für später.
   - (M3) `prefillSelection` fängt alle Ausnahmen ab und schreibt sie ins Log. So gewollt als Netz.
+
+## E2E c (kopierte Bin): Befund und Fix
+
+- `r20_e2e_c` scheiterte nach dem Neubau.
+- `r20_copy_probe` zeigt: Der Neubau legt den Joint richtig in die Tasche der Kopie (`Bins:1+Gridfinity bin 1x1x3:2`,
+  gesund). Fusion nennt ihn aber „… in pocket (1)“, weil der alte Joint gleichen Namens beim Bauen noch da ist.
+  `insertPocket` suchte nur nach dem Namensende „ in pocket“ und fand ihn danach nicht mehr.
+- Das ist ein Fehler im Code, nicht im Test. Er trifft jeden Neubau in eine Tasche, bei dem der Name gleich bleibt, auch
+  bei einer nicht kopierten Bin. E2E a und r18a änderten den Text und damit den Namen.
+- Fix: `labelConfig.isPocketJointName` erkennt auch die Nummerierung, mit Unit-Test.
