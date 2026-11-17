@@ -1,7 +1,7 @@
 # Settings, rebuild and clone
 
-Every baseplate, bin, insert and box remembers the settings it was built with. Right-click it, in the canvas or in the
-browser, for three commands:
+Every baseplate, bin, insert, box and box label remembers the settings it was built with. Right-click it, in the
+canvas or in the browser, for three commands:
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/images/context-menu-dark.png"><img src="../../assets/images/context-menu-light.png" alt="Fusion's right-click menu on a face of a bin, with Gridkeeper settings, Gridkeeper rebuild and Gridkeeper clone at its end"></picture>
 
@@ -42,10 +42,12 @@ which model is rebuilt.
   to the joint origins of the same name, see [Storage boxes](../boxes.md).
 - A rebuilt insert is drawn from the bottom left corner of the old one; if it was in a pocket, the dialog has that
   pocket picked already and the new insert is jointed into it.
+- A rebuilt box label goes into the holder of its box again, the dialog has the box picked already; a label without
+  a box stays where it was, see [Storage boxes](../boxes.md#label).
 - For a bin, changing only what its [parameters](parameters.md) hold, the height and the units, sets the parameters
   instead of building it again. Any change of a label text builds the bin anew, so the text is fitted to its label.
 
 ## Gridkeeper clone
 
 Opens the model's dialog with its settings for a **new** model, the original stays as it is. Handy for a second bin
-like the first, only higher.
+like the first, only higher. A cloned insert or box label has no pocket or box picked; pick one for the new one.

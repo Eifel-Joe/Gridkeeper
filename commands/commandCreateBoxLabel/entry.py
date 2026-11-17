@@ -5,18 +5,24 @@ import time
 
 from ...lib.gridfinityUtils import designIntent
 from ...lib import configUtils
+from ...lib import configJson
+from ...lib import rebuildUtils
+from ...lib import settingsUtils
 from ...lib import tagUtils
 from ...lib import fusion360utils as futil
 from ... import config
 from ...lib.gridfinityUtils import commonUtils
+from ...lib.gridfinityUtils import boxLabelConfig
 from ...lib.gridfinityUtils import labelColors
 from ...lib.gridfinityUtils import predBoxLabel
 from ...lib.gridfinityUtils import predBoxLabelLayout
 from ...lib.gridfinityUtils import predBoxSeats
 from ...lib.gridfinityUtils import textStyles
 from .inputState import InputState
-from .boxLabelBuilder import buildBoxLabel, boxCells, isBoxLabelJointOrigin, labelLayout, labelName, labelProblem, ICONS_FOLDER
+from .boxLabelBuilder import buildBoxLabel, rebuildBoxLabel, labelHolder, boxCells, isBoxLabelJointOrigin, labelLayout, labelName, labelProblem, ICONS_FOLDER
 from ...lib.ui.commandUiState import CommandUiState
+from ...lib.ui import configButtons
+from ...lib.ui import selectionPrefill
 from ...lib.ui.defaultsButtons import addDefaultsButtonRow, defaultsButtonsHandlers, DEFAULTS_SAVE, DEFAULTS_FACTORY_RESET
 from ...lib.ui import browserPages
 from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
@@ -86,6 +92,31 @@ INFO_TEXT = ("<b>Help:</b> every input is explained "
              "<a href=\"https://github.com/CullenJWebb/Cullenect-Labels\">Cullenect-Labels</a> (MIT).")
 
 INPUTS_VALID = True
+
+# Settings, rebuild and clone in the right-click menu like the Cullenect insert's (1.1.0, Nutzer after his test: "Die
+# Box-Labels haben die Punkte [Gridkeeper settings / rebuild / clone im Rechtsklick] nicht. Warum? Die Cullenect-Label
+# haben es."), see commandCreateLabel.entry. The config the dialog opens with next, see startWithConfig
+pendingConfig: dict | None = None
+# the label the dialog opens to rebuild next and the box it is jointed into, see startRebuild; the entity token of the
+# one the open dialog rebuilds, every preview is undone, the token finds the body again. None for a new label
+pendingRebuildBody: adsk.fusion.BRepBody | None = None
+pendingRebuildBox: adsk.fusion.JointOrigin | None = None
+rebuildBodyToken: str | None = None
+# what of the features after a rebuilt label needs a look, shown when the dialog closes
+rebuildNotes: list[str] = []
+BOX_NOTE = 'box_note'
+SETTINGS_TITLE = 'Box label'
+# the dialog's first defaults, see initUiState, for the name of a saved config file
+DEFAULT_STATE = InputState(
+    cells=predBoxLabelLayout.DEFAULT_CELLS,
+    bigText='M3',
+    line1='Socket head',
+    line2='DIN 912',
+    symbols=['Socket Hex'] + [predBoxLabelLayout.NO_SYMBOL] * (predBoxLabelLayout.MAX_SYMBOLS - 1),
+    textStyle=textStyles.DEFAULT_INSERT_STYLE,
+    surface=predBoxLabel.SURFACE_EMBOSSED,
+    textColor='',
+)
 
 
 def infoText():
@@ -170,9 +201,22 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     futil.log(f'{CMD_NAME} Command Created Event')
     args.command.setDialogInitialSize(400, 500)
     inputs = args.command.commandInputs
+    global rebuildBodyToken
+    global pendingRebuildBody
+    global pendingRebuildBox
+    rebuildBodyToken = pendingRebuildBody.entityToken if pendingRebuildBody is not None else None
+    rebuildName = rebuildTitle(pendingRebuildBody) if pendingRebuildBody is not None else None
+    rebuildBox = pendingRebuildBox
+    pendingRebuildBody = None
+    pendingRebuildBox = None
+    # before the inputs, they take the dialog state
+    applyPendingConfig()
 
     infoGroup = addGroup(inputs, INFO_GROUP, 'Info')
     info = infoText()
+    if rebuildName is not None:
+        # as the insert dialog says it
+        info = f'<b>Rebuilding {html.escape(rebuildName)}</b> in place, features after it in the timeline are kept.<br>' + info
     infoGroup.children.addTextBoxCommandInput("info_text", "Info", info, info.count('<br>') + 4, True)
 
     boxGroup = addGroup(inputs, BOX_GROUP, 'Box')
@@ -183,6 +227,17 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
                         "the box's width and goes into the holder. Without, it lies beside the parts there are")
     # Nutzer 17.11.2026: "Da das Schild ja feste Breiten hat, sollte es nur ein Auswahlmenü dafür geben. Nicht frei
     # einstellbar." Works without a box in the document, for a reprint
+    # a rebuilt label goes into its box's holder again unless it's picked off, as the insert into its pocket. Fusion may
+    # refuse the box (round 20, p220): the input stays empty and the dialog says so
+    note = selectionPrefill.prefillSelection(boxInput, rebuildBox)
+    if note is not None:
+        futil.log(f'{CMD_NAME} box {rebuildBox.name} of the rebuilt label not picked, {note}')
+        boxGroup.children.addTextBoxCommandInput(
+            BOX_NOTE, '',
+            "The box the label was in couldn't be picked. Pick its label joint origin again, otherwise the label is "
+            'built where it was without a joint.',
+            3, True,
+        )
     widthDropdown = addDropdown(boxGroup.children, WIDTH_DROPDOWN, 'Label width', [name for name, _ in predBoxLabelLayout.widthChoices()])
     widthDropdown.tooltip = "Pred's label widths by the width of the box; a picked box sets its own"
     boxGroup.children.addTextBoxCommandInput(SIZE_TEXT, 'Label', '', 2, True)
@@ -225,6 +280,12 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     futil.add_handler(args.command.incomingFromHTML, command_incoming_from_html, local_handlers=local_handlers)
 
 
+def rebuildTitle(body: adsk.fusion.BRepBody) -> str:
+    """The label's component, named after its text, the body's own name for a label built into the root"""
+    component = body.parentComponent
+    return component.name if component != component.parentDesign.rootComponent else body.name
+
+
 def selectedBox(inputs: adsk.core.CommandInputs) -> adsk.fusion.JointOrigin | None:
     boxInput = adsk.core.SelectionCommandInput.cast(inputs.itemById(BOX_INPUT))
     if boxInput is None or boxInput.selectionCount == 0:
@@ -235,6 +296,10 @@ def selectedBox(inputs: adsk.core.CommandInputs) -> adsk.fusion.JointOrigin | No
 def boxProblem(inputs: adsk.core.CommandInputs, state: InputState) -> str | None:
     """A picked box whose width isn't the chosen one, the label wouldn't fit its holder"""
     box = selectedBox(inputs) if inputs is not None else None
+    if box is not None and not isBoxLabelJointOrigin(box):
+        # another joint origin of the box came through the pick, the build refused it as an unknown error (click test
+        # 17.11.2026); OK stays off with this note
+        return f'Pick the {predBoxSeats.LABEL_JOINT_ORIGIN} at the front of a box'
     cells = boxCells(box) if box is not None else None
     if cells is not None and predBoxLabelLayout.widthChoiceFor(cells) != predBoxLabelLayout.widthChoiceFor(state.cells):
         return f'The picked box takes the label width {predBoxLabelLayout.widthChoiceFor(cells)}'
@@ -297,6 +362,10 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
         return
     uiState.onInputUpdate(changed_input)
     if changed_input.id == BOX_INPUT:
+        # the note that the old box couldn't be picked goes once one is picked
+        note = changed_input.parentCommand.commandInputs.itemById(BOX_NOTE)
+        if note is not None:
+            note.isVisible = adsk.core.SelectionCommandInput.cast(changed_input).selectionCount == 0
         # Nutzer: "Aber es kann natürlich auch eine Breite übernommen werden, wenn man einen Joint auswählt zum positionieren."
         box = selectedBox(changed_input.parentCommand.commandInputs)
         cells = boxCells(box) if box is not None else None
@@ -338,19 +407,41 @@ def command_incoming_from_html(args: adsk.core.HTMLEventArgs):
 
 def command_destroy(args: adsk.core.CommandEventArgs):
     global local_handlers
+    global rebuildBodyToken
     local_handlers = []
+    rebuildBodyToken = None
+    if args.terminationReason == adsk.core.CommandTerminationReason.CompletedTerminationReason and len(rebuildNotes) > 0:
+        ui.messageBox(
+            'The label was rebuilt. These features after it need a look, ones using a face or an edge of the old '
+            'label need them picked again:\n\n' + '\n'.join(rebuildNotes),
+            CMD_NAME,
+            adsk.core.MessageBoxButtonTypes.OKButtonType,
+            adsk.core.MessageBoxIconTypes.WarningIconType,
+        )
+
+
+def snapshotSettings(inputs: adsk.core.CommandInputs) -> list[dict]:
+    # the label width stays, the picked box and the note about it are the joint's, not the label's
+    return settingsUtils.snapshotInputs(inputs, [INFO_GROUP, INPUT_CHANGES_GROUP, PREVIEW_GROUP, BOX_INPUT, BOX_NOTE], SETTINGS_TITLE)
 
 
 def generateBoxLabel(args: adsk.core.CommandEventArgs, mayChangeDocument: bool = True):
     startTime = time.perf_counter()
     inputs = args.command.commandInputs
     state = getInputsState(inputs)
+    settings = snapshotSettings(inputs)
     commonUtils.fileLog(f'{CMD_NAME} Generating box label {state}')
     # notes of an earlier build, a preview or a failed one, are not this one's
     textStyles.clearNotes()
+    global rebuildNotes
+    rebuildNotes = []
     try:
         des = adsk.fusion.Design.cast(app.activeProduct)
-        buildBoxLabel(des, state, mayChangeDocument, selectedBox(inputs))
+        if rebuildBodyToken is not None:
+            body = rebuildUtils.findBodyByToken(des, rebuildBodyToken)
+            (_, rebuildNotes) = rebuildBoxLabel(des, body, state, settings, not mayChangeDocument, selectedBox(inputs))
+        else:
+            buildBoxLabel(des, state, settings, mayChangeDocument, selectedBox(inputs))
         futil.log(f'{CMD_NAME} {labelName(state)} generated in {time.perf_counter() - startTime:.3f}s')
     except UnsupportedDesignTypeException:
         args.executeFailed = True
@@ -403,3 +494,89 @@ def getInputsState(inputs: adsk.core.CommandInputs | None = None) -> InputState:
         surface=next((key for (key, name) in SURFACE_NAMES.items() if name == surfaceName), predBoxLabel.SURFACE_EMBOSSED),
         textColor=labelColors.dialogColor(uiState.getState(TEXT_COLOR_DROPDOWN), uiState.getState(CUSTOM_COLOR_INPUT)),
     )
+
+
+# --- settings, rebuild and clone from the right-click menu, as commandCreateLabel.entry (1.1.0)
+
+def applyInputsState(state: InputState):
+    """Sets the dialog state to a state, the way back of getInputsState, the inputs follow on forceUIRefresh"""
+    uiState.setValue(WIDTH_DROPDOWN, predBoxLabelLayout.widthChoiceFor(state.cells))
+    uiState.setValue(BIG_TEXT_INPUT, state.bigText)
+    uiState.setValue(LINE_1_INPUT, state.line1)
+    uiState.setValue(LINE_2_INPUT, state.line2)
+    for (inputId, symbol) in zip(SYMBOL_DROPDOWNS, state.symbols):
+        uiState.setValue(inputId, symbol)
+    uiState.setValue(TEXT_STYLE_DROPDOWN, state.textStyle)
+    uiState.setValue(SURFACE_DROPDOWN, SURFACE_NAMES[state.surface])
+    (colorChoice, customColor) = labelColors.choiceOf(state.textColor)
+    uiState.setValue(TEXT_COLOR_DROPDOWN, colorChoice)
+    uiState.setValue(CUSTOM_COLOR_INPUT, customColor)
+
+
+def configChoices() -> dict[str, configJson.Choice]:
+    """The options of the dropdowns a config can't set to anything else, with the dialog's first defaults. The symbols
+    are a list, see boxLabelConfig.knownSymbols"""
+    return {
+        'textStyle': configJson.Choice(textStyles.STYLES, DEFAULT_STATE.textStyle),
+        'surface': configJson.Choice(predBoxLabel.SURFACES, DEFAULT_STATE.surface),
+    }
+
+
+def readConfig(text: str, source: str) -> InputState | None:
+    """The state of a config, none when it can't be read, see configButtons.readConfig. A symbol this install has no
+    svg for becomes an empty place, and is said"""
+    state = configButtons.readConfig(text, source, configJson.GENERATOR_BOX_LABEL, InputState, getInputsState(), configChoices())
+    if state is None:
+        return None
+    (state.symbols, unknown) = boxLabelConfig.knownSymbols(state.symbols, symbolNames())
+    if len(unknown) > 0:
+        futil.log(f'{CMD_NAME} {source} symbols without an svg left out: {unknown}')
+        ui.messageBox(f'{source} with changes:\n\nUnknown symbols, left out:\n' + '\n'.join(f'  • {name}' for name in unknown),
+                      'Gridkeeper config', adsk.core.MessageBoxButtonTypes.OKButtonType, adsk.core.MessageBoxIconTypes.WarningIconType)
+    return state
+
+
+def configFileName(settings: dict) -> str:
+    """The name a saved file of these settings starts with, the label's name"""
+    defaults = configJson.stateToJson(configJson.GENERATOR_BOX_LABEL, DEFAULT_STATE)
+    known = {name: value for (name, value) in settings.items() if name in defaults}
+    return labelName(configJson.stateFromJson(configJson.GENERATOR_BOX_LABEL, InputState, {**defaults, **known}))
+
+
+def startWithConfig(settings: dict):
+    """Opens the dialog with a config by field name, see configJson.stateToJson, settings it doesn't have stay. A clone
+    has no box picked, as an insert cloned without its pocket"""
+    global pendingConfig
+    global pendingRebuildBody
+    global pendingRebuildBox
+    pendingConfig = settings
+    if not ui.commandDefinitions.itemById(CMD_ID).execute():
+        # no dialog took them, the next one opened by hand mustn't rebuild or clone
+        pendingConfig = None
+        pendingRebuildBody = None
+        pendingRebuildBox = None
+
+
+def startRebuild(body: adsk.fusion.BRepBody, tag: dict):
+    """
+    Opens the dialog with the settings of the label the plate is of, its tag value, to rebuild it in place, see
+    boxLabelBuilder.rebuildBoxLabel. Its text parameters may have been changed since, their values replace the
+    settings. A label in a box's holder has the box picked again
+    """
+    global pendingRebuildBody
+    global pendingRebuildBox
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    settings = rebuildUtils.configWithParameters(configJson.GENERATOR_BOX_LABEL, tag['config'], tag.get('parameters'), design.userParameters.itemByName, boxLabelConfig.PARAMETER_FIELDS)
+    pendingRebuildBody = body
+    pendingRebuildBox = labelHolder(design, body)
+    startWithConfig(settings)
+
+
+def applyPendingConfig():
+    global pendingConfig
+    if pendingConfig is None:
+        return
+    state = readConfig(configJson.configText(configJson.GENERATOR_BOX_LABEL, pendingConfig), 'Rebuilding' if rebuildBodyToken is not None else 'Cloned')
+    pendingConfig = None
+    if state is not None:
+        applyInputsState(state)
