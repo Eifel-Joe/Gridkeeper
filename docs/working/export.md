@@ -16,7 +16,7 @@ builds and to colored text.
 |---|---|
 | **All Gridkeeper parts** | Selects every visible bin, baseplate, Cullenect insert and box of the design. Off goes back to what was selected |
 | **Bodies** | What goes out. A selected letter or symbol stands for its part; any other body picked goes out as it is |
-| **Format** | **3MF**: one file with all parts, laid out as in the design. **STL** or **STEP**: a file of each part, named after it, at the origin with its bottom at zero |
+| **Format** | **3MF**: one file with all parts, laid out as in the design. **STL** or **STEP**: a file of each part, named after it (a box's *Base* and *Lid* with the box's name in front, such as *Box 5×4×6 Base*), at the origin with its bottom at zero |
 | **Folder**, **Choose folder...** | Where the files go, the last folder is kept |
 | **File name** | Name of the 3MF file, the part's name for one part |
 | **Color label text** | 3MF only: the label text gets a color index the slicer prints it in, see below |

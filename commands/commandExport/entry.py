@@ -479,11 +479,23 @@ def safeFileName(name: str) -> str:
 def defaultFileName(items: list[ExportItem]) -> str:
     return fileNames(items)[0] if len(items) == 1 else DEFAULT_FILE_NAME
 
+def setNameOf(item: ExportItem) -> str | None:
+    """
+    The name of the set a box's body is in: Base and Lid lie in the components Box and Lid of the set "Box 5×4×6"
+    (round 27). None for every other body and for a box built as bodies in the root
+    """
+    tag = tagUtils.readBodyTag(item.body)
+    if tag is None or tag[0] != tagUtils.TAG_BOX:
+        return None
+    partOccurrence = item.occurrence or occurrenceOf(item.body.parentComponent)
+    setOccurrence = partOccurrence.assemblyContext if partOccurrence is not None else None
+    return setOccurrence.component.name if setOccurrence is not None else None
+
 def fileNames(items: list[ExportItem]) -> list[str]:
-    """By body name, numbered when the same"""
+    """By body name, a box's with its set's name in front (exportParts.partFileName), numbered when the same"""
     names = []
     for item in items:
-        name = safeFileName(item.body.name) or 'Body'
+        name = safeFileName(exportParts.partFileName(item.body.name, setNameOf(item))) or 'Body'
         unique = name
         number = 2
         while unique.lower() in (other.lower() for other in names):
