@@ -33,6 +33,8 @@ Hollow bin | Shelled bin | Solid bin
 
 The lip is the socket the feet of a bin stacked on top sit in.
 
+![Bin features in the bin dialog with Lip type and Trim lip top](../assets/images/bin-lip-dialog.png)
+
 - **Light** (default): the inside of the lip goes straight down to the bin top. It takes the least material and
   leaves the most room inside the bin.
 - **Full:** the original Gridfinity profile. The lip narrows at 45 degrees to an inner tip, like the bottom of a foot,

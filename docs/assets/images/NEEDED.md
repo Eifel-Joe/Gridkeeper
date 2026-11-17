@@ -12,17 +12,17 @@ from GridfinityGenerator. The models in `docs/assets/models` are rendered by a F
 ## Wanted
 
 - Lip types (upstream round 17.11.2026, p13): `docs/assets/models/bin-lip-light.png`, `bin-lip-full.png`,
-  `bin-lip-full-untrimmed.png`, a 1x1x2 bin cut through its middle, rendered by
-  `fusion-auftraege/ug_lip_render.py`; a crop of the bin dialog's **Bin features** with **Lip type** and **Trim lip
-  top**, `docs/assets/images/bin-lip-dialog.png`.
+  `bin-lip-full-untrimmed.png`, a 1x1x2 bin cut through its middle, rendered by `fusion-auftraege/ug_lip_render.py`.
+- Export (upstream round 17.11.2026, p13/p300): the export dialog (shot `fusion-dialog-export`; the click test's one
+  shows a folder path with a user name, take it again with a neutral folder), and a 3MF of a bin with a colored label
+  and an insert opened in Bambu Studio, for `docs/working/export.md`.
+- Storage boxes (round 28): a render of a box 5 × 4 × 6 with its lid and the small parts (latches, handle with its
+  pins, hinges) for [Storage boxes](../../boxes.md), in place of `box-5x4x6.png`.
 
-- Export (upstream round 17.11.2026, p13/p300): the right-click menu of a bin with **Gridkeeper export** and the export
-  dialog, taken by `tools/screenshots` (shots `context-menu-export-scene`, `fusion-dialog-export`), and a 3MF of a bin
-  with a colored label and an insert opened in Bambu Studio, for `docs/working/export.md`.
+## Taken (click test 17.11.2026, main session)
 
-## Still to take (after round 28)
-
-- `dialog-box.png`: the Gridkeeper box dialog, and a render of a box 5 × 4 × 6 with its lid and the small parts of
-  round 28 for [Storage boxes](../../boxes.md).
-- `dialog-bin-magnet-size.png`: the magnet settings of the bin dialog with the Magnet size choice.
-- `dialog-baseplate-magnet-size.png`: the magnet settings of the baseplate dialog with the Magnet size choice.
+- `dialog-box.png`, `box-5x4x6.png` (box and lid, before the small parts): [Storage boxes](../../boxes.md).
+- `dialog-bin-magnet-size.png`: [Base, magnets and screws](../../bins/base.md).
+- `dialog-baseplate-magnet-size.png`: [Baseplates](../../baseplates.md).
+- `bin-lip-dialog.png`: [Body, walls and lip](../../bins/body.md).
+- `context-menu-export-scene.png`: [Exporting for printing](../../working/export.md).

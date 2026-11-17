@@ -9,11 +9,15 @@ and the stacking rim are Pred's to the millimetre.
 Every new box is a component of its own in the container *Boxes*, holding the components *Box* and *Lid*; the lid
 is jointed shut on the box, see [Components and joints](working/components.md).
 
+![A box 5 × 4 × 6 with its lid, built by Gridkeeper box, and its set Box 5×4×6 with the components Box and Lid in the browser](assets/images/box-5x4x6.png)
+
 !!! note "This round builds box and lid"
     The latches, hinges, handle with its pins and the label follow with the next version. Box and lid already
     have every seat for them. Magnet holes are for 6 × 2 mm magnets only: 6 × 3 mm ones would break through the floor.
 
 ## Info
+
+![The Gridkeeper box dialog: Info, Size 5 × 4 × 6 with the outer size 230 × 188 × 65 mm, Magnet holes and Joint origins](assets/images/dialog-box.png)
 
 A link to this page, the credit to Pred and the version of the add-in. When the dialog was opened by
 **Gridkeeper rebuild**, it says which box is rebuilt in place.
