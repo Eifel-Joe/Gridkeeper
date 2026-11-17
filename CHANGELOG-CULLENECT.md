@@ -23,6 +23,9 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   Lab printer of Bambu Studio's profiles, the old *Bambu Lab A1, P1, X1* entry is split (a baseplate saved with it
   opens as *Custom* 256 × 256). The export keeps the purge tower's square where Bambu Studio puts the tower and,
   for the P1 and X1, keeps clear of their excluded corner, which made Bambu Studio warn of collisions.
+- **Parts as a compact group:** the parts of a plate lie as a roughly square group in the middle of the bed, not in
+  a row across its whole width (Jörg: „Was mir nicht gefällt ist, dass die Kleinteile über die volle Breite angelegt
+  sind. Diese könnten kompakter verteilt sein.“).
 - **A box set on three plates:** box, lid and small parts each on plates of their own (Jörg: „Das Zubehör der Box
   sollte auf eine separate Platte. Eine Box müsste je nach Größe 3 Platten gesamt ergeben.“).
 - **Pinned hinge's halves named after it:** *BottomHingePart_Pinned*, *TopHingePart_Pinned* (Pred names them like the
