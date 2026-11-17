@@ -196,3 +196,51 @@ def test_the_small_part_roles_are_the_box_parts():
 
 def test_a_small_part_carries_its_sets_name():
     assert exportParts.partFileName("Latch", "Box 5×4×6") == "Box 5×4×6 Latch"
+
+
+# ---------------------------------------------------------------------------
+# Round r29-export: what the print layout needs of a part
+# ---------------------------------------------------------------------------
+
+def test_a_labels_surface_comes_from_its_tag():
+    assert exportParts.labelSurface(("label", {"config": {"surface": "Flush"}})) == "Flush"
+    assert exportParts.labelSurface(("label", {"config": {"surface": "Embossed"}})) == "Embossed"
+
+
+def test_parts_without_a_label_surface_have_none():
+    assert exportParts.labelSurface(None) is None
+    assert exportParts.labelSurface(("bin", {"config": {"surface": "Flush"}})) is None
+    assert exportParts.labelSurface(("label", {})) is None
+    assert exportParts.labelSurface(("label", {"config": "broken"})) is None
+
+
+def test_parts_of_one_place_and_turn_go_together():
+    # the halves of a hinge: one occurrence, one turn; its pin turns on its own
+    keys = [("hinge 1", "none"), ("latch", "none"), ("hinge 1", "none"), ("hinge 1", "x-90"), (None, "none"), (None, "none")]
+    assert exportParts.printGroups(keys) == [[0, 2], [1], [3], [4], [5]]
+
+
+printBeds = _load("printBeds", "commands", "commandCreateBaseplate", "printBeds.py")
+BED_NAMES = [printBeds.PRINT_BED_CUSTOM] + list(printBeds.PRINT_BED_PRESETS)
+
+
+def test_the_default_bed_is_one_of_the_baseplate_dialogs():
+    assert exportParts.DEFAULT_BED in printBeds.PRINT_BED_PRESETS
+    assert printBeds.PRINT_BED_PRESETS[exportParts.DEFAULT_BED] == (exportParts.DEFAULT_BED_SIZE, exportParts.DEFAULT_BED_SIZE)
+
+
+def test_layout_choices_default_to_jörgs_values():
+    choices = exportParts.layoutChoices({}, BED_NAMES)
+    assert choices == {"bed": "Bambu Lab A1, P1, X1 (256 x 256 mm)", "bedWidth": 256.0, "bedLength": 256.0, "spacing": 5.0, "purge": 50.0}
+
+
+def test_layout_choices_are_read_back():
+    section = {"bed": "Custom", "bedWidth": "300", "bedLength": "320.5", "spacing": "8", "purge": "0"}
+    assert exportParts.layoutChoices(section, BED_NAMES) == {"bed": "Custom", "bedWidth": 300.0, "bedLength": 320.5, "spacing": 8.0, "purge": 0.0}
+
+
+def test_broken_layout_choices_fall_back():
+    section = {"bed": "Gone printer", "bedWidth": "-3", "bedLength": "abc", "spacing": "-1", "purge": "x"}
+    choices = exportParts.layoutChoices(section, BED_NAMES)
+    assert choices["bed"] == "Custom"
+    assert (choices["bedWidth"], choices["bedLength"], choices["spacing"], choices["purge"]) == (256.0, 256.0, 5.0, 50.0)

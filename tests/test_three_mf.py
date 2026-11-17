@@ -146,3 +146,13 @@ def test_without_a_version_or_title_the_generator_is_named_alone(tmp_path):
     found = metadata(read_model(path))
     assert found["Application"] == "Fusion Gridfinity Generator"
     assert "Title" not in found
+
+
+def test_objects_laid_out_on_plates_are_written_where_they_are(tmp_path):
+    # round r29-export: printLayout placed them already, write keeps them
+    path = tmp_path / "laid.3mf"
+    objects = [cube("a", x=300, z=0), cube("b", x=5, z=0)]
+    threeMf.write(str(path), objects, None, plates=[1, 0])
+    model = read_model(path)
+    xs = sorted(float(vertex.get("x")) for vertex in model.iter(f"{CORE}vertex"))
+    assert xs[0] == pytest.approx(5) and xs[-1] == pytest.approx(310)
