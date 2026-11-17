@@ -58,7 +58,16 @@ def test_the_part_files_are_named_once():
     assert len(files) == len(set(files))
 
 
-def test_the_printed_hinge_pin_has_a_name():
-    """Main session 17.11.2026: Pred's printed pin of Hinge_Pined is "Body21", export file names go by body names"""
-    assert parts.BODY_NAMES == {"hingePinned.f3d": {"Body21": "Hinge pin"}}
-    assert set(parts.BODY_NAMES) <= set(parts.HINGES.values()) | {part.file for part in parts.PARTS}
+# Round 29 (Nutzer 17.11.2026: "Wir zeichnen die Teile im Code."): parts are drawn in the box command, no file is
+# imported; on the integration branch a part comes in once its generator is there (Nutzer: "So wie eine Sitzung fertig
+# ist, kann ja sofort ein Testlauf mit Klicktest durchgeführt werden."), the others stay out
+
+def test_only_parts_with_a_generator_are_built():
+    assert parts.partsToDraw("M3x30", drawn=[]) == []
+    assert [p.role for p in parts.partsToDraw("M3x30", drawn=["Handle"])] == ["Handle"]
+    assert [p.role for p in parts.partsToDraw("Plain", drawn=["Hinge", "Latch"])] == ["Latch", "Hinge"]
+
+
+def test_the_drawn_roles_are_roles_of_the_set():
+    assert set(parts.DRAWN_ROLES) <= {part.role for part in parts.PARTS}
+    assert parts.partsToDraw("M3x30") == parts.partsToDraw("M3x30", drawn=parts.DRAWN_ROLES)

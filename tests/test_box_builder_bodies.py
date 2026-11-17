@@ -80,10 +80,24 @@ def test_the_hinges_are_jointed_like_the_other_parts_without_a_captured_position
     captured position stayed suppressed after a rebuild (r28_cmd l1/l2); every part is jointed now, none is placed"""
     source = open(INSERT, encoding="utf-8").read()
     assert "snapshots.add" not in source and "transform2" not in source and "placeAllInSet" not in source
-    assert "predBoxParts.partsFor(hinge)" in source and "predBoxSeats.seats(dims, hinge)" in source
+    assert "predBoxParts.partsToDraw(hinge)" in source and "predBoxSeats.seats(dims, hinge)" in source
     assert "originConstructionPoint" in source
 
 
-def test_bodies_get_their_names_from_the_part_list():
+def test_the_parts_are_drawn_in_the_set_not_imported():
+    """Round 29: importToTarget fails in a command with a dialog (fusion-auftraege/r28_cmdvariants.log); every part is
+    drawn by its generator into a new component of the set, in the box command, so it lands in the set's group"""
     source = open(INSERT, encoding="utf-8").read()
-    assert "predBoxParts.BODY_NAMES.get(part.file" in source
+    assert "importToTarget" not in source and "tempCopy" not in source and ".f3d" not in source
+    assert "predBoxParts.partsToDraw(hinge)" in source and "occurrences.addNewComponent(" in source
+    assert "drawPart(component, part, dims, hinge)" in source
+
+
+def test_every_drawn_role_has_its_generator():
+    tree = ast.parse(open(INSERT, encoding="utf-8").read())
+    drawPart = ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "drawPart"))
+    parts = open(os.path.join(os.path.dirname(INSERT), "predBoxParts.py"), encoding="utf-8").read()
+    drawn = ast.literal_eval(next(node.value for node in ast.parse(parts).body
+                                  if isinstance(node, ast.AnnAssign) and getattr(node.target, "id", None) == "DRAWN_ROLES"))
+    for role in drawn:
+        assert f"'{role}'" in drawPart, role
