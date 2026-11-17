@@ -14,6 +14,16 @@ Die Teile kommen deshalb einzeln auf `r29-int` (ab `runde-29`), je Teil ein Klic
 - **`boxBuilder`:** unverändert. `insertParts` läuft im Befehl, die Teile landen in der Gruppe des Satzes.
 - **Teile, die noch nicht gezeichnet werden,** fehlen im Satz ganz. Ihre Joint origins an der Box sind schon da.
 
+## Konzepttest bestanden (Klicktest 17.11.2026, Stand 2e16a78, nur Haltestift)
+
+- Erzeugen 5×4×6 im echten Dialog, Part-Dokument: kein Fehler, der Hybrid-Hinweis wie erwartet.
+- Im Satz: Box, Lid, Handle pin ×2.
+- Zeitleiste: Container *Boxes*, *Pin1* und eine zugeklappte Gruppe. *Pin1* ist das Fixieren des Containers
+  (`assembly.py`, `occurrence.isGrounded = True`); es steht wie bisher vor der Gruppe.
+- Rebuild auf 5×4×7 und Clone ohne Fehler, die Stifte jeweils im neuen Satz, je Satz eine Gruppe.
+
+Der Weg „im Befehl zeichnen“ trägt.
+
 ## Ein Teil aufnehmen, sobald seine Untersitzung fertig ist
 
 1. Den Teil-Branch nach `r29-int` mergen (Merge-Commit): Griff `claude/r29-handle-049385`, Riegel
