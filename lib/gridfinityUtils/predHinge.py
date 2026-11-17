@@ -63,7 +63,9 @@ SHAPES = {
     'M3x30': HingeShape('Hinge_M3x30', ('BottomHingePart_M3x30', 'TopHingePart_M3x30'),
                         knuckle=8 / 2, clearance=(8 + 2 * TOLERANCE) / 2, core=3.5 / 2,
                         leafWidth=SLOT_WIDTH - 0.4, leafDepth=SLOT_DEPTH - 0.2, inset=0.2),
-    'Pinned': HingeShape('Hinge_Pined', ('BottomHingePart_M3x30', 'TopHingePart_M3x30', 'Hinge pin'),
+    # Pinned's halves named after it, Pred names them as M3x30's (Jörg 17.11.2026, click test F3: misleading in the
+    # export and the slicer)
+    'Pinned': HingeShape('Hinge_Pined', ('BottomHingePart_Pinned', 'TopHingePart_Pinned', 'Hinge pin'),
                          knuckle=8 / 2, clearance=(8 + 2 * TOLERANCE) / 2, core=3.5 / 2,
                          leafWidth=SLOT_WIDTH - 0.4, leafDepth=SLOT_DEPTH - 0.2, inset=0.2),
     'Plain': HingeShape('Hinge', ('BottomHingePart', 'TopHingePart'),
