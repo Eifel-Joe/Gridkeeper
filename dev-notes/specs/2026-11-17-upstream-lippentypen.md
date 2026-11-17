@@ -61,6 +61,23 @@ unverändert grün (Vorgaben = bisheriges Verhalten).
 - neu von Upstream: `bin_2x1x3_lip_full`, `bin_2x1x3_lip_untrimmed`, `bin_2x1x3_lip_full_untrimmed_shelled_notches`,
   `bin_2x1x1_lip_full_lowest`, `bin_2x2x4_lip_full_scoop_tab`, `bin_3x3x4_l_shape_lip_full`,
   `bin_1_5x2x6_shape_half_grid_shelled_lip_full`
-- neu von uns: `bin_3x2x3_dividers_to_top_3_columns_lip_full` (Add new)
+- neu von uns (Add new): `bin_3x2x3_dividers_to_top_3_columns_lip_full`, `bin_3x2x3_dividers_to_top_3_columns_lip_untrimmed`,
+  `bin_1x1x3_cullenect_lip_full`
 - Stichprobe Vorgabe unverändert: `bin_1x1x3_plain`, `bin_3x3x4_l_shape_lip_notches`, `bin_2x1x3_shelled_notches`,
   `bin_3x2x3_dividers_to_top_3_columns`
+
+## Nach dem Review (Opus, 17.11.)
+
+- Fund 1 behoben: erhöhte Trenner reichen auch bis zur ungekürzten Lippe (`lipInput.topTrimHeight` statt fester
+  0,6 mm). Neuer Fall `bin_3x2x3_dividers_to_top_3_columns_lip_untrimmed` (Add new).
+- Fund 3 behoben: `configJson.OLDER_VALUES` – eine Bin, die vor dem Merge getaggt oder gespeichert wurde, liest
+  Light/getrimmt statt des Dialogwerts (Load, Rebuild, Clone, p151), und `parameterEdits` zählt ihre Lippe nicht als
+  geändert. Gilt nur für die beiden Lippenfelder; das ältere Muster (z. B. `hasDividersToTop`) ist ein neuer Punkt.
+- Fund 2 (Fusion): Eckverrundung der erhöhten Trenner (p83) unter voller Lippe – die Stütze steht dort, wo die
+  Verrundung bei leichter Lippe beginnt. Beim „Add new“ von `bin_3x2x3_dividers_to_top_3_columns_lip_full` nicht blind
+  annehmen: Log auf „sweep … failed“/„filleted“ prüfen, die 8 Wandecken im Schnitt ansehen.
+- Fund 4 (Fusion/Druck): Cullenect-Tasche unter voller Lippe – rechnerisch ragt die Stütze ~0,05 mm über die Hinterkante
+  der Tasche. Neuer Fall `bin_1x1x3_cullenect_lip_full` (Add new, Schnitt ansehen); Einsetzen des Einlegers auf Jörgs
+  Testliste.
+- Fund 5 (Upstream, nicht hier): geschalte Bin mit Lippe und Schaufel setzt den Tab an `BIN_LIP_WALL_THICKNESS`, auch
+  bei voller Lippe.
