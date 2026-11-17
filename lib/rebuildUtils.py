@@ -6,8 +6,10 @@ from typing import Callable
 from . import configJson
 from . import tagUtils
 from . import assembly
+from . import placementUtils
 from .gridfinityUtils import commonUtils
 from .gridfinityUtils import cullenect
+from .gridfinityUtils import boxLabelConfig, predBoxLabelLayout, predBoxSeats
 from .gridfinityUtils import timelineRemoval
 
 # Rebuilding a generated body at its place in the timeline: the new one is built right after the old one's timeline
@@ -332,6 +334,7 @@ def repointJoints(
         return (round((box.maxPoint.x - box.minPoint.x) * 10, 4), round((box.maxPoint.y - box.minPoint.y) * 10, 4))
     moved = 0
     notes = []
+    shown = []
     # items of a collapsed group can't be rolled to ("Associated feature is invalid", Fusion 15.11.2026), the group of
     # the insert holding the joint is expanded meanwhile, as in replaceBodies
     collapsedGroups = []
@@ -353,6 +356,8 @@ def repointJoints(
                 item.rollTo(True)
                 newPocket = newComponent.jointOrigins.itemByName(newName)
                 setattr(joint, side, newPocket.createForAssemblyContext(newOccurrence))
+                # the insert's pocket stays shown, see assembly.keepShown
+                shown.append(newPocket.createForAssemblyContext(newOccurrence))
                 moved += 1
                 commonUtils.debugLog(f'{LOG_PREFIX} {joint.name} now uses {newName} of the new part')
                 # a narrower pocket of the same name, after other base units or compartments, may no longer take the
@@ -370,6 +375,8 @@ def repointJoints(
     design.timeline.moveToEnd()
     for group in collapsedGroups:
         group.isCollapsed = True
+    for jointOrigin in shown:
+        assembly.keepShown(jointOrigin)
     return (moved, notes)
 
 def partRole(component: adsk.fusion.Component) -> str:
@@ -385,7 +392,8 @@ def repointJointsByName(
     """
     Joints of the user on a joint origin of the old part, its own component or one inside it (a box set: Box and Lid,
     round 27), get the joint origin of the same name in the same place of the new part. The part's own joints, in its
-    timeline group, go with the old part. Returns how many were moved over and a note per joint that couldn't be
+    timeline group, go with the old part. A box label too wide for the rebuilt box isn't moved over, it is laid beside
+    the parts, see _layBeside. Returns how many were moved over and a note per joint that couldn't be or needs a look
     """
     if target.occurrence is None or len(newBodies) == 0:
         return (0, [])
@@ -404,6 +412,9 @@ def repointJointsByName(
             newJointOrigins[(place, jointOrigin.name)] = jointOrigin.createForAssemblyContext(occurrence)
     moved = 0
     notes = []
+    shown = []
+    # box labels to lay beside: the joint, the label's occurrence and the cells it was built for
+    tooWide = []
     collapsedGroups = []
     for joint in list(design.rootComponent.allJoints):
         item = joint.timelineObject
@@ -422,6 +433,22 @@ def repointJointsByName(
                 notes.append(f'{joint.name}: the new part has no {jointOrigin.name}, the joint goes with the old one')
                 continue
             try:
+                if jointOrigin.name == predBoxSeats.LABEL_JOINT_ORIGIN:
+                    # a box rebuilt with its label in the holder (Nutzer: "Noch schöner wäre natürlich, wenn bei Rebuild
+                    # der Joint erhalten bliebe."): the holder stays shown, a label of another width is said. One too
+                    # wide goes beside (Nutzer: "Wenn die Box einen Rebuild bekommt, der das Schild zu groß werden lässt,
+                    # muss das Schild daneben gelegt werden.")
+                    shown.append(newJointOrigin)
+                    otherSide = adsk.fusion.JointOrigin.cast(getattr(joint, 'geometryOrOriginTwo' if side == 'geometryOrOriginOne' else 'geometryOrOriginOne'))
+                    (labelCells, boxCells) = (_labelCells(otherSide), _boxCells(newJointOrigin))
+                    widthNote = boxLabelConfig.widthNote(joint.name, labelCells, boxCells)
+                    if boxLabelConfig.labelFit(labelCells, boxCells) == boxLabelConfig.FIT_TOO_WIDE:
+                        # the label's occurrence from the joint: its sides may come without one (round 20, p220, review)
+                        labelOccurrence = getattr(joint, 'occurrenceOne' if side == 'geometryOrOriginTwo' else 'occurrenceTwo') or otherSide.assemblyContext
+                        tooWide.append((joint, labelOccurrence, labelCells, widthNote))
+                        continue
+                    if widthNote is not None:
+                        notes.append(widthNote)
                 group = item.parentGroup
                 if group is not None and group.isCollapsed:
                     group.isCollapsed = False
@@ -435,7 +462,94 @@ def repointJointsByName(
     design.timeline.moveToEnd()
     for group in collapsedGroups:
         group.isCollapsed = True
+    # with the timeline at its end, before the old part goes: its joints would break with it
+    for (joint, occurrence, labelCells, widthNote) in tooWide:
+        jointName = joint.name
+        laid = _layBeside(design, joint, occurrence, labelCells)
+        if laid == LAID_BESIDE:
+            notes.append(widthNote)
+        elif laid == LAID_FREE:
+            notes.append(f"{jointName}: the label is too wide for the box now, it was taken out but lies where it was built; move it and rebuild it with the new width")
+        else:
+            notes.append(f"{jointName}: the label is too wide for the box now and couldn't be taken out, it goes with the old box; rebuild the label")
+    for jointOrigin in shown:
+        assembly.keepShown(jointOrigin)
     return (moved, notes)
+
+# grid free spots are looked for on, as a new box label's (boxLabelBuilder.PLACEMENT_CELL)
+LABEL_PLACEMENT_CELL = 4.2
+# what _layBeside did: laid beside the parts, taken out but left where it was built, or left in
+LAID_BESIDE = 'beside'
+LAID_FREE = 'free'
+LAID_NOT = 'not'
+
+def _layBeside(design: adsk.fusion.Design, joint: adsk.fusion.Joint, occurrence: adsk.fusion.Occurrence | None, labelCells: int) -> str:
+    """
+    Takes the label out of the holder of a box rebuilt too narrow for it and lays it flat at a free spot beside the
+    parts, as a new label without a box. Without its joint Fusion puts it back where it was built, for a jointed label
+    the origin (p391); a new place holds only with its position captured right after it is set (p392: transform2,
+    then snapshots.add). Returns LAID_BESIDE, LAID_FREE or LAID_NOT
+    """
+    if occurrence is None:
+        return LAID_NOT
+    deleted = False
+    group = None
+    wasCollapsed = False
+    try:
+        item = joint.timelineObject
+        group = item.parentGroup if item is not None else None
+        wasCollapsed = group is not None and group.isCollapsed
+        if wasCollapsed:
+            group.isCollapsed = False
+        if item is not None:
+            item.rollTo(True)
+        joint.deleteMe()
+        deleted = True
+        design.timeline.moveToEnd()
+        (width, height) = (predBoxLabelLayout.plateWidth(labelCells), predBoxLabelLayout.PLATE_HEIGHT)
+        (x, y) = placementUtils.findPlacement(
+            design,
+            [tagUtils.TAG_BOX, tagUtils.TAG_LABEL, tagUtils.TAG_BIN, tagUtils.TAG_BASEPLATE],
+            predBoxLabelLayout.PLATE_BODY_NAME,
+            (0, 0, width, height),
+            LABEL_PLACEMENT_CELL,
+            LABEL_PLACEMENT_CELL,
+        )
+        place = adsk.core.Matrix3D.create()
+        place.translation = adsk.core.Vector3D.create(x + width / 2, y + height / 2, 0)
+        occurrence.transform2 = place
+        if design.snapshots.hasPendingSnapshot:
+            design.snapshots.add()
+        return LAID_BESIDE
+    except Exception as err:
+        commonUtils.fileLog(f"{LOG_PREFIX} a box label {'taken out' if deleted else 'left in'}, not laid beside the box, {err}")
+        return LAID_FREE if deleted else LAID_NOT
+    finally:
+        # a group the marker is in can't be collapsed (review: the error path left it open)
+        try:
+            design.timeline.moveToEnd()
+            if wasCollapsed and group is not None and group.isValid:
+                group.isCollapsed = True
+        except Exception as err:
+            commonUtils.fileLog(f'{LOG_PREFIX} timeline not put back after laying a box label beside, {err}')
+
+def _labelCells(jointOrigin: adsk.fusion.JointOrigin | None) -> int | None:
+    """The cells a box label on the joint origin was built for, from its plate's config, none for anything else"""
+    if jointOrigin is None:
+        return None
+    for body in (jointOrigin.nativeObject or jointOrigin).parentComponent.bRepBodies:
+        tag = tagUtils.readPartTag(body)
+        if tag is not None and tag[0] == tagUtils.TAG_BOX_LABEL:
+            cells = tagUtils.buildConfig(tag[0], tag[1]) or {}
+            return cells.get('cells') if isinstance(cells.get('cells'), int) else None
+    return None
+
+def _boxCells(jointOrigin: adsk.fusion.JointOrigin) -> int | None:
+    """The width in grid cells of the box the joint origin is of, its widest body, as boxLabelBuilder.boxCells"""
+    bodies = list((jointOrigin.nativeObject or jointOrigin).parentComponent.bRepBodies)
+    if len(bodies) == 0:
+        return None
+    return predBoxLabelLayout.cellsOfBoxWidth(max(body.boundingBox.maxPoint.x - body.boundingBox.minPoint.x for body in bodies))
 
 def newlyUnhealthy(target: RebuildTarget) -> list[str]:
     """Later items that were fine before and have a warning or an error now, with Fusion's message"""

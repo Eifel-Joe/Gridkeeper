@@ -79,9 +79,7 @@ def boxCells(jointOrigin: adsk.fusion.JointOrigin) -> int | None:
     bodies = list(native.parentComponent.bRepBodies)
     if len(bodies) == 0:
         return None
-    width = max(body.boundingBox.maxPoint.x - body.boundingBox.minPoint.x for body in bodies)
-    cells = round((width * 10 - 20) / 42)
-    return cells if cells >= predBoxLabelLayout.MIN_CELLS else None
+    return predBoxLabelLayout.cellsOfBoxWidth(max(body.boundingBox.maxPoint.x - body.boundingBox.minPoint.x for body in bodies))
 
 
 def buildBoxLabel(
@@ -199,6 +197,8 @@ def _buildBoxLabel(
         jointInput.setAsRigidJointMotion()
         joint = root.joints.add(jointInput)
         joint.name = f'{name}{HOLDER_JOINT_SUFFIX}'
+        # Fusion turned off the box's Label joint origin for the joint, it stays shown
+        assembly.keepShown(box)
 
     if des.designType == adsk.fusion.DesignTypes.ParametricDesignType:
         group = des.timeline.timelineGroups.add(originalTimelinePosition, des.timeline.markerPosition - 1)
@@ -276,6 +276,8 @@ def rebuildBoxLabel(
     if _isAfter(target, box):
         raise ValueError("The box comes after the label in the timeline, the label can't be rebuilt into its holder in place")
     prefix = rebuildUtils.bodyId(target.bodies[0], PARAMETER_BASE_NAME)
+    # the holder the old label leaves, Fusion turned it off for the old joint, see assembly.keepShown
+    oldHolder = labelHolder(des, body)
     if not isPreview:
         newConfig = configJson.stateToJson(configJson.GENERATOR_BOX_LABEL, state)
         commonUtils.fileLog(f'{LOG_PREFIX} rebuilding {target.group.name}, {rebuildUtils.configChanges(configJson.GENERATOR_BOX_LABEL, target.bodies[0], newConfig)}')
@@ -286,4 +288,9 @@ def rebuildBoxLabel(
         (bodies, _) = buildBoxLabel(des, state, settings, not isPreview, box, parameterPrefix, None if box is not None else transform, rootSpot, oldPlace)
         # only the plate takes the place of the old one, its text and symbols are bodies of their own
         return bodies[:1]
-    return rebuildUtils.rebuild(des, target, prefix, PARAMETER_BASE_NAME, isPreview, build, 'box label', jointsByName=True)
+    result = rebuildUtils.rebuild(des, target, prefix, PARAMETER_BASE_NAME, isPreview, build, 'box label', jointsByName=True)
+    if not isPreview:
+        # with the timeline at its end again: the one left and the one the new label went into (review)
+        assembly.keepShown(oldHolder)
+        assembly.keepShown(box)
+    return result

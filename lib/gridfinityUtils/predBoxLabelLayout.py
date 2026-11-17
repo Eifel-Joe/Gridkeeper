@@ -53,6 +53,8 @@ ROW_GAP = 0.2
 MAX_SYMBOLS = 5
 
 NO_SYMBOL = 'None'
+# the plate's body, its text and symbols 'Box label text 1', 'Box label symbol 1'; free labels are found by it
+PLATE_BODY_NAME = 'Box label'
 
 
 def labelWidth(cells: int) -> float:
@@ -84,6 +86,12 @@ def widthChoiceFor(cells: int) -> str:
 
 def cellsOfChoice(name: str) -> int:
     return dict(widthChoices()).get(name, DEFAULT_CELLS)
+
+
+def cellsOfBoxWidth(width: float) -> int | None:
+    """The width in grid cells of a box of that outer width (cm): cells x 42 mm + 20 mm, none below the smallest box"""
+    cells = round((width - 2 * PRED['margin']) / PRED['grid'])
+    return cells if cells >= MIN_CELLS else None
 
 
 def sizeProblem(cells: int) -> str | None:
