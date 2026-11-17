@@ -218,3 +218,42 @@ def test_the_front_spot_comes_from_the_rebuilt_box_and_leaves_out_the_label():
 def test_the_note_says_in_front_of_the_box():
     tail = _function(REBUILD_UTILS, "repointJointsByName")
     assert "LAID_FRONT" in tail
+
+
+# -- review: the old set's extents come from the instance being rebuilt, not the first instance of its component (a
+# pasted second copy would widen them and the label would land in front of the wrong box)
+
+def _rebuiltInstance():
+    namespace = {}
+    exec(compile(ast.Module(body=[_node(REBUILD_UTILS, "_rebuiltInstance")], type_ignores=[]), REBUILD_UTILS, "exec"), namespace)
+    return namespace["_rebuiltInstance"]
+
+
+class _Proxies:
+    def __init__(self, items):
+        self.items = items
+        self.count = len(items)
+
+    def item(self, index):
+        return self.items[index]
+
+
+def test_the_old_set_is_the_instance_being_rebuilt_not_the_first_copy():
+    (rebuilt, pasted) = (object(), object())
+    proxies = _Proxies([types.SimpleNamespace(nativeObject=pasted), types.SimpleNamespace(nativeObject=rebuilt)])
+    assert _rebuiltInstance()(proxies, rebuilt) is proxies.item(1)
+
+
+def test_an_old_set_in_the_root_is_its_own_instance():
+    native = types.SimpleNamespace(nativeObject=None)
+    assert _rebuiltInstance()(_Proxies([native]), native) is native
+
+
+def test_no_matching_instance_gives_none():
+    assert _rebuiltInstance()(_Proxies([types.SimpleNamespace(nativeObject=object())]), object()) is None
+
+
+def test_the_label_front_uses_the_rebuilt_instance():
+    source = _function(REBUILD_UTILS, "repointJointsByName")
+    assert "_rebuiltInstance(" in source
+    assert "oldParts.item(0)" not in source
