@@ -24,7 +24,7 @@ ICONS_FOLDER = os.path.join(
 
 # user parameter names are stored in user documents, keep these literal
 PARAMETER_BASE_NAME = 'gfBoxLabel'
-TEXT_PARAMETERS = ['bigText', 'text1', 'text2']
+TEXT_PARAMETER_NAMES = boxLabelConfig.TEXT_PARAMETER_NAMES
 HOLDER_JOINT_SUFFIX = boxLabelConfig.HOLDER_JOINT_SUFFIX
 # the move of the bodies built into the root (a preview in a part design) to their spot, a rebuild finds the spot by it
 PLACEMENT_FEATURE = 'Box label placement'
@@ -162,16 +162,15 @@ def _buildBoxLabel(
 
     # a rebuilt label keeps its parameters, the old ones are still there and are taken over, see rebuildUtils.rebuild
     reuse = parameterPrefix is not None
-    prefix = parameterPrefix or parameterUtils.nextFreePrefix(des, PARAMETER_BASE_NAME, TEXT_PARAMETERS, tagUtils.usedBodyIds(des, tagUtils.TAG_BOX_LABEL))
+    prefix = parameterPrefix or parameterUtils.nextFreePrefix(des, PARAMETER_BASE_NAME, TEXT_PARAMETER_NAMES, tagUtils.usedBodyIds(des, tagUtils.TAG_BOX_LABEL))
     texts = [state.bigText, state.line1, state.line2]
     parameters = [
         parameterUtils.addTextParameter(des, parameterUtils.parameterName(prefix, field), text.strip(), f'{name} {field}', reuse)
         if len(text.strip()) > 0 else None
-        for (field, text) in zip(TEXT_PARAMETERS, texts)
+        for (field, text) in zip(TEXT_PARAMETER_NAMES, texts)
     ]
     # labelled for the settings page and the rebuild, which takes their values back, see boxLabelConfig.PARAMETER_FIELDS
-    labelParameters = [[boxLabelConfig.PARAMETER_LABELS[field], parameter.name]
-                       for (field, parameter) in zip(TEXT_PARAMETERS, parameters) if parameter is not None]
+    labelParameters = boxLabelConfig.parameterLabels([parameter.name if parameter is not None else None for parameter in parameters])
     labelInput = boxLabelInput(state)
     labelInput.bigTextParameter = parameters[0]
     labelInput.lineParameters = parameters[1:]

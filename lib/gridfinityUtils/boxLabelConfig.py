@@ -11,10 +11,20 @@ import re
 
 from .predBoxLabelLayout import MAX_SYMBOLS, NO_SYMBOL
 
-# the label's text parameters by their field, with the label the tag gives them; a rebuild takes their values back into
-# the settings, see rebuildUtils.configWithParameters
-PARAMETER_LABELS = {'bigText': 'Large text', 'line1': 'Line 1', 'line2': 'Line 2'}
-PARAMETER_FIELDS = {label: field for (field, label) in PARAMETER_LABELS.items()}
+# the label's text parameters: the end of their name in the document (gfBoxLabel1_text1, kept as built in round 29),
+# the config field each holds and the label the tag gives it; a rebuild takes their values back into the settings, see
+# rebuildUtils.configWithParameters. One table: the names and the fields differ, a lookup of a name among the fields
+# failed every build (click test 17.11.2026, KeyError 'text1')
+TEXT_PARAMETERS = [('bigText', 'bigText', 'Large text'), ('text1', 'line1', 'Line 1'), ('text2', 'line2', 'Line 2')]
+TEXT_PARAMETER_NAMES = [name for (name, _, _) in TEXT_PARAMETERS]
+PARAMETER_FIELDS = {label: field for (_, field, label) in TEXT_PARAMETERS}
+
+
+def parameterLabels(parameterNames: list[str | None]) -> list[list[str]]:
+    """The label and name pairs of the tag, the parameter names in the order of TEXT_PARAMETERS, None for a text left
+    empty, which has none"""
+    return [[label, name] for ((_, _, label), name) in zip(TEXT_PARAMETERS, parameterNames) if name is not None]
+
 
 # the joint the box label command makes into a box's holder, "<label> in holder"; Fusion numbers a name still taken, a
 # rebuild with the same name gives "<label> in holder (1)" while the old joint is there yet

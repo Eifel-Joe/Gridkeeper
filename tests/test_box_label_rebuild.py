@@ -141,7 +141,7 @@ class TestBuilder:
 
     def test_the_text_parameters_are_labelled_for_the_rebuild(self):
         source = _function(BUILDER, "_buildBoxLabel")
-        assert "boxLabelConfig.PARAMETER_LABELS" in source
+        assert "boxLabelConfig.parameterLabels(" in source
         assert "parameterUtils.addTextParameter(des, parameterUtils.parameterName(prefix, field), text.strip(), f'{name} {field}', reuse)" in source
 
     def test_the_bodies_in_the_root_are_moved_by_a_named_placement(self):
@@ -207,3 +207,39 @@ class TestOlderLabels:
     def test_the_menu_and_the_page_ask_for_it(self):
         for name in ("canRebuild", "canClone", "pageHandlers"):
             assert "tagUtils.buildConfig(" in _function(SETTINGS_ENTRY, name), name
+
+
+class TestTextParameters:
+    """Click test 17.11.2026: KeyError 'text1' in _buildBoxLabel, the parameters are named text1 and text2 in the
+    document while the config fields are line1 and line2. One table holds both, the builder and the rebuild use it"""
+
+    def test_each_parameter_has_its_config_field_and_label(self):
+        assert boxLabelConfig.TEXT_PARAMETERS == [("bigText", "bigText", "Large text"), ("text1", "line1", "Line 1"), ("text2", "line2", "Line 2")]
+
+    def test_the_fields_are_the_dialogs(self):
+        fields = set(State.__dataclass_fields__)
+        assert all(field in fields for (_, field, _) in boxLabelConfig.TEXT_PARAMETERS)
+
+    def test_the_tag_labels_the_parameters_there_are(self):
+        # the click test's label: all three texts; and one without a large text
+        assert boxLabelConfig.parameterLabels(["gfBoxLabel1_bigText", "gfBoxLabel1_text1", "gfBoxLabel1_text2"]) == [
+            ["Large text", "gfBoxLabel1_bigText"], ["Line 1", "gfBoxLabel1_text1"], ["Line 2", "gfBoxLabel1_text2"]]
+        assert boxLabelConfig.parameterLabels([None, "gfBoxLabel2_text1", None]) == [["Line 1", "gfBoxLabel2_text1"]]
+
+    def test_the_rebuild_reads_them_back_into_their_fields(self):
+        assert boxLabelConfig.PARAMETER_FIELDS == {"Large text": "bigText", "Line 1": "line1", "Line 2": "line2"}
+
+    def test_the_builder_uses_the_table(self):
+        source = _function(BUILDER, "_buildBoxLabel")
+        assert "boxLabelConfig.parameterLabels([parameter.name if parameter is not None else None for parameter in parameters])" in source
+        assert "boxLabelConfig.PARAMETER_LABELS" not in source
+        assert "TEXT_PARAMETER_NAMES" in source
+
+
+class TestWrongJointOrigin:
+    """Click test 17.11.2026: another joint origin of the box came through, the build failed with an unknown error"""
+
+    def test_a_picked_joint_origin_that_isnt_a_label_one_blocks_ok_with_a_note(self):
+        source = _function(ENTRY, "boxProblem")
+        assert "not isBoxLabelJointOrigin(box)" in source
+        assert "predBoxSeats.LABEL_JOINT_ORIGIN" in source
