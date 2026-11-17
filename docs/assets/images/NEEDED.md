@@ -14,3 +14,4 @@ from GridfinityGenerator. The models in `docs/assets/models` are rendered by a F
 - `dialog-box.png`: the Gridkeeper box dialog, and a render of a box 5 × 4 × 6 with its lid and the small parts of
   round 28 for [Storage boxes](../../boxes.md).
 - `dialog-bin-magnet-size.png`: the magnet settings of the bin dialog with the Magnet size choice.
+- `dialog-baseplate-magnet-size.png`: the magnet settings of the baseplate dialog with the Magnet size choice.
