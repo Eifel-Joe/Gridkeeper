@@ -168,3 +168,24 @@ class TestTitle:
 
     def test_long_text_is_cut(self):
         assert layout.labelTitle(4, "x" * 30, []).endswith("x" * 20 + "…")
+
+
+class TestWidthChoices:
+    """Nutzer 17.11.2026: "Da das Schild ja feste Breiten hat, sollte es nur ein Auswahlmenü dafür geben. Nicht frei
+    einstellbar." Pred's label widths: box 4 cells 28.5 mm, 5 cells 70.5 mm, from 6 cells 85 mm"""
+
+    def test_three_fixed_widths(self):
+        assert layout.widthChoices() == [("Box 4 cells (28.5 mm)", 4), ("Box 5 cells (70.5 mm)", 5), ("Box 6+ cells (85 mm)", 6)]
+
+    def test_every_choice_is_preds_label_width(self):
+        for (name, cells) in layout.widthChoices():
+            assert f"({mm(layout.labelWidth(cells)):g} mm)" in name
+
+    @pytest.mark.parametrize("cells, name", [(4, "Box 4 cells (28.5 mm)"), (5, "Box 5 cells (70.5 mm)"),
+                                             (6, "Box 6+ cells (85 mm)"), (12, "Box 6+ cells (85 mm)")])
+    def test_a_picked_box_preselects_its_width(self, cells, name):
+        assert layout.widthChoiceFor(cells) == name
+
+    def test_a_choice_gives_its_cells(self):
+        assert layout.cellsOfChoice("Box 5 cells (70.5 mm)") == 5
+        assert layout.cellsOfChoice("unknown") == 5

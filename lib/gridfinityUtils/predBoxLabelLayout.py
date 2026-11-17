@@ -64,6 +64,28 @@ def plateWidth(cells: int) -> float:
     return labelWidth(cells) - 2 * PLATE_INSET
 
 
+# Nutzer 17.11.2026: "Da das Schild ja feste Breiten hat, sollte es nur ein Auswahlmenü dafür geben. Nicht frei
+# einstellbar." Pred's label width stops growing at 85 mm from 6 cells on, so there are three
+WIDTH_CHOICE_CELLS = [4, 5, 6]
+DEFAULT_CELLS = 5
+
+
+def widthChoices() -> list[tuple[str, int]]:
+    """(dialog name, cells) of each label width there is, named by the box and Pred's label width"""
+    return [(f'Box {cells}{"+" if cells == WIDTH_CHOICE_CELLS[-1] else ""} cells ({labelWidth(cells) * 10:g} mm)', cells)
+            for cells in WIDTH_CHOICE_CELLS]
+
+
+def widthChoiceFor(cells: int) -> str:
+    """The choice of a box that many cells wide, the widest from 6 cells on"""
+    choices = widthChoices()
+    return next((name for (name, choiceCells) in choices if choiceCells == cells), choices[-1][0] if cells > WIDTH_CHOICE_CELLS[-1] else choices[0][0])
+
+
+def cellsOfChoice(name: str) -> int:
+    return dict(widthChoices()).get(name, DEFAULT_CELLS)
+
+
 def sizeProblem(cells: int) -> str | None:
     if cells < MIN_CELLS:
         return f'A box is at least {MIN_CELLS} cells wide'

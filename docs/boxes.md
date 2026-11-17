@@ -87,7 +87,7 @@ sketches fully constrained and Pred's parameters turned into their values.
 ## Label
 
 **Solid › Create › Gridkeeper box label** makes the label for the holder at the front of the box: Pred's flat plate,
-0.85 mm thick and 24.5 mm high, as wide as the holder of the box (the label width less 3 mm: 25.5 mm at a width of 4,
+0.85 mm thick and 24.5 mm high, as wide as the holder of the box (Pred's label width less 3 mm: 25.5 mm at a width of 4,
 67.5 mm at 5, 82 mm from 6 on). It is a command of its own, so a label can be swapped without touching the box.
 
 ```
@@ -100,8 +100,8 @@ sketches fully constrained and Pred's parameters turned into their values.
 
 | Input | Default | What it does |
 |---|---|---|
-| **Box** | none | Pick the *Label joint origin* of a box: the label gets the box's width and is jointed into its holder (joint *… in holder*). Without, the label lies beside the parts there are |
-| **Box width (u)** | 5 | The width of the box in grid cells, when no box is picked |
+| **Box** | none | Optional: pick the *Label joint origin* of a box, the label is jointed into its holder (joint *… in holder*) and **Label width** is set to the box's. Without, the label lies beside the parts there are, e.g. for a reprint |
+| **Label width** | Box 5 cells (70.5 mm) | Pred's fixed label widths: *Box 4 cells (28.5 mm)*, *Box 5 cells (70.5 mm)*, *Box 6+ cells (85 mm)*; the plate is 3 mm narrower. With a picked box only its own width builds |
 | **Large text** | M3 | One line in large letters (up to 12 mm) at the left, a little over a third of the width; empty leaves the room to the lines |
 | **Line 1**, **Line 2** | Socket head, DIN 912 | Two lines at the right, 4 mm high, smaller when they are long |
 | **Text style**, **Text and symbols**, **Text color** | Heavy, Raised, none | As for the [Cullenect inserts](cullenect/inserts.md): raised 0.4 mm like Pred's own labels, set in 0.4 mm or flush, as bodies of their own to print in another colour |
