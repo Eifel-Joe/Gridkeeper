@@ -9,6 +9,14 @@ LIP_TYPE_LIGHT = 'Light'
 LIP_TYPE_FULL = 'Full'
 LIP_TYPES = [LIP_TYPE_LIGHT, LIP_TYPE_FULL]
 
+def lipSocketHasBottomChamfer(lipType: str) -> bool:
+    """
+    Whether the socket a stacked bin's feet sit in narrows at its bottom like a foot does. Only the full lip follows the
+    feet that far down, the light one ends straight. The lip cutout and the feet cut out of dividers raised into the lip
+    share it, so a divider's ridge meets the lip around it (Gridkeeper, upstream round 17.11.2026, p13)
+    """
+    return lipType == LIP_TYPE_FULL
+
 def lipTopTrimHeight(isTrimmed: bool) -> float:
     """How much is cut off the lip top to leave it flat, none leaves the sharp edge of the original profile"""
     return const.BIN_LIP_TOP_RECESS_HEIGHT if isTrimmed else 0
