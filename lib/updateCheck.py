@@ -177,8 +177,8 @@ def fetchReleases(url: str = API_URL, urlopen=None, log=print) -> list | None:
     Errors are only logged, the check is silent at startup"""
     import urllib.request
     urlopen = urlopen or urllib.request.urlopen
-    request = urllib.request.Request(url, headers={'User-Agent': USER_AGENT, 'Accept': 'application/vnd.github+json'})
     try:
+        request = urllib.request.Request(url, headers={'User-Agent': USER_AGENT, 'Accept': 'application/vnd.github+json'})
         with urlopen(request, timeout=TIMEOUT) as response:
             data = json.loads(response.read().decode('utf-8'))
     except Exception as err:
