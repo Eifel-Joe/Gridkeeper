@@ -147,3 +147,52 @@ def test_floor_pad_with_blends_and_magnet():
               (px - b, py + R + b), (e0, e0 + 0.115), (e0 + 0.115, e0), (e0 + 0.115, e0 + 0.115)]
     curves = [arc(0, 1, 2), arc(3, 1, 4), arc(5, 2, 6), circle(0), line(4, 8), arc(9, 8, 7), line(7, 6)]
     check(points, curves, plan.chain(points, curves))
+
+
+# -- arc ends without a second solution (round 27, fusion-auftraege/r27_diag4.log): the label rail's arc end level with
+# its centre was fixed by one dimension on the circle; a horizontal line crosses the circle twice, and after a width
+# change Fusion's solver took the other crossing, the rail's outline flipped and Chamfer30 lost its edge.
+
+def linearlyFixed(points, curves, constraints):
+    """How many of the outline points' coordinates (arc centres left out) the conditions fix without the circles"""
+    centres = {c["center"] for c in curves if c["kind"] == "arc"}
+    outline = [p for p in range(len(points)) if p not in centres]
+    values, radiusIndex = plan._layout(points, curves)
+    basis = plan._Basis()
+    for constraint in constraints:
+        if constraint[0] in ("hdim", "vdim") and constraint[1] in centres:
+            continue
+        rows = [("originAt", constraint[1], "x"), ("originAt", constraint[1], "y")] if constraint[0] == "originAt" else [constraint]
+        for item in rows:
+            basis.add(plan._row(item, curves, radiusIndex, values))
+    columns = {2 * p for p in outline} | {2 * p + 1 for p in outline}
+    return sum(1 for pivot in basis.rows if pivot in columns), 2 * len(outline)
+
+
+def labelRail(mirrored=False, midX=115.0):
+    """The label rail of the box at 5 x 4 x 6 in its sketch (mm, r27_diag3.log), mirrored the right one"""
+    fx = (lambda x: 2 * midX - x) if mirrored else (lambda x: x)
+    raw = [(115.0, -10.95), (84.75, -10.95), (84.75, -15.95), (79.75, -15.95), (79.75, -33.45), (84.75, -33.45),
+           (84.75, -38.45), (84.75, -35.95), (82.25, -33.45), (82.25, -15.95), (84.75, -13.45), (115.0, -13.45)]
+    points = [(fx(x) / 10, y / 10) for x, y in raw]
+    curves = [line(0, 1), arc(2, 1, 3), line(3, 4), arc(5, 4, 6)] + [line(i, i + 1) for i in range(6, 11)] + [line(11, 0)]
+    return points, curves
+
+
+def test_the_label_rail_is_determined():
+    for mirrored in (False, True):
+        points, curves = labelRail(mirrored)
+        check(points, curves, plan.chain(points, curves))
+
+
+def test_the_label_rails_arc_ends_need_no_circle():
+    for mirrored in (False, True):
+        points, curves = labelRail(mirrored)
+        fixed, wanted = linearlyFixed(points, curves, plan.chain(points, curves))
+        assert fixed == wanted
+
+
+def test_a_rounded_rectangles_arc_ends_need_no_circle():
+    points, curves = rounded(0, 0, 23, 18.8, 1.4)
+    fixed, wanted = linearlyFixed(points, curves, plan.chain(points, curves))
+    assert fixed == wanted

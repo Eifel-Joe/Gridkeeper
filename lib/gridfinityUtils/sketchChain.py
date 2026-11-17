@@ -230,11 +230,15 @@ class _Chain:
                 self.fixAxis(c, axis, self.references(c, [s, e]))
                 self.known.add(c)
                 return
+            # the other end first, by two dimensions, then the centre on the chord's bisector as above. Fixed on the
+            # circle by one dimension, the end had a second solution across the centre: the label rail's end level with
+            # its centre flipped there after a width change (fusion-auftraege/r27_diag4.log, Chamfer30 lost its edge)
             known = s if s in self.known else e
-            self.fixAxis(c, 0, self.references(c, [known]))
-            self.fixAxis(c, 1, self.references(c, [known]))
-            self.known.add(c)
-            self.onCircle(e if known == s else s, c)
+            other = e if known == s else s
+            self.fixAxis(other, 0, self.references(other, [known]))
+            self.fixAxis(other, 1, self.references(other, [known]))
+            self.known.add(other)
+            self.arc(index, curve)
             return
         new = [p for p in (s, e) if p not in self.known]
         if not new:
