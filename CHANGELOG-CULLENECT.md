@@ -1,8 +1,27 @@
 # Changelog — Cullenect labels
 
 Changes of Gridkeeper (`Eifel-Joe/Gridkeeper`, until 16.11.2026 `Eifel-Joe/FusionGridfinityGenerator`) on top of
-GridfinityGenerator v2.4.2.0 by Le0Michine (rounds 1 to 11 were built on v2.2.0.0, round 22 merged v2.4.2.0).
+GridfinityGenerator by Le0Michine, merged up to 513e6ab (17.11.2026; rounds 1 to 11 were built on v2.2.0.0, round 22 merged v2.4.2.0).
 Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`, the `vX.Y.Z.W` tags belong to GridfinityGenerator.
+
+## Unreleased
+
+### Merged from upstream (17.11.2026)
+
+Thirteen commits of FusionGridfinityGenerator by Lev Mishin (Le0Michine, CC BY-NC-SA 4.0), `fba170e..513e6ab`, merged
+with his authorship kept:
+- **Lip type** *Light* (default, as before) or *Full*, the original Gridfinity profile with an inner tip and a support
+  under it, and **Trim lip top** (on by default, as before; off keeps the sharp top edge), each with its profile
+  beside it in the dialog. Seven new shape tests.
+- **Context menu on bin and baseplate components:** settings, rebuild and clone also when the component of a bin is
+  selected rather than its body, beside this fork's own handling of bodies and label letters.
+- **Developer tools:** the test window filters cases by status and updates a snapshot right away; the model pictures
+  palette searches by name, cuts pictures through their middle and takes the dialog screenshots. Their output stays
+  in `tools/screenshots/out/`.
+- In this fork: dividers raised up to the top under a full lip get the narrowing foot bottom of the lip socket around
+  them, a new shape test for it.
+- Not taken over: the README text and every picture and animation (the documentation keeps its own pictures), the
+  version bump (Gridkeeper keeps its own version).
 
 ## 1.0.0 (2026-11-16)
 

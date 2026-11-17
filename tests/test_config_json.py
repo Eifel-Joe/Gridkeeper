@@ -264,3 +264,41 @@ def test_hand_test_10_file_keeps_lengths_in_mm_in_the_note(current):
     assert "xyClearance (0.25 mm)" in note
     assert "baseWidth (42 mm)" in note
     assert state.wallThickness == pytest.approx(0.12)
+
+
+# --- upstream round 17.11. (p13): a bin saved before the lip types had the light lip trimmed flat ---
+
+def _lip_changed(current):
+    return dataclasses.replace(current, lipType="Full", isLipTopTrimmed=False)
+
+
+def test_older_bin_settings_get_the_lip_they_were_built_with():
+    assert configJson.withOlderValues(BIN, {"binWidth": 4}) == {"lipType": "Light", "isLipTopTrimmed": True, "binWidth": 4}
+    assert configJson.withOlderValues(BIN, {"lipType": "Full", "isLipTopTrimmed": False}) == {"lipType": "Full", "isLipTopTrimmed": False}
+    assert configJson.withOlderValues(configJson.GENERATOR_BASEPLATE, {"baseWidth": 42}) == {"baseWidth": 42}
+
+
+def test_older_config_reads_with_the_light_trimmed_lip_whatever_the_dialog_has(current):
+    # a rebuild or clone of a bin tagged before the merge reads its config over the dialog's state (p151)
+    (state, notes) = read(settings_text(binWidth=4), _lip_changed(current))
+    assert state.lipType == "Light"
+    assert state.isLipTopTrimmed is True
+    missing = [name for (name, _) in notes.missing]
+    assert "lipType" not in missing and "isLipTopTrimmed" not in missing
+
+
+def test_config_with_a_lip_type_keeps_it(current):
+    (state, _) = read(settings_text(lipType="Full", isLipTopTrimmed=False), current)
+    assert state.lipType == "Full"
+    assert state.isLipTopTrimmed is False
+
+
+def test_rebuild_fills_the_older_values_into_a_tagged_config():
+    # parameterEdits compares the tagged config with the dialog's, a bin tagged before the merge would otherwise count
+    # its lip as changed and be rebuilt instead of having its parameters set
+    path = os.path.join(PROJECT_ROOT, "lib", "rebuildUtils.py")
+    with open(path, encoding="utf-8") as file:
+        source = file.read()
+    body = source[source.index("def configWithParameters("):]
+    body = body[:body.index("\ndef ", 1)]
+    assert "config = configJson.withOlderValues(generator, config)" in body
