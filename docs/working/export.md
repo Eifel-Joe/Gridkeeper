@@ -10,6 +10,8 @@ builds and to colored text.
   container (*Grid*, *Bins*, *Label*), and pick **Gridkeeper export**. It sits below *Save As Mesh*.
 - Right-click the design's root component to start with **All Gridkeeper parts** on.
 
+![The right-click menu of a bin's component with Gridkeeper export below Save As Mesh, and settings, rebuild and clone at the end](../assets/images/context-menu-export-scene.png)
+
 ## The dialog
 
 | Input | What it does |

@@ -73,6 +73,8 @@ Full and skeletonized plates only. **Add magnet cutouts** (on), **Magnet cutout 
 **Magnet size** (6×2 mm magnets need 2.4 mm, 6×3 mm ones 3.4 mm, or *Custom*) and **Magnet cutout depth** (2.4 mm,
 more than 0, typed with *Custom*). Only the depth is saved; settings files with other depths load as *Custom*.
 
+![The magnet settings of the baseplate dialog: Magnet size 6×3 mm sets the cutout depth to 3.4 mm](assets/images/dialog-baseplate-magnet-size.png)
+
 ### Screw holes
 
 Full and skeletonized plates only. **Add screw holes** (on), **Screw hole diameter** (3.2 mm, up to 10 mm) and

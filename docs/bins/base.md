@@ -14,6 +14,8 @@ The **Base interface features** section of the bin dialog: the feet that sit in 
 | **Magnet size** | 6×2 mm (2.4 mm deep) | Sets the depth for 6 × 2 mm or 6 × 3 mm (3.4 mm) magnets; *Custom* to type the depth |
 | **Magnet cutout depth** | 2.4 mm | At least 1 mm, typed with *Custom* |
 
+![The magnet settings of the bin dialog: Magnet size 6×3 mm sets the cutout depth to 3.4 mm](../assets/images/dialog-bin-magnet-size.png)
+
 With magnet sockets and screw holes together, a groove bridges each magnet socket to its screw hole for
 printability; it is left out where the sockets are too deep for it. Half size feet have no magnet or screw holes: on the **Half grid** the hole inputs are locked, as they are without
 **Generate base**.
