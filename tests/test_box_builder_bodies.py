@@ -48,3 +48,10 @@ def test_a_rebuild_pairs_box_and_lid_only():
     rebuild = _function("rebuildBox")
     build = next(node for node in ast.walk(rebuild) if isinstance(node, ast.FunctionDef) and node.name == "build")
     assert "tagUtils.readBodyTag" in ast.unparse(build)
+
+
+def test_a_rebuild_renames_the_small_parts_too():
+    """Review round 28: the new set's parts are inserted while the old set still has its components, Fusion names them
+    "Latch (1)" and so on; _renameParts gave box and lid back their names only. It walks the set's components now"""
+    source = ast.unparse(_function("_renameParts"))
+    assert "childOccurrences" in source

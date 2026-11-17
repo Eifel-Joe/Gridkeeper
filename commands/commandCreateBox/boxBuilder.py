@@ -218,10 +218,21 @@ def rebuildBox(
 def _renameParts(bodies: list[adsk.fusion.BRepBody]):
     """
     The new set is built while the old one still has its components, Fusion names the new ones "Box (2)", "Lid (2)"
-    (r27_cmd 17.11.2026). With the old set gone the names are free again, a name another set still holds stays taken
+    (r27_cmd 17.11.2026), the small parts "Latch (1)" and so on (review round 28). With the old set gone the names are
+    free again, a name another set still holds stays taken
     """
+    components = []
     for body in bodies:
         component = rebuildUtils.nativeBody(body).parentComponent
+        if component not in components:
+            components.append(component)
+        # the set holding box and lid, and with them the small parts' components
+        occurrences = component.parentDesign.rootComponent.allOccurrencesByComponent(component)
+        setOccurrence = occurrences.item(0).assemblyContext if occurrences.count > 0 else None
+        for child in (setOccurrence.childOccurrences if setOccurrence is not None else []):
+            if child.component not in components:
+                components.append(child.component)
+    for component in components:
         role = rebuildUtils.partRole(component)
         if role and component.name != role:
             try:
