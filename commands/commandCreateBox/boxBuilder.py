@@ -6,7 +6,7 @@ from ...lib import assembly
 from ...lib import configJson
 from ...lib import rebuildUtils
 from ...lib.gridfinityUtils import commonUtils, designIntent, parameterUtils
-from ...lib.gridfinityUtils import predBoxConfig, predBoxSeats
+from ...lib.gridfinityUtils import predBoxConfig, predBoxSeats, predBoxInsert
 from ...lib.gridfinityUtils.predBox import PredBoxDims
 from ...lib.gridfinityUtils.predBoxGenerator import createPredBox, PredBoxOptions
 from ...lib.gridfinityUtils.baseGenerator import createPointJointOrigins
@@ -171,12 +171,16 @@ def _buildBox(
         joint = des.rootComponent.joints.add(jointInput)
         joint.name = f'{name} {LID_JOINT_NAME}'
 
+    # the small parts after Pred (round 28): latches, handle and pins jointed at their seats, hinges beside the box; a
+    # box of bodies in the root (a part design kept as it is) has no components to joint, it stays without them
+    partBodies = predBoxInsert.insertParts(des, setOccurrence, boxOccurrence, dims, name, assembly.inContext) if boxOccurrence is not None else []
+
     if des.designType == adsk.fusion.DesignTypes.ParametricDesignType:
         group = des.timeline.timelineGroups.add(originalTimelinePosition, des.timeline.markerPosition - 1)
         group.name = name
     # the native bodies, as binBuilder: those moveToComponent gives back are seen through the Box and Lid occurrences,
     # the snapshot tests found them neither among the design's bodies nor with their tag (r27_snap 17.11.2026)
-    return [rebuildUtils.nativeBody(base), rebuildUtils.nativeBody(lid)]
+    return [rebuildUtils.nativeBody(base), rebuildUtils.nativeBody(lid)] + partBodies
 
 
 def rebuildBox(
@@ -201,7 +205,10 @@ def rebuildBox(
         commonUtils.fileLog(f'{LOG_PREFIX} rebuilding {target.group.name}, {rebuildUtils.configChanges(configJson.GENERATOR_BOX, target.bodies[0], newConfig)}')
 
     def build(placement, parameterPrefix, transform, oldPlace):
-        return buildBox(des, state, settings, not isPreview, parameterPrefix, transform, oldPlace)
+        # box and lid only: rebuildUtils.bodyMap pairs the old set's tagged bodies with as many new ones, the small
+        # parts (round 28) aren't tagged and come and go with the set's timeline group
+        bodies = buildBox(des, state, settings, not isPreview, parameterPrefix, transform, oldPlace)
+        return [body for body in bodies if tagUtils.readBodyTag(body) is not None]
     (bodies, notes) = rebuildUtils.rebuild(des, target, prefix, BOX_PARAMETER_BASE_NAME, isPreview, build, 'box', jointsByName=True)
     if not isPreview:
         _renameParts(bodies)
