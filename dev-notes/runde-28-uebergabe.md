@@ -18,6 +18,10 @@ Spec mit den Nachträgen dieser Runde: `dev-notes/specs/2026-11-16-pred-box-desi
   - Lagen gleich Preds Datei auf 0,01 mm, Griff bei 4×3×6 57 mm breit.
   - Teile eingebettet (nicht verknüpft), kein `_XRef_`.
   - Der Bau dauert rund 90 s, der Parameterwechsel 37 s.
+- **Formvergleich** `r28_compare` l3 (17.11.) BESTANDEN, Restkörper 0,0000 mm:
+  - Riegel, Griff, Stift und Scharnier sind exakt Preds Teile.
+  - Bericht gegen Preds eingebauten Latch:1 (ältere Form): Reste 2 × 4,41 und 2 × 17,57 mm³. Das ergibt genau den
+    Volumenunterschied der beiden Riegel (26,32 mm³). Die Ausrichtung des Riegel-Gelenks stimmt also.
 - **Griff** `handle.f3d` neu gebaut (`r28_handle_build` l5). Volumen gleich Preds bei beiden Halbbreiten.
 - **Klicktest-Funde:**
   - F1: Rechtsklick auf den Satz zeigt Einstellungen, Rebuild und Clone.
@@ -43,9 +47,14 @@ Spec mit den Nachträgen dieser Runde: `dev-notes/specs/2026-11-16-pred-box-desi
   - Offen ist des Nutzers Antwort zur Lage von „Hinge“: An Preds Stelle läge es rund 67 mm weiter außen. Vorschlag: an die
     Stelle von M3x30.
   - Danach bauen: Auswahl in Dialog, InputState, configJson, Rebuild und Clone.
+- **Lage der Scharniere, Architektur-Entscheidung bei Nutzer** (3-Fix-Regel, `r28_cmd` l1/l2):
+  - Die lose gesetzten Scharniere wandern nicht mit, wenn der Satz gestapelt oder verschoben wird.
+  - Das Positions-Element „Position1“ bleibt nach dem Rebuild unterdrückt zurück.
+  - Vorschlag J: die Scharniere starr an zwei Joint origins neben der Box jointen, in Druckposition.
+  - Rebuild-Dauer 667–673 s (R27: 413 s), Ursache noch nicht gemessen.
 - **Task 7:**
-  - Vorbereitet in `fusion-auftraege`: `r28_compare` (Form gegen Preds Teile), `r28_cmd` (zwei Sätze, Stapeln,
-    Rebuild), `r28_snap` (zehn Box-Snapshots neu).
+  - In `fusion-auftraege`: `r28_compare` bestanden; `r28_cmd` (zwei Sätze, Stapeln, Rebuild) nach J wiederholen;
+    `r28_snap` (zehn Box-Snapshots neu).
   - Die Snapshots erst nach der Scharnier-Auswahl ablegen, weil sie die Einstellungen ändert.
   - Ungeprüft:
     - ob der Rebuild die alten Teile mit der alten Zeitleisten-Gruppe entfernt (die Teile werden innerhalb der Gruppe
