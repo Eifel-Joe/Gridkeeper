@@ -11,8 +11,6 @@ from GridfinityGenerator. The models in `docs/assets/models` are rendered by a F
 
 ## Wanted
 
-- Lip types (upstream round 17.11.2026, p13): `docs/assets/models/bin-lip-light.png`, `bin-lip-full.png`,
-  `bin-lip-full-untrimmed.png`, a 1x1x2 bin cut through its middle, rendered by `fusion-auftraege/ug_lip_render.py`.
 - Export (upstream round 17.11.2026, p13/p300): the export dialog (shot `fusion-dialog-export`; the click test's one
   shows a folder path with a user name, take it again with a neutral folder), and a 3MF of a bin with a colored label
   and an insert opened in Bambu Studio, for `docs/working/export.md`.
@@ -25,6 +23,8 @@ from GridfinityGenerator. The models in `docs/assets/models` are rendered by a F
 - `dialog-baseplate-magnet-size.png`: [Baseplates](../../baseplates.md).
 - `bin-lip-dialog.png`: [Body, walls and lip](../../bins/body.md).
 - `context-menu-export-scene.png`: [Exporting for printing](../../working/export.md).
+- `docs/assets/models/bin-lip-light.png`, `bin-lip-full.png`, `bin-lip-full-untrimmed.png` (lip types, p13): a 1x1x2
+  bin cut through its middle, rendered by `fusion-auftraege/ug_lip_render.py`: [Body, walls and lip](../../bins/body.md).
 
 ## Taken (joint origins guide)
 

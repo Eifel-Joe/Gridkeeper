@@ -44,6 +44,10 @@ The lip is the socket the feet of a bin stacked on top sit in.
 - **Trim lip top:** on by default, the top of the lip is cut flat, 0.6 mm lower, the shape Gridkeeper bins have
   always had. Off keeps the sharp top edge of the original profile; the bin is then 0.6 mm taller.
 
+Light | Full | Full, top not trimmed
+:---: | :---: | :---:
+![A bin cut through its middle with the light lip](../assets/models/bin-lip-light.png) | ![A bin cut through its middle with the full lip, top trimmed](../assets/models/bin-lip-full.png) | ![A bin cut through its middle with the full lip and its sharp top edge](../assets/models/bin-lip-full-untrimmed.png)
+
 Without **Generate lip for stackability** the wall goes straight up and both inputs are locked.
 
 ## Creased walls
