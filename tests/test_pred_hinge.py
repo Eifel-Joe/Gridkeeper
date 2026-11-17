@@ -181,6 +181,46 @@ def test_bridge_sketch_is_exactly_determined():
     _exactly_determined(points, curves)
 
 
+def _pointsOnCircles(points, curves, radii):
+    """Points of the plan lying on one of its circles (radii in the circles' order)"""
+    circles = [(points[c["center"]], r) for c, r in zip([c for c in curves if c["kind"] == "circle"], radii)]
+    return [p for p in points for (cx, cy), r in circles if abs(math.hypot(p[0] - cx, p[1] - cy) - r) < 1e-3]
+
+
+def test_no_point_on_a_circle():
+    """r29_hinge_check l1/l2: sketches with points exactly on a circle of the same sketch (the sector's arc ends, the
+    bridge chords' ends) were over-constrained in Fusion; every sketch with circles keeps its points off them"""
+    for shape in hinge.SHAPES.values():
+        c = hinge.center(shape)
+        points, curves = hinge.sectionSketch(shape)
+        assert not _pointsOnCircles(points, curves, [shape.knuckle])
+        for side in (-1, 1):
+            points, curves = hinge.clearanceSketch(shape, side)
+            assert not _pointsOnCircles(points, curves, [shape.knuckle, shape.clearance])
+        for count in (2, 3):
+            points, curves = hinge.circlesSketch(c, count)
+            assert not _pointsOnCircles(points, curves, [shape.core, hinge.PLAIN_HOLE, shape.clearance][:count])
+    points, curves = hinge.bridgeSketch(0.0)
+    assert not _pointsOnCircles(points, curves, [hinge.COUNTERBORE / 2])
+
+
+def test_bridge_chords_cross_only_inside():
+    """The chords reach past the circle; outside it no two of them meet, so they close no profile there"""
+    points, curves = hinge.bridgeSketch(0.0)
+    lines = [(points[c["a"]], points[c["b"]]) for c in curves if c["kind"] == "line"]
+    r = hinge.COUNTERBORE / 2
+    for i, (p, q) in enumerate(lines):
+        assert math.hypot(*p) > r and math.hypot(*q) > r
+        for (s, t) in lines[i + 1:]:
+            d = (q[0] - p[0]) * (t[1] - s[1]) - (q[1] - p[1]) * (t[0] - s[0])
+            if abs(d) < 1e-12:
+                continue
+            u = ((s[0] - p[0]) * (t[1] - s[1]) - (s[1] - p[1]) * (t[0] - s[0])) / d
+            v = ((s[0] - p[0]) * (q[1] - p[1]) - (s[1] - p[1]) * (q[0] - p[0])) / d
+            if 0 <= u <= 1 and 0 <= v <= 1:
+                assert math.hypot(p[0] + u * (q[0] - p[0]), p[1] + u * (q[1] - p[1])) < r
+
+
 # Pred's Sketch5 profiles (sketch x, sketch y = -world y; bounding boxes) and the layers he extruded them in:
 # Extrude25 0.2 mm: 0 1 2 3 4 8 9 10 11 12 18 28, Extrude26 0.4 mm: 0 4 5 6 7 8 12 14 22 30 31 32
 SKETCH5 = {
