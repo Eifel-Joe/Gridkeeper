@@ -3,13 +3,13 @@
 Einheit in `lib/printLayout.py` ist mm, wie in `threeMf.MeshObject`. Erst kommt der RED-Test, dann der Code, danach
 die volle Suite (`python -m pytest`). Commits auf Englisch, einer pro grünem Task.
 
-- [ ] **T1 Drehregeln** – `tests/test_print_layout.py`
+- [x] **T1 Drehregeln** – `tests/test_print_layout.py`
   - RED: `printRotation(role, bodyName, surface)` liefert 'none' für Bin, Baseplate, Box, Lid, Latch, Handle pin und
     die Hinge-Hälften. 'x+90' für Handle, 'x-90' für den Pinned-`Hinge pin`, 'x180' für ein Label oder Box-Schild mit
     `Flush`, 'none' für Embossed/Debossed. `rotated(vertices, rotation)` dreht richtig: ein Quader 10×20×30 hat nach
     'x+90' die Maße 10×30×20.
   - GREEN: `lib/printLayout.py`.
-- [ ] **T2 Verteilen** – `arrange(footprints, bed, spacing, purge)` liefert je Teil (Platte, x, y, gedreht).
+- [x] **T2 Verteilen** – `arrange(footprints, bed, spacing, purge)` liefert je Teil (Platte, x, y, gedreht).
   - RED, je Fall ein Test:
     - Alles passt auf eine Platte, mit Abstand zueinander und zum Rand.
     - Was nicht passt, kommt auf Platte 2.
@@ -18,17 +18,17 @@ die volle Suite (`python -m pytest`). Commits auf Englisch, einer pro grünem Ta
     - Die Purgetower-Ecke hinten rechts bleibt auf jeder Platte frei, ohne Bemalung nicht.
     - Ein einzelnes Teil liegt in der Bettmitte.
   - GREEN: Regalverfahren, die größten Teile zuerst.
-- [ ] **T3 Gruppen und Platzieren** – `layOut(groups, bed, spacing, purge)` auf `MeshObject`-Gruppen.
+- [x] **T3 Gruppen und Platzieren** – `layOut(groups, bed, spacing, purge)` auf `MeshObject`-Gruppen.
   - RED:
     - Jede Gruppe steht auf z=0.
     - Die Scharnierhälften einer Gruppe behalten ihre Lage zueinander.
     - Platte i liegt im Bambu-Gitter: x + (i % cols)·W·1,2, y − (i // cols)·D·1,2, cols = ⌈√n⌉.
   - GREEN.
-- [ ] **T4 Plattendaten in der 3MF** – erst nach dem Ergebnis der Plattenprobe (`notizen/r29-export-probe`).
+- [x] **T4 Plattendaten in der 3MF** – erst nach dem Ergebnis der Plattenprobe (`notizen/r29-export-probe`).
   - RED: `threeMf.write` schreibt die Platten nach dem Format, das die Probe belegt. Bei einer Platte bleibt die Datei
     wie heute.
   - GREEN. Geht die Probe nicht auf: Jörg fragen, Ausweg wäre eine Datei je Platte.
-- [ ] **T5 Export-Befehl** (`commands/commandExport/entry.py`). Fusion-Teile werden mit Stub-Tests geprüft, soweit
+- [x] **T5 Export-Befehl** (`commands/commandExport/entry.py`). Fusion-Teile werden mit Stub-Tests geprüft, soweit
   `tests/stubs` reicht.
   - Rolle eines Teils:
     - Satzteile über `partRoleOf`.
@@ -45,7 +45,7 @@ die volle Suite (`python -m pytest`). Commits auf Englisch, einer pro grünem Ta
   - `readChoices`/`saveChoices` werden um diese Werte erweitert.
   - STL: jedes Teil in Drucklage, `atOrigin` wie bisher.
   - STEP bleibt unverändert.
-- [ ] **T6 Doku und Changelog**
+- [x] **T6 Doku und Changelog**
   - `docs/` (Export-Seite) und `CHANGELOG-CULLENECT.md` 1.1.0.
   - Credit: Pred, Drucklage nach Printables 543553 (CC BY-NC).
   - Prüfung: `mkdocs build --strict`.
