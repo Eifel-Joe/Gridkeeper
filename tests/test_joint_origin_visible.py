@@ -141,3 +141,18 @@ def test_a_rebuild_into_another_holder_or_pocket_shows_it_with_the_timeline_at_i
     assert label.index("rebuildUtils.rebuild(") < label.index("assembly.keepShown(box)")
     insert = _function(INSERT, "rebuildLabel")
     assert insert.index("rebuildUtils.rebuild(") < insert.index("assembly.keepShown(pocket)")
+
+
+def test_an_invalid_joint_origin_whose_native_object_raises_doesnt_fail_the_build():
+    # review: Fusion raises RuntimeError reading a property of an invalid object, getattr took AttributeError only
+    class _Invalid(_JointOrigin):
+        @property
+        def nativeObject(self):
+            raise RuntimeError("invalid")
+
+        @nativeObject.setter
+        def nativeObject(self, value):
+            pass
+    (keepShown, logged) = _keepShown()
+    keepShown(_Invalid())
+    assert len(logged) >= 1
