@@ -12,6 +12,17 @@ GENERATOR_BASEPLATE = 'baseplate'
 # Cullenect inserts of the label command, only the shape test cases use their configs so far
 GENERATOR_LABEL = 'label'
 
+# Settings added after configs were saved without them, with the value that built the model of such a config. A config
+# read over the dialog's state (Load, rebuild, clone, p151) would otherwise take the dialog's value and build an older
+# bin differently: before upstream's lip types every bin had the light lip trimmed flat (upstream round 17.11.2026, p13)
+OLDER_VALUES = {
+    GENERATOR_BIN: {'lipType': 'Light', 'isLipTopTrimmed': True},
+}
+
+def withOlderValues(generator: str, settings: dict) -> dict:
+    """The settings with the values of OLDER_VALUES they don't have"""
+    return {**OLDER_VALUES.get(generator, {}), **settings}
+
 # the rest are counts, base or height units, flags and names, kept as they are
 MM_FIELDS = {
     GENERATOR_BIN: {
@@ -161,7 +172,7 @@ def readConfig(text: str, generator: str, stateClass: type, current: object, cho
         title = GENERATOR_TITLES.get(data.get('generator'))
         raise ConfigError(f'It\'s the config of a {title}, not of a {GENERATOR_TITLES[generator]}' if title else f'It isn\'t the config of a {GENERATOR_TITLES[generator]}')
     fieldTypes = {field.name: field.type for field in dataclasses.fields(stateClass)}
-    loaded = data['settings']
+    loaded = withOlderValues(generator, data['settings'])
     wrongTypes = [
         f'{name} has to be {_typeName(fieldTypes[name])}, not {json.dumps(value)}'
         for (name, value) in loaded.items()

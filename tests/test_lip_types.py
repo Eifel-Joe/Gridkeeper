@@ -69,3 +69,12 @@ def test_raised_dividers_pass_the_lip_type_to_their_foot_cutters():
     start = source.index("lipInput = BinBodyLipGeneratorInput()")
     block = source[start:source.index("createGridfinityBinBodyLip(lipInput", start)]
     assert "lipInput.lipType = input.lipType" in block
+
+
+def test_raised_dividers_reach_the_top_of_an_untrimmed_lip_too():
+    # with Trim lip top off the lip stands 0.6 mm higher, the dividers go up to its top all the same (review finding)
+    source = _source("lib", "gridfinityUtils", "binBodyGenerator.py")
+    start = source.index("def createRaisedDividers(")
+    body = source[start:source.index("\ndef ", start + 1)]
+    assert "const.BIN_LIP_TOP_RECESS_HEIGHT" not in body
+    assert "- lipInput.topTrimHeight" in body

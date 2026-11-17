@@ -422,7 +422,8 @@ def createRaisedDividers(
     """
     boxes: list[adsk.fusion.BRepBody] = []
     bottomZ = binBodyTotalHeight - Dim.length(const.BIN_TAB_TOP_CLEARANCE)
-    height = const.BIN_TAB_TOP_CLEARANCE + const.BIN_LIP_EXTRA_HEIGHT - const.BIN_LIP_TOP_RECESS_HEIGHT
+    # up to the lip top, trimmed or not (upstream round 17.11.2026, p13)
+    height = const.BIN_TAB_TOP_CLEARANCE + const.BIN_LIP_EXTRA_HEIGHT - lipInput.topTrimHeight
     for (index, segment) in enumerate(segments):
         # across is the axis the wall stands on, along the one it runs on
         (across, along) = (0, 1) if segment.axis == 'x' else (1, 0)
