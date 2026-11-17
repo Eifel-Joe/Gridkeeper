@@ -1,0 +1,15 @@
+{
+    "description": "3x2x3 bin with dividers up to the top and 3 compartments under a full lip, the feet cut out of the raised dividers narrow at their bottom like the lip socket around them",
+    "generator": "bin",
+    "settings": {
+        "binWidth": 3,
+        "binLength": 2,
+        "binHeight": 3,
+        "hasDividersToTop": true,
+        "lipType": "Full",
+        "tabLength": 4,
+        "labelStyle": "Cullenect",
+        "compartmentsX": 3,
+        "hasCreases": false
+    }
+}

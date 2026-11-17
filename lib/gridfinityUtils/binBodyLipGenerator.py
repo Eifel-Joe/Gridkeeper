@@ -5,7 +5,7 @@ import math
 from ...lib import fusion360utils as futil
 from . import const, combineUtils, faceUtils, commonUtils, sketchUtils, extrudeUtils, baseGenerator, edgeUtils, filletUtils, geometryUtils, binGrid, patternUtils
 from .baseGeneratorInput import BaseGeneratorInput
-from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput, LIP_TYPE_FULL
+from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput, LIP_TYPE_FULL, lipSocketHasBottomChamfer
 from .dim import Dim, valueInput, applyTo
 
 app = adsk.core.Application.get()
@@ -189,7 +189,7 @@ def createStackedFootCutters(
     The space the feet of a bin stacked on top take in the lip, with clearance, one body per foot, half ones included.
     Dividers raised into the lip are cut with them, so between two feet on a grid line a ridge is left that fits the
     groove between the feet. The top is the lip socket's, see lipSocketTop, so the ridge follows the socket's 45 degree
-    face the way the lip around it does
+    face the way the lip around it does, and so does the bottom, narrowing under a full lip, see lipSocketHasBottomChamfer
     """
     socketTop = lipSocketTop(input.xyClearance)
     lipCutoutInput = BaseGeneratorInput()
@@ -203,7 +203,7 @@ def createStackedFootCutters(
     lipCutoutInput.baseWidth = input.baseWidth + Dim.length(input.xyClearance * 2)
     lipCutoutInput.baseLength = input.baseLength + Dim.length(input.xyClearance * 2)
     lipCutoutInput.xyClearance = input.xyClearance
-    lipCutoutInput.hasBottomChamfer = False
+    lipCutoutInput.hasBottomChamfer = lipSocketHasBottomChamfer(input.lipType)
     lipCutoutInput.cornerFilletRadius = input.binCornerFilletRadius + input.xyClearance * 2
     return baseGenerator.createFootGrid(
         lipCutoutInput,
@@ -428,7 +428,7 @@ def createGridfinityBinBodyLip(
         lipCutoutInput.baseWidth = input.baseWidth * input.binWidth + Dim.length(input.xyClearance * 2)
         lipCutoutInput.baseLength = input.baseLength * input.binLength + Dim.length(input.xyClearance * 2)
         lipCutoutInput.xyClearance = input.xyClearance
-        lipCutoutInput.hasBottomChamfer = input.lipType == LIP_TYPE_FULL
+        lipCutoutInput.hasBottomChamfer = lipSocketHasBottomChamfer(input.lipType)
         lipCutoutInput.cornerFilletRadius = input.binCornerFilletRadius + input.xyClearance * 2
         lipCutout = baseGenerator.createSingleGridfinityBaseBody(lipCutoutInput, targetComponent, name='Lip cutout')
     lipCutoutBodies.append(lipCutout)
