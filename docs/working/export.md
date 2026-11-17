@@ -34,7 +34,10 @@ Existing files are only replaced after asking. 3MF and STL meshes are made at Fu
 | Box and lid (Pred box) | as soon as the box is part of Gridkeeper |
 
 Each part is one object in the 3MF and one STL or STEP file, its text and symbol bodies included, so the part comes
-out whole. The text bodies are never a part of their own.
+out whole. The text bodies of a part in its own component are never a part of their own.
+
+The 3MF keeps the parts where they are in the design, side by side on the plate. Inserts jointed into the pockets of
+their bins lie on top of the bins there: press **Arrange** in the slicer before slicing.
 
 ## Colored label text in the 3MF
 
@@ -50,8 +53,11 @@ All label text gets the same index, whatever color it has in Fusion. Without **C
 the file, in the part's filament.
 
 !!! note "Known limits"
-    - A bin built as bodies in the root component, without a component of its own, has no *Text* component; its
-      colored label bodies are not found and are missing from the export. Rebuild it to get a component.
+    - A bin built as bodies in the root component, without a component of its own (older designs), has no *Text*
+      component; its colored label bodies are not found and are missing from the export. A rebuild keeps it in the
+      root; **Gridkeeper clone** builds a copy in a component of its own, then delete the old bin.
+    - An insert in the root component exports its text and symbol bodies as parts of their own, unpainted. Clone it
+      into a component the same way.
     - STL and STEP files have no colors. In STEP the text bodies are bodies of their own beside the part.
 
 ## In the slicer
