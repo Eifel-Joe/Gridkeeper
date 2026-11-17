@@ -24,6 +24,8 @@ from ...lib.gridfinityUtils.binBodyLipGeneratorInput import LIP_TYPES, lipHeight
 from ...lib.gridfinityUtils import compartmentLayout
 from ...lib.gridfinityUtils import binShape
 from ...lib.gridfinityUtils import binGrid
+from ...lib.gridfinityUtils import magnetSizes
+from ...lib.ui import magnetSizeInput
 from ...lib.gridfinityUtils import wallCreases
 from ...lib.gridfinityUtils import raisedDividers
 from .inputState import InputState
@@ -151,6 +153,8 @@ BIN_MAGNET_CUTOUTS_TABS_INPUT_ID = 'bin_magnet_cutouts_tabs'
 BIN_SCREW_DIAMETER_INPUT = 'screw_diameter'
 BIN_MAGNET_DIAMETER_INPUT = 'magnet_diameter'
 BIN_MAGNET_HEIGHT_INPUT = 'magnet_height'
+# the magnet size choice before the depth (round 27, p263)
+BIN_MAGNET_SIZE_INPUT = 'magnet_size'
 BIN_HAS_SCOOP_INPUT_ID = 'bin_has_scoop'
 BIN_SCOOP_MAX_RADIUS_INPUT_ID = 'bin_scoop_max_radius'
 BIN_HAS_TAB_INPUT_ID = 'bin_has_tab'
@@ -354,6 +358,7 @@ def initDefaultUiState():
     commandUIState.initValue(BIN_MAGNET_CUTOUTS_TABS_INPUT_ID, DEFAULT_STATE.hasMagnetCutoutsTabs, adsk.core.BoolValueCommandInput.classType())
     commandUIState.initValue(BIN_MAGNET_DIAMETER_INPUT, DEFAULT_STATE.magnetCutoutDiameter, adsk.core.ValueCommandInput.classType())
     commandUIState.initValue(BIN_MAGNET_HEIGHT_INPUT, DEFAULT_STATE.magnetCutoutDepth, adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_MAGNET_SIZE_INPUT, magnetSizes.choiceForDepth(DEFAULT_STATE.magnetCutoutDepth, magnetSizes.ALL_CHOICES), adsk.core.DropDownCommandInput.classType())
 
     compartmentPockets = list(DEFAULT_STATE.compartmentPockets)
     binShapeCells = list(DEFAULT_STATE.shapeCells)
@@ -381,6 +386,8 @@ def initDefaultUiState():
         commandUIState.removeValue(LEGACY_COMPARTMENTS_GRID_TYPE_ID)
         if commandUIState.getState(BIN_SHAPE_CUSTOM_ID) and isinstance(recordedDefaults.get('shape'), list):
             binShapeCells = recordedDefaults['shape']
+        # saved defaults of an older version have the depth only, the choice is read back from it
+        magnetSizeInput.syncMagnetSize(commandUIState, BIN_MAGNET_SIZE_INPUT, BIN_MAGNET_HEIGHT_INPUT, magnetSizes.ALL_CHOICES)
     futil.log(f'{CMD_NAME} UI state initialized')
 
 def getErrorMessage(text = "An unknown error occurred, please validate your inputs and try again"):
@@ -1072,12 +1079,13 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     commandUIState.registerCommandInput(generateMagnetSocketCheckboxInput)
     generateMagnetsTabCheckboxInput = baseFeaturesGroup.children.addBoolValueInput(BIN_MAGNET_CUTOUTS_TABS_INPUT_ID, 'Add tabs to magnet sockets', True, '', commandUIState.getState(BIN_MAGNET_CUTOUTS_TABS_INPUT_ID))
     commandUIState.registerCommandInput(generateMagnetsTabCheckboxInput)
-    magnetSizeInput = baseFeaturesGroup.children.addValueInput(BIN_MAGNET_DIAMETER_INPUT, 'Magnet cutout diameter', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_MAGNET_DIAMETER_INPUT)))
-    magnetSizeInput.minimumValue = 0.1
-    magnetSizeInput.isMinimumInclusive = True
-    magnetSizeInput.maximumValue = 1
-    magnetSizeInput.isMaximumInclusive = True
-    commandUIState.registerCommandInput(magnetSizeInput)
+    magnetDiameterInput = baseFeaturesGroup.children.addValueInput(BIN_MAGNET_DIAMETER_INPUT, 'Magnet cutout diameter', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_MAGNET_DIAMETER_INPUT)))
+    magnetDiameterInput.minimumValue = 0.1
+    magnetDiameterInput.isMinimumInclusive = True
+    magnetDiameterInput.maximumValue = 1
+    magnetDiameterInput.isMaximumInclusive = True
+    commandUIState.registerCommandInput(magnetDiameterInput)
+    magnetSizeInput.addMagnetSizeInput(baseFeaturesGroup.children, BIN_MAGNET_SIZE_INPUT, commandUIState, magnetSizes.ALL_CHOICES)
     magnetHeightInput = baseFeaturesGroup.children.addValueInput(BIN_MAGNET_HEIGHT_INPUT, 'Magnet cutout depth', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_MAGNET_HEIGHT_INPUT)))
     magnetHeightInput.minimumValue = 0.1
     magnetHeightInput.isMinimumInclusive = True
@@ -1162,6 +1170,9 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
     elif changed_input.id == BIN_COMPARTMENTS_SHOW_LAYOUT_ID and not commandUIState.getState(BIN_COMPARTMENTS_SHOW_LAYOUT_ID):
         # back to the uniform grid, refreshUi fills it with single cells
         compartmentPockets = []
+    elif changed_input.id == BIN_MAGNET_SIZE_INPUT:
+        # 6x2 or 6x3 mm magnets set the depth, Custom leaves it to be typed (p263)
+        magnetSizeInput.onMagnetSizeChanged(commandUIState, BIN_MAGNET_SIZE_INPUT, BIN_MAGNET_HEIGHT_INPUT)
     elif changed_input.id == BIN_HALF_GRID_INPUT_ID:
         # the drawn shape keeps its footprint in the cells of the other grid
         binShapeCells = binShape.splitCells(binShapeCells) if isHalfGrid() else binShape.mergeCells(binShapeCells)
@@ -1299,8 +1310,9 @@ def onChangeValidate():
     commandUIState.getInput(BIN_JOINT_ORIGINS_INPUT_ID).isEnabled = generateBase
     # half feet have no room for holes
     hasHoles = generateBase and not isHalfGrid()
-    for inputId in [BIN_SCREW_HOLES_INPUT_ID, BIN_MAGNET_CUTOUTS_INPUT_ID, BIN_MAGNET_CUTOUTS_TABS_INPUT_ID, BIN_MAGNET_DIAMETER_INPUT, BIN_MAGNET_HEIGHT_INPUT, BIN_SCREW_DIAMETER_INPUT]:
+    for inputId in [BIN_SCREW_HOLES_INPUT_ID, BIN_MAGNET_CUTOUTS_INPUT_ID, BIN_MAGNET_CUTOUTS_TABS_INPUT_ID, BIN_MAGNET_DIAMETER_INPUT, BIN_MAGNET_HEIGHT_INPUT, BIN_SCREW_DIAMETER_INPUT, BIN_MAGNET_SIZE_INPUT]:
         commandUIState.getInput(inputId).isEnabled = hasHoles
+    commandUIState.getInput(BIN_MAGNET_HEIGHT_INPUT).isEnabled = hasHoles and magnetSizeInput.isDepthTyped(commandUIState, BIN_MAGNET_SIZE_INPUT)
 
     generateBody: bool = commandUIState.getState(BIN_GENERATE_BODY_INPUT_ID)
     binType: str = commandUIState.getState(BIN_TYPE_DROPDOWN_ID)
@@ -1470,6 +1482,8 @@ def applyInputsState(state: InputState):
         commandUIState.setValue(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID, customColor)
     compartmentPockets = list(state.compartmentPockets)
     binShapeCells = list(state.shapeCells)
+    # only the depth is saved, the magnet size shown is read back from it (p263)
+    magnetSizeInput.syncMagnetSize(commandUIState, BIN_MAGNET_SIZE_INPUT, BIN_MAGNET_HEIGHT_INPUT, magnetSizes.ALL_CHOICES)
 
 def angleExpression(angle: float) -> str:
     """An angle in radians as the dialog keeps it, see STATE_ANGLE_INPUT_IDS"""

@@ -8,6 +8,7 @@ from . import tagUtils
 from . import assembly
 from .gridfinityUtils import commonUtils
 from .gridfinityUtils import cullenect
+from .gridfinityUtils import timelineRemoval
 
 # Rebuilding a generated body at its place in the timeline: the new one is built right after the old one's timeline
 # group, the features after it that use the old bodies get the new ones and the old group goes. Features picking a
@@ -156,7 +157,8 @@ def bodyMap(target: RebuildTarget, newBodies: list[adsk.fusion.BRepBody]) -> lis
     """
     def position(body: adsk.fusion.BRepBody):
         box = body.boundingBox
-        return (round(box.minPoint.y, 3), round(box.minPoint.x, 3))
+        # a box and its lid start at the same corner, the lower one first (round 27)
+        return (round(box.minPoint.y, 3), round(box.minPoint.x, 3), round(box.minPoint.z, 3))
     newBodies = [nativeBody(body) for body in newBodies]
     if len(newBodies) == 1:
         return [(body, newBodies[0]) for body in target.bodies]
@@ -291,25 +293,10 @@ def removeOldGroup(target: RebuildTarget, oneByOne: bool = False) -> list[str]:
     except RuntimeError as err:
         commonUtils.fileLog(f'{LOG_PREFIX} the timeline group {groupName} wasn\'t deleted, {err}, deleting its items one by one')
     # items of a group can't be deleted on their own, the group goes and they stay in the timeline
+    timeline = group.parentTimeline
     if group.isValid:
         group.deleteMe(False)
-    kept = []
-    for item in reversed(target.groupItems):
-        if not item.isValid:
-            continue
-        name = item.name
-        try:
-            if item.isDeletable and item.deleteObject():
-                continue
-            commonUtils.fileLog(f'{LOG_PREFIX} {name} of {groupName} wasn\'t deleted, deletable: {item.isDeletable}')
-        except RuntimeError as err:
-            commonUtils.fileLog(f'{LOG_PREFIX} {name} of {groupName} wasn\'t deleted, {err}')
-        try:
-            item.isSuppressed = True
-        except RuntimeError as err:
-            commonUtils.fileLog(f'{LOG_PREFIX} {name} of {groupName} wasn\'t suppressed either, {err}')
-        kept.append(name)
-    return kept
+    return timelineRemoval.deleteOneByOne(target.groupItems, timeline, lambda message: commonUtils.fileLog(f'{LOG_PREFIX} {message} ({groupName})'))
 
 def repointJoints(
     design: adsk.fusion.Design,
@@ -380,6 +367,71 @@ def repointJoints(
             except Exception as err:
                 commonUtils.fileLog(f'{LOG_PREFIX} {joint.name} couldn\'t be moved over to {newName}, {err}')
                 notes.append(f'{joint.name}: couldn\'t be moved over to {newName} of the new {newComponent.name}, it goes with the old one')
+    design.timeline.moveToEnd()
+    for group in collapsedGroups:
+        group.isCollapsed = True
+    return (moved, notes)
+
+def partRole(component: adsk.fusion.Component) -> str:
+    """The role of a component inside a part, its tag (a box set's 'Box', 'Lid'), else its name"""
+    attribute = component.attributes.itemByName(tagUtils.TAG_GROUP, tagUtils.TAG_PART_ROLE)
+    return attribute.value if attribute is not None else component.name
+
+def repointJointsByName(
+    design: adsk.fusion.Design,
+    target: RebuildTarget,
+    newBodies: list[adsk.fusion.BRepBody],
+) -> tuple[int, list[str]]:
+    """
+    Joints of the user on a joint origin of the old part, its own component or one inside it (a box set: Box and Lid,
+    round 27), get the joint origin of the same name in the same place of the new part. The part's own joints, in its
+    timeline group, go with the old part. Returns how many were moved over and a note per joint that couldn't be
+    """
+    if target.occurrence is None or len(newBodies) == 0:
+        return (0, [])
+    oldNative = target.occurrence.nativeObject or target.occurrence
+    oldComponents = [oldNative.component] + [occurrence.component for occurrence in oldNative.component.allOccurrences]
+    proxies = design.rootComponent.allOccurrencesByComponent(nativeBody(newBodies[0]).parentComponent)
+    if proxies.count == 0:
+        return (0, [])
+    newPart = proxies.item(0)
+    # a set with components inside (box and lid) was replaced by a set again: the body's component is one level down
+    if oldNative.component.occurrences.count > 0 and newPart.assemblyContext is not None:
+        newPart = newPart.assemblyContext
+    newJointOrigins = {}
+    for (occurrence, place) in [(newPart, '')] + [(child, partRole(child.component)) for child in newPart.childOccurrences]:
+        for jointOrigin in occurrence.component.jointOrigins:
+            newJointOrigins[(place, jointOrigin.name)] = jointOrigin.createForAssemblyContext(occurrence)
+    moved = 0
+    notes = []
+    collapsedGroups = []
+    for joint in list(design.rootComponent.allJoints):
+        item = joint.timelineObject
+        if item is not None and isGroupItem(target.group, item):
+            continue
+        for side in ('geometryOrOriginOne', 'geometryOrOriginTwo'):
+            jointOrigin = adsk.fusion.JointOrigin.cast(getattr(joint, side))
+            if jointOrigin is None:
+                continue
+            component = (jointOrigin.nativeObject or jointOrigin).parentComponent
+            if not any(component == old for old in oldComponents):
+                continue
+            place = '' if component == oldNative.component else partRole(component)
+            newJointOrigin = newJointOrigins.get((place, jointOrigin.name))
+            if newJointOrigin is None:
+                notes.append(f'{joint.name}: the new part has no {jointOrigin.name}, the joint goes with the old one')
+                continue
+            try:
+                group = item.parentGroup
+                if group is not None and group.isCollapsed:
+                    group.isCollapsed = False
+                    collapsedGroups.append(group)
+                item.rollTo(True)
+                setattr(joint, side, newJointOrigin)
+                moved += 1
+            except Exception as err:
+                commonUtils.fileLog(f"{LOG_PREFIX} {joint.name} couldn't be moved over to {jointOrigin.name}, {err}")
+                notes.append(f"{joint.name}: couldn't be moved over to the new part, it goes with the old one")
     design.timeline.moveToEnd()
     for group in collapsedGroups:
         group.isCollapsed = True
@@ -487,6 +539,7 @@ def rebuild(
     isPreview: bool,
     build: Callable[[tuple[float, float], str | None, adsk.core.Matrix3D | None, assembly.OldPlace | None], list[adsk.fusion.BRepBody]],
     title: str,
+    jointsByName: bool = False,
 ) -> tuple[list[adsk.fusion.BRepBody], list[str]]:
     """
     Builds the replacement of the target in its place, keeping the features after it. build gets the placement, the
@@ -508,7 +561,10 @@ def rebuild(
         occurrences = design.rootComponent.allOccurrencesByComponent(newBodies[0].parentComponent)
         newOccurrence = occurrences.item(0) if occurrences.count > 0 else None
     failed = replaceBodies(target, newBodies, newOccurrence)
-    (movedJoints, jointNotes) = repointJoints(design, target, newOccurrence)
+    if jointsByName:
+        (movedJoints, jointNotes) = repointJointsByName(design, target, newBodies)
+    else:
+        (movedJoints, jointNotes) = repointJoints(design, target, newOccurrence)
     keptOldItems = removeOldGroup(target, oneByOne=movedJoints > 0)
     # shared units stay, the body's own ones it no longer has go, like the label of a tab turned off
     newNames = tagParameterNames(newBodies[0]) if len(newBodies) > 0 else []

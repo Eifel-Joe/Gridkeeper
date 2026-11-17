@@ -1,6 +1,6 @@
 # Settings, rebuild and clone
 
-Every baseplate, bin and insert remembers the settings it was built with. Right-click it, in the canvas or in the
+Every baseplate, bin, insert and box remembers the settings it was built with. Right-click it, in the canvas or in the
 browser, for three commands:
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/images/context-menu-dark.png"><img src="../../assets/images/context-menu-light.png" alt="Fusion's right-click menu on a face of a bin, with Gridkeeper settings, Gridkeeper rebuild and Gridkeeper clone at its end"></picture>
@@ -38,6 +38,8 @@ which model is rebuilt.
   after the rebuild.
 - A bin or baseplate stays in the component it was in.
 - Inserts in the pockets of a rebuilt bin are jointed into the pockets of the same name again.
+- A rebuilt box replaces box and lid together, where the old set stood; your joints on its joint origins move over
+  to the joint origins of the same name, see [Storage boxes](../boxes.md).
 - A rebuilt insert is drawn from the bottom left corner of the old one; if it was in a pocket, the dialog has that
   pocket picked already and the new insert is jointed into it.
 - For a bin, changing only what its [parameters](parameters.md) hold, the height and the units, sets the parameters

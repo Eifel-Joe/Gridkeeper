@@ -10,6 +10,7 @@ the design:
 | **Grid** | Baseplates |
 | **Bins** | Bins |
 | **Label** | Cullenect label inserts |
+| **Boxes** | Storage boxes, each a component with the components *Box* and *Lid*, the lid jointed shut on the box |
 
 The containers are found by a tag, so you may rename them. They are grounded, so a joint of a part in them moves that
 part only, not the container with everything in it. The colored letters of a bin or insert are in a component

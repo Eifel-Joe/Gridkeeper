@@ -1,0 +1,9 @@
+{
+    "gridX": 4,
+    "gridY": 3,
+    "heightU": 6,
+    "hasMagnets": true,
+    "magnetDepth": 2.6,
+    "magnetDiameter": 8.0,
+    "hasJointOrigins": true
+}

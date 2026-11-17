@@ -47,6 +47,7 @@ copyright: >-
   Gridkeeper by Eifel-Joe, CC BY-NC-SA 4.0 · Based on
   <a href="https://github.com/Le0Michine/FusionGridfinityGenerator">GridfinityGenerator</a> by Le0Michine ·
   Cullenect labels by <a href="https://github.com/CullenJWebb/Cullenect-Labels">CullenJWebb</a> (MIT) ·
+  Storage box after <a href="https://www.printables.com/model/543553">Pred</a> (CC BY-NC) ·
   Gridfinity by Zack Freedman
 
 # the list of pictures still to be taken, for the maintainers, not a page of the site
@@ -74,6 +75,7 @@ nav:
     - First bin: getting-started/first-bin.md
     - What's new: getting-started/whats-new.md
   - Baseplates: baseplates.md
+  - Storage boxes: boxes.md
   - Bins:
     - bins/index.md
     - Size and shape: bins/size.md

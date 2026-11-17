@@ -1,0 +1,12 @@
+{
+  "description": "Smallest box with the deepest custom magnet holes, 2.6 mm, 8 mm wide",
+  "generator": "box",
+  "settings": {
+    "gridX": 4,
+    "gridY": 3,
+    "heightU": 5,
+    "hasMagnets": true,
+    "magnetDepth": 2.6,
+    "magnetDiameter": 8.0
+  }
+}

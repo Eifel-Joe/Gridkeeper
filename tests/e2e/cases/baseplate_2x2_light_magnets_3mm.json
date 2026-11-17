@@ -1,0 +1,10 @@
+{
+    "description": "2x2 light baseplate with magnet sockets for 6 x 3 mm magnets, 3.4 mm deep (p263)",
+    "generator": "baseplate",
+    "settings": {
+        "plateLength": 2,
+        "magnetSocketDepth": 3.4,
+        "hasScrewHoles": false,
+        "sizingMode": "Grid units"
+    }
+}

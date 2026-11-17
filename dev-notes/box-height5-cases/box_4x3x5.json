@@ -1,0 +1,9 @@
+{
+  "description": "Smallest box after Pred, 4 x 3 cells, height 5",
+  "generator": "box",
+  "settings": {
+    "gridX": 4,
+    "gridY": 3,
+    "heightU": 5
+  }
+}

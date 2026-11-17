@@ -8,6 +8,8 @@ TAG_BIN = 'bin'
 TAG_BASEPLATE = 'baseplate'
 # Cullenect inserts of the label command
 TAG_LABEL = 'label'
+# storage boxes after Pred (round 27), on the box and on the lid body
+TAG_BOX = 'box'
 # on a user parameter of a bin, the config field its value is, see tagParameterField
 TAG_PARAMETER_FIELD = 'parameterField'
 # name of the component of a part holding its colored text and symbol bodies (round 13, p90), a copy is named
@@ -18,10 +20,14 @@ TAG_CONTAINER = 'container'
 KIND_GRID = 'grid'
 KIND_BINS = 'bins'
 KIND_LABELS = 'labels'
+KIND_BOXES = 'boxes'
 # names the containers get, Nutzer 15.11.2026, the user may rename them, they are found by the tag
-CONTAINER_NAMES = {KIND_GRID: 'Grid', KIND_BINS: 'Bins', KIND_LABELS: 'Label'}
+CONTAINER_NAMES = {KIND_GRID: 'Grid', KIND_BINS: 'Bins', KIND_LABELS: 'Label', KIND_BOXES: 'Boxes'}
 # on the joint origin of a Cullenect pocket, the value holds its size in mm, see cullenect.pocketTagValue
 TAG_POCKET = 'pocket'
+# on a component inside a part, its role there (a box set: 'Box', 'Lid'). Fusion names the components of a second
+# set "Box (1)", "Lid (1)", a rebuild finds the matching one by the role (round 27)
+TAG_PART_ROLE = 'partRole'
 
 # Bump only on incompatible changes to the tag value, readers ignore fields they don't know
 TAG_SCHEMA_VERSION = 1
@@ -85,7 +91,7 @@ def tagBody(body: adsk.fusion.BRepBody, tagName: str, settings: list[dict] = Non
 
 def readBodyTag(body: adsk.fusion.BRepBody) -> tuple[str, dict] | None:
     """Which generator tagged the body and the tag value, none for bodies it didn't generate"""
-    for tagName in (TAG_BIN, TAG_BASEPLATE, TAG_LABEL):
+    for tagName in (TAG_BIN, TAG_BASEPLATE, TAG_LABEL, TAG_BOX):
         attribute = body.attributes.itemByName(TAG_GROUP, tagName)
         if attribute is not None:
             return (tagName, parseTagValue(attribute.value))
