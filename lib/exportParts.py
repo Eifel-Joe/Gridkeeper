@@ -10,7 +10,7 @@ import dataclasses
 # The tags of the bodies the export takes, as tagUtils writes them (tags are literals, they're stored in documents).
 # 'box' is the box and the lid of round 27, there from its merge on. A new part, the small parts of round 28 or the box
 # label (p262), is one more entry here and in tests/test_export_parts.py
-EXPORT_TAGS = ('bin', 'baseplate', 'label', 'box')
+EXPORT_TAGS = ('bin', 'baseplate', 'label', 'box', 'boxLabel')
 
 # Pred's small parts in a box set (round 28): untagged, their component carries the part role (tagUtils.TAG_PART_ROLE);
 # the same roles as lib/gridfinityUtils/predBoxParts.PARTS, tests/test_export_parts.py checks it
@@ -125,8 +125,8 @@ DEFAULT_PURGE = 50.0
 
 
 def labelSurface(tag: tuple | None) -> str | None:
-    """The surface of a Cullenect insert (Embossed, Debossed, Flush) from its tag, none for every other part"""
-    if tag is None or tag[0] != 'label' or not isinstance(tag[1], dict):
+    """The surface of a Cullenect insert or box label (Embossed, Debossed, Flush) from its tag, none for every other part"""
+    if tag is None or tag[0] not in ('label', 'boxLabel') or not isinstance(tag[1], dict):
         return None
     settings = tag[1].get('config')
     return settings.get('surface') if isinstance(settings, dict) else None

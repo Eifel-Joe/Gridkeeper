@@ -10,6 +10,9 @@ TAG_BASEPLATE = 'baseplate'
 TAG_LABEL = 'label'
 # storage boxes after Pred (round 27), on the box and on the lid body
 TAG_BOX = 'box'
+# the box label's plate (round r29-export, p380), a tag of its own: readBodyTag leaves it out, the settings menu and
+# rebuild would take it for a Cullenect insert. Its config holds the surface only, for the export's print orientation
+TAG_BOX_LABEL = 'boxLabel'
 # on a user parameter of a bin, the config field its value is, see tagParameterField
 TAG_PARAMETER_FIELD = 'parameterField'
 # name of the component of a part holding its colored text and symbol bodies (round 13, p90), a copy is named
@@ -88,6 +91,14 @@ def parseTagValue(value: str) -> dict:
 def tagBody(body: adsk.fusion.BRepBody, tagName: str, settings: list[dict] = None, parameters: list[list[str]] = None, config: dict = None, bodyId: str = None):
     """bodyId links the body with its parameters, see tagParameterField"""
     body.attributes.add(TAG_GROUP, tagName, createTagValue(getGeneratorVersion(), settings, parameters, config, bodyId=bodyId))
+
+def readExportTag(body: adsk.fusion.BRepBody) -> tuple[str, dict] | None:
+    """The tag the export knows a part by: a generator's, see readBodyTag, or the box label's"""
+    tag = readBodyTag(body)
+    if tag is not None:
+        return tag
+    attribute = body.attributes.itemByName(TAG_GROUP, TAG_BOX_LABEL)
+    return (TAG_BOX_LABEL, parseTagValue(attribute.value)) if attribute is not None else None
 
 def readBodyTag(body: adsk.fusion.BRepBody) -> tuple[str, dict] | None:
     """Which generator tagged the body and the tag value, none for bodies it didn't generate"""

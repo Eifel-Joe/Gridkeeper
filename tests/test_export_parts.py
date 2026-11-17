@@ -34,7 +34,7 @@ def _tag_constants():
 # --- which tags are parts ---
 
 def test_the_parts_the_export_knows():
-    assert exportParts.EXPORT_TAGS == ("bin", "baseplate", "label", "box")
+    assert exportParts.EXPORT_TAGS == ("bin", "baseplate", "label", "box", "boxLabel")
 
 
 def test_export_tags_are_those_the_generators_write():
@@ -244,3 +244,19 @@ def test_broken_layout_choices_fall_back():
     choices = exportParts.layoutChoices(section, BED_NAMES)
     assert choices["bed"] == "Custom"
     assert (choices["bedWidth"], choices["bedLength"], choices["spacing"], choices["purge"]) == (256.0, 256.0, 5.0, 50.0)
+
+
+def test_the_box_label_is_a_part_by_a_tag_of_its_own():
+    # p380: not the Cullenect insert's tag, the settings menu and rebuild would take it for an insert
+    assert _tag_constants()["TAG_BOX_LABEL"] == "boxLabel"
+    assert exportParts.isPartBody("boxLabel", "Box label 5")
+
+
+def test_a_box_labels_surface_comes_from_its_tag():
+    assert exportParts.labelSurface(("boxLabel", {"config": {"surface": "Flush"}})) == "Flush"
+
+
+def test_the_export_reads_the_box_label_tag_too():
+    source = open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read()
+    assert "tagUtils.readBodyTag(native)" not in source
+    assert source.count("tagUtils.readExportTag(") >= 2

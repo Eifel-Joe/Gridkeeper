@@ -148,7 +148,7 @@ def partRoleOf(component: adsk.fusion.Component) -> str | None:
 def isPartBody(body: adsk.fusion.BRepBody) -> bool:
     """A part the export takes, see exportParts.isPartBody, the body where it's placed or its native one"""
     native = body.nativeObject if body.assemblyContext is not None else body
-    tag = tagUtils.readBodyTag(native)
+    tag = tagUtils.readExportTag(native)
     component = native.parentComponent
     return exportParts.isPartBody(tag[0] if tag is not None else None, component.name, isRootComponent(component), partRoleOf(component))
 
@@ -719,7 +719,7 @@ def export3mf(items: list[ExportItem], names: list[str], path: str, filament: in
 
 def printRotationOf(item: ExportItem) -> str:
     """How the part turns into its print orientation, by its role in a box set or its label surface, see printLayout"""
-    return printLayout.printRotation(partRoleOf(item.body.parentComponent), item.body.name, exportParts.labelSurface(tagUtils.readBodyTag(item.body)))
+    return printLayout.printRotation(partRoleOf(item.body.parentComponent), item.body.name, exportParts.labelSurface(tagUtils.readExportTag(item.body)))
 
 def printMesh(item: ExportItem, name: str, filament: int | None, rotation: str | None = None) -> threeMf.MeshObject:
     """
