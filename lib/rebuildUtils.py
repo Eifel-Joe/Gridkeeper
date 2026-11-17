@@ -465,9 +465,11 @@ def repointJointsByName(
     for group in collapsedGroups:
         group.isCollapsed = True
     # with the timeline at its end, before the old part goes: its joints would break with it
-    # the old set too: still there, it may reach further out in front than the new one
-    oldParts = design.rootComponent.allOccurrencesByComponent(oldNative.component)
-    boxParts = [newPart] + ([oldParts.item(0)] if oldParts.count > 0 else [])
+    # the old set too: still there, it may reach further out in front than the new one. The instance being rebuilt, not
+    # the first of its component: a pasted copy elsewhere would widen the extents (review). The new set's component is
+    # new, newPart is its only instance
+    oldPart = _rebuiltInstance(design.rootComponent.allOccurrencesByComponent(oldNative.component), oldNative)
+    boxParts = [newPart] + ([oldPart] if oldPart is not None else [])
     for (joint, occurrence, labelCells, boxCells, boxJointOrigin) in tooWide:
         jointName = joint.name
         laid = _layBeside(design, joint, occurrence, labelCells, boxJointOrigin, boxParts)
@@ -600,6 +602,17 @@ def _frontSpot(
     except Exception as err:
         commonUtils.fileLog(f'{LOG_PREFIX} the front of the rebuilt box not found for its label, {err}')
         return None
+
+def _rebuiltInstance(proxies, native):
+    """
+    Of the instances seen from the root of a component, the one of the native occurrence being rebuilt (its proxy, or
+    itself in the root), none if none is
+    """
+    for index in range(proxies.count):
+        proxy = proxies.item(index)
+        if (proxy.nativeObject or proxy) == native:
+            return proxy
+    return None
 
 def _worldExtents(occurrence: adsk.fusion.Occurrence) -> list[tuple[float, float, float, float]]:
     """World XY extents of the bodies of an occurrence seen from the root (a proxy) and of those inside it"""
