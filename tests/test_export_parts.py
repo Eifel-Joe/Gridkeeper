@@ -380,3 +380,9 @@ def test_the_export_lays_out_by_kind_without_excluded_areas():
     assert "printLayout.layOutKinds(" in source
     assert "exportParts.plateKind(" in source
     assert "excludedAreas" not in source
+
+
+def test_the_old_shared_bambu_bed_is_read_as_the_p1_and_x1():
+    # review r29-export: the click test's export saved it, Custom would put the tower back right again
+    choices = exportParts.layoutChoices({"bed": "Bambu Lab A1, P1, X1 (256 x 256 mm)"}, BED_NAMES)
+    assert choices["bed"] == "Bambu Lab P1P, P1S, X1, X1C, X1E (256 x 256 mm)"
