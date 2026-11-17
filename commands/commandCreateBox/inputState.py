@@ -15,3 +15,6 @@ class InputState:
     magnetDiameter: float
     # a joint origin in every cell of the floor, to joint bins into the box
     hasJointOrigins: bool
+    # which of Pred's hinges the set gets, a key of predBoxParts.HINGES (round 28, Jörg 17.11.2026: "alle drei zum
+    # auswählen ist besser")
+    hinge: str

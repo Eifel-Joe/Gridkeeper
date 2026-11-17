@@ -160,3 +160,39 @@ def test_the_root_is_never_a_text_component():
     # the root component is named after the document, "Texthalter" mustn't make its parts letters
     assert not exportParts.isTextComponentName("Texthalter", isRoot=True)
     assert exportParts.isTextComponentName("Text", isRoot=False)
+
+
+# -- file names (click test 17.11.2026, F3): a box's bodies are named Base and Lid, every box exported gave "Base.stl",
+# "Base (2).stl"; the file name carries the set's name, "Box 5×4×6 Base"
+
+def test_a_box_body_is_named_after_its_set():
+    assert exportParts.partFileName("Base", "Box 5×4×6") == "Box 5×4×6 Base"
+    assert exportParts.partFileName("Lid", "Box 7×5×10") == "Box 7×5×10 Lid"
+
+
+def test_a_body_outside_a_set_keeps_its_name():
+    assert exportParts.partFileName("Gridfinity bin 2x1x3", None) == "Gridfinity bin 2x1x3"
+
+
+def test_a_name_that_starts_with_the_set_name_isnt_doubled():
+    assert exportParts.partFileName("Box 5×4×6 Base", "Box 5×4×6") == "Box 5×4×6 Base"
+
+
+# --- the small parts of a box set (round 28, review) ---
+
+def test_the_small_parts_of_a_box_are_parts_the_export_takes():
+    """Latches, handle, pins and hinges are untagged, their component carries the part role; the export left them out,
+    a right-click on a set gave Base and Lid only"""
+    for role in ("Latch", "Handle", "Handle pin", "Hinge"):
+        assert exportParts.isPartBody(None, role, role=role)
+    assert not exportParts.isPartBody(None, "Component1", role=None)
+    assert not exportParts.isPartBody(None, "Box", role="Box")
+
+
+def test_the_small_part_roles_are_the_box_parts():
+    parts = _load("predBoxParts", "lib", "gridfinityUtils", "predBoxParts.py")
+    assert set(exportParts.SMALL_PART_ROLES) == {part.role for part in parts.PARTS}
+
+
+def test_a_small_part_carries_its_sets_name():
+    assert exportParts.partFileName("Latch", "Box 5×4×6") == "Box 5×4×6 Latch"

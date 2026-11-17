@@ -106,3 +106,28 @@ def test_spinner_takes_a_parameter_beyond_its_limits(value, limits):
     """Review R27: a rebuild opens the dialog with the size parameters, which may have been set to 5 or 35 in Change
     Parameters; the spinner widens to show it, boxProblem names what's wrong instead of the dialog not opening"""
     assert boxConfig.spinnerLimits(6, 30, value) == limits
+
+
+# Jörg 17.11.2026: "alle drei zum auswählen ist besser"; the choice is a setting of the box, rebuild and clone take it
+
+def test_the_hinge_is_a_box_setting_m3x30_by_default():
+    assert state().hinge == "M3x30"
+    parts = _load("predBoxParts")
+    assert defaultSettings.SETTINGS["box"]["hinge"] == parts.DEFAULT_HINGE
+
+
+def test_a_box_saved_before_the_choice_rebuilds_with_m3x30():
+    """Boxes of round 27 have no hinge setting; read over a dialog set to another hinge they keep M3x30, the hinge
+    every box got before there was a choice"""
+    saved = {name: value for name, value in defaultSettings.SETTINGS["box"].items() if name != "hinge"}
+    current = state(hinge="Plain")
+    (loaded, _) = configJson.readConfig(configJson.configText("box", saved), "box", InputState, current)
+    assert loaded.hinge == "M3x30"
+
+
+def test_an_unknown_hinge_is_a_problem_before_anything_is_built():
+    """Review R28: a defaults file or a test case with a hinge no longer known reached predBoxParts.partsFor and broke
+    the build halfway, box and lid built, the set's group not made yet"""
+    assert boxConfig.boxProblem(state(hinge="Hinge_X")) == "Unknown hinge Hinge_X, pick one of M3x30, Pinned, Plain"
+    for hinge in ("M3x30", "Pinned", "Plain"):
+        assert boxConfig.boxProblem(state(hinge=hinge)) is None

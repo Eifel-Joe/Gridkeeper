@@ -97,9 +97,18 @@ def selectedTag() -> tuple[adsk.fusion.BRepBody, str, dict] | None:
     return tagUtils.partTag(body, occurrenceOf)
 
 def componentTag(component: adsk.fusion.Component) -> tuple[adsk.fusion.BRepBody, str, dict] | None:
-    """The generated body of a component with its tag, none unless it holds exactly one, its bodies are native"""
-    tags = [(body, *tag) for body in component.bRepBodies if (tag := tagUtils.readBodyTag(body)) is not None]
-    return tags[0] if len(tags) == 1 else None
+    """
+    The generated body of a component with its tag, none unless it holds exactly one, its bodies are native. A box set
+    holds none, its Box component's body stands for it, see tagUtils.menuTagOf
+    """
+    def tagsOf(owner: adsk.fusion.Component) -> list:
+        return [(body, *tag) for body in owner.bRepBodies if (tag := tagUtils.readBodyTag(body)) is not None]
+    def roleOf(child: adsk.fusion.Component) -> str | None:
+        # the tag only, not the name: a user's own component named Box doesn't answer for its parent
+        attribute = child.attributes.itemByName(tagUtils.TAG_GROUP, tagUtils.TAG_PART_ROLE)
+        return attribute.value if attribute is not None else None
+    children = [(roleOf(occurrence.component), tagsOf(occurrence.component)) for occurrence in component.occurrences]
+    return tagUtils.menuTagOf(tagsOf(component), children)
 
 def canRebuild(tag: tuple[adsk.fusion.BRepBody, str, dict] | None) -> bool:
     """Bodies generated before the generator kept the config can't be rebuilt"""

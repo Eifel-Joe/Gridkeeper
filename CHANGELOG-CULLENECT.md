@@ -6,6 +6,20 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased (1.1.0)
 
+### Small parts of the storage box (round 28)
+
+- **Latches, handle, pins and hinges (p261):** every box set now holds Pred's small parts, taken over from
+  [Pred's file](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric) (CC BY-NC) as
+  Fusion parts in `resources/predBox`: four latches (two at the front, one on each side at the back), the handle and
+  its two pins, rigidly jointed at joint origins of the box, and two hinges jointed beside the box in their print
+  position. The handle follows the label width (+28.5 mm, at most 113.5 mm). **Hinge** picks one of Pred's three
+  hinges (M3x30, the default; Pinned; Plain); settings saved before load with M3x30. Every sketch of the parts is fully constrained,
+  none uses a user parameter.
+- **Right-click on the set (click test F1):** the set's component offers settings, rebuild and clone like box and lid.
+- **Export file names (click test F3):** box bodies carry the set's name, e.g. *Box 5×4×6 Base*.
+- **No files in the add-in folder (p292):** the parts are inserted from a temporary copy; Fusion's import wrote a
+  folder `_XRef_` beside the part files before.
+
 ### Storage box after Pred (round 27)
 
 - **Gridkeeper box (p260):** a new command builds a storage box with lid after
@@ -18,7 +32,7 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   jointed shut; joint origins in every cell, for stacking and for the lid. Settings, rebuild and clone as for bins.
   Changes to Pred's box: magnet holes of a size of your choice, the floor pads and the stacking rim drawn from circles
   instead of arcs. Height 5 is left for later (p264).
-  Latches, hinges, handle and label follow in the next rounds.
+  Latches, hinges and handle followed in round 28, the label is still to come.
 - **Magnet size (p263):** bins, baseplates and boxes have a choice before the magnet cutout depth: 6 × 2 mm magnets
   (2.4 mm deep), 6 × 3 mm magnets (3.4 mm, not for boxes: it would break through the floor) or *Custom*. Only the
   depth is saved, older settings files load unchanged.
