@@ -9,6 +9,7 @@ einstellbar. Und bei zweifarbigem Export auch eine freie Fläche für den Purget
 """
 
 import dataclasses
+import math
 import re
 
 ROTATE_NONE = 'none'
@@ -100,9 +101,11 @@ def purgeSquare(bed: tuple[float, float], spacing: float, purge: float, anchor: 
 
 
 def arrange(footprints: list[tuple[float, float]], bed: tuple[float, float], spacing: float, purge: float,
-            purgeAnchor: tuple[float, float] = (1.0, 1.0), excluded: list[tuple] = (), blocked: list[tuple] = ()) -> tuple[list[Placement], list[int], list[int]]:
+            purgeAnchor: tuple[float, float] = (1.0, 1.0), excluded: list[tuple] = (), blocked: list[tuple] = (),
+            rowWidth: float | None = None) -> tuple[list[Placement], list[int], list[int]]:
     """
-    Where each footprint (width along x, depth along y) goes, in shelves along x, the deepest first, keeping the spacing
+    Where each footprint (width along x, depth along y) goes, in shelves along x no wider than the row width (the bed's
+    without one; a part wider than the row takes its own width), the deepest first, keeping the spacing
     from the bed's edge, from each other and from the areas kept free: the purge square at the tower's spot (see
     purgeSquare), the printer's excluded areas and any other blocked ones. A shelf skips past an area in its way, a new
     shelf may start above one. A footprint turns 90° when it fits no other way. One larger than the bed gets a plate
@@ -119,8 +122,9 @@ def arrange(footprints: list[tuple[float, float]], bed: tuple[float, float], spa
         return not any(_touches(box, area, spacing) for area in areas)
 
     def fitX(x: float, y: float, width: float, depth: float) -> float | None:
-        """The first x from x on where the footprint keeps clear of every area, none past the bed's right edge"""
-        while x + width <= right + 1e-9:
+        """The first x from x on where the footprint keeps clear of every area, none past the row's right end"""
+        rowRight = right if rowWidth is None else min(right, max(spacing + rowWidth, spacing + width))
+        while x + width <= rowRight + 1e-9:
             hits = [area for area in areas if _touches((x, y, x + width, y + depth), area, spacing)]
             if not hits:
                 return x
@@ -235,6 +239,22 @@ def _edgeStrips(excluded: list[tuple], bed: tuple[float, float], axis: int) -> l
     return [(-1e3, -1e3, bed[0] + 1e3, reach), (-1e3, size - reach, bed[0] + 1e3, size + 1e3)]
 
 
+def compactRowWidths(footprints: list[tuple[float, float]], bed: tuple[float, float], spacing: float, steps: int = 6) -> list[float]:
+    """
+    The row widths to try, narrowest first: the side of a square as large as the parts with their spacing, at least
+    the widest part's width, widened in steps short of the bed's width between the spacing
+    """
+    usable = bed[0] - 2 * spacing
+    fitting = [(width, depth) for (width, depth) in footprints if width <= usable + 1e-9]
+    if not fitting:
+        return []
+    side = math.sqrt(sum((width + spacing) * (depth + spacing) for (width, depth) in fitting))
+    narrowest = min(max(side, max(width for (width, _) in fitting)), usable)
+    if narrowest >= usable - 1e-9:
+        return []
+    return [narrowest + (usable - narrowest) * step / steps for step in range(steps)]
+
+
 def layOut(groups: list[list], bed: tuple[float, float], spacing: float, purge: float,
            purgeAnchor: tuple[float, float] = (1.0, 1.0), excluded: list[tuple] = ()) -> tuple[list[tuple[int, object]], int, list[int], list[int], list[int]]:
     """
@@ -262,8 +282,8 @@ def layOut(groups: list[list], bed: tuple[float, float], spacing: float, purge: 
     square = purgeSquare(bed, spacing, purge, purgeAnchor)
     excludedAreas = [tuple(area) for area in excluded]
 
-    def attempt(blocked: list):
-        (placements, tooLarge, noRoom) = arrange(footprints, bed, spacing, purge, purgeAnchor, excluded, blocked)
+    def attempt(blocked: list, rowWidth: float | None):
+        (placements, tooLarge, noRoom) = arrange(footprints, bed, spacing, purge, purgeAnchor, excluded, blocked, rowWidth)
         boxes = []
         for ((width, depth), placement) in zip(footprints, placements):
             (w, d) = (depth, width) if placement.turned else (width, depth)
@@ -299,17 +319,31 @@ def layOut(groups: list[list], bed: tuple[float, float], spacing: float, purge: 
         score = (len(nearExcluded), len(nearSquare), plateCount)
         return (score, placements, tooLarge, (sorted(nearSquare), sorted(nearExcluded)), shifts, plateCount, moreBlocked if helps else [])
 
-    best = None
     variants = [[]] + [strips for strips in (_edgeStrips(excludedAreas, bed, 0), _edgeStrips(excludedAreas, bed, 1)) if strips]
-    for strips in variants:
-        blocked = list(strips)
-        for _ in range(PURGE_ATTEMPTS):
-            result = attempt(blocked)
-            if best is None or result[0] < best[0]:
-                best = result
-            if not result[6]:
-                break
-            blocked = blocked + result[6]
+
+    def bestWith(rowWidth: float | None):
+        best = None
+        for strips in variants:
+            blocked = list(strips)
+            for _ in range(PURGE_ATTEMPTS):
+                result = attempt(blocked, rowWidth)
+                if best is None or result[0] < best[0]:
+                    best = result
+                if not result[6]:
+                    break
+                blocked = blocked + result[6]
+        return best
+
+    # Rows over the whole bed laid the small parts of a box side by side across it (Jörg 17.11.2026: „Diese könnten
+    # kompakter verteilt sein. Das muss nicht alles nebeneinander liegen.“): rows as wide as a square of the parts'
+    # area with their spacing, widened step by step while that costs a plate or an area kept free that full rows keep
+    full = bestWith(None)
+    best = full
+    for rowWidth in compactRowWidths(footprints, bed, spacing):
+        result = bestWith(rowWidth)
+        if result[0] <= full[0]:
+            best = result
+            break
     (_, placements, tooLarge, (nearSquare, nearExcluded), shifts, plateCount, _) = best
 
     laid = []

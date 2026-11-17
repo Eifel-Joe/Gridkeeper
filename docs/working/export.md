@@ -85,8 +85,9 @@ Every part of the 3MF lies the way it is printed, whatever its place in the desi
 The print orientation of the box's parts follows
 [Pred's storage box](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric) (CC BY-NC).
 
-The parts are then spread over the chosen bed in rows, the largest first, with the **Spacing** between them and to the
-edge. A part that only fits across is turned by 90°. What doesn't fit goes on further plates, and **each plate is a
+The parts are then laid out in rows, the largest first, with the **Spacing** between them and to the edge, as a
+compact, roughly square group in the middle of the bed rather than across its whole width; the rows only widen when
+that saves a plate. A part that only fits across is turned by 90°. What doesn't fit goes on further plates, and **each plate is a
 3MF file of its own**: *Gridkeeper parts, plate 1.3mf*, *Gridkeeper parts, plate 2.3mf* and so on, just *Gridkeeper
 parts.3mf* when one plate holds all. A part larger than the bed lies alone on a plate of its own and is named in the
 message after the export. Plate files of an earlier export of the same name that the new one doesn't write are
