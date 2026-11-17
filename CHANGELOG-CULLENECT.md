@@ -64,10 +64,13 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   [Gridkeeper settings / rebuild / clone im Rechtsklick] nicht. Warum? Die Cullenect-Label haben es.“ Now they do,
   like the Cullenect inserts: the label keeps its settings, a rebuild builds it anew in place and jointed into the
   holder of its box again, a clone opens the dialog with its settings and no box.
-- **The holder stays shown:** Fusion turns off a joint origin a joint uses and leaves it off when the joint goes; after
-  a rebuild without its box the box's *Label joint origin* was hidden. Jörg: „Allerdings darf er nicht ausgeblendet
-  werden.“ The box label and the Cullenect insert now keep the holder or pocket they are jointed into shown, and a
-  rebuild shows the one the old label or insert leaves.
+- **The holder stays shown:** after a rebuild without its box the box's *Label joint origin* was hidden; no Gridkeeper
+  code turns joint origins off, the ones a joint had used were off. Jörg: „Allerdings darf er nicht ausgeblendet
+  werden.“ The box label and the Cullenect insert now keep the holder or pocket they are jointed into shown, also
+  when a rebuilt box or bin takes the joint over, and a rebuild shows the one the old label or insert leaves.
+- **A rebuilt box keeps its label:** the label's joint moves over to the *Label joint origin* of the rebuilt box. Is
+  the box now of another label width, the label stays in and the note after the rebuild says to rebuild it with that
+  width.
 
 ### Small parts of the storage box (round 28)
 

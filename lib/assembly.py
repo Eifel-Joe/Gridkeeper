@@ -42,19 +42,21 @@ def inContext(entity, occurrence: adsk.fusion.Occurrence | None):
 
 def keepShown(jointOrigin: adsk.fusion.JointOrigin | None):
     """
-    Turns the joint origin's light bulb on again, the one seen from the root and its native one: Fusion turns off a
-    joint origin a joint uses and doesn't turn it on when the joint goes. A label's holder or an insert's pocket stays
-    shown so it can be picked again (Jörg 17.11.2026: "Allerdings darf er nicht ausgeblendet werden."). Turning a light
-    bulb on isn't worth failing a build, a refusal is logged
+    Turns the joint origin's light bulb on, the one seen from the root and its native one. After a label was rebuilt
+    without its box, the box's Label joint origin was off (Jörg's test 17.11.2026; no Gridkeeper code turns a joint
+    origin off, the joint origins a joint used were the ones off). A label's holder or an insert's pocket stays shown so
+    it can be picked again (Jörg: "Allerdings darf er nicht ausgeblendet werden."). Turning a light bulb on isn't worth
+    failing a build, a refusal is logged and the other one still tried
     """
     if jointOrigin is None:
         return
-    try:
-        for entity in (jointOrigin, jointOrigin.nativeObject):
-            if entity is not None:
-                entity.isLightBulbOn = True
-    except Exception as err:
-        commonUtils.fileLog(f'{jointOrigin.name} not shown again, {err}')
+    for entity in (jointOrigin, getattr(jointOrigin, 'nativeObject', None)):
+        if entity is None:
+            continue
+        try:
+            entity.isLightBulbOn = True
+        except Exception as err:
+            commonUtils.fileLog(f'A joint origin a label or insert is jointed into not shown again, {err}')
 
 def findContainer(des: adsk.fusion.Design, kind: str) -> adsk.fusion.Occurrence | None:
     """The container of the kind in the root, found by its tag so the user may rename it"""

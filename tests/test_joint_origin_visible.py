@@ -38,7 +38,10 @@ class _JointOrigin:
         self.nativeObject = native
         self.fails = fails
         self._bulb = False
-        self.name = "Label joint origin"
+
+    @property
+    def name(self):
+        return "Label joint origin"
 
     @property
     def isLightBulbOn(self):
@@ -88,3 +91,53 @@ def test_an_insert_rebuild_shows_the_pocket_it_leaves():
     assert "oldPocket = insertPocket(des, body)" in source
     assert "assembly.keepShown(oldPocket)" in source
     assert source.index("oldPocket = insertPocket(des, body)") < source.index("rebuildUtils.rebuild(")
+
+
+# -- a box or bin rebuilt with a label or insert in it (Jörg: "Noch schöner wäre natürlich, wenn bei Rebuild der Joint
+# erhalten bliebe."): rebuildUtils moves the joint over to the new holder or pocket, that one stays shown too, and a
+# label that no longer fits the new box's width is said in the note after the rebuild
+
+REBUILD_UTILS = os.path.join(ROOT, "lib", "rebuildUtils.py")
+
+
+def test_a_rebuilt_box_keeps_its_new_label_holder_shown():
+    source = _function(REBUILD_UTILS, "repointJointsByName")
+    assert source.index("setattr(joint, side, newJointOrigin)") < source.index("shown.append(newJointOrigin)")
+    # with the timeline at its end again (review)
+    assert source.index("design.timeline.moveToEnd()") < source.index("assembly.keepShown(jointOrigin)")
+    assert "predBoxSeats.LABEL_JOINT_ORIGIN" in source
+
+
+def test_a_rebuilt_box_says_when_its_label_no_longer_fits():
+    assert "boxLabelConfig.widthNote(" in _function(REBUILD_UTILS, "repointJointsByName")
+
+
+def test_a_rebuilt_bin_keeps_its_new_pocket_shown():
+    source = _function(REBUILD_UTILS, "repointJoints")
+    assert source.index("setattr(joint, side, newPocket.createForAssemblyContext(newOccurrence))") < source.index("assembly.keepShown(")
+
+
+def test_a_refused_proxy_still_turns_on_its_native_joint_origin():
+    (keepShown, logged) = _keepShown()
+    native = _JointOrigin()
+    keepShown(_JointOrigin(native, fails=True))
+    assert native.isLightBulbOn and len(logged) == 1
+
+
+def test_a_joint_origin_gone_invalid_doesnt_fail_the_build():
+    class _Gone(_JointOrigin):
+        @property
+        def name(self):
+            raise RuntimeError("invalid")
+    (keepShown, logged) = _keepShown()
+    gone = _Gone(fails=True)
+    keepShown(gone)
+    assert len(logged) == 1
+
+
+def test_a_rebuild_into_another_holder_or_pocket_shows_it_with_the_timeline_at_its_end():
+    # review: shown while the timeline was rolled back, the new holder or pocket might go off when the joint computes
+    label = _function(BOX_LABEL, "rebuildBoxLabel")
+    assert label.index("rebuildUtils.rebuild(") < label.index("assembly.keepShown(box)")
+    insert = _function(INSERT, "rebuildLabel")
+    assert insert.index("rebuildUtils.rebuild(") < insert.index("assembly.keepShown(pocket)")

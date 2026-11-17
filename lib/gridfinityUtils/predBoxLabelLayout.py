@@ -86,6 +86,12 @@ def cellsOfChoice(name: str) -> int:
     return dict(widthChoices()).get(name, DEFAULT_CELLS)
 
 
+def cellsOfBoxWidth(width: float) -> int | None:
+    """The width in grid cells of a box of that outer width (cm): cells x 42 mm + 20 mm, none below the smallest box"""
+    cells = round((width - 2 * PRED['margin']) / PRED['grid'])
+    return cells if cells >= MIN_CELLS else None
+
+
 def sizeProblem(cells: int) -> str | None:
     if cells < MIN_CELLS:
         return f'A box is at least {MIN_CELLS} cells wide'

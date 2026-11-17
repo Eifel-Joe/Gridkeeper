@@ -243,3 +243,27 @@ class TestWrongJointOrigin:
         source = _function(ENTRY, "boxProblem")
         assert "not isBoxLabelJointOrigin(box)" in source
         assert "predBoxSeats.LABEL_JOINT_ORIGIN" in source
+
+
+class TestBoxRebuiltWithItsLabel:
+    """The label stays jointed in the holder of a rebuilt box; a box of another width says the label doesn't fit"""
+
+    @pytest.mark.parametrize("widthMm, cells", [(188, 4), (230, 5), (272, 6), (356, 8)])
+    def test_the_cells_of_a_box_by_its_outer_width(self, widthMm, cells):
+        layout = _loadUtils("predBoxLabelLayout")
+        assert layout.cellsOfBoxWidth(widthMm / 10) == cells
+
+    def test_a_label_of_the_box_width_fits(self):
+        assert boxLabelConfig.widthNote("L in holder", 5, 5) is None
+        # from 6 cells on the label is 85 mm wide alike
+        assert boxLabelConfig.widthNote("L in holder", 6, 9) is None
+
+    def test_another_width_is_said(self):
+        note = boxLabelConfig.widthNote("L in holder", 5, 4)
+        assert note.startswith("L in holder: ")
+        assert "Box 5 cells (70.5 mm)" in note and "Box 4 cells (28.5 mm)" in note
+        assert "rebuild the label" in note
+
+    def test_an_unknown_width_says_nothing(self):
+        assert boxLabelConfig.widthNote("L in holder", None, 5) is None
+        assert boxLabelConfig.widthNote("L in holder", 5, None) is None

@@ -83,7 +83,8 @@ def test_a_picked_box_preselects_its_width():
 
 def test_the_cells_come_from_the_boxs_outer_width():
     source = _function(BUILDER, "boxCells")
-    assert "round((width * 10 - 20) / 42)" in source
+    # cells x 42 mm + 20 mm, the rule is shared with the box rebuild's width note, see test_box_label_rebuild
+    assert "predBoxLabelLayout.cellsOfBoxWidth(" in source
 
 
 def test_the_builder_joints_the_label_into_the_holder():
