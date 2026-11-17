@@ -61,6 +61,9 @@ The full list of changes, round by round, is in
   label text painted for Bambu Studio, OrcaSlicer and PrusaSlicer, or an STL or STEP file each. Gridkeeper exports
   Cullenect inserts too and puts the colored text and symbol bodies of bins and inserts into their part, painted. See
   [Exporting for printing](../working/export.md).
+- **Print orientation:** the 3MF lays every part the way it is printed, the box's handle and latches flat, and
+  spreads them over the chosen print bed with spacing, on further plates if needed, with the corner for the purge
+  tower kept free.
 - From GridfinityGenerator too: the letters of outline labels show in a color of their own in Fusion, the bin dialog
   shows the bin's size to the micron, and baseplates set the **Plate edge clearance** per edge (older settings are
   read as half the old gap).
