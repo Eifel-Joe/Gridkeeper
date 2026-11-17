@@ -10,14 +10,14 @@ Every new box is a component of its own in the container *Boxes*, holding the co
 small parts (latches, handle, handle pins, hinges, see [Small parts](#small-parts)); the lid is jointed shut on the
 box, see [Components and joints](working/components.md).
 
-![A box 5 × 4 × 6 with its lid, built by Gridkeeper box, and its set Box 5×4×6 with the components Box and Lid in the browser](assets/images/box-5x4x6.png)
+![A box 5 × 4 × 6 with its lid, its orange small parts and a label in the holder, and its set Box 5×4×6 in the browser: Box, Lid, four latches, the handle, two handle pins and two hinges](assets/images/box-5x4x6.png)
 
 !!! note "Magnet holes"
     Magnet holes are for 6 × 2 mm magnets only: 6 × 3 mm ones would break through the floor.
 
 ## Info
 
-![The Gridkeeper box dialog: Info, Size 5 × 4 × 6 with the outer size 230 × 188 × 65 mm, Magnet holes and Joint origins](assets/images/dialog-box.png)
+![The Gridkeeper box dialog: Info, Size 5 × 4 × 6 with the outer size 230 × 188 × 65 mm, Magnet holes, Joint origins and Small parts with the Hinge choice](assets/images/dialog-box.png)
 
 A link to this page, the credit to Pred and the version of the add-in. When the dialog was opened by
 **Gridkeeper rebuild**, it says which box is rebuilt in place.
@@ -91,6 +91,8 @@ box's group in the timeline and come along with a rebuild or clone. They have an
 **Solid › Create › Gridkeeper box label** makes the label for the holder at the front of the box: Pred's flat plate,
 0.85 mm thick and 24.5 mm high, as wide as the holder of the box (Pred's label width less 3 mm: 25.5 mm at a width of 4,
 67.5 mm at 5, 82 mm from 6 on). It is a command of its own, so a label can be swapped without touching the box.
+
+![The Gridkeeper box label dialog with a box picked: label width Box 5 cells (70.5 mm), plate 67.5 × 24.5 mm, large text M3, two lines, Heavy and Raised, one symbol](assets/images/dialog-box-label.png)
 
 ```
 +--------------------------------------------+
