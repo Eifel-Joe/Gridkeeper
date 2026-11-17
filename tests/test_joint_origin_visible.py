@@ -194,3 +194,27 @@ def test_a_label_taken_out_but_not_placed_is_said_as_it_is():
     assert "finally:" in source
     tail = _function(REBUILD_UTILS, "repointJointsByName")
     assert "LAID_FREE" in tail and "LAID_BESIDE" in tail
+
+
+# -- Jörg 17.11.2026 after laying beside: "Schild vor die Front wäre besser. Sonst übersieht man es schnell." The label
+# goes in front of the box first, the free spot search only when the front is taken
+
+def test_a_label_laid_beside_tries_the_front_of_the_box_first():
+    source = _function(REBUILD_UTILS, "_layBeside")
+    assert "_frontSpot(" in source
+    assert source.index("_frontSpot(") < source.index("placementUtils.findPlacement(")
+    assert source.index("occurrence.transform2 = ") < source.index("design.snapshots.add()")
+    assert "LAID_FRONT" in source
+
+
+def test_the_front_spot_comes_from_the_rebuilt_box_and_leaves_out_the_label():
+    source = _function(REBUILD_UTILS, "_frontSpot")
+    assert "placementUtils.frontPlacement(" in source
+    assert "skipComponents=" in source
+    # the box's place from the native transforms up its path, not a proxy's
+    assert "nativeObject" in source
+
+
+def test_the_note_says_in_front_of_the_box():
+    tail = _function(REBUILD_UTILS, "repointJointsByName")
+    assert "LAID_FRONT" in tail

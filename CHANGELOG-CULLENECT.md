@@ -70,8 +70,10 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   when a rebuilt box or bin takes the joint over, and a rebuild shows the one the old label or insert leaves.
 - **A rebuilt box keeps its label:** the label's joint moves over to the *Label joint origin* of the rebuilt box. Jörg:
   „Wenn die Box einen Rebuild bekommt, der das Schild zu groß werden lässt, muss das Schild daneben gelegt werden.“
-  A label too wide for the rebuilt box is taken out and laid beside the parts, a narrower one stays in; the note after
-  the rebuild says to rebuild it with the new width.
+  A label too wide for the rebuilt box is taken out and laid flat in front of the box, 10 mm in front of the handle and
+  centred on the box (Jörg: „Schild vor die Front wäre besser. Sonst übersieht man es schnell.“); is something in the
+  way there, it goes to a free spot beside the parts. A narrower one stays in; the note after the rebuild says where
+  the label is and to rebuild it with the new width.
 
 ### Small parts of the storage box (round 28)
 

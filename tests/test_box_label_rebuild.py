@@ -298,3 +298,10 @@ class TestLabelTooWideForTheRebuiltBox:
     def test_the_note_of_a_narrower_label_left_in(self):
         note = boxLabelConfig.widthNote("L in holder", 4, 5)
         assert "stays in the holder" in note and "rebuild the label" in note
+
+
+def test_the_note_of_a_label_laid_in_front_of_the_box():
+    # Jörg 17.11.2026: "Schild vor die Front wäre besser. Sonst übersieht man es schnell."
+    note = boxLabelConfig.widthNote("L in holder", 5, 4, place="in front of")
+    assert "laid in front of the box" in note
+    assert "laid beside the box" in boxLabelConfig.widthNote("L in holder", 5, 4)

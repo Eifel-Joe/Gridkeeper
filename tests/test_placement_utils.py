@@ -170,3 +170,99 @@ def test_placement_with_a_single_tag_still_works(monkeypatch):
     design = types.SimpleNamespace(rootComponent=root, allComponents=[])
     monkeypatch.setattr(placementUtils.tagUtils, "findTaggedBodies", lambda d, tag: [])
     assert placementUtils.findPlacement(design, "bin", "Gridfinity bin ", (0, 0, 4.1, 4.1), 4.2, 4.2) == (0, 0)
+
+
+# --- a box label taken out of the holder of a box rebuilt too narrow for it goes in front of the box (Jörg
+# 17.11.2026: "Schild vor die Front wäre besser. Sonst übersieht man es schnell."). cm, as in the code
+
+LABEL = (7.05, 2.45)  # a 5 cells label lying flat: width along its x, height along its y
+GAP = 1.0  # cm, placementUtils.FRONT_GAP
+SET = [(0.0, 0.0, 14.0, 12.0), (2.5, -1.2, 11.5, 0.0)]  # box, handle sticking out in front (-y)
+
+
+def test_the_front_gap_is_10_mm():
+    assert placementUtils.FRONT_GAP == pytest.approx(GAP)
+
+
+def test_a_label_goes_in_front_of_the_box_centred_on_its_middle():
+    (x, y, turns) = placementUtils.frontPlacement((0, -1), (7.0, 0.73), SET, LABEL, GAP, [])
+    assert x == pytest.approx(7.0)
+    # in front of the handle, the part of the set furthest out, by the gap
+    assert y == pytest.approx(-1.2 - GAP - 2.45 / 2)
+    assert turns == 0
+
+
+def test_the_box_itself_in_the_occupied_list_doesnt_block_the_spot():
+    assert placementUtils.frontPlacement((0, -1), (7.0, 0.73), SET, LABEL, GAP, SET) is not None
+
+
+def test_a_turned_box_gets_its_label_turned_along_its_front():
+    # front towards +x: the box is turned a quarter to the left, the label lies along the wall, its height across
+    (x, y, turns) = placementUtils.frontPlacement((1, 0), (13.27, 6.0), SET, LABEL, GAP, [])
+    assert (x, y, turns) == (pytest.approx(14.0 + GAP + 2.45 / 2), pytest.approx(6.0), 1)
+    (x, y, turns) = placementUtils.frontPlacement((0, 1), (7.0, 11.27), SET, LABEL, GAP, [])
+    assert (x, y, turns) == (pytest.approx(7.0), pytest.approx(12.0 + GAP + 2.45 / 2), 2)
+    (x, y, turns) = placementUtils.frontPlacement((-1, 0), (0.73, 6.0), SET, LABEL, GAP, [])
+    assert (x, y, turns) == (pytest.approx(0.0 - GAP - 2.45 / 2), pytest.approx(6.0), 3)
+
+
+def test_a_front_with_something_in_the_way_gives_no_spot():
+    bin_in_front = (5.0, -6.0, 9.2, -1.8)
+    assert placementUtils.frontPlacement((0, -1), (7.0, 0.73), SET, LABEL, GAP, [bin_in_front]) is None
+
+
+def test_something_closer_than_the_gap_blocks_too():
+    # the label would end at y = -2.2 - 2.45, a part 5 mm below that is within the gap
+    just_below = (6.0, -6.0, 8.0, -2.2 - 2.45 - 0.5)
+    assert placementUtils.frontPlacement((0, -1), (7.0, 0.73), SET, LABEL, GAP, [just_below]) is None
+
+
+def test_something_beside_the_spot_doesnt_block_it():
+    far_left = (-10.0, -6.0, -5.0, -1.8)
+    assert placementUtils.frontPlacement((0, -1), (7.0, 0.73), SET, LABEL, GAP, [far_left]) is not None
+
+
+def test_a_box_turned_off_the_grid_axes_gives_no_spot():
+    assert placementUtils.frontPlacement((0.6, -0.8), (7.0, 0.73), SET, LABEL, GAP, []) is None
+
+
+def test_no_box_extents_give_no_spot():
+    assert placementUtils.frontPlacement((0, -1), (7.0, 0.73), [], LABEL, GAP, []) is None
+
+
+def test_occupied_extents_can_leave_out_the_label_itself(monkeypatch):
+    class Point:
+        def __init__(self, x, y):
+            self.x = x
+            self.y = y
+
+    class Box:
+        def __init__(self, minX, minY, maxX, maxY):
+            self.minPoint = Point(minX, minY)
+            self.maxPoint = Point(maxX, maxY)
+
+    root = object()
+    labelComponent = object()
+
+    class Body:
+        def __init__(self, box, component):
+            self.parentComponent = component
+            self.boundingBox = box
+            self.name = "Box label"
+            self.attributes = types.SimpleNamespace(itemByName=lambda group, name: None)
+
+        def createForAssemblyContext(self, occurrence):
+            return self
+
+    class Occurrences(list):
+        pass
+
+    root = types.SimpleNamespace(allOccurrencesByComponent=lambda component: Occurrences([object()]))
+    labelBody = Body(Box(0, 0, 7, 2.45), labelComponent)
+    otherBody = Body(Box(20, 0, 27, 2.45), object())
+    design = types.SimpleNamespace(rootComponent=root, allComponents=[types.SimpleNamespace(bRepBodies=[labelBody]), types.SimpleNamespace(bRepBodies=[otherBody])])
+    monkeypatch.setattr(placementUtils.tagUtils, "findTaggedBodies", lambda d, tag: [])
+    every = placementUtils.getOccupiedExtents(design, ["box"], "Box label")
+    assert len(every) == 2
+    skipped = placementUtils.getOccupiedExtents(design, ["box"], "Box label", skipComponents=[labelComponent])
+    assert skipped == [(20, 0, 27, 2.45)]
