@@ -2,6 +2,15 @@
 
 Gemeinsame Regeln: `dev-notes/r29/README.md`.
 
+
+## Pflicht: jede Skizze vollständig bestimmt
+
+Jörg 17.11.2026: „Denk nur dran, dass alle Zeichnungen vollständig bestimmt sein müssen.“
+- Jede Skizze dieses Teils ist `isFullyConstrained`. Das gilt auch dort, wo Preds Vorlage es nicht ist. Die JSON aus
+  `r29_parts_walk` nennt je Skizze `fullyConstrained`, `freeCurves` und `freePoints`.
+- Der pytest prüft den Plan (`sketchChain`/`predSketch`): jede Kurve und jeder Punkt bestimmt, keine losen Punkte.
+- Die Fusion-Prüfung meldet je Skizze `isFullyConstrained`; ein einziges False heißt nicht bestanden.
+
 ## Ziel
 
 `lib/gridfinityUtils/predLatch.py` mit `createLatch(component: adsk.fusion.Component) -> list[adsk.fusion.BRepBody]`.

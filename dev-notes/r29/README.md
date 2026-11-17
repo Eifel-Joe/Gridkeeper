@@ -20,7 +20,7 @@ Je Teil eine Untersitzung mit eigenem Auftrag: `latch.md`, `handle.md`, `handleP
 - **Joint origin** mit demselben Namen, Ort und denselben Achsen wie in der `.f3d`. Die Werte stehen im Auftrag.
 - **Körpernamen** wie bisher: ein einzelner Körper heißt wie die Rolle (`Latch`, `Handle`, `Handle pin`). Die
   Scharniere behalten Preds Namen, der gedruckte Stift heißt `Hinge pin` (`predBoxParts.BODY_NAMES`).
-- **Jede Skizze vollständig bestimmt** (`Sketch.isFullyConstrained`).
+- **Pflicht: jede Skizze vollständig bestimmt** (`Sketch.isFullyConstrained`; Jörg: „Denk nur dran, dass alle Zeichnungen vollständig bestimmt sein müssen.“). Geprüft per pytest des Plans und in Fusion; die freien Kurven/Punkte von Preds Skizzen stehen in der Walk-JSON (`freeCurves`, `freePoints`).
   - Keine Benutzerparameter. Nur der Griff hat eine Breite, die als Ausdruck an den Box-Parametern hängt.
   - Längen intern in cm, Tests in mm (Projekt-`CLAUDE.md`).
   - Werkzeuge: `predSketch.py`, `sketchChain.py`, `arcDrawing`.
