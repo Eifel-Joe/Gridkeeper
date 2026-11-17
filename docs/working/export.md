@@ -26,7 +26,7 @@ builds and to colored text.
 | **Print bed** › **Printer** | 3MF only: the bed the parts are laid out on, the printers of the baseplate dialog or *Custom* |
 | **Bed width, X**, **Bed length, Y** | The bed's usable size; typing a size switches the printer to *Custom* |
 | **Spacing** | Space between the parts and to the bed's edge, 5 mm to start with |
-| **Purge tower area** | With **Color label text** on: a square kept free in the back right corner of every plate for the purge tower, 50 mm to start with, 0 for none |
+| **Purge tower area** | With **Color label text** on and text to color: a square kept free on every plate for the purge tower, 50 mm to start with, 0 for none |
 
 The dialog keeps its choices for the next export. Existing files are only replaced after asking. 3MF and STL meshes are made at Fusion's very high quality.
 
@@ -66,8 +66,17 @@ edge. A part that only fits across is turned by 90°. What doesn't fit goes on f
 3MF file of its own**: *Gridkeeper parts, plate 1.3mf*, *Gridkeeper parts, plate 2.3mf* and so on, just *Gridkeeper
 parts.3mf* when one plate holds all. A part larger than the bed lies alone on a plate of its own and is named in the
 message after the export. Plate files of an earlier export of the same name that the new one doesn't write are
-removed, after asking together with the files it replaces. With **Color label text** on, the back right corner of every plate stays free for the purge
-tower: move the slicer's purge tower there. The message names a plate where the corner couldn't be kept free.
+removed, after asking together with the files it replaces.
+
+With **Color label text** on and label text to color, a square stays free for the purge tower on every plate. For a
+Bambu Lab printer it lies where Bambu Studio puts the tower (from its printer profiles): at the back, at about two
+thirds of the width, for the P1, X1, P2S, X2D and H2 printers; back left for the A1, A1 mini and A2L; front right for
+the H3C. For the other printers and *Custom* it is the back right corner: move the slicer's purge tower there. The
+message names a plate where the square couldn't be kept free, a box as wide as the bed for one.
+
+The **P1P, P1S, X1, X1C and X1E** keep the front left corner of the bed free (18 × 28 mm, where the nozzle is wiped).
+No part comes near it, so Bambu Studio doesn't warn of a collision; a large part such as a box then fills a plate
+alone.
 
 The parts of each file are centered on the bed: Bambu Studio, OrcaSlicer and PrusaSlicer move the parts of a 3MF made
 elsewhere to the middle of the bed as a group, so the layout stays as it is when the file is opened. Don't press
