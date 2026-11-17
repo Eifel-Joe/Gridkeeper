@@ -64,10 +64,21 @@ def test_only_a_box_label_joint_origin_can_be_picked():
     assert "isBoxLabelJointOrigin" in source
 
 
-def test_a_picked_box_gives_the_width():
-    source = _function(ENTRY, "getInputsState")
-    assert "cells=" in source
-    assert "boxCells(selectedBox(" in _function(ENTRY, "currentCells")
+def test_the_width_is_a_choice_of_preds_fixed_widths():
+    """Jörg 17.11.2026: "Da das Schild ja feste Breiten hat, sollte es nur ein Auswahlmenü dafür geben. Nicht frei
+    einstellbar." It works without a box in the document (a reprint)"""
+    source = _function(ENTRY, "command_created")
+    assert "addDropdown(boxGroup.children, WIDTH_DROPDOWN, 'Label width', [name for name, _ in predBoxLabelLayout.widthChoices()])" in source
+    assert "addIntegerSpinnerCommandInput" not in open(ENTRY, encoding="utf-8").read()
+    assert "cells=predBoxLabelLayout.cellsOfChoice(uiState.getState(WIDTH_DROPDOWN))" in _function(ENTRY, "getInputsState")
+
+
+def test_a_picked_box_preselects_its_width():
+    """Jörg: "Aber es kann natürlich auch eine Breite übernommen werden, wenn man einen Joint auswählt zum positionieren." """
+    source = _function(ENTRY, "command_input_changed")
+    assert "if changed_input.id == BOX_INPUT:" in source
+    assert "predBoxLabelLayout.widthChoiceFor(cells)" in source
+    assert "uiState.setValue(WIDTH_DROPDOWN" in source
 
 
 def test_the_cells_come_from_the_boxs_outer_width():

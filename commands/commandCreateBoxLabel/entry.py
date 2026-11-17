@@ -55,7 +55,7 @@ SYMBOL_GROUP = 'symbol_group'
 INPUT_CHANGES_GROUP = 'input_changes_group'
 PREVIEW_GROUP = 'preview_group'
 BOX_INPUT = 'box'
-CELLS_INPUT = 'box_cells'
+WIDTH_DROPDOWN = 'label_width'
 SIZE_TEXT = 'size_text'
 BIG_TEXT_INPUT = 'big_text'
 LINE_1_INPUT = 'text_line_1'
@@ -179,11 +179,11 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     boxInput = boxGroup.children.addSelectionInput(BOX_INPUT, 'Box', f'The {predBoxSeats.LABEL_JOINT_ORIGIN} of a box, the label is jointed into its holder')
     boxInput.addSelectionFilter(adsk.core.SelectionCommandInput.JointOrigins)
     boxInput.setSelectionLimits(0, 1)
-    boxInput.tooltip = (f'Optional: pick the {predBoxSeats.LABEL_JOINT_ORIGIN} at the front of a box, the label gets its '
-                        'width and goes into the holder. Without, set the width below, the label lies beside the parts')
-    cells = boxGroup.children.addIntegerSpinnerCommandInput(CELLS_INPUT, 'Box width (u)', predBoxLabelLayout.MIN_CELLS, 30, 1, uiState.getState(CELLS_INPUT))
-    cells.tooltip = 'Width of the box in grid cells, without a picked box. From 6 cells on the label is 82 mm wide'
-    uiState.registerCommandInput(cells)
+    boxInput.tooltip = (f'Optional: pick the {predBoxSeats.LABEL_JOINT_ORIGIN} at the front of a box, the label takes '
+                        "the box's width and goes into the holder. Without, it lies beside the parts there are")
+    # Jörg 17.11.2026: "Da das Schild ja feste Breiten hat, sollte es nur ein Auswahlmenü dafür geben. Nicht frei
+    # einstellbar." Works without a box in the document, for a reprint
+    addDropdown(boxGroup.children, WIDTH_DROPDOWN, 'Label width', [name for name, _ in predBoxLabelLayout.widthChoices()]).tooltip =         "Pred's label widths by the width of the box; a picked box sets its own"
     boxGroup.children.addTextBoxCommandInput(SIZE_TEXT, 'Label', '', 2, True)
 
     textGroup = addGroup(inputs, TEXT_GROUP, 'Text')
@@ -231,21 +231,22 @@ def selectedBox(inputs: adsk.core.CommandInputs) -> adsk.fusion.JointOrigin | No
     return adsk.fusion.JointOrigin.cast(boxInput.selection(0).entity)
 
 
-def currentCells(inputs: adsk.core.CommandInputs | None) -> int:
-    """The picked box's width, else the spinner's"""
+def boxProblem(inputs: adsk.core.CommandInputs, state: InputState) -> str | None:
+    """A picked box whose width isn't the chosen one, the label wouldn't fit its holder"""
     box = selectedBox(inputs) if inputs is not None else None
-    cells = boxCells(selectedBox(inputs)) if box is not None else None
-    return cells if cells is not None else int(uiState.getState(CELLS_INPUT))
+    cells = boxCells(box) if box is not None else None
+    if cells is not None and predBoxLabelLayout.widthChoiceFor(cells) != predBoxLabelLayout.widthChoiceFor(state.cells):
+        return f'The picked box takes the label width {predBoxLabelLayout.widthChoiceFor(cells)}'
+    return None
 
 
 def updateInputs(inputs: adsk.core.CommandInputs):
     """Shows the inputs that apply and what the label comes out as"""
     state = getInputsState(inputs)
-    inputs.itemById(CELLS_INPUT).isEnabled = selectedBox(inputs) is None
     inputs.itemById(CUSTOM_COLOR_INPUT).isVisible = uiState.getState(TEXT_COLOR_DROPDOWN) == labelColors.CUSTOM_CHOICE
     width = predBoxLabelLayout.plateWidth(state.cells) * 10
-    text = f'{width:g} x {predBoxLabelLayout.PLATE_HEIGHT * 10:g} mm for a box {state.cells} cells wide'
-    problem = labelProblem(state)
+    text = f'Plate {width:g} x {predBoxLabelLayout.PLATE_HEIGHT * 10:g} mm'
+    problem = labelProblem(state) or boxProblem(inputs, state)
     inputs.itemById(SIZE_TEXT).formattedText = text if problem is None else f'{text}<br><span style="color:#d04030">{html.escape(problem)}</span>'
     layout = labelLayout(state)
     chosen = sum(1 for name in state.symbols if name != predBoxLabelLayout.NO_SYMBOL)
@@ -294,6 +295,13 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
     if changed_input.id in (PREVIEW_TIME_INPUT, SIZE_TEXT, SYMBOL_TEXT):
         return
     uiState.onInputUpdate(changed_input)
+    if changed_input.id == BOX_INPUT:
+        # Jörg: "Aber es kann natürlich auch eine Breite übernommen werden, wenn man einen Joint auswählt zum positionieren."
+        box = selectedBox(changed_input.parentCommand.commandInputs)
+        cells = boxCells(box) if box is not None else None
+        if cells is not None:
+            uiState.setValue(WIDTH_DROPDOWN, predBoxLabelLayout.widthChoiceFor(cells))
+            uiState.forceUIRefresh()
     if isinstance(changed_input, adsk.core.GroupCommandInput) and changed_input.isExpanded == True:
         for input in changed_input.children:
             uiState.registerCommandInput(input)
@@ -303,7 +311,8 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
 
 def command_validate_input(args: adsk.core.ValidateInputsEventArgs):
     global INPUTS_VALID
-    INPUTS_VALID = labelProblem(getInputsState(args.inputs)) is None
+    state = getInputsState(args.inputs)
+    INPUTS_VALID = labelProblem(state) is None and boxProblem(args.inputs, state) is None
     args.areInputsValid = INPUTS_VALID
 
 
@@ -358,7 +367,7 @@ def initUiState():
         uiState.initValue(group, True, adsk.core.GroupCommandInput.classType())
     dropdown = adsk.core.DropDownCommandInput.classType()
     string = adsk.core.StringValueCommandInput.classType()
-    uiState.initValue(CELLS_INPUT, 5, adsk.core.IntegerSpinnerCommandInput.classType())
+    uiState.initValue(WIDTH_DROPDOWN, predBoxLabelLayout.widthChoiceFor(predBoxLabelLayout.DEFAULT_CELLS), dropdown)
     uiState.initValue(BIG_TEXT_INPUT, 'M3', string)
     uiState.initValue(LINE_1_INPUT, 'Socket head', string)
     uiState.initValue(LINE_2_INPUT, 'DIN 912', string)
@@ -384,7 +393,7 @@ def saveUIInputsAsDefaults():
 def getInputsState(inputs: adsk.core.CommandInputs | None = None) -> InputState:
     surfaceName = uiState.getState(SURFACE_DROPDOWN)
     return InputState(
-        cells=currentCells(inputs),
+        cells=predBoxLabelLayout.cellsOfChoice(uiState.getState(WIDTH_DROPDOWN)),
         bigText=uiState.getState(BIG_TEXT_INPUT),
         line1=uiState.getState(LINE_1_INPUT),
         line2=uiState.getState(LINE_2_INPUT),
