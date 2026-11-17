@@ -117,3 +117,21 @@ def seatJointOriginPoints(d: PredBoxDims) -> list[tuple[str, Dim, Dim, Dim]]:
     joint takes its turn about z (turnAboutZ). Round 28, plan task 5
     """
     return [(seatJointOriginName(seat.name), seat.x, seat.y, seat.z) for seat in seats(d)]
+
+
+def handleHalfWidth(d: PredBoxDims) -> Dim:
+    """The expression the inserted handle's one size dimension (HandleHalfWidth, resources/predBox/handle.f3d) gets"""
+    return handleWidth(d) / 2
+
+
+# the hinges beside the box in their print position (plan decision 6): the first where Pred's Hinge_M3x30:1 is, mm
+# (fusion-auftraege/r28_tmp/pred_parts.json), the second beside it in y with a gap of 5 mm (Pred's file has one hinge)
+PRED_HINGE_ORIGIN = (-51.9986, 40.5039, -12.2095)
+HINGE_DEPTH = 12.8
+HINGE_GAP = 5.0
+
+
+def hingePlaces() -> list[tuple[float, float, float]]:
+    """Where the hinges' origins go in the set, mm; they don't follow the box size"""
+    x, y, z = PRED_HINGE_ORIGIN
+    return [(x, y, z), (x, round(y + HINGE_DEPTH + HINGE_GAP, 4), z)]

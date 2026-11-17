@@ -150,3 +150,25 @@ def test_the_box_gets_a_joint_origin_at_every_seat():
     by = _byName((5, 4, 6))
     for (name, x, y, z), seatName in zip(points, parts.SEAT_NAMES):
         assert (x.value, y.value, z.value) == (by[seatName].x.value, by[seatName].y.value, by[seatName].z.value)
+
+
+# Plan decision 6: the hinges lie beside the box in their print position, the first where Pred's Hinge_M3x30:1 is
+# (pred_parts.json: origin (-51.9986 | 40.5039 | -12.2095) mm), the second beside it in y
+PRED_HINGE = (-51.9986, 40.5039, -12.2095)
+HINGE_DEPTH = 49.3039 - 36.5039
+
+
+def test_the_first_hinge_lies_where_preds_does():
+    assert seats.hingePlaces()[0] == pytest.approx(PRED_HINGE)
+
+
+def test_the_second_hinge_lies_beside_it_without_touching():
+    first, second = seats.hingePlaces()
+    assert (second[0], second[2]) == pytest.approx((first[0], first[2]))
+    assert second[1] - first[1] > HINGE_DEPTH
+
+
+def test_the_handle_half_width_expression_follows_the_box():
+    half = seats.handleHalfWidth(_dims(5, 4, 6))
+    assert half.value * 10 == pytest.approx(49.5)
+    assert "gfBox1_baseWidth" in half.expression
