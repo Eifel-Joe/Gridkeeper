@@ -43,7 +43,7 @@ Custom Event und Dialoge. Nur Standardbibliothek (`urllib`, `zipfile`, `hashlib`
 - `isGitCheckout(folder: str) -> bool` (`os.path.exists(join(folder,'.git'))`)
 - `readSettings(path) -> dict`, `writeSettings(path, settings) -> bool`, `isDue(settings, today: date) -> bool`, `manifestVersion(addinFolder) -> tuple | None`
 
-- [ ] **Step 1: Tests** — u. a.
+- [x] **Step 1: Tests** — u. a.
   - `test_newest_ignores_original_tags`: Liste mit `v2.4.2.0` (Version höher), `gridkeeper-v1.1.0`, `gridkeeper-v1.0.0` → `.tag == 'gridkeeper-v1.1.0'`
   - `test_numeric_not_text`: `gridkeeper-v1.10.0` schlägt `gridkeeper-v1.9.0`
   - `test_skips_draft_and_prerelease`, `test_none_when_not_newer` (current `(1,1,0)`), `test_missing_asset_keeps_release_without_url` (`assetUrl is None`)
@@ -52,10 +52,10 @@ Custom Event und Dialoge. Nur Standardbibliothek (`urllib`, `zipfile`, `hashlib`
   - `test_due_once_a_day`: `{'lastCheck':'2026-11-17'}` + 17.11. → False, + 18.11. → True; `{}` → True; `checkAtStartup False` → False
   - `test_settings_broken_file_defaults` (Müll in Datei → `{'checkAtStartup': True}`)
   - `test_manifest_version` (Manifest-JSON mit Tab-Einrückung wie im Repo → `(1,0,0)`)
-- [ ] **Step 2:** `python -m pytest tests/test_update_check.py` → FAIL (Modul fehlt)
-- [ ] **Step 3:** Implementieren
-- [ ] **Step 4:** PASS, dann volle Suite `python -m pytest` grün
-- [ ] **Step 5:** Commit „Update-Prüfung: Versions-, Tag- und Release-Logik (p310)“
+- [x] **Step 2:** `python -m pytest tests/test_update_check.py` → FAIL (Modul fehlt)
+- [x] **Step 3:** Implementieren
+- [x] **Step 4:** PASS, dann volle Suite `python -m pytest` grün
+- [x] **Step 5:** Commit „Update-Prüfung: Versions-, Tag- und Release-Logik (p310)“
 
 ### Task 2: Abruf (`fetchReleases`, `checkForUpdate`)
 
@@ -66,9 +66,9 @@ Custom Event und Dialoge. Nur Standardbibliothek (`urllib`, `zipfile`, `hashlib`
 - `fetchReleases(url=API_URL, urlopen=urllib.request.urlopen, log=print) -> list[dict] | None` (Fehler → None + log)
 - `checkForUpdate(addinFolder: str, fetch=fetchReleases, log=print) -> Release | None`
 
-- [ ] **Step 1: Tests** — `test_request_headers_only_neutral` (Fake-`urlopen` fängt `Request`: Header genau `User-agent`, `Accept`; Zeitlimit 10), `test_fetch_errors_are_none` (URLError, `socket.timeout`, HTTP 403, kaputtes JSON, JSON-Objekt statt Liste → None, je ein Log), `test_check_for_update` (Fake-Fetch + Manifest 1.0.0 → Release 1.1.0), `test_check_unreadable_manifest_none`
-- [ ] **Step 2–4:** RED → implementieren → GREEN, volle Suite
-- [ ] **Step 5:** Commit „Update-Prüfung: Abruf bei GitHub mit neutralem User-Agent (p310)“
+- [x] **Step 1: Tests** — `test_request_headers_only_neutral` (Fake-`urlopen` fängt `Request`: Header genau `User-agent`, `Accept`; Zeitlimit 10), `test_fetch_errors_are_none` (URLError, `socket.timeout`, HTTP 403, kaputtes JSON, JSON-Objekt statt Liste → None, je ein Log), `test_check_for_update` (Fake-Fetch + Manifest 1.0.0 → Release 1.1.0), `test_check_unreadable_manifest_none`
+- [x] **Step 2–4:** RED → implementieren → GREEN, volle Suite
+- [x] **Step 5:** Commit „Update-Prüfung: Abruf bei GitHub mit neutralem User-Agent (p310)“
 
 ### Task 3: ZIP laden und prüfen (`lib/updateInstall.py`)
 
@@ -80,9 +80,9 @@ Custom Event und Dialoge. Nur Standardbibliothek (`urllib`, `zipfile`, `hashlib`
 - `verifyZip(zipPath, version: tuple, digest: str | None, size: int | None) -> None` (wirft `UpdateError`)
 - `extract(zipPath, targetParent) -> str` (Pfad des entpackten `Gridkeeper`)
 
-- [ ] **Step 1: Tests** — `test_verify_ok`, `test_wrong_digest`, `test_no_digest_size_must_match`, `test_rejects_dotdot` (`Gridkeeper/../x`), `test_rejects_absolute`, `test_rejects_second_top_folder`, `test_rejects_wrong_manifest_version`, `test_rejects_missing_py`, `test_rejects_too_big_uncompressed` (Limit per Parameter klein gesetzt), `test_download_stops_over_limit`
-- [ ] **Step 2–4:** RED → implementieren → GREEN
-- [ ] **Step 5:** Commit „Update: Release-ZIP laden und prüfen (p310)“
+- [x] **Step 1: Tests** — `test_verify_ok`, `test_wrong_digest`, `test_no_digest_size_must_match`, `test_rejects_dotdot` (`Gridkeeper/../x`), `test_rejects_absolute`, `test_rejects_second_top_folder`, `test_rejects_wrong_manifest_version`, `test_rejects_missing_py`, `test_rejects_too_big_uncompressed` (Limit per Parameter klein gesetzt), `test_download_stops_over_limit`
+- [x] **Step 2–4:** RED → implementieren → GREEN
+- [x] **Step 5:** Commit „Update: Release-ZIP laden und prüfen (p310)“
 
 ### Task 4: Tausch mit Mitnehmen und Rückweg
 
@@ -94,9 +94,9 @@ Custom Event und Dialoge. Nur Standardbibliothek (`urllib`, `zipfile`, `hashlib`
 - `install(release: Release, addinFolder, urlopen=..., now=datetime.now) -> None` (Ablauf E11.1–E11.8; Weigerung bei `isGitCheckout`)
 - `cleanupBackups(addinFolder) -> None` (alle bis auf die jüngste Sicherung, `new/`, ZIPs)
 
-- [ ] **Step 1: Tests** — `test_swap_renames` (Ergebnis Inhalt neu, Sicherung = alt); `test_second_rename_fails_restores` (zweites `rename` wirft → alter Ordner wieder am Platz, `UpdateError`); `test_first_rename_fails_copies` (erstes wirft `PermissionError` → `'copied'`, Inhalt neu, Sicherung vollständig); `test_copy_fails_restores` (Kopieren wirft mittendrin → Inhalt wieder alt); `test_carries_user_files` (`commands/commandCreateBin/commandConfig/x.json`, eigenes `lib/…/hardware/my.svg`, `updateConfig/update.json` mitgenommen; altes `lib/gone.py` und `__pycache__` nicht); `test_refuses_git_dir`, `test_refuses_git_file` (Ordner bleibt unverändert); `test_install_end_to_end` (Fake-`urlopen` liefert ZIP, Release mit Digest → neuer Inhalt, `new/` weg); `test_cleanup_keeps_newest_backup`
-- [ ] **Step 2–4:** RED → implementieren → GREEN, volle Suite
-- [ ] **Step 5:** Commit „Update: Add-in-Ordner sicher tauschen, Vorgaben mitnehmen (p310)“
+- [x] **Step 1: Tests** — `test_swap_renames` (Ergebnis Inhalt neu, Sicherung = alt); `test_second_rename_fails_restores` (zweites `rename` wirft → alter Ordner wieder am Platz, `UpdateError`); `test_first_rename_fails_copies` (erstes wirft `PermissionError` → `'copied'`, Inhalt neu, Sicherung vollständig); `test_copy_fails_restores` (Kopieren wirft mittendrin → Inhalt wieder alt); `test_carries_user_files` (`commands/commandCreateBin/commandConfig/x.json`, eigenes `lib/…/hardware/my.svg`, `updateConfig/update.json` mitgenommen; altes `lib/gone.py` und `__pycache__` nicht); `test_refuses_git_dir`, `test_refuses_git_file` (Ordner bleibt unverändert); `test_install_end_to_end` (Fake-`urlopen` liefert ZIP, Release mit Digest → neuer Inhalt, `new/` weg); `test_cleanup_keeps_newest_backup`
+- [x] **Step 2–4:** RED → implementieren → GREEN, volle Suite
+- [x] **Step 5:** Commit „Update: Add-in-Ordner sicher tauschen, Vorgaben mitnehmen (p310)“
 
 ### Task 5: Fusion-Befehl `commandUpdates`
 
@@ -111,20 +111,20 @@ Custom Event und Dialoge. Nur Standardbibliothek (`urllib`, `zipfile`, `hashlib`
 - Befehls-Dialog (E14): `versionLine`, Haken, Knopf „Check now“ (ohne Tagesgrenze, zeigt auch „newest“ und Fehler).
 - `run()` in `Gridkeeper.py` unverändert; `cleanupBackups` beim Start im Thread.
 
-- [ ] **Step 1:** Tests `dialogHtml` (drei Fälle, inkl. `<script>` in der Kurzinfo escaped) → RED
-- [ ] **Step 2:** implementieren → GREEN, volle Suite
-- [ ] **Step 3:** Commit „Update-Hinweis: Befehl, Hintergrundprüfung und Dialoge (p310)“
+- [x] **Step 1:** Tests `dialogHtml` (drei Fälle, inkl. `<script>` in der Kurzinfo escaped) → RED
+- [x] **Step 2:** implementieren → GREEN, volle Suite
+- [x] **Step 3:** Commit „Update-Hinweis: Befehl, Hintergrundprüfung und Dialoge (p310)“
 
 ### Task 6: Fusion-Jobs (über die Hauptsitzung)
 
 **Files:** Create `dev-notes/tools/update-fusion-jobs/job1_api.py`, `job2_thread_install.py` (laden die Module aus dem Worktree per `importlib`, schreiben Ergebnis-JSON); Job-Dateien nach `D:\Entwicklung\Gridfinity\fusion-auftraege` (Format der vorhandenen Aufträge), je < 50 s.
 
-- [ ] **Job 1:** echte API → newest 1.0.0, `checkForUpdate` gegen 1.0.0 → None; Download `Gridkeeper-v1.0.0.zip` + `verifyZip` OK; Zeit < 30 s.
-- [ ] **Job 2:** Thread mit Fake-Fetch (9.9.9) → Custom Event im Haupt-Thread empfangen (Handler schreibt Datei statt Dialog); `install` aus lokal gebauter ZIP (Bau wie `release.yml`, Manifest 9.9.9) in Testordner im Scratch, `commandConfig` mitgenommen; Panel-ID von Utilities › Add-Ins ausgeben.
-- [ ] **Job 3 (API-Erkundung, nur lesen):** listet, was Fusion zu Add-ins anbietet (`dir(app)`, Objekte mit
+- [x] **Job 1:** echte API → newest 1.0.0, `checkForUpdate` gegen 1.0.0 → None; Download `Gridkeeper-v1.0.0.zip` + `verifyZip` OK; Zeit < 30 s.
+- [x] **Job 2:** Thread mit Fake-Fetch (9.9.9) → Custom Event im Haupt-Thread empfangen (Handler schreibt Datei statt Dialog); `install` aus lokal gebauter ZIP (Bau wie `release.yml`, Manifest 9.9.9) in Testordner im Scratch, `commandConfig` mitgenommen; Panel-ID von Utilities › Add-Ins ausgeben.
+- [x] **Job 3 (API-Erkundung, nur lesen):** listet, was Fusion zu Add-ins anbietet (`dir(app)`, Objekte mit
   „script“/„addin“ im Namen, deren Eigenschaften/Methoden, Eintrag für Gridkeeper mit `isRunning` o. ä.). Ergebnis
   entscheidet, ob W3 überhaupt möglich ist.
-- [ ] Jobnamen der Hauptsitzung melden, Ergebnis abwarten, Abweichungen per TDD nachziehen.
+- [x] Jobnamen der Hauptsitzung melden, Ergebnis abwarten, Abweichungen per TDD nachziehen.
 
 ### Task 6a: Neu-Laden-Matrix (Spec E13) und Folgen für die Meldung
 
@@ -133,13 +133,13 @@ Test-Installation wie `release.yml`, Manifest-Version als Parameter, optional Ma
 `job4_reload_addin.py` (W4: Neu-Laden wie in `fusion-addin-reload.py`, aber für den Test-Pfad), ggf. `job5_api_restart.py` (W3,
 nur wenn Job 3 einen Weg zeigt); Ergebnis-Tabelle in die Spec (Abschnitt „Messung Neu-Laden“).
 
-- [ ] Vorbereitung (Hauptsitzung/Jörg): Jörgs Gridkeeper stoppen, Test-Installation 9.9.8 hinzufügen und starten.
-- [ ] Je Weg W1, W2, W3 (falls möglich), W4, jeweils nach frischem Fusion-Start: Installer setzt 9.9.9 auf die
+- [x] Vorbereitung (Hauptsitzung/Jörg): Jörgs Gridkeeper stoppen, Test-Installation 9.9.8 hinzufügen und starten.
+- [x] Je Weg W1, W2, W3 (falls möglich), W4, jeweils nach frischem Fusion-Start: Installer setzt 9.9.9 auf die
   Platte (Job), Weg anwenden, dann prüfen: „Gridkeeper updates“ zeigt Running/Installed, Bin, Baseplate, Label,
   Box, Export öffnen und mit Abbrechen schließen, Rechtsklick settings/rebuild/clone auf einem gebauten Teil,
   Textbefehlsfenster auf Fehler. Klicks macht die Hauptsitzung (Testplan-Checkliste von mir).
-- [ ] Danach: Test-Installation entfernen, Jörgs Gridkeeper wieder starten.
-- [ ] Auswertung in die Spec; Erfolgsmeldung (Task 5) danach festlegen: Knopf „Reload Gridkeeper“ nur bei
+- [x] Danach: Test-Installation entfernen, Jörgs Gridkeeper wieder starten.
+- [x] Auswertung in die Spec; Erfolgsmeldung (Task 5) danach festlegen: Knopf „Reload Gridkeeper“ nur bei
   belegtem sicheren W3/W4, Anleitung bei W2, sonst „Restart Fusion“. Änderung per TDD (Text in `dialogHtml`/
   `successText(reloadWay)` getestet), Commit „Update: Meldung nach Messung Neu-Laden (p310)“.
 
@@ -147,11 +147,11 @@ nur wenn Job 3 einen Weg zeigt); Ergebnis-Tabelle in die Spec (Abschnitt „Mess
 
 **Files:** Modify `docs/getting-started/installation.md` (Abschnitt „Update“: automatische Prüfung, Dialog, „Update now“, Git-Checkout, Sicherung in `.gridkeeper-update`, Rückweg von Hand; neuer Abschnitt „Update check and privacy“: was gesendet wird, Abschalten); `docs/getting-started/whats-new.md` (ein Punkt); `CHANGELOG-CULLENECT.md` unter „Unreleased (1.1.0)“ Abschnitt „Update check (p310)“.
 
-- [ ] `mkdocs build --strict` → ohne Warnung; `python -m pytest` grün
-- [ ] Commit „Doku: Update-Prüfung und Abschalten (p310)“
+- [x] `mkdocs build --strict` → ohne Warnung; `python -m pytest` grün
+- [x] Commit „Doku: Update-Prüfung und Abschalten (p310)“
 
 ### Task 8: Review, PR
 
-- [ ] Opus-Review (`superpowers:requesting-code-review`) über Diff + Spec + Plan; Funde über `receiving-code-review`, je Fund Test + Fix + Commit
-- [ ] Neuer Punkt p320 auf der Liste: `config.DEV_TOOLS` übersieht Git-Worktrees
-- [ ] Push, PR gegen `master` (Text vorher der Hauptsitzung zeigen), CI pytest 3.13/3.14 grün, PR-Link + Testplan melden
+- [x] Opus-Review (`superpowers:requesting-code-review`) über Diff + Spec + Plan; Funde über `receiving-code-review`, je Fund Test + Fix + Commit
+- [x] Neuer Punkt p320 auf der Liste: `config.DEV_TOOLS` übersieht Git-Worktrees
+- [x] Push, PR gegen `master` (Text vorher der Hauptsitzung zeigen), CI pytest 3.13/3.14 grün, PR-Link + Testplan melden
