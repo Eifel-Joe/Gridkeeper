@@ -160,6 +160,14 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
    klärt `fusion-auftraege/r28_hinge_variants.py`; braucht sie eine, wird das vor dem Bau vorgelegt.
    Lage der Scharniere (Jörg 17.11.2026: „Das passt so für das Scharnier“): das erste dort, wo Preds `Hinge_M3x30:1`
    liegt, das zweite 5 mm daneben in y (`predBoxSeats.HINGE_GAP`), beide in Druckposition; gilt für alle drei Varianten.
+   Nachtrag 17.11.2026 (Runde 28, Jörg auf „Scharniere in Druckposition neben der Box festmachen (Vorschlag J), und Lage
+   für alle drei so?“: „Ja, beides“): Die Scharniere werden starr gejointet, an zwei Joint origins der Box *Hinge 1 joint
+   origin* und *Hinge 2 joint origin* neben der Box in Druckposition, nicht in Einbaulage. So wandern sie mit dem Satz,
+   und es gibt kein Positions-Element in der Zeitleiste. Anlass: lose gesetzt blieben sie beim Stapeln liegen, und ihr
+   Positions-Element blieb nach dem Rebuild unterdrückt stehen (`fusion-auftraege/r28_cmd.l1.out`, `.l2.out`). Lage je
+   Variante: die Ecke ihres Körperquaders (kleinstes x, y, z) dort, wo die von `Hinge_M3x30:1` liegt, das zweite
+   Scharnier 5 mm daneben in y, gerechnet von der eigenen Tiefe. Vorgabe M3x30. Damit gilt oben „werden nicht in die
+   Box gejointet“ nur noch im Sinn von: nicht in Einbaulage.
 3. **Schild:** gebaut vom Gridkeeper-Schildgenerator (Text, Cullenect-Symbole), Plattengröße nach Preds Formel.
 4. Struktur wie bisher: jedes Teil eine Komponente, im Container „Gridkeeper boxes“ o. ä., Gelenke zwischen Teilen.
 
