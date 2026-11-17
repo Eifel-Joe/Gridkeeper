@@ -161,6 +161,8 @@ def _buildBoxLabel(
         markingOccurrence=textOccurrence,
     )
     appearanceUtils.colorPart(marking, textOccurrence, state.textColor)
+    # the export takes the plate as a part with its marking, Flush lies on its text (p380, round r29-export)
+    tagUtils.tagBody(plate, tagUtils.TAG_BOX_LABEL, config={'surface': state.surface})
     if occurrence is None and spot is not None:
         # no occurrence to carry the spot: the bodies themselves move there
         placementUtils.moveBodies([plate] + marking, spot[0], spot[1], component, name=f'{name} placement')
