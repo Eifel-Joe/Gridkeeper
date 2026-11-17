@@ -171,7 +171,7 @@ def tabOctagon(lower: bool):
 
 def tabSketch():
     """Points (y, z in mm) and curves of a leaf's tab sketch: both octagons, joined by a construction line so the sketch
-    is one shape with one origin anchor (see bridgeSketch)"""
+    is one shape with one origin anchor (the bridges' chords, each anchored on its own, were refused by Fusion)"""
     upper, lower = tabOctagon(False), tabOctagon(True)
     points = upper + lower
     n = len(upper)
@@ -196,7 +196,6 @@ COUNTERBORE = 5.5
 COUNTERBORE_DEPTH = 3.5 + 0.4
 THIN_BRIDGE = 0.2
 THICK_BRIDGE = 0.4
-BRIDGE_STUB = 0.25
 
 
 def hexagon(cx: float):
@@ -206,54 +205,40 @@ def hexagon(cx: float):
     return [(cx + r, 0.0), (cx + r / 2, h), (cx - r / 2, h), (cx - r, 0.0), (cx - r / 2, -h), (cx + r / 2, -h)]
 
 
-def _bridgeLines():
-    """Pred's Sketch5 lines about the axis: a square and a square turned 45 degrees, all tangent to the screw hole
-    (r 1.75), as chords of the counterbore (r 2.75)"""
-    r = COUNTERBORE / 2
-    a = SHAPES['M3x30'].core
-    e = math.sqrt(r * r - a * a)
-    lines = [((-e, a), (e, a)), ((-e, -a), (e, -a)), ((a, -e), (a, e)), ((-a, -e), (-a, e))]
-    d = a * math.sqrt(2)
-    m, h = d / 2, e / math.sqrt(2)
-    for sx, sy in ((1, 1), (-1, 1), (-1, -1), (1, -1)):
-        # the chord sx x + sy y = d
-        lines.append(((sx * (m + h), sy * (m - h)), (sx * (m - h), sy * (m + h))))
-    return lines
+# Weg A (Nutzer 17.11.2026: "A: Brücken anders"): Pred's Sketch5, a square and a square turned 45 degrees round the
+# screw hole as chords of the counterbore, could not be drawn fully constrained (fusion-auftraege/r29_hinge_diag.log:
+# Fusion refused a dimension, VCS_SKETCH_OVER_CONSTRAINTS, after three fixes). His twelve profiles per layer add up to
+# two circle segments beyond parallel 45-degree chords tangent to the hole, so each segment is drawn as a rectangle of
+# its own (one shape, one anchor, like the nut trap): its inner side on the chord, reaching past the counterbore into the
+# knuckle's solid, where the join adds nothing
+BRIDGE_REACH = 2.8          # the rectangles' outer side from the axis (counterbore 2.75, knuckle 4)
+BRIDGE_HALF_WIDTH = 2.3     # half their length along the chord (half chord 2.1213)
 
 
-def bridgeSketch(cx: float):
-    """Points and curves of the bridge sketch: the counterbore circle and Pred's eight chords, a little longer (without
-    his projected screw hole circle: no profile we extrude touches it but at a tangent point, see bridgeLayers)"""
-    points, curves = [(cx, 0.0)], []
-    for (x0, y0), (x1, y1) in _bridgeLines():
-        # the chords reach BRIDGE_STUB past the circle: ends on it were over-constrained in Fusion
-        # (fusion-auftraege/r29_hinge_check l2, VCS_SKETCH_OVER_CONSTRAINTS); outside it they meet nowhere
-        length = math.hypot(x1 - x0, y1 - y0)
-        dx, dy = (x1 - x0) / length * BRIDGE_STUB, (y1 - y0) / length * BRIDGE_STUB
-        x0, y0, x1, y1 = x0 - dx, y0 - dy, x1 + dx, y1 + dy
-        points += [(cx + x0, y0), (cx + x1, y1)]
-        curves.append({'kind': 'line', 'a': len(points) - 2, 'b': len(points) - 1})
-    # construction spokes from the centre join the chords into one shape with one anchor: each chord on its own was
-    # dimensioned from the origin, and Fusion refused the second such anchor (fusion-auftraege/r29_hinge_diag.log)
-    for index in range(1, len(points), 2):
-        curves.append({'kind': 'line', 'a': 0, 'b': index, 'construction': True})
-    curves.append({'kind': 'circle', 'center': 0})
-    return points, curves
+def _bridgeNormals(layer: float):
+    """Unit normals of the layer's two chords: the thin layer beyond x - y = +-d, the thick one beyond x + y = +-d"""
+    s = 1 / math.sqrt(2)
+    return [(s, -s), (-s, s)] if layer == THIN_BRIDGE else [(s, s), (-s, -s)]
 
 
-def bridgeLayers(x: float, y: float):
-    """The bridge layers (THIN_BRIDGE, THICK_BRIDGE) a profile of the bridge sketch goes into, from its box centre (x, y
-    about the axis, world). Pred (Extrude25/26): the four tips beyond both 45-degree chords into both; the pieces beyond
-    the squares in the quadrants x y < 0 into the thin layer, x y > 0 into the thick one; the pieces on the axes inside
-    the 45-degree chords, and everything inside the squares but their corners, into none.
-    Tested against all 33 of Pred's profiles in tests/test_pred_hinge.py"""
-    near = min(abs(x), abs(y)) < 0.3
-    distance = math.hypot(x, y)
-    if near:
-        return (THIN_BRIDGE, THICK_BRIDGE) if distance > 2.4 else ()
-    if distance < 1.7:
-        return ()
-    return (THIN_BRIDGE,) if x * y < 0 else (THICK_BRIDGE,)
+def inBridge(layer: float, x: float, y: float) -> bool:
+    """Whether (x, y about the axis) lies in the bridge layer (THIN_BRIDGE or THICK_BRIDGE): beyond one of its chords.
+    Pred (Extrude25/26): the thin layer has the pieces in the quadrants x y < 0, the thick one those with x y > 0, both the
+    four tips on the axes. Tested against all 33 of Pred's profiles in tests/test_pred_hinge.py"""
+    h = SHAPES['M3x30'].core
+    return any(x * nx + y * ny > h for nx, ny in _bridgeNormals(layer))
+
+
+def bridgeRectangles(cx: float, layer: float):
+    """The layer's two rectangles (x, y in mm), from the chord's ends outwards"""
+    h = SHAPES['M3x30'].core
+    rectangles = []
+    for nx, ny in _bridgeNormals(layer):
+        tx, ty = -ny, nx
+        corners = [(h, -BRIDGE_HALF_WIDTH), (BRIDGE_REACH, -BRIDGE_HALF_WIDTH), (BRIDGE_REACH, BRIDGE_HALF_WIDTH),
+                   (h, BRIDGE_HALF_WIDTH)]
+        rectangles.append([(cx + u * nx + v * tx, u * ny + v * ty) for u, v in corners])
+    return rectangles
 
 
 # -- Pinned: the printed pin (Pred's Body21: Sketch6/7, Extrude27-32, Chamfer3/4, Fillet1) -----------------------------
@@ -378,14 +363,6 @@ def _polygonPlan(points):
 
 def _ringArea(inner: float, outer: float) -> float:
     return math.pi * (outer ** 2 - inner ** 2)
-
-
-def _profileCentre(sketch: WorldSketch, profile):
-    """World x, y (mm) of the centre of the profile's box"""
-    box = profile.boundingBox
-    middle = adsk.core.Point3D.create((box.minPoint.x + box.maxPoint.x) / 2, (box.minPoint.y + box.maxPoint.y) / 2, 0)
-    p = sketch.sketch.sketchToModelSpace(middle)
-    return p.x * 10, p.y * 10
 
 
 # -- edges -------------------------------------------------------------------------------------------------------------
@@ -526,15 +503,13 @@ def _m3x30(component, shape: HingeShape):
     _extrude(component, [ring], cut, 0.0, COUNTERBORE_DEPTH, bodies=[top], name='Counterbore')
 
     plane = _plane(component, 2, COUNTERBORE_DEPTH, 'Counterbore floor')
-    points, curves = bridgeSketch(c)
-    bridges = _drawPlan(component, plane, 'Bridges', points, curves, at=COUNTERBORE_DEPTH, diameters=[COUNTERBORE])
-    centres = [(profile, _profileCentre(bridges, profile)) for profile in bridges.sketch.profiles]
     for layer, label in ((THIN_BRIDGE, 'thin'), (THICK_BRIDGE, 'thick')):
-        chosen = [profile for profile, (x, y) in centres if layer in bridgeLayers(x - c, y)]
-        if len(chosen) != 12:
-            raise ValueError(f'hinge: {len(chosen)} profiles for the {label} bridge, Pred has 12')
-        _extrude(component, chosen, join, COUNTERBORE_DEPTH, COUNTERBORE_DEPTH - layer, bodies=[top],
-                 name=f'Bridge {label}')
+        for number, rectangle in enumerate(bridgeRectangles(c, layer)):
+            points, curves = _polygonPlan(rectangle)
+            name = f'Bridge {label} {number + 1}'
+            sketch = _drawPlan(component, plane, name, points, curves, at=COUNTERBORE_DEPTH)
+            _extrude(component, list(sketch.sketch.profiles), join, COUNTERBORE_DEPTH, COUNTERBORE_DEPTH - layer,
+                     bodies=[top], name=name)
     return bottom, top
 
 
