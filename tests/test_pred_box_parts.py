@@ -75,5 +75,5 @@ def test_the_drawn_roles_are_roles_of_the_set():
 
 def test_the_drawn_parts_so_far():
     """Round 29: the pin passed its Fusion check first (r29_pin_check, concept test passed with 2e16a78), then the
-    handle (r29_handle_check)"""
-    assert parts.DRAWN_ROLES == ["Handle", "Handle pin"]
+    handle (r29_handle_check), the latch (r29_latch_build)"""
+    assert parts.DRAWN_ROLES == ["Latch", "Handle", "Handle pin"]

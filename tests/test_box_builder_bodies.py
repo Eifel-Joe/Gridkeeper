@@ -114,3 +114,9 @@ def test_the_handle_is_drawn_with_the_width_of_the_box():
     tree = ast.parse(open(INSERT, encoding="utf-8").read())
     drawPart = ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "drawPart"))
     assert "predHandle.createHandle(component, predBoxSeats.handleHalfWidth(dims).expression)" in drawPart
+
+
+def test_the_latch_is_drawn_by_its_generator():
+    tree = ast.parse(open(INSERT, encoding="utf-8").read())
+    drawPart = ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "drawPart"))
+    assert "predLatch.createLatch(component)" in drawPart
