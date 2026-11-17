@@ -176,3 +176,23 @@ def test_a_body_outside_a_set_keeps_its_name():
 
 def test_a_name_that_starts_with_the_set_name_isnt_doubled():
     assert exportParts.partFileName("Box 5×4×6 Base", "Box 5×4×6") == "Box 5×4×6 Base"
+
+
+# --- the small parts of a box set (round 28, review) ---
+
+def test_the_small_parts_of_a_box_are_parts_the_export_takes():
+    """Latches, handle, pins and hinges are untagged, their component carries the part role; the export left them out,
+    a right-click on a set gave Base and Lid only"""
+    for role in ("Latch", "Handle", "Handle pin", "Hinge"):
+        assert exportParts.isPartBody(None, role, role=role)
+    assert not exportParts.isPartBody(None, "Component1", role=None)
+    assert not exportParts.isPartBody(None, "Box", role="Box")
+
+
+def test_the_small_part_roles_are_the_box_parts():
+    parts = _load("predBoxParts", "lib", "gridfinityUtils", "predBoxParts.py")
+    assert set(exportParts.SMALL_PART_ROLES) == {part.role for part in parts.PARTS}
+
+
+def test_a_small_part_carries_its_sets_name():
+    assert exportParts.partFileName("Latch", "Box 5×4×6") == "Box 5×4×6 Latch"
