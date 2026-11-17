@@ -9,6 +9,8 @@ their own with a color, so the slicer sees them as separate parts.
 *Gray* or *Custom* with a `#rrggbb` value in **Custom label color**.
 
 - **None** works as in GridfinityGenerator: raised letters are joined to the bin, engraved and outline ones are cut.
+  The letters of an outline label show in a dark appearance of their own in Fusion, `Gridfinity label`; change its
+  color in the design's appearances to change them all.
 - **A color** keeps the label as bodies of its own: raised letters are not joined to the bin, engraved and outline
   ones fill their cut flush.
 
@@ -28,8 +30,11 @@ and get no Text component.
 
 ## Exporting
 
-Right-click the bin or insert **component** in the browser and pick **Save As Mesh**, format **3MF**, or use **File ›
-Export** with 3MF. Exporting the component takes the model with its Text component; every body is an object of its own
+The easiest way is **Gridkeeper export**: one 3MF with every part, the label text painted with a filament index the
+slicer picks up, see [Exporting for printing](export.md). It gives all label text the same filament.
+
+To give each color a filament of its own, export by hand: right-click the bin or insert **component** in the browser
+and pick **Save As Mesh**, format **3MF**, or use **File › Export** with 3MF. Exporting the component takes the model with its Text component; every body is an object of its own
 in its color.
 
 !!! note "Known limit"

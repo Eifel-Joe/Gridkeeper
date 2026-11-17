@@ -12,7 +12,7 @@ jobs:
     name: Create release-artifacts
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Create zip file for manual installation
         # the add-in in a folder named Gridkeeper: Fusion loads it only when the folder is named like the manifest
         shell: bash
