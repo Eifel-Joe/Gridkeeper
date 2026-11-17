@@ -23,3 +23,9 @@ def test_build_box_returns_the_native_bodies():
     assert isinstance(value, ast.List) and len(value.elts) == 2
     for element in value.elts:
         assert isinstance(element, ast.Call) and ast.unparse(element.func) == "rebuildUtils.nativeBody", ast.unparse(element)
+
+
+def test_build_box_puts_joint_origins_at_the_small_parts_seats():
+    """Round 28, plan task 5: the seats of latches, handle and pins become joint origins in the box component"""
+    source = ast.unparse(_function("_buildBox"))
+    assert "createPointJointOrigins(predBoxSeats.seatJointOriginPoints(dims), boxComponent" in source

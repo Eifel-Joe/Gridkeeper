@@ -140,3 +140,13 @@ def test_the_handle_width_follows_the_box_width_parameter():
 def test_the_handle_width_is_preds(size):
     (x0, _, _), (x1, _, _) = HANDLE_BOX[size]
     assert seats.handleWidth(_dims(*size)).value * 10 == pytest.approx(x1 - x0, abs=0.01)
+
+
+def test_the_box_gets_a_joint_origin_at_every_seat():
+    """Task 5: the points for baseGenerator.createPointJointOrigins, named after predBoxParts.seatJointOriginName"""
+    d = _dims(5, 4, 6)
+    points = seats.seatJointOriginPoints(d)
+    assert [name for (name, *_rest) in points] == [parts.seatJointOriginName(name) for name in parts.SEAT_NAMES]
+    by = _byName((5, 4, 6))
+    for (name, x, y, z), seatName in zip(points, parts.SEAT_NAMES):
+        assert (x.value, y.value, z.value) == (by[seatName].x.value, by[seatName].y.value, by[seatName].z.value)

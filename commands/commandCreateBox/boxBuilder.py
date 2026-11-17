@@ -6,7 +6,7 @@ from ...lib import assembly
 from ...lib import configJson
 from ...lib import rebuildUtils
 from ...lib.gridfinityUtils import commonUtils, designIntent, parameterUtils
-from ...lib.gridfinityUtils import predBoxConfig
+from ...lib.gridfinityUtils import predBoxConfig, predBoxSeats
 from ...lib.gridfinityUtils.predBox import PredBoxDims
 from ...lib.gridfinityUtils.predBoxGenerator import createPredBox, PredBoxOptions
 from ...lib.gridfinityUtils.baseGenerator import createPointJointOrigins
@@ -35,6 +35,7 @@ STACK_BOTTOM_JOINT_ORIGIN = 'Stack bottom joint origin'
 STACK_TOP_JOINT_ORIGIN = 'Stack top joint origin'
 LID_JOINT_ORIGIN = 'Lid joint origin'
 LID_JOINT_NAME = 'Lid on box'
+SEAT_JOINT_ORIGINS = 'Seat joint origin'
 # placement grid for new boxes, beside bins, baseplates, inserts and other boxes
 PLACEMENT_CELL_LENGTH = 4.2
 
@@ -158,6 +159,9 @@ def _buildBox(
         createPointJointOrigins(cellJointOriginPoints(centers, CELL_JOINT_ORIGIN, Dim.length(predBoxConfig.CELL_JOINT_Z)), boxComponent, name=CELL_JOINT_ORIGIN)
     (stackBottom,) = createPointJointOrigins([(STACK_BOTTOM_JOINT_ORIGIN, dims.midX, dims.midY, dims.bottom)], boxComponent, name=STACK_BOTTOM_JOINT_ORIGIN)
     (stackTop,) = createPointJointOrigins([(STACK_TOP_JOINT_ORIGIN, dims.midX, dims.midY, dims.bodyTop)], lidComponent, name=STACK_TOP_JOINT_ORIGIN)
+    # the seats of the small parts (round 28): latches, handle and its pins, upright like the others, each part's joint
+    # turns it, see predBoxSeats.turnAboutZ
+    createPointJointOrigins(predBoxSeats.seatJointOriginPoints(dims), boxComponent, name=SEAT_JOINT_ORIGINS)
     if boxOccurrence is not None:
         (boxSide,) = createPointJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], boxComponent, name=LID_JOINT_ORIGIN)
         (lidSide,) = createPointJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], lidComponent, name=LID_JOINT_ORIGIN)
