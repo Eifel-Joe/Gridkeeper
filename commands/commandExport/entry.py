@@ -470,7 +470,7 @@ def updateInputs(inputs: adsk.core.CommandInputs):
         items = exportItems(inputs)
         if not isFileNameTyped:
             fileNameInput.value = defaultFileName(items)
-        files = 'one file' if format == FORMAT_3MF else 'a file each'
+        files = 'a 3MF file per plate' if format == FORMAT_3MF else 'a file each'
         summary = f'{len(items)} part{"" if len(items) == 1 else "s"}, {files}' if items else 'Select bodies to export'
     except Exception as err:
         summary = f'Bodies not found, {err}'
