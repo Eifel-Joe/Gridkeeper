@@ -37,6 +37,8 @@ OUTER_RADIUS = 15.0
 FILLET_RADIUS = 3.5
 CHAMFER = 1.0
 HOLE_DIAMETER = 3.5
+# how far the hole's cut reaches past the arm's outer face, so it ends in the air, not flush with the face
+HOLE_PAST_ARM = 1.0
 
 _EPS = 1e-5
 
@@ -130,7 +132,7 @@ def createHandle(component: adsk.fusion.Component, halfWidth: str) -> list[adsk.
     chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(predSketch.collection(chamferEdges), _value(CHAMFER), False)
     features.chamferFeatures.add(chamferInput)
 
-    _pinHole(component, body)
+    _pinHole(component, body, halfWidth)
 
     mirrorInput = features.mirrorFeatures.createInput(predSketch.collection([body]), component.yZConstructionPlane)
     mirrorInput.isCombine = True
@@ -141,13 +143,16 @@ def createHandle(component: adsk.fusion.Component, halfWidth: str) -> list[adsk.
     return [body]
 
 
-def _pinHole(component: adsk.fusion.Component, body: adsk.fusion.BRepBody):
+def _pinHole(component: adsk.fusion.Component, body: adsk.fusion.BRepBody, halfWidth: str):
     """
-    The pin hole d 3.5 on the pin axis (x along X at y = z = 0), cut through all from the YZ plane, into the half body
-    only. Along the pin axis's band the half profile is the arm alone (the bar lies at z <= -19.5,
+    The pin hole d 3.5 on the pin axis (x along X at y = z = 0), cut from the YZ plane into the half body only. Along the
+    pin axis's band the half profile is the arm alone (the bar lies at z <= -19.5,
     test_the_pin_hole_cut_along_x_meets_the_arm_only), so the cut is Pred's Extrude2 through the arm. On the YZ plane
     the circle sits on the sketch origin: no face to pick, no projection (r28_handle_build needed addWithoutEdges and a
-    projected origin on the arm face)
+    projected origin on the arm face).
+    The cut reaches symmetric H + 1 mm to each side, past the arm's outer face at -H, as an expression on the half width.
+    Through all from the YZ plane failed: "Could not complete Through All Extrude, body not found to extrude through"
+    (fusion-auftraege/r29_handle_check.l1.out); a plain distance needs no body at the sketch plane
     """
     sketch = component.sketches.add(component.yZConstructionPlane)
     sketch.name = HOLE_SKETCH
@@ -159,7 +164,7 @@ def _pinHole(component: adsk.fusion.Component, body: adsk.fusion.BRepBody):
     if len(disc) != 1:
         raise RuntimeError(f'{HOLE_SKETCH}: {len(disc)} circle profiles instead of 1')
     cutInput = component.features.extrudeFeatures.createInput(disc[0], adsk.fusion.FeatureOperations.CutFeatureOperation)
-    cutInput.setAllExtent(adsk.fusion.ExtentDirections.SymmetricExtentDirection)
+    cutInput.setSymmetricExtent(adsk.core.ValueInput.createByString(f'({halfWidth}) + {HOLE_PAST_ARM:g} mm'), False)
     cutInput.participantBodies = [body]
     component.features.extrudeFeatures.add(cutInput)
 
