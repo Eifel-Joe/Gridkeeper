@@ -15,7 +15,7 @@ import os
 import adsk.core, adsk.fusion
 
 from .. import tagUtils
-from . import predBoxParts, predBoxSeats
+from . import predBoxParts, predBoxSeats, tempCopy
 from .predBox import PredBoxDims
 
 RESOURCES = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'resources', 'predBox')
@@ -46,8 +46,10 @@ def insertParts(
     bodies = []
     for part in predBoxParts.PARTS:
         before = setComponent.occurrences.count
-        options = app.importManager.createFusionArchiveImportOptions(os.path.join(RESOURCES, part.file))
-        if not app.importManager.importToTarget(options, setComponent) or setComponent.occurrences.count == before:
+        # from a temporary copy, Fusion writes a folder _XRef_ beside the file it imports (p292, tempCopy)
+        imported = tempCopy.withTempCopy(os.path.join(RESOURCES, part.file), lambda copy: app.importManager.importToTarget(
+            app.importManager.createFusionArchiveImportOptions(copy), setComponent))
+        if not imported or setComponent.occurrences.count == before:
             raise RuntimeError(f'{part.file} could not be inserted')
         first = setComponent.occurrences.item(setComponent.occurrences.count - 1)
         component = first.component
