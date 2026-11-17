@@ -170,7 +170,9 @@ def _buildBox(
     if des.designType == adsk.fusion.DesignTypes.ParametricDesignType:
         group = des.timeline.timelineGroups.add(originalTimelinePosition, des.timeline.markerPosition - 1)
         group.name = name
-    return [base, lid]
+    # the native bodies, as binBuilder: those moveToComponent gives back are seen through the Box and Lid occurrences,
+    # the snapshot tests found them neither among the design's bodies nor with their tag (r27_snap 17.11.2026)
+    return [rebuildUtils.nativeBody(base), rebuildUtils.nativeBody(lid)]
 
 
 def rebuildBox(
