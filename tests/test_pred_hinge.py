@@ -58,7 +58,8 @@ def test_body_names_are_preds():
     assert hinge.SHAPES["M3x30"].bodyNames == ("BottomHingePart_M3x30", "TopHingePart_M3x30")
     assert hinge.SHAPES["Pinned"].bodyNames == ("BottomHingePart_M3x30", "TopHingePart_M3x30", "Hinge pin")
     assert hinge.SHAPES["Plain"].bodyNames == ("BottomHingePart", "TopHingePart")
-    assert parts.BODY_NAMES["hingePinned.f3d"] == {"Body21": "Hinge pin"}
+    # predBoxParts.BODY_NAMES (renaming the imported Body21) went with the import (r29-int scaffold 5949078): the
+    # generator names the printed pin itself
 
 
 def test_lengths_follow_preds_slot():

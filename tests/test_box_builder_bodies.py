@@ -120,3 +120,13 @@ def test_the_latch_is_drawn_by_its_generator():
     tree = ast.parse(open(INSERT, encoding="utf-8").read())
     drawPart = ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "drawPart"))
     assert "predLatch.createLatch(component)" in drawPart
+
+
+def test_the_hinge_is_drawn_in_the_chosen_variant_and_gets_its_joint_origin():
+    """The hinges are drawn in the variant of the box's setting; they have no joint origin of their own, insertParts
+    gives them one at the component's origin and joints them at Hinge 1/2 beside the box (round 28, Vorschlag J)"""
+    source = open(INSERT, encoding="utf-8").read()
+    tree = ast.parse(source)
+    drawPart = ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "drawPart"))
+    assert "predHinge.createHinge(component, hinge)" in drawPart
+    assert "addOriginJointOrigin(component, partJointOriginName(part.role))" in source
