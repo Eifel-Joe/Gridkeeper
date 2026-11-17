@@ -23,12 +23,36 @@ builds and to colored text.
 | **File name** | Name of the 3MF file, the part's name for one part; with several plates *, plate 1*, *, plate 2* … is added |
 | **Color label text** | 3MF only: the label text gets a color index the slicer prints it in, see below |
 | **Label color index** | The slicer's filament for the label text, counting from 1 as the slicer lists them |
-| **Print bed** › **Printer** | 3MF only: the bed the parts are laid out on, the printers of the baseplate dialog or *Custom* |
+| **Print bed** › **Printer** | 3MF only: your printer, see [Choosing the printer](#choosing-the-printer); its bed size, where its slicer puts the purge tower and the area it keeps free come with it |
 | **Bed width, X**, **Bed length, Y** | The bed's usable size; typing a size switches the printer to *Custom* |
 | **Spacing** | Space between the parts and to the bed's edge, 5 mm to start with |
 | **Purge tower area** | With **Color label text** on and text to color: a square kept free on every plate for the purge tower, 50 mm to start with, 0 for none |
 
 The dialog keeps its choices for the next export. Existing files are only replaced after asking. 3MF and STL meshes are made at Fusion's very high quality.
+
+## Choosing the printer
+
+**Print bed › Printer** tells the export which bed to lay the parts out on. Pick your printer, or *Custom* and type
+**Bed width, X** and **Bed length, Y** yourself. The list is the same as in the baseplate dialog:
+
+| Printer | Bed (mm) | Purge tower square, with colored text | Kept free |
+|---|---|---|---|
+| Bambu Lab A1 mini | 180 × 180 | back left | – |
+| Bambu Lab A1 | 256 × 256 | back left | – |
+| Bambu Lab A2L | 330 × 320 | back left | – |
+| Bambu Lab P1P, P1S, X1, X1C, X1E | 256 × 256 | back, at about two thirds of the width | front left 18 × 28 mm, where the nozzle is wiped |
+| Bambu Lab P2S, X2D | 256 × 256 | back, at about two thirds of the width | – |
+| Bambu Lab H2C | 330 × 320 | back, at about two thirds of the width | – |
+| Bambu Lab H2D, H2D Pro | 350 × 320 | back, at about two thirds of the width | – |
+| Bambu Lab H2S | 340 × 320 | back, at about two thirds of the width | – |
+| Bambu Lab H3C | 330 × 320 | front right | – |
+| Prusa MINI, MK3/MK4, CORE One, XL; Creality Ender-3, K1/K1C, K1 Max; Elegoo Neptune 4; Voron 0, 250, 300, 350 | the printer's bed | back right | – |
+| *Custom* | as typed | back right | – |
+
+For the Bambu Lab printers the purge tower square and the area kept free come from Bambu Studio's own printer
+profiles, so the slicer's purge tower lands on the free square without moving it and no collision warning comes up.
+For every other printer and *Custom* the square is at the back right: move the slicer's purge tower onto it, and mind
+any area your printer keeps free yourself. Typing a bed size switches the printer to *Custom*.
 
 ## Which parts
 
