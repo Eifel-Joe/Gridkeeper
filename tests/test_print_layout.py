@@ -464,3 +464,64 @@ def test_box_lid_and_small_parts_keep_their_own_plates_clear_of_the_excluded_are
     assert plates == 3 and nearExcluded == []
     for (_, name, box_) in laid_boxes(laid):
         assert not overlap(box_, X1_EXCLUDED[0], 5 - 1e-6), (name, box_)
+
+
+# ---------------------------------------------------------------------------
+# Nutzer 17.11.2026, his own test: „Was mir nicht gefällt ist, dass die Kleinteile über die volle Breite angelegt sind.
+# Diese könnten kompakter verteilt sein. Das muss nicht alles nebeneinander liegen.“
+# ---------------------------------------------------------------------------
+
+SMALL_PARTS = [(99, 30), (13.3, 12.8), (13.3, 12.8), (5.1, 31.6), (5.1, 31.6), (19.7, 5.1), (19.7, 5.1),
+               (23.6, 36.5), (23.6, 36.5), (23.6, 36.5), (23.6, 36.5)]
+
+
+@pytest.mark.parametrize("tower, excluded", [((1.0, 1.0), []), (X1_TOWER, X1_EXCLUDED)])
+@pytest.mark.parametrize("purge", [0, 50])
+def test_small_parts_lie_as_a_compact_group_in_the_middle(tower, excluded, purge):
+    (laid, plates, _, taken, nearExcluded) = printLayout.layOut(boxes_of(SMALL_PARTS), BED, 5, purge, tower, excluded)
+    assert plates == 1 and taken == [] and nearExcluded == []
+    ((x0, x1), (y0, y1), _) = plate_bounds(laid, 0)
+    # about square, not a row over the whole bed
+    assert x1 - x0 < 160
+    assert 0.5 <= (x1 - x0) / (y1 - y0) <= 2
+    assert ((x0 + x1) / 2, (y0 + y1) / 2) == pytest.approx((128, 128))
+
+
+def test_a_row_is_never_narrower_than_the_widest_part():
+    (laid, plates, _, _, _) = printLayout.layOut(boxes_of([(200, 20), (10, 10), (10, 10)]), BED, 5, 0)
+    assert plates == 1
+    ((x0, x1), _, _) = plate_bounds(laid, 0)
+    assert x1 - x0 >= 200
+
+
+@pytest.mark.parametrize("footprints", [
+    [(84, 84)] * 6,
+    [(126, 84), (84, 84), (42, 42), (42, 42), (168, 42), (84, 126)],
+    [(210, 168), (126, 210), (168, 42), (168, 168), (84, 210)],
+    [(40, 40)] * 30,
+])
+def test_compact_groups_never_take_more_plates_than_full_rows(footprints):
+    (_, compact, _, _, _) = printLayout.layOut(boxes_of(footprints), BED, 5, 50, X1_TOWER, X1_EXCLUDED)
+    (placements, _, _) = printLayout.arrange(footprints, BED, 5, 50, X1_TOWER, X1_EXCLUDED)
+    assert compact <= max(p.plate for p in placements) + 1
+
+
+def test_each_box_gets_a_small_parts_plate_of_its_own():
+    # Nutzer 17.11.2026: „Je Box eine Zubehörplatte passt.“
+    groups = boxes_of([(23.6, 36.5), (99, 30), (23.6, 36.5), (99, 30)])
+    kinds = [("Box 1", "parts"), ("Box 1", "parts"), ("Box 2", "parts"), ("Box 2", "parts")]
+    (laid, plates, _, _, _) = printLayout.layOutKinds(groups, kinds, BED, 5, 0)
+    plateOf = {meshObject.name: plate for (plate, meshObject) in laid}
+    assert plates == 2
+    assert plateOf["p0"] == plateOf["p1"] != plateOf["p2"] == plateOf["p3"]
+
+
+@pytest.mark.parametrize("footprints", [[(40, 40)] * 30, [(40, 40)] * 30 + [(84, 84)] * 6])
+def test_every_plate_is_compact_also_the_last_half_full_one(footprints):
+    # review r29-export-compact: with more than one plate the rows went across the whole bed again
+    (laid, plates, _, nearSquare, nearExcluded) = printLayout.layOut(boxes_of(footprints), BED, 5, 50, X1_TOWER, X1_EXCLUDED)
+    assert plates >= 2 and nearSquare == [] and nearExcluded == []
+    ((x0, x1), (y0, y1), _) = plate_bounds(laid, plates - 1)
+    assert 0.5 <= (x1 - x0) / (y1 - y0) <= 2, (x1 - x0, y1 - y0)
+    for (_, name, box_) in laid_boxes(laid):
+        assert not overlap(box_, X1_EXCLUDED[0], 5 - 1e-6), (name, box_)
