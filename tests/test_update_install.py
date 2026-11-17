@@ -192,3 +192,247 @@ def test_git_dir_and_file(tmp_path):
     # a git worktree has a .git file pointing to the repository
     (worktree / ".git").write_text("gitdir: D:/repo/.git/worktrees/x")
     assert updateInstall.isGitCheckout(str(worktree))
+
+
+# swapping the add-in folder
+
+def tree(folder) -> dict:
+    """relative path -> content of every file below folder"""
+    files = {}
+    for (root, _, names) in os.walk(folder):
+        for name in names:
+            path = os.path.join(root, name)
+            with open(path, "rb") as file:
+                files[os.path.relpath(path, folder).replace(os.sep, "/")] = file.read()
+    return files
+
+
+def makeTree(folder, files: dict):
+    for (name, data) in files.items():
+        path = os.path.join(folder, *name.split("/"))
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "wb") as file:
+            file.write(data)
+    return str(folder)
+
+
+OLD = {
+    "Gridkeeper.manifest": manifest("1.0.0"),
+    "Gridkeeper.py": b"# old\n",
+    "lib/gone.py": b"# removed in the new version\n",
+    "lib/__pycache__/gone.cpython-314.pyc": b"pyc",
+    "lib/symbols/hardware/nut.svg": b"<svg old/>",
+    "lib/symbols/hardware/my.svg": b"<svg mine/>",
+    "commands/commandCreateBin/commandConfig/defaults.json": b"{}",
+    "commands/commandCreateBin/commandConfig/config.ini": b"[UI]",
+    "updateConfig/update.json": b'{"checkAtStartup": false}',
+}
+NEW = {
+    "Gridkeeper.manifest": manifest("1.1.0"),
+    "Gridkeeper.py": b"# new\n",
+    "lib/new.py": b"# new module\n",
+    "lib/symbols/hardware/nut.svg": b"<svg new/>",
+}
+
+
+def test_carries_user_files(tmp_path):
+    old = makeTree(tmp_path / "old", OLD)
+    new = makeTree(tmp_path / "new", NEW)
+    carried = updateInstall.carryOver(old, new)
+    assert sorted(carried) == [
+        "commands/commandCreateBin/commandConfig/config.ini",
+        "commands/commandCreateBin/commandConfig/defaults.json",
+        "lib/symbols/hardware/my.svg",
+        "updateConfig/update.json",
+    ]
+    result = tree(new)
+    assert result["lib/symbols/hardware/my.svg"] == b"<svg mine/>"
+    # the new version's files win, code and caches of the old one stay behind
+    assert result["lib/symbols/hardware/nut.svg"] == b"<svg new/>"
+    assert result["Gridkeeper.py"] == b"# new\n"
+    assert "lib/gone.py" not in result
+    assert not any("__pycache__" in name for name in result)
+
+
+def setUpSwap(tmp_path):
+    addin = makeTree(tmp_path / "addins" / "Gridkeeper", OLD)
+    new = makeTree(tmp_path / "addins" / ".gridkeeper-update" / "new" / "Gridkeeper", {**NEW, "updateConfig/update.json": b"{}"})
+    backup = str(tmp_path / "addins" / ".gridkeeper-update" / "backup-1" / "Gridkeeper")
+    os.makedirs(os.path.dirname(backup))
+    return (addin, new, backup)
+
+
+def test_swap_renames(tmp_path):
+    (addin, new, backup) = setUpSwap(tmp_path)
+    expected = tree(new)
+    assert updateInstall.swap(addin, new, backup) == "renamed"
+    assert tree(addin) == expected
+    assert tree(backup) == OLD
+
+
+def failingAt(calls: list, failAt: int, real):
+    """real, but raising PermissionError on its failAt-th call (1-based)"""
+    def call(*args, **kwargs):
+        calls.append(args)
+        if len(calls) == failAt:
+            raise PermissionError("in use")
+        return real(*args, **kwargs)
+    return call
+
+
+def test_second_rename_fails_restores(tmp_path):
+    (addin, new, backup) = setUpSwap(tmp_path)
+    with pytest.raises(UpdateError):
+        updateInstall.swap(addin, new, backup, rename=failingAt([], 2, os.replace))
+    assert tree(addin) == OLD
+
+
+def test_first_rename_fails_copies(tmp_path):
+    (addin, new, backup) = setUpSwap(tmp_path)
+    expected = tree(new)
+    assert updateInstall.swap(addin, new, backup, rename=failingAt([], 1, os.replace)) == "copied"
+    # old code files the new version doesn't have are gone as after a rename
+    assert tree(addin) == expected
+    # the backup is the whole old folder
+    assert tree(backup) == OLD
+
+
+def test_backup_copy_fails_nothing_changes(tmp_path):
+    (addin, new, backup) = setUpSwap(tmp_path)
+    import shutil
+
+    def copyFile(source, target, *args, **kwargs):
+        # the backup copy breaks after a few files
+        if os.path.normpath(target).startswith(os.path.normpath(backup)) and len(os.listdir(os.path.dirname(target))) >= 1:
+            raise PermissionError("disk full")
+        return shutil.copy2(source, target, *args, **kwargs)
+
+    with pytest.raises(UpdateError):
+        updateInstall.swap(addin, new, backup, rename=failingAt([], 1, os.replace), copyFile=copyFile)
+    assert tree(addin) == OLD
+    # no half backup is left
+    assert not os.path.exists(backup)
+
+
+def test_copy_fails_restores(tmp_path):
+    (addin, new, backup) = setUpSwap(tmp_path)
+    import shutil
+    fromNew = []
+
+    def copyFile(source, target, *args, **kwargs):
+        # copying the new version over the add-in folder breaks after two files
+        if os.path.normpath(source).startswith(os.path.normpath(new)):
+            fromNew.append(source)
+            if len(fromNew) == 3:
+                raise PermissionError("in use")
+        return shutil.copy2(source, target, *args, **kwargs)
+
+    with pytest.raises(UpdateError):
+        updateInstall.swap(addin, new, backup, rename=failingAt([], 1, os.replace), copyFile=copyFile)
+    assert tree(addin) == OLD
+
+
+def test_swap_fails_without_way_back_names_backup(tmp_path):
+    (addin, new, backup) = setUpSwap(tmp_path)
+    calls = []
+
+    def rename(source, target):
+        calls.append(source)
+        if len(calls) >= 2:
+            raise PermissionError("in use")
+        return os.replace(source, target)
+
+    with pytest.raises(UpdateError) as info:
+        updateInstall.swap(addin, new, backup, rename=rename)
+    assert backup in str(info.value)
+
+
+# the whole update
+
+class Release:
+    def __init__(self, version, assetUrl, assetSize, assetDigest):
+        self.version = version
+        self.assetUrl = assetUrl
+        self.assetSize = assetSize
+        self.assetDigest = assetDigest
+
+
+def releaseFor(payload, digest=True):
+    return Release((1, 1, 0), "https://x/Gridkeeper-v1.1.0.zip", len(payload),
+                   "sha256:" + hashlib.sha256(payload).hexdigest() if digest else None)
+
+
+def test_install_end_to_end(tmp_path):
+    addin = makeTree(tmp_path / "addins" / "Gridkeeper", OLD)
+    payload = zipBytes({f"Gridkeeper/{name}": data for (name, data) in NEW.items()})
+    way = updateInstall.install(releaseFor(payload), addin, urlopen=fakeUrlopen(payload),
+                                now=lambda: datetime.datetime(2026, 11, 17, 12, 0, 0))
+    assert way == "renamed"
+    result = tree(addin)
+    assert result["Gridkeeper.py"] == b"# new\n"
+    assert result["updateConfig/update.json"] == b'{"checkAtStartup": false}'
+    assert result["commands/commandCreateBin/commandConfig/defaults.json"] == b"{}"
+    work = tmp_path / "addins" / ".gridkeeper-update"
+    # only the backup is left
+    assert sorted(os.listdir(work)) == ["backup-20261117-120000"]
+    assert tree(work / "backup-20261117-120000" / "Gridkeeper") == OLD
+
+
+def test_install_twice_same_second(tmp_path):
+    addin = makeTree(tmp_path / "addins" / "Gridkeeper", OLD)
+    payload = zipBytes({f"Gridkeeper/{name}": data for (name, data) in NEW.items()})
+    now = lambda: datetime.datetime(2026, 11, 17, 12, 0, 0)
+    updateInstall.install(releaseFor(payload), addin, urlopen=fakeUrlopen(payload), now=now)
+    updateInstall.install(releaseFor(payload), addin, urlopen=fakeUrlopen(payload), now=now)
+    assert tree(addin)["Gridkeeper.py"] == b"# new\n"
+
+
+def test_install_bad_download_leaves_addin(tmp_path):
+    addin = makeTree(tmp_path / "addins" / "Gridkeeper", OLD)
+    payload = zipBytes({f"Gridkeeper/{name}": data for (name, data) in NEW.items()})
+    release = Release((1, 1, 0), "https://x/Gridkeeper-v1.1.0.zip", None, "sha256:" + "0" * 64)
+    with pytest.raises(UpdateError):
+        updateInstall.install(release, addin, urlopen=fakeUrlopen(payload))
+    assert tree(addin) == OLD
+    assert os.listdir(tmp_path / "addins" / ".gridkeeper-update") == []
+
+
+def test_install_clears_leftovers_of_a_broken_run(tmp_path):
+    addin = makeTree(tmp_path / "addins" / "Gridkeeper", OLD)
+    makeTree(tmp_path / "addins" / ".gridkeeper-update" / "new" / "Gridkeeper", {"stale.py": b"x"})
+    payload = zipBytes({f"Gridkeeper/{name}": data for (name, data) in NEW.items()})
+    updateInstall.install(releaseFor(payload), addin, urlopen=fakeUrlopen(payload))
+    assert "stale.py" not in tree(addin)
+
+
+def test_refuses_git_dir_and_file(tmp_path):
+    for (name, make) in [("clone", lambda p: p.mkdir()), ("worktree", lambda p: p.write_text("gitdir: x"))]:
+        addin = makeTree(tmp_path / name / "Gridkeeper", OLD)
+        make(tmp_path / name / "Gridkeeper" / ".git")
+        before = tree(addin)
+        asked = []
+        with pytest.raises(UpdateError, match="git"):
+            updateInstall.install(Release((1, 1, 0), "https://x", 1, None), addin, urlopen=fakeUrlopen(b"", calls=asked))
+        assert tree(addin) == before
+        assert asked == []
+
+
+def test_refuses_release_without_zip(tmp_path):
+    addin = makeTree(tmp_path / "Gridkeeper", OLD)
+    with pytest.raises(UpdateError):
+        updateInstall.install(Release((1, 1, 0), None, None, None), addin, urlopen=fakeUrlopen(b""))
+
+
+def test_cleanup_keeps_newest_backup(tmp_path):
+    addin = makeTree(tmp_path / "Gridkeeper", OLD)
+    work = tmp_path / ".gridkeeper-update"
+    for name in ["backup-20261101-080000", "backup-20261117-120000", "backup-20261110-090000"]:
+        makeTree(work / name / "Gridkeeper", {"x": b"x"})
+    makeTree(work / "new" / "Gridkeeper", {"x": b"x"})
+    (work / "Gridkeeper-v1.1.0.zip").write_bytes(b"zip")
+    updateInstall.cleanupBackups(addin)
+    assert os.listdir(work) == ["backup-20261117-120000"]
+
+
+def test_cleanup_without_work_folder(tmp_path):
+    updateInstall.cleanupBackups(makeTree(tmp_path / "Gridkeeper", OLD))
