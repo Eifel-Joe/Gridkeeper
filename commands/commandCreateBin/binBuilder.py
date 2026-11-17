@@ -7,6 +7,7 @@ from ...lib import configJson
 from ...lib import placementUtils
 from ...lib import rebuildUtils
 from ...lib import assembly
+from ...lib import labelFaces
 from ...lib.gridfinityUtils import combineUtils
 from ...lib.gridfinityUtils import geometryUtils
 from ...lib.gridfinityUtils import faceUtils
@@ -679,6 +680,12 @@ def _buildBin(
         # with the settings it was generated with to show later. Labels aren't bins, they'd count as bins of their own
         for body in generatedBodies:
             tagUtils.tagBody(body, tagUtils.TAG_BIN, settings, binParameters, configJson.stateToJson(configJson.GENERATOR_BIN, state), binParameterPrefix)
+        # the letters of outline labels in their own color, as a slicer can print them, see labelFaces
+        if state.generateBody and state.labelStyle == labelGenerator.LABEL_STYLE_OUTLINE:
+            try:
+                labelFaces.paintLetterFaces(des, binBody)
+            except Exception as err:
+                commonUtils.debugLog(f'{LOG_PREFIX} label letters not colored, {err}')
         generatedBodies = movedBodies
 
     if state.generateBase and state.hasJointOrigins:

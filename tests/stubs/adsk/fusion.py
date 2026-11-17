@@ -19,3 +19,7 @@ class BRepBody:
 
 class BRepEdges:
     """Placeholder: only used in type annotations of faceUtils.py."""
+
+
+class Design:
+    """Placeholder: only used in type annotations of lib/labelFaces.py."""
