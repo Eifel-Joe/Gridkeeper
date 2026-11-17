@@ -1,7 +1,7 @@
 # Changing parameters
 
 Each model gets user parameters of its own, numbered per model: the first bin is `gfBin1_…`, the next `gfBin2_…`, the
-same for `gfPlate1_…` and `gfLabel1_…`. Change them in **Modify › Change Parameters** and the model follows without
+same for `gfPlate1_…`, `gfLabel1_…` and `gfBox1_…`. Change them in **Modify › Change Parameters** and the model follows without
 building it again; changing one model's parameters changes no other.
 
 ![Fusion's Parameters window with the user parameters gfBin1_baseWidth, gfBin1_baseLength, gfBin1_heightU and gfBin1_heightUnit of a bin](../assets/images/change-parameters.png)
@@ -45,3 +45,13 @@ right; shorten it or rebuild the insert.
 !!! tip "Rebuild instead"
     Anything that isn't a parameter, such as the bin size in units or the compartments, is changed with
     [Gridkeeper rebuild](settings-rebuild-clone.md#gridkeeper-rebuild).
+
+## Boxes
+
+| Parameter | What it is |
+|---|---|
+| `gfBox1_baseWidth` | Width in grid cells of 42 mm, at least 4 |
+| `gfBox1_baseLength` | Length in grid cells, at least 3 |
+| `gfBox1_heightU` | Height in units of 7 mm, at least 6 |
+
+The cell joint origins of a box keep the cells it was built with, see [Storage boxes](../boxes.md).

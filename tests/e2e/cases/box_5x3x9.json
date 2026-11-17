@@ -1,0 +1,8 @@
+{
+  "description": "Box 5 x 3, height 9",
+  "generator": "box",
+  "settings": {
+    "gridY": 3,
+    "heightU": 9
+  }
+}

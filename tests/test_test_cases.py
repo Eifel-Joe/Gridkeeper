@@ -580,3 +580,35 @@ def test_a_leftover_as_thin_as_the_letters_is_where_they_lie():
 
 def test_a_thicker_leftover_is_a_change_of_shape():
     assert not cases.isLetterSlab({"volume": 30.0, "pieces": 2, "min": [10.0, 29.0, 12.0], "max": [20.0, 37.0, 15.5]})
+
+
+# --- storage boxes after Pred (round 27, p260): their size parameters are counts, not lengths
+
+boxState = _load("boxInputState", "commands", "commandCreateBox", "inputState.py")
+STATE_CLASSES[cases.GENERATOR_BOX] = boxState.InputState
+
+
+def test_box_parameters_are_counts():
+    assert cases.PARAMETER_FIELDS[cases.GENERATOR_BOX] == {
+        'gfBox1_baseWidth': 'gridX', 'gfBox1_baseLength': 'gridY', 'gfBox1_heightU': 'heightU'}
+    assert cases.parametersFromJson(cases.GENERATOR_BOX, {'gfBox1_heightU': 10}) == {'gfBox1_heightU': 10}
+    assert cases.isUnitless('gfBox1_heightU') and not cases.isUnitless('gfBin1_baseWidth')
+
+
+@pytest.mark.parametrize("value", [0, 2.5, True, "7"])
+def test_box_parameters_are_whole_counts(value):
+    with pytest.raises(cases.TestCaseError):
+        cases.parametersFromJson(cases.GENERATOR_BOX, {'gfBox1_baseWidth': value})
+
+
+def test_box_cases_go_to_the_boxes_container():
+    assert cases.expectedContainer(cases.GENERATOR_BOX) == 'boxes'
+    assert cases.GENERATOR_TITLES[cases.GENERATOR_BOX] == 'Boxes'
+
+
+def test_box_case_with_parameters_edits_the_counts(tmp_path):
+    data = {"description": "a box", "generator": "box", "settings": {"gridX": 5},
+            "parameters": {"gfBox1_baseWidth": 7, "gfBox1_heightU": 10}}
+    case = cases.loadCase(write_case_data(tmp_path, data, name="box"), STATE_CLASSES)
+    edited = cases.editedState(case)
+    assert (edited.gridX, edited.gridY, edited.heightU) == (7, 4, 10)

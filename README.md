@@ -22,6 +22,8 @@ colored labels for multicolor printing, an assembly of components with joints, a
   printing
 - **Cullenect pockets** in the label tabs and the **Gridkeeper label** command for the inserts: text and a screw or
   hardware symbol, jointed into their pocket
+- **Storage boxes** with lid after Pred's parametric Gridfinity Storage Box v1.1, the **Gridkeeper box** command:
+  any size from 4 × 3 cells and 6 units high, stacking and latching with boxes printed from Pred's file
 - **Settings, rebuild and clone** from the right-click menu of every model, settings saved to and loaded from JSON
   files, user parameters to change a model without building it again
 
@@ -47,7 +49,7 @@ Gridkeeper is installed from a GitHub release, **not** from the Autodesk App Sto
    `Gridkeeper` folder.
 4. Select Gridkeeper, tick **Run on Startup** and click **Run**.
 
-**Gridkeeper bin**, **Gridkeeper baseplate** and **Gridkeeper label** now show in **Solid › Create**.
+**Gridkeeper bin**, **Gridkeeper baseplate**, **Gridkeeper label** and **Gridkeeper box** now show in **Solid › Create**.
 
 **Update:** unpack the ZIP of the new release over the old folder and restart Fusion. Gridkeeper runs beside the
 original GridfinityGenerator.
@@ -77,6 +79,8 @@ Gridkeeper counts its own versions, starting with 1.0.0. Releases are tagged `gr
   pockets and symbols, MIT
 - **ostat / Chris Heazlewood**: [gridfinity_extended_openscad](https://github.com/ostat/gridfinity_extended_openscad),
   used as a reference
+- **Pred**: [Gridfinity Storage Box v1.1](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric),
+  size and shape of the storage box and its lid, rebuilt in code with changes, CC BY-NC
 - **Zack Freedman**: [Gridfinity](https://www.youtube.com/watch?v=ra_9zU-mnl8)
 
 ## License
@@ -84,6 +88,7 @@ Gridkeeper counts its own versions, starting with 1.0.0. Releases are tagged `gr
 This work is licensed under a
 [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License][cc-by-nc-sa], like
 GridfinityGenerator. The Cullenect symbols in `lib/gridfinityUtils/cullenectIcons/` keep their MIT license.
+The storage box follows [Pred's parametric Gridfinity Storage Box v1.1](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric) (CC BY-NC): Gridkeeper rebuilds its shape in code, with the changes noted on [Storage boxes](https://eifel-joe.github.io/Gridkeeper/boxes/), and credits Pred for it; the rebuild is part of Gridkeeper under CC BY-NC-SA, Pred's own files stay under Pred's license.
 
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-image]][cc-by-nc-sa]
 

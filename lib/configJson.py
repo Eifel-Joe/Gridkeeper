@@ -11,6 +11,8 @@ GENERATOR_BIN = 'bin'
 GENERATOR_BASEPLATE = 'baseplate'
 # Cullenect inserts of the label command, only the shape test cases use their configs so far
 GENERATOR_LABEL = 'label'
+# storage box after Pred's parametric Gridfinity Storage Box v1.1 (round 27, p260)
+GENERATOR_BOX = 'box'
 
 # Settings added after configs were saved without them, with the value that built the model of such a config. A config
 # read over the dialog's state (Load, rebuild, clone, p151) would otherwise take the dialog's value and build an older
@@ -38,20 +40,23 @@ MM_FIELDS = {
         'bedWidth', 'bedLength', 'bedMargin',
     },
     GENERATOR_LABEL: {'baseWidth', 'freeWidth', 'offsetX', 'offsetY'},
+    GENERATOR_BOX: {'magnetDepth', 'magnetDiameter'},
 }
 DEGREE_FIELDS = {
     GENERATOR_BIN: {'tabOverhangAngle', 'tabTopAngle'},
     GENERATOR_BASEPLATE: set(),
     GENERATOR_LABEL: set(),
+    GENERATOR_BOX: set(),
 }
 # lists of cells, JSON has no tuples
 CELL_LIST_FIELDS = {
     GENERATOR_BIN: {'shapeCells'},
     GENERATOR_BASEPLATE: set(),
     GENERATOR_LABEL: set(),
+    GENERATOR_BOX: set(),
 }
 
-GENERATOR_TITLES = {GENERATOR_BIN: 'bin', GENERATOR_BASEPLATE: 'baseplate', GENERATOR_LABEL: 'label'}
+GENERATOR_TITLES = {GENERATOR_BIN: 'bin', GENERATOR_BASEPLATE: 'baseplate', GENERATOR_LABEL: 'label', GENERATOR_BOX: 'box'}
 
 # settings older versions saved under another name, their new name and what their value is multiplied by
 RENAMED_FIELDS = {

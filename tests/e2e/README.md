@@ -56,6 +56,7 @@ This page is written from the case files, run `python3 tests/e2e/write_readme.py
 | <img src="snapshots/bin_2x1x3_lip_full_untrimmed_shelled_notches/preview.png" width="120" alt="bin_2x1x3_lip_full_untrimmed_shelled_notches"> | [bin_2x1x3_lip_full_untrimmed_shelled_notches](cases/bin_2x1x3_lip_full_untrimmed_shelled_notches.json) | 2x1x3 shelled bin with an untrimmed full lip and lip notches, the support joined after the shell |
 | <img src="snapshots/bin_2x1x3_lip_untrimmed/preview.png" width="120" alt="bin_2x1x3_lip_untrimmed"> | [bin_2x1x3_lip_untrimmed](cases/bin_2x1x3_lip_untrimmed.json) | 2x1x3 bin with a light lip left untrimmed, ending in a sharp edge |
 | <img src="snapshots/bin_2x1x3_magnets/preview.png" width="120" alt="bin_2x1x3_magnets"> | [bin_2x1x3_magnets](cases/bin_2x1x3_magnets.json) | 2x1x3 bin with magnet holes only |
+|  | [bin_2x1x3_magnets_3mm](cases/bin_2x1x3_magnets_3mm.json) | 2x1x3 bin with magnet holes for 6 x 3 mm magnets, 3.4 mm deep (p263) |
 | <img src="snapshots/bin_2x1x3_magnets_pull_tabs/preview.png" width="120" alt="bin_2x1x3_magnets_pull_tabs"> | [bin_2x1x3_magnets_pull_tabs](cases/bin_2x1x3_magnets_pull_tabs.json) | 2x1x3 bin with magnet holes opened to the side for pulling magnets out |
 | <img src="snapshots/bin_2x1x3_magnets_pull_tabs_screws_grooves/preview.png" width="120" alt="bin_2x1x3_magnets_pull_tabs_screws_grooves"> | [bin_2x1x3_magnets_pull_tabs_screws_grooves](cases/bin_2x1x3_magnets_pull_tabs_screws_grooves.json) | 2x1x3 bin with magnet holes opened to the side, screw holes and printability grooves |
 | <img src="snapshots/bin_2x1x3_magnets_screws_grooves/preview.png" width="120" alt="bin_2x1x3_magnets_screws_grooves"> | [bin_2x1x3_magnets_screws_grooves](cases/bin_2x1x3_magnets_screws_grooves.json) | 2x1x3 bin with magnet and screw holes, a printability groove bridges each magnet hole to its screw hole |
@@ -102,6 +103,7 @@ This page is written from the case files, run `python3 tests/e2e/write_readme.py
 | Preview | Case | Description |
 | --- | --- | --- |
 | <img src="snapshots/baseplate_2x2_light/preview.png" width="120" alt="baseplate_2x2_light"> | [baseplate_2x2_light](cases/baseplate_2x2_light.json) | 2x2 light baseplate without holes, the baseline the other baseplate cases change one thing of |
+|  | [baseplate_2x2_light_magnets_3mm](cases/baseplate_2x2_light_magnets_3mm.json) | 2x2 light baseplate with magnet sockets for 6 x 3 mm magnets, 3.4 mm deep (p263) |
 | <img src="snapshots/baseplate_2x2_light_params_base_40x50/preview.png" width="120" alt="baseplate_2x2_light_params_base_40x50"> | [baseplate_2x2_light_params_base_40x50](cases/baseplate_2x2_light_params_base_40x50.json) | Light 2x2 baseplate, base units changed to 40 by 50 mm. Sets `gfPlate1_baseWidth` 40 mm, `gfPlate1_baseLength` 50 mm once built, a run compares that with a build using those values from the start |
 | <img src="snapshots/baseplate_2x2_skeletonized_padding/preview.png" width="120" alt="baseplate_2x2_skeletonized_padding"> | [baseplate_2x2_skeletonized_padding](cases/baseplate_2x2_skeletonized_padding.json) | 2x2 skeletonized baseplate with magnet sockets and uneven padding |
 | <img src="snapshots/baseplate_3x2_full/preview.png" width="120" alt="baseplate_3x2_full"> | [baseplate_3x2_full](cases/baseplate_3x2_full.json) | 3x2 full baseplate with magnet sockets, screw holes and connection holes |
@@ -121,3 +123,18 @@ This page is written from the case files, run `python3 tests/e2e/write_readme.py
 |  | [label_25mm_free](cases/label_25mm_free.json) | Insert 25 mm wide given in mm with a width correction of -0.1 mm, a flanged pan head screw, flush, bold text |
 |  | [label_2u_hardware](cases/label_2u_hardware.json) | 2U insert with a nylon lock nut and two lines of text, set in, the filling kept as a hidden body |
 |  | [label_6u_text](cases/label_6u_text.json) | 6U insert with text only, built on 42 mm units and set to a 40 mm base width after, the insert has to shrink with it. Sets `gfLabel1_baseWidth` 40 mm once built, a run compares that with a build using those values from the start |
+
+## Boxes
+
+| Preview | Case | Description |
+| --- | --- | --- |
+|  | [box_4x3x6](cases/box_4x3x6.json) | Smallest box, 4 x 3 cells, height 6 (the minimum, Joerg 16.11.2026: "Mindesthöhe 6. vorerst.") |
+|  | [box_4x3x6_magnets_custom](cases/box_4x3x6_magnets_custom.json) | Smallest box with the deepest custom magnet holes, 2.6 mm, 8 mm wide |
+|  | [box_4x3x8](cases/box_4x3x8.json) | Narrow box 4 x 3, height 8 |
+|  | [box_5x3x9](cases/box_5x3x9.json) | Box 5 x 3, height 9 |
+|  | [box_5x4x6](cases/box_5x4x6.json) | Pred's own box 5 x 4 x 6 |
+|  | [box_5x4x6_magnets](cases/box_5x4x6_magnets.json) | Box 5 x 4 x 6 with magnet holes for 6 x 2 mm magnets |
+|  | [box_5x4x6_params_7x5x10](cases/box_5x4x6_params_7x5x10.json) | Box 5 x 4 x 6, its parameters changed to 7 x 5 x 10. Sets `gfBox1_baseWidth` 7 mm, `gfBox1_baseLength` 5 mm, `gfBox1_heightU` 10 mm once built, a run compares that with a build using those values from the start |
+|  | [box_6x5x7](cases/box_6x5x7.json) | Box 6 x 5 x 7, the label holder at its widest (85 mm) |
+|  | [box_6x5x7_params_4x3x6](cases/box_6x5x7_params_4x3x6.json) | Box 6 x 5 x 7, its parameters changed to 4 x 3 x 6. Sets `gfBox1_baseWidth` 4 mm, `gfBox1_baseLength` 3 mm, `gfBox1_heightU` 6 mm once built, a run compares that with a build using those values from the start |
+|  | [box_7x5x10](cases/box_7x5x10.json) | Large box 7 x 5 x 10 |

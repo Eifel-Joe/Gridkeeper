@@ -1,0 +1,10 @@
+{
+  "description": "Box 5 x 4 x 5 with square holder tops, its height parameter changed to 6: Pred's rounding comes back",
+  "generator": "box",
+  "settings": {
+    "heightU": 5
+  },
+  "parameters": {
+    "gfBox1_heightU": 6
+  }
+}
