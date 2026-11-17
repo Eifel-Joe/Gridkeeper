@@ -9,6 +9,8 @@ The **Bin features** section of the bin dialog.
 | **Bin wall thickness** | 1.2 mm | 0.4 to 2 mm. Not for solid bins. Cullenect pockets need at least 1.2 mm |
 | **Generate lip for stackability** | on | The lip at the top another bin stacks on. Off gives a straight wall |
 | **Generate lip notches** | off | Notches in the lip that keep stacked bins from sliding; only with the lip |
+| **Lip type** | Light | *Light* or *Full*, see below; only with the lip |
+| **Trim lip top** | on | Cuts the top of the lip flat, 0.6 mm lower; off leaves the sharp edge of the original profile. Only with the lip |
 | **Fold long walls for stiffness** | on | Creases, see below. Hollow and shelled bins with a body only |
 
 With **Generate base** off in [Base interface features](base.md) the body is built alone, to combine it with an
@@ -26,6 +28,21 @@ Hollow bin | Shelled bin | Solid bin
 - **Solid:** a solid block, a start for tool bins: cut the shape of your tools into it.
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/bin-solid-tool-dark.gif"><img src="../../assets/gif/bin-solid-tool-light.gif" alt="A 2x1 bin turned from hollow to solid, then two round tool pockets cut into its top"></picture>
+
+## Lip types
+
+The lip is the socket the feet of a bin stacked on top sit in.
+
+- **Light** (default): the inside of the lip goes straight down to the bin top. It takes the least material and
+  leaves the most room inside the bin.
+- **Full:** the original Gridfinity profile. The lip narrows at 45 degrees to an inner tip, like the bottom of a foot,
+  and a support under the tip runs straight down and then out at 45 degrees into the wall, so the tip doesn't overhang
+  the inside of the bin. A scoop wall reaches up to the tip. Dividers raised up to the top on grid lines (see
+  [Compartments](compartments.md)) follow the same profile.
+- **Trim lip top:** on by default, the top of the lip is cut flat, 0.6 mm lower, the shape Gridkeeper bins have
+  always had. Off keeps the sharp top edge of the original profile; the bin is then 0.6 mm taller.
+
+Without **Generate lip for stackability** the wall goes straight up and both inputs are locked.
 
 ## Creased walls
 

@@ -1,0 +1,15 @@
+{
+    "description": "3x2x3 bin with dividers up to the top and 3 compartments under a light lip left untrimmed, the raised dividers reach the sharp top of the lip, 0.6 mm higher than trimmed",
+    "generator": "bin",
+    "settings": {
+        "binWidth": 3,
+        "binLength": 2,
+        "binHeight": 3,
+        "hasDividersToTop": true,
+        "isLipTopTrimmed": false,
+        "tabLength": 4,
+        "labelStyle": "Cullenect",
+        "compartmentsX": 3,
+        "hasCreases": false
+    }
+}

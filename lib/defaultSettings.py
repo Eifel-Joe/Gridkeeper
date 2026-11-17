@@ -28,6 +28,8 @@ BIN = {
     'hasLipNotches': False,
     # dividers on grid lines go up into the lip, see raisedDividers
     'hasDividersToTop': False,
+    'lipType': 'Light',
+    'isLipTopTrimmed': True,
     'hasScoop': False,
     'scoopMaxRadius': 25.0,
     'hasTab': False,
