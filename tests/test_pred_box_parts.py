@@ -73,6 +73,7 @@ def test_the_drawn_roles_are_roles_of_the_set():
     assert parts.partsToDraw("M3x30") == parts.partsToDraw("M3x30", drawn=parts.DRAWN_ROLES)
 
 
-def test_the_handle_pin_is_the_first_drawn_part():
-    """Round 29: the pin passed its Fusion check first (r29_pin_check), Jörg wants the concept tested with it now"""
-    assert parts.DRAWN_ROLES == ["Handle pin"]
+def test_the_drawn_parts_so_far():
+    """Round 29: the pin passed its Fusion check first (r29_pin_check, concept test passed with 2e16a78), then the
+    handle (r29_handle_check)"""
+    assert parts.DRAWN_ROLES == ["Handle", "Handle pin"]

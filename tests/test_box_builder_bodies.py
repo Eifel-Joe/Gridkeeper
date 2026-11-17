@@ -107,3 +107,10 @@ def test_the_pin_is_drawn_by_its_generator():
     tree = ast.parse(open(INSERT, encoding="utf-8").read())
     drawPart = ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "drawPart"))
     assert "predHandlePin.createHandlePin(component)" in drawPart
+
+
+def test_the_handle_is_drawn_with_the_width_of_the_box():
+    """The handle follows the label width by its expression on gfBoxN_baseWidth (predBoxSeats.handleHalfWidth)"""
+    tree = ast.parse(open(INSERT, encoding="utf-8").read())
+    drawPart = ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "drawPart"))
+    assert "predHandle.createHandle(component, predBoxSeats.handleHalfWidth(dims).expression)" in drawPart
