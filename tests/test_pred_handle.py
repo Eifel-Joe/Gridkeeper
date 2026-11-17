@@ -162,6 +162,31 @@ def test_the_profile_is_fully_determined_by_the_chain(H):
     assert used == set(range(len(points))), "a loose point"
 
 
+@pytest.mark.parametrize("H", [49.5, 56.75, 28.5])
+def test_a_width_change_cannot_flip_an_outline_point(H):
+    """
+    r29_handle_check Lauf 1: from 4 to 5 units Fillet1 and Chamfer1 lost their edges, V 5732.9733 instead of 6136.8299.
+    The r 15 arc's end at -H was held by its height alone: on the circle that height has a second solution 30 mm to the
+    right, and a jump of H by 21 mm put it there. Now every outline point's x is fixed by lines and dimensions alone,
+    without the arcs' equal radii; the arc holds only the bar's bottom end, by its height, which no width change moves
+    """
+    _, points, curves = _chainInput(_curves(H))
+    constraints = chainPlan.chain(points, curves)
+    values, radiusIndex = chainPlan._layout(points, curves)
+    linear = chainPlan._Basis()
+    for constraint in constraints:
+        rows = [("originAt", constraint[1], "x"), ("originAt", constraint[1], "y")] if constraint[0] == "originAt" else [constraint]
+        for item in rows:
+            linear.add(chainPlan._row(item, curves, radiusIndex, values))
+    centres = {c["center"] for c in curves if c["kind"] == "arc"}
+    for p in range(len(points)):
+        if p in centres:
+            continue
+        probe = chainPlan._Basis()
+        probe.rows = {k: dict(row) for k, row in linear.rows.items()}
+        assert not probe.add({2 * p: 1.0}), f"x of point {p} {points[p]} hangs on a circle"
+
+
 def test_the_dimensions_follow_the_half_width():
     """Each dimension's expression, as WorldSketch gives it (abs of the world dims' difference), evaluated at another
     half width gives that width's distance: the profile follows H, the arm and arcs keep their size"""
