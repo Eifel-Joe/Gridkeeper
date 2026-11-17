@@ -115,8 +115,9 @@ def withMarkings(part, markings: list, paint: bool):
 # Round r29-export (spec dev-notes/specs/2026-11-17-r29-export-drucklage.md): what the print layout needs of a part,
 # and the dialog's bed, spacing and purge choices
 
-# the baseplate dialog's preset (commandCreateBaseplate/printBeds.py) the export starts on, Bambu Lab's 256 mm bed
-DEFAULT_BED = 'Bambu Lab A1, P1, X1 (256 x 256 mm)'
+# the baseplate dialog's preset (commandCreateBaseplate/printBeds.py) the export starts on, Bambu Lab's 256 mm bed of
+# the P1 and X1 (Jörg prints on an X1C)
+DEFAULT_BED = 'Bambu Lab P1P, P1S, X1, X1C, X1E (256 x 256 mm)'
 DEFAULT_BED_SIZE = 256.0
 CUSTOM_BED = 'Custom'
 # mm, Jörg 17.11.2026 (D2), see printLayout
