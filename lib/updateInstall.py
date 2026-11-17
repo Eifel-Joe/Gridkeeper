@@ -155,14 +155,15 @@ def _sameFiles(folder: str, other: str) -> bool:
                for name in files)
 
 def _prune(folder: str, keep: set[str]) -> None:
-    """Deletes the files below folder that aren't in keep, and folders left empty, as far as it can. Compared as the
-    file system does: on Windows copying over lib/Symbols writes lib/symbols/x.svg into the old spelling, that file
-    is kept (second review, test_copy_path_keeps_new_files_whose_folder_differs_in_case)"""
-    keep = {os.path.normcase(name) for name in keep}
+    """Deletes the files below folder that aren't in keep, and folders left empty, as far as it can. Compared without
+    case, as the file systems of Windows and macOS (both supported, see the manifest) do: copying over lib/Symbols
+    writes lib/symbols/x.svg into the old spelling, that file is kept (second review,
+    test_copy_path_keeps_new_files_whose_folder_differs_in_case). The same as carryOver"""
+    keep = {name.lower() for name in keep}
     for (root, folders, names) in os.walk(folder, topdown=False):
         for name in names:
             path = os.path.join(root, name)
-            if os.path.normcase(os.path.relpath(path, folder).replace(os.sep, '/')) not in keep:
+            if os.path.relpath(path, folder).replace(os.sep, '/').lower() not in keep:
                 try:
                     os.remove(path)
                 except OSError:
