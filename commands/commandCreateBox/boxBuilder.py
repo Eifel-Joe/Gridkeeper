@@ -160,8 +160,9 @@ def _buildBox(
     (stackBottom,) = createPointJointOrigins([(STACK_BOTTOM_JOINT_ORIGIN, dims.midX, dims.midY, dims.bottom)], boxComponent, name=STACK_BOTTOM_JOINT_ORIGIN)
     (stackTop,) = createPointJointOrigins([(STACK_TOP_JOINT_ORIGIN, dims.midX, dims.midY, dims.bodyTop)], lidComponent, name=STACK_TOP_JOINT_ORIGIN)
     # the seats of the small parts (round 28): latches, handle and its pins, upright like the others, each part's joint
-    # turns it, see predBoxSeats.turnAboutZ
-    createPointJointOrigins(predBoxSeats.seatJointOriginPoints(dims), boxComponent, name=SEAT_JOINT_ORIGINS)
+    # turns it, see predBoxSeats.turnAboutZ; a box of bodies in the root gets no parts, so no seats either (review)
+    if boxOccurrence is not None:
+        createPointJointOrigins(predBoxSeats.seatJointOriginPoints(dims), boxComponent, name=SEAT_JOINT_ORIGINS)
     if boxOccurrence is not None:
         (boxSide,) = createPointJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], boxComponent, name=LID_JOINT_ORIGIN)
         (lidSide,) = createPointJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], lidComponent, name=LID_JOINT_ORIGIN)

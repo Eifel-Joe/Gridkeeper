@@ -55,6 +55,9 @@ def insertParts(
         component = first.component
         component.name = part.role
         component.attributes.add(tagUtils.TAG_GROUP, tagUtils.TAG_PART_ROLE, part.role)
+        # a part's only body after the part: the pin's is "Body1" in Pred's file, snapshots and export go by body names
+        if component.bRepBodies.count == 1:
+            component.bRepBodies.item(0).name = part.role
         if part.role == 'Handle':
             bindHandleWidth(component, dims)
         occurrences = [first]

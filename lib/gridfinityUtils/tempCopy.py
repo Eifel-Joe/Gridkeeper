@@ -20,4 +20,5 @@ def withTempCopy(path: str, use):
         shutil.copyfile(path, copy)
         return use(copy)
     finally:
+        # a copy Fusion still holds stays behind; the prefix gridkeeper- makes such a folder easy to find in %TEMP%
         shutil.rmtree(folder, ignore_errors=True)
