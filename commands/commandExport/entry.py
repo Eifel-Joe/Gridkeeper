@@ -370,9 +370,12 @@ def selectedEntities(inputs: adsk.core.CommandInputs) -> list:
     return [selectionInput.selection(index).entity for index in range(selectionInput.selectionCount)]
 
 def exportItems(inputs: adsk.core.CommandInputs) -> list[ExportItem]:
+    return exportItemsOf(selectedEntities(inputs))
+
+def exportItemsOf(entities: list) -> list[ExportItem]:
     """
-    The parts of the selected bodies and occurrences, each once with its colored text and symbol bodies: a selected
-    letter stands for its part. Other bodies picked themselves go out as they are
+    The parts of the bodies and occurrences, each once with its colored text and symbol bodies: a letter stands for its
+    part. Other bodies picked themselves go out as they are
     """
     bodies: list[adsk.fusion.BRepBody] = []
     def addOccurrence(occurrence: adsk.fusion.Occurrence):
@@ -380,7 +383,7 @@ def exportItems(inputs: adsk.core.CommandInputs) -> list[ExportItem]:
         for child in occurrence.childOccurrences:
             addOccurrence(child)
 
-    for entity in selectedEntities(inputs):
+    for entity in entities:
         body = adsk.fusion.BRepBody.cast(entity)
         if body is not None:
             bodies.append(body)
