@@ -185,6 +185,7 @@ COUNTERBORE = 5.5
 COUNTERBORE_DEPTH = 3.5 + 0.4
 THIN_BRIDGE = 0.2
 THICK_BRIDGE = 0.4
+BRIDGE_STUB = 0.25
 
 
 def hexagon(cx: float):
@@ -210,10 +211,15 @@ def _bridgeLines():
 
 
 def bridgeSketch(cx: float):
-    """Points and curves of the bridge sketch: the counterbore circle and Pred's eight lines (without his projected
-    screw hole circle: no profile we extrude touches it but at a tangent point, see bridgeLayers)"""
+    """Points and curves of the bridge sketch: the counterbore circle and Pred's eight chords, a little longer (without
+    his projected screw hole circle: no profile we extrude touches it but at a tangent point, see bridgeLayers)"""
     points, curves = [], []
     for (x0, y0), (x1, y1) in _bridgeLines():
+        # the chords reach BRIDGE_STUB past the circle: ends on it were over-constrained in Fusion
+        # (fusion-auftraege/r29_hinge_check l2, VCS_SKETCH_OVER_CONSTRAINTS); outside it they meet nowhere
+        length = math.hypot(x1 - x0, y1 - y0)
+        dx, dy = (x1 - x0) / length * BRIDGE_STUB, (y1 - y0) / length * BRIDGE_STUB
+        x0, y0, x1, y1 = x0 - dx, y0 - dy, x1 + dx, y1 + dy
         points += [(cx + x0, y0), (cx + x1, y1)]
         curves.append({'kind': 'line', 'a': len(points) - 2, 'b': len(points) - 1})
     # the circle last: its centre may lie on the origin and hangs on the lines' points
