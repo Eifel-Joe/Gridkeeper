@@ -7,7 +7,7 @@ Gridkeeper is our further development of GridfinityGenerator. It stands on the w
 | **Le0Michine** (Lev Mishin) | [FusionGridfinityGenerator](https://github.com/Le0Michine/FusionGridfinityGenerator), the add-in Gridkeeper is built on; its history and authorship are kept in the repository | CC BY-NC-SA 4.0 |
 | **CullenJWebb** | [Cullenect-Labels](https://github.com/CullenJWebb/Cullenect-Labels): insert and pocket dimensions, the insert geometry and layout, the screw and hardware symbols | MIT |
 | **ostat / Chris Heazlewood** | [gridfinity_extended_openscad](https://github.com/ostat/gridfinity_extended_openscad), reference for the Cullenect tab | used as a reference |
-| **Pred** | [Gridfinity Storage Box v1.1 (parametric)](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric): size and shape of the storage box and its lid, rebuilt in code with changes noted on [Storage boxes](../boxes.md) | CC BY-NC |
+| **Pred** | [Gridfinity Storage Box v1.1 (parametric)](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric): size and shape of the storage box and its lid, rebuilt in code with changes noted on [Storage boxes](../boxes.md); its latches, handle, handle pins and hinges, taken over from Pred's file (`resources/predBox`) | CC BY-NC |
 | **Zack Freedman** | [Gridfinity](https://www.youtube.com/watch?v=ra_9zU-mnl8), the system itself | |
 
 All pictures and animations of this documentation are Gridkeeper's own, made with Gridkeeper in Fusion; the
