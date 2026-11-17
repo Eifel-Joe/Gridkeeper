@@ -312,3 +312,30 @@ def test_older_plate_files_are_replaced_too():
 def test_the_format_tooltip_tells_of_a_file_per_plate():
     source = open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read()
     assert "3MF puts every body in one file" not in source
+
+
+def test_the_question_tells_replaced_files_from_removed_ones():
+    # review r29-export: older plate files are removed, not replaced, the question must say so
+    question = exportParts.replaceQuestion(["Box.3mf"], ["Box, plate 2.3mf", "Box, plate 3.3mf"], "D:/out", 8)
+    assert question.startswith("Replace the existing file and remove 2 plate files of an earlier export in D:/out?")
+    assert "Box.3mf" in question and "Box, plate 3.3mf" in question
+
+
+def test_the_question_for_removed_files_alone():
+    question = exportParts.replaceQuestion([], ["Box, plate 2.3mf"], "D:/out", 8)
+    assert question.startswith("Remove 1 plate file of an earlier export in D:/out?")
+
+
+def test_the_question_for_replaced_files_alone_stays_as_it_was():
+    question = exportParts.replaceQuestion(["a.stl", "b.stl"], [], "D:/out", 8)
+    assert question.startswith("Replace 2 existing files in D:/out?")
+
+
+def test_the_question_lists_a_few_and_counts_the_rest():
+    question = exportParts.replaceQuestion([f"{n}.stl" for n in range(10)], [], "D:/out", 8)
+    assert "and 2 more" in question
+
+
+def test_an_older_plate_file_that_cant_be_removed_doesnt_fail_the_export():
+    source = _entry_function("export3mf")
+    assert "except OSError" in source

@@ -180,3 +180,19 @@ def layoutChoices(section: dict, bedNames: list[str]) -> dict:
         'spacing': number('spacing', DEFAULT_SPACING, 0),
         'purge': number('purge', DEFAULT_PURGE, 0),
     }
+
+
+def replaceQuestion(replaced: list[str], removed: list[str], folder: str, listed: int) -> str:
+    """
+    The question before an export overwrites files, by name: those it replaces, and the plate files of an earlier
+    export it removes (review r29-export: they were asked for as replaced), a few listed and the rest counted
+    """
+    parts = []
+    if replaced:
+        parts.append(f'replace {"the existing file" if len(replaced) == 1 else f"{len(replaced)} existing files"}')
+    if removed:
+        parts.append(f'remove {len(removed)} plate file{"" if len(removed) == 1 else "s"} of an earlier export')
+    question = ' and '.join(parts)
+    names = replaced + removed
+    shown = names[:listed] + ([f'and {len(names) - listed} more'] if len(names) > listed else [])
+    return f'{question[0].upper()}{question[1:]} in {folder}?\n\n' + '\n'.join(shown)

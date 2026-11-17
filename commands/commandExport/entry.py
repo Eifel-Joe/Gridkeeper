@@ -572,16 +572,17 @@ def plateNote(tooLarge: list[str], noPurge: list[int], paint: bool) -> str:
         note += '\n\nNo free corner for the purge tower on plate ' + ', '.join(str(plate + 1) for plate in noPurge) + '.'
     return note
 
-def mayReplace(paths: list[str]) -> bool:
-    """Whether the files there already may be replaced, asked once for all of them"""
+def mayReplace(paths: list[str], removed: list[str] = None) -> bool:
+    """
+    Whether the files there already may be replaced, and the removed ones removed, asked once for all of them, see
+    exportParts.replaceQuestion
+    """
     existing = [path for path in paths if os.path.exists(path)]
-    if len(existing) == 0:
+    removed = removed or []
+    if len(existing) == 0 and len(removed) == 0:
         return True
-    shown = [os.path.basename(path) for path in existing[:MAX_LISTED_FILES]]
-    if len(existing) > MAX_LISTED_FILES:
-        shown.append(f'and {len(existing) - MAX_LISTED_FILES} more')
-    folder = os.path.dirname(existing[0])
-    question = f'Replace {"the existing file" if len(existing) == 1 else f"{len(existing)} existing files"} in {folder}?\n\n' + '\n'.join(shown)
+    folder = os.path.dirname((existing + removed)[0])
+    question = exportParts.replaceQuestion([os.path.basename(path) for path in existing], [os.path.basename(path) for path in removed], folder, MAX_LISTED_FILES)
     answer = ui.messageBox(question, CMD_NAME, adsk.core.MessageBoxButtonTypes.YesNoButtonType, adsk.core.MessageBoxIconTypes.WarningIconType)
     return answer == adsk.core.DialogResults.DialogYes
 
@@ -732,13 +733,17 @@ def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: 
     written = {os.path.normcase(path) for path in paths}
     stale = [os.path.join(folder, name) for name in os.listdir(folder)
              if printLayout.isPlateFileOf(name, fileName) and os.path.normcase(os.path.join(folder, name)) not in written]
-    if not mayReplace(paths + stale):
+    if not mayReplace(paths, stale):
         return None
     for (plate, (title, path)) in enumerate(zip(titles, paths)):
         onPlate = [meshObject for (index, meshObject) in laid if index == plate]
         threeMf.write(path, onPlate, filament, title, tagUtils.getGeneratorVersion(), isLaidOut=True)
     for path in stale:
-        os.remove(path)
+        # one held open by a slicer stays, the export itself is done (review r29-export)
+        try:
+            os.remove(path)
+        except OSError as err:
+            futil.log(f'{CMD_NAME} older plate file {path} not removed, {err}')
     return (paintedCount, paths, [names[groups[index][0]] for index in tooLarge], noPurge)
 
 def printRotationOf(item: ExportItem) -> str:
