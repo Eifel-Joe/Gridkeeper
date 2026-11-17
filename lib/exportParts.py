@@ -10,7 +10,7 @@ import dataclasses
 # The tags of the bodies the export takes, as tagUtils writes them (tags are literals, they're stored in documents).
 # 'box' is the box and the lid of round 27, there from its merge on. A new part, the small parts of round 28 or the box
 # label (p262), is one more entry here and in tests/test_export_parts.py
-EXPORT_TAGS = ('bin', 'baseplate', 'label', 'box')
+EXPORT_TAGS = ('bin', 'baseplate', 'label', 'box', 'boxLabel')
 
 # Pred's small parts in a box set (round 28): untagged, their component carries the part role (tagUtils.TAG_PART_ROLE);
 # the same roles as lib/gridfinityUtils/predBoxParts.PARTS, tests/test_export_parts.py checks it
@@ -110,3 +110,110 @@ def withMarkings(part, markings: list, paint: bool):
                 painted.add(len(triangles))
             triangles.append(tuple(vertex + offset for vertex in triangle))
     return dataclasses.replace(part, vertices=vertices, triangles=triangles, painted=painted)
+
+
+# Round r29-export (spec dev-notes/specs/2026-11-17-r29-export-drucklage.md): what the print layout needs of a part,
+# and the dialog's bed, spacing and purge choices
+
+# the baseplate dialog's preset (commandCreateBaseplate/printBeds.py) the export starts on, Bambu Lab's 256 mm bed of
+# the P1 and X1 (Jörg prints on an X1C)
+DEFAULT_BED = 'Bambu Lab P1P, P1S, X1, X1C, X1E (256 x 256 mm)'
+DEFAULT_BED_SIZE = 256.0
+CUSTOM_BED = 'Custom'
+# saved names of beds gone from the list, by the one they are now
+OLD_BED_NAMES = {'Bambu Lab A1, P1, X1 (256 x 256 mm)': DEFAULT_BED}
+# mm, Jörg 17.11.2026 (D2), see printLayout
+DEFAULT_SPACING = 5.0
+DEFAULT_PURGE = 50.0
+
+
+def labelSurface(tag: tuple | None) -> str | None:
+    """The surface of a Cullenect insert or box label (Embossed, Debossed, Flush) from its tag, none for every other part"""
+    if tag is None or tag[0] not in ('label', 'boxLabel') or not isinstance(tag[1], dict):
+        return None
+    settings = tag[1].get('config')
+    return settings.get('surface') if isinstance(settings, dict) else None
+
+
+def printGroupKey(role: str | None, occurrencePath: str | None, rotation: str) -> tuple:
+    """
+    What lays a part out together with others: the halves of a hinge, one occurrence and one turn. Every other part goes
+    alone (review r29-export: the pieces of a filled area are bodies of one baseplate component, they were glued into
+    one block larger than the bed)
+    """
+    return (occurrencePath if role == 'Hinge' and occurrencePath is not None else None, rotation)
+
+
+def printGroups(keys: list) -> list[list[int]]:
+    """
+    The parts laid out as one block, by index, in order: those of one place and one turn (the halves of a hinge, one
+    occurrence), a part without a place (key None) alone
+    """
+    groups: list[list[int]] = []
+    found: dict = {}
+    for (index, key) in enumerate(keys):
+        if key[0] is None:
+            groups.append([index])
+        elif key in found:
+            found[key].append(index)
+        else:
+            found[key] = [index]
+            groups.append(found[key])
+    return groups
+
+
+def layoutChoices(section: dict, bedNames: list[str]) -> dict:
+    """
+    The saved bed, its size, spacing and purge square in mm, the defaults for what is missing or broken. configparser
+    gives its keys in lower case (review r29-export: bedWidth was never read back)
+    """
+    section = {str(key).lower(): value for (key, value) in section.items()}
+    def number(key: str, default: float, minimum: float) -> float:
+        try:
+            value = float(section.get(key, default))
+        except (TypeError, ValueError):
+            return default
+        return value if value >= minimum and value == value else default
+
+    bed = section.get('bed', DEFAULT_BED)
+    # the shared entry before the Bambu Lab printers were apart (click test 17.11.2026), Jörg prints on an X1C
+    bed = OLD_BED_NAMES.get(bed, bed)
+    return {
+        'bed': bed if bed in bedNames else CUSTOM_BED,
+        'bedWidth': number('bedwidth', DEFAULT_BED_SIZE, 1e-6),
+        'bedLength': number('bedlength', DEFAULT_BED_SIZE, 1e-6),
+        'spacing': number('spacing', DEFAULT_SPACING, 0),
+        'purge': number('purge', DEFAULT_PURGE, 0),
+    }
+
+
+def replaceQuestion(replaced: list[str], removed: list[str], folder: str, listed: int) -> str:
+    """
+    The question before an export overwrites files, by name: those it replaces, and the plate files of an earlier
+    export it removes (review r29-export: they were asked for as replaced), a few listed and the rest counted
+    """
+    parts = []
+    if replaced:
+        parts.append(f'replace {"the existing file" if len(replaced) == 1 else f"{len(replaced)} existing files"}')
+    if removed:
+        parts.append(f'remove {len(removed)} plate file{"" if len(removed) == 1 else "s"} of an earlier export')
+    question = ' and '.join(parts)
+    names = replaced + removed
+    shown = names[:listed] + ([f'and {len(names) - listed} more'] if len(names) > listed else [])
+    return f'{question[0].upper()}{question[1:]} in {folder}?\n\n' + '\n'.join(shown)
+
+
+def plateKind(role: str | None, tagName: str | None, bodyName: str, setName: str | None) -> tuple | None:
+    """
+    Which plates a part may share, see printLayout.layOutKinds: a box set's box, its lid and its small parts each
+    plates of their own, per set (Jörg 17.11.2026: „Das Zubehör der Box sollte auf eine separate Platte. Eine Box
+    müsste je nach Größe 3 Platten gesamt ergeben.“). A box built as bodies in the root has no set, its Base and Lid
+    are told by name. None for every other part, they share plates
+    """
+    if role in SMALL_PART_ROLES:
+        return (setName, 'parts')
+    if role == 'Lid' or (role is None and tagName == 'box' and bodyName == 'Lid'):
+        return (setName, 'lid')
+    if role == 'Box' or (role is None and tagName == 'box'):
+        return (setName, 'box')
+    return None

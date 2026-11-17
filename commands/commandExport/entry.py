@@ -1,5 +1,6 @@
 import adsk.core, adsk.fusion
 import dataclasses
+import math
 import os
 import re
 
@@ -8,11 +9,13 @@ from ...lib import labelFaces
 from ...lib import threeMf
 from ...lib import stlFile
 from ...lib import exportParts
+from ...lib import printLayout
 from ...lib import configUtils
 from ...lib import fusion360utils as futil
 from ...lib.gridfinityUtils import labelGenerator
 from ...lib.gridfinityUtils import labelColors
 from ... import config
+from ..commandCreateBaseplate import printBeds
 
 # Upstream's export of bins and baseplates (Le0Michine, 4b2f167, round 17.11.2026), for every part our generators make
 # (p300): which tags are parts is exportParts.EXPORT_TAGS, and the colored text and symbol bodies in a part's Text
@@ -37,6 +40,13 @@ FOLDER_INPUT_ID = 'export_folder'
 BROWSE_INPUT_ID = 'export_browse'
 FILE_NAME_INPUT_ID = 'export_file_name'
 SUMMARY_INPUT_ID = 'export_summary'
+# round r29-export: the bed the 3MF's parts are laid out on, their spacing and the purge tower's corner
+BED_GROUP_ID = 'export_bed_group'
+BED_INPUT_ID = 'export_bed'
+BED_WIDTH_INPUT_ID = 'export_bed_width'
+BED_LENGTH_INPUT_ID = 'export_bed_length'
+SPACING_INPUT_ID = 'export_spacing'
+PURGE_INPUT_ID = 'export_purge'
 
 FORMAT_3MF = '3MF'
 FORMAT_STL = 'STL'
@@ -60,6 +70,8 @@ DEFAULT_FILAMENT = 2
 # the folder chosen in the dialog open now, and whether its file name was typed or still follows the bodies
 dialogFolder = ''
 isFileNameTyped = False
+# a preset setting the bed size, so the size inputs' change doesn't turn the dropdown to Custom
+isApplyingBedPreset = False
 
 local_handlers = []
 markingMenuHandler = None
@@ -137,7 +149,7 @@ def partRoleOf(component: adsk.fusion.Component) -> str | None:
 def isPartBody(body: adsk.fusion.BRepBody) -> bool:
     """A part the export takes, see exportParts.isPartBody, the body where it's placed or its native one"""
     native = body.nativeObject if body.assemblyContext is not None else body
-    tag = tagUtils.readBodyTag(native)
+    tag = tagUtils.readExportTag(native)
     component = native.parentComponent
     return exportParts.isPartBody(tag[0] if tag is not None else None, component.name, isRootComponent(component), partRoleOf(component))
 
@@ -267,15 +279,26 @@ def readChoices() -> dict:
         'format': format if format in FORMATS else FORMAT_3MF,
         'paint': section.get('paint', 'yes') != 'no',
         'filament': filament,
+        # the bed, its size, spacing and purge square in mm (r29-export)
+        'layout': exportParts.layoutChoices(dict(section), bedNames()),
     }
 
-def saveChoices(folder: str, format: str, paint: bool, filament: int):
+def bedNames() -> list[str]:
+    """The bed dropdown's entries, the baseplate dialog's presets after Custom"""
+    return [printBeds.PRINT_BED_CUSTOM] + list(printBeds.PRINT_BED_PRESETS.keys())
+
+def saveChoices(folder: str, format: str, paint: bool, filament: int, layout: dict):
     addinConfig = configUtils.readConfig(CONFIG_FOLDER_PATH)
     addinConfig[CONFIG_SECTION] = {
         'folder': folder,
         'format': format,
         'paint': 'yes' if paint else 'no',
         'colorIndex': str(filament),
+        'bed': layout['bed'],
+        'bedWidth': f'{layout["bedWidth"]:g}',
+        'bedLength': f'{layout["bedLength"]:g}',
+        'spacing': f'{layout["spacing"]:g}',
+        'purge': f'{layout["purge"]:g}',
     }
     if not configUtils.writeConfig(addinConfig, CONFIG_FOLDER_PATH):
         futil.log(f'{CMD_NAME} choices not saved to {CONFIG_FOLDER_PATH}')
@@ -299,7 +322,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     formatInput = inputs.addDropDownCommandInput(FORMAT_INPUT_ID, 'Format', adsk.core.DropDownStyles.TextListDropDownStyle)
     for name in FORMATS:
         formatInput.listItems.add(name, name == choices['format'])
-    formatInput.tooltip = '3MF puts every body in one file, STL and STEP give each body a file of its own in the folder'
+    formatInput.tooltip = '3MF lays the bodies out in print orientation on the print bed, a file per plate, STL and STEP give each body a file of its own in the folder'
     folderInput = inputs.addTextBoxCommandInput(FOLDER_INPUT_ID, 'Folder', dialogFolder, 2, True)
     folderInput.tooltip = 'Where the files go, the last folder chosen is kept'
     browseInput = inputs.addBoolValueInput(BROWSE_INPUT_ID, '', False, '', False)
@@ -310,6 +333,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     paintInput.tooltip = 'Assigns a color index to label text so the slicer paints it automatically: the letters of outline labels, and the colored text and symbols of bins and Cullenect inserts'
     filamentInput = inputs.addIntegerSpinnerCommandInput(FILAMENT_INPUT_ID, 'Label color index', 1, threeMf.MAX_FILAMENT, 1, choices['filament'])
     filamentInput.tooltip = 'The slicer\'s color the label text prints in, counting from 1 as the slicer lists them'
+    addLayoutInputs(inputs, choices['layout'])
     inputs.addTextBoxCommandInput(SUMMARY_INPUT_ID, '', '', 2, True)
     # as wide as the bin dialog, the minimum widens one Fusion kept narrower from before
     command.setDialogInitialSize(450, 400)
@@ -319,18 +343,80 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     futil.add_handler(command.execute, command_execute, local_handlers=local_handlers)
     futil.add_handler(command.destroy, command_destroy, local_handlers=local_handlers)
 
+def addLayoutInputs(inputs: adsk.core.CommandInputs, layout: dict):
+    """
+    The bed the 3MF's parts are laid out on, the baseplate dialog's presets or a size of its own, the spacing between
+    the parts and the purge tower's square, in Fusion's units, cm (round r29-export)
+    """
+    product = adsk.fusion.Design.cast(app.activeProduct)
+    units = product.unitsManager.defaultLengthUnits if product is not None else 'mm'
+    group = inputs.addGroupCommandInput(BED_GROUP_ID, 'Print bed')
+    group.isExpanded = True
+    bedInput = group.children.addDropDownCommandInput(BED_INPUT_ID, 'Printer', adsk.core.DropDownStyles.TextListDropDownStyle)
+    for name in bedNames():
+        bedInput.listItems.add(name, name == layout['bed'])
+    bedInput.tooltip = "The 3MF lays the parts out on this bed in print orientation, what doesn't fit goes on further plates"
+    for (inputId, name, value, tooltip) in (
+        (BED_WIDTH_INPUT_ID, 'Bed width, X', layout['bedWidth'], 'The usable width of the bed'),
+        (BED_LENGTH_INPUT_ID, 'Bed length, Y', layout['bedLength'], 'The usable depth of the bed'),
+        (SPACING_INPUT_ID, 'Spacing', layout['spacing'], 'Space between the parts and to the edge of the bed'),
+        (PURGE_INPUT_ID, 'Purge tower area', layout['purge'], 'A square kept free on each plate for the purge tower when label text is colored: where Bambu Studio puts the tower for a Bambu Lab printer, the back right corner for others, 0 for none'),
+    ):
+        valueInput = group.children.addValueInput(inputId, name, units, adsk.core.ValueInput.createByReal(value / 10))
+        valueInput.minimumValue = 0
+        valueInput.isMinimumInclusive = inputId in (SPACING_INPUT_ID, PURGE_INPUT_ID)
+        valueInput.tooltip = tooltip
+
+def layoutOf(inputs: adsk.core.CommandInputs) -> dict:
+    """The dialog's bed, spacing and purge square, mm"""
+    def value(inputId: str) -> float:
+        return adsk.core.ValueCommandInput.cast(inputs.itemById(inputId)).value * 10
+    return {
+        'bed': adsk.core.DropDownCommandInput.cast(inputs.itemById(BED_INPUT_ID)).selectedItem.name,
+        'bedWidth': value(BED_WIDTH_INPUT_ID),
+        'bedLength': value(BED_LENGTH_INPUT_ID),
+        'spacing': value(SPACING_INPUT_ID),
+        'purge': value(PURGE_INPUT_ID),
+    }
+
+def bedInputChanged(inputs: adsk.core.CommandInputs, changed: adsk.core.CommandInput):
+    """A preset sets the bed size, typing a size turns the dropdown to Custom, as in the baseplate dialog"""
+    global isApplyingBedPreset
+    bedInput = adsk.core.DropDownCommandInput.cast(inputs.itemById(BED_INPUT_ID))
+    if changed.id == BED_INPUT_ID:
+        size = printBeds.presetBedSize(bedInput.selectedItem.name)
+        if size is None:
+            return
+        isApplyingBedPreset = True
+        try:
+            adsk.core.ValueCommandInput.cast(inputs.itemById(BED_WIDTH_INPUT_ID)).value = size[0]
+            adsk.core.ValueCommandInput.cast(inputs.itemById(BED_LENGTH_INPUT_ID)).value = size[1]
+        finally:
+            isApplyingBedPreset = False
+    elif changed.id in (BED_WIDTH_INPUT_ID, BED_LENGTH_INPUT_ID) and not isApplyingBedPreset:
+        # only a size that is no longer the preset's, should Fusion report the preset's own setting late
+        size = printBeds.presetBedSize(bedInput.selectedItem.name) if bedInput.selectedItem is not None else None
+        typed = tuple(adsk.core.ValueCommandInput.cast(inputs.itemById(inputId)).value for inputId in (BED_WIDTH_INPUT_ID, BED_LENGTH_INPUT_ID))
+        if size is not None and not all(math.isclose(a, b, abs_tol=1e-6) for (a, b) in zip(size, typed)):
+            bedInput.listItems.item(0).isSelected = True
+
 def command_input_changed(args: adsk.core.InputChangedEventArgs):
     global dialogFolder, isFileNameTyped
+    # args.inputs only holds the siblings of the changed input, those of the Print bed group in it, the dialog's
+    # inputs are on the command (as the baseplate dialog notes; review r29-export)
+    inputs = args.input.parentCommand.commandInputs
+    if args.input.id in (BED_INPUT_ID, BED_WIDTH_INPUT_ID, BED_LENGTH_INPUT_ID):
+        bedInputChanged(inputs, args.input)
     if args.input.id == ALL_INPUT_ID:
-        selectAll(args.inputs, adsk.core.BoolValueCommandInput.cast(args.input).value)
+        selectAll(inputs, adsk.core.BoolValueCommandInput.cast(args.input).value)
     elif args.input.id == BROWSE_INPUT_ID:
         folder = askFolder(dialogFolder)
         if folder is not None:
             dialogFolder = folder
-            adsk.core.TextBoxCommandInput.cast(args.inputs.itemById(FOLDER_INPUT_ID)).text = folder
+            adsk.core.TextBoxCommandInput.cast(inputs.itemById(FOLDER_INPUT_ID)).text = folder
     elif args.input.id == FILE_NAME_INPUT_ID:
         isFileNameTyped = True
-    updateInputs(args.inputs)
+    updateInputs(inputs)
 
 def selectAll(inputs: adsk.core.CommandInputs, isAll: bool):
     """Every visible part in the selection, or what was selected as the dialog opened"""
@@ -378,6 +464,8 @@ def updateInputs(inputs: adsk.core.CommandInputs):
     inputs.itemById(FILAMENT_INPUT_ID).isVisible = format == FORMAT_3MF and paintInput.value
     fileNameInput = adsk.core.StringValueCommandInput.cast(inputs.itemById(FILE_NAME_INPUT_ID))
     fileNameInput.isVisible = format == FORMAT_3MF
+    inputs.itemById(BED_GROUP_ID).isVisible = format == FORMAT_3MF
+    inputs.itemById(PURGE_INPUT_ID).isVisible = format == FORMAT_3MF and paintInput.value
     try:
         items = exportItems(inputs)
         if not isFileNameTyped:
@@ -437,7 +525,8 @@ def command_execute(args: adsk.core.CommandEventArgs):
             folder = askFolder(folder)
             if folder is None:
                 return
-        saveChoices(folder, format, paint, filament)
+        layout = layoutOf(inputs)
+        saveChoices(folder, format, paint, filament, layout)
         items = exportItems(inputs)
         if len(items) == 0:
             ui.messageBox('Nothing to export, select bodies or turn on All Gridkeeper parts.', CMD_NAME)
@@ -445,11 +534,13 @@ def command_execute(args: adsk.core.CommandEventArgs):
         names = fileNames(items)
         if format == FORMAT_3MF:
             fileName = safeFileName(adsk.core.StringValueCommandInput.cast(inputs.itemById(FILE_NAME_INPUT_ID)).value) or defaultFileName(items)
-            path = os.path.join(folder, fileName if fileName.lower().endswith('.3mf') else f'{fileName}.3mf')
-            if not mayReplace([path]):
+            fileName = fileName[:-4] if fileName.lower().endswith('.3mf') else fileName
+            result = export3mf(items, names, folder, fileName, filament if paint else None, layout)
+            if result is None:
                 return
-            painted = export3mf(items, names, path, filament if paint else None)
-            ui.messageBox(f'Exported {len(items)} part{"" if len(items) == 1 else "s"} to {path}.{paintNote(paint, painted, filament)}', CMD_NAME)
+            (painted, paths, tooLarge, noPurge, nearExcluded) = result
+            where = paths[0] if len(paths) == 1 else f'{len(paths)} files, a file per plate, in {folder}'
+            ui.messageBox(f'Exported {len(items)} part{"" if len(items) == 1 else "s"} to {where}.{plateNote(tooLarge, noPurge, nearExcluded, paint)}{paintNote(paint, painted, filament)}', CMD_NAME)
         else:
             if not mayReplace([os.path.join(folder, f'{name}.{FORMAT_EXTENSIONS[format]}') for name in names]):
                 return
@@ -472,16 +563,28 @@ def paintNote(paint: bool, painted: int, filament: int) -> str:
     bodies = 'the part' if painted == 1 else f'{painted} parts'
     return f'\n\nLabel text of {bodies} is assigned color {filament}.'
 
-def mayReplace(paths: list[str]) -> bool:
-    """Whether the files there already may be replaced, asked once for all of them"""
+def plateNote(tooLarge: list[str], noPurge: list[int], nearExcluded: list[int], paint: bool) -> str:
+    """Which parts don't fit the bed, and which plates have no free corner for the purge tower"""
+    note = ''
+    if tooLarge:
+        note += '\n\nLarger than the bed, on a plate of its own: ' + ', '.join(tooLarge) + '.'
+    if paint and noPurge:
+        note += '\n\nNo room kept free for the purge tower on plate ' + ', '.join(str(plate + 1) for plate in noPurge) + ', move the tower or a part in the slicer.'
+    if nearExcluded:
+        note += '\n\nA part comes near the area the printer keeps free on plate ' + ', '.join(str(plate + 1) for plate in nearExcluded) + ', the slicer may warn of collisions.'
+    return note
+
+def mayReplace(paths: list[str], removed: list[str] = None) -> bool:
+    """
+    Whether the files there already may be replaced, and the removed ones removed, asked once for all of them, see
+    exportParts.replaceQuestion
+    """
     existing = [path for path in paths if os.path.exists(path)]
-    if len(existing) == 0:
+    removed = removed or []
+    if len(existing) == 0 and len(removed) == 0:
         return True
-    shown = [os.path.basename(path) for path in existing[:MAX_LISTED_FILES]]
-    if len(existing) > MAX_LISTED_FILES:
-        shown.append(f'and {len(existing) - MAX_LISTED_FILES} more')
-    folder = os.path.dirname(existing[0])
-    question = f'Replace {"the existing file" if len(existing) == 1 else f"{len(existing)} existing files"} in {folder}?\n\n' + '\n'.join(shown)
+    folder = os.path.dirname((existing + removed)[0])
+    question = exportParts.replaceQuestion([os.path.basename(path) for path in existing], [os.path.basename(path) for path in removed], folder, MAX_LISTED_FILES)
     answer = ui.messageBox(question, CMD_NAME, adsk.core.MessageBoxButtonTypes.YesNoButtonType, adsk.core.MessageBoxIconTypes.WarningIconType)
     return answer == adsk.core.DialogResults.DialogYes
 
@@ -547,7 +650,8 @@ def exportEach(items: list[ExportItem], names: list[str], folder: str, format: s
             path = os.path.join(folder, f'{name}.{FORMAT_EXTENSIONS[format]}')
             if format == FORMAT_STL:
                 # the mesh the 3MF takes, Fusion's STL export writes a body where it is
-                meshObject = partMesh(item, name, None)
+                # in print orientation (Jörg 17.11.2026, D4)
+                meshObject = printMesh(item, name, None)
                 stlFile.write(path, name, stlFile.atOrigin(meshObject.vertices), meshObject.triangles)
             else:
                 exportStep(scratch, item, name, path)
@@ -599,33 +703,89 @@ def toOrigin(box: adsk.core.BoundingBox3D) -> adsk.core.Matrix3D:
     )
     return move
 
-def export3mf(items: list[ExportItem], names: list[str], path: str, filament: int | None) -> int:
-    """All bodies in one file, returns how many have painted letters"""
+def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: str, filament: int | None, layout: dict) -> tuple[int, list[str], list[str], list[int], list[int]] | None:
+    """
+    The bodies in print orientation laid out on the bed, a 3MF per plate (round r29-export; Jörg 17.11.2026: "Eine
+    Sortierung kann ja nur bei eine 3MF je Platte anständig durchgeführt werden."), the purge tower's square free when
+    the text is painted, a chosen Bambu Lab printer's excluded area free. Returns how many have painted letters, the
+    files, the names of the parts too large for the bed, the plates without a free purge square and the plates near an
+    excluded area; none when the files there may not be replaced
+    """
     objects = []
+    keys = []
+    kinds = []
     paintedCount = 0
     progress = progressDialog(len(items))
     try:
         for (index, (item, name)) in enumerate(zip(items, names)):
-            meshObject = partMesh(item, name, filament)
+            rotation = printRotationOf(item)
+            meshObject = printMesh(item, name, filament, rotation)
             paintedCount += 1 if meshObject.painted else 0
             objects.append(meshObject)
+            occurrencePath = item.occurrence.fullPathName if item.occurrence is not None else None
+            role = partRoleOf(item.body.parentComponent)
+            keys.append(exportParts.printGroupKey(role, occurrencePath, rotation))
+            tag = tagUtils.readExportTag(item.body)
+            kinds.append(exportParts.plateKind(role, tag[0] if tag is not None else None, item.body.name, setNameOf(item)))
             progress.progressValue = index + 1
     finally:
         progress.hide()
-    title = os.path.splitext(os.path.basename(path))[0]
-    threeMf.write(path, objects, filament, title, tagUtils.getGeneratorVersion())
-    return paintedCount
+    groups = exportParts.printGroups(keys)
+    bed = (layout['bedWidth'], layout['bedLength'])
+    # a purge tower only for painted text, where the printer's slicer puts it, the excluded areas of a Bambu Lab printer
+    # chosen kept free (click test 17.11.2026: F2 the tower wasn't in the corner kept free, F1 Bambu warned of a box too
+    # close to the X1's excluded area). A box set's box, lid and small parts on plates of their own (Jörg 17.11.2026)
+    purge = layout['purge'] if filament is not None and paintedCount > 0 else 0.0
+    (laid, plates, tooLarge, noPurge, nearExcluded) = printLayout.layOutKinds(
+        [[objects[index] for index in group] for group in groups], [kinds[group[0]] for group in groups], bed,
+        layout['spacing'], purge, printBeds.purgeAnchor(layout['bed']), printBeds.excludedAreas(layout['bed']))
+    titles = [printLayout.plateFileName(fileName, plate, plates) for plate in range(plates)]
+    paths = [os.path.join(folder, f'{title}.3mf') for title in titles]
+    # the plate files of an earlier export of the name the new one doesn't write, they'd be printed with the new ones
+    written = {os.path.normcase(path) for path in paths}
+    stale = [os.path.join(folder, name) for name in os.listdir(folder)
+             if printLayout.isPlateFileOf(name, fileName) and os.path.normcase(os.path.join(folder, name)) not in written]
+    if not mayReplace(paths, stale):
+        return None
+    for (plate, (title, path)) in enumerate(zip(titles, paths)):
+        onPlate = [meshObject for (index, meshObject) in laid if index == plate]
+        threeMf.write(path, onPlate, filament, title, tagUtils.getGeneratorVersion(), isLaidOut=True)
+    for path in stale:
+        # one held open by a slicer stays, the export itself is done (review r29-export)
+        try:
+            os.remove(path)
+        except OSError as err:
+            futil.log(f'{CMD_NAME} older plate file {path} not removed, {err}')
+    return (paintedCount, paths, [names[groups[index][0]] for index in tooLarge], noPurge, nearExcluded)
 
-def partMesh(item: ExportItem, name: str, filament: int | None) -> threeMf.MeshObject:
+def printRotationOf(item: ExportItem) -> str:
+    """How the part turns into its print orientation, by its role in a box set or its label surface, see printLayout"""
+    return printLayout.printRotation(partRoleOf(item.body.parentComponent), item.body.name, exportParts.labelSurface(tagUtils.readExportTag(item.body)))
+
+def printMesh(item: ExportItem, name: str, filament: int | None, rotation: str | None = None) -> threeMf.MeshObject:
+    """
+    The part's mesh in its own frame, its component's, turned into print orientation (round r29-export): the box set's
+    joints and a box label's holder place a part upright, its own frame lies as Pred printed it, see
+    printLayout.printRotation. Its text and symbol bodies come along, they're placed in its frame too
+    """
+    frame = None
+    if item.occurrence is not None:
+        frame = item.occurrence.transform2.copy()
+        frame.invert()
+    meshObject = partMesh(item, name, filament, frame)
+    rotation = printRotationOf(item) if rotation is None else rotation
+    return dataclasses.replace(meshObject, vertices=printLayout.rotated(meshObject.vertices, rotation))
+
+def partMesh(item: ExportItem, name: str, filament: int | None, frame: adsk.core.Matrix3D | None = None) -> threeMf.MeshObject:
     """
     The part's mesh with its text and symbol bodies (p300). With a filament the letters of its outline labels and all
     of its text and symbol triangles are painted, see exportParts.withMarkings
     """
     paint = filament is not None
-    meshObject = meshOf(item, name, paint and item.hasOutlineLabels)
-    return exportParts.withMarkings(meshObject, [meshOf(marking, name, False) for marking in item.markings], paint)
+    meshObject = meshOf(item, name, paint and item.hasOutlineLabels, frame)
+    return exportParts.withMarkings(meshObject, [meshOf(marking, name, False, frame) for marking in item.markings], paint)
 
-def meshOf(item: ExportItem, name: str, paint: bool) -> threeMf.MeshObject:
+def meshOf(item: ExportItem, name: str, paint: bool, frame: adsk.core.Matrix3D | None = None) -> threeMf.MeshObject:
     """
     The body's triangles in mm where it's placed, the nodes Fusion repeats for each face joined into one. With paint, the
     triangles on the letter faces of its outline labels are marked, see labelFaces
@@ -650,6 +810,9 @@ def meshOf(item: ExportItem, name: str, paint: bool) -> threeMf.MeshObject:
             point = adsk.core.Point3D.create(*node)
             if transform is not None:
                 point.transformBy(transform)
+            # back into the part's own frame, see printMesh
+            if frame is not None:
+                point.transformBy(frame)
             vertices.append((point.x * 10, point.y * 10, point.z * 10))
         nodeVertex.append(joined[key])
 

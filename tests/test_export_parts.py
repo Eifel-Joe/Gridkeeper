@@ -4,6 +4,7 @@ and how the colored text bodies of a part go into its mesh, painted for the slic
 """
 
 import ast
+import pytest
 import os
 import importlib.util
 
@@ -34,7 +35,7 @@ def _tag_constants():
 # --- which tags are parts ---
 
 def test_the_parts_the_export_knows():
-    assert exportParts.EXPORT_TAGS == ("bin", "baseplate", "label", "box")
+    assert exportParts.EXPORT_TAGS == ("bin", "baseplate", "label", "box", "boxLabel")
 
 
 def test_export_tags_are_those_the_generators_write():
@@ -196,3 +197,199 @@ def test_the_small_part_roles_are_the_box_parts():
 
 def test_a_small_part_carries_its_sets_name():
     assert exportParts.partFileName("Latch", "Box 5×4×6") == "Box 5×4×6 Latch"
+
+
+# ---------------------------------------------------------------------------
+# Round r29-export: what the print layout needs of a part
+# ---------------------------------------------------------------------------
+
+def test_a_labels_surface_comes_from_its_tag():
+    assert exportParts.labelSurface(("label", {"config": {"surface": "Flush"}})) == "Flush"
+    assert exportParts.labelSurface(("label", {"config": {"surface": "Embossed"}})) == "Embossed"
+
+
+def test_parts_without_a_label_surface_have_none():
+    assert exportParts.labelSurface(None) is None
+    assert exportParts.labelSurface(("bin", {"config": {"surface": "Flush"}})) is None
+    assert exportParts.labelSurface(("label", {})) is None
+    assert exportParts.labelSurface(("label", {"config": "broken"})) is None
+
+
+def test_parts_of_one_place_and_turn_go_together():
+    # the halves of a hinge: one occurrence, one turn; its pin turns on its own
+    keys = [("hinge 1", "none"), ("latch", "none"), ("hinge 1", "none"), ("hinge 1", "x-90"), (None, "none"), (None, "none")]
+    assert exportParts.printGroups(keys) == [[0, 2], [1], [3], [4], [5]]
+
+
+printBeds = _load("printBeds", "commands", "commandCreateBaseplate", "printBeds.py")
+BED_NAMES = [printBeds.PRINT_BED_CUSTOM] + list(printBeds.PRINT_BED_PRESETS)
+
+
+def test_the_default_bed_is_one_of_the_baseplate_dialogs():
+    assert exportParts.DEFAULT_BED in printBeds.PRINT_BED_PRESETS
+    assert printBeds.PRINT_BED_PRESETS[exportParts.DEFAULT_BED] == (exportParts.DEFAULT_BED_SIZE, exportParts.DEFAULT_BED_SIZE)
+
+
+def test_layout_choices_default_to_jörgs_values():
+    choices = exportParts.layoutChoices({}, BED_NAMES)
+    assert choices == {"bed": "Bambu Lab P1P, P1S, X1, X1C, X1E (256 x 256 mm)", "bedWidth": 256.0, "bedLength": 256.0, "spacing": 5.0, "purge": 50.0}
+
+
+def test_layout_choices_are_read_back():
+    section = {"bed": "Custom", "bedWidth": "300", "bedLength": "320.5", "spacing": "8", "purge": "0"}
+    assert exportParts.layoutChoices(section, BED_NAMES) == {"bed": "Custom", "bedWidth": 300.0, "bedLength": 320.5, "spacing": 8.0, "purge": 0.0}
+
+
+def test_broken_layout_choices_fall_back():
+    section = {"bed": "Gone printer", "bedWidth": "-3", "bedLength": "abc", "spacing": "-1", "purge": "x"}
+    choices = exportParts.layoutChoices(section, BED_NAMES)
+    assert choices["bed"] == "Custom"
+    assert (choices["bedWidth"], choices["bedLength"], choices["spacing"], choices["purge"]) == (256.0, 256.0, 5.0, 50.0)
+
+
+def test_the_box_label_is_a_part_by_a_tag_of_its_own():
+    # p380: not the Cullenect insert's tag, the settings menu and rebuild would take it for an insert
+    assert _tag_constants()["TAG_BOX_LABEL"] == "boxLabel"
+    assert exportParts.isPartBody("boxLabel", "Box label 5")
+
+
+def test_a_box_labels_surface_comes_from_its_tag():
+    assert exportParts.labelSurface(("boxLabel", {"config": {"surface": "Flush"}})) == "Flush"
+
+
+def test_the_export_reads_the_box_label_tag_too():
+    source = open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read()
+    assert "tagUtils.readBodyTag(native)" not in source
+    assert source.count("tagUtils.readExportTag(") >= 2
+
+
+def test_layout_choices_survive_the_config_file():
+    # review r29-export: configparser writes its keys in lower case, bedWidth came back as the default
+    import configparser
+    config = configparser.ConfigParser()
+    config["Export"] = {"bed": "Custom", "bedWidth": "180", "bedLength": "210", "spacing": "8", "purge": "40"}
+    choices = exportParts.layoutChoices(dict(config["Export"]), BED_NAMES)
+    assert (choices["bedWidth"], choices["bedLength"], choices["spacing"], choices["purge"]) == (180.0, 210.0, 8.0, 40.0)
+
+
+def test_only_the_halves_of_a_hinge_are_one_block():
+    # review r29-export: the pieces of a filled area are bodies of one baseplate component, they go apart
+    assert exportParts.printGroupKey("Hinge", "Box:1+Hinge 1:1", "none") == ("Box:1+Hinge 1:1", "none")
+    assert exportParts.printGroupKey(None, "Grid:1", "none")[0] is None
+    assert exportParts.printGroupKey("Latch", "Box:1+Latch:1", "none")[0] is None
+    assert exportParts.printGroupKey("Hinge", None, "none")[0] is None
+
+
+def _entry_function(name):
+    tree = ast.parse(open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read())
+    return ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == name))
+
+
+def test_a_change_in_the_bed_group_updates_the_whole_dialog():
+    # review r29-export: inside a group args.inputs holds only the group's inputs, as the baseplate dialog notes
+    source = _entry_function("command_input_changed")
+    assert "args.input.parentCommand.commandInputs" in source
+    assert "updateInputs(args.inputs)" not in source
+
+
+def test_a_size_typed_turns_the_bed_to_custom_only_when_it_differs_from_the_preset():
+    source = _entry_function("bedInputChanged")
+    assert "math.isclose" in source
+
+
+def test_the_3mf_goes_out_as_a_file_per_plate():
+    source = _entry_function("export3mf")
+    assert "printLayout.plateFileName(" in source
+    assert "exportParts.printGroupKey(" in source
+
+
+def test_older_plate_files_are_replaced_too():
+    # review r29-export: a plate file of an earlier export with more plates stayed beside the new ones
+    source = _entry_function("export3mf")
+    assert "printLayout.isPlateFileOf(" in source
+    assert "os.remove(" in source
+
+
+def test_the_format_tooltip_tells_of_a_file_per_plate():
+    source = open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read()
+    assert "3MF puts every body in one file" not in source
+
+
+def test_the_question_tells_replaced_files_from_removed_ones():
+    # review r29-export: older plate files are removed, not replaced, the question must say so
+    question = exportParts.replaceQuestion(["Box.3mf"], ["Box, plate 2.3mf", "Box, plate 3.3mf"], "D:/out", 8)
+    assert question.startswith("Replace the existing file and remove 2 plate files of an earlier export in D:/out?")
+    assert "Box.3mf" in question and "Box, plate 3.3mf" in question
+
+
+def test_the_question_for_removed_files_alone():
+    question = exportParts.replaceQuestion([], ["Box, plate 2.3mf"], "D:/out", 8)
+    assert question.startswith("Remove 1 plate file of an earlier export in D:/out?")
+
+
+def test_the_question_for_replaced_files_alone_stays_as_it_was():
+    question = exportParts.replaceQuestion(["a.stl", "b.stl"], [], "D:/out", 8)
+    assert question.startswith("Replace 2 existing files in D:/out?")
+
+
+def test_the_question_lists_a_few_and_counts_the_rest():
+    question = exportParts.replaceQuestion([f"{n}.stl" for n in range(10)], [], "D:/out", 8)
+    assert "and 2 more" in question
+
+
+def test_an_older_plate_file_that_cant_be_removed_doesnt_fail_the_export():
+    source = _entry_function("export3mf")
+    assert "except OSError" in source
+
+
+def test_the_layout_keeps_the_printers_tower_spot_and_excluded_area_free():
+    # Bambu click test 17.11.2026 (F1, F2); Jörg: „Wenn wir den Drucker exakt vorgeben ist die Sperrzone nicht mehr
+    # Sache des Users.“
+    source = _entry_function("export3mf")
+    assert "printBeds.purgeAnchor(layout['bed'])" in source
+    assert "printBeds.excludedAreas(layout['bed'])" in source
+
+
+def test_a_plate_near_an_excluded_area_is_named_painted_or_not():
+    # review r29-export: it was named only with paint, and as without room for the purge tower
+    source = _entry_function("plateNote")
+    assert "nearExcluded" in source
+    assert "if nearExcluded" in source
+
+
+def test_the_purge_square_only_when_label_text_is_painted():
+    # a box set has no text: with Color label text on nothing is painted and no tower is printed
+    source = _entry_function("export3mf")
+    assert "if filament is not None and paintedCount > 0" in source
+
+
+@pytest.mark.parametrize("role, tag, body, setName, kind", [
+    ("Box", "box", "Base", "Box 5×4×6", ("Box 5×4×6", "box")),
+    ("Lid", "box", "Lid", "Box 5×4×6", ("Box 5×4×6", "lid")),
+    ("Latch", None, "Latch", "Box 5×4×6", ("Box 5×4×6", "parts")),
+    ("Handle", None, "Handle", "Box 5×4×6", ("Box 5×4×6", "parts")),
+    ("Handle pin", None, "Handle pin", "Box 5×4×6", ("Box 5×4×6", "parts")),
+    ("Hinge", None, "Hinge pin", "Box 5×4×6", ("Box 5×4×6", "parts")),
+    # a box built as bodies in the root: no set, its bodies by name
+    (None, "box", "Base", None, (None, "box")),
+    (None, "box", "Lid", None, (None, "lid")),
+    (None, "bin", "Gridfinity bin 1x2x3", None, None),
+    (None, "label", "Gridfinity label", None, None),
+    (None, "boxLabel", "Box label", None, None),
+])
+def test_a_box_sets_box_lid_and_small_parts_go_on_plates_of_their_own(role, tag, body, setName, kind):
+    # Jörg 17.11.2026: „Das Zubehör der Box sollte auf eine separate Platte. Eine Box müsste je nach Größe 3 Platten
+    # gesamt ergeben.“
+    assert exportParts.plateKind(role, tag, body, setName) == kind
+
+
+def test_the_export_lays_out_by_kind():
+    source = _entry_function("export3mf")
+    assert "printLayout.layOutKinds(" in source
+    assert "exportParts.plateKind(" in source
+
+
+def test_the_old_shared_bambu_bed_is_read_as_the_p1_and_x1():
+    # review r29-export: the click test's export saved it, Custom would put the tower back right again
+    choices = exportParts.layoutChoices({"bed": "Bambu Lab A1, P1, X1 (256 x 256 mm)"}, BED_NAMES)
+    assert choices["bed"] == "Bambu Lab P1P, P1S, X1, X1C, X1E (256 x 256 mm)"
