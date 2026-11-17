@@ -538,9 +538,9 @@ def command_execute(args: adsk.core.CommandEventArgs):
             result = export3mf(items, names, folder, fileName, filament if paint else None, layout)
             if result is None:
                 return
-            (painted, paths, tooLarge, noPurge) = result
+            (painted, paths, tooLarge, noPurge, nearExcluded) = result
             where = paths[0] if len(paths) == 1 else f'{len(paths)} files, a file per plate, in {folder}'
-            ui.messageBox(f'Exported {len(items)} part{"" if len(items) == 1 else "s"} to {where}.{plateNote(tooLarge, noPurge, paint)}{paintNote(paint, painted, filament)}', CMD_NAME)
+            ui.messageBox(f'Exported {len(items)} part{"" if len(items) == 1 else "s"} to {where}.{plateNote(tooLarge, noPurge, nearExcluded, paint)}{paintNote(paint, painted, filament)}', CMD_NAME)
         else:
             if not mayReplace([os.path.join(folder, f'{name}.{FORMAT_EXTENSIONS[format]}') for name in names]):
                 return
@@ -563,13 +563,15 @@ def paintNote(paint: bool, painted: int, filament: int) -> str:
     bodies = 'the part' if painted == 1 else f'{painted} parts'
     return f'\n\nLabel text of {bodies} is assigned color {filament}.'
 
-def plateNote(tooLarge: list[str], noPurge: list[int], paint: bool) -> str:
+def plateNote(tooLarge: list[str], noPurge: list[int], nearExcluded: list[int], paint: bool) -> str:
     """Which parts don't fit the bed, and which plates have no free corner for the purge tower"""
     note = ''
     if tooLarge:
         note += '\n\nLarger than the bed, on a plate of its own: ' + ', '.join(tooLarge) + '.'
     if paint and noPurge:
         note += '\n\nNo room kept free for the purge tower on plate ' + ', '.join(str(plate + 1) for plate in noPurge) + ', move the tower or a part in the slicer.'
+    if nearExcluded:
+        note += '\n\nA part comes near the area the printer keeps free on plate ' + ', '.join(str(plate + 1) for plate in nearExcluded) + ', the slicer may warn of collisions.'
     return note
 
 def mayReplace(paths: list[str], removed: list[str] = None) -> bool:
@@ -729,12 +731,13 @@ def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: 
         progress.hide()
     groups = exportParts.printGroups(keys)
     bed = (layout['bedWidth'], layout['bedLength'])
-    # a purge tower only for painted text, where the printer's slicer puts it (click test 17.11.2026, F2: the tower
-    # wasn't in the corner kept free). A box set's box, lid and small parts on plates of their own (Jörg 17.11.2026)
+    # a purge tower only for painted text, where the printer's slicer puts it, the excluded areas of a Bambu Lab printer
+    # chosen kept free (click test 17.11.2026: F2 the tower wasn't in the corner kept free, F1 Bambu warned of a box too
+    # close to the X1's excluded area). A box set's box, lid and small parts on plates of their own (Jörg 17.11.2026)
     purge = layout['purge'] if filament is not None and paintedCount > 0 else 0.0
-    (laid, plates, tooLarge, noPurge) = printLayout.layOutKinds(
+    (laid, plates, tooLarge, noPurge, nearExcluded) = printLayout.layOutKinds(
         [[objects[index] for index in group] for group in groups], [kinds[group[0]] for group in groups], bed,
-        layout['spacing'], purge, printBeds.purgeAnchor(layout['bed']))
+        layout['spacing'], purge, printBeds.purgeAnchor(layout['bed']), printBeds.excludedAreas(layout['bed']))
     titles = [printLayout.plateFileName(fileName, plate, plates) for plate in range(plates)]
     paths = [os.path.join(folder, f'{title}.3mf') for title in titles]
     # the plate files of an earlier export of the name the new one doesn't write, they'd be printed with the new ones
@@ -752,7 +755,7 @@ def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: 
             os.remove(path)
         except OSError as err:
             futil.log(f'{CMD_NAME} older plate file {path} not removed, {err}')
-    return (paintedCount, paths, [names[groups[index][0]] for index in tooLarge], noPurge)
+    return (paintedCount, paths, [names[groups[index][0]] for index in tooLarge], noPurge, nearExcluded)
 
 def printRotationOf(item: ExportItem) -> str:
     """How the part turns into its print orientation, by its role in a box set or its label surface, see printLayout"""

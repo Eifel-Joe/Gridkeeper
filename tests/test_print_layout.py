@@ -237,7 +237,7 @@ def test_a_purge_square_larger_than_the_bed_keeps_every_part_on_one_plate_withou
 
 def test_every_group_stands_on_its_plate_inside_the_bed():
     groups = [[box("a", 500, 500, -20, 84, 84, 30)], [box("b", -300, 10, 7, 42, 42, 10)]]
-    (laid, plates, tooLarge, noPurge) = printLayout.layOut(groups, BED, spacing=5, purge=0)
+    (laid, plates, tooLarge, noPurge, _) = printLayout.layOut(groups, BED, spacing=5, purge=0)
     assert plates == 1 and tooLarge == [] and noPurge == []
     for (plate, meshObject) in laid:
         ((x0, x1), (y0, y1), (z0, _)) = bounds(meshObject.vertices)
@@ -255,7 +255,7 @@ def test_each_plates_parts_are_centered_on_the_bed():
     # Bambu Studio and PrusaSlicer move the parts of a 3MF not made by them to the middle of the bed as one group
     # (Plater.cpp center_instances_around_point), centered already they stay where the layout put them
     groups = [[box(f"p{i}", 0, 0, 0, 60, 40, 10)] for i in range(5)]
-    (laid, plates, _, _) = printLayout.layOut(groups, BED, spacing=5, purge=0)
+    (laid, plates, _, _, _) = printLayout.layOut(groups, BED, spacing=5, purge=0)
     for plate in range(plates):
         ((x0, x1), (y0, y1), _) = plate_bounds(laid, plate)
         assert ((x0 + x1) / 2, (y0 + y1) / 2) == pytest.approx((128, 128))
@@ -263,7 +263,7 @@ def test_each_plates_parts_are_centered_on_the_bed():
 
 def test_the_purge_corner_is_free_after_centering():
     groups = [[box(f"p{i}", 0, 0, 0, 50, 50, 10)] for i in range(7)]
-    (laid, plates, _, noPurge) = printLayout.layOut(groups, BED, spacing=5, purge=50)
+    (laid, plates, _, noPurge, _) = printLayout.layOut(groups, BED, spacing=5, purge=50)
     assert noPurge == []
     corner = (256 - 55, 256 - 55, 251, 251)
     for (plate, meshObject) in laid:
@@ -276,14 +276,14 @@ def test_the_purge_corner_is_free_after_centering():
 
 def test_a_plate_whose_centered_part_takes_the_corner_is_named():
     # a large part alone lies in the middle of the bed in the slicer, whatever the layout says
-    (laid, plates, tooLarge, noPurge) = printLayout.layOut([[box("big", 0, 0, 0, 230, 230, 10)]], BED, spacing=5, purge=50)
+    (laid, plates, tooLarge, noPurge, _) = printLayout.layOut([[box("big", 0, 0, 0, 230, 230, 10)]], BED, spacing=5, purge=50)
     assert tooLarge == [] and noPurge == [0]
 
 
 def test_the_halves_of_a_hinge_keep_their_place_to_each_other():
     bottom = box("BottomHingePart", 0, 0, 0, 30, 10, 31.6)
     top = box("TopHingePart", 0, 12, 0, 30, 10, 31.6)
-    (laid, _, _, _) = printLayout.layOut([[bottom, top], [box("x", 0, 0, 0, 60, 60, 5)]], BED, spacing=5, purge=0)
+    (laid, _, _, _, _) = printLayout.layOut([[bottom, top], [box("x", 0, 0, 0, 60, 60, 5)]], BED, spacing=5, purge=0)
     placed = {meshObject.name: meshObject for (_, meshObject) in laid}
     delta = [tuple(b - a for (a, b) in zip(p, q)) for (p, q) in zip(bottom.vertices, placed["BottomHingePart"].vertices)]
     delta += [tuple(b - a for (a, b) in zip(p, q)) for (p, q) in zip(top.vertices, placed["TopHingePart"].vertices)]
@@ -293,7 +293,7 @@ def test_the_halves_of_a_hinge_keep_their_place_to_each_other():
 
 def test_what_does_not_fit_lies_on_a_second_plate_of_its_own_coordinates():
     groups = [[box("a", 0, 0, 0, 200, 200, 10)], [box("b", 0, 0, 0, 200, 200, 10)]]
-    (laid, plates, _, _) = printLayout.layOut(groups, BED, spacing=5, purge=0)
+    (laid, plates, _, _, _) = printLayout.layOut(groups, BED, spacing=5, purge=0)
     assert plates == 2
     assert sorted(plate for (plate, _) in laid) == [0, 1]
     for plate in (0, 1):
@@ -303,7 +303,7 @@ def test_what_does_not_fit_lies_on_a_second_plate_of_its_own_coordinates():
 
 def test_a_turned_group_is_turned_about_z_whole():
     groups = [[box("long", 0, 0, 0, 100, 300, 10)]]
-    (laid, _, tooLarge, _) = printLayout.layOut(groups, (350, 200), spacing=5, purge=0)
+    (laid, _, tooLarge, _, _) = printLayout.layOut(groups, (350, 200), spacing=5, purge=0)
     assert tooLarge == []
     (_, meshObject) = laid[0]
     assert extent(meshObject.vertices)[:2] == pytest.approx((300, 100))
@@ -327,13 +327,13 @@ def test_growing_the_purge_square_never_makes_the_layout_worse(footprints):
     # review r29-export: the last attempt was taken, one with more plates and no fewer plates without a corner
     (placements, _, _) = printLayout.arrange(footprints, BED, 5, 50)
     first = max(p.plate for p in placements) + 1
-    (_, plates, _, noPurge) = printLayout.layOut(boxes_of(footprints), BED, spacing=5, purge=50)
+    (_, plates, _, noPurge, _) = printLayout.layOut(boxes_of(footprints), BED, spacing=5, purge=50)
     assert plates <= first
     assert len(noPurge) <= first
 
 
 def test_a_part_larger_than_the_bed_is_not_named_twice():
-    (_, _, tooLarge, noPurge) = printLayout.layOut(boxes_of([(300, 300), (30, 30)]), BED, spacing=5, purge=50)
+    (_, _, tooLarge, noPurge, _) = printLayout.layOut(boxes_of([(300, 300), (30, 30)]), BED, spacing=5, purge=50)
     assert tooLarge == [0]
     assert noPurge == []
 
@@ -344,8 +344,8 @@ def test_older_plate_files_of_the_same_name_are_known():
 
 
 # ---------------------------------------------------------------------------
-# Bambu click test 17.11.2026: the purge tower's spot (F2); the excluded area is the user's (Jörg: „Die Sperrzone ist
-# Sache des Users.“)
+# Bambu click test 17.11.2026: the purge tower's spot (F2) and the excluded area of a Bambu Lab printer chosen (F1;
+# Jörg: „Wenn wir den Drucker exakt vorgeben ist die Sperrzone nicht mehr Sache des Users.“)
 # ---------------------------------------------------------------------------
 
 X1_TOWER = (0.644, 0.977)
@@ -373,7 +373,7 @@ def laid_boxes(laid):
     [(99, 30), (13.3, 12.8), (5.1, 31.6), (19.7, 5.1), (19.7, 5.1), (23.6, 36.5), (23.6, 36.5), (23.6, 36.5), (23.6, 36.5)],
 ])
 def test_parts_keep_clear_of_the_tower_spot_after_centering(footprints):
-    (laid, plates, tooLarge, blocked) = printLayout.layOut(boxes_of(footprints), BED, 5, 50, X1_TOWER)
+    (laid, plates, tooLarge, blocked, _) = printLayout.layOut(boxes_of(footprints), BED, 5, 50, X1_TOWER)
     assert blocked == []
     tower = printLayout.purgeSquare(BED, 5, 50, X1_TOWER)
     for (plate, name, box_) in laid_boxes(laid):
@@ -398,7 +398,7 @@ def test_a_shelf_skips_past_the_tower_spot():
 def test_parts_of_different_kinds_never_share_a_plate():
     groups = boxes_of([(230, 188), (230, 188), (23.6, 36.5), (23.6, 36.5), (99, 30), (40, 40)])
     kinds = [("Box 1", "base"), ("Box 1", "lid"), ("Box 1", "parts"), ("Box 1", "parts"), ("Box 1", "parts"), None]
-    (laid, plates, tooLarge, blocked) = printLayout.layOutKinds(groups, kinds, BED, 5, 0, X1_TOWER)
+    (laid, plates, tooLarge, blocked, _) = printLayout.layOutKinds(groups, kinds, BED, 5, 0, X1_TOWER)
     plateOf = {meshObject.name: plate for (plate, meshObject) in laid}
     assert plates == 4
     assert len({plateOf["p0"], plateOf["p1"], plateOf["p2"], plateOf["p5"]}) == 4
@@ -411,7 +411,7 @@ def test_parts_of_different_kinds_never_share_a_plate():
 def test_a_kind_too_many_for_one_plate_takes_more_in_a_row():
     groups = boxes_of([(200, 200), (200, 200), (30, 30)])
     kinds = [("Box 1", "parts"), ("Box 1", "parts"), None]
-    (laid, plates, _, _) = printLayout.layOutKinds(groups, kinds, BED, 5, 0, X1_TOWER)
+    (laid, plates, _, _, _) = printLayout.layOutKinds(groups, kinds, BED, 5, 0, X1_TOWER)
     plateOf = {meshObject.name: plate for (plate, meshObject) in laid}
     assert plates == 3
     assert sorted([plateOf["p0"], plateOf["p1"]]) == [0, 1] and plateOf["p2"] == 2
@@ -420,7 +420,47 @@ def test_a_kind_too_many_for_one_plate_takes_more_in_a_row():
 def test_kinds_report_their_too_large_parts_and_taken_plates_in_the_whole_numbering():
     groups = boxes_of([(30, 30), (300, 300), (230, 230)])
     kinds = [None, ("Box 1", "base"), ("Box 1", "lid")]
-    (laid, plates, tooLarge, blocked) = printLayout.layOutKinds(groups, kinds, BED, 5, 50, X1_TOWER)
+    (laid, plates, tooLarge, blocked, _) = printLayout.layOutKinds(groups, kinds, BED, 5, 50, X1_TOWER)
     plateOf = {meshObject.name: plate for (plate, meshObject) in laid}
     assert tooLarge == [1]
     assert blocked == [plateOf["p2"]]
+
+
+X1_EXCLUDED = [(0, 0, 18, 28)]
+
+
+@pytest.mark.parametrize("footprints", [
+    [(40, 40)] * 12,
+    [(84, 84), (42, 126), (126, 42), (36, 11), (36, 11), (83.5, 41.5)],
+    [(230, 188)],
+    [(99, 30), (13.3, 12.8), (5.1, 31.6), (19.7, 5.1), (19.7, 5.1), (23.6, 36.5), (23.6, 36.5), (23.6, 36.5), (23.6, 36.5)],
+])
+@pytest.mark.parametrize("purge", [0, 50])
+def test_parts_keep_clear_of_the_excluded_area_after_centering(footprints, purge):
+    # Bambu Studio warned: "Box 5×4×6 Base is too close to exclusion area, there may be collisions when printing"
+    (laid, plates, _, taken, nearExcluded) = printLayout.layOut(boxes_of(footprints), BED, 5, purge, X1_TOWER, X1_EXCLUDED)
+    assert nearExcluded == []
+    for (_, name, box_) in laid_boxes(laid):
+        assert not overlap(box_, X1_EXCLUDED[0], 5 - 1e-6), (name, box_)
+
+
+def test_arrange_skips_an_excluded_area_along_the_shelf():
+    (placements, _, _) = printLayout.arrange([(30, 30)] * 3, BED, 5, 0, excluded=X1_EXCLUDED)
+    for p in placements:
+        assert not overlap((p.x, p.y, p.x + 30, p.y + 30), X1_EXCLUDED[0], 5 - 1e-9)
+
+
+def test_a_part_that_cant_keep_clear_of_the_excluded_area_is_named_for_it_not_for_the_tower():
+    # review r29-export: 214 x 214 fits no strip between the edges, centered it comes near the corner
+    (_, plates, tooLarge, taken, nearExcluded) = printLayout.layOut(boxes_of([(214, 214)]), BED, 5, 0, X1_TOWER, X1_EXCLUDED)
+    assert tooLarge == [] and taken == []
+    assert nearExcluded == [0]
+
+
+def test_box_lid_and_small_parts_keep_their_own_plates_clear_of_the_excluded_area():
+    groups = boxes_of([(230, 188), (230, 188), (23.6, 36.5), (23.6, 36.5), (99, 30)])
+    kinds = [("Box 1", "box"), ("Box 1", "lid"), ("Box 1", "parts"), ("Box 1", "parts"), ("Box 1", "parts")]
+    (laid, plates, _, _, nearExcluded) = printLayout.layOutKinds(groups, kinds, BED, 5, 0, X1_TOWER, X1_EXCLUDED)
+    assert plates == 3 and nearExcluded == []
+    for (_, name, box_) in laid_boxes(laid):
+        assert not overlap(box_, X1_EXCLUDED[0], 5 - 1e-6), (name, box_)

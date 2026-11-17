@@ -342,10 +342,19 @@ def test_an_older_plate_file_that_cant_be_removed_doesnt_fail_the_export():
     assert "except OSError" in source
 
 
-def test_the_layout_keeps_the_printers_tower_spot_free():
-    # Bambu click test 17.11.2026 (F2)
+def test_the_layout_keeps_the_printers_tower_spot_and_excluded_area_free():
+    # Bambu click test 17.11.2026 (F1, F2); Jörg: „Wenn wir den Drucker exakt vorgeben ist die Sperrzone nicht mehr
+    # Sache des Users.“
     source = _entry_function("export3mf")
     assert "printBeds.purgeAnchor(layout['bed'])" in source
+    assert "printBeds.excludedAreas(layout['bed'])" in source
+
+
+def test_a_plate_near_an_excluded_area_is_named_painted_or_not():
+    # review r29-export: it was named only with paint, and as without room for the purge tower
+    source = _entry_function("plateNote")
+    assert "nearExcluded" in source
+    assert "if nearExcluded" in source
 
 
 def test_the_purge_square_only_when_label_text_is_painted():
@@ -374,12 +383,10 @@ def test_a_box_sets_box_lid_and_small_parts_go_on_plates_of_their_own(role, tag,
     assert exportParts.plateKind(role, tag, body, setName) == kind
 
 
-def test_the_export_lays_out_by_kind_without_excluded_areas():
-    # Jörg 17.11.2026: „Die Sperrzone ist Sache des Users.“
+def test_the_export_lays_out_by_kind():
     source = _entry_function("export3mf")
     assert "printLayout.layOutKinds(" in source
     assert "exportParts.plateKind(" in source
-    assert "excludedAreas" not in source
 
 
 def test_the_old_shared_bambu_bed_is_read_as_the_p1_and_x1():

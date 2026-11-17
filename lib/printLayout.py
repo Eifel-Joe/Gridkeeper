@@ -100,11 +100,11 @@ def purgeSquare(bed: tuple[float, float], spacing: float, purge: float, anchor: 
 
 
 def arrange(footprints: list[tuple[float, float]], bed: tuple[float, float], spacing: float, purge: float,
-            purgeAnchor: tuple[float, float] = (1.0, 1.0), blocked: list[tuple] = ()) -> tuple[list[Placement], list[int], list[int]]:
+            purgeAnchor: tuple[float, float] = (1.0, 1.0), excluded: list[tuple] = (), blocked: list[tuple] = ()) -> tuple[list[Placement], list[int], list[int]]:
     """
     Where each footprint (width along x, depth along y) goes, in shelves along x, the deepest first, keeping the spacing
     from the bed's edge, from each other and from the areas kept free: the purge square at the tower's spot (see
-    purgeSquare) and any other blocked ones. A shelf skips past an area in its way, a new
+    purgeSquare), the printer's excluded areas and any other blocked ones. A shelf skips past an area in its way, a new
     shelf may start above one. A footprint turns 90° when it fits no other way. One larger than the bed gets a plate
     of its own and is named in the first list, one that fits the bed but not beside the areas gets a plate of its own
     without them and is named in the second. A single part lies in the middle of the bed when that keeps clear
@@ -113,7 +113,7 @@ def arrange(footprints: list[tuple[float, float]], bed: tuple[float, float], spa
     right = bedWidth - spacing
     back = bedDepth - spacing
     square = purgeSquare(bed, spacing, purge, purgeAnchor)
-    areas = list(blocked) + ([square] if square is not None else [])
+    areas = [tuple(area) for area in excluded] + list(blocked) + ([square] if square is not None else [])
 
     def clear(box: tuple) -> bool:
         return not any(_touches(box, area, spacing) for area in areas)
@@ -218,20 +218,41 @@ def _bounds(vertices):
 PURGE_ATTEMPTS = 6
 
 
+def _edgeStrips(excluded: list[tuple], bed: tuple[float, float], axis: int) -> list[tuple]:
+    """
+    Strips along both edges of the bed across the axis, as deep as the excluded areas reach in from their edge: what
+    lies between them stays between them once the slicer centers it, so it can't come to an excluded area
+    """
+    size = bed[axis]
+    reach = 0.0
+    for area in excluded:
+        (low, high) = (area[axis], area[axis + 2])
+        reach = max(reach, min(high, size - low))
+    if reach <= 0:
+        return []
+    if axis == 0:
+        return [(-1e3, -1e3, reach, bed[1] + 1e3), (size - reach, -1e3, size + 1e3, bed[1] + 1e3)]
+    return [(-1e3, -1e3, bed[0] + 1e3, reach), (-1e3, size - reach, bed[0] + 1e3, size + 1e3)]
+
+
 def layOut(groups: list[list], bed: tuple[float, float], spacing: float, purge: float,
-           purgeAnchor: tuple[float, float] = (1.0, 1.0)) -> tuple[list[tuple[int, object]], int, list[int], list[int]]:
+           purgeAnchor: tuple[float, float] = (1.0, 1.0), excluded: list[tuple] = ()) -> tuple[list[tuple[int, object]], int, list[int], list[int], list[int]]:
     """
     The meshes (threeMf.MeshObject) placed on their plates, each group as one block keeping its meshes' places to each
     other (the halves of a hinge), standing on z = 0, in the coordinates of its plate's own file. Returns each mesh
-    with its plate, how many plates, the groups too large for the bed and the plates where the purge square couldn't
-    be kept free, leaving out those of a part too large for the bed, it is named already.
+    with its plate, how many plates, the groups too large for the bed, the plates where the purge square couldn't be
+    kept free and those near an excluded area, apart, so the message names each for what it is (review r29-export),
+    leaving out the plates of a part too large for the bed, it is named already. The excluded areas are those of a
+    Bambu Lab printer chosen (Jörg 17.11.2026: „Wenn wir den Drucker exakt vorgeben ist die Sperrzone nicht mehr Sache
+    des Users.“)
 
     Bambu Studio and PrusaSlicer move the parts of a 3MF not made by them as one group to the middle of the bed
     (Bambu Studio Plater.cpp center_instances_around_point, Bambu probe A 17.11.2026), so each plate's parts are
-    centered here already and stay where they are laid out. Centering moves them, maybe into the purge square: then
-    the layout is tried again with the square blocked where it lies before the move. The best attempt counts: the
-    fewest plates with the square taken, then the fewest plates (review r29-export). A printer's excluded area is the
-    user's (Jörg 17.11.2026: „Die Sperrzone ist Sache des Users.“)
+    centered here already and stay where they are laid out. Centering moves them, maybe into an area kept free: then
+    the layout is tried again with that area blocked where it lies before the move. An excluded area (Bambu's
+    collision warning, click test 17.11.2026) is also tried with strips along both edges as deep as it reaches in,
+    see _edgeStrips. The best attempt counts: the fewest plates near an excluded area, then near the purge square, then
+    the fewest plates (review r29-export)
     """
     footprints = []
     for group in groups:
@@ -239,9 +260,10 @@ def layOut(groups: list[list], bed: tuple[float, float], spacing: float, purge: 
         footprints.append((x1 - x0, y1 - y0))
     (bedWidth, bedDepth) = bed
     square = purgeSquare(bed, spacing, purge, purgeAnchor)
+    excludedAreas = [tuple(area) for area in excluded]
 
     def attempt(blocked: list):
-        (placements, tooLarge, noRoom) = arrange(footprints, bed, spacing, purge, purgeAnchor, blocked)
+        (placements, tooLarge, noRoom) = arrange(footprints, bed, spacing, purge, purgeAnchor, excluded, blocked)
         boxes = []
         for ((width, depth), placement) in zip(footprints, placements):
             (w, d) = (depth, width) if placement.turned else (width, depth)
@@ -254,32 +276,41 @@ def layOut(groups: list[list], bed: tuple[float, float], spacing: float, purge: 
                 bedWidth / 2 - (min(b[0] for b in onPlate) + max(b[2] for b in onPlate)) / 2,
                 bedDepth / 2 - (min(b[1] for b in onPlate) + max(b[3] for b in onPlate)) / 2,
             ))
-        # the plates whose centered parts come too close to the square, and where it lies before the move
-        near = set()
+        # the areas the centered parts come too close to, by plate, and where they lie before the move
+        nearExcluded = set()
+        nearSquare = set()
         moreBlocked = []
         for (box, placement) in zip(boxes, placements):
             (sx, sy) = shifts[placement.plate]
             moved = (box[0] + sx, box[1] + sy, box[2] + sx, box[3] + sy)
-            if square is not None and _touches(moved, square, spacing):
-                near.add(placement.plate)
-                moreBlocked.append((square[0] - sx, square[1] - sy, square[2] - sx, square[3] - sy))
+            for (area, near) in [(area, nearExcluded) for area in excludedAreas] + ([(square, nearSquare)] if square is not None else []):
+                if _touches(moved, area, spacing):
+                    near.add(placement.plate)
+                    moreBlocked.append((area[0] - sx, area[1] - sy, area[2] - sx, area[3] - sy))
         tooLargePlates = {placements[index].plate for index in tooLarge}
         noRoomPlates = {placements[index].plate for index in noRoom}
-        taken = (near | noRoomPlates) - tooLargePlates
-        # what blocking more may help: the plates whose parts all had room beside the square
-        helps = any(plate not in tooLargePlates | noRoomPlates for plate in near)
-        return ((len(taken), plateCount), placements, tooLarge, sorted(taken), shifts, plateCount, moreBlocked if helps else [])
+        nearExcluded -= tooLargePlates
+        # a part with no room beside the areas: near the square when there is one, else near an excluded area
+        (nearSquare if square is not None else nearExcluded).update(noRoomPlates - tooLargePlates)
+        nearSquare -= tooLargePlates
+        # what blocking more may help: the plates whose parts all had room beside the areas
+        stuck = tooLargePlates | noRoomPlates
+        helps = any(plate not in stuck for plate in nearExcluded | nearSquare)
+        score = (len(nearExcluded), len(nearSquare), plateCount)
+        return (score, placements, tooLarge, (sorted(nearSquare), sorted(nearExcluded)), shifts, plateCount, moreBlocked if helps else [])
 
-    blocked: list = []
     best = None
-    for _ in range(PURGE_ATTEMPTS):
-        result = attempt(blocked)
-        if best is None or result[0] < best[0]:
-            best = result
-        if not result[6]:
-            break
-        blocked = blocked + result[6]
-    (_, placements, tooLarge, takenPlates, shifts, plateCount, _) = best
+    variants = [[]] + [strips for strips in (_edgeStrips(excludedAreas, bed, 0), _edgeStrips(excludedAreas, bed, 1)) if strips]
+    for strips in variants:
+        blocked = list(strips)
+        for _ in range(PURGE_ATTEMPTS):
+            result = attempt(blocked)
+            if best is None or result[0] < best[0]:
+                best = result
+            if not result[6]:
+                break
+            blocked = blocked + result[6]
+    (_, placements, tooLarge, (nearSquare, nearExcluded), shifts, plateCount, _) = best
 
     laid = []
     for (group, placement) in zip(groups, placements):
@@ -291,11 +322,11 @@ def layOut(groups: list[list], bed: tuple[float, float], spacing: float, purge: 
         for meshObject in group:
             vertices = [(x + shift[0], y + shift[1], z + shift[2]) for (x, y, z) in meshObject.vertices]
             laid.append((placement.plate, dataclasses.replace(meshObject, vertices=vertices)))
-    return (laid, plateCount, tooLarge, takenPlates)
+    return (laid, plateCount, tooLarge, nearSquare, nearExcluded)
 
 
 def layOutKinds(groups: list[list], kinds: list, bed: tuple[float, float], spacing: float, purge: float,
-                purgeAnchor: tuple[float, float] = (1.0, 1.0)) -> tuple[list[tuple[int, object]], int, list[int], list[int]]:
+                purgeAnchor: tuple[float, float] = (1.0, 1.0), excluded: list[tuple] = ()) -> tuple[list[tuple[int, object]], int, list[int], list[int], list[int]]:
     """
     As layOut, the groups of one kind on plates of their own, the kinds in the order they first come, their plates
     numbered on. A box set's box, lid and small parts are three kinds (Jörg 17.11.2026: „Das Zubehör der Box sollte auf
@@ -308,12 +339,14 @@ def layOutKinds(groups: list[list], kinds: list, bed: tuple[float, float], spaci
     laid = []
     plates = 0
     tooLarge = []
-    taken = []
+    nearSquare = []
+    nearExcluded = []
     for kind in order:
         indices = [index for (index, k) in enumerate(kinds) if k == kind]
-        (kindLaid, kindPlates, kindTooLarge, kindTaken) = layOut([groups[index] for index in indices], bed, spacing, purge, purgeAnchor)
+        (kindLaid, kindPlates, kindTooLarge, kindSquare, kindExcluded) = layOut([groups[index] for index in indices], bed, spacing, purge, purgeAnchor, excluded)
         laid += [(plates + plate, meshObject) for (plate, meshObject) in kindLaid]
         tooLarge += [indices[index] for index in kindTooLarge]
-        taken += [plates + plate for plate in kindTaken]
+        nearSquare += [plates + plate for plate in kindSquare]
+        nearExcluded += [plates + plate for plate in kindExcluded]
         plates += kindPlates
-    return (laid, plates, sorted(tooLarge), sorted(taken))
+    return (laid, plates, sorted(tooLarge), sorted(nearSquare), sorted(nearExcluded))

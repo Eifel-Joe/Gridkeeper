@@ -77,8 +77,10 @@ message names a plate where the square couldn't be kept free, a box as wide as t
 A storage box set goes on plates of its own: the box on one, the lid on one, the latches, handle, pins and hinges on
 a third, more if they don't fit. Other parts exported with it share their own plates.
 
-Areas a printer keeps free, such as the front left corner of the Bambu Lab P1 and X1, are left to you: move a part
-in the slicer when it warns.
+With a Bambu Lab printer chosen, the area it keeps free stays free too: the **P1P, P1S, X1, X1C and X1E** wipe the
+nozzle in the front left corner (18 × 28 mm), and Bambu Studio warns of collisions when a part comes near it. A large
+part such as a box then fills its plate alone. The message names a plate where a part couldn't keep clear. With
+*Custom* or another printer such areas are yours to mind.
 
 The parts of each file are centered on the bed: Bambu Studio, OrcaSlicer and PrusaSlicer move the parts of a 3MF made
 elsewhere to the middle of the bed as a group, so the layout stays as it is when the file is opened. Don't press
