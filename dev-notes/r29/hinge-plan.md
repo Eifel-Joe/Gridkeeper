@@ -28,9 +28,14 @@ Alle drei Varianten haben dieselbe Grundform; Achse des Gelenks entlang z bei (c
 - `lib/gridfinityUtils/predHinge.py`: `createHinge(component, hinge)`; eine Tabelle `HingeShape` je Variante (cx, Maße
   oben), **eine** Funktion für die Grundform, die Extras je Variante als eigene kleine Funktionen.
 - Jede Skizze mit `WorldSketch` (voll bestimmt durch `sketchChain`), auf den Grundebenen oder deren Versatz-Ebenen
-  (keine Skizzen auf Flächen nötig). Jede Form bekommt möglichst eine eigene Skizze mit einem Profil (Ring-Hälfte aus
-  zwei Viertelbögen je Radius, Spalt-Ring, Sechskant, Nase als Achteck). Wo eine Skizze mehrere Profile hat, Auswahl
-  über Fläche bzw. Schwerpunkt-Regel (Brückenlagen).
+  (keine Skizzen auf Flächen nötig). Jede Form bekommt möglichst eine eigene Skizze mit einem Profil (Sechskant, Nase
+  als Achteck). Wo eine Skizze mehrere Profile hat, Auswahl über Fläche (Spalt-Ringe) bzw. Fläche und Seite
+  (Freiraum: zwei Kreise plus Rechteck auf der Schnittseite).
+  - **Stand nach den Fusion-Läufen (l1–l4, `r29_hinge_diag`):** keine Bögen in Skizzen (der Freiraum-Sektor aus zwei
+    Bögen war überbestimmt), jede Skizze eine Form mit genau einem ganz vom Ursprung bestimmten Punkt (Teile über
+    Konstruktionslinien verbunden; die acht einzeln verankerten Brücken-Sehnen lehnte Fusion ab).
+  - **Brücken (Weg A, Jörg: „A: Brücken anders“):** je Lage zwei Kreisabschnitte jenseits paralleler 45°-Sehnen, jeder
+    als eigenes Rechteck in eigener Skizze, das über den Senkungsrand ins volle Auge ragt (Spec-Nachtrag).
 - Längen: Preds „bis Fläche“-Grenzen werden feste Abstände (es gibt keine Benutzerparameter).
 - **Keine Feature-Spiegelung.** Preds Mirror2/3/4 als Gegenstücke direkt gebaut:
   - Nasen: Chamfer1 (Ecken im Querschnitt der Nase) wird zum Achteck-Profil der Nase, so braucht es dafür keine Fase;
@@ -45,8 +50,8 @@ Alle drei Varianten haben dieselbe Grundform; Achse des Gelenks entlang z bei (c
 
 ## Gemeinsame Werkzeuge
 
-Voraussichtlich keine Änderung. Falls `WorldSketch` einen Helfer braucht (z. B. Profilwahl nach Schwerpunkt und
-Fläche zugleich), wird er ergänzt, nicht umgebaut, und gemeldet.
+Keine Änderung an `predSketch`/`sketchChain`. Preds Fasen-Kantenlisten liegen als Daten in
+`lib/gridfinityUtils/predHingeEdges.json` (erzeugt von `dev-notes/r29/hinge-edges-gen.py` aus `r29_walk`).
 
 ## Prüfung
 
