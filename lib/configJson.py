@@ -34,7 +34,7 @@ MM_FIELDS = {
     GENERATOR_BASEPLATE: {
         'baseWidth', 'baseLength', 'xyClearance', 'magnetSocketSize', 'magnetSocketDepth', 'screwHoleSize',
         'screwHeadSize', 'paddingLeft', 'paddingTop', 'paddingRight', 'paddingBottom', 'extraBottomThickness',
-        'verticalClearance', 'connectionHoleSize', 'areaWidth', 'areaLength', 'plateClearance',
+        'verticalClearance', 'connectionHoleSize', 'areaWidth', 'areaLength', 'plateEdgeClearance',
         'bedWidth', 'bedLength', 'bedMargin',
     },
     GENERATOR_LABEL: {'baseWidth', 'freeWidth', 'offsetX', 'offsetY'},
@@ -52,6 +52,23 @@ CELL_LIST_FIELDS = {
 }
 
 GENERATOR_TITLES = {GENERATOR_BIN: 'bin', GENERATOR_BASEPLATE: 'baseplate', GENERATOR_LABEL: 'label'}
+
+# settings older versions saved under another name, their new name and what their value is multiplied by
+RENAMED_FIELDS = {
+    GENERATOR_BIN: {},
+    # the whole gap between plates, now how far each plate's edge stops short of the grid line
+    GENERATOR_BASEPLATE: {'plateClearance': ('plateEdgeClearance', 0.5)},
+}
+
+def renamedSettings(generator: str, settings: dict) -> dict:
+    """Settings with the ones of older versions under their new name, a new one already there wins"""
+    renamed = dict(settings)
+    for (oldName, (newName, factor)) in RENAMED_FIELDS.get(generator, {}).items():
+        if oldName in renamed:
+            value = renamed.pop(oldName)
+            if newName not in renamed and _isNumber(value):
+                renamed[newName] = value * factor
+    return renamed
 
 class ConfigError(Exception):
     pass
@@ -172,7 +189,8 @@ def readConfig(text: str, generator: str, stateClass: type, current: object, cho
         title = GENERATOR_TITLES.get(data.get('generator'))
         raise ConfigError(f'It\'s the config of a {title}, not of a {GENERATOR_TITLES[generator]}' if title else f'It isn\'t the config of a {GENERATOR_TITLES[generator]}')
     fieldTypes = {field.name: field.type for field in dataclasses.fields(stateClass)}
-    loaded = withOlderValues(generator, data['settings'])
+    # renamed ones first, a renamed old setting is there then and keeps its value
+    loaded = withOlderValues(generator, renamedSettings(generator, data['settings']))
     wrongTypes = [
         f'{name} has to be {_typeName(fieldTypes[name])}, not {json.dumps(value)}'
         for (name, value) in loaded.items()
