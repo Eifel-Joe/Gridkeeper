@@ -132,6 +132,15 @@ def labelSurface(tag: tuple | None) -> str | None:
     return settings.get('surface') if isinstance(settings, dict) else None
 
 
+def printGroupKey(role: str | None, occurrencePath: str | None, rotation: str) -> tuple:
+    """
+    What lays a part out together with others: the halves of a hinge, one occurrence and one turn. Every other part goes
+    alone (review r29-export: the pieces of a filled area are bodies of one baseplate component, they were glued into
+    one block larger than the bed)
+    """
+    return (occurrencePath if role == 'Hinge' and occurrencePath is not None else None, rotation)
+
+
 def printGroups(keys: list) -> list[list[int]]:
     """
     The parts laid out as one block, by index, in order: those of one place and one turn (the halves of a hinge, one
@@ -151,7 +160,11 @@ def printGroups(keys: list) -> list[list[int]]:
 
 
 def layoutChoices(section: dict, bedNames: list[str]) -> dict:
-    """The saved bed, its size, spacing and purge square in mm, the defaults for what is missing or broken"""
+    """
+    The saved bed, its size, spacing and purge square in mm, the defaults for what is missing or broken. configparser
+    gives its keys in lower case (review r29-export: bedWidth was never read back)
+    """
+    section = {str(key).lower(): value for (key, value) in section.items()}
     def number(key: str, default: float, minimum: float) -> float:
         try:
             value = float(section.get(key, default))
@@ -162,8 +175,8 @@ def layoutChoices(section: dict, bedNames: list[str]) -> dict:
     bed = section.get('bed', DEFAULT_BED)
     return {
         'bed': bed if bed in bedNames else CUSTOM_BED,
-        'bedWidth': number('bedWidth', DEFAULT_BED_SIZE, 1e-6),
-        'bedLength': number('bedLength', DEFAULT_BED_SIZE, 1e-6),
+        'bedWidth': number('bedwidth', DEFAULT_BED_SIZE, 1e-6),
+        'bedLength': number('bedlength', DEFAULT_BED_SIZE, 1e-6),
         'spacing': number('spacing', DEFAULT_SPACING, 0),
         'purge': number('purge', DEFAULT_PURGE, 0),
     }

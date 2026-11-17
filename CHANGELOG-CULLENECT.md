@@ -16,7 +16,11 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   (CC BY-NC, by Pred). STL files come in print orientation too, STEP stays as designed.
 - **Print bed, spacing, purge tower:** the export dialog picks the bed (the baseplate dialog's printers or a size of
   its own), the spacing between the parts (5 mm) and, with colored label text, a square kept free for the purge tower
-  (50 mm). The parts are spread over the bed, what doesn't fit goes on further plates. The choices are kept.
+  (50 mm). The parts are spread over the bed, what doesn't fit goes on further plates, a 3MF file per plate
+  (Nutzer: „Eine Sortierung kann ja nur bei eine 3MF je Platte anständig durchgeführt werden.“), so the slicer keeps
+  its printer, filament and process settings. The choices are kept.
+- **Box label is a part of the export (p380):** All Gridkeeper parts takes the box label with its text, a Flush label
+  lies on its text.
 
 ### Small parts drawn in code (round 29)
 
