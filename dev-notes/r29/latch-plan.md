@@ -94,3 +94,15 @@ Nach Auftrag/README gilt: Fasen und Rundungen werden nicht gespiegelt, Gegenstü
 
 Falls die direkte Bauweise in Fusion scheitert, wäre die Alternative Preds Körper-Spiegelung wie beim Griff in R28. Die
 spiegelt aber Fasen und Rundungen mit und braucht deshalb eure Freigabe.
+
+## Ergebnis (17.11.2026)
+
+- pytest: 1389 grün, davon 26 in `tests/test_pred_latch.py`. Mutationsprobe: alle sieben Mutationen gefunden.
+- Review per Opus-Subagent:
+  - Am Modul keine Funde. Die Kantenlisten sind per Skript gegen die Walk-JSON abgeglichen.
+  - Zwei Funde am Fusion-Job (Volumen-Genauigkeit, Körper nach dem Zurückrollen) sind vor dem Lauf behoben.
+- Fusion `r29_latch_build.py` Lauf 1 (`r29_latch_build.l1.out`): **BESTANDEN** in 14,9 s.
+  - Volumen 3232,0691. Kein Restkörper gegen `latch.f3d`. Flächen und Kanten 323/820 wie bei Pred.
+  - Sketch1, Sketch2 und Sketch2 right sind voll bestimmt. Die Zeitleiste mit 26 Schritten ist gesund.
+  - Das Volumen nach jedem Feature ist gleich 2 × Preds Halbkörper (größte Abweichung 0,0001).
+  - Der Joint origin stimmt in Ort, Achsen und Winkel 180° mit dem aus `latch.f3d` überein.
