@@ -258,6 +258,43 @@ def compactRowWidths(footprints: list[tuple[float, float]], bed: tuple[float, fl
 def layOut(groups: list[list], bed: tuple[float, float], spacing: float, purge: float,
            purgeAnchor: tuple[float, float] = (1.0, 1.0), excluded: list[tuple] = ()) -> tuple[list[tuple[int, object]], int, list[int], list[int], list[int]]:
     """
+    The groups laid out on their plates, see _layOutOnce, then each plate of several laid out again with its own parts
+    alone: the row width of the parts of all plates is the bed's, the last plate half full lay across the whole bed
+    again (review r29-export-compact). A plate keeps its first layout when alone its parts would need another plate,
+    or come near an area kept free its first layout keeps clear of
+    """
+    result = _layOutOnce(groups, bed, spacing, purge, purgeAnchor, excluded)
+    (laid, plates, tooLarge, nearSquare, nearExcluded) = result
+    if plates < 2:
+        return result
+    # each group's laid meshes, they come in the groups' order
+    perGroup = []
+    position = 0
+    for group in groups:
+        perGroup.append(laid[position:position + len(group)])
+        position += len(group)
+    nearSquare = set(nearSquare)
+    nearExcluded = set(nearExcluded)
+    for plate in range(plates):
+        indices = [index for (index, groupLaid) in enumerate(perGroup) if groupLaid[0][0] == plate]
+        if any(index in tooLarge for index in indices):
+            continue
+        (alone, alonePlates, aloneTooLarge, aloneSquare, aloneExcluded) = _layOutOnce([groups[index] for index in indices], bed, spacing, purge, purgeAnchor, excluded)
+        if alonePlates != 1 or aloneTooLarge or (len(aloneExcluded), len(aloneSquare)) > (int(plate in nearExcluded), int(plate in nearSquare)):
+            continue
+        position = 0
+        for index in indices:
+            perGroup[index] = [(plate, meshObject) for (_, meshObject) in alone[position:position + len(groups[index])]]
+            position += len(groups[index])
+        # the plate's marks as its new layout has them
+        (nearSquare.add if aloneSquare else nearSquare.discard)(plate)
+        (nearExcluded.add if aloneExcluded else nearExcluded.discard)(plate)
+    return ([entry for groupLaid in perGroup for entry in groupLaid], plates, tooLarge, sorted(nearSquare), sorted(nearExcluded))
+
+
+def _layOutOnce(groups: list[list], bed: tuple[float, float], spacing: float, purge: float,
+           purgeAnchor: tuple[float, float] = (1.0, 1.0), excluded: list[tuple] = ()) -> tuple[list[tuple[int, object]], int, list[int], list[int], list[int]]:
+    """
     The meshes (threeMf.MeshObject) placed on their plates, each group as one block keeping its meshes' places to each
     other (the halves of a hinge), standing on z = 0, in the coordinates of its plate's own file. Returns each mesh
     with its plate, how many plates, the groups too large for the bed, the plates where the purge square couldn't be
