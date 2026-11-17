@@ -34,9 +34,9 @@ PARTS = [
 ]
 
 
-# bodies of a part file named after what they are: export file names and snapshots go by body names (a part's only body
-# is named after the part when it's inserted, see predBoxInsert)
-BODY_NAMES = {'hingePinned.f3d': {'Body21': 'Hinge pin'}}
+# Round 29 (Jörg 17.11.2026: "Wir zeichnen die Teile im Code."): the roles whose part predBoxInsert.drawPart draws.
+# The others stay out of the set until their generator is there (integration step by step, a click test after each)
+DRAWN_ROLES: list[str] = []
 
 
 def partsFor(hinge: str) -> list[Part]:
@@ -49,3 +49,9 @@ SEAT_NAMES = [seat for part in PARTS for seat in part.seats]
 def seatJointOriginName(seat: str) -> str:
     """The joint origin on the box a part is jointed to; the joint carries the seat's name"""
     return f'{seat} joint origin'
+
+
+def partsToDraw(hinge: str, drawn: list[str] = None) -> list[Part]:
+    """The parts with the chosen hinge that have a generator (DRAWN_ROLES), in the order of PARTS"""
+    roles = DRAWN_ROLES if drawn is None else drawn
+    return [part for part in partsFor(hinge) if part.role in roles]
