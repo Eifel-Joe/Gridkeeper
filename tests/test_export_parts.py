@@ -393,3 +393,10 @@ def test_the_old_shared_bambu_bed_is_read_as_the_p1_and_x1():
     # review r29-export: the click test's export saved it, Custom would put the tower back right again
     choices = exportParts.layoutChoices({"bed": "Bambu Lab A1, P1, X1 (256 x 256 mm)"}, BED_NAMES)
     assert choices["bed"] == "Bambu Lab P1P, P1S, X1, X1C, X1E (256 x 256 mm)"
+
+
+def test_the_dialog_summary_tells_of_a_file_per_plate():
+    # the user's test 17.11.2026: the summary still said "26 parts, one file" after the export got a 3MF per plate
+    source = open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read()
+    assert "'one file' if format == FORMAT_3MF" not in source
+    assert "a 3MF file per plate" in source
