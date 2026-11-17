@@ -110,3 +110,60 @@ def withMarkings(part, markings: list, paint: bool):
                 painted.add(len(triangles))
             triangles.append(tuple(vertex + offset for vertex in triangle))
     return dataclasses.replace(part, vertices=vertices, triangles=triangles, painted=painted)
+
+
+# Round r29-export (spec dev-notes/specs/2026-11-17-r29-export-drucklage.md): what the print layout needs of a part,
+# and the dialog's bed, spacing and purge choices
+
+# the baseplate dialog's preset (commandCreateBaseplate/printBeds.py) the export starts on, Bambu Lab's 256 mm bed
+DEFAULT_BED = 'Bambu Lab A1, P1, X1 (256 x 256 mm)'
+DEFAULT_BED_SIZE = 256.0
+CUSTOM_BED = 'Custom'
+# mm, Nutzer 17.11.2026 (D2), see printLayout
+DEFAULT_SPACING = 5.0
+DEFAULT_PURGE = 50.0
+
+
+def labelSurface(tag: tuple | None) -> str | None:
+    """The surface of a Cullenect insert (Embossed, Debossed, Flush) from its tag, none for every other part"""
+    if tag is None or tag[0] != 'label' or not isinstance(tag[1], dict):
+        return None
+    settings = tag[1].get('config')
+    return settings.get('surface') if isinstance(settings, dict) else None
+
+
+def printGroups(keys: list) -> list[list[int]]:
+    """
+    The parts laid out as one block, by index, in order: those of one place and one turn (the halves of a hinge, one
+    occurrence), a part without a place (key None) alone
+    """
+    groups: list[list[int]] = []
+    found: dict = {}
+    for (index, key) in enumerate(keys):
+        if key[0] is None:
+            groups.append([index])
+        elif key in found:
+            found[key].append(index)
+        else:
+            found[key] = [index]
+            groups.append(found[key])
+    return groups
+
+
+def layoutChoices(section: dict, bedNames: list[str]) -> dict:
+    """The saved bed, its size, spacing and purge square in mm, the defaults for what is missing or broken"""
+    def number(key: str, default: float, minimum: float) -> float:
+        try:
+            value = float(section.get(key, default))
+        except (TypeError, ValueError):
+            return default
+        return value if value >= minimum and value == value else default
+
+    bed = section.get('bed', DEFAULT_BED)
+    return {
+        'bed': bed if bed in bedNames else CUSTOM_BED,
+        'bedWidth': number('bedWidth', DEFAULT_BED_SIZE, 1e-6),
+        'bedLength': number('bedLength', DEFAULT_BED_SIZE, 1e-6),
+        'spacing': number('spacing', DEFAULT_SPACING, 0),
+        'purge': number('purge', DEFAULT_PURGE, 0),
+    }
