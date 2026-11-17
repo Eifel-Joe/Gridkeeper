@@ -4,6 +4,7 @@ and how the colored text bodies of a part go into its mesh, painted for the slic
 """
 
 import ast
+import pytest
 import os
 import importlib.util
 
@@ -341,14 +342,41 @@ def test_an_older_plate_file_that_cant_be_removed_doesnt_fail_the_export():
     assert "except OSError" in source
 
 
-def test_the_layout_keeps_the_printers_tower_spot_and_excluded_area_free():
-    # Bambu click test 17.11.2026 (F1, F2)
+def test_the_layout_keeps_the_printers_tower_spot_free():
+    # Bambu click test 17.11.2026 (F2)
     source = _entry_function("export3mf")
     assert "printBeds.purgeAnchor(layout['bed'])" in source
-    assert "printBeds.excludedAreas(layout['bed'])" in source
 
 
 def test_the_purge_square_only_when_label_text_is_painted():
     # a box set has no text: with Color label text on nothing is painted and no tower is printed
     source = _entry_function("export3mf")
     assert "if filament is not None and paintedCount > 0" in source
+
+
+@pytest.mark.parametrize("role, tag, body, setName, kind", [
+    ("Box", "box", "Base", "Box 5×4×6", ("Box 5×4×6", "box")),
+    ("Lid", "box", "Lid", "Box 5×4×6", ("Box 5×4×6", "lid")),
+    ("Latch", None, "Latch", "Box 5×4×6", ("Box 5×4×6", "parts")),
+    ("Handle", None, "Handle", "Box 5×4×6", ("Box 5×4×6", "parts")),
+    ("Handle pin", None, "Handle pin", "Box 5×4×6", ("Box 5×4×6", "parts")),
+    ("Hinge", None, "Hinge pin", "Box 5×4×6", ("Box 5×4×6", "parts")),
+    # a box built as bodies in the root: no set, its bodies by name
+    (None, "box", "Base", None, (None, "box")),
+    (None, "box", "Lid", None, (None, "lid")),
+    (None, "bin", "Gridfinity bin 1x2x3", None, None),
+    (None, "label", "Gridfinity label", None, None),
+    (None, "boxLabel", "Box label", None, None),
+])
+def test_a_box_sets_box_lid_and_small_parts_go_on_plates_of_their_own(role, tag, body, setName, kind):
+    # Jörg 17.11.2026: „Das Zubehör der Box sollte auf eine separate Platte. Eine Box müsste je nach Größe 3 Platten
+    # gesamt ergeben.“
+    assert exportParts.plateKind(role, tag, body, setName) == kind
+
+
+def test_the_export_lays_out_by_kind_without_excluded_areas():
+    # Jörg 17.11.2026: „Die Sperrzone ist Sache des Users.“
+    source = _entry_function("export3mf")
+    assert "printLayout.layOutKinds(" in source
+    assert "exportParts.plateKind(" in source
+    assert "excludedAreas" not in source

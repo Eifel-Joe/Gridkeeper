@@ -74,9 +74,11 @@ thirds of the width, for the P1, X1, P2S, X2D and H2 printers; back left for the
 the H3C. For the other printers and *Custom* it is the back right corner: move the slicer's purge tower there. The
 message names a plate where the square couldn't be kept free, a box as wide as the bed for one.
 
-The **P1P, P1S, X1, X1C and X1E** keep the front left corner of the bed free (18 × 28 mm, where the nozzle is wiped).
-No part comes near it, so Bambu Studio doesn't warn of a collision; a large part such as a box then fills a plate
-alone.
+A storage box set goes on plates of its own: the box on one, the lid on one, the latches, handle, pins and hinges on
+a third, more if they don't fit. Other parts exported with it share their own plates.
+
+Areas a printer keeps free, such as the front left corner of the Bambu Lab P1 and X1, are left to you: move a part
+in the slicer when it warns.
 
 The parts of each file are centered on the bed: Bambu Studio, OrcaSlicer and PrusaSlicer move the parts of a 3MF made
 elsewhere to the middle of the bed as a group, so the layout stays as it is when the file is opened. Don't press
