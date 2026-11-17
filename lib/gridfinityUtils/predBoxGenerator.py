@@ -109,9 +109,9 @@ class _Builder:
         return self.extrude(profiles, operation, distance * sign, start=offset * sign if offset is not None else None,
                             bodies=bodies, name=name)
 
-    def _pick(self, step, values, faces=False, body=None):
+    def _pick(self, step, values, faces=False, body=None, mirrored=False):
         body = body or self.base
-        expected = predBoxEdges.expectedItems(step, values)
+        expected = predBoxEdges.expectedItems(step, values, mirrored)
         edgeItems = [item for item in expected if item['kind'] != 'face']
         faceItems = [item for item in expected if item['kind'] == 'face']
         picked = []
@@ -121,9 +121,9 @@ class _Builder:
             picked += predBoxEdges.matchItems(faceItems, list(body.faces), _faceItem)
         return picked
 
-    def chamfer(self, step, name=None, body=None):
+    def chamfer(self, step, name=None, body=None, mirrored=False):
         [edgeSet] = predBoxEdges.PRED_EDGES[step]
-        items = self._pick(step, self.dims.values(), body=body)
+        items = self._pick(step, self.dims.values(), body=body, mirrored=mirrored)
         chamfers = self.features.chamferFeatures
 
         def add(tangentChain):
@@ -136,9 +136,9 @@ class _Builder:
         self.step(step)
         return feature
 
-    def fillet(self, step, name=None, body=None):
+    def fillet(self, step, name=None, body=None, mirrored=False):
         [edgeSet] = predBoxEdges.PRED_EDGES[step]
-        items = self._pick(step, self.dims.values(), body=body)
+        items = self._pick(step, self.dims.values(), body=body, mirrored=mirrored)
         fillets = self.features.filletFeatures
 
         def add(tangentChain):
@@ -152,11 +152,11 @@ class _Builder:
         return feature
 
     def mirror(self, features, plane, step):
-        # Identical copies the mirrored faces. Fusion's default Adjust finds the fillet and chamfer edges again on the
-        # other side and failed #42 Mirror6 with FILLET_NO_EDGE_FOUND once the box came through the command (grounded
-        # container, tagged parameters), though the geometry was the same; leaving out any one of six features also
-        # let it pass. Identical and Optimized built it with the same volume (fusion-auftraege/r27_diag2.log, variants
-        # 7 to 11). Identical rather than Optimized because it searches no edges at all, like the cell pattern (#16).
+        # Pred's mirrors #72, #73, #80 and #81. Identical copies the mirrored faces, Fusion's default Adjust finds the
+        # fillet and chamfer edges again on the other side. Adjust failed Pred's #42 Mirror6 depending on document state
+        # with no part in the geometry (fusion-auftraege/r27_diag2.log), Identical failed it too in r27_cmd, so the
+        # right handle holders are built as a counterpart instead, see walls. These four passed with both compute types
+        # so far; Identical like the cell pattern (#16), r27_compare gives Pred's shape with it.
         mirrors = self.features.mirrorFeatures
         mirrorInput = mirrors.createInput(collection(features), plane)
         mirrorInput.patternComputeOption = adsk.fusion.PatternComputeOptions.IdenticalPatternCompute
@@ -355,31 +355,62 @@ class _Builder:
         self.step('#29 Extrude10')
 
         self.holders()
+        # the right half as the left one's counterpart, in place of Pred's #42 Mirror6: Fusion failed to replay that
+        # feature mirror of chamfers and fillets (FILLET_NO_EDGE_FOUND, CHAMFER_NO_EDGE_FOUND) depending on document
+        # state with no part in the geometry: a grounded container, tagged parameters, an attribute of the design.
+        # Fusion's Identical compute type only moved the failure (fusion-auftraege/r27_diag2.log, r27_cmd.out). Built
+        # itself, every chamfer and fillet finds its own edges, mirrored across the box middle (Nutzer 17.11.2026: "Ja, A
+        # bauen"). Same shape as Pred, the timeline differs: no Mirror6, the right half's features follow the left's.
+        self.holders(mirrored=True)
         self.fillet('#43 Fillet11')
 
-    def holders(self):
-        """Pred's LabelAndHandleHolder and HandleBoltHoles for the left half, mirrored to the right (#30 to #42)"""
+    def holders(self, mirrored=False):
+        """Pred's LabelAndHandleHolder and HandleBoltHoles for the left half (#30 to #41); mirrored, the right half's
+        counterpart: x across the box middle, extrudes along x the other way, the chamfers' and fillets' edges mirrored"""
         c = self.component
         cut = adsk.fusion.FeatureOperations.CutFeatureOperation
         join = adsk.fusion.FeatureOperations.JoinFeatureOperation
         y = mm(7.5)
-        lab, mid, midX = self.lab, self.mid, self.dims.midX
+        midX = self.dims.midX
+        side = ' right' if mirrored else ''
 
-        blocks = WorldSketch(c, self.frontPlane, 'HandleHolders')
+        def fx(x: Dim) -> Dim:
+            return midX * 2 - x if mirrored else x
+
+        def lab(x):
+            return fx(self.lab(x))
+
+        mid = self.mid
+        # an extrude along x points the other way on the right
+        alongX = -1 if mirrored else 1
+
+        def step(name):
+            self.step(name + side)
+
+        def named(name):
+            return name + side
+
+        def chamfer(name):
+            return self.chamfer(name, name=named(name.split(' ')[1]), mirrored=mirrored)
+
+        def fillet(name):
+            return self.fillet(name, name=named(name.split(' ')[1]), mirrored=mirrored)
+
+        blocks = WorldSketch(c, self.frontPlane, named('HandleHolders'))
         for xa, xb in ((60.25, 65.25), (72.75, 77.75)):
             blocks.rectangle((lab(xa), y, mid(14.7)), (lab(xb), y, mid(14.7)), (lab(xb), y, mid(34.7)), (lab(xa), y, mid(34.7)))
         blocks.close()
-        self.step('#30 LabelAndHandleHolder')
-        handleHolders = self.along(list(blocks.sketch.profiles), join, 1, mm(-7.5), name='Handle holders')
-        self.step('#31 Extrude46')
-        chamfer26 = self.chamfer('#32 Chamfer26')
-        fillet10 = self.fillet('#33 Fillet10')
+        step('#30 LabelAndHandleHolder')
+        self.along(list(blocks.sketch.profiles), join, 1, mm(-7.5), name=named('Handle holders'))
+        step('#31 Extrude46')
+        chamfer('#32 Chamfer26')
+        fillet('#33 Fillet10')
 
         def P(x, z):
-            return (x if isinstance(x, Dim) else lab(x), y, mid(z))
+            return (fx(x) if isinstance(x, Dim) else lab(x), y, mid(z))
 
         # the label rail: left side and bottom up to the middle, open at the top (Pred's profiles 4 to 10 and 13)
-        rail = WorldSketch(c, self.frontPlane, 'LabelRail')
+        rail = WorldSketch(c, self.frontPlane, named('LabelRail'))
         rail.line(P(midX, 10.95), P(84.75, 10.95))
         rail.arc(P(84.75, 15.95), P(84.75, 10.95), P(79.75, 15.95))
         rail.line(P(79.75, 15.95), P(79.75, 33.45))
@@ -387,11 +418,11 @@ class _Builder:
         rail.polyline([P(84.75, 38.45), P(84.75, 35.95), P(82.25, 33.45), P(82.25, 15.95), P(84.75, 13.45),
                        P(midX, 13.45), P(midX, 10.95)], closed=False)
         rail.close()
-        self.step('#34 HandleBoltHoles')
-        railJoin = self.along(list(rail.sketch.profiles), join, 1, mm(-2.5), name='Label rail')
-        self.step('#35 Extrude49')
+        step('#34 HandleBoltHoles')
+        self.along(list(rail.sketch.profiles), join, 1, mm(-2.5), name=named('Label rail'))
+        step('#35 Extrude49')
         # the slot the label slides in: the rail without its outer band below the top corner (profiles 5 and 6)
-        slot = WorldSketch(c, self.frontPlane, 'LabelSlot')
+        slot = WorldSketch(c, self.frontPlane, named('LabelSlot'))
         slot.line(P(midX, 12.2), P(84.75, 12.2))
         slot.arc(P(84.75, 15.95), P(84.75, 12.2), P(81, 15.95))
         slot.polyline([P(81, 15.95), P(81, 33.45), P(79.75, 33.45)], closed=False)
@@ -399,27 +430,25 @@ class _Builder:
         slot.polyline([P(84.75, 38.45), P(84.75, 35.95), P(82.25, 33.45), P(82.25, 15.95), P(84.75, 13.45),
                        P(midX, 13.45), P(midX, 12.2)], closed=False)
         slot.close()
-        railCut = self.along(list(slot.sketch.profiles), cut, 1, mm(-1.25), name='Label slot')
-        self.step('#36 Extrude51')
+        self.along(list(slot.sketch.profiles), cut, 1, mm(-1.25), name=named('Label slot'))
+        step('#36 Extrude51')
 
-        boltPlane = self.offsetPlane(c.yZConstructionPlane, 0, lab(77.75), 'HandleBoltPlane')
-        bolt = WorldSketch(c, boltPlane, 'HandleBoltHoles')
+        boltPlane = self.offsetPlane(c.yZConstructionPlane, 0, lab(77.75), named('HandleBoltPlane'))
+        bolt = WorldSketch(c, boltPlane, named('HandleBoltHoles'))
         center = (lab(77.75), mm(3.75), mid(24.7))
         for diameter in (3.0, 3.5, 5.5):
             bolt.circle(center, mm(diameter))
         bolt.close()
         disc, ring, counterbore = bolt.profilesByArea([math.pi * 1.5 ** 2, math.pi * (1.75 ** 2 - 1.5 ** 2),
                                                        math.pi * (2.75 ** 2 - 1.75 ** 2)])
-        hole = self.along([disc, ring], cut, 0, mm(-5), name='Handle bolt hole')
-        self.step('#37 Extrude47')
-        pinHole = self.along([disc], cut, 0, mm(-17.5), name='Handle pin hole')
-        self.step('#38 Extrude55')
-        sink = self.along([counterbore], cut, 0, mm(-3.5), name='Handle bolt head')
-        self.step('#39 Extrude48')
-        chamfer29 = self.chamfer('#40 Chamfer29')
-        chamfer30 = self.chamfer('#41 Chamfer30')
-        self.mirror([handleHolders, chamfer26, fillet10, railJoin, railCut, hole, sink, chamfer29, chamfer30, pinHole],
-                    self.midXPlane, '#42 Mirror6')
+        self.along([disc, ring], cut, 0, mm(-5 * alongX), name=named('Handle bolt hole'))
+        step('#37 Extrude47')
+        self.along([disc], cut, 0, mm(-17.5 * alongX), name=named('Handle pin hole'))
+        step('#38 Extrude55')
+        self.along([counterbore], cut, 0, mm(-3.5 * alongX), name=named('Handle bolt head'))
+        step('#39 Extrude48')
+        chamfer('#40 Chamfer29')
+        chamfer('#41 Chamfer30')
 
     # -- Pred #44 to #59: catch tabs, catch slides, stacking tabs ------------------------------------------------
 

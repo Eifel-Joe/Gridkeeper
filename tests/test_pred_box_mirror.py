@@ -1,8 +1,7 @@
 """
-The storage box's feature mirrors (round 27, Pred's #42 Mirror6) copy the mirrored faces instead of finding the
-fillet and chamfer edges again on the other side. Fusion's default compute type Adjust failed #42 Mirror6 with
-FILLET_NO_EDGE_FOUND as soon as the box was built through the command (grounded container, tagged parameters),
-Identical and Optimized built it with the same volume (fusion-auftraege/r27_diag2.log, variants 7 to 11).
+The storage box's feature mirrors (round 27, Pred's #72, #73, #80, #81) copy the mirrored faces instead of finding the
+fillet and chamfer edges again on the other side (Fusion's default compute type Adjust, fusion-auftraege/r27_diag2.log).
+Pred's #42 Mirror6 failed with both, the right handle holders are built as the left ones' counterpart instead.
 """
 
 import sys
@@ -60,9 +59,24 @@ def _builder(monkeypatch):
 
 def test_the_mirror_copies_the_faces(monkeypatch):
     builder, steps = _builder(monkeypatch)
-    feature = builder.mirror(["holders", "fillet10"], "midXPlane", "#42 Mirror6")
+    feature = builder.mirror(["frontTabs", "frontTabChamfer"], "midXPlane", "#73 Mirror2")
     [mirrorInput] = builder.features.mirrorFeatures.added
     assert mirrorInput.patternComputeOption == COMPUTE.IdenticalPatternCompute
-    assert mirrorInput.features == ["holders", "fillet10"] and mirrorInput.plane == "midXPlane"
-    assert feature.name == "Mirror6"
-    assert steps == ["#42 Mirror6"]
+    assert mirrorInput.features == ["frontTabs", "frontTabChamfer"] and mirrorInput.plane == "midXPlane"
+    assert feature.name == "Mirror2"
+    assert steps == ["#73 Mirror2"]
+
+
+def test_the_right_holders_pick_the_mirrored_edges(monkeypatch):
+    """The right handle and label holders' chamfers and fillets look up the left ones' edges mirrored across the box
+    middle (round 27: built as the counterpart instead of Pred's #42 Mirror6)"""
+    edges = sys.modules[generator.__name__.rsplit(".", 1)[0] + ".predBoxEdges"]
+    values = {"outerWidth": 23.0, "outerLength": 18.8, "midX": 11.5, "midY": 9.4, "bodyTop": 5.22, "midZ": 2.47,
+              "labelWidth": 7.05, "catchSlideDepth": 4.3}
+    left = edges.expectedItems("#40 Chamfer29", values)
+    right = edges.expectedItems("#40 Chamfer29", values, mirrored=True)
+    monkeypatch.setattr(generator, "_edgeItem", lambda edge: edge)
+    builder = generator._Builder.__new__(generator._Builder)
+    builder.base = SimpleNamespace(edges=left + right, faces=[])
+    assert builder._pick("#40 Chamfer29", values, mirrored=True) == right
+    assert builder._pick("#40 Chamfer29", values) == left
