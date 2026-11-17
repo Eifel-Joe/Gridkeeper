@@ -169,3 +169,18 @@ def usedBodyIds(design: adsk.fusion.Design, tagName: str) -> set[str]:
     """The ids of the bodies with the tag, so a new one gets another, see tagBody"""
     return {str(tag['id']) for (_, tag) in findTaggedBodies(design, tagName) if tag.get('id')}
 
+
+# the part of a set whose body answers for the set in the right-click menu: a box set's components are Box and Lid
+# (boxBuilder.BOX_COMPONENT_NAME, kept as their part role), the settings sit on both, the box stands for the set
+SET_ANSWERING_ROLE = 'Box'
+
+def menuTagOf(ownTags: list[tuple], children: list[tuple[str, list[tuple]]]) -> tuple | None:
+    """
+    What a component selected in the browser stands for in the right-click menu: its one tagged body; for a box set,
+    which holds no body itself, the body of its component with the role Box (click test 17.11.2026, F1: the menu on
+    "Box 5×4×6" had export only, rebuild, settings and clone stood on Box:1 alone). Children are (part role, tags)
+    """
+    if ownTags:
+        return ownTags[0] if len(ownTags) == 1 else None
+    answering = [tags for (role, tags) in children if role == SET_ANSWERING_ROLE]
+    return answering[0][0] if len(answering) == 1 and len(answering[0]) == 1 else None
