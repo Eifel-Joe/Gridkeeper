@@ -119,3 +119,16 @@ def test_a_timeline_group_per_label():
 def test_execute_and_preview_share_the_build():
     assert "generateBoxLabel(args)" in _function(ENTRY, "command_execute")
     assert "generateBoxLabel(args, mayChangeDocument=False)" in _function(ENTRY, "command_preview")
+
+
+def test_free_labels_count_as_taken_room_by_their_body_names():
+    """Review: the bodies aren't tagged, placementUtils finds them by name: 'Box label', 'Box label text 1', ..."""
+    source = _function(BUILDER, "_buildBoxLabel")
+    assert "predBoxLabel.PLATE_BODY_NAME," in source
+
+
+def test_bodies_in_the_root_are_moved_to_the_free_spot():
+    """Review: a preview in a part design builds into the root, without an occurrence to carry the spot or a joint"""
+    source = _function(BUILDER, "_buildBoxLabel")
+    assert "if box is None or not place.isComponent:" in source
+    assert "placementUtils.moveBodies(" in source

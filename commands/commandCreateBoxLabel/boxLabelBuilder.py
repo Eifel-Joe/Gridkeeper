@@ -23,7 +23,6 @@ ICONS_FOLDER = os.path.join(
 # user parameter names are stored in user documents, keep these literal
 PARAMETER_BASE_NAME = 'gfBoxLabel'
 TEXT_PARAMETERS = ['bigText', 'text1', 'text2']
-LABEL_NAME_PREFIX = 'Gridkeeper box label'
 HOLDER_JOINT_SUFFIX = ' in holder'
 # grid free spots are looked for on, without a box
 PLACEMENT_CELL = 4.2
@@ -116,18 +115,22 @@ def _buildBoxLabel(
     place = assembly.partPlace(des, plan, tagUtils.KIND_BOXES, None)
     originalTimelinePosition = des.timeline.markerPosition
 
-    # a free spot before anything of the label is there; jointed to a box, the joint places it
+    # a free spot before anything of the label is there; jointed to a box, the joint places it. Bodies in the root (a
+    # preview in a part design) can't be jointed, they go to a free spot too (review)
     transform = adsk.core.Matrix3D.create()
-    if box is None:
+    spot = None
+    if box is None or not place.isComponent:
         (x, y) = placementUtils.findPlacement(
             des,
             [tagUtils.TAG_BOX, tagUtils.TAG_LABEL, tagUtils.TAG_BIN, tagUtils.TAG_BASEPLATE],
-            LABEL_NAME_PREFIX,
+            # the label's bodies aren't tagged, found by name: 'Box label', 'Box label text 1', ... (review)
+            predBoxLabel.PLATE_BODY_NAME,
             (0, 0, width, height),
             PLACEMENT_CELL,
             PLACEMENT_CELL,
         )
-        transform.translation = adsk.core.Vector3D.create(x + width / 2, y + height / 2, 0)
+        spot = (x + width / 2, y + height / 2)
+        transform.translation = adsk.core.Vector3D.create(spot[0], spot[1], 0)
     if place.isComponent:
         occurrence = assembly.addOccurrence(des, place.parent, name, transform, isMovable=True)
         occurrence.activate()
@@ -158,6 +161,9 @@ def _buildBoxLabel(
         markingOccurrence=textOccurrence,
     )
     appearanceUtils.colorPart(marking, textOccurrence, state.textColor)
+    if occurrence is None and spot is not None:
+        # no occurrence to carry the spot: the bodies themselves move there
+        placementUtils.moveBodies([plate] + marking, spot[0], spot[1], component, name=f'{name} placement')
 
     if box is not None and occurrence is not None:
         # the label moves into the holder, the box stays where it is
