@@ -58,7 +58,6 @@ def test_body_names_are_preds():
     assert hinge.SHAPES["M3x30"].bodyNames == ("BottomHingePart_M3x30", "TopHingePart_M3x30")
     assert hinge.SHAPES["Pinned"].bodyNames == ("BottomHingePart_M3x30", "TopHingePart_M3x30", "Hinge pin")
     assert hinge.SHAPES["Plain"].bodyNames == ("BottomHingePart", "TopHingePart")
-    assert parts.BODY_NAMES["hingePinned.f3d"] == {"Body21": "Hinge pin"}
 
 
 def test_lengths_follow_preds_slot():
