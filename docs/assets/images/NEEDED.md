@@ -18,6 +18,7 @@ from GridfinityGenerator. The models in `docs/assets/models` are rendered by a F
   and an insert opened in Bambu Studio, for `docs/working/export.md`.
 - Storage boxes (round 28): a render of a box 5 × 4 × 6 with its lid and the small parts (latches, handle with its
   pins, hinges) for [Storage boxes](../../boxes.md), in place of `box-5x4x6.png`.
+- Storage boxes (round 28): `dialog-box.png` again, now with the group *Small parts* and its **Hinge** choice.
 
 ## Taken (click test 17.11.2026, main session)
 
@@ -26,3 +27,9 @@ from GridfinityGenerator. The models in `docs/assets/models` are rendered by a F
 - `dialog-baseplate-magnet-size.png`: [Baseplates](../../baseplates.md).
 - `bin-lip-dialog.png`: [Body, walls and lip](../../bins/body.md).
 - `context-menu-export-scene.png`: [Exporting for printing](../../working/export.md).
+
+## Taken (update check, PR #4)
+
+- [x] Update check (p310): `update-dialog-available.png`, `updates-dialog-installed.png`, `updates-dialog-git.png`
+  for [Installation and updates](../../getting-started/installation.md#update), from the click test of 17.11.2026 with
+  a test installation 0.9.0 built from the branch (so they show 0.9.0 → 1.0.0, not Gridkeeper 1.0.0 itself).

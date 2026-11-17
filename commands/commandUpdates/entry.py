@@ -1,0 +1,290 @@
+import datetime
+import os
+import threading
+import webbrowser
+
+import adsk.core
+
+from ...lib import fusion360utils as futil
+from ...lib import updateCheck
+from ...lib import updateInstall
+from ... import config
+
+# The update check (p310, dev-notes/specs/2026-11-17-update-hinweis-design.md): once a day at startup a background
+# thread asks GitHub for a newer Gridkeeper, a custom event brings the answer to Fusion's main thread, which shows it
+# in this command's dialog. The same dialog, opened from Utilities > Add-ins, shows the version and turns the check
+# off. What's Fusion-free is in lib/updateCheck.py and lib/updateInstall.py
+
+app = adsk.core.Application.get()
+ui = app.userInterface
+
+CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdUpdates'
+CMD_NAME = 'Gridkeeper updates'
+CMD_DESCRIPTION = 'Shows the Gridkeeper version, checks for a new one and turns the check at startup on or off'
+ICON_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources', '')
+# Utilities > Add-ins, out of the way of the generator commands, as the test commands
+WORKSPACE_ID = 'FusionSolidEnvironment'
+PANEL_ID = 'SolidScriptsAddinsPanel'
+
+ADDIN_FOLDER = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# the answer of the background check, see checkInBackground
+RESULT_EVENT_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_updateCheckResult'
+# the dialog waits for Fusion to be idle, tried again this often this many seconds apart, see result_custom_event
+SHOW_RETRY_SECONDS = 30
+SHOW_RETRIES = 10
+
+INFO_INPUT = 'updateInfo'
+CHECK_AT_STARTUP_INPUT = 'checkAtStartup'
+CHECK_NOW_INPUT = 'checkNow'
+UPDATE_NOW_INPUT = 'updateNow'
+RELEASE_NOTES_INPUT = 'releaseNotes'
+
+local_handlers = []
+event_handlers = []
+# the version of the code running, read once at start: the manifest on disk may already be the next one
+runningVersion: tuple[int, int, int] | None = None
+# the newer release the last check found, none before one or when there is none
+pendingRelease: updateCheck.Release | None = None
+# log lines of the background thread, which mustn't call Fusion, written by the custom event
+pendingLogs: list[str] = []
+showRetries = 0
+stopped = False
+# the timer waiting for Fusion to be idle, cancelled at stop (review finding 3)
+retryTimer: threading.Timer | None = None
+# the dialog opened by the check at startup has Update now and Later as its buttons (spec E6), the one opened from
+# the menu shows the version and the settings
+openedByCheck = False
+# an update is being installed, a second click or Check now waits (review finding 1)
+installing = False
+
+def start():
+    global runningVersion, stopped, showRetries
+    stopped = False
+    showRetries = 0
+    runningVersion = updateCheck.manifestVersion(ADDIN_FOLDER)
+    cmd_def = ui.commandDefinitions.itemById(CMD_ID)
+    if not cmd_def:
+        cmd_def = ui.commandDefinitions.addButtonDefinition(CMD_ID, CMD_NAME, CMD_DESCRIPTION, ICON_FOLDER)
+    futil.add_handler(cmd_def.commandCreated, command_created)
+    try:
+        panel = ui.workspaces.itemById(WORKSPACE_ID).toolbarPanels.itemById(PANEL_ID)
+        if panel is not None and panel.controls.itemById(CMD_ID) is None:
+            panel.controls.addCommand(cmd_def)
+    except Exception as err:
+        futil.log(f'{CMD_NAME} button not added, {err}')
+    # left over when the add-in wasn't stopped
+    app.unregisterCustomEvent(RESULT_EVENT_ID)
+    futil.add_handler(app.registerCustomEvent(RESULT_EVENT_ID), result_custom_event, local_handlers=event_handlers)
+    settings = updateCheck.readSettings(updateCheck.settingsPath(ADDIN_FOLDER))
+    today = datetime.date.today()
+    if updateCheck.isDue(settings, today):
+        # a failed check counts too, a computer without network doesn't ask at every start
+        updateCheck.writeSettings(updateCheck.settingsPath(ADDIN_FOLDER), {**settings, 'lastCheck': today.isoformat()})
+        # daemon: Fusion never waits for it, neither at startup nor when it closes
+        threading.Thread(target=checkInBackground, name='Gridkeeper update check', daemon=True).start()
+    else:
+        threading.Thread(target=cleanUpInBackground, name='Gridkeeper update cleanup', daemon=True).start()
+
+def stop():
+    global stopped, event_handlers, retryTimer
+    stopped = True
+    if retryTimer is not None:
+        retryTimer.cancel()
+        retryTimer = None
+    app.unregisterCustomEvent(RESULT_EVENT_ID)
+    event_handlers = []
+    panel = ui.workspaces.itemById(WORKSPACE_ID).toolbarPanels.itemById(PANEL_ID)
+    control = panel.controls.itemById(CMD_ID) if panel is not None else None
+    if control:
+        control.deleteMe()
+    cmd_def = ui.commandDefinitions.itemById(CMD_ID)
+    if cmd_def:
+        cmd_def.deleteMe()
+
+def cleanUpInBackground():
+    """What an update left in .gridkeeper-update but the newest backup, see updateInstall.cleanupBackups"""
+    try:
+        updateInstall.cleanupBackups(ADDIN_FOLDER)
+    except Exception as err:
+        pendingLogs.append(f'Gridkeeper update cleanup failed: {err}')
+
+def checkInBackground():
+    """Runs in its own thread, Fusion's API is only called through the custom event"""
+    global pendingRelease
+    cleanUpInBackground()
+    try:
+        release = updateCheck.checkForUpdate(ADDIN_FOLDER, log=pendingLogs.append)
+    except Exception as err:
+        pendingLogs.append(f'Gridkeeper update check failed: {err}')
+        release = None
+    if release is not None:
+        pendingRelease = release
+    if not stopped:
+        app.fireCustomEvent(RESULT_EVENT_ID, 'check')
+
+def retryLater():
+    if not stopped:
+        app.fireCustomEvent(RESULT_EVENT_ID, 'retry')
+
+def result_custom_event(args: adsk.core.CustomEventArgs):
+    global showRetries, retryTimer, openedByCheck
+    try:
+        while pendingLogs:
+            futil.log(pendingLogs.pop(0))
+        if pendingRelease is None:
+            return
+        # not in the middle of another command, its dialog would be cancelled
+        if ui.activeCommand != 'SelectCommand':
+            if showRetries < SHOW_RETRIES:
+                showRetries += 1
+                retryTimer = threading.Timer(SHOW_RETRY_SECONDS, retryLater)
+                # Fusion never waits for it when it closes
+                retryTimer.daemon = True
+                retryTimer.start()
+            else:
+                futil.log(f'Gridkeeper {pendingRelease.versionText} is available, Fusion was busy, asking tomorrow')
+            return
+        openedByCheck = True
+        try:
+            ui.commandDefinitions.itemById(CMD_ID).execute()
+        except Exception:
+            # no command_created follows, the next open from the menu is the menu's (second review). Not reset after
+            # a good execute: whether Fusion creates the command during execute or after it isn't known
+            openedByCheck = False
+            raise
+    except Exception:
+        futil.handle_error('Gridkeeper update check')
+
+# the dialog
+
+def infoHtml() -> str:
+    installed = updateCheck.manifestVersion(ADDIN_FOLDER)
+    lines = [updateCheck.versionLine(runningVersion, installed)]
+    if pendingRelease is not None and (installed is None or pendingRelease.version > installed):
+        lines.append(updateCheck.dialogHtml(pendingRelease, installed or runningVersion or (0, 0, 0), updateInstall.isGitCheckout(ADDIN_FOLDER)))
+    return '<br><br>'.join(lines)
+
+def canInstall() -> bool:
+    installed = updateCheck.manifestVersion(ADDIN_FOLDER)
+    return (pendingRelease is not None and pendingRelease.assetUrl is not None
+            and (installed is None or pendingRelease.version > installed)
+            and not updateInstall.isGitCheckout(ADDIN_FOLDER))
+
+def command_created(args: adsk.core.CommandCreatedEventArgs):
+    global openedByCheck
+    command = args.command
+    # opened by the check with a release to install: OK is Update now, Cancel is Later (spec E6)
+    updateDialog = openedByCheck and canInstall()
+    openedByCheck = False
+    command.isOKButtonVisible = updateDialog
+    if updateDialog:
+        command.okButtonText = 'Update now'
+        command.cancelButtonText = 'Later'
+        futil.add_handler(command.execute, command_execute, local_handlers=local_handlers)
+    else:
+        command.cancelButtonText = 'Close'
+    command.setDialogInitialSize(420, 300)
+    inputs = command.commandInputs
+    info = inputs.addTextBoxCommandInput(INFO_INPUT, '', infoHtml(), 8, True)
+    info.isFullWidth = True
+    # in the dialog opened from the menu, after Check now found a release
+    updateNow = inputs.addBoolValueInput(UPDATE_NOW_INPUT, 'Update now', False, '', False)
+    updateNow.isVisible = canInstall() and not updateDialog
+    releaseNotes = inputs.addBoolValueInput(RELEASE_NOTES_INPUT, 'Release notes', False, '', False)
+    releaseNotes.isVisible = pendingRelease is not None and bool(pendingRelease.pageUrl)
+    inputs.addBoolValueInput(CHECK_NOW_INPUT, 'Check now', False, '', False)
+    settings = updateCheck.readSettings(updateCheck.settingsPath(ADDIN_FOLDER))
+    inputs.addBoolValueInput(CHECK_AT_STARTUP_INPUT, 'Check for updates at startup', True, '', settings['checkAtStartup'])
+    futil.add_handler(command.inputChanged, command_input_changed, local_handlers=local_handlers)
+    futil.add_handler(command.destroy, command_destroy, local_handlers=local_handlers)
+
+def hideProgress(progress: adsk.core.ProgressDialog):
+    try:
+        if progress.isShowing:
+            progress.hide()
+    except Exception as err:
+        futil.log(f'{CMD_NAME}: progress window not closed, {err}')
+
+def installRelease(release: updateCheck.Release) -> bool:
+    """Installs release with a progress window, tells the user how it went, whether it's installed"""
+    global installing
+    if installing:
+        return False
+    installing = True
+    progress = ui.createProgressDialog()
+    try:
+        progress.isCancelButtonShown = False
+        progress.show(CMD_NAME, f'Downloading Gridkeeper {release.versionText}…', 0, max(release.assetSize or 0, 1))
+        def downloaded(size: int):
+            progress.progressValue = min(size, progress.maximumValue)
+            adsk.doEvents()
+        updateInstall.install(release, ADDIN_FOLDER, progress=downloaded)
+    except updateInstall.UpdateError as err:
+        hideProgress(progress)
+        futil.log(f'Gridkeeper update to {release.versionText} failed: {err}')
+        ui.messageBox(f'Gridkeeper {release.versionText} couldn\'t be installed.\n\n{err}', CMD_NAME)
+        return False
+    finally:
+        installing = False
+        # also when something else went wrong, the caller's error message mustn't sit under it (second review)
+        hideProgress(progress)
+    # first, before any input of a dialog that may be gone by now (review finding 1)
+    ui.messageBox(updateCheck.successText(release), CMD_NAME)
+    return True
+
+def command_execute(args: adsk.core.CommandEventArgs):
+    """Update now of the dialog the check opened"""
+    try:
+        if canInstall():
+            installRelease(pendingRelease)
+    except Exception:
+        futil.handle_error(f'{CMD_NAME} failed', show_message_box=True)
+
+def command_input_changed(args: adsk.core.InputChangedEventArgs):
+    global pendingRelease
+    inputs = args.inputs
+    changed = args.input
+    info = adsk.core.TextBoxCommandInput.cast(inputs.itemById(INFO_INPUT))
+    if installing:
+        return
+    try:
+        if changed.id == CHECK_AT_STARTUP_INPUT:
+            path = updateCheck.settingsPath(ADDIN_FOLDER)
+            settings = updateCheck.readSettings(path)
+            settings['checkAtStartup'] = adsk.core.BoolValueCommandInput.cast(changed).value
+            if not updateCheck.writeSettings(path, settings):
+                ui.messageBox(f'The setting couldn\'t be saved to {path}.', CMD_NAME)
+        elif changed.id == RELEASE_NOTES_INPUT:
+            if pendingRelease is not None and pendingRelease.pageUrl:
+                webbrowser.open(pendingRelease.pageUrl)
+        elif changed.id == CHECK_NOW_INPUT:
+            info.formattedText = 'Checking GitHub for a new version…'
+            adsk.doEvents()
+            logs = []
+            releases = updateCheck.fetchReleases(log=logs.append)
+            for line in logs:
+                futil.log(line)
+            installed = updateCheck.manifestVersion(ADDIN_FOLDER) or runningVersion
+            if releases is None:
+                info.formattedText = f'{updateCheck.versionLine(runningVersion, installed)}<br><br>GitHub couldn\'t be asked: {logs[-1] if logs else "no answer"}'
+            elif installed is None:
+                info.formattedText = f'{updateCheck.versionLine(runningVersion, installed)}<br><br>The installed version is unknown, it can\'t be compared.'
+            else:
+                pendingRelease = updateCheck.newestRelease(releases, installed)
+                info.formattedText = infoHtml() if pendingRelease is not None else f'{updateCheck.versionLine(runningVersion, installed)}<br><br>You have the newest version.'
+            inputs.itemById(UPDATE_NOW_INPUT).isVisible = canInstall()
+            inputs.itemById(RELEASE_NOTES_INPUT).isVisible = pendingRelease is not None and bool(pendingRelease.pageUrl)
+        elif changed.id == UPDATE_NOW_INPUT and canInstall():
+            if installRelease(pendingRelease):
+                # the dialog may have been closed meanwhile, the update is in place anyway
+                try:
+                    info.formattedText = infoHtml()
+                    inputs.itemById(UPDATE_NOW_INPUT).isVisible = False
+                except Exception as err:
+                    futil.log(f'{CMD_NAME}: dialog not updated after the update, {err}')
+    except Exception:
+        futil.handle_error(f'{CMD_NAME} failed', show_message_box=True)
+
+def command_destroy(args: adsk.core.CommandEventArgs):
+    global local_handlers
+    local_handlers = []
