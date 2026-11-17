@@ -64,13 +64,21 @@ Each set holds Pred's small parts as components of their own, each with its bodi
 | *Latch* | 4 | Jointed in place: two at the front, one on each side at the back |
 | *Handle* | 1 | Jointed at the front, between the handle holders |
 | *Handle pin* | 2 | Jointed in the handle holders, the right one turned round |
-| *Hinge* | 2 | Beside the box, lying as they are printed; not jointed |
+| *Hinge* | 2 | Jointed beside the box, lying as they are printed |
 
-The latches, the handle and its pins sit on joint origins of the box, *Latch front left joint origin* and so on; their
-rigid joints are named after the set and the seat, *Box 5×4×6 Latch front left*. When the size changes they move
-with the box. The handle is as wide as the label holder space allows: the label width plus 28.5 mm, so 57 mm at a
+Every part sits on a joint origin of the box, *Latch front left joint origin*, *Hinge 1 joint origin* and so on; the
+rigid joints are named after the set and the seat, *Box 5×4×6 Latch front left*. The parts move with the box when
+its size changes or when it is moved or stacked. The handle is as wide as the label holder space allows: the label width plus 28.5 mm, so 57 mm at a
 width of 4, 99 mm at 5 and at most 113.5 mm from a width of 6 on. The hinges keep their place beside the box at every
-size.
+size, the second 5 mm beside the first.
+
+**Hinge** in the group *Small parts* picks one of Pred's three hinges; the box is the same for all three:
+
+| Hinge | What it is |
+|---|---|
+| **M3x30** (default) | Pred's *Hinge_M3x30*, held by an M3 × 30 mm screw |
+| **Pinned** | Pred's *Hinge_Pined*, with a printed pin as a third body |
+| **Plain** | Pred's *Hinge*, the one Pred's file shows |
 
 The parts are taken from Pred's file (`resources/predBox`, see its README): the same shape, with joint origins added,
 sketches fully constrained and Pred's parameters turned into their values.

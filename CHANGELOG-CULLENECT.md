@@ -11,8 +11,9 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 - **Latches, handle, pins and hinges (p261):** every box set now holds Pred's small parts, taken over from
   [Pred's file](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric) (CC BY-NC) as
   Fusion parts in `resources/predBox`: four latches (two at the front, one on each side at the back), the handle and
-  its two pins, rigidly jointed at joint origins of the box, and two hinges beside the box in their print position.
-  The handle follows the label width (+28.5 mm, at most 113.5 mm). Every sketch of the parts is fully constrained,
+  its two pins, rigidly jointed at joint origins of the box, and two hinges jointed beside the box in their print
+  position. The handle follows the label width (+28.5 mm, at most 113.5 mm). **Hinge** picks one of Pred's three
+  hinges (M3x30, the default; Pinned; Plain); settings saved before load with M3x30. Every sketch of the parts is fully constrained,
   none uses a user parameter.
 - **Right-click on the set (click test F1):** the set's component offers settings, rebuild and clone like box and lid.
 - **Export file names (click test F3):** box bodies carry the set's name, e.g. *Box 5×4×6 Base*.

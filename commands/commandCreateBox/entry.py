@@ -12,6 +12,7 @@ from ... import config
 from ...lib.gridfinityUtils import commonUtils
 from ...lib.gridfinityUtils import magnetSizes
 from ...lib.gridfinityUtils import predBoxConfig
+from ...lib.gridfinityUtils import predBoxParts
 from .inputState import InputState
 from .boxBuilder import buildBox, rebuildBox, boxName, boxProblem
 from ...lib import configJson
@@ -55,6 +56,7 @@ INFO_GROUP = 'info_group'
 SIZE_GROUP = 'size_group'
 MAGNET_GROUP = 'magnet_group'
 JOINT_GROUP = 'joint_group'
+PARTS_GROUP = 'parts_group'
 INPUT_CHANGES_GROUP = 'input_changes_group'
 PREVIEW_GROUP = 'preview_group'
 GRID_X_INPUT = 'grid_x'
@@ -66,6 +68,7 @@ MAGNET_SIZE_DROPDOWN = 'magnet_size'
 MAGNET_DEPTH_INPUT = 'magnet_height'
 MAGNET_DIAMETER_INPUT = 'magnet_diameter'
 JOINT_ORIGINS_INPUT = 'joint_origins'
+HINGE_DROPDOWN = 'hinge'
 INPUT_CHANGES_BUTTONS_BROWSER = 'input_changes_buttons'
 CONFIG_BUTTONS_BROWSER = 'config_buttons'
 SHOW_PREVIEW_INPUT = 'show_preview'
@@ -199,6 +202,14 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
 
     jointGroup = addGroup(inputs, JOINT_GROUP, 'Joint origins')
     addBool(jointGroup.children, JOINT_ORIGINS_INPUT, 'Add joint origins', 'A joint origin in every cell of the floor, to joint bins into the box')
+
+    # Pred's three hinges (round 28, Nutzer 17.11.2026: "alle drei zum auswählen ist besser"), the box is the same for all
+    partsGroup = addGroup(inputs, PARTS_GROUP, 'Small parts')
+    hingeDropdown = partsGroup.children.addDropDownCommandInput(HINGE_DROPDOWN, 'Hinge', adsk.core.DropDownStyles.TextListDropDownStyle)
+    for name in predBoxParts.HINGES:
+        hingeDropdown.listItems.add(name, name == uiState.getState(HINGE_DROPDOWN))
+    hingeDropdown.tooltip = "Which of Pred's hinges the box comes with: M3x30 for an M3 x 30 mm screw, Pinned with a printed pin, Plain as in Pred's file"
+    uiState.registerCommandInput(hingeDropdown)
 
     inputChangesGroup = addGroup(inputs, INPUT_CHANGES_GROUP, 'Inputs')
     addDefaultsButtonRow(inputChangesGroup.children, INPUT_CHANGES_BUTTONS_BROWSER)
@@ -360,7 +371,7 @@ def generateBox(args: adsk.core.CommandEventArgs, mayChangeDocument: bool = True
 
 
 def initUiState():
-    for group in (INFO_GROUP, SIZE_GROUP, MAGNET_GROUP, JOINT_GROUP, INPUT_CHANGES_GROUP, PREVIEW_GROUP):
+    for group in (INFO_GROUP, SIZE_GROUP, MAGNET_GROUP, JOINT_GROUP, PARTS_GROUP, INPUT_CHANGES_GROUP, PREVIEW_GROUP):
         uiState.initValue(group, True, adsk.core.GroupCommandInput.classType())
     spinner = adsk.core.IntegerSpinnerCommandInput.classType()
     value = adsk.core.ValueCommandInput.classType()
@@ -374,6 +385,7 @@ def initUiState():
     uiState.initValue(MAGNET_DEPTH_INPUT, DEFAULT_STATE.magnetDepth, value)
     uiState.initValue(MAGNET_DIAMETER_INPUT, DEFAULT_STATE.magnetDiameter, value)
     uiState.initValue(JOINT_ORIGINS_INPUT, DEFAULT_STATE.hasJointOrigins, boolean)
+    uiState.initValue(HINGE_DROPDOWN, DEFAULT_STATE.hinge, dropdown)
     uiState.initValue(SHOW_PREVIEW_INPUT, False, boolean)
     recordedDefaults = configUtils.readJsonConfig(UI_INPUT_DEFAULTS_CONFIG_PATH)
     if recordedDefaults:
@@ -396,6 +408,7 @@ def getInputsState() -> InputState:
         magnetDepth=uiState.getState(MAGNET_DEPTH_INPUT),
         magnetDiameter=uiState.getState(MAGNET_DIAMETER_INPUT),
         hasJointOrigins=uiState.getState(JOINT_ORIGINS_INPUT),
+        hinge=uiState.getState(HINGE_DROPDOWN),
     )
 
 
@@ -410,10 +423,12 @@ def applyInputsState(state: InputState):
     uiState.setValue(MAGNET_DEPTH_INPUT, state.magnetDepth)
     uiState.setValue(MAGNET_DIAMETER_INPUT, state.magnetDiameter)
     uiState.setValue(JOINT_ORIGINS_INPUT, state.hasJointOrigins)
+    uiState.setValue(HINGE_DROPDOWN, state.hinge)
 
 
 def readConfig(text: str, source: str) -> InputState | None:
-    return configButtons.readConfig(text, source, configJson.GENERATOR_BOX, InputState, getInputsState(), {})
+    choices = {'hinge': configJson.Choice(list(predBoxParts.HINGES), predBoxParts.DEFAULT_HINGE)}
+    return configButtons.readConfig(text, source, configJson.GENERATOR_BOX, InputState, getInputsState(), choices)
 
 
 def configFileName(settings: dict) -> str:
