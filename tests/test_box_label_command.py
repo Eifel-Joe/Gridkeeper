@@ -130,11 +130,12 @@ def test_free_labels_count_as_taken_room_by_their_body_names():
 def test_bodies_in_the_root_are_moved_to_the_free_spot():
     """Review: a preview in a part design builds into the root, without an occurrence to carry the spot or a joint"""
     source = _function(BUILDER, "_buildBoxLabel")
-    assert "if box is None or not place.isComponent:" in source
+    assert "elif occurrenceTransform is None and (box is None or not place.isComponent):" in source
     assert "placementUtils.moveBodies(" in source
 
 
 def test_the_plate_is_tagged_so_the_export_takes_it_with_its_surface():
     # p380 (round r29-export): untagged, the export didn't take the label as a part, and a Flush one lay wrong side up
     source = _function(BUILDER, "_buildBoxLabel")
-    assert "tagUtils.tagBody(plate, tagUtils.TAG_BOX_LABEL, config={'surface': state.surface})" in source
+    # its config holds the surface among the rest since the box label is rebuilt and cloned (1.1.0)
+    assert "tagUtils.tagBody(plate, tagUtils.TAG_BOX_LABEL, settings, labelParameters, configJson.stateToJson(configJson.GENERATOR_BOX_LABEL, state), prefix)" in source
