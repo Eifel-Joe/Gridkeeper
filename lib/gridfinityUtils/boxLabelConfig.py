@@ -54,14 +54,17 @@ def labelFit(labelCells: int | None, boxCells: int | None) -> str:
     return FIT_TOO_WIDE if labelWidth(labelCells) > labelWidth(boxCells) else FIT_NARROWER
 
 
-def widthNote(jointName: str, labelCells: int | None, boxCells: int | None) -> str | None:
-    """What the note after a box rebuild says of its label of another label width, none when it fits"""
+def widthNote(jointName: str, labelCells: int | None, boxCells: int | None, place: str = 'beside') -> str | None:
+    """
+    What the note after a box rebuild says of its label of another label width, none when it fits. place: where a too
+    wide one was laid, 'in front of' the box or 'beside' it at a free spot
+    """
     fit = labelFit(labelCells, boxCells)
     if fit == FIT_SAME:
         return None
     widths = f'{widthChoiceFor(labelCells)} against {widthChoiceFor(boxCells)} the box takes now'
     if fit == FIT_TOO_WIDE:
-        return f'{jointName}: the label is too wide for the box now ({widths}), it was laid beside the box; rebuild the label with that width'
+        return f'{jointName}: the label is too wide for the box now ({widths}), it was laid {place} the box; rebuild the label with that width'
     return f'{jointName}: the label is narrower than the holder now ({widths}), it stays in the holder; rebuild the label with that width'
 
 

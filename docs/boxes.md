@@ -136,8 +136,10 @@ the box was built with; **Gridkeeper rebuild** places them anew.
 Right-click the box, the lid or the set's component (*Box 5×4×6* in the browser) for the settings, **Gridkeeper rebuild** and **Gridkeeper clone**, see
 [Settings, rebuild and clone](working/settings-rebuild-clone.md). A rebuild replaces box, lid and small parts together; joints of
 yours on its joint origins move over to the joint origins of the same name. A label in the holder stays in. Is the
-rebuilt box narrower, so that the label is too wide for its holder, the label is taken out and laid beside the parts;
-is it wider, the label stays in. Either way the note after the rebuild says to rebuild the label with the new width.
+rebuilt box narrower, so that the label is too wide for its holder, the label is taken out and laid flat in front of
+the box: 10 mm in front of the handle, its middle on the box's middle, turned with the box so its text reads from the
+front. Is something in the way there, it goes to a free spot beside the parts instead. Is the box wider, the label
+stays in. Either way the note after the rebuild says where the label is and to rebuild it with the new width.
 
 The label has the same three commands: right-click the plate, a letter or a symbol, or the label's component. A
 rebuild builds it anew in its place in the timeline; a label in a holder has its box picked in the dialog already and

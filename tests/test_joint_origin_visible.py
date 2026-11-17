@@ -194,3 +194,66 @@ def test_a_label_taken_out_but_not_placed_is_said_as_it_is():
     assert "finally:" in source
     tail = _function(REBUILD_UTILS, "repointJointsByName")
     assert "LAID_FREE" in tail and "LAID_BESIDE" in tail
+
+
+# -- Jörg 17.11.2026 after laying beside: "Schild vor die Front wäre besser. Sonst übersieht man es schnell." The label
+# goes in front of the box first, the free spot search only when the front is taken
+
+def test_a_label_laid_beside_tries_the_front_of_the_box_first():
+    source = _function(REBUILD_UTILS, "_layBeside")
+    assert "_frontSpot(" in source
+    assert source.index("_frontSpot(") < source.index("placementUtils.findPlacement(")
+    assert source.index("occurrence.transform2 = ") < source.index("design.snapshots.add()")
+    assert "LAID_FRONT" in source
+
+
+def test_the_front_spot_comes_from_the_rebuilt_box_and_leaves_out_the_label():
+    source = _function(REBUILD_UTILS, "_frontSpot")
+    assert "placementUtils.frontPlacement(" in source
+    assert "skipComponents=" in source
+    # the box's place from the native transforms up its path, not a proxy's
+    assert "nativeObject" in source
+
+
+def test_the_note_says_in_front_of_the_box():
+    tail = _function(REBUILD_UTILS, "repointJointsByName")
+    assert "LAID_FRONT" in tail
+
+
+# -- review: the old set's extents come from the instance being rebuilt, not the first instance of its component (a
+# pasted second copy would widen them and the label would land in front of the wrong box)
+
+def _rebuiltInstance():
+    namespace = {}
+    exec(compile(ast.Module(body=[_node(REBUILD_UTILS, "_rebuiltInstance")], type_ignores=[]), REBUILD_UTILS, "exec"), namespace)
+    return namespace["_rebuiltInstance"]
+
+
+class _Proxies:
+    def __init__(self, items):
+        self.items = items
+        self.count = len(items)
+
+    def item(self, index):
+        return self.items[index]
+
+
+def test_the_old_set_is_the_instance_being_rebuilt_not_the_first_copy():
+    (rebuilt, pasted) = (object(), object())
+    proxies = _Proxies([types.SimpleNamespace(nativeObject=pasted), types.SimpleNamespace(nativeObject=rebuilt)])
+    assert _rebuiltInstance()(proxies, rebuilt) is proxies.item(1)
+
+
+def test_an_old_set_in_the_root_is_its_own_instance():
+    native = types.SimpleNamespace(nativeObject=None)
+    assert _rebuiltInstance()(_Proxies([native]), native) is native
+
+
+def test_no_matching_instance_gives_none():
+    assert _rebuiltInstance()(_Proxies([types.SimpleNamespace(nativeObject=object())]), object()) is None
+
+
+def test_the_label_front_uses_the_rebuilt_instance():
+    source = _function(REBUILD_UTILS, "repointJointsByName")
+    assert "_rebuiltInstance(" in source
+    assert "oldParts.item(0)" not in source
