@@ -701,7 +701,18 @@ def structureNotes(case: testCases.TestCase, document: adsk.core.Document, bodie
         attribute = occurrence.component.attributes.itemByName(tagUtils.TAG_GROUP, tagUtils.TAG_CONTAINER) if occurrence is not None else None
         return attribute.value if attribute is not None else None
     parts = [body for body in bodies if body.attributes.itemByName(tagUtils.TAG_GROUP, tags[case.generator]) is not None and not body.parentComponent.name.startswith(assembly.TEXT_COMPONENT_NAME)]
-    marking = [body for body in bodies if body not in parts]
+    def roleOf(body: adsk.fusion.BRepBody) -> str | None:
+        attribute = body.parentComponent.attributes.itemByName(tagUtils.TAG_GROUP, tagUtils.TAG_PART_ROLE)
+        return attribute.value if attribute is not None else None
+    # Pred's small parts in a box set (round 28): untagged, each in a component of its own in the set
+    rest = [body for body in bodies if body not in parts]
+    smallKeys = set(testCases.smallPartBodies(case.generator, [(str(index), roleOf(body)) for (index, body) in enumerate(rest)]))
+    small = [body for (index, body) in enumerate(rest) if str(index) in smallKeys]
+    marking = [body for (index, body) in enumerate(rest) if str(index) not in smallKeys]
+    for body in small:
+        setOccurrence = parentOf(body.parentComponent)
+        if setOccurrence is None or kindOf(parentOf(setOccurrence.component)) != kind:
+            notes.append(f"{body.name} isn't in a component of its own in a box set in the container {kind}")
     for body in parts:
         parent = parentOf(body.parentComponent)
         if case.generator == testCases.GENERATOR_BOX:
