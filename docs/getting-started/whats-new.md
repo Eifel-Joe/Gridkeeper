@@ -1,8 +1,9 @@
 # What's new compared to GridfinityGenerator
 
-Gridkeeper starts from GridfinityGenerator v2.4.2.0 by Le0Michine and keeps all of it: baseplates that fill an area
-and split it for the print bed, bins of custom shapes with compartments, scoops and label tabs, creased walls,
-rebuilding and cloning from the right-click menu, settings saved to JSON files. On top of that it adds the following.
+Gridkeeper starts from GridfinityGenerator v2.4.2.0 by Le0Michine, takes over its later changes (such as the lip
+types) and keeps all of it: baseplates that fill an area and split it for the print bed, bins of custom shapes with
+compartments, scoops and label tabs, creased walls, rebuilding and cloning from the right-click menu, settings saved
+to JSON files. On top of that it adds the following.
 The full list of changes, round by round, is in
 [CHANGELOG-CULLENECT.md](https://github.com/Eifel-Joe/Gridkeeper/blob/master/CHANGELOG-CULLENECT.md).
 
@@ -54,6 +55,16 @@ The full list of changes, round by round, is in
 - **Cullenect walls:** a bin with Cullenect pockets needs walls of at least 1.2 mm, the dialog says so instead of
   building a weak tab.
 
+## Export
+
+- **Gridkeeper export** in the right-click menu, from GridfinityGenerator (Le0Michine): one 3MF of all parts with the
+  label text painted for Bambu Studio, OrcaSlicer and PrusaSlicer, or an STL or STEP file each. Gridkeeper exports
+  Cullenect inserts too and puts the colored text and symbol bodies of bins and inserts into their part, painted. See
+  [Exporting for printing](../working/export.md).
+- From GridfinityGenerator too: the letters of outline labels show in a color of their own in Fusion, the bin dialog
+  shows the bin's size to the micron, and baseplates set the **Plate edge clearance** per edge (older settings are
+  read as half the old gap).
+
 ## The design
 
 - **An assembly of components:** every baseplate, bin and insert is a component of its own, in the containers
@@ -64,7 +75,7 @@ The full list of changes, round by round, is in
 ## Credits and naming
 
 - The commands are called **Gridkeeper bin**, **Gridkeeper baseplate**, **Gridkeeper label**, **Gridkeeper
-  settings**, **Gridkeeper rebuild** and **Gridkeeper clone**, so they don't mix with the original add-in. Bodies are
+  settings**, **Gridkeeper rebuild**, **Gridkeeper clone** and **Gridkeeper export**, so they don't mix with the original add-in. Bodies are
   still named *Gridfinity bin …*, as before.
 - Installed from the ZIP of a GitHub release, not from the Autodesk App Store, see
   [Installation](installation.md).

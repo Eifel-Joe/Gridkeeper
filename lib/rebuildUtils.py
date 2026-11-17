@@ -508,9 +508,11 @@ def configWithParameters(generator: str, config: dict, parameters: list, findPar
     """
     The config a body was built with, with the values its parameters have now, so changes made to them since aren't
     undone by building it again. findParameter looks one up by name. A field of a list item goes by its index, like
-    compartmentPockets.2.label
+    compartmentPockets.2.label. Settings a config saved before them doesn't have get the value it was built with, see
+    configJson.OLDER_VALUES, and settings saved under an older name are read under their new one, see
+    configJson.RENAMED_FIELDS
     """
-    config = dict(config)
+    config = configJson.withOlderValues(generator, configJson.renamedSettings(generator, config))
     for (fieldName, parameter) in parameterFields(parameters, findParameter, labelFields):
         isText = parameter.valueType == adsk.fusion.ParameterValueTypes.TextParameterValueType
         if isText:
@@ -577,5 +579,7 @@ def configChanges(generator: str, body: adsk.fusion.BRepBody, newConfig: dict) -
     oldConfig = tag[1].get('config') if tag is not None else None
     if not isinstance(oldConfig, dict):
         return 'its old config isn\'t in its tag'
+    # settings saved under an older name compare under their new one, see configJson.RENAMED_FIELDS
+    oldConfig = configJson.renamedSettings(generator, oldConfig)
     changes = [f'  {name}: {oldConfig.get(name)!r} -> {value!r}' for (name, value) in newConfig.items() if oldConfig.get(name) != value]
     return 'changes:\n' + '\n'.join(changes) if len(changes) > 0 else 'no changes to its config'

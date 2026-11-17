@@ -93,6 +93,7 @@ nav:
     - Saving and loading settings: working/save-load.md
     - Changing parameters: working/parameters.md
     - Colors and multicolor printing: working/colors.md
+    - Exporting for printing: working/export.md
     - Components and joints: working/components.md
   - Help:
     - Messages and locked OK: help/messages.md

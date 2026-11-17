@@ -1,13 +1,44 @@
 import adsk.core, adsk.fusion, traceback
+import math
 
 from . import const
 from .dim import Dim
+
+# the socket's inner wall goes straight down to the bin top
+LIP_TYPE_LIGHT = 'Light'
+# the original Gridfinity profile, narrowing at 45 degrees to its inner tip with a support under it
+LIP_TYPE_FULL = 'Full'
+LIP_TYPES = [LIP_TYPE_LIGHT, LIP_TYPE_FULL]
+
+def lipSocketHasBottomChamfer(lipType: str) -> bool:
+    """
+    Whether the socket a stacked bin's feet sit in narrows at its bottom like a foot does. Only the full lip follows the
+    feet that far down, the light one ends straight. The lip cutout and the feet cut out of dividers raised into the lip
+    share it, so a divider's ridge meets the lip around it (Gridkeeper, upstream round 17.11.2026, p13)
+    """
+    return lipType == LIP_TYPE_FULL
+
+def lipTopTrimHeight(isTrimmed: bool) -> float:
+    """How much is cut off the lip top to leave it flat, none leaves the sharp edge of the original profile"""
+    return const.BIN_LIP_TOP_RECESS_HEIGHT if isTrimmed else 0
+
+def lipHeight(isTrimmed: bool, xyClearance: float) -> float:
+    """
+    How far the lip stands above the bin wall. Its sharp top is where the 45 degree face of the socket, which starts the
+    clearance out from the grid line, meets the outer wall, the clearance in from it, so twice the clearance below the
+    socket top, see binBodyLipGenerator.lipSocketTop. A trimmed lip is cut flat below it
+    """
+    sharpTop = const.BIN_BASE_HEIGHT - (1 + math.sqrt(2)) * xyClearance
+    return min(sharpTop, const.BIN_LIP_EXTRA_HEIGHT - lipTopTrimHeight(isTrimmed))
 
 class BinBodyLipGeneratorInput():
     def __init__(self):
         self.wallThickness = const.BIN_LIP_WALL_THICKNESS
         self.hasLip = False
         self.hasLipNotches = False
+        self.lipType = LIP_TYPE_LIGHT
+        # cut off the top to leave it flat, see lipTopTrimHeight
+        self.topTrimHeight = const.BIN_LIP_TOP_RECESS_HEIGHT
         self.binCornerFilletRadius = const.BIN_CORNER_FILLET_RADIUS
         self.originZ = None
         # grid cells of a shaped bin, see BinBodyGeneratorInput.shapeCells

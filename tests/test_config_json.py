@@ -100,6 +100,20 @@ def test_unknown_settings_are_skipped(current):
     assert notes.unknown == ["hasLid"]
 
 
+def test_the_old_gap_between_plates_reads_as_half_on_each_plate_edge():
+    plate = case_state("baseplate_2x2_light.json", BASEPLATE, baseplateState.InputState)
+    text = json.dumps({"generator": BASEPLATE, "settings": {"plateClearance": 0.3}})
+    (state, notes) = read(text, plate, BASEPLATE, baseplateState.InputState)
+    assert state.plateEdgeClearance == pytest.approx(0.015)
+    assert "plateClearance" not in notes.unknown
+    assert "plateEdgeClearance" not in [name for (name, _) in notes.missing]
+
+
+def test_a_new_setting_wins_over_its_old_name():
+    settings = configJson.renamedSettings(BASEPLATE, {"plateClearance": 0.3, "plateEdgeClearance": 0.1})
+    assert settings == {"plateEdgeClearance": 0.1}
+
+
 def test_shape_cells_become_tuples(current):
     (state, _) = read(json.dumps({"generator": BIN, "settings": {"shapeCells": [[0, 0], [1, 0]]}}), current)
     assert state.shapeCells == [(0, 0), (1, 0)]
@@ -264,3 +278,74 @@ def test_hand_test_10_file_keeps_lengths_in_mm_in_the_note(current):
     assert "xyClearance (0.25 mm)" in note
     assert "baseWidth (42 mm)" in note
     assert state.wallThickness == pytest.approx(0.12)
+
+
+# --- upstream round 17.11. (p13): a bin saved before the lip types had the light lip trimmed flat ---
+
+def _lip_changed(current):
+    return dataclasses.replace(current, lipType="Full", isLipTopTrimmed=False)
+
+
+def test_older_bin_settings_get_the_lip_they_were_built_with():
+    assert configJson.withOlderValues(BIN, {"binWidth": 4}) == {"lipType": "Light", "isLipTopTrimmed": True, "binWidth": 4}
+    assert configJson.withOlderValues(BIN, {"lipType": "Full", "isLipTopTrimmed": False}) == {"lipType": "Full", "isLipTopTrimmed": False}
+    assert configJson.withOlderValues(configJson.GENERATOR_BASEPLATE, {"baseWidth": 42}) == {"baseWidth": 42}
+
+
+def test_older_config_reads_with_the_light_trimmed_lip_whatever_the_dialog_has(current):
+    # a rebuild or clone of a bin tagged before the merge reads its config over the dialog's state (p151)
+    (state, notes) = read(settings_text(binWidth=4), _lip_changed(current))
+    assert state.lipType == "Light"
+    assert state.isLipTopTrimmed is True
+    missing = [name for (name, _) in notes.missing]
+    assert "lipType" not in missing and "isLipTopTrimmed" not in missing
+
+
+def test_config_with_a_lip_type_keeps_it(current):
+    (state, _) = read(settings_text(lipType="Full", isLipTopTrimmed=False), current)
+    assert state.lipType == "Full"
+    assert state.isLipTopTrimmed is False
+
+
+def test_rebuild_fills_the_older_values_into_a_tagged_config():
+    # parameterEdits compares the tagged config with the dialog's, a bin tagged before the merge would otherwise count
+    # its lip as changed and be rebuilt instead of having its parameters set
+    path = os.path.join(PROJECT_ROOT, "lib", "rebuildUtils.py")
+    with open(path, encoding="utf-8") as file:
+        source = file.read()
+    body = source[source.index("def configWithParameters("):]
+    body = body[:body.index("\ndef ", 1)]
+    assert "config = configJson.withOlderValues(generator, " in body
+
+
+# --- upstream round 17.11. (p13, 3452e56): the plate clearance per edge, renamed on every way settings are read ---
+
+def test_renamed_settings_leave_label_and_unknown_generators_alone():
+    # Cullenect inserts have no renamed settings, a generator a later round adds (the box of round 27) neither
+    assert configJson.renamedSettings(configJson.GENERATOR_LABEL, {"baseWidth": 25}) == {"baseWidth": 25}
+    assert configJson.renamedSettings("box", {"width": 3}) == {"width": 3}
+
+
+def test_old_baseplate_config_reads_the_clearance_per_edge():
+    settings = configJson.withOlderValues(configJson.GENERATOR_BASEPLATE, configJson.renamedSettings(configJson.GENERATOR_BASEPLATE, {"plateClearance": 0.6}))
+    assert settings == {"plateEdgeClearance": 0.3}
+
+
+def test_rebuild_renames_the_settings_of_a_tagged_config():
+    # a baseplate tagged before the rename keeps plateClearance in its tag, its settings and a rebuild read the new name
+    path = os.path.join(PROJECT_ROOT, "lib", "rebuildUtils.py")
+    with open(path, encoding="utf-8") as file:
+        source = file.read()
+    body = source[source.index("def configWithParameters("):]
+    body = body[:body.index("\ndef ", 1)]
+    assert "config = configJson.withOlderValues(generator, configJson.renamedSettings(generator, config))" in body
+
+
+def test_rebuild_log_compares_under_the_new_names():
+    # the log of an old baseplate's rebuild showed plateEdgeClearance None -> 0.05 instead of its old value halved
+    path = os.path.join(PROJECT_ROOT, "lib", "rebuildUtils.py")
+    with open(path, encoding="utf-8") as file:
+        source = file.read()
+    body = source[source.index("def configChanges("):]
+    body = body[:body.index("\ndef ", 1)] if "\ndef " in body[1:] else body
+    assert "configJson.renamedSettings(generator, " in body

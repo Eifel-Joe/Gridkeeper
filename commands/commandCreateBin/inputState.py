@@ -34,6 +34,9 @@ class InputState:
     hasLipNotches: bool
     # dividers on grid lines go up into the lip, see raisedDividers
     hasDividersToTop: bool
+    # see binBodyLipGeneratorInput.LIP_TYPE_LIGHT
+    lipType: str
+    isLipTopTrimmed: bool
 
     hasScoop: bool
     scoopMaxRadius: float
