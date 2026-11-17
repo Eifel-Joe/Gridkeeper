@@ -36,6 +36,10 @@ class TestPlate:
         """EmptyLabel 67.5 x 24.5 x 0.85 mm"""
         assert (mm(layout.plateWidth(5)), mm(layout.PLATE_HEIGHT), mm(layout.PLATE_THICKNESS)) == pytest.approx((67.5, 24.5, 0.85))
 
+    def test_preds_rounded_corners_and_chamfer(self):
+        """Label/Sketch1 arcs of 3.5 mm, Chamfer1 0.2 mm (r29_walk/Label.json): 1389.6464 mm3 at 5 cells"""
+        assert (mm(layout.PLATE_CORNER_RADIUS), mm(layout.PLATE_CHAMFER)) == pytest.approx((3.5, 0.2))
+
     def test_raised_marking_is_preds_04_mm(self):
         """Label_M_Screws: y 6.05 ... 7.3 against 6.45 ... 7.3"""
         assert mm(layout.MARKING_DEPTH) == pytest.approx(0.4)
