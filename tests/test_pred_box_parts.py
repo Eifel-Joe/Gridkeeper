@@ -18,26 +18,39 @@ def test_the_set_holds_preds_small_parts():
     ]
 
 
-def test_latches_handle_and_pins_are_jointed_hinges_lie_beside_the_box():
-    jointed = {part.role: part.seats for part in parts.PARTS if part.seats}
+def test_every_part_is_jointed_the_hinges_beside_the_box():
+    """Nutzer 17.11.2026 ("Ja, beides" to Vorschlag J): the hinges are jointed too, in their print position beside the box"""
+    jointed = {part.role: part.seats for part in parts.PARTS}
     assert jointed == {
         "Latch": ["Latch front left", "Latch front right", "Latch left", "Latch right"],
         "Handle": ["Handle"],
         "Handle pin": ["Handle pin left", "Handle pin right"],
+        "Hinge": ["Hinge 1", "Hinge 2"],
     }
-    hinge = [part for part in parts.PARTS if part.role == "Hinge"][0]
-    assert hinge.seats == [] and hinge.count == 2
+
+
+# Nutzer 17.11.2026: "alle drei zum auswählen ist besser", M3x30 the default
+def test_the_three_hinge_variants_and_their_files():
+    assert parts.HINGES == {"M3x30": "hinge.f3d", "Pinned": "hingePinned.f3d", "Plain": "hingePlain.f3d"}
+    assert parts.DEFAULT_HINGE == "M3x30"
+
+
+def test_the_chosen_hinge_is_the_hinge_part_the_rest_stays():
+    chosen = parts.partsFor("Plain")
+    assert [(part.role, part.file) for part in chosen] == [
+        ("Latch", "latch.f3d"), ("Handle", "handle.f3d"), ("Handle pin", "handlePin.f3d"), ("Hinge", "hingePlain.f3d")]
+    assert parts.partsFor(parts.DEFAULT_HINGE) == parts.PARTS
 
 
 def test_every_jointed_part_has_a_seat_per_occurrence():
     for part in parts.PARTS:
-        assert len(part.seats) in (0, part.count)
+        assert len(part.seats) == part.count
 
 
 def test_seat_joint_origin_names():
     assert parts.seatJointOriginName("Latch left") == "Latch left joint origin"
     assert parts.SEAT_NAMES == ["Latch front left", "Latch front right", "Latch left", "Latch right", "Handle",
-                                "Handle pin left", "Handle pin right"]
+                                "Handle pin left", "Handle pin right", "Hinge 1", "Hinge 2"]
 
 
 def test_the_part_files_are_named_once():
