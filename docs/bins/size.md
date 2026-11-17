@@ -23,13 +23,15 @@ other.
 | **Bin width, X (u)** | 2 | In whole or half base units, 0.5 to 100 |
 | **Bin length, Y (u)** | 3 | In whole or half base units, 0.5 to 100 |
 | **Half grid** | off | Puts the bin on half size feet, for a half grid baseplate; the bin keeps its size in base units |
-| **Bin height, Z (u)** | 5 | Total height in height units, base included, at least 1; the stacking lip adds 3.8 mm on top |
+| **Bin height, Z (u)** | 5 | Total height in height units, base included, at least 1; the stacking lip adds 3.8 mm on top, 4.4 mm with **Trim lip top** off |
 | **Custom shape** | off | Shows a drawing of the bin cells to leave some out |
 
 ### Actual dimensions
 
 At the end of the section, the **Actual dimensions (mm)** table shows the outer width, length and height the bin will
-have. With the Cullenect label style a second row lists the pocket sizes and the insert width that fits each, e.g.
+have, to the micron: width and length follow the **Bin xy clearance**, the height the lip with **Trim lip top** on or
+off, its sharp top lowered by the clearance. With the Cullenect label style a second row lists the pocket sizes and the
+insert width that fits each, e.g.
 `Cullenect: 2U: pocket 78.3 mm, insert 78 mm`, see [Pockets in bins](../cullenect/pockets.md).
 
 ### Half sizes and half grid

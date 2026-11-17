@@ -108,3 +108,40 @@ def test_reversed_line_matches():
     [line] = edges.expectedItems("#22 Chamfer7", _values())
     reversed_ = dict(line, start=line["end"], end=line["start"])
     assert edges.matchItems([line], [reversed_], key=lambda candidate: candidate) == [reversed_]
+
+
+# -- the right handle and label holders, built as the left ones' counterpart (round 27, Nutzer 17.11.2026: "Ja, A bauen")
+# instead of Pred's #42 Mirror6, which Fusion failed to replay depending on unrelated document state
+# (fusion-auftraege/r27_diag2.log, r27_cmd.out)
+
+HOLDER_STEPS = ["#32 Chamfer26", "#33 Fillet10", "#40 Chamfer29", "#41 Chamfer30"]
+
+
+@pytest.mark.parametrize("size", [(5, 4, 6), (7, 5, 10)])
+@pytest.mark.parametrize("step", HOLDER_STEPS)
+def test_mirrored_items_lie_across_the_box_middle(step, size):
+    values = _values(*size)
+    left = edges.expectedItems(step, values)
+    right = edges.expectedItems(step, values, mirrored=True)
+    assert len(right) == len(left)
+    for a, b in zip(left, right):
+        assert a["kind"] == b["kind"]
+        for key in ("start", "end", "center"):
+            if key in a:
+                assert b[key][0] == pytest.approx(2 * values["midX"] - a[key][0])
+                assert b[key][1:] == a[key][1:]
+        if "radius" in a:
+            assert b["radius"] == a["radius"]
+
+
+def test_mirrored_items_of_pred_size_lie_on_the_right_half():
+    right = edges.expectedItems("#40 Chamfer29", _values(), mirrored=True)
+    xs = [item[key][0] for item in right for key in ("start", "end", "center") if key in item]
+    assert min(xs) == pytest.approx(23.0 - 7.775) and max(xs) == pytest.approx(23.0 - 6.025)
+
+
+def test_a_mirrored_face_keeps_min_below_max():
+    face = {"kind": "face", "min": [1.0, 2.0, 3.0], "max": [4.0, 5.0, 6.0]}
+    mirrored = edges.mirrorItem(face, 10.0)
+    assert mirrored == {"kind": "face", "min": [16.0, 2.0, 3.0], "max": [19.0, 5.0, 6.0]}
+    assert face == {"kind": "face", "min": [1.0, 2.0, 3.0], "max": [4.0, 5.0, 6.0]}

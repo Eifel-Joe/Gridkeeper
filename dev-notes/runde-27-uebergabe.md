@@ -38,32 +38,22 @@ und Abweichungen: `dev-notes/plans/2026-11-16-runde-27.md`. Spec: `dev-notes/spe
 - Box-Magnete nur 6×2 plus Custom bis 2,6 mm („Box nur 6×2“).
 - Bodenpolster und Stapelrand aus Kreisen statt Bögen („Ja, Formen-Weg“, „Versuche b“).
 
-## Offen: Box-Bau scheitert an #42 Mirror6 seit dem langen Rebuild (Nacht 16./17.11.)
+## Gelöst: Box-Bau scheiterte an #42 Mirror6 (16./17.11.)
 
-Seit etwa 00:53 bricht jeder Box-Bau über `boxBuilder.buildBox` nach #41 an „#42 Mirror6“ ab, mit „Mirror1 / Compute
-Failed // FILLET_NO_EDGE_FOUND“. Betroffen waren `r27_render`, alle Box-Schritte von `r27_snap` und `r27_diag` V1. Bis
-00:45 baute derselbe Weg zwei Boxen und einen Rebuild (`r27_cmd`). Eingrenzung mit `fusion-auftraege\r27_diag.py`,
-Protokoll `r27_diag.log`:
+Jeder Box-Bau über `boxBuilder.buildBox` brach nach #41 an „#42 Mirror6“ ab (`FILLET_NO_EDGE_FOUND`), auch nach
+Fusion-Neustart; der Generator direkt baute. Eingrenzung in `fusion-auftraege27_diag.log` und `r27_diag2.log`:
 
-| Lauf | Weg | Ergebnis |
-|---|---|---|
-| r27_steps | Generator direkt (wie bisher), jetziger Code | baut, alle Schritte gleich Pred |
-| V1 | buildBox wie der Befehl | Fehler #42 |
-| V2 | buildBox, Magnet-Optionen wie vor 0de77ce | Fehler #42 |
-| V3 | Generator direkt, Hybrid | baut |
-| V4 | Generator direkt, Container (activate griff nicht) | baut |
-| V5/V6 | Zustand vor dem Generator: Parameter, Dims, Einheit, Lage gleich; nur bei buildBox ist die Satz-Komponente aktiv | – |
-| V7 | Generator direkt, Komponente wirklich aktiv | baut |
-| V8 | buildBox, Wurzel vor dem Generator aktiviert | Fehler #42 |
-| V9 | buildBox aus dem Stand a1f99e7 (baute um 00:45) | Fehler #42 |
-| V10 | buildBox, Satz-Occurrence wieder am Elternteil fest | Fehler #42 |
-
-**Schluss (vorläufig):** Der Code ist nicht die Ursache. V9 scheitert mit genau dem Code, der um 00:45 baute.
-Fusion war seit dem Rebuild-Lauf (`r27_cmd` Lauf 2, 7 min) in einem Zustand, der nur den buildBox-Weg trifft.
-Kandidaten: Parameter mit Kommentar und Tags, Attribute, Container über `assembly`, Ereignis-Handler des laufenden
-Add-ins. Fusion wurde neu gestartet, der Beleg steht aus: `r27_diag` mit State 1, also V1, als erster Lauf. Baut V1,
-bleibt das als Beobachtung offen; tritt es nach einem langen Rebuild wieder auf, kommt es auf des Nutzers Testliste. Bricht
-V1 wieder ab, geht die Eingrenzung im buildBox-Pfad weiter.
+- Maße, Parameter, Lage und Optionen sind in beiden Wegen gleich. Ohne Erdung des Containers oder ohne Parameter-Tags
+  baute buildBox, mit beiden nicht (V3, V4, V5, V6). Kanten und Fasen-Zweige sind in beiden Fällen gleich (V7, V8).
+- Mirror6 kippt auf Kleinigkeiten: Ohne irgendeins von sechs der zehn gespiegelten Features baut er (V7). Fusions
+  Standard-Compute-Typ Adjust scheitert, Identical und Optimized bauen (V9 bis V11).
+- Fix 1, Identical (824dad7): `r27_compare` bestanden, `r27_cmd` mit einem Design-Attribut scheiterte wieder.
+- Fix 2, Weg A (Nutzer: „Ja, A bauen“, 69c0e59): rechte Griff- und Schildhalter als Gegenstück mit gespiegelten
+  x-Koordinaten und Kantenauswahlen, kein Mirror6 mehr. Spec-Nachtrag „Bauweise“.
+- Dabei gefunden (`r27_diag3.log`, ca5173e): Fusion legt einen Bogen mit negativem Sweep mit vertauschten Enden an,
+  die gespiegelte Schiene war überbestimmt. Bögen werden jetzt immer gegen den Uhrzeigersinn gezeichnet.
+- Ergebnis mit ca5173e: `r27_compare` bestanden (Restkörper 0,0000 mm, Volumen wie zuvor), `r27_cmd` beide Läufe OK
+  mit Design-Attribut, Rebuild 6×4×7 in 413 s. Preds Mirror1 bis 4 bleiben Spiegelungen (Identical) und hielten mit.
 
 ## Offen
 

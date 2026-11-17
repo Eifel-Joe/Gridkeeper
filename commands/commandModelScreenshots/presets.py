@@ -18,6 +18,8 @@ STYLES = {
     'wireframe': 'WireframeVisualStyle',
 }
 CAMERAS = ['perspective', 'orthographic']
+# origin planes a section cuts the model along, through its middle
+SECTION_PLANES = ['xy', 'xz', 'yz']
 DEFAULT_OUTPUT = os.path.join('tools', 'screenshots', 'out', 'models')
 
 # options of the picture, what a preset doesn't set
@@ -41,6 +43,10 @@ DEFAULT_OPTIONS = {
     # the appearance in this color, '#rrggbb', the blue of the dialogs' drawings by default, none keeps its own
     'color': '#4e79a7',
     'output': DEFAULT_OUTPUT,
+    # a section analysis through the middle of the model, none shows it whole, see checkSection
+    'section': None,
+    # what other settings add to the model, shown in a color of its own, none shows the model alone, see checkDifference
+    'difference': None,
 }
 # not passed on to presets extending this one
 OWN_KEYS = ['description']
@@ -71,6 +77,10 @@ class Preset:
     color: str | None
     # folder of the picture, from the add-in folder
     output: str
+    # the plane of SECTION_PLANES the cut through the middle is parallel to, and whether the other half is kept
+    section: dict | None
+    # settings changed from the preset's and a color, what the model built with them has more is shown in the color
+    difference: dict | None = None
 
 def readPresetData(folder: str, fileName: str, extending: tuple[str, ...] = ()) -> dict:
     """The preset's data with what it extends filled in, settings merged one by one"""
@@ -112,6 +122,35 @@ def checkView(view) -> str | dict:
     point('target', True)
     point('up', False)
     return view
+
+def checkSection(section) -> dict | None:
+    if section is None:
+        return None
+    if not isinstance(section, dict):
+        raise PresetError('a section is an object with a plane')
+    unknown = [key for key in section if key not in ['plane', 'flip']]
+    if unknown:
+        raise PresetError(f'unknown section keys {unknown}')
+    if section.get('plane') not in SECTION_PLANES:
+        raise PresetError(f'section plane is one of {", ".join(SECTION_PLANES)}')
+    if not isinstance(section.get('flip', False), bool):
+        raise PresetError('section flip is true or false')
+    return {'plane': section['plane'], 'flip': section.get('flip', False)}
+
+def checkDifference(difference) -> dict | None:
+    """Settings changed from the preset's, as a test case's, and a color, '#rrggbb'"""
+    if difference is None:
+        return None
+    if not isinstance(difference, dict):
+        raise PresetError('a difference is an object with settings and a color')
+    unknown = [key for key in difference if key not in ['settings', 'color']]
+    if unknown:
+        raise PresetError(f'unknown difference keys {unknown}')
+    if not isinstance(difference.get('settings'), dict) or len(difference['settings']) == 0:
+        raise PresetError('difference settings are the settings changed from the preset\'s')
+    if not (isinstance(difference.get('color'), str) and re.fullmatch(r'#[0-9a-fA-F]{6}', difference['color'])):
+        raise PresetError('difference color is #rrggbb')
+    return {'settings': difference['settings'], 'color': difference['color']}
 
 def loadPreset(folder: str, fileName: str) -> Preset:
     name = os.path.splitext(fileName)[0]
@@ -158,6 +197,8 @@ def loadPreset(folder: str, fileName: str) -> Preset:
             appearance=data['appearance'],
             color=data['color'],
             output=data['output'],
+            section=checkSection(data['section']),
+            difference=checkDifference(data['difference']),
         )
     except PresetError as err:
         raise PresetError(f'preset {name}: {err}') from err

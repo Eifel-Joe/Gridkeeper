@@ -28,6 +28,8 @@ BIN = {
     'hasLipNotches': False,
     # dividers on grid lines go up into the lip, see raisedDividers
     'hasDividersToTop': False,
+    'lipType': 'Light',
+    'isLipTopTrimmed': True,
     'hasScoop': False,
     'scoopMaxRadius': 25.0,
     'hasTab': False,
@@ -88,8 +90,9 @@ BASEPLATE = {
     'sizingMode': 'Fill area',
     'areaWidth': 400.0,
     'areaLength': 300.0,
-    # gap between baseplates glued side by side, each takes half of it on its edge. Closer than bins are to each other
-    'plateClearance': 0.1,
+    # how far a plate's edge stops short of the grid line, plates glued side by side leave twice it between them.
+    # Closer than bins are to each other
+    'plateEdgeClearance': 0.05,
     # a common bed size, of the Bambu Lab A1, P1 and X1, the bed dropdown starts on custom
     'bedWidth': 256.0,
     'bedLength': 256.0,

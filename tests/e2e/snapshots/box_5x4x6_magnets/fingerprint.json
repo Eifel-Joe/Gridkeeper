@@ -1,0 +1,44 @@
+{
+    "bodies": [
+        {
+            "name": "Base",
+            "file": "body1.smt",
+            "volume": 270305.466484,
+            "area": 175164.052964,
+            "bboxMin": [
+                0.0,
+                0.0,
+                -2.8
+            ],
+            "bboxMax": [
+                230.0,
+                188.0,
+                44.7
+            ],
+            "lumps": 1,
+            "faces": 2244,
+            "edges": 5430,
+            "vertices": 3442
+        },
+        {
+            "name": "Lid",
+            "file": "body2.smt",
+            "volume": 109757.549395,
+            "area": 122524.612592,
+            "bboxMin": [
+                0.0,
+                0.0,
+                42.2
+            ],
+            "bboxMax": [
+                230.0,
+                188.0,
+                53.7
+            ],
+            "lumps": 1,
+            "faces": 2159,
+            "edges": 5008,
+            "vertices": 2906
+        }
+    ]
+}

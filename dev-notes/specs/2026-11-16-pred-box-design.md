@@ -136,6 +136,11 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
 1. **Box und Deckel** baut der Generator im Code wie Bins und Baseplates: vollständig bestimmte Skizzen, Maße aus Preds
    Datei, Benutzerparameter `gfBox1_baseWidth`, `gfBox1_baseLength`, `gfBox1_heightU`. Bodenraster und Bin-Füße im Deckel
    aus den vorhandenen Generatoren (`baseplateGenerator`, `baseGenerator`), soweit maßgleich zu Pred.
+   Nachtrag 17.11.2026 (Nutzer: „Ja, A bauen“): Die rechten Griff- und Schildhalter baut der Generator selbst als
+   Gegenstück der linken (x über die Boxmitte gespiegelt, Fasen- und Rundungskanten ebenso), statt Preds `#42 Mirror6`.
+   Fusion konnte diese Feature-Spiegelung je nach Dokumentzustand nicht nachrechnen (`FILLET_NO_EDGE_FOUND`), auch mit
+   dem Compute-Typ Identical nicht (`fusion-auftraege/r27_diag2.log`, `r27_cmd.out`). Die Form bleibt Preds, die
+   Zeitleiste weicht ab: kein Mirror6, die Features der rechten Hälfte folgen denen der linken.
 2. **Kleinteile** (Riegel Experimental, Scharnier M3x30, Griff, Haltestift): einmal aus Preds Datei als eigene
    Fusion-Dateien ins Add-in übernommen, Skizzen dabei nachbestimmt (Scharnier) bzw. neu angelegt (Griff), dann beim Bau
    eingefügt. Keine Benutzerparameter. Riegel, Griff und Haltestift setzen Gelenke in **Einbaulage**, nicht in Preds
