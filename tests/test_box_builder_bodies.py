@@ -130,3 +130,12 @@ def test_the_hinge_is_drawn_in_the_chosen_variant_and_gets_its_joint_origin():
     drawPart = ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "drawPart"))
     assert "predHinge.createHinge(component, hinge)" in drawPart
     assert "addOriginJointOrigin(component, partJointOriginName(part.role))" in source
+
+
+def test_every_small_part_body_gets_the_box_parts_appearance():
+    """Jörg 17.11.2026: latches, hinges, handle and pins in another color than box and lid; insertParts gives every body
+    of every part the appearance, on create, rebuild and clone alike (all build through it)"""
+    tree = ast.parse(open(INSERT, encoding="utf-8").read())
+    insertParts = ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "insertParts"))
+    assert "appearanceUtils.boxPartsAppearance(des)" in insertParts
+    assert "body.appearance = appearance" in insertParts
