@@ -341,3 +341,75 @@ def test_a_part_larger_than_the_bed_is_not_named_twice():
 def test_older_plate_files_of_the_same_name_are_known():
     names = ["Parts.3mf", "Parts, plate 1.3mf", "Parts, plate 12.3mf", "Parts, plate x.3mf", "Parts 2.3mf", "Other.3mf", "parts, PLATE 3.3MF"]
     assert [n for n in names if printLayout.isPlateFileOf(n, "Parts")] == ["Parts.3mf", "Parts, plate 1.3mf", "Parts, plate 12.3mf", "parts, PLATE 3.3MF"]
+
+
+# ---------------------------------------------------------------------------
+# Bambu click test 17.11.2026: the purge tower's spot and the printer's excluded area
+# ---------------------------------------------------------------------------
+
+X1_TOWER = (0.644, 0.977)
+X1_EXCLUDED = [(0, 0, 18, 28)]
+
+
+def test_the_purge_square_lies_where_the_slicer_puts_the_tower():
+    # Bambu Studio: the tower's corner at 0.644 x 0.977 of the bed, kept on the bed between the spacing
+    assert printLayout.purgeSquare(BED, 5, 50, X1_TOWER) == pytest.approx((164.864, 201, 214.864, 251))
+    assert printLayout.purgeSquare(BED, 5, 50, (0.0, 1.0)) == pytest.approx((5, 201, 55, 251))
+    assert printLayout.purgeSquare(BED, 5, 50, (1.0, 1.0)) == pytest.approx((201, 201, 251, 251))
+    assert printLayout.purgeSquare(BED, 5, 0, (1.0, 1.0)) is None
+
+
+def laid_boxes(laid):
+    out = []
+    for (plate, meshObject) in laid:
+        ((x0, x1), (y0, y1), _) = bounds(meshObject.vertices)
+        out.append((plate, meshObject.name, (x0, y0, x1, y1)))
+    return out
+
+
+@pytest.mark.parametrize("footprints", [
+    [(40, 40)] * 12,
+    [(84, 84), (42, 126), (126, 42), (36, 11), (36, 11), (83.5, 41.5)],
+    [(230, 188)],
+    [(99, 30), (230, 188)],
+    [(230, 188), (13.3, 12.8), (5.1, 31.6), (19.7, 5.1), (19.7, 5.1), (23.6, 36.5), (23.6, 36.5), (23.6, 36.5), (23.6, 36.5)],
+])
+def test_parts_keep_clear_of_the_tower_and_the_excluded_area_after_centering(footprints):
+    (laid, plates, tooLarge, blocked) = printLayout.layOut(boxes_of(footprints), BED, 5, 50, X1_TOWER, X1_EXCLUDED)
+    tower = printLayout.purgeSquare(BED, 5, 50, X1_TOWER)
+    for (plate, name, box_) in laid_boxes(laid):
+        # the excluded area is a collision, never touched
+        assert not overlap(box_, X1_EXCLUDED[0], 5 - 1e-6), (name, box_)
+        if plate not in blocked:
+            assert not overlap(box_, tower, 5 - 1e-6), (name, box_)
+    for plate in range(plates):
+        ((x0, x1), (y0, y1), _) = plate_bounds(laid, plate)
+        assert ((x0 + x1) / 2, (y0 + y1) / 2) == pytest.approx((128, 128))
+
+
+def test_the_excluded_area_is_kept_free_without_a_purge_square():
+    (laid, _, _, blocked) = printLayout.layOut(boxes_of([(40, 40)] * 25), BED, 5, 0, X1_TOWER, X1_EXCLUDED)
+    assert blocked == []
+    for (_, name, box_) in laid_boxes(laid):
+        assert not overlap(box_, X1_EXCLUDED[0], 5 - 1e-6), (name, box_)
+
+
+def test_arrange_skips_a_blocked_area_along_the_shelf():
+    (placements, _, _) = printLayout.arrange([(30, 30)] * 3, BED, 5, 0, excluded=[(0, 0, 18, 28)])
+    for p in placements:
+        assert not overlap((p.x, p.y, p.x + 30, p.y + 30), (0, 0, 18, 28), 5 - 1e-9)
+
+
+BOX_SET = [(230, 188), (13.3, 12.8), (5.1, 31.6), (19.7, 5.1), (19.7, 5.1), (23.6, 36.5), (23.6, 36.5), (23.6, 36.5), (23.6, 36.5), (230, 188), (99, 30)]
+
+
+@pytest.mark.parametrize("purge", [0, 50])
+def test_a_box_set_never_comes_near_the_excluded_area(purge):
+    # Bambu click test 17.11.2026: "Box 5×4×6 Base is too close to exclusion area, there may be collisions"
+    (laid, plates, _, blocked) = printLayout.layOut(boxes_of(BOX_SET), BED, 5, purge, X1_TOWER, X1_EXCLUDED)
+    for (_, name, box_) in laid_boxes(laid):
+        assert not overlap(box_, X1_EXCLUDED[0], 5 - 1e-6), (name, box_)
+    if purge == 0:
+        # box and lid each fill a plate between the strips the excluded area needs, the small parts take a third
+        assert blocked == []
+        assert plates == 3

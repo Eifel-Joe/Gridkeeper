@@ -84,27 +84,48 @@ class _Plate:
     nextY: float = 0.0
 
 
-def arrange(footprints: list[tuple[float, float]], bed: tuple[float, float], spacing: float, purge: float) -> tuple[list[Placement], list[int], list[int]]:
+def purgeSquare(bed: tuple[float, float], spacing: float, purge: float, anchor: tuple[float, float]) -> tuple | None:
     """
-    Where each footprint (width along x, depth along y) goes, in shelves along x, the deepest first, the plate's back
-    right corner a purge square wide kept free (none for 0). A footprint turns 90° when it fits no other way, the purge
-    square counted (review r29-export). One larger than the bed gets a plate of its own and is named in the first list,
-    one that fits the bed but not beside the purge square gets a plate of its own without it and is named in the
-    second. A single part lies in the middle of the bed, unless that touches the purge corner
+    The square kept free for the purge tower, x0, y0, x1, y1, where the slicer puts the tower: its corner nearest the
+    origin at the anchor's share of the bed (Bambu Studio's default_wipe_tower_pos, printBeds.purgeAnchor), kept on the
+    bed between the spacing. None without a purge square. Never more than the bed between the spacing
+    """
+    if purge <= 0:
+        return None
+    (bedWidth, bedDepth) = bed
+    purge = min(purge, bedWidth - 2 * spacing, bedDepth - 2 * spacing)
+    x0 = min(max(anchor[0] * bedWidth, spacing), bedWidth - spacing - purge)
+    y0 = min(max(anchor[1] * bedDepth, spacing), bedDepth - spacing - purge)
+    return (x0, y0, x0 + purge, y0 + purge)
+
+
+def arrange(footprints: list[tuple[float, float]], bed: tuple[float, float], spacing: float, purge: float,
+            purgeAnchor: tuple[float, float] = (1.0, 1.0), excluded: list[tuple] = (), blocked: list[tuple] = ()) -> tuple[list[Placement], list[int], list[int]]:
+    """
+    Where each footprint (width along x, depth along y) goes, in shelves along x, the deepest first, keeping the spacing
+    from the bed's edge, from each other and from the areas kept free: the purge square at the tower's spot (see
+    purgeSquare), the printer's excluded areas and any other blocked ones. A shelf skips past an area in its way, a new
+    shelf may start above one. A footprint turns 90° when it fits no other way. One larger than the bed gets a plate
+    of its own and is named in the first list, one that fits the bed but not beside the areas gets a plate of its own
+    without them and is named in the second. A single part lies in the middle of the bed when that keeps clear
     """
     (bedWidth, bedDepth) = bed
     right = bedWidth - spacing
     back = bedDepth - spacing
-    # never more than the bed between the spacing, a larger one only leaves every part a plate of its own
-    purge = min(purge, right - spacing, back - spacing)
-    # the purge square, x0, y0, x1, y1
-    corner = (right - purge, back - purge, right, back) if purge > 0 else None
+    square = purgeSquare(bed, spacing, purge, purgeAnchor)
+    areas = [tuple(area) for area in excluded] + list(blocked) + ([square] if square is not None else [])
 
-    def limit(y: float, depth: float) -> float:
-        """How far right a part may reach at this height, short of the purge square beside it"""
-        if corner is not None and y < corner[3] + spacing and y + depth > corner[1] - spacing:
-            return corner[0] - spacing
-        return right
+    def clear(box: tuple) -> bool:
+        return not any(_touches(box, area, spacing) for area in areas)
+
+    def fitX(x: float, y: float, width: float, depth: float) -> float | None:
+        """The first x from x on where the footprint keeps clear of every area, none past the bed's right edge"""
+        while x + width <= right + 1e-9:
+            hits = [area for area in areas if _touches((x, y, x + width, y + depth), area, spacing)]
+            if not hits:
+                return x
+            x = max(area[2] for area in hits) + spacing
+        return None
 
     def fits(width: float, depth: float) -> bool:
         return width <= right - spacing + 1e-9 and depth <= back - spacing + 1e-9
@@ -125,20 +146,26 @@ def arrange(footprints: list[tuple[float, float]], bed: tuple[float, float], spa
     def place(width: float, depth: float) -> tuple[int, float, float] | None:
         for (plateIndex, plate) in enumerate(plates + [_Plate(nextY=spacing)]):
             for shelf in plate.shelves:
-                if depth <= shelf.depth + 1e-9 and shelf.x + width <= limit(shelf.y, depth) + 1e-9:
-                    position = (plateIndex, shelf.x, shelf.y)
-                    shelf.x += width + spacing
-                    return position
-            if plate.nextY + depth <= back + 1e-9 and spacing + width <= limit(plate.nextY, depth) + 1e-9:
-                if plateIndex == len(plates):
-                    plates.append(plate)
-                shelf = _Shelf(plate.nextY, depth, spacing + width + spacing)
-                plate.shelves.append(shelf)
-                plate.nextY += depth + spacing
-                return (plateIndex, spacing, shelf.y)
+                if depth <= shelf.depth + 1e-9:
+                    x = fitX(shelf.x, shelf.y, width, depth)
+                    if x is not None:
+                        shelf.x = x + width + spacing
+                        return (plateIndex, x, shelf.y)
+            # a new shelf on top, or above an area in the way
+            starts = sorted({plate.nextY} | {area[3] + spacing for area in areas if area[3] + spacing > plate.nextY})
+            for y in starts:
+                if y + depth > back + 1e-9:
+                    break
+                x = fitX(spacing, y, width, depth)
+                if x is not None:
+                    if plateIndex == len(plates):
+                        plates.append(plate)
+                    plate.shelves.append(_Shelf(y, depth, x + width + spacing))
+                    plate.nextY = y + depth + spacing
+                    return (plateIndex, x, y)
         return None
 
-    noPurge = []
+    noRoom = []
     order = sorted(ways, key=lambda index: (-ways[index][0][1], -ways[index][0][0]))
     for index in order:
         for (width, depth, turned) in ways[index]:
@@ -147,40 +174,32 @@ def arrange(footprints: list[tuple[float, float]], bed: tuple[float, float], spa
                 placements[index] = Placement(position[0], position[1], position[2], turned)
                 break
         else:
-            noPurge.append(index)
+            noRoom.append(index)
 
-    # alone on a plate in its middle: too large for the bed, or for the bed beside the purge square
-    for index in sorted(tooLarge + noPurge):
+    # alone on a plate in its middle: too large for the bed, or for the bed beside the areas kept free
+    for index in sorted(tooLarge + noRoom):
         (width, depth, turned) = ways[index][0] if index in ways else (*footprints[index], False)
         plates.append(_Plate())
         placements[index] = Placement(len(plates) - 1, (bedWidth - width) / 2, (bedDepth - depth) / 2, turned)
 
-    if len(footprints) == 1 and not tooLarge and not noPurge:
+    if len(footprints) == 1 and not tooLarge and not noRoom:
         (width, depth, turned) = next(way for way in ways[0] if way[2] == placements[0].turned)
         middle = ((bedWidth - width) / 2, (bedDepth - depth) / 2)
-        if corner is None or not _touches((middle[0], middle[1], middle[0] + width, middle[1] + depth), corner, spacing):
+        if clear((middle[0], middle[1], middle[0] + width, middle[1] + depth)):
             placements[0] = Placement(0, middle[0], middle[1], turned)
 
-    return (placements, sorted(tooLarge), sorted(noPurge))
+    return (placements, sorted(tooLarge), sorted(noRoom))
 
 
-def _touches(box: tuple, corner: tuple, spacing: float) -> bool:
-    """Whether the box (x0, y0, x1, y1) comes closer to the corner square than the spacing"""
-    return box[0] < corner[2] + spacing - 1e-9 and corner[0] < box[2] + spacing - 1e-9 \
-        and box[1] < corner[3] + spacing - 1e-9 and corner[1] < box[3] + spacing - 1e-9
+def _touches(box: tuple, area: tuple, spacing: float) -> bool:
+    """Whether the box (x0, y0, x1, y1) comes closer to the area than the spacing"""
+    return box[0] < area[2] + spacing - 1e-9 and area[0] < box[2] + spacing - 1e-9 \
+        and box[1] < area[3] + spacing - 1e-9 and area[1] < box[3] + spacing - 1e-9
 
 
 def plateFileName(name: str, plate: int, plateCount: int) -> str:
     """The 3MF of a plate (Nutzer 17.11.2026: one 3MF per plate), the name alone when there is one plate"""
     return name if plateCount == 1 else f'{name}, plate {plate + 1}'
-
-
-def _bounds(vertices):
-    return [(min(v[axis] for v in vertices), max(v[axis] for v in vertices)) for axis in range(3)]
-
-
-# how often the purge square grows to stay free once the plates are centered, see layOut
-PURGE_ATTEMPTS = 6
 
 
 def isPlateFileOf(fileName: str, name: str) -> bool:
@@ -191,28 +210,57 @@ def isPlateFileOf(fileName: str, name: str) -> bool:
     return re.fullmatch(re.escape(name) + r'(, plate \d+)?\.3mf', fileName, re.IGNORECASE) is not None
 
 
-def layOut(groups: list[list], bed: tuple[float, float], spacing: float, purge: float) -> tuple[list[tuple[int, object]], int, list[int], list[int]]:
+def _bounds(vertices):
+    return [(min(v[axis] for v in vertices), max(v[axis] for v in vertices)) for axis in range(3)]
+
+
+# how often the layout is tried again to keep the areas free once the plates are centered, see layOut
+PURGE_ATTEMPTS = 6
+
+
+def _edgeStrips(excluded: list[tuple], bed: tuple[float, float], axis: int) -> list[tuple]:
+    """
+    Strips along both edges of the bed across the axis, as deep as the excluded areas reach in from their edge: what
+    lies between them stays between them once the slicer centers it, so it can't come to an excluded area
+    """
+    size = bed[axis]
+    reach = 0.0
+    for area in excluded:
+        (low, high) = (area[axis], area[axis + 2])
+        reach = max(reach, min(high, size - low))
+    if reach <= 0:
+        return []
+    if axis == 0:
+        return [(-1e3, -1e3, reach, bed[1] + 1e3), (size - reach, -1e3, size + 1e3, bed[1] + 1e3)]
+    return [(-1e3, -1e3, bed[0] + 1e3, reach), (-1e3, size - reach, bed[0] + 1e3, size + 1e3)]
+
+
+def layOut(groups: list[list], bed: tuple[float, float], spacing: float, purge: float,
+           purgeAnchor: tuple[float, float] = (1.0, 1.0), excluded: list[tuple] = ()) -> tuple[list[tuple[int, object]], int, list[int], list[int]]:
     """
     The meshes (threeMf.MeshObject) placed on their plates, each group as one block keeping its meshes' places to each
     other (the halves of a hinge), standing on z = 0, in the coordinates of its plate's own file. Returns each mesh
-    with its plate, how many plates, the groups too large for the bed and the plates without a free purge corner,
-    leaving out those of a part too large for the bed, it is named already.
+    with its plate, how many plates, the groups too large for the bed and the plates where the purge square or an
+    excluded area couldn't be kept free, leaving out those of a part too large for the bed, it is named already.
 
     Bambu Studio and PrusaSlicer move the parts of a 3MF not made by them as one group to the middle of the bed
     (Bambu Studio Plater.cpp center_instances_around_point, Bambu probe A 17.11.2026), so each plate's parts are
-    centered here already and stay where they are laid out. Centering moves them towards the purge corner: when a part
-    comes too close, the square is laid out larger and tried again. The best attempt counts, the fewest plates without
-    a free corner, then the fewest plates (review r29-export: a larger square can push parts onto plates of their own)
+    centered here already and stay where they are laid out. Centering moves them, maybe into an area kept free: then
+    the layout is tried again with that area blocked where it lies before the move. An excluded area (Bambu's
+    collision warning, click test 17.11.2026) is also tried with strips along both edges as deep as it reaches in,
+    see _edgeStrips. The best attempt counts: the fewest plates near an excluded area, then near the purge square, then
+    the fewest plates (review r29-export)
     """
     footprints = []
     for group in groups:
         ((x0, x1), (y0, y1), _) = _bounds([v for meshObject in group for v in meshObject.vertices])
         footprints.append((x1 - x0, y1 - y0))
     (bedWidth, bedDepth) = bed
-    corner = (bedWidth - spacing - purge, bedDepth - spacing - purge, bedWidth - spacing, bedDepth - spacing)
+    square = purgeSquare(bed, spacing, purge, purgeAnchor)
+    excludedAreas = [tuple(area) for area in excluded]
 
-    def attempt(reserve: float):
-        (placements, tooLarge, noPurge) = arrange(footprints, bed, spacing, reserve)
+    def attempt(blocked: list):
+        (placements, tooLarge, noRoom) = arrange(footprints, bed, spacing, purge, purgeAnchor, excluded, blocked)
         boxes = []
         for ((width, depth), placement) in zip(footprints, placements):
             (w, d) = (depth, width) if placement.turned else (width, depth)
@@ -225,31 +273,39 @@ def layOut(groups: list[list], bed: tuple[float, float], spacing: float, purge: 
                 bedWidth / 2 - (min(b[0] for b in onPlate) + max(b[2] for b in onPlate)) / 2,
                 bedDepth / 2 - (min(b[1] for b in onPlate) + max(b[3] for b in onPlate)) / 2,
             ))
-        # how far the centered parts reach into the purge square, by plate
-        intrusion = {}
+        # the areas the centered parts come too close to, by plate, and where they lie before the move
+        nearExcluded = set()
+        nearSquare = set()
+        moreBlocked = []
         for (box, placement) in zip(boxes, placements):
             (sx, sy) = shifts[placement.plate]
             moved = (box[0] + sx, box[1] + sy, box[2] + sx, box[3] + sy)
-            if purge > 0 and _touches(moved, corner, spacing):
-                reach = min(moved[2] + spacing - corner[0], moved[3] + spacing - corner[1])
-                intrusion[placement.plate] = max(intrusion.get(placement.plate, 0.0), reach)
+            for (area, near) in [(area, nearExcluded) for area in excludedAreas] + ([(square, nearSquare)] if square is not None else []):
+                if _touches(moved, area, spacing):
+                    near.add(placement.plate)
+                    moreBlocked.append((area[0] - sx, area[1] - sy, area[2] - sx, area[3] - sy))
         tooLargePlates = {placements[index].plate for index in tooLarge}
-        noPurgePlates = (set(intrusion) | {placements[index].plate for index in noPurge}) - tooLargePlates
-        # what more room in the corner may help: the plates whose parts all had room beside it
-        stuck = tooLargePlates | {placements[index].plate for index in noPurge}
-        grow = max((reach for (plate, reach) in intrusion.items() if plate not in stuck), default=0.0)
-        return (placements, tooLarge, sorted(noPurgePlates), shifts, plateCount, grow)
+        noRoomPlates = {placements[index].plate for index in noRoom}
+        nearExcluded -= tooLargePlates
+        nearSquare = (nearSquare | noRoomPlates) - tooLargePlates
+        # what blocking more may help: the plates whose parts all had room beside the areas
+        stuck = tooLargePlates | noRoomPlates
+        helps = any(plate not in stuck for plate in nearExcluded | nearSquare)
+        score = (len(nearExcluded), len(nearSquare), plateCount)
+        return (score, placements, tooLarge, sorted(nearExcluded | nearSquare), shifts, plateCount, moreBlocked if helps else [])
 
-    reserve = purge
     best = None
-    for _ in range(PURGE_ATTEMPTS):
-        result = attempt(reserve)
-        if best is None or (len(result[2]), result[4]) < (len(best[2]), best[4]):
-            best = result
-        if result[5] <= 0:
-            break
-        reserve += result[5]
-    (placements, tooLarge, noPurgePlates, shifts, plateCount, _) = best
+    variants = [[]] + [strips for strips in (_edgeStrips(excludedAreas, bed, 0), _edgeStrips(excludedAreas, bed, 1)) if strips]
+    for strips in variants:
+        blocked = list(strips)
+        for _ in range(PURGE_ATTEMPTS):
+            result = attempt(blocked)
+            if best is None or result[0] < best[0]:
+                best = result
+            if not result[6]:
+                break
+            blocked = blocked + result[6]
+    (_, placements, tooLarge, takenPlates, shifts, plateCount, _) = best
 
     laid = []
     for (group, placement) in zip(groups, placements):
@@ -261,4 +317,4 @@ def layOut(groups: list[list], bed: tuple[float, float], spacing: float, purge: 
         for meshObject in group:
             vertices = [(x + shift[0], y + shift[1], z + shift[2]) for (x, y, z) in meshObject.vertices]
             laid.append((placement.plate, dataclasses.replace(meshObject, vertices=vertices)))
-    return (laid, plateCount, tooLarge, noPurgePlates)
+    return (laid, plateCount, tooLarge, takenPlates)

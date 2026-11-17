@@ -360,7 +360,7 @@ def addLayoutInputs(inputs: adsk.core.CommandInputs, layout: dict):
         (BED_WIDTH_INPUT_ID, 'Bed width, X', layout['bedWidth'], 'The usable width of the bed'),
         (BED_LENGTH_INPUT_ID, 'Bed length, Y', layout['bedLength'], 'The usable depth of the bed'),
         (SPACING_INPUT_ID, 'Spacing', layout['spacing'], 'Space between the parts and to the edge of the bed'),
-        (PURGE_INPUT_ID, 'Purge tower area', layout['purge'], 'A square kept free in the back right corner of each plate for the purge tower when the label text is colored, 0 for none'),
+        (PURGE_INPUT_ID, 'Purge tower area', layout['purge'], 'A square kept free on each plate for the purge tower when label text is colored: where Bambu Studio puts the tower for a Bambu Lab printer, the back right corner for others, 0 for none'),
     ):
         valueInput = group.children.addValueInput(inputId, name, units, adsk.core.ValueInput.createByReal(value / 10))
         valueInput.minimumValue = 0
@@ -569,7 +569,7 @@ def plateNote(tooLarge: list[str], noPurge: list[int], paint: bool) -> str:
     if tooLarge:
         note += '\n\nLarger than the bed, on a plate of its own: ' + ', '.join(tooLarge) + '.'
     if paint and noPurge:
-        note += '\n\nNo free corner for the purge tower on plate ' + ', '.join(str(plate + 1) for plate in noPurge) + '.'
+        note += '\n\nNo room kept free for the purge tower on plate ' + ', '.join(str(plate + 1) for plate in noPurge) + ', move the tower or a part in the slicer.'
     return note
 
 def mayReplace(paths: list[str], removed: list[str] = None) -> bool:
@@ -725,8 +725,12 @@ def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: 
         progress.hide()
     groups = exportParts.printGroups(keys)
     bed = (layout['bedWidth'], layout['bedLength'])
-    purge = layout['purge'] if filament is not None else 0.0
-    (laid, plates, tooLarge, noPurge) = printLayout.layOut([[objects[index] for index in group] for group in groups], bed, layout['spacing'], purge)
+    # a purge tower only for painted text, where the printer's slicer puts it, its excluded areas kept free (click test
+    # 17.11.2026: F1 Bambu warned of a box too close to the X1's excluded area, F2 the tower wasn't in the free corner)
+    purge = layout['purge'] if filament is not None and paintedCount > 0 else 0.0
+    (laid, plates, tooLarge, noPurge) = printLayout.layOut(
+        [[objects[index] for index in group] for group in groups], bed, layout['spacing'], purge,
+        printBeds.purgeAnchor(layout['bed']), printBeds.excludedAreas(layout['bed']))
     titles = [printLayout.plateFileName(fileName, plate, plates) for plate in range(plates)]
     paths = [os.path.join(folder, f'{title}.3mf') for title in titles]
     # the plate files of an earlier export of the name the new one doesn't write, they'd be printed with the new ones

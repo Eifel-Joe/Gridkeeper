@@ -231,7 +231,7 @@ def test_the_default_bed_is_one_of_the_baseplate_dialogs():
 
 def test_layout_choices_default_to_values():
     choices = exportParts.layoutChoices({}, BED_NAMES)
-    assert choices == {"bed": "Bambu Lab A1, P1, X1 (256 x 256 mm)", "bedWidth": 256.0, "bedLength": 256.0, "spacing": 5.0, "purge": 50.0}
+    assert choices == {"bed": "Bambu Lab P1P, P1S, X1, X1C, X1E (256 x 256 mm)", "bedWidth": 256.0, "bedLength": 256.0, "spacing": 5.0, "purge": 50.0}
 
 
 def test_layout_choices_are_read_back():
@@ -339,3 +339,16 @@ def test_the_question_lists_a_few_and_counts_the_rest():
 def test_an_older_plate_file_that_cant_be_removed_doesnt_fail_the_export():
     source = _entry_function("export3mf")
     assert "except OSError" in source
+
+
+def test_the_layout_keeps_the_printers_tower_spot_and_excluded_area_free():
+    # Bambu click test 17.11.2026 (F1, F2)
+    source = _entry_function("export3mf")
+    assert "printBeds.purgeAnchor(layout['bed'])" in source
+    assert "printBeds.excludedAreas(layout['bed'])" in source
+
+
+def test_the_purge_square_only_when_label_text_is_painted():
+    # a box set has no text: with Color label text on nothing is painted and no tower is printed
+    source = _entry_function("export3mf")
+    assert "if filament is not None and paintedCount > 0" in source
