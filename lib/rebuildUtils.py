@@ -466,7 +466,7 @@ def findBodyByToken(design: adsk.fusion.Design, token: str) -> adsk.fusion.BRepB
 
 def tagParameterNames(body: adsk.fusion.BRepBody) -> list[str]:
     """Names of the user parameters in the body's tag"""
-    tag = tagUtils.readBodyTag(body)
+    tag = tagUtils.readPartTag(body)
     parameters = tag[1].get('parameters') if tag is not None else None
     if not isinstance(parameters, list):
         return []
@@ -483,7 +483,7 @@ def prefixOf(names: list[str], baseName: str) -> str | None:
 
 def bodyId(body: adsk.fusion.BRepBody, baseName: str) -> str | None:
     """The id of the body, see tagUtils.tagBody, one built before bodies had ids goes by the prefix of its parameters"""
-    tag = tagUtils.readBodyTag(body)
+    tag = tagUtils.readPartTag(body)
     return (tag[1].get('id') if tag is not None else None) or prefixOf(tagParameterNames(body), baseName)
 
 def parameterFields(parameters: list, findParameter, labelFields: dict[str, str]) -> list[tuple[str, adsk.fusion.UserParameter]]:
@@ -575,7 +575,7 @@ def rebuild(
 
 def configChanges(generator: str, body: adsk.fusion.BRepBody, newConfig: dict) -> str:
     """What the rebuild changes of the config in the body's tag, a line per field as old -> new, for the log"""
-    tag = tagUtils.readBodyTag(body)
+    tag = tagUtils.readPartTag(body)
     oldConfig = tag[1].get('config') if tag is not None else None
     if not isinstance(oldConfig, dict):
         return 'its old config isn\'t in its tag'

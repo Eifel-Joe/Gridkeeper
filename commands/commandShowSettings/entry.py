@@ -13,6 +13,7 @@ from ..commandCreateBin import entry as binEntry
 from ..commandCreateBaseplate import entry as baseplateEntry
 from ..commandCreateLabel import entry as labelEntry
 from ..commandCreateBox import entry as boxEntry
+from ..commandCreateBoxLabel import entry as boxLabelEntry
 
 app = adsk.core.Application.get()
 ui = app.userInterface
@@ -43,6 +44,7 @@ TAG_TITLES = {
     tagUtils.TAG_BASEPLATE: 'Gridfinity baseplate',
     tagUtils.TAG_LABEL: 'Gridfinity label',
     tagUtils.TAG_BOX: 'Gridfinity box',
+    tagUtils.TAG_BOX_LABEL: 'Box label',
 }
 # the dialog each generator opens with a cloned config, see startWithConfig
 CLONE_COMMANDS = {
@@ -52,13 +54,17 @@ CLONE_COMMANDS = {
     tagUtils.TAG_LABEL: labelEntry,
     # storage boxes after Pred (round 27)
     tagUtils.TAG_BOX: boxEntry,
+    # the label of a box (1.1.0, Jörg: "Die Box-Labels haben die Punkte [...] nicht. Warum? Die Cullenect-Label haben es.")
+    tagUtils.TAG_BOX_LABEL: boxLabelEntry,
 }
-# generators that rebuild a body in place, see binEntry.startRebuild, baseplateEntry.startRebuild and labelEntry.startRebuild
+# generators that rebuild a body in place, see binEntry.startRebuild, baseplateEntry.startRebuild, labelEntry.startRebuild,
+# boxEntry.startRebuild and boxLabelEntry.startRebuild
 REBUILD_COMMANDS = {
     tagUtils.TAG_BIN: binEntry,
     tagUtils.TAG_BASEPLATE: baseplateEntry,
     tagUtils.TAG_LABEL: labelEntry,
     tagUtils.TAG_BOX: boxEntry,
+    tagUtils.TAG_BOX_LABEL: boxLabelEntry,
 }
 REBUILD_ACTION = 'rebuild'
 # the page's height, what the dialog has room for at its initial size. Fusion makes a page as tall as its content up
@@ -102,7 +108,7 @@ def componentTag(component: adsk.fusion.Component) -> tuple[adsk.fusion.BRepBody
     holds none, its Box component's body stands for it, see tagUtils.menuTagOf
     """
     def tagsOf(owner: adsk.fusion.Component) -> list:
-        return [(body, *tag) for body in owner.bRepBodies if (tag := tagUtils.readBodyTag(body)) is not None]
+        return [(body, *tag) for body in owner.bRepBodies if (tag := tagUtils.readPartTag(body)) is not None]
     def roleOf(child: adsk.fusion.Component) -> str | None:
         # the tag only, not the name: a user's own component named Box doesn't answer for its parent
         attribute = child.attributes.itemByName(tagUtils.TAG_GROUP, tagUtils.TAG_PART_ROLE)
@@ -112,11 +118,11 @@ def componentTag(component: adsk.fusion.Component) -> tuple[adsk.fusion.BRepBody
 
 def canRebuild(tag: tuple[adsk.fusion.BRepBody, str, dict] | None) -> bool:
     """Bodies generated before the generator kept the config can't be rebuilt"""
-    return tag is not None and tag[1] in REBUILD_COMMANDS and isinstance(tag[2].get('config'), dict)
+    return tag is not None and tag[1] in REBUILD_COMMANDS and tagUtils.buildConfig(tag[1], tag[2]) is not None
 
 def canClone(tag: tuple[adsk.fusion.BRepBody, str, dict] | None) -> bool:
     """Bodies generated before the generator kept the config can't be cloned"""
-    return tag is not None and tag[1] in CLONE_COMMANDS and isinstance(tag[2].get('config'), dict)
+    return tag is not None and tag[1] in CLONE_COMMANDS and tagUtils.buildConfig(tag[1], tag[2]) is not None
 
 def startRebuild(tag: tuple[adsk.fusion.BRepBody, str, dict]):
     (body, tagName, value) = tag
@@ -221,7 +227,8 @@ def pageHandlers(body: adsk.fusion.BRepBody, tagName: str, value: dict) -> dict[
         'settings': settingsUtils.settingsHtml(value, parameterExpression),
         'buttons': [],
     }
-    if not isinstance(value.get('config'), dict):
+    # a box label built before it kept its whole config shows its settings only, see tagUtils.buildConfig
+    if tagUtils.buildConfig(tagName, value) is None:
         return {browserPages.READY: lambda _: page}
     # tag names are the generator names of configJson
     generatorTitle = configJson.GENERATOR_TITLES[tagName]

@@ -10,8 +10,9 @@ TAG_BASEPLATE = 'baseplate'
 TAG_LABEL = 'label'
 # storage boxes after Pred (round 27), on the box and on the lid body
 TAG_BOX = 'box'
-# the box label's plate (round r29-export, p380), a tag of its own: readBodyTag leaves it out, the settings menu and
-# rebuild would take it for a Cullenect insert. Its config holds the surface only, for the export's print orientation
+# the box label's plate (round r29-export, p380), a tag of its own: readBodyTag, the generators' tags, leaves it out, it
+# isn't a Cullenect insert. readPartTag knows it, for the export, the settings menu, rebuild and clone (1.1.0, Jörg: "Die
+# Box-Labels haben die Punkte [...] nicht. Warum? Die Cullenect-Label haben es."); its config is the whole dialog's
 TAG_BOX_LABEL = 'boxLabel'
 # on a user parameter of a bin, the config field its value is, see tagParameterField
 TAG_PARAMETER_FIELD = 'parameterField'
@@ -93,12 +94,28 @@ def tagBody(body: adsk.fusion.BRepBody, tagName: str, settings: list[dict] = Non
     body.attributes.add(TAG_GROUP, tagName, createTagValue(getGeneratorVersion(), settings, parameters, config, bodyId=bodyId))
 
 def readExportTag(body: adsk.fusion.BRepBody) -> tuple[str, dict] | None:
-    """The tag the export knows a part by: a generator's, see readBodyTag, or the box label's"""
+    """The tag the export knows a part by, see readPartTag"""
+    return readPartTag(body)
+
+def readPartTag(body: adsk.fusion.BRepBody) -> tuple[str, dict] | None:
+    """The tag of a part the add-in made: a generator's, see readBodyTag, or the box label's"""
     tag = readBodyTag(body)
     if tag is not None:
         return tag
     attribute = body.attributes.itemByName(TAG_GROUP, TAG_BOX_LABEL)
     return (TAG_BOX_LABEL, parseTagValue(attribute.value)) if attribute is not None else None
+
+# a field every whole config of the part has: a box label built before it was rebuilt and cloned (1.1.0) kept the
+# surface only, for the export (p380); built from that, the rest came from the dialog's last label (review)
+CONFIG_KEY_FIELDS = {TAG_BOX_LABEL: 'bigText'}
+
+def buildConfig(tagName: str, value: dict) -> dict | None:
+    """The config in a tag value the part can be rebuilt and cloned from, none when there's none or not all of it"""
+    config = value.get('config')
+    if not isinstance(config, dict):
+        return None
+    keyField = CONFIG_KEY_FIELDS.get(tagName)
+    return config if keyField is None or keyField in config else None
 
 def readBodyTag(body: adsk.fusion.BRepBody) -> tuple[str, dict] | None:
     """Which generator tagged the body and the tag value, none for bodies it didn't generate"""
@@ -117,7 +134,7 @@ def partTag(body: adsk.fusion.BRepBody, occurrenceOf) -> tuple[adsk.fusion.BRepB
     component with occurrenceOf, which gives None for the root
     """
     native = body.nativeObject or body
-    tag = readBodyTag(native)
+    tag = readPartTag(native)
     if tag is not None:
         return (native, *tag)
     # only a letter in Text: a bin nested in the user's own assembly would answer for the user's bodies otherwise
@@ -128,7 +145,7 @@ def partTag(body: adsk.fusion.BRepBody, occurrenceOf) -> tuple[adsk.fusion.BRepB
     if part is None:
         return None
     for partBody in part.component.bRepBodies:
-        partBodyTag = readBodyTag(partBody)
+        partBodyTag = readPartTag(partBody)
         if partBodyTag is not None:
             return (partBody, *partBodyTag)
     return None

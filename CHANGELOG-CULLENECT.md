@@ -60,6 +60,10 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   or flush like the Cullenect inserts. Picking the *Label joint origin* of a box joints the label into its holder; every
   box now has that joint origin. A command of its own, so a label can be swapped without touching the box. Every
   sketch is fully constrained.
+- **Settings, rebuild and clone for the box label:** Jörg after his test: „Die Box-Labels haben die Punkte
+  [Gridkeeper settings / rebuild / clone im Rechtsklick] nicht. Warum? Die Cullenect-Label haben es.“ Now they do,
+  like the Cullenect inserts: the label keeps its settings, a rebuild builds it anew in place and jointed into the
+  holder of its box again, a clone opens the dialog with its settings and no box.
 
 ### Small parts of the storage box (round 28)
 
