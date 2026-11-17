@@ -153,3 +153,17 @@ def placeInSet(native, setOccurrence, inContext, transform):
     occurrence = inContext(native, setOccurrence)
     occurrence.transform2 = world
     return occurrence
+
+
+def placeAllInSet(first, addCopy, setOccurrence, inContext, transforms):
+    """
+    The first occurrence and one copy per further transform (addCopy makes one in the set's component), each put at
+    its transform (set's frame) through placeInSet; returns their proxies from the root.
+
+    Root cause (r28_insert_check l3, 17.11.2026): a copy made by addExistingComponent with its place, after the first
+    was put, lay at first place + its place (second hinge at y 98.81 = 40.50 + 58.30 mm). Why Fusion composes them
+    isn't known; putting each copy through its proxy sets an absolute place, so what the copy starts with doesn't
+    matter. Test: tests/test_pred_box_seats.py
+    """
+    occurrences = [first] + [addCopy() for _ in transforms[1:]]
+    return [placeInSet(occurrence, setOccurrence, inContext, transform) for occurrence, transform in zip(occurrences, transforms)]

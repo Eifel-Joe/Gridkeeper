@@ -222,3 +222,22 @@ def test_a_hinge_is_placed_through_its_proxy_from_the_root_in_world_coordinates(
     assert placed.transform2.t == pytest.approx((94.8, 4.05, 48.78))
     # the set's own transform is left as it was
     assert setOccurrence.transform2.t == (100.0, 0.0, 50.0)
+
+
+def test_both_hinges_end_up_at_their_places_even_if_a_copy_starts_where_the_first_lies():
+    """r28_insert_check l3 (17.11.2026): the second hinge, made by addExistingComponent with its place, lay at first
+    place + second place; so every hinge is made first and then put at its place through its proxy"""
+    setOccurrence = _Occurrence(_Matrix(), proxy=True)
+    first = _Occurrence()
+
+    def addCopy():
+        # as Fusion did: the copy starts where the first one was put
+        return _Occurrence(first.transform2.copy())
+
+    def inContext(entity, occurrence):
+        proxy = _Occurrence(entity.transform2, proxy=True)
+        entity.proxyOf = proxy
+        return proxy
+
+    placed = seats.placeAllInSet(first, addCopy, setOccurrence, inContext, [_Matrix(-52.0, 40.5, -12.2), _Matrix(-52.0, 58.3, -12.2)])
+    assert [p.transform2.t for p in placed] == [pytest.approx((-52.0, 40.5, -12.2)), pytest.approx((-52.0, 58.3, -12.2))]

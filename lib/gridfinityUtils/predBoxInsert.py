@@ -75,14 +75,14 @@ def insertParts(
                 joint.name = f'{setName} {seatName}'
         else:
             # the hinges beside the box in their print position, the first where Pred's lies (plan decision 6)
-            places = predBoxSeats.hingePlaces()
-            for (index, (x, y, z)) in enumerate(places[:part.count]):
+            transforms = []
+            for (x, y, z) in predBoxSeats.hingePlaces()[:part.count]:
                 transform = adsk.core.Matrix3D.create()
                 transform.translation = adsk.core.Vector3D.create(x / 10, y / 10, z / 10)
-                if index == 0:
-                    predBoxSeats.placeInSet(first, setOccurrence, inContext, transform)
-                else:
-                    occurrences.append(setComponent.occurrences.addExistingComponent(component, transform))
+                transforms.append(transform)
+            predBoxSeats.placeAllInSet(
+                first, lambda: setComponent.occurrences.addExistingComponent(component, adsk.core.Matrix3D.create()),
+                setOccurrence, inContext, transforms)
             if des.designType == adsk.fusion.DesignTypes.ParametricDesignType and des.snapshots.hasPendingSnapshot:
                 des.snapshots.add()
         bodies += list(component.bRepBodies)
