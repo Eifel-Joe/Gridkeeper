@@ -80,10 +80,69 @@ def test_the_hinges_are_jointed_like_the_other_parts_without_a_captured_position
     captured position stayed suppressed after a rebuild (r28_cmd l1/l2); every part is jointed now, none is placed"""
     source = open(INSERT, encoding="utf-8").read()
     assert "snapshots.add" not in source and "transform2" not in source and "placeAllInSet" not in source
-    assert "predBoxParts.partsFor(hinge)" in source and "predBoxSeats.seats(dims, hinge)" in source
+    assert "predBoxParts.partsToDraw(hinge)" in source and "predBoxSeats.seats(dims, hinge)" in source
     assert "originConstructionPoint" in source
 
 
-def test_bodies_get_their_names_from_the_part_list():
+def test_the_parts_are_drawn_in_the_set_not_imported():
+    """Round 29: importToTarget fails in a command with a dialog (fusion-auftraege/r28_cmdvariants.log); every part is
+    drawn by its generator into a new component of the set, in the box command, so it lands in the set's group"""
     source = open(INSERT, encoding="utf-8").read()
-    assert "predBoxParts.BODY_NAMES.get(part.file" in source
+    assert "importToTarget" not in source and "tempCopy" not in source and ".f3d" not in source
+    assert "predBoxParts.partsToDraw(hinge)" in source and "occurrences.addNewComponent(" in source
+    assert "drawPart(component, part, dims, hinge)" in source
+
+
+def test_every_drawn_role_has_its_generator():
+    tree = ast.parse(open(INSERT, encoding="utf-8").read())
+    drawPart = ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "drawPart"))
+    parts = open(os.path.join(os.path.dirname(INSERT), "predBoxParts.py"), encoding="utf-8").read()
+    drawn = ast.literal_eval(next(node.value for node in ast.parse(parts).body
+                                  if isinstance(node, ast.AnnAssign) and getattr(node.target, "id", None) == "DRAWN_ROLES"))
+    for role in drawn:
+        assert f"'{role}'" in drawPart, role
+
+
+def test_the_pin_is_drawn_by_its_generator():
+    tree = ast.parse(open(INSERT, encoding="utf-8").read())
+    drawPart = ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "drawPart"))
+    assert "predHandlePin.createHandlePin(component)" in drawPart
+
+
+def test_the_handle_is_drawn_with_the_width_of_the_box():
+    """The handle follows the label width by its expression on gfBoxN_baseWidth (predBoxSeats.handleHalfWidth)"""
+    tree = ast.parse(open(INSERT, encoding="utf-8").read())
+    drawPart = ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "drawPart"))
+    assert "predHandle.createHandle(component, predBoxSeats.handleHalfWidth(dims).expression)" in drawPart
+
+
+def test_the_latch_is_drawn_by_its_generator():
+    tree = ast.parse(open(INSERT, encoding="utf-8").read())
+    drawPart = ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "drawPart"))
+    assert "predLatch.createLatch(component)" in drawPart
+
+
+def test_the_hinge_is_drawn_in_the_chosen_variant_and_gets_its_joint_origin():
+    """The hinges are drawn in the variant of the box's setting; they have no joint origin of their own, insertParts
+    gives them one at the component's origin and joints them at Hinge 1/2 beside the box (round 28, Vorschlag J)"""
+    source = open(INSERT, encoding="utf-8").read()
+    tree = ast.parse(source)
+    drawPart = ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "drawPart"))
+    assert "predHinge.createHinge(component, hinge)" in drawPart
+    assert "addOriginJointOrigin(component, partJointOriginName(part.role))" in source
+
+
+def test_every_small_part_body_gets_the_box_parts_appearance():
+    """Nutzer 17.11.2026: latches, hinges, handle and pins in another color than box and lid; insertParts gives every body
+    of every part the appearance, on create, rebuild and clone alike (all build through it)"""
+    tree = ast.parse(open(INSERT, encoding="utf-8").read())
+    insertParts = ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "insertParts"))
+    assert "appearanceUtils.boxPartsAppearance(des)" in insertParts
+    assert "body.appearance = appearance" in insertParts
+
+
+def test_a_missing_library_appearance_leaves_the_parts_uncoloured_but_builds_the_box():
+    """Review round 29: without a library appearance to copy (appearanceUtils.AppearanceError) the box command failed,
+    before round 29 a box needed no appearance; the parts are drawn without their colour then"""
+    source = open(INSERT, encoding="utf-8").read()
+    assert "except appearanceUtils.AppearanceError" in source

@@ -112,3 +112,20 @@ def test_by_default_only_the_occurrence_is_colored(appearances):
     appearanceUtils.colorPart(bodies, occurrence, RED)
     assert occurrence.appearance == f"appearance {RED}"
     assert bodies[0].appearance is None
+
+
+# Nutzer 17.11.2026: "Im Übrigen brauchen Latches, Hinge, Handle und Pin eine andere Farbe als die Box und der Deckel."
+# Orange like the latch in Pred's file (the main session's choice, Nutzer may change it), one appearance per document
+
+def test_the_small_parts_have_an_appearance_of_their_own():
+    appearanceUtils = _load()
+    assert appearanceUtils.BOX_PARTS_APPEARANCE == "Gridkeeper box parts"
+    assert appearanceUtils.BOX_PARTS_COLOR == "#F07800"
+
+
+def test_the_box_parts_appearance_is_made_once_by_name(monkeypatch):
+    appearanceUtils = _load()
+    calls = []
+    monkeypatch.setattr(appearanceUtils, "namedAppearance", lambda design, name, color: calls.append((design, name, color)) or "appearance")
+    assert appearanceUtils.boxPartsAppearance("design") == "appearance"
+    assert calls == [("design", "Gridkeeper box parts", "#F07800")]

@@ -10,14 +10,14 @@ Every new box is a component of its own in the container *Boxes*, holding the co
 small parts (latches, handle, handle pins, hinges, see [Small parts](#small-parts)); the lid is jointed shut on the
 box, see [Components and joints](working/components.md).
 
-![A box 5 × 4 × 6 with its lid, built by Gridkeeper box, and its set Box 5×4×6 with the components Box and Lid in the browser](assets/images/box-5x4x6.png)
+![A box 5 × 4 × 6 with its lid, its orange small parts and a label in the holder, and its set Box 5×4×6 in the browser: Box, Lid, four latches, the handle, two handle pins and two hinges](assets/images/box-5x4x6.png)
 
 !!! note "Magnet holes"
     Magnet holes are for 6 × 2 mm magnets only: 6 × 3 mm ones would break through the floor.
 
 ## Info
 
-![The Gridkeeper box dialog: Info, Size 5 × 4 × 6 with the outer size 230 × 188 × 65 mm, Magnet holes and Joint origins](assets/images/dialog-box.png)
+![The Gridkeeper box dialog: Info, Size 5 × 4 × 6 with the outer size 230 × 188 × 65 mm, Magnet holes, Joint origins and Small parts with the Hinge choice](assets/images/dialog-box.png)
 
 A link to this page, the credit to Pred and the version of the add-in. When the dialog was opened by
 **Gridkeeper rebuild**, it says which box is rebuilt in place.
@@ -52,6 +52,7 @@ into the box like onto a baseplate. These are always there:
 | *Stack bottom joint origin* | Middle of the box's underside |
 | *Stack top joint origin* | Middle of the lid's top: joint the bottom of another box onto it to stack them |
 | *Lid joint origin* | In box and lid at the middle of the joint between them, used by the joint *Lid on box* |
+| *Label joint origin* | In the label holder at the front, the middle of the label's back; **Gridkeeper box label** joints the label there |
 
 *Lid on box* is part of the box: a rebuild makes it anew as a rigid joint, changes of yours to it are not kept.
 
@@ -80,8 +81,40 @@ size, the second 5 mm beside the first.
 | **Pinned** | Pred's *Hinge_Pined*, with a printed pin as a third body |
 | **Plain** | Pred's *Hinge*, the one Pred's file shows |
 
-The parts are taken from Pred's file (`resources/predBox`, see its README): the same shape, with joint origins added,
-sketches fully constrained and Pred's parameters turned into their values.
+The parts are drawn in code in Pred's shape, compared with Pred's own parts to the micrometre, with every sketch fully
+constrained and Pred's parameters turned into values; they are drawn by the box command itself, so they sit in the
+box's group in the timeline and come along with a rebuild or clone. They have an appearance of their own,
+*Gridkeeper box parts*, orange like Pred's latch, so they stand apart from box and lid.
+
+## Label
+
+**Solid › Create › Gridkeeper box label** makes the label for the holder at the front of the box: Pred's flat plate,
+0.85 mm thick and 24.5 mm high, as wide as the holder of the box (Pred's label width less 3 mm: 25.5 mm at a width of 4,
+67.5 mm at 5, 82 mm from 6 on). It is a command of its own, so a label can be swapped without touching the box.
+
+![The Gridkeeper box label dialog with a box picked: label width Box 5 cells (70.5 mm), plate 67.5 × 24.5 mm, large text M3, two lines, Heavy and Raised, one symbol](assets/images/dialog-box-label.png)
+
+```
++--------------------------------------------+
+|  large  |  Line 1                          |
+|  text   |  Line 2                          |
+|         |  up to five symbols              |
++--------------------------------------------+
+```
+
+| Input | Default | What it does |
+|---|---|---|
+| **Box** | none | Optional: pick the *Label joint origin* of a box, the label is jointed into its holder (joint *… in holder*) and **Label width** is set to the box's. Without, the label lies beside the parts there are, e.g. for a reprint |
+| **Label width** | Box 5 cells (70.5 mm) | Pred's fixed label widths: *Box 4 cells (28.5 mm)*, *Box 5 cells (70.5 mm)*, *Box 6+ cells (85 mm)*; the plate is 3 mm narrower. With a picked box only its own width builds |
+| **Large text** | M3 | One line in large letters (up to 12 mm) at the left, a little over a third of the width; empty leaves the room to the lines |
+| **Line 1**, **Line 2** | Socket head, DIN 912 | Two lines at the right, 4 mm high, smaller when they are long |
+| **Text style**, **Text and symbols**, **Text color** | Heavy, Raised, none | As for the [Cullenect inserts](cullenect/inserts.md): raised 0.4 mm like Pred's own labels, set in 0.4 mm or flush, as bodies of their own to print in another colour |
+| **Symbol 1** … **Symbol 5** | Socket Hex, None … | Cullenect symbols in a row under the lines, 6 mm high: machine screws with full thread by head and driver, and every hardware symbol. The ones the width has no room for are left out from the right, the dialog says how many |
+
+A 2.5 mm rim stays free all round, so the holder's lips don't cover text or symbols. The plate lies flat in its
+component as it is printed, the text up; the label joint origin at the middle of its back turns it upright into the
+holder. Each text is driven by a text parameter `gfBoxLabel1_bigText`, `gfBoxLabel1_text1`, `gfBoxLabel1_text2`;
+a longer text is not fitted again. For another box width or other symbols, delete the label and make a new one.
 
 ## Parameters
 
@@ -104,8 +137,10 @@ yours on its joint origins move over to the joint origins of the same name.
 
 ## Credits
 
-Pred's Gridfinity Storage Box v1.1 is licensed CC BY-NC. The small parts are Pred's, taken over from Pred's file
-with the changes listed in `resources/predBox/README.md`. Gridkeeper rebuilds its box and lid in code, with fully
+Pred's Gridfinity Storage Box v1.1 is licensed CC BY-NC. The small parts are Pred's, drawn in code after Pred's
+file, the same shape. Gridkeeper rebuilds its box and lid in code, with fully
 constrained sketches and parameters, and changes it where noted on this page (the magnet holes, the floor pads and
 the stacking rim drawn from circles, the joint origins). The timeline follows Pred's steps, except that the right
 handle and label holders are built directly instead of mirrored from the left ones; the shape stays Pred's.
+The label is Pred's plate with Gridkeeper text and the Cullenect symbols by CullenJWebb
+([Cullenect-Labels](https://github.com/CullenJWebb/Cullenect-Labels), MIT) instead of Pred's text.

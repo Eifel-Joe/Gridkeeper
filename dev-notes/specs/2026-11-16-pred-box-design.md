@@ -168,6 +168,11 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
    Variante: die Ecke ihres Körperquaders (kleinstes x, y, z) dort, wo die von `Hinge_M3x30:1` liegt, das zweite
    Scharnier 5 mm daneben in y, gerechnet von der eigenen Tiefe. Vorgabe M3x30. Damit gilt oben „werden nicht in die
    Box gejointet“ nur noch im Sinn von: nicht in Einbaulage.
+   Nachtrag 17.11.2026 (Runde 29, Nutzer: „Im Übrigen brauchen Latches, Hinge, Handle und Pin eine andere Farbe als die
+   Box und der Deckel.“): Alle Körper der Kleinteile (Riegel, Griff, Haltestifte, Scharnierhälften und der gedruckte
+   Stift) bekommen die Darstellung *Gridkeeper box parts*, orange (#F07800) wie der Riegel in Preds Datei (Festlegung
+   der Hauptsitzung, Nutzer kann sie ändern). Sie wird je Dokument einmal angelegt und wiederverwendet, beim Erzeugen,
+   Rebuild und Clone gleich. Box und Deckel bleiben, wie sie sind; die Geometrie ändert sich nicht.
 3. **Schild:** gebaut vom Gridkeeper-Schildgenerator (Text, Cullenect-Symbole), Plattengröße nach Preds Formel.
 4. Struktur wie bisher: jedes Teil eine Komponente, im Container „Gridkeeper boxes“ o. ä., Gelenke zwischen Teilen.
 
@@ -193,3 +198,15 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
 - Ob Bodenraster und Bin-Füße aus vorhandenen Generatoren maßgleich sind oder Preds Profil nachgebaut werden muss.
 - Maße, die nicht in diesem Dokument stehen, misst der Builder in Preds Datei nach (Lage der Riegel und Scharniere,
   Griffhalter, Schildhalter, Luft unter den Lippen).
+
+## Nachtrag Runde 29: Brücken im Scharnier M3x30 (Nutzer, 17.11.2026: „A: Brücken anders“)
+
+- Preds Druckhilfe in der Senkung des M3x30-Scharniers (Sketch5, Extrude25/26: Lagen 0,2 und 0,4 mm am Senkungsboden)
+  ließ sich als Skizze nicht vollständig bestimmt zeichnen: Fusion lehnte eine Bemaßung ab
+  (`VCS_SKETCH_OVER_CONSTRAINTS`, `fusion-auftraege/r29_hinge_diag.log`), auch nach drei Fix-Versuchen.
+- Weg A: Die Form bleibt Preds. Seine zwölf Profile je Lage sind zusammen zwei Kreisabschnitte der Senkung jenseits
+  paralleler 45°-Sehnen, die das Schraubenloch berühren (dünne Lage jenseits x − y = ±1,75√2, dicke jenseits
+  x + y = ±1,75√2). Jeder Abschnitt wird als eigenes Rechteck in eigener Skizze gezeichnet; es ragt über den
+  Senkungsrand in das volle Gelenkauge, wo der Join nichts ändert. Geprüft wird das Volumen auf 0,001 mm³ gegen Preds
+  (`r29_hinge_check`).
+- Klappt das nicht im ersten Lauf, gilt Weg C: 1.1.0 mit dem Scharnier Pinned als Vorgabe, M3x30 später.

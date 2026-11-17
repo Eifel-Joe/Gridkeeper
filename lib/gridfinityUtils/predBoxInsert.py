@@ -1,31 +1,44 @@
 """
-Inserts the small parts of the storage box after Pred's parametric Gridfinity Storage Box v1.1
+Puts the small parts of the storage box after Pred's parametric Gridfinity Storage Box v1.1
 (https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric, CC BY-NC, by Pred) into a box
-set, round 28 (p261, plan task 6). The parts are Fusion files in resources/predBox, taken over once from Pred's file
-(resources/predBox/README.md); which parts, how many and where they sit are in predBoxParts and predBoxSeats.
+set; which parts, how many and where they sit are in predBoxParts and predBoxSeats.
 
-Each file is inserted once with importManager.importToTarget (plan decision 1, the spike kept timeline, sketches and
-features), further occurrences of a part are the same component again. Latches, handle and pins are jointed rigidly,
-their joint origin on the box's at their seat, turned about z (predBoxSeats.turnAboutZ); the handle's one size
-dimension is bound to the box's label width; the hinges of the chosen variant are jointed beside the box in their
-print position.
+Round 29 (Nutzer 17.11.2026: "Wir zeichnen die Teile im Code."): every part is drawn by its generator into a new
+component of the set, in the box command, so it lands in the set's timeline group. Importing the former part
+files failed in a command with a dialog (fusion-auftraege/r28_cmdvariants.log). Further occurrences of a part are
+the same component again. Every part is jointed rigidly, its joint origin on the box's at its seat, turned about z
+(predBoxSeats.turnAboutZ); the hinges of the chosen variant at two seats beside the box in their print position.
+Parts come in one by one as their generators are done (predBoxParts.DRAWN_ROLES), the others stay out meanwhile.
 """
-
-import os
 
 import adsk.core, adsk.fusion
 
 from .. import tagUtils
-from . import predBoxParts, predBoxSeats, tempCopy
+from . import appearanceUtils, commonUtils, predBoxParts, predBoxSeats, predHandle, predHandlePin, predHinge, predLatch
 from .predBox import PredBoxDims
-
-RESOURCES = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'resources', 'predBox')
-HANDLE_WIDTH_PARAMETER = 'HandleHalfWidth'
 
 
 def partJointOriginName(role: str) -> str:
-    """The joint origin each jointed part file carries, see fusion-auftraege/r28_extract.py and r28_handle_build.py"""
+    """The joint origin each part's generator gives it, see dev-notes/r29"""
     return f'{role} joint origin'
+
+
+def drawPart(component: adsk.fusion.Component, part: predBoxParts.Part, dims: PredBoxDims, hinge: str) -> list[adsk.fusion.BRepBody]:
+    """
+    Draws the part into the empty component, in the part frame of dev-notes/r29 (the frame of the former part file),
+    with its joint origin except for the hinges. One branch per role of predBoxParts.DRAWN_ROLES
+    """
+    if part.role == 'Latch':
+        return predLatch.createLatch(component)
+    if part.role == 'Handle':
+        # its width follows the label width, an expression on gfBoxN_baseWidth (Nutzer: at most 113.5 mm)
+        return predHandle.createHandle(component, predBoxSeats.handleHalfWidth(dims).expression)
+    if part.role == 'Handle pin':
+        return predHandlePin.createHandlePin(component)
+    if part.role == 'Hinge':
+        # in the variant of the box's setting; its joint origin comes from insertParts (addOriginJointOrigin)
+        return predHinge.createHinge(component, hinge)
+    raise RuntimeError(f'no generator for {part.role} yet')
 
 
 def insertParts(
@@ -38,7 +51,7 @@ def insertParts(
     inContext,
 ) -> list[adsk.fusion.BRepBody]:
     """
-    The small parts into the set, each jointed rigidly to the box at its seat; the hinges of the chosen variant (a key
+    The small parts into the set, each jointed rigidly to the box at its seat; the hinges of the chosen variant (one
     of predBoxParts.HINGES) at two seats beside the box in their print position. Returns their native bodies, each
     part's once, after box and lid in buildBox's list (plan decision 5). inContext is assembly.inContext.
 
@@ -46,29 +59,29 @@ def insertParts(
     their proxy's transform stayed where they were when the set was stacked, and the position Fusion captured for
     them stayed in the timeline, suppressed, after a rebuild (fusion-auftraege/r28_cmd.l1.out, .l2.out)
     """
-    app = adsk.core.Application.get()
     setComponent = (setOccurrence.nativeObject or setOccurrence).component
     boxComponent = (boxOccurrence.nativeObject or boxOccurrence).component
     seats = {seat.name: seat for seat in predBoxSeats.seats(dims, hinge)}
     bodies = []
-    for part in predBoxParts.partsFor(hinge):
-        before = setComponent.occurrences.count
-        # from a temporary copy, Fusion writes a folder _XRef_ beside the file it imports (p292, tempCopy)
-        imported = tempCopy.withTempCopy(os.path.join(RESOURCES, part.file), lambda copy: app.importManager.importToTarget(
-            app.importManager.createFusionArchiveImportOptions(copy), setComponent))
-        if not imported or setComponent.occurrences.count == before:
-            raise RuntimeError(f'{part.file} could not be inserted')
-        first = setComponent.occurrences.item(setComponent.occurrences.count - 1)
+    # the small parts in a color of their own, box and lid keep theirs (Nutzer 17.11.2026); without a library appearance
+    # to copy they stay uncoloured, the box is built all the same (review round 29: before, a box needed none)
+    appearance = None
+    if predBoxParts.partsToDraw(hinge):
+        try:
+            appearance = appearanceUtils.boxPartsAppearance(des)
+        except appearanceUtils.AppearanceError as err:
+            commonUtils.fileLog(f'small parts of {setName} not coloured, {err}')
+    for part in predBoxParts.partsToDraw(hinge):
+        first = setComponent.occurrences.addNewComponent(adsk.core.Matrix3D.create())
         component = first.component
         component.name = part.role
         component.attributes.add(tagUtils.TAG_GROUP, tagUtils.TAG_PART_ROLE, part.role)
-        # a part's only body after the part: the pin's is "Body1" in Pred's file, snapshots and export go by body names
+        drawPart(component, part, dims, hinge)
+        # a part's only body after the part: snapshots and export go by body names
         if component.bRepBodies.count == 1:
             component.bRepBodies.item(0).name = part.role
-        for body in component.bRepBodies:
-            body.name = predBoxParts.BODY_NAMES.get(part.file, {}).get(body.name, body.name)
-        if part.role == 'Handle':
-            bindHandleWidth(component, dims)
+        for body in (component.bRepBodies if appearance is not None else []):
+            body.appearance = appearance
         occurrences = [first]
         for _ in range(part.count - 1):
             occurrences.append(setComponent.occurrences.addExistingComponent(component, adsk.core.Matrix3D.create()))
@@ -76,7 +89,7 @@ def insertParts(
         if jointOrigin is None and part.role == 'Hinge':
             jointOrigin = addOriginJointOrigin(component, partJointOriginName(part.role))
         if jointOrigin is None:
-            raise RuntimeError(f'{part.file} has no joint origin {partJointOriginName(part.role)}')
+            raise RuntimeError(f'{part.role} has no joint origin {partJointOriginName(part.role)}')
         reference = seats[part.seats[0]]
         for (native, seatName) in zip(occurrences, part.seats):
             occurrence = inContext(native, setOccurrence)
@@ -94,21 +107,11 @@ def insertParts(
 
 def addOriginJointOrigin(component: adsk.fusion.Component, name: str) -> adsk.fusion.JointOrigin:
     """
-    A joint origin at the component's origin, its axes the component's: the hinge files have none, Pred's hinges lie
-    in their print position in their own frame, so the box's hinge seats (predBoxSeats.hingeOrigins) take that frame
-    as it is
+    A joint origin at the component's origin, its axes the component's: the hinges have none of their own, Pred's
+    hinges lie in their print position in their own frame, so the box's hinge seats (predBoxSeats.hingeOrigins) take
+    that frame as it is
     """
     jointOriginInput = component.jointOrigins.createInput(adsk.fusion.JointGeometry.createByPoint(component.originConstructionPoint))
     jointOrigin = component.jointOrigins.add(jointOriginInput)
     jointOrigin.name = name
     return jointOrigin
-
-
-def bindHandleWidth(component: adsk.fusion.Component, dims: PredBoxDims):
-    """The handle's one size dimension gets the box's label width / 2 + 14.25 mm, so it follows a width change
-    (Nutzer 17.11.2026: "Der Griff bleibt bei Max. 113,5mm stehen."); a copy is named "HandleHalfWidth_1" or so"""
-    for parameter in component.modelParameters:
-        if parameter.name.startswith(HANDLE_WIDTH_PARAMETER):
-            parameter.expression = predBoxSeats.handleHalfWidth(dims).expression
-            return
-    raise RuntimeError(f'the handle has no dimension {HANDLE_WIDTH_PARAMETER}')

@@ -42,7 +42,21 @@ def baseAppearance() -> adsk.core.Appearance:
 
 def labelAppearance(design: adsk.fusion.Design, color: str) -> adsk.core.Appearance:
     """The appearance of the color in the design, made once and found again by its name"""
-    name = labelColors.appearanceName(color)
+    return namedAppearance(design, labelColors.appearanceName(color), color)
+
+# The small parts of the storage box in a color of their own (Nutzer 17.11.2026: "Im Übrigen brauchen Latches, Hinge,
+# Handle und Pin eine andere Farbe als die Box und der Deckel."): orange like the latch in Pred's file, the main
+# session's choice, Nutzer may change it
+BOX_PARTS_APPEARANCE = 'Gridkeeper box parts'
+BOX_PARTS_COLOR = '#F07800'
+
+def boxPartsAppearance(design: adsk.fusion.Design) -> adsk.core.Appearance:
+    """The appearance of the box's small parts, made once in the design and found again by its name"""
+    return namedAppearance(design, BOX_PARTS_APPEARANCE, BOX_PARTS_COLOR)
+
+def namedAppearance(design: adsk.fusion.Design, name: str, color: str) -> adsk.core.Appearance:
+    """The appearance of the name in the design, made once as a recolored copy of a library appearance (see above) and
+    found again by its name"""
     appearance = design.appearances.itemByName(name)
     if appearance is not None:
         return appearance
