@@ -339,6 +339,13 @@ def _extrude(component, profiles, operation, start: float, end: float, axis: int
     return feature
 
 
+def _own(component) -> list:
+    """The component's own bodies, for a cut's participantBodies: without them Fusion's cut also cuts every body of
+    other components in its way, as a bin standing where the hinge was drawn (p400,
+    fusion-auftraege/p400_cut_participants.log). createHinge starts on an empty component, so these are the hinge's"""
+    return list(component.bRepBodies)
+
+
 def _drawPlan(component, plane, name, points, curves, at=0.0, axis=2, diameters=()):
     """A WorldSketch from a plan: points are the plane's two world coordinates in mm, (x, y) at z = at for axis 2,
     (y, z) at x = at for axis 0; circles take the diameters (mm) in their order"""
@@ -445,17 +452,18 @@ def _base(component, shape: HingeShape):
         (profile,) = [p for p in sketch.sketch.profiles if abs(p.areaProperties().area * 100 - area) < 1e-3
                       and side * (sketch.sketch.sketchToModelSpace(p.areaProperties().centroid).x * 10 - c) > 0]
         for number, (_, z0, z1) in enumerate([r for r in clearanceRanges() if r[0] == side]):
-            _extrude(component, [profile], cut, z0, z1, name=f'Clearance {label} {number + 1}')
+            _extrude(component, [profile], cut, z0, z1, bodies=_own(component), name=f'Clearance {label} {number + 1}')
 
     radii = [shape.core] + ([PLAIN_HOLE] if shape is SHAPES['Plain'] else []) + [shape.clearance]
     points, curves = circlesSketch(c, len(radii))
     gaps = _drawPlan(component, xy, 'Gaps', points, curves, diameters=[2 * r for r in radii])
     rings = gaps.profilesByArea([_ringArea(a, b) for a, b in zip(radii, radii[1:])])
     for number, (z0, z1) in enumerate(gapRanges()):
-        _extrude(component, rings, cut, z0, z1, name=f'Gap {number + 1}')
+        _extrude(component, rings, cut, z0, z1, bodies=_own(component), name=f'Gap {number + 1}')
     if shape is SHAPES['Plain']:
         # the middle knuckle turns on the core (Pred's Extrude7 left out the ring inside HingeInnerDiameter + 2 tol.)
-        _extrude(component, rings[:1], cut, THIRD + GAP, LENGTH - THIRD - GAP, name='Knuckle hole')
+        _extrude(component, rings[:1], cut, THIRD + GAP, LENGTH - THIRD - GAP, bodies=_own(component),
+                 name='Knuckle hole')
 
 
 def _tabs(component, shape: HingeShape):
@@ -494,11 +502,12 @@ def _m3x30(component, shape: HingeShape):
     c = center(shape)
     points, curves = _polygonPlan(hexagon(c))
     nut = _drawPlan(component, xy, 'Nut trap', points, curves)
-    _extrude(component, list(nut.sketch.profiles), cut, LENGTH - NUT_DEPTH, LENGTH, name='Nut trap')
+    _extrude(component, list(nut.sketch.profiles), cut, LENGTH - NUT_DEPTH, LENGTH, bodies=_own(component),
+             name='Nut trap')
     points, curves = circlesSketch(c, 2)
     holes = _drawPlan(component, xy, 'Screw hole', points, curves, diameters=[2 * shape.core, COUNTERBORE])
     core, ring = holes.profilesByArea([_ringArea(0, shape.core), _ringArea(shape.core, COUNTERBORE / 2)])
-    _extrude(component, [core], cut, 0.0, LENGTH - NUT_DEPTH, name='Screw hole')
+    _extrude(component, [core], cut, 0.0, LENGTH - NUT_DEPTH, bodies=_own(component), name='Screw hole')
     bottom, top = _bottomTop(component, shape)
     _extrude(component, [ring], cut, 0.0, COUNTERBORE_DEPTH, bodies=[top], name='Counterbore')
 
@@ -522,7 +531,7 @@ def _pinned(component, shape: HingeShape):
     points, curves = circlesSketch(c, 2)
     holes = _drawPlan(component, xy, 'Pin hole', points, curves, diameters=[2 * PIN_HOLE, COUNTERBORE])
     core, ring = holes.profilesByArea([_ringArea(0, PIN_HOLE), _ringArea(PIN_HOLE, COUNTERBORE / 2)])
-    _extrude(component, [core], cut, 0.0, LENGTH, name='Pin hole')
+    _extrude(component, [core], cut, 0.0, LENGTH, bodies=_own(component), name='Pin hole')
     bottom, top = _bottomTop(component, shape)
     _extrude(component, [ring], cut, 0.0, COUNTERBORE_DEPTH, bodies=[top], name='Counterbore 1')
     _extrude(component, [ring], cut, LENGTH - COUNTERBORE_DEPTH, LENGTH, bodies=[top], name='Counterbore 2')
