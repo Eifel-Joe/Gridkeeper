@@ -3,6 +3,7 @@ import hashlib
 import json
 import os
 import shutil
+import threading
 import zipfile
 
 # Installing an update (p310): the release ZIP is downloaded, checked and unpacked before anything of the add-in folder
@@ -107,6 +108,10 @@ WORK_FOLDER_NAME = '.gridkeeper-update'
 CARRY_OVER_SKIPPED_FOLDERS = ('__pycache__', '.git')
 CARRY_OVER_SKIPPED_SUFFIXES = ('.py', '.pyc', '.manifest')
 
+# one install at a time, and no cleanup meanwhile: the cleanup thread at startup and a click on Update now must not
+# work in .gridkeeper-update together (review finding 4)
+WORK_LOCK = threading.Lock()
+
 def workFolder(addinFolder: str) -> str:
     return os.path.join(os.path.dirname(os.path.abspath(addinFolder)), WORK_FOLDER_NAME)
 
@@ -126,18 +131,28 @@ def carryOver(oldFolder: str, newFolder: str) -> list[str]:
     are left behind. A side effect: a picture or symbol a new version left out on purpose comes back from the old one
     """
     carried = []
-    newFiles = _files(newFolder)
+    # Windows doesn't tell Symbols/Nut.svg from symbols/nut.svg, the new version's file must win there too
+    newFiles = {name.lower() for name in _files(newFolder)}
     for (root, folders, names) in os.walk(oldFolder):
         folders[:] = [folder for folder in folders if folder not in CARRY_OVER_SKIPPED_FOLDERS]
         for name in names:
             relative = os.path.relpath(os.path.join(root, name), oldFolder).replace(os.sep, '/')
-            if name.lower().endswith(CARRY_OVER_SKIPPED_SUFFIXES) or relative in newFiles:
+            if name.lower().endswith(CARRY_OVER_SKIPPED_SUFFIXES) or relative.lower() in newFiles:
                 continue
             target = os.path.join(newFolder, *relative.split('/'))
             os.makedirs(os.path.dirname(target), exist_ok=True)
             shutil.copy2(os.path.join(root, name), target)
             carried.append(relative)
     return carried
+
+def _sameFiles(folder: str, other: str) -> bool:
+    """Both hold the same files with the same content"""
+    import filecmp
+    files = _files(folder)
+    if files != _files(other):
+        return False
+    return all(filecmp.cmp(os.path.join(folder, *name.split('/')), os.path.join(other, *name.split('/')), shallow=False)
+               for name in files)
 
 def _prune(folder: str, keep: set[str]) -> None:
     """Deletes the files below folder that aren't in keep, and folders left empty, as far as it can"""
@@ -185,28 +200,42 @@ def _swapByCopy(addinFolder: str, newFolder: str, backupFolder: str, copyFile) -
     try:
         shutil.copytree(newFolder, addinFolder, dirs_exist_ok=True, copy_function=copyFile)
     except OSError as err:
-        # the way back: the backup over the add-in folder, the files of the new version it doesn't have removed
+        # The way back: the backup over the add-in folder, the files of the new version it doesn't have removed.
+        # Whether it's back is decided by comparing with the backup, not by errors of the copy: a file Windows holds
+        # open can't be written either way, it failed the forward copy too and still has the old content (review
+        # finding 2, test_copy_fails_both_ways_on_a_locked_file)
         try:
-            shutil.copytree(backupFolder, addinFolder, dirs_exist_ok=True)
-            _prune(addinFolder, _files(backupFolder))
+            shutil.copytree(backupFolder, addinFolder, dirs_exist_ok=True, copy_function=copyFile)
         except OSError:
+            pass
+        _prune(addinFolder, _files(backupFolder))
+        if not _sameFiles(addinFolder, backupFolder):
             raise UpdateError(f"The new version couldn't be copied ({err}) and the old one not back. "
-                              f"It's in {backupFolder}, copy it back to {addinFolder}.") from err
+                              f"It's in {backupFolder}, copy it back to {addinFolder} with Fusion closed.") from err
         raise UpdateError(f"The new version couldn't be copied: {err}. The old version is back.") from err
     # as after a rename, files of the old version the new one doesn't have go, the user's are in it, see carryOver
     _prune(addinFolder, _files(newFolder))
     return 'copied'
 
-def install(release, addinFolder: str, urlopen=None, now=datetime.datetime.now, progress=None) -> str:
+def install(release, addinFolder: str, urlopen=None, now=datetime.datetime.now, progress=None, rename=os.replace) -> str:
     """
     Downloads, checks and unpacks the release ZIP, then swaps the add-in folder, see swap; 'renamed' or 'copied'.
     release has version, assetUrl, assetSize and assetDigest, see updateCheck.Release. Raises UpdateError with the
-    reason, the add-in folder is unchanged or back then. A git checkout is refused before anything is downloaded
+    reason, the add-in folder is unchanged or back then. A git checkout is refused before anything is downloaded.
+    One at a time, and not while cleanupBackups runs, see WORK_LOCK
     """
     if isGitCheckout(addinFolder):
         raise UpdateError('This add-in runs from a git checkout, update it with git.')
     if not release.assetUrl:
         raise UpdateError('The release has no ZIP file to install.')
+    if not WORK_LOCK.acquire(blocking=False):
+        raise UpdateError('An update is already running.')
+    try:
+        return _install(release, addinFolder, urlopen, now, progress, rename)
+    finally:
+        WORK_LOCK.release()
+
+def _install(release, addinFolder: str, urlopen, now, progress, rename) -> str:
     versionText = '.'.join(str(part) for part in release.version)
     work = workFolder(addinFolder)
     newParent = os.path.join(work, 'new')
@@ -227,7 +256,7 @@ def install(release, addinFolder: str, urlopen=None, now=datetime.datetime.now, 
             count += 1
             backupParent = os.path.join(work, f'backup-{stamp}-{count}')
         os.makedirs(backupParent)
-        return swap(addinFolder, newFolder, os.path.join(backupParent, ADDIN_FOLDER_NAME))
+        return swap(addinFolder, newFolder, os.path.join(backupParent, ADDIN_FOLDER_NAME), rename=rename)
     except Exception as err:
         # swap raises UpdateError only, any other error came before it and left the add-in folder alone
         if backupParent is not None and os.path.isdir(backupParent) and not os.listdir(backupParent):
@@ -242,20 +271,20 @@ def install(release, addinFolder: str, urlopen=None, now=datetime.datetime.now, 
         except OSError:
             pass
 
+def _backupKey(name: str) -> tuple:
+    """backup-<YYYYmmdd-HHMMSS>[-<n>] in the order they were made, -10 after -2"""
+    parts = name.split('-')
+    return (parts[1:3], int(parts[3]) if len(parts) > 3 and parts[3].isdigit() else 1)
+
 def cleanupBackups(addinFolder: str) -> None:
-    """Removes what an update left but the newest backup, as far as it can"""
+    """
+    Removes the backups of earlier updates but the newest, as far as it can. Only backups: new/ and the ZIP belong to
+    an update that may be running, install clears them itself (review finding 4). Waits for a running install
+    """
     work = workFolder(addinFolder)
-    if not os.path.isdir(work):
-        return
-    backups = sorted(name for name in os.listdir(work) if name.startswith('backup-'))
-    for name in os.listdir(work):
-        path = os.path.join(work, name)
-        if backups and name == backups[-1]:
-            continue
-        if os.path.isdir(path):
-            shutil.rmtree(path, ignore_errors=True)
-        else:
-            try:
-                os.remove(path)
-            except OSError:
-                pass
+    with WORK_LOCK:
+        if not os.path.isdir(work):
+            return
+        backups = sorted((name for name in os.listdir(work) if name.startswith('backup-')), key=_backupKey)
+        for name in backups[:-1]:
+            shutil.rmtree(os.path.join(work, name), ignore_errors=True)

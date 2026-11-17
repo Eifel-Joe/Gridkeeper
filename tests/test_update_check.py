@@ -119,6 +119,19 @@ def test_summary_skips_leading_heading_and_blank_lines():
     assert updateCheck.summary("\n\n## What's new\n\nBoxes after Pred.") == "Boxes after Pred."
 
 
+def test_summary_drops_heading_lines_not_the_paragraph():
+    assert updateCheck.summary("## What's new\n- Boxes after Pred\n- Magnet size") == "- Boxes after Pred - Magnet size"
+
+
+def test_only_github_links():
+    entry = release("gridkeeper-v1.1.0")
+    entry["html_url"] = "javascript:alert(1)"
+    entry["assets"][0]["browser_download_url"] = "http://evil.example/Gridkeeper-v1.1.0.zip"
+    newest = updateCheck.newestRelease([entry], (1, 0, 0))
+    assert newest.pageUrl == ""
+    assert newest.assetUrl is None
+
+
 def test_summary_cut():
     text = updateCheck.summary("a" * 400)
     assert len(text) == 300
@@ -214,7 +227,9 @@ def test_version_line():
 
 def test_success_text():
     newest = updateCheck.newestRelease([release("gridkeeper-v1.1.0")], (1, 0, 0))
-    assert updateCheck.successText(newest) == "Gridkeeper 1.1.0 is installed. Restart Fusion to use it."
+    # spec E11.7; until Fusion restarts the old code runs with the new files on disk, it says so (review finding 5)
+    assert updateCheck.successText(newest) == (
+        "Gridkeeper 1.1.0 is installed. Restart Fusion to load it, until then the old version runs.")
 
 
 # asking GitHub
@@ -264,6 +279,12 @@ def test_fetch_errors_are_none():
         logs = []
         assert updateCheck.fetchReleases(urlopen=fakeUrlopen(payload), log=logs.append) is None
         assert len(logs) == 1
+
+
+def test_fetch_limits_the_answer():
+    logs = []
+    assert updateCheck.fetchReleases(urlopen=fakeUrlopen(b"[" + b"1," * 3_000_000 + b"1]"), log=logs.append) is None
+    assert len(logs) == 1
 
 
 def test_fetch_bad_url_is_none():
