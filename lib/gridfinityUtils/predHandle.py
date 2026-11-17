@@ -67,15 +67,20 @@ def profile(halfWidth: Dim) -> list[dict]:
 
     def line(a, b):
         return {'kind': 'line', 'start': a, 'end': b}
+    # The order is the chain's (sketchChain fixes the curves in this order): the arm's outer line before the arcs, so
+    # its lower end is vertical under the top corner and dimensioned, and the r 15 arc holds the bar's bottom end by its
+    # height only. Held by the circle alone, the arc's end at -H had a second solution 30 mm to the right, and from 4 to
+    # 5 units Fusion took it (r29_handle_check Lauf 1: Fillet1/Chamfer1 lost their edges, V 5732.9733 instead of
+    # 6136.8299); the bar end's height doesn't change with the width. test_a_width_change_cannot_flip_an_outline_point
     return [
         line(P(armOut, top), P(armIn, top)),
+        line(P(armOut, armEnd), P(armOut, top)),
         line(P(armIn, top), P(armIn, armEnd)),
         {'kind': 'arc', 'center': P(center, armEnd), 'start': P(armIn, armEnd), 'end': P(center, barTop)},
         line(P(center, barTop), P(zero, barTop)),
         line(P(zero, barTop), P(zero, barBottom)),
-        line(P(zero, barBottom), P(center, barBottom)),
         {'kind': 'arc', 'center': P(center, armEnd), 'start': P(center, barBottom), 'end': P(armOut, armEnd)},
-        line(P(armOut, armEnd), P(armOut, top)),
+        line(P(zero, barBottom), P(center, barBottom)),
     ]
 
 
@@ -160,7 +165,8 @@ def _pinHole(component: adsk.fusion.Component, body: adsk.fusion.BRepBody, halfW
     sketch.geometricConstraints.addCoincident(circle.centerSketchPoint, sketch.originPoint)
     dimension = sketch.sketchDimensions.addDiameterDimension(circle, adsk.core.Point3D.create(0.3, 0.3, 0), True)
     dimension.parameter.expression = f'{HOLE_DIAMETER:g} mm'
-    disc = [p for p in sketch.profiles if abs(p.areaProperties().area - math.pi * _cm(HOLE_DIAMETER / 2) ** 2) < 1e-6]
+    # 1e-3 mm2 as in r28_handle_build (review: 1e-4 mm2 was tighter than needed at areaProperties' default accuracy)
+    disc = [p for p in sketch.profiles if abs(p.areaProperties().area - math.pi * _cm(HOLE_DIAMETER / 2) ** 2) < 1e-5]
     if len(disc) != 1:
         raise RuntimeError(f'{HOLE_SKETCH}: {len(disc)} circle profiles instead of 1')
     cutInput = component.features.extrudeFeatures.createInput(disc[0], adsk.fusion.FeatureOperations.CutFeatureOperation)
