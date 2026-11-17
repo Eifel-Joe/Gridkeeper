@@ -378,5 +378,7 @@ def rebuildLabel(
         return bodies[:1]
     result = rebuildUtils.rebuild(des, target, prefix, LABEL_PARAMETER_BASE_NAME, isPreview, build, 'insert')
     if not isPreview:
+        # with the timeline at its end again: the one left and the one the new insert went into (review)
         assembly.keepShown(oldPocket)
+        assembly.keepShown(pocket)
     return result

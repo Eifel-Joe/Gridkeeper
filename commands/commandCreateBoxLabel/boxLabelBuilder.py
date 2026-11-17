@@ -79,9 +79,7 @@ def boxCells(jointOrigin: adsk.fusion.JointOrigin) -> int | None:
     bodies = list(native.parentComponent.bRepBodies)
     if len(bodies) == 0:
         return None
-    width = max(body.boundingBox.maxPoint.x - body.boundingBox.minPoint.x for body in bodies)
-    cells = round((width * 10 - 20) / 42)
-    return cells if cells >= predBoxLabelLayout.MIN_CELLS else None
+    return predBoxLabelLayout.cellsOfBoxWidth(max(body.boundingBox.maxPoint.x - body.boundingBox.minPoint.x for body in bodies))
 
 
 def buildBoxLabel(
@@ -292,5 +290,7 @@ def rebuildBoxLabel(
         return bodies[:1]
     result = rebuildUtils.rebuild(des, target, prefix, PARAMETER_BASE_NAME, isPreview, build, 'box label', jointsByName=True)
     if not isPreview:
+        # with the timeline at its end again: the one left and the one the new label went into (review)
         assembly.keepShown(oldHolder)
+        assembly.keepShown(box)
     return result

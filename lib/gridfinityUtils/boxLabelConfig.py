@@ -9,7 +9,7 @@ Settings are by field name as configJson.stateToJson has them, the symbols by th
 
 import re
 
-from .predBoxLabelLayout import MAX_SYMBOLS, NO_SYMBOL
+from .predBoxLabelLayout import MAX_SYMBOLS, NO_SYMBOL, widthChoiceFor
 
 # the label's text parameters: the end of their name in the document (gfBoxLabel1_text1, kept as built in round 29),
 # the config field each holds and the label the tag gives it; a rebuild takes their values back into the settings, see
@@ -35,6 +35,18 @@ _HOLDER_JOINT = re.compile(r' in holder( \(\d+\))?$')
 def isHolderJointName(name: str) -> bool:
     """Whether the joint is one the box label command made into a holder"""
     return _HOLDER_JOINT.search(name) is not None
+
+
+def widthNote(jointName: str, labelCells: int | None, boxCells: int | None) -> str | None:
+    """
+    What the note after a box rebuild says of a label left in the holder of a box of another label width, none when it
+    fits or a width isn't known. It stays jointed in (Hauptsitzung 17.11.2026: "dann trotzdem einsetzen und in der
+    Meldung nach dem Rebuild darauf hinweisen")
+    """
+    if labelCells is None or boxCells is None or widthChoiceFor(labelCells) == widthChoiceFor(boxCells):
+        return None
+    return (f'{jointName}: the label is {widthChoiceFor(labelCells)} wide, the box now takes {widthChoiceFor(boxCells)}; '
+            'rebuild the label with that width')
 
 
 def knownSymbols(symbols: list[str], names: list[str]) -> tuple[list[str], list[str]]:

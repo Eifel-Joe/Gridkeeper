@@ -8,6 +8,7 @@ from . import tagUtils
 from . import assembly
 from .gridfinityUtils import commonUtils
 from .gridfinityUtils import cullenect
+from .gridfinityUtils import boxLabelConfig, predBoxLabelLayout, predBoxSeats
 from .gridfinityUtils import timelineRemoval
 
 # Rebuilding a generated body at its place in the timeline: the new one is built right after the old one's timeline
@@ -332,6 +333,7 @@ def repointJoints(
         return (round((box.maxPoint.x - box.minPoint.x) * 10, 4), round((box.maxPoint.y - box.minPoint.y) * 10, 4))
     moved = 0
     notes = []
+    shown = []
     # items of a collapsed group can't be rolled to ("Associated feature is invalid", Fusion 15.11.2026), the group of
     # the insert holding the joint is expanded meanwhile, as in replaceBodies
     collapsedGroups = []
@@ -353,6 +355,8 @@ def repointJoints(
                 item.rollTo(True)
                 newPocket = newComponent.jointOrigins.itemByName(newName)
                 setattr(joint, side, newPocket.createForAssemblyContext(newOccurrence))
+                # the insert's pocket stays shown, see assembly.keepShown
+                shown.append(newPocket.createForAssemblyContext(newOccurrence))
                 moved += 1
                 commonUtils.debugLog(f'{LOG_PREFIX} {joint.name} now uses {newName} of the new part')
                 # a narrower pocket of the same name, after other base units or compartments, may no longer take the
@@ -370,6 +374,8 @@ def repointJoints(
     design.timeline.moveToEnd()
     for group in collapsedGroups:
         group.isCollapsed = True
+    for jointOrigin in shown:
+        assembly.keepShown(jointOrigin)
     return (moved, notes)
 
 def partRole(component: adsk.fusion.Component) -> str:
@@ -404,6 +410,7 @@ def repointJointsByName(
             newJointOrigins[(place, jointOrigin.name)] = jointOrigin.createForAssemblyContext(occurrence)
     moved = 0
     notes = []
+    shown = []
     collapsedGroups = []
     for joint in list(design.rootComponent.allJoints):
         item = joint.timelineObject
@@ -429,13 +436,41 @@ def repointJointsByName(
                 item.rollTo(True)
                 setattr(joint, side, newJointOrigin)
                 moved += 1
+                if jointOrigin.name == predBoxSeats.LABEL_JOINT_ORIGIN:
+                    # a box rebuilt with its label in the holder (Nutzer: "Noch schöner wäre natürlich, wenn bei Rebuild
+                    # der Joint erhalten bliebe."): the holder stays shown, a label of another width is said
+                    shown.append(newJointOrigin)
+                    otherSide = adsk.fusion.JointOrigin.cast(getattr(joint, 'geometryOrOriginTwo' if side == 'geometryOrOriginOne' else 'geometryOrOriginOne'))
+                    widthNote = boxLabelConfig.widthNote(joint.name, _labelCells(otherSide), _boxCells(newJointOrigin))
+                    if widthNote is not None:
+                        notes.append(widthNote)
             except Exception as err:
                 commonUtils.fileLog(f"{LOG_PREFIX} {joint.name} couldn't be moved over to {jointOrigin.name}, {err}")
                 notes.append(f"{joint.name}: couldn't be moved over to the new part, it goes with the old one")
     design.timeline.moveToEnd()
     for group in collapsedGroups:
         group.isCollapsed = True
+    for jointOrigin in shown:
+        assembly.keepShown(jointOrigin)
     return (moved, notes)
+
+def _labelCells(jointOrigin: adsk.fusion.JointOrigin | None) -> int | None:
+    """The cells a box label on the joint origin was built for, from its plate's config, none for anything else"""
+    if jointOrigin is None:
+        return None
+    for body in (jointOrigin.nativeObject or jointOrigin).parentComponent.bRepBodies:
+        tag = tagUtils.readPartTag(body)
+        if tag is not None and tag[0] == tagUtils.TAG_BOX_LABEL:
+            cells = tagUtils.buildConfig(tag[0], tag[1]) or {}
+            return cells.get('cells') if isinstance(cells.get('cells'), int) else None
+    return None
+
+def _boxCells(jointOrigin: adsk.fusion.JointOrigin) -> int | None:
+    """The width in grid cells of the box the joint origin is of, its widest body, as boxLabelBuilder.boxCells"""
+    bodies = list((jointOrigin.nativeObject or jointOrigin).parentComponent.bRepBodies)
+    if len(bodies) == 0:
+        return None
+    return predBoxLabelLayout.cellsOfBoxWidth(max(body.boundingBox.maxPoint.x - body.boundingBox.minPoint.x for body in bodies))
 
 def newlyUnhealthy(target: RebuildTarget) -> list[str]:
     """Later items that were fine before and have a warning or an error now, with Fusion's message"""

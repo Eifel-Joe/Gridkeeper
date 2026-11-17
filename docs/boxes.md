@@ -135,7 +135,8 @@ the box was built with; **Gridkeeper rebuild** places them anew.
 
 Right-click the box, the lid or the set's component (*Box 5×4×6* in the browser) for the settings, **Gridkeeper rebuild** and **Gridkeeper clone**, see
 [Settings, rebuild and clone](working/settings-rebuild-clone.md). A rebuild replaces box, lid and small parts together; joints of
-yours on its joint origins move over to the joint origins of the same name.
+yours on its joint origins move over to the joint origins of the same name. A label in the holder stays in; is the
+rebuilt box of another label width, the note after the rebuild says to rebuild the label with that width.
 
 The label has the same three commands: right-click the plate, a letter or a symbol, or the label's component. A
 rebuild builds it anew in its place in the timeline; a label in a holder has its box picked in the dialog already and
