@@ -21,8 +21,46 @@ workspace.
 
 ## Update
 
+Gridkeeper looks for a new version by itself, once a day when Fusion starts. When there is one, a window
+**Gridkeeper updates** shows the new version, a few lines about it and a link to its **release notes**, so you know
+what you get before you install it.
+
+- **Update now** downloads the release ZIP from GitHub, checks it and replaces the `Gridkeeper` folder. Then restart
+  Fusion to use the new version. Until then the old one keeps running.
+- **Close** leaves everything as it is; the window comes again the next day.
+
+What stays: your saved dialog defaults, the update setting and symbols you added to the symbol folders. Gridkeeper
+copies every file of the old folder that the new version doesn't have into the new one, only the program files
+(`.py`) of the old version stay behind. So a picture or symbol a new version removed on purpose is kept from the old
+one; delete it by hand if it bothers you.
+
+How the folder is replaced: the new version is unpacked and checked next to the add-in folder, in
+`.gridkeeper-update`, before anything is changed. Then the old folder moves to `.gridkeeper-update\backup-<date>`
+and the new one takes its place. If that fails at any step, the old version is put back and the window says why.
+The newest backup is kept; to go back by hand, close Fusion and put the `Gridkeeper` folder of that backup in place
+of the add-in folder.
+
+### Update by hand
+
 Download the ZIP of the new release and unpack it over the old `Gridkeeper` folder, replacing its files. Restart Fusion, or stop
 and run the add-in again in **Scripts and Add-Ins**. Your saved dialog defaults are kept, they are stored in the add-in folder and not part of the ZIP.
+
+### From a git checkout
+
+When Gridkeeper runs from a git checkout (the add-in folder has a `.git`), it never replaces it. The window only
+tells you about the new version and links its release notes; update with git.
+
+### Checking for updates and your privacy
+
+Open **Utilities › Add-Ins › Gridkeeper updates** to see the version running and the one installed (they differ
+after an update until Fusion restarts), to **Check now** and to turn **Check for updates at startup** off or on.
+The setting is kept in the add-in folder (`updateConfig\update.json`).
+
+The check asks GitHub's public API for the releases of
+[Eifel-Joe/Gridkeeper](https://github.com/Eifel-Joe/Gridkeeper/releases), at most once a day. It sends nothing about
+you, your computer or your designs, only the request itself with the user agent `Gridkeeper-update-check`. As with
+any web page you open, GitHub sees your IP address. Without network the check fails quietly and Fusion starts as
+always; it runs in the background and never holds up the start.
 
 ## Beside the original
 
