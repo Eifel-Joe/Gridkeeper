@@ -52,6 +52,7 @@ into the box like onto a baseplate. These are always there:
 | *Stack bottom joint origin* | Middle of the box's underside |
 | *Stack top joint origin* | Middle of the lid's top: joint the bottom of another box onto it to stack them |
 | *Lid joint origin* | In box and lid at the middle of the joint between them, used by the joint *Lid on box* |
+| *Label joint origin* | In the label holder at the front, the middle of the label's back; **Gridkeeper box label** joints the label there |
 
 *Lid on box* is part of the box: a rebuild makes it anew as a rigid joint, changes of yours to it are not kept.
 
@@ -83,6 +84,34 @@ size, the second 5 mm beside the first.
 The parts are taken from Pred's file (`resources/predBox`, see its README): the same shape, with joint origins added,
 sketches fully constrained and Pred's parameters turned into their values.
 
+## Label
+
+**Solid › Create › Gridkeeper box label** makes the label for the holder at the front of the box: Pred's flat plate,
+0.85 mm thick and 24.5 mm high, as wide as the holder of the box (the label width less 3 mm: 25.5 mm at a width of 4,
+67.5 mm at 5, 82 mm from 6 on). It is a command of its own, so a label can be swapped without touching the box.
+
+```
++--------------------------------------------+
+|  large  |  Line 1                          |
+|  text   |  Line 2                          |
+|         |  up to five symbols              |
++--------------------------------------------+
+```
+
+| Input | Default | What it does |
+|---|---|---|
+| **Box** | none | Pick the *Label joint origin* of a box: the label gets the box's width and is jointed into its holder (joint *… in holder*). Without, the label lies beside the parts there are |
+| **Box width (u)** | 5 | The width of the box in grid cells, when no box is picked |
+| **Large text** | M3 | One line in large letters (up to 12 mm) at the left, a little over a third of the width; empty leaves the room to the lines |
+| **Line 1**, **Line 2** | Socket head, DIN 912 | Two lines at the right, 4 mm high, smaller when they are long |
+| **Text style**, **Text and symbols**, **Text color** | Heavy, Raised, none | As for the [Cullenect inserts](cullenect/inserts.md): raised 0.4 mm like Pred's own labels, set in 0.4 mm or flush, as bodies of their own to print in another colour |
+| **Symbol 1** … **Symbol 5** | Socket Hex, None … | Cullenect symbols in a row under the lines, 6 mm high: machine screws with full thread by head and driver, and every hardware symbol. The ones the width has no room for are left out from the right, the dialog says how many |
+
+A 2.5 mm rim stays free all round, so the holder's lips don't cover text or symbols. The plate lies flat in its
+component as it is printed, the text up; the label joint origin at the middle of its back turns it upright into the
+holder. Each text is driven by a text parameter `gfBoxLabel1_bigText`, `gfBoxLabel1_text1`, `gfBoxLabel1_text2`;
+a longer text is not fitted again. For another box width or other symbols, delete the label and make a new one.
+
 ## Parameters
 
 The size is in three user parameters, see [Changing parameters](working/parameters.md):
@@ -109,3 +138,5 @@ with the changes listed in `resources/predBox/README.md`. Gridkeeper rebuilds it
 constrained sketches and parameters, and changes it where noted on this page (the magnet holes, the floor pads and
 the stacking rim drawn from circles, the joint origins). The timeline follows Pred's steps, except that the right
 handle and label holders are built directly instead of mirrored from the left ones; the shape stays Pred's.
+The label is Pred's plate with Gridkeeper text and the Cullenect symbols by CullenJWebb
+([Cullenect-Labels](https://github.com/CullenJWebb/Cullenect-Labels), MIT) instead of Pred's text.
