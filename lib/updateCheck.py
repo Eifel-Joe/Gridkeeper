@@ -69,19 +69,27 @@ def newestRelease(releases: list, current: tuple[int, int, int]) -> Release | No
     return Release(
         version=version,
         tag=entry['tag_name'],
-        pageUrl=entry.get('html_url') if isinstance(entry.get('html_url'), str) else '',
+        pageUrl=gitHubUrl(entry.get('html_url')) or '',
         summary=summary(entry.get('body')),
-        assetUrl=assetField('browser_download_url', str),
+        assetUrl=gitHubUrl(assetField('browser_download_url', str)),
         assetSize=assetField('size', int),
         assetDigest=assetField('digest', str),
     )
+
+# the link in the dialog and the download only ever go to GitHub (review: no other scheme or host from the answer)
+GITHUB_PREFIX = 'https://github.com/'
+
+def gitHubUrl(url) -> str | None:
+    return url if isinstance(url, str) and url.startswith(GITHUB_PREFIX) else None
 
 def summary(body: str | None, limit: int = SUMMARY_LIMIT) -> str:
     """The first paragraph of the release notes as plain text, headings skipped, cut to limit characters"""
     if not isinstance(body, str):
         return ''
     paragraphs = re.split(r'\n\s*\n', body.replace('\r\n', '\n').replace('\r', '\n'))
-    paragraph = next((text.strip() for text in paragraphs if text.strip() and not text.strip().startswith('#')), '')
+    # heading lines go, not the paragraph they head: "## What's new" right above a list is common
+    paragraphs = ['\n'.join(line for line in text.split('\n') if not line.strip().startswith('#')).strip() for text in paragraphs]
+    paragraph = next((text for text in paragraphs if text), '')
     # markdown links become their text, emphasis and code marks go
     text = re.sub(r'\[([^\]]*)\]\([^)]*\)', r'\1', paragraph)
     text = re.sub(r'(\*\*|__|`)', '', text)
@@ -101,6 +109,8 @@ def manifestVersion(addinFolder: str) -> tuple[int, int, int] | None:
 GIT_CHECKOUT_TEXT = 'This add-in runs from a git checkout, update it with git.'
 # until the reload test of the spec (E13) shows a way without one
 RESTART_TEXT = 'Restart Fusion to use'
+# spec E11.7; until Fusion restarts the old code runs with the new files on disk, so it says so (review finding 5)
+SUCCESS_RESTART_TEXT = 'Restart Fusion to load it, until then the old version runs.'
 
 def dialogHtml(release: Release, current: tuple[int, int, int], gitCheckout: bool) -> str:
     """The text of the update dialog: the new version, its short info and the link to its release notes"""
@@ -126,7 +136,7 @@ def versionLine(running: tuple[int, int, int] | None, installed: tuple[int, int,
             f'{RESTART_TEXT} {versionText(installed)}.')
 
 def successText(release: Release) -> str:
-    return f'Gridkeeper {release.versionText} is installed. {RESTART_TEXT} it.'
+    return f'Gridkeeper {release.versionText} is installed. {SUCCESS_RESTART_TEXT}'
 
 # settings
 
@@ -171,6 +181,7 @@ API_URL = 'https://api.github.com/repos/Eifel-Joe/Gridkeeper/releases?per_page=3
 # GitHub wants a user agent, this one says nothing about the user, the computer or the version (p310: no personal data)
 USER_AGENT = 'Gridkeeper-update-check'
 TIMEOUT = 10
+MAX_ANSWER = 5 * 2**20
 
 def fetchReleases(url: str = API_URL, urlopen=None, log=print) -> list | None:
     """The release list of the GitHub API, none when it can't be had: no network, a timeout, an HTTP error or no list.
@@ -180,7 +191,11 @@ def fetchReleases(url: str = API_URL, urlopen=None, log=print) -> list | None:
     try:
         request = urllib.request.Request(url, headers={'User-Agent': USER_AGENT, 'Accept': 'application/vnd.github+json'})
         with urlopen(request, timeout=TIMEOUT) as response:
-            data = json.loads(response.read().decode('utf-8'))
+            # a release list is a few hundred kB, more is no answer of GitHub's
+            raw = response.read(MAX_ANSWER + 1)
+            if len(raw) > MAX_ANSWER:
+                raise ValueError(f'answer larger than {MAX_ANSWER // 2**20} MB')
+            data = json.loads(raw.decode('utf-8'))
     except Exception as err:
         log(f'Gridkeeper update check failed: {type(err).__name__}: {err}')
         return None

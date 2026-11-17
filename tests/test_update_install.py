@@ -458,7 +458,56 @@ def test_cleanup_keeps_newest_backup(tmp_path):
     makeTree(work / "new" / "Gridkeeper", {"x": b"x"})
     (work / "Gridkeeper-v1.1.0.zip").write_bytes(b"zip")
     updateInstall.cleanupBackups(addin)
-    assert os.listdir(work) == ["backup-20261117-120000"]
+    # new/ and the ZIP may belong to an update running right now, install clears them itself (review finding 4)
+    assert sorted(os.listdir(work)) == ["Gridkeeper-v1.1.0.zip", "backup-20261117-120000", "new"]
+
+
+def test_cleanup_orders_backups_of_one_second_by_number(tmp_path):
+    addin = makeTree(tmp_path / "Gridkeeper", OLD)
+    work = tmp_path / ".gridkeeper-update"
+    for name in ["backup-20261117-120000", "backup-20261117-120000-2", "backup-20261117-120000-10"]:
+        makeTree(work / name / "Gridkeeper", {"x": b"x"})
+    updateInstall.cleanupBackups(addin)
+    assert os.listdir(work) == ["backup-20261117-120000-10"]
+
+
+def test_install_and_cleanup_share_a_lock():
+    assert hasattr(updateInstall.WORK_LOCK, "acquire")
+
+
+def test_carry_over_ignores_case_of_the_new_version(tmp_path):
+    old = makeTree(tmp_path / "old", {"lib/Symbols/Nut.svg": b"<svg old/>"})
+    new = makeTree(tmp_path / "new", {"lib/symbols/nut.svg": b"<svg new/>"})
+    assert updateInstall.carryOver(old, new) == []
+    assert tree(new) == {"lib/symbols/nut.svg": b"<svg new/>"}
+
+
+def test_copy_fails_both_ways_on_a_locked_file(tmp_path):
+    # Windows: a file Fusion holds open can be neither overwritten nor written back, but it never changed
+    (addin, new, backup) = setUpSwap(tmp_path)
+    import shutil
+    locked = os.path.normcase(os.path.join(addin, "lib", "symbols", "hardware", "nut.svg"))
+
+    def copyFile(source, target, *args, **kwargs):
+        if os.path.normcase(target) == locked:
+            raise PermissionError("in use")
+        return shutil.copy2(source, target, *args, **kwargs)
+
+    with pytest.raises(UpdateError) as info:
+        updateInstall.swap(addin, new, backup, rename=failingAt([], 1, os.replace), copyFile=copyFile)
+    assert "The old version is back" in str(info.value)
+    assert tree(addin) == OLD
+
+
+def test_install_end_to_end_by_copy(tmp_path):
+    addin = makeTree(tmp_path / "addins" / "Gridkeeper", OLD)
+    payload = zipBytes({f"Gridkeeper/{name}": data for (name, data) in NEW.items()})
+    way = updateInstall.install(releaseFor(payload), addin, urlopen=fakeUrlopen(payload), rename=failingAt([], 1, os.replace))
+    assert way == "copied"
+    result = tree(addin)
+    assert result["Gridkeeper.py"] == b"# new\n"
+    assert "lib/gone.py" not in result
+    assert result["commands/commandCreateBin/commandConfig/defaults.json"] == b"{}"
 
 
 def test_cleanup_without_work_folder(tmp_path):

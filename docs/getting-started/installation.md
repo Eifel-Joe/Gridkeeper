@@ -27,7 +27,7 @@ what you get before you install it.
 
 - **Update now** downloads the release ZIP from GitHub, checks it and replaces the `Gridkeeper` folder. Then restart
   Fusion to use the new version. Until then the old one keeps running.
-- **Close** leaves everything as it is; the window comes again the next day.
+- **Later** leaves everything as it is; the window comes again the next day.
 
 What stays: your saved dialog defaults, the update setting and symbols you added to the symbol folders. Gridkeeper
 copies every file of the old folder that the new version doesn't have into the new one, only the program files
@@ -36,9 +36,11 @@ one; delete it by hand if it bothers you.
 
 How the folder is replaced: the new version is unpacked and checked next to the add-in folder, in
 `.gridkeeper-update`, before anything is changed. Then the old folder moves to `.gridkeeper-update\backup-<date>`
-and the new one takes its place. If that fails at any step, the old version is put back and the window says why.
-The newest backup is kept; to go back by hand, close Fusion and put the `Gridkeeper` folder of that backup in place
-of the add-in folder.
+and the new one takes its place. If Windows won't move the folder because Fusion has a file of it open, the new
+version is copied over it instead, after a full copy of the old one into the backup. If any step fails, the old
+version is put back and a message says why. In the rare case it can't be put back either, the message says so and
+names the backup folder: close Fusion and put the `Gridkeeper` folder of that backup in place of the add-in folder.
+The newest backup is kept, so you can go back to the version before the last update the same way.
 
 ### Update by hand
 

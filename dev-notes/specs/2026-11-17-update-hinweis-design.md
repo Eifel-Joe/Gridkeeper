@@ -162,3 +162,18 @@ aus einem Git-Checkout, der darf nie angefasst werden.
 - Handtest (Hauptsitzung/Jörg): Dialog sehen, Link öffnet die Release-Seite, „Update now“ auf einer Test-Installation
   (Kopie der 1.0.0-ZIP, Manifest auf 0.9.0 gesetzt) ersetzt sie, nach Neustart zeigt Fusion 1.0.0. Damit ist kein
   Test-Release auf GitHub nötig; der Weg über ein echtes neues Release läuft erst mit 1.1.0.
+
+## Umsetzungsnotizen (Runde Update-Hinweis, 17.11.2026)
+- E6 und E14 sind ein Befehl: „Gridkeeper updates“. Vom Start-Check geöffnet hat er OK = „Update now“ und
+  Abbrechen = „Later“ wie E6; aus dem Menü geöffnet „Close“, die Version (E13a), „Check now“ und den Haken (E14).
+  Findet „Check now“ ein Release, erscheint im Dialog ein Knopf „Update now“.
+- E8: Link im Text **und** ein Knopf „Release notes“, bis der Handtest zeigt, ob Fusion den Link im Text öffnet.
+- E11.7: Erfolgsmeldung „Gridkeeper X.Y.Z is installed. Restart Fusion to load it, until then the old version runs.“
+  (Review: bis zum Neustart läuft alter Code gegen neue Dateien, die Meldung soll nicht zum Weiterarbeiten einladen).
+- Kurzinfo (E7): Überschriftszeilen fallen weg, nicht der Absatz darunter.
+- Seiten-Link und Download nur, wenn die Adresse mit `https://github.com/` beginnt; API-Antwort höchstens 5 MB.
+- E11.6 Rückfall Kopieren: ob der alte Stand zurück ist, entscheidet der Inhaltsvergleich mit der Sicherung (eine
+  gesperrte Datei scheitert in beide Richtungen, hat aber den alten Inhalt). E11.8: das Aufräumen beim Start löscht
+  nur ältere Sicherungen, `new/` und die ZIP räumt `install` selbst; beide teilen eine Sperre.
+- Mitnehmen (E11.4) vergleicht Pfade ohne Groß-/Kleinschreibung (Windows). Nebenwirkung, von der Hauptsitzung
+  akzeptiert: Bilder/SVGs, die eine neue Version absichtlich entfernt, bleiben aus der alten erhalten (Doku nennt es).
