@@ -123,3 +123,20 @@ def test_each_seat_is_its_parts_first_seat_turned_about_z():
         ("Handle", ["Handle"])) for name in names}
     assert turns == {"Latch front left": 0, "Latch front right": 0, "Latch left": -90, "Latch right": 90,
                      "Handle pin left": 0, "Handle pin right": 180, "Handle": 0}
+
+
+# Nutzer 17.11.2026: "Der Griff bleibt bei Max. 113,5mm stehen. Breiter macht keinen Sinn." Pred's handle is the label
+# width + 28.5 mm wide (pred_parts.json: 99 mm at 5 x 4 x 6, 113.5 mm at 7 x 5 x 10), the label width stops at 85 mm.
+@pytest.mark.parametrize("gridX, width", [(4, 57.0), (5, 99.0), (6, 113.5), (7, 113.5)])
+def test_the_handle_is_the_label_width_and_28_5_mm_wide(gridX, width):
+    assert seats.handleWidth(_dims(gridX, 4, 6)).value * 10 == pytest.approx(width, abs=1e-6)
+
+
+def test_the_handle_width_follows_the_box_width_parameter():
+    assert "gfBox1_baseWidth" in seats.handleWidth(_dims(5, 4, 6)).expression
+
+
+@pytest.mark.parametrize("size", SIZES)
+def test_the_handle_width_is_preds(size):
+    (x0, _, _), (x1, _, _) = HANDLE_BOX[size]
+    assert seats.handleWidth(_dims(*size)).value * 10 == pytest.approx(x1 - x0, abs=0.01)

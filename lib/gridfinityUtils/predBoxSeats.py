@@ -95,3 +95,16 @@ def _turned(axis: Axis, angle: int) -> Axis:
     cos, sin = {0: (1, 0), 90: (0, 1), 180: (-1, 0), -90: (0, -1)}[angle]
     x, y, z = axis
     return (x * cos - y * sin + 0, x * sin + y * cos + 0, z)
+
+
+# the handle reaches 14.25 mm past each label edge (Pred's file: 99 mm at 5 x 4 x 6, 113.5 mm at 7 x 5 x 10)
+HANDLE_PAST_LABEL = 28.5
+
+
+def handleWidth(d: PredBoxDims) -> Dim:
+    """
+    The handle's width, the one measure of a small part that follows the box: the label width + 28.5 mm, so 57 mm at 4
+    cells wide, 99 mm at 5 and 113.5 mm from 6 on (Nutzer 17.11.2026: "Der Griff bleibt bei Max. 113,5mm stehen. Breiter
+    macht keinen Sinn."). The inserted handle's width dimension gets this expression
+    """
+    return d.labelWidth + mm(HANDLE_PAST_LABEL)
