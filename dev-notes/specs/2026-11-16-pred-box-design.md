@@ -147,6 +147,11 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
    Druckposition (siehe Befund); im Maßvergleich wird die Einbaulage gegen die Aufnahmen der Box geprüft (Riegel auf den
    Haken wie `Latch:1`). Die Scharniere bleiben in Druckposition neben der Box; ihre Passung zum Schlitz prüft der
    Maßvergleich über die Maße (Länge, Tiefe, Breite der Laschen gegen `HingeSlot…`).
+   Nachtrag 17.11.2026 (Runde 28, Jörg: „Der Griff bleibt bei Max. 113,5mm stehen. Breiter macht keinen Sinn.“): Der
+   Griff ist in Preds Datei kein festes Teil. Er ist so breit wie das Schild plus 28,5 mm (57 / 99 / 113,5 mm bei 4 / 5 /
+   ab 6 Einheiten Breite) und hat dort keine eigene Skizze. Abweichung von „feste Teile ohne Parameter“: `handle.f3d`
+   bekommt eine eigene, vollständig bestimmte Skizze; ihr einziges Breitenmaß wird beim Einfügen per Ausdruck an die
+   Schildbreite der Box + 28,5 mm gebunden (`predBoxSeats.handleWidth`). Eigene Benutzerparameter hat das Teil nicht.
 3. **Schild:** gebaut vom Gridkeeper-Schildgenerator (Text, Cullenect-Symbole), Plattengröße nach Preds Formel.
 4. Struktur wie bisher: jedes Teil eine Komponente, im Container „Gridkeeper boxes“ o. ä., Gelenke zwischen Teilen.
 
