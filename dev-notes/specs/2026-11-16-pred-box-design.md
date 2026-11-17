@@ -168,6 +168,11 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
    Variante: die Ecke ihres Körperquaders (kleinstes x, y, z) dort, wo die von `Hinge_M3x30:1` liegt, das zweite
    Scharnier 5 mm daneben in y, gerechnet von der eigenen Tiefe. Vorgabe M3x30. Damit gilt oben „werden nicht in die
    Box gejointet“ nur noch im Sinn von: nicht in Einbaulage.
+   Nachtrag 17.11.2026 (Runde 29, Nutzer: „Im Übrigen brauchen Latches, Hinge, Handle und Pin eine andere Farbe als die
+   Box und der Deckel.“): Alle Körper der Kleinteile (Riegel, Griff, Haltestifte, Scharnierhälften und der gedruckte
+   Stift) bekommen die Darstellung *Gridkeeper box parts*, orange (#F07800) wie der Riegel in Preds Datei (Festlegung
+   der Hauptsitzung, Nutzer kann sie ändern). Sie wird je Dokument einmal angelegt und wiederverwendet, beim Erzeugen,
+   Rebuild und Clone gleich. Box und Deckel bleiben, wie sie sind; die Geometrie ändert sich nicht.
 3. **Schild:** gebaut vom Gridkeeper-Schildgenerator (Text, Cullenect-Symbole), Plattengröße nach Preds Formel.
 4. Struktur wie bisher: jedes Teil eine Komponente, im Container „Gridkeeper boxes“ o. ä., Gelenke zwischen Teilen.
 
