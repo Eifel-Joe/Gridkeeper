@@ -70,8 +70,10 @@ einstellbar. Und bei zweifarbigem Export auch eine freie Fläche für den Purget
 - Keine Purgetower-Lage pro Drucker, immer hinten rechts.
 
 ## Ende-zu-Ende
-1. Die Hauptsitzung exportiert in Fusion eine 3MF mit einem Box-Satz (M3x30) und eine mit einem Mix aus 3 Bins und
-   2 Baseplates.
+1. Die Hauptsitzung lässt in Fusion den Job `fusion-auftraege/r29_export.py` laufen. Er exportiert:
+   - einen Box-Satz mit Pinned-Scharnier, der den Stift mit abdeckt (die Hälften von M3x30 folgen derselben Regel);
+   - einen Mix aus 2 Bins, 2 Baseplates und 2 Cullenect-Labels, eines davon Flush. Den Mix einmal auf 256 mm mit
+     Bemalung und einmal auf 180 mm ohne Bemalung.
 2. Bambu Studio öffnet beide fehlerfrei.
 3. Alle Teile liegen in Drucklage innerhalb des 256er-Betts, mit Abstand und mit freier Purgetower-Ecke.
 4. Was nicht passt, liegt in einer weiteren Datei „…, plate 2.3mf“.

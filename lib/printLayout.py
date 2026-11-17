@@ -9,6 +9,7 @@ einstellbar. Und bei zweifarbigem Export auch eine freie Fläche für den Purget
 """
 
 import dataclasses
+import re
 
 ROTATE_NONE = 'none'
 # about the part's x axis, right-handed: +90 takes +y up, so the -y face goes down
@@ -182,16 +183,26 @@ def _bounds(vertices):
 PURGE_ATTEMPTS = 6
 
 
+def isPlateFileOf(fileName: str, name: str) -> bool:
+    """
+    Whether the file is a 3MF of the name's plates, see plateFileName: an earlier export of more plates leaves files the
+    new one doesn't write (review r29-export), they would be printed with the new ones
+    """
+    return re.fullmatch(re.escape(name) + r'(, plate \d+)?\.3mf', fileName, re.IGNORECASE) is not None
+
+
 def layOut(groups: list[list], bed: tuple[float, float], spacing: float, purge: float) -> tuple[list[tuple[int, object]], int, list[int], list[int]]:
     """
     The meshes (threeMf.MeshObject) placed on their plates, each group as one block keeping its meshes' places to each
     other (the halves of a hinge), standing on z = 0, in the coordinates of its plate's own file. Returns each mesh
-    with its plate, how many plates, the groups too large for the bed and the plates without a free purge corner.
+    with its plate, how many plates, the groups too large for the bed and the plates without a free purge corner,
+    leaving out those of a part too large for the bed, it is named already.
 
     Bambu Studio and PrusaSlicer move the parts of a 3MF not made by them as one group to the middle of the bed
     (Bambu Studio Plater.cpp center_instances_around_point, Bambu probe A 17.11.2026), so each plate's parts are
     centered here already and stay where they are laid out. Centering moves them towards the purge corner: when a part
-    comes too close, the square is laid out larger and tried again
+    comes too close, the square is laid out larger and tried again. The best attempt counts, the fewest plates without
+    a free corner, then the fewest plates (review r29-export: a larger square can push parts onto plates of their own)
     """
     footprints = []
     for group in groups:
@@ -199,8 +210,8 @@ def layOut(groups: list[list], bed: tuple[float, float], spacing: float, purge: 
         footprints.append((x1 - x0, y1 - y0))
     (bedWidth, bedDepth) = bed
     corner = (bedWidth - spacing - purge, bedDepth - spacing - purge, bedWidth - spacing, bedDepth - spacing)
-    reserve = purge
-    for _ in range(PURGE_ATTEMPTS):
+
+    def attempt(reserve: float):
         (placements, tooLarge, noPurge) = arrange(footprints, bed, spacing, reserve)
         boxes = []
         for ((width, depth), placement) in zip(footprints, placements):
@@ -216,16 +227,30 @@ def layOut(groups: list[list], bed: tuple[float, float], spacing: float, purge: 
             ))
         # how far the centered parts reach into the purge square, by plate
         intrusion = {}
-        for (index, (box, placement)) in enumerate(zip(boxes, placements)):
+        for (box, placement) in zip(boxes, placements):
             (sx, sy) = shifts[placement.plate]
             moved = (box[0] + sx, box[1] + sy, box[2] + sx, box[3] + sy)
             if purge > 0 and _touches(moved, corner, spacing):
                 reach = min(moved[2] + spacing - corner[0], moved[3] + spacing - corner[1])
                 intrusion[placement.plate] = max(intrusion.get(placement.plate, 0.0), reach)
-        stuck = {placements[index].plate for index in tooLarge + noPurge}
-        if all(plate in stuck for plate in intrusion):
+        tooLargePlates = {placements[index].plate for index in tooLarge}
+        noPurgePlates = (set(intrusion) | {placements[index].plate for index in noPurge}) - tooLargePlates
+        # what more room in the corner may help: the plates whose parts all had room beside it
+        stuck = tooLargePlates | {placements[index].plate for index in noPurge}
+        grow = max((reach for (plate, reach) in intrusion.items() if plate not in stuck), default=0.0)
+        return (placements, tooLarge, sorted(noPurgePlates), shifts, plateCount, grow)
+
+    reserve = purge
+    best = None
+    for _ in range(PURGE_ATTEMPTS):
+        result = attempt(reserve)
+        if best is None or (len(result[2]), result[4]) < (len(best[2]), best[4]):
+            best = result
+        if result[5] <= 0:
             break
-        reserve += max(reach for (plate, reach) in intrusion.items() if plate not in stuck)
+        reserve += result[5]
+    (placements, tooLarge, noPurgePlates, shifts, plateCount, _) = best
+
     laid = []
     for (group, placement) in zip(groups, placements):
         if placement.turned:
@@ -236,6 +261,4 @@ def layOut(groups: list[list], bed: tuple[float, float], spacing: float, purge: 
         for meshObject in group:
             vertices = [(x + shift[0], y + shift[1], z + shift[2]) for (x, y, z) in meshObject.vertices]
             laid.append((placement.plate, dataclasses.replace(meshObject, vertices=vertices)))
-    # the plates without a free purge corner: a centered part reaches into it, or a part had no room beside it
-    noPurgePlates = set(intrusion) | {placements[index].plate for index in noPurge}
-    return (laid, plateCount, tooLarge, sorted(noPurgePlates))
+    return (laid, plateCount, tooLarge, noPurgePlates)

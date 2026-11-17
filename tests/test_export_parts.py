@@ -300,3 +300,15 @@ def test_the_3mf_goes_out_as_a_file_per_plate():
     source = _entry_function("export3mf")
     assert "printLayout.plateFileName(" in source
     assert "exportParts.printGroupKey(" in source
+
+
+def test_older_plate_files_are_replaced_too():
+    # review r29-export: a plate file of an earlier export with more plates stayed beside the new ones
+    source = _entry_function("export3mf")
+    assert "printLayout.isPlateFileOf(" in source
+    assert "os.remove(" in source
+
+
+def test_the_format_tooltip_tells_of_a_file_per_plate():
+    source = open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read()
+    assert "3MF puts every body in one file" not in source
