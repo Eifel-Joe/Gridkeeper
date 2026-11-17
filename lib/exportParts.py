@@ -120,6 +120,8 @@ def withMarkings(part, markings: list, paint: bool):
 DEFAULT_BED = 'Bambu Lab P1P, P1S, X1, X1C, X1E (256 x 256 mm)'
 DEFAULT_BED_SIZE = 256.0
 CUSTOM_BED = 'Custom'
+# saved names of beds gone from the list, by the one they are now
+OLD_BED_NAMES = {'Bambu Lab A1, P1, X1 (256 x 256 mm)': DEFAULT_BED}
 # mm, Nutzer 17.11.2026 (D2), see printLayout
 DEFAULT_SPACING = 5.0
 DEFAULT_PURGE = 50.0
@@ -174,6 +176,8 @@ def layoutChoices(section: dict, bedNames: list[str]) -> dict:
         return value if value >= minimum and value == value else default
 
     bed = section.get('bed', DEFAULT_BED)
+    # the shared entry before the Bambu Lab printers were apart (click test 17.11.2026), Nutzer prints on an X1C
+    bed = OLD_BED_NAMES.get(bed, bed)
     return {
         'bed': bed if bed in bedNames else CUSTOM_BED,
         'bedWidth': number('bedwidth', DEFAULT_BED_SIZE, 1e-6),
