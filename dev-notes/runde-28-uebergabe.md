@@ -42,12 +42,13 @@ Spec mit den Nachträgen dieser Runde: `dev-notes/specs/2026-11-16-pred-box-desi
   - Rebuild 6×4×7 in 695 s, danach nichts ungesund und nichts übrig.
 - **Box-Snapshots** neu abgelegt, alle zehn pass (`r28_snap`, 671f9e9).
 - `origin/master` (PR #4) gemergt (da801b7).
-- `python -m pytest -q`: 1359 grün. `mkdocs build --strict` sauber.
+- `r28_insert_check` Plain und Pinned (l11/l12): beide OK, Scharnier-Quader an der M3x30-Ecke, das zweite 5 mm daneben.
+- Zweites Review über Scharniere und Auswahl: unbekanntes Scharnier wird vor dem Bau gemeldet, Preds gedruckter Stift
+  heißt „Hinge pin“ (e22a70c); die Verwechslung beim Umhängen (p293) gilt jetzt auch für Scharniere.
+- `python -m pytest -q`: 1362 grün. `mkdocs build --strict` sauber.
 
 ## Offen
 
-- `r28_insert_check` mit den Scharnieren Plain und Pinned (läuft).
-- Zweites Review über die gejointeten Scharniere und die Auswahl (läuft).
 - Bild der Box mit Kleinteilen und neues Dialogbild (`docs/assets/images/NEEDED.md`).
 - Ungeprüft in Fusion: Clone; Export eines Satzes mit Teilen (Code angepasst).
 - Liste: p293 (eigenes Gelenk an einem Riegel springt beim Rebuild), p295 (Vorschau fügt die Teile jedes Mal ein),
