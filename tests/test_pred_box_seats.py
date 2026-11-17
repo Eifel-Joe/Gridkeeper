@@ -111,3 +111,15 @@ def test_the_seats_follow_the_box_parameters():
     seat = _byName((5, 4, 6))["Latch front right"]
     assert "gfBox1_baseWidth" in seat.x.expression
     assert "gfBox1_heightU" in seat.z.expression
+
+
+def test_each_seat_is_its_parts_first_seat_turned_about_z():
+    """The box's joint origins stand upright, X along X (createPointJointOrigins); each part's joint turns it about z
+    from the pose of its first seat, the one Pred's file shows"""
+    by = _byName((5, 4, 6))
+    turns = {name: seats.turnAboutZ(by[first], by[name]) for first, names in (
+        ("Latch front left", ["Latch front left", "Latch front right", "Latch left", "Latch right"]),
+        ("Handle pin left", ["Handle pin left", "Handle pin right"]),
+        ("Handle", ["Handle"])) for name in names}
+    assert turns == {"Latch front left": 0, "Latch front right": 0, "Latch left": -90, "Latch right": 90,
+                     "Handle pin left": 0, "Handle pin right": 180, "Handle": 0}

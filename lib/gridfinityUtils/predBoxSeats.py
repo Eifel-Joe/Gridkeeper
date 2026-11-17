@@ -77,3 +77,21 @@ def seats(d: PredBoxDims) -> list[Seat]:
         Seat('Handle pin left', bolt, boltY, boltZ, (1, 0, 0), (0, 0, 1)),
         Seat('Handle pin right', d.midX * 2 - bolt, boltY, boltZ, (-1, 0, 0), (0, 0, 1)),
     ]
+
+
+def turnAboutZ(reference: Seat, seat: Seat) -> int:
+    """
+    Degrees about z that turn the reference seat's axes into the seat's, a multiple of 90. The box's joint origins stand
+    upright with X along X (baseGenerator.createPointJointOrigins), a part's joint takes this angle from the pose of its
+    first seat, the one Pred's file shows (round 28)
+    """
+    for angle in (0, 90, 180, -90):
+        if _turned(reference.xAxis, angle) == tuple(seat.xAxis) and _turned(reference.zAxis, angle) == tuple(seat.zAxis):
+            return angle
+    raise ValueError(f'{seat.name} is no turn about z of {reference.name}')
+
+
+def _turned(axis: Axis, angle: int) -> Axis:
+    cos, sin = {0: (1, 0), 90: (0, 1), 180: (-1, 0), -90: (0, -1)}[angle]
+    x, y, z = axis
+    return (x * cos - y * sin + 0, x * sin + y * cos + 0, z)
