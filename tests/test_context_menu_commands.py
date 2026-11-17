@@ -25,7 +25,7 @@ def _function(name):
 
 def test_clone_and_rebuild_cover_inserts():
     for name in ('CLONE_COMMANDS', 'REBUILD_COMMANDS'):
-        assert _dict_keys(name) == ['tagUtils.TAG_BIN', 'tagUtils.TAG_BASEPLATE', 'tagUtils.TAG_LABEL', 'tagUtils.TAG_BOX'], name
+        assert _dict_keys(name) == ['tagUtils.TAG_BIN', 'tagUtils.TAG_BASEPLATE', 'tagUtils.TAG_LABEL', 'tagUtils.TAG_BOX', 'tagUtils.TAG_BOX_LABEL'], name
 
 
 def test_stop_deletes_every_definition():

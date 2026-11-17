@@ -13,6 +13,9 @@ GENERATOR_BASEPLATE = 'baseplate'
 GENERATOR_LABEL = 'label'
 # storage box after Pred's parametric Gridfinity Storage Box v1.1 (round 27, p260)
 GENERATOR_BOX = 'box'
+# the label of that box (round 29, p262), its settings, rebuild and clone for 1.1.0; the name is its tag's,
+# tagUtils.TAG_BOX_LABEL
+GENERATOR_BOX_LABEL = 'boxLabel'
 
 # Settings added after configs were saved without them, with the value that built the model of such a config. A config
 # read over the dialog's state (Load, rebuild, clone, p151) would otherwise take the dialog's value and build an older
@@ -43,12 +46,15 @@ MM_FIELDS = {
     },
     GENERATOR_LABEL: {'baseWidth', 'freeWidth', 'offsetX', 'offsetY'},
     GENERATOR_BOX: {'magnetDepth', 'magnetDiameter'},
+    # its width is chosen by the box's cells
+    GENERATOR_BOX_LABEL: set(),
 }
 DEGREE_FIELDS = {
     GENERATOR_BIN: {'tabOverhangAngle', 'tabTopAngle'},
     GENERATOR_BASEPLATE: set(),
     GENERATOR_LABEL: set(),
     GENERATOR_BOX: set(),
+    GENERATOR_BOX_LABEL: set(),
 }
 # lists of cells, JSON has no tuples
 CELL_LIST_FIELDS = {
@@ -56,9 +62,10 @@ CELL_LIST_FIELDS = {
     GENERATOR_BASEPLATE: set(),
     GENERATOR_LABEL: set(),
     GENERATOR_BOX: set(),
+    GENERATOR_BOX_LABEL: set(),
 }
 
-GENERATOR_TITLES = {GENERATOR_BIN: 'bin', GENERATOR_BASEPLATE: 'baseplate', GENERATOR_LABEL: 'label', GENERATOR_BOX: 'box'}
+GENERATOR_TITLES = {GENERATOR_BIN: 'bin', GENERATOR_BASEPLATE: 'baseplate', GENERATOR_LABEL: 'label', GENERATOR_BOX: 'box', GENERATOR_BOX_LABEL: 'box label'}
 
 # settings older versions saved under another name, their new name and what their value is multiplied by
 RENAMED_FIELDS = {
@@ -149,6 +156,8 @@ def _typeName(fieldType) -> str:
         return 'a list of [x, y] cells'
     if fieldType == list[dict]:
         return 'a list of objects'
+    if fieldType == list[str]:
+        return 'a list of names'
     return str(fieldType)
 
 def _isNumber(value) -> bool:
@@ -170,6 +179,9 @@ def _fitsType(value, fieldType) -> bool:
         )
     if fieldType == list[dict]:
         return isinstance(value, list) and all(isinstance(item, dict) for item in value)
+    # the box label's symbols by their names
+    if fieldType == list[str]:
+        return isinstance(value, list) and all(isinstance(item, str) for item in value)
     return False
 
 def _withType(value, fieldType):
