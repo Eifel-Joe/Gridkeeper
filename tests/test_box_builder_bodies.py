@@ -55,3 +55,18 @@ def test_a_rebuild_renames_the_small_parts_too():
     "Latch (1)" and so on; _renameParts gave box and lid back their names only. It walks the set's components now"""
     source = ast.unparse(_function("_renameParts"))
     assert "childOccurrences" in source
+
+
+def test_a_single_body_part_has_its_roles_name():
+    """Review round 28: the handle pin's body is "Body1" from Pred's file; snapshots key bodies by name and export names
+    files after them, so a part's only body is named after the part"""
+    source = open(os.path.join(os.path.dirname(SOURCE), "..", "..", "lib", "gridfinityUtils", "predBoxInsert.py"), encoding="utf-8").read()
+    assert "bRepBodies.count == 1" in source and ".name = part.role" in source
+
+
+def test_a_box_of_bodies_in_the_root_gets_no_seats():
+    """Review round 28: without components no part is inserted, so the seat joint origins would be clutter"""
+    source = ast.unparse(_function("_buildBox"))
+    seat = source.index("predBoxSeats.seatJointOriginPoints(dims)")
+    guard = source.rfind("if boxOccurrence is not None", 0, seat)
+    assert guard != -1 and source.count("\n", guard, seat) <= 1
