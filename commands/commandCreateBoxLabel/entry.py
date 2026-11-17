@@ -183,7 +183,8 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
                         "the box's width and goes into the holder. Without, it lies beside the parts there are")
     # Jörg 17.11.2026: "Da das Schild ja feste Breiten hat, sollte es nur ein Auswahlmenü dafür geben. Nicht frei
     # einstellbar." Works without a box in the document, for a reprint
-    addDropdown(boxGroup.children, WIDTH_DROPDOWN, 'Label width', [name for name, _ in predBoxLabelLayout.widthChoices()]).tooltip =         "Pred's label widths by the width of the box; a picked box sets its own"
+    widthDropdown = addDropdown(boxGroup.children, WIDTH_DROPDOWN, 'Label width', [name for name, _ in predBoxLabelLayout.widthChoices()])
+    widthDropdown.tooltip = "Pred's label widths by the width of the box; a picked box sets its own"
     boxGroup.children.addTextBoxCommandInput(SIZE_TEXT, 'Label', '', 2, True)
 
     textGroup = addGroup(inputs, TEXT_GROUP, 'Text')

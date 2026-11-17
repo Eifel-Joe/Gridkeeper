@@ -68,7 +68,7 @@ def test_the_width_is_a_choice_of_preds_fixed_widths():
     """Jörg 17.11.2026: "Da das Schild ja feste Breiten hat, sollte es nur ein Auswahlmenü dafür geben. Nicht frei
     einstellbar." It works without a box in the document (a reprint)"""
     source = _function(ENTRY, "command_created")
-    assert "addDropdown(boxGroup.children, WIDTH_DROPDOWN, 'Label width', [name for name, _ in predBoxLabelLayout.widthChoices()])" in source
+    assert "widthDropdown = addDropdown(boxGroup.children, WIDTH_DROPDOWN, 'Label width', [name for name, _ in predBoxLabelLayout.widthChoices()])" in source
     assert "addIntegerSpinnerCommandInput" not in open(ENTRY, encoding="utf-8").read()
     assert "cells=predBoxLabelLayout.cellsOfChoice(uiState.getState(WIDTH_DROPDOWN))" in _function(ENTRY, "getInputsState")
 
