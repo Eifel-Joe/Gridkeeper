@@ -147,6 +147,27 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
    Druckposition (siehe Befund); im Maßvergleich wird die Einbaulage gegen die Aufnahmen der Box geprüft (Riegel auf den
    Haken wie `Latch:1`). Die Scharniere bleiben in Druckposition neben der Box; ihre Passung zum Schlitz prüft der
    Maßvergleich über die Maße (Länge, Tiefe, Breite der Laschen gegen `HingeSlot…`).
+   Nachtrag 17.11.2026 (Runde 28, Nutzer: „Der Griff bleibt bei Max. 113,5mm stehen. Breiter macht keinen Sinn.“): Der
+   Griff ist in Preds Datei kein festes Teil. Er ist so breit wie das Schild plus 28,5 mm (57 / 99 / 113,5 mm bei 4 / 5 /
+   ab 6 Einheiten Breite) und hat dort keine eigene Skizze. Abweichung von „feste Teile ohne Parameter“: `handle.f3d`
+   bekommt eine eigene, vollständig bestimmte Skizze; ihr einziges Breitenmaß wird beim Einfügen per Ausdruck an die
+   Schildbreite der Box + 28,5 mm gebunden (`predBoxSeats.handleWidth`). Eigene Benutzerparameter hat das Teil nicht.
+   Nachtrag 17.11.2026 (Runde 28, Nutzer: „Am besten doch alle Scharniere mit Auswahl im Generator. Ich hatte zwar das
+   Scharnier M3x30 gesagt, aber ich denke alle drei zum auswählen ist besser.“): Der Box-Dialog bekommt eine Auswahl
+   **Hinge** mit allen drei Scharnier-Varianten aus Preds Datei, Standard M3x30 wie bisher. Die Wahl steht in den
+   Einstellungen der Box (Rebuild und Clone übernehmen sie). Jede Variante kommt wie M3x30 als eigene Datei
+   (`resources/predBox`), zwei Stück in Druckposition neben der Box. Ob die Box je Variante eine andere Aussparung braucht,
+   klärt `fusion-auftraege/r28_hinge_variants.py`; braucht sie eine, wird das vor dem Bau vorgelegt.
+   Lage der Scharniere (Nutzer 17.11.2026: „Das passt so für das Scharnier“): das erste dort, wo Preds `Hinge_M3x30:1`
+   liegt, das zweite 5 mm daneben in y (`predBoxSeats.HINGE_GAP`), beide in Druckposition; gilt für alle drei Varianten.
+   Nachtrag 17.11.2026 (Runde 28, Nutzer auf „Scharniere in Druckposition neben der Box festmachen (Vorschlag J), und Lage
+   für alle drei so?“: „Ja, beides“): Die Scharniere werden starr gejointet, an zwei Joint origins der Box *Hinge 1 joint
+   origin* und *Hinge 2 joint origin* neben der Box in Druckposition, nicht in Einbaulage. So wandern sie mit dem Satz,
+   und es gibt kein Positions-Element in der Zeitleiste. Anlass: lose gesetzt blieben sie beim Stapeln liegen, und ihr
+   Positions-Element blieb nach dem Rebuild unterdrückt stehen (`fusion-auftraege/r28_cmd.l1.out`, `.l2.out`). Lage je
+   Variante: die Ecke ihres Körperquaders (kleinstes x, y, z) dort, wo die von `Hinge_M3x30:1` liegt, das zweite
+   Scharnier 5 mm daneben in y, gerechnet von der eigenen Tiefe. Vorgabe M3x30. Damit gilt oben „werden nicht in die
+   Box gejointet“ nur noch im Sinn von: nicht in Einbaulage.
 3. **Schild:** gebaut vom Gridkeeper-Schildgenerator (Text, Cullenect-Symbole), Plattengröße nach Preds Formel.
 4. Struktur wie bisher: jedes Teil eine Komponente, im Container „Gridkeeper boxes“ o. ä., Gelenke zwischen Teilen.
 

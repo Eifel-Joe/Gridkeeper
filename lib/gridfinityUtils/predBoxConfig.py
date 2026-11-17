@@ -6,6 +6,7 @@ from typing import NamedTuple
 
 from . import const
 from .predBox import PRED
+from . import predBoxParts
 
 MIN_GRID_X = 4
 MIN_GRID_Y = 3
@@ -46,6 +47,9 @@ def boxProblem(state) -> str | None:
         return f'Length must be at least {MIN_GRID_Y} units'
     if state.heightU < MIN_HEIGHT_U:
         return f'Height must be at least {MIN_HEIGHT_U} units'
+    # a defaults file or test case may hold a hinge no longer known, it broke the build halfway (review R28)
+    if state.hinge not in predBoxParts.HINGES:
+        return f"Unknown hinge {state.hinge}, pick one of {', '.join(predBoxParts.HINGES)}"
     if state.hasMagnets:
         if state.magnetDepth <= _EPS:
             return 'The magnet holes need a depth'

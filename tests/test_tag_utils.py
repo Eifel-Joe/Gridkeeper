@@ -238,3 +238,23 @@ def test_untagged_body_outside_a_text_component_has_no_part():
     userOccurrence = _Occurrence(userComponent, partOccurrence)
     proxy = _Body(userComponent, native=userBody, occurrence=userOccurrence)
     assert tagUtils.partTag(proxy, lambda component: None) is None
+
+
+# -- the right-click menu on a box set (click test 17.11.2026, F1): the set "Box 5×4×6" holds no body, its components
+# Box and Lid do; the set offers settings, rebuild and clone like a bin's component, the box's body answers for it
+
+def test_a_component_with_one_tagged_body_answers_with_it():
+    module = _load_tag_utils()
+    assert module.menuTagOf([("bin body", "bin")], []) == ("bin body", "bin")
+
+
+def test_a_box_set_answers_with_its_box():
+    module = _load_tag_utils()
+    children = [("Box", [("Base", "box")]), ("Lid", [("Lid", "box")])]
+    assert module.menuTagOf([], children) == ("Base", "box")
+
+
+def test_a_component_of_other_parts_answers_with_none():
+    module = _load_tag_utils()
+    assert module.menuTagOf([], [("", [("bin 1", "bin")]), ("", [("bin 2", "bin")])]) is None
+    assert module.menuTagOf([("a", "bin"), ("b", "bin")], []) is None

@@ -6,17 +6,19 @@ builds and to colored text.
 
 ## Starting the export
 
-- **Right-click** a bin, baseplate or Cullenect insert, a letter or symbol of one, its component in the browser, or a
-  container (*Grid*, *Bins*, *Label*), and pick **Gridkeeper export**. It sits below *Save As Mesh*.
+- **Right-click** a bin, baseplate, Cullenect insert or storage box, a letter or symbol of one, its component in the
+  browser, or a container (*Grid*, *Bins*, *Label*, *Boxes*), and pick **Gridkeeper export**. It sits below *Save As Mesh*.
 - Right-click the design's root component to start with **All Gridkeeper parts** on.
+
+![The right-click menu of a bin's component with Gridkeeper export below Save As Mesh, and settings, rebuild and clone at the end](../assets/images/context-menu-export-scene.png)
 
 ## The dialog
 
 | Input | What it does |
 |---|---|
-| **All Gridkeeper parts** | Selects every visible bin, baseplate, Cullenect insert and box of the design. Off goes back to what was selected |
+| **All Gridkeeper parts** | Selects every visible bin, baseplate, Cullenect insert and box with its small parts of the design. Off goes back to what was selected |
 | **Bodies** | What goes out. A selected letter or symbol stands for its part; any other body picked goes out as it is |
-| **Format** | **3MF**: one file with all parts, laid out as in the design. **STL** or **STEP**: a file of each part, named after it, at the origin with its bottom at zero |
+| **Format** | **3MF**: one file with all parts, laid out as in the design. **STL** or **STEP**: a file of each part, named after it (a box's *Base*, *Lid* and small parts with the box's name in front, such as *Box 5×4×6 Base*, *Box 5×4×6 Latch*), at the origin with its bottom at zero |
 | **Folder**, **Choose folder...** | Where the files go, the last folder is kept |
 | **File name** | Name of the 3MF file, the part's name for one part |
 | **Color label text** | 3MF only: the label text gets a color index the slicer prints it in, see below |
@@ -31,7 +33,8 @@ Existing files are only replaced after asking. 3MF and STL meshes are made at Fu
 | Bin | its colored label text and symbol bodies |
 | Baseplate | – |
 | Cullenect insert | its text and symbol bodies |
-| Box and lid (Pred box) | as soon as the box is part of Gridkeeper |
+| Box and lid (Pred box) | – |
+| Small parts of a box: latches, handle, handle pins, hinges | – (each placed one is a part of its own: the four latches give four files) |
 
 Each part is one object in the 3MF and one STL or STEP file, its text and symbol bodies included, so the part comes
 out whole. The text bodies of a part in its own component are never a part of their own.

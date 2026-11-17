@@ -6,7 +6,7 @@ from ...lib import assembly
 from ...lib import configJson
 from ...lib import rebuildUtils
 from ...lib.gridfinityUtils import commonUtils, designIntent, parameterUtils
-from ...lib.gridfinityUtils import predBoxConfig
+from ...lib.gridfinityUtils import predBoxConfig, predBoxSeats, predBoxInsert
 from ...lib.gridfinityUtils.predBox import PredBoxDims
 from ...lib.gridfinityUtils.predBoxGenerator import createPredBox, PredBoxOptions
 from ...lib.gridfinityUtils.baseGenerator import createPointJointOrigins
@@ -35,6 +35,7 @@ STACK_BOTTOM_JOINT_ORIGIN = 'Stack bottom joint origin'
 STACK_TOP_JOINT_ORIGIN = 'Stack top joint origin'
 LID_JOINT_ORIGIN = 'Lid joint origin'
 LID_JOINT_NAME = 'Lid on box'
+SEAT_JOINT_ORIGINS = 'Seat joint origin'
 # placement grid for new boxes, beside bins, baseplates, inserts and other boxes
 PLACEMENT_CELL_LENGTH = 4.2
 
@@ -158,6 +159,10 @@ def _buildBox(
         createPointJointOrigins(cellJointOriginPoints(centers, CELL_JOINT_ORIGIN, Dim.length(predBoxConfig.CELL_JOINT_Z)), boxComponent, name=CELL_JOINT_ORIGIN)
     (stackBottom,) = createPointJointOrigins([(STACK_BOTTOM_JOINT_ORIGIN, dims.midX, dims.midY, dims.bottom)], boxComponent, name=STACK_BOTTOM_JOINT_ORIGIN)
     (stackTop,) = createPointJointOrigins([(STACK_TOP_JOINT_ORIGIN, dims.midX, dims.midY, dims.bodyTop)], lidComponent, name=STACK_TOP_JOINT_ORIGIN)
+    # the seats of the small parts (round 28): latches, handle and its pins, upright like the others, each part's joint
+    # turns it, see predBoxSeats.turnAboutZ; a box of bodies in the root gets no parts, so no seats either (review)
+    if boxOccurrence is not None:
+        createPointJointOrigins(predBoxSeats.seatJointOriginPoints(dims, state.hinge), boxComponent, name=SEAT_JOINT_ORIGINS)
     if boxOccurrence is not None:
         (boxSide,) = createPointJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], boxComponent, name=LID_JOINT_ORIGIN)
         (lidSide,) = createPointJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], lidComponent, name=LID_JOINT_ORIGIN)
@@ -167,12 +172,16 @@ def _buildBox(
         joint = des.rootComponent.joints.add(jointInput)
         joint.name = f'{name} {LID_JOINT_NAME}'
 
+    # the small parts after Pred (round 28): latches, handle and pins jointed at their seats, hinges beside the box; a
+    # box of bodies in the root (a part design kept as it is) has no components to joint, it stays without them
+    partBodies = predBoxInsert.insertParts(des, setOccurrence, boxOccurrence, dims, state.hinge, name, assembly.inContext) if boxOccurrence is not None else []
+
     if des.designType == adsk.fusion.DesignTypes.ParametricDesignType:
         group = des.timeline.timelineGroups.add(originalTimelinePosition, des.timeline.markerPosition - 1)
         group.name = name
     # the native bodies, as binBuilder: those moveToComponent gives back are seen through the Box and Lid occurrences,
     # the snapshot tests found them neither among the design's bodies nor with their tag (r27_snap 17.11.2026)
-    return [rebuildUtils.nativeBody(base), rebuildUtils.nativeBody(lid)]
+    return [rebuildUtils.nativeBody(base), rebuildUtils.nativeBody(lid)] + partBodies
 
 
 def rebuildBox(
@@ -197,7 +206,10 @@ def rebuildBox(
         commonUtils.fileLog(f'{LOG_PREFIX} rebuilding {target.group.name}, {rebuildUtils.configChanges(configJson.GENERATOR_BOX, target.bodies[0], newConfig)}')
 
     def build(placement, parameterPrefix, transform, oldPlace):
-        return buildBox(des, state, settings, not isPreview, parameterPrefix, transform, oldPlace)
+        # box and lid only: rebuildUtils.bodyMap pairs the old set's tagged bodies with as many new ones, the small
+        # parts (round 28) aren't tagged and come and go with the set's timeline group
+        bodies = buildBox(des, state, settings, not isPreview, parameterPrefix, transform, oldPlace)
+        return [body for body in bodies if tagUtils.readBodyTag(body) is not None]
     (bodies, notes) = rebuildUtils.rebuild(des, target, prefix, BOX_PARAMETER_BASE_NAME, isPreview, build, 'box', jointsByName=True)
     if not isPreview:
         _renameParts(bodies)
@@ -207,10 +219,21 @@ def rebuildBox(
 def _renameParts(bodies: list[adsk.fusion.BRepBody]):
     """
     The new set is built while the old one still has its components, Fusion names the new ones "Box (2)", "Lid (2)"
-    (r27_cmd 17.11.2026). With the old set gone the names are free again, a name another set still holds stays taken
+    (r27_cmd 17.11.2026), the small parts "Latch (1)" and so on (review round 28). With the old set gone the names are
+    free again, a name another set still holds stays taken
     """
+    components = []
     for body in bodies:
         component = rebuildUtils.nativeBody(body).parentComponent
+        if component not in components:
+            components.append(component)
+        # the set holding box and lid, and with them the small parts' components
+        occurrences = component.parentDesign.rootComponent.allOccurrencesByComponent(component)
+        setOccurrence = occurrences.item(0).assemblyContext if occurrences.count > 0 else None
+        for child in (setOccurrence.childOccurrences if setOccurrence is not None else []):
+            if child.component not in components:
+                components.append(child.component)
+    for component in components:
         role = rebuildUtils.partRole(component)
         if role and component.name != role:
             try:

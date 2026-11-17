@@ -129,11 +129,17 @@ def isTextComponent(component: adsk.fusion.Component) -> bool:
     """A part's Text component, never the root, which is named after the document, see exportParts.isTextComponentName"""
     return exportParts.isTextComponentName(component.name, isRootComponent(component))
 
+def partRoleOf(component: adsk.fusion.Component) -> str | None:
+    """The role a component has in a box set (Box, Lid, Latch, ...), None outside one"""
+    attribute = component.attributes.itemByName(tagUtils.TAG_GROUP, tagUtils.TAG_PART_ROLE)
+    return attribute.value if attribute is not None else None
+
 def isPartBody(body: adsk.fusion.BRepBody) -> bool:
     """A part the export takes, see exportParts.isPartBody, the body where it's placed or its native one"""
     native = body.nativeObject if body.assemblyContext is not None else body
     tag = tagUtils.readBodyTag(native)
-    return exportParts.isPartBody(tag[0] if tag is not None else None, native.parentComponent.name, isRootComponent(native.parentComponent))
+    component = native.parentComponent
+    return exportParts.isPartBody(tag[0] if tag is not None else None, component.name, isRootComponent(component), partRoleOf(component))
 
 def placedPart(body: adsk.fusion.BRepBody) -> adsk.fusion.BRepBody | None:
     """
@@ -352,6 +358,13 @@ def gridfinityBodies(design: adsk.fusion.Design) -> list[adsk.fusion.BRepBody]:
             else:
                 placed = [body.createForAssemblyContext(occurrence) for occurrence in root.allOccurrencesByComponent(component)]
             bodies += [placedBody for placedBody in placed if placedBody.isVisible]
+    # the small parts of box sets, untagged, by their component's role (review round 28)
+    for component in design.allComponents:
+        if partRoleOf(component) not in exportParts.SMALL_PART_ROLES:
+            continue
+        for body in component.bRepBodies:
+            placed = [body.createForAssemblyContext(occurrence) for occurrence in root.allOccurrencesByComponent(component)]
+            bodies += [placedBody for placedBody in placed if placedBody.isVisible]
     return bodies
 
 def selectedFormat(inputs: adsk.core.CommandInputs) -> str:
@@ -479,11 +492,25 @@ def safeFileName(name: str) -> str:
 def defaultFileName(items: list[ExportItem]) -> str:
     return fileNames(items)[0] if len(items) == 1 else DEFAULT_FILE_NAME
 
+def setNameOf(item: ExportItem) -> str | None:
+    """
+    The name of the set a box's body is in: Base and Lid lie in the components Box and Lid of the set "Box 5×4×6"
+    (round 27), the small parts in components of their own there (round 28). None for every other body and for a box
+    built as bodies in the root
+    """
+    tag = tagUtils.readBodyTag(item.body)
+    isSmallPart = partRoleOf(item.body.parentComponent) in exportParts.SMALL_PART_ROLES
+    if not isSmallPart and (tag is None or tag[0] != tagUtils.TAG_BOX):
+        return None
+    partOccurrence = item.occurrence or occurrenceOf(item.body.parentComponent)
+    setOccurrence = partOccurrence.assemblyContext if partOccurrence is not None else None
+    return setOccurrence.component.name if setOccurrence is not None else None
+
 def fileNames(items: list[ExportItem]) -> list[str]:
-    """By body name, numbered when the same"""
+    """By body name, a box's with its set's name in front (exportParts.partFileName), numbered when the same"""
     names = []
     for item in items:
-        name = safeFileName(item.body.name) or 'Body'
+        name = safeFileName(exportParts.partFileName(item.body.name, setNameOf(item))) or 'Body'
         unique = name
         number = 2
         while unique.lower() in (other.lower() for other in names):

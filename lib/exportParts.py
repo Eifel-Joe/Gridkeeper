@@ -12,9 +12,23 @@ import dataclasses
 # label (p262), is one more entry here and in tests/test_export_parts.py
 EXPORT_TAGS = ('bin', 'baseplate', 'label', 'box')
 
+# Pred's small parts in a box set (round 28): untagged, their component carries the part role (tagUtils.TAG_PART_ROLE);
+# the same roles as lib/gridfinityUtils/predBoxParts.PARTS, tests/test_export_parts.py checks it
+SMALL_PART_ROLES = ('Latch', 'Handle', 'Handle pin', 'Hinge')
+
 # the component of a part holding its colored text and symbol bodies, tagUtils.TEXT_COMPONENT_NAME, a copy of it is
 # named "Text (1)", see tagUtils.partTag
 TEXT_COMPONENT_NAME = 'Text'
+
+
+def partFileName(bodyName: str, setName: str | None) -> str:
+    """
+    The file name of a part's body: a body of a set, the box's Base and Lid and its small parts, carries the set's name
+    in front, "Box 5×4×6 Base"; every box gave "Base.stl", "Base (2).stl" before (click test 17.11.2026, F3)
+    """
+    if not setName or bodyName.startswith(setName):
+        return bodyName
+    return f'{setName} {bodyName}'
 
 
 def isExportTag(tagName: str | None) -> bool:
@@ -29,11 +43,14 @@ def isTextComponentName(name: str, isRoot: bool = False) -> bool:
     return not isRoot and name.startswith(TEXT_COMPONENT_NAME)
 
 
-def isPartBody(tagName: str | None, componentName: str, isRoot: bool = False) -> bool:
+def isPartBody(tagName: str | None, componentName: str, isRoot: bool = False, role: str | None = None) -> bool:
     """
     A body exported as a part of its own. The text bodies of a Cullenect insert are tagged like its base, they go with
-    the base instead
+    the base instead. A small part of a box set is one by its component's role (review round 28: the export left them
+    out, a right-click on a set gave Base and Lid only)
     """
+    if role in SMALL_PART_ROLES:
+        return True
     return isExportTag(tagName) and not isTextComponentName(componentName, isRoot)
 
 
