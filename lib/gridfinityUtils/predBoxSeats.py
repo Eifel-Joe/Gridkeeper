@@ -17,7 +17,7 @@ from dataclasses import dataclass
 
 from .dim import Dim
 from .predBox import PredBoxDims
-from .predBoxParts import seatJointOriginName
+from .predBoxParts import DEFAULT_HINGE, seatJointOriginName
 
 Axis = tuple[float, float, float]
 
@@ -62,8 +62,8 @@ def boltHeight(d: PredBoxDims) -> Dim:
     return d.midZ
 
 
-def seats(d: PredBoxDims) -> list[Seat]:
-    """The seats in the order of predBoxParts.SEAT_NAMES"""
+def seats(d: PredBoxDims, hinge: str = DEFAULT_HINGE) -> list[Seat]:
+    """The seats in the order of predBoxParts.SEAT_NAMES, the hinges' for the chosen variant"""
     W, L = d.outerWidth, d.outerLength
     latchZ = d.bodyTop - mm(LATCH_UNDER_TOP)
     out, fromWall = mm(LATCH_OUT), mm(LATCH_FROM_WALL)
@@ -77,7 +77,7 @@ def seats(d: PredBoxDims) -> list[Seat]:
         Seat('Handle', d.midX, boltY, boltZ, (1, 0, 0), (0, 0, 1)),
         Seat('Handle pin left', bolt, boltY, boltZ, (1, 0, 0), (0, 0, 1)),
         Seat('Handle pin right', d.midX * 2 - bolt, boltY, boltZ, (-1, 0, 0), (0, 0, 1)),
-    ]
+    ] + [Seat(name, mm(x), mm(y), mm(z), (1, 0, 0), (0, 0, 1)) for (name, (x, y, z)) in zip(('Hinge 1', 'Hinge 2'), hingeOrigins(hinge))]
 
 
 def turnAboutZ(reference: Seat, seat: Seat) -> int:
@@ -111,12 +111,12 @@ def handleWidth(d: PredBoxDims) -> Dim:
     return d.labelWidth + mm(HANDLE_PAST_LABEL)
 
 
-def seatJointOriginPoints(d: PredBoxDims) -> list[tuple[str, Dim, Dim, Dim]]:
+def seatJointOriginPoints(d: PredBoxDims, hinge: str = DEFAULT_HINGE) -> list[tuple[str, Dim, Dim, Dim]]:
     """
     The box's joint origins at the seats, for baseGenerator.createPointJointOrigins: upright, X along X; a part's
     joint takes its turn about z (turnAboutZ). Round 28, plan task 5
     """
-    return [(seatJointOriginName(seat.name), seat.x, seat.y, seat.z) for seat in seats(d)]
+    return [(seatJointOriginName(seat.name), seat.x, seat.y, seat.z) for seat in seats(d, hinge)]
 
 
 def handleHalfWidth(d: PredBoxDims) -> Dim:
@@ -124,46 +124,22 @@ def handleHalfWidth(d: PredBoxDims) -> Dim:
     return handleWidth(d) / 2
 
 
-# the hinges beside the box in their print position (plan decision 6): the first where Pred's Hinge_M3x30:1 is, mm
-# (fusion-auftraege/r28_tmp/pred_parts.json), the second beside it in y with a gap of 5 mm (Pred's file has one hinge)
-PRED_HINGE_ORIGIN = (-51.9986, 40.5039, -12.2095)
-HINGE_DEPTH = 12.8
+# The hinges in their print position beside the box, jointed there at their component's origin (Jörg 17.11.2026, "Ja,
+# beides" to Vorschlag J): each variant with the corner of its body box (least x, y, z) where Hinge_M3x30's is in Pred's
+# file, the second 5 mm beside it in y from its own depth; they don't follow the box size. mm, from
+# fusion-auftraege/r28_tmp/pred_parts.json and the part files (r28_extract.l5-l7.out)
+M3X30_CORNER = (-61.2502, 36.5039, -12.2095)
+# per variant: the corner of its bodies in its component, and its depth in y
+HINGE_BODY_BOX = {
+    'M3x30': ((-9.2516, -4.0, 0.0), 12.8),
+    'Pinned': ((-9.2516, -4.0, 0.0), 12.8),
+    'Plain': ((-76.2325, -3.5, 0.0), 12.0),
+}
 HINGE_GAP = 5.0
 
 
-def hingePlaces() -> list[tuple[float, float, float]]:
-    """Where the hinges' origins go in the set, mm; they don't follow the box size"""
-    x, y, z = PRED_HINGE_ORIGIN
-    return [(x, y, z), (x, round(y + HINGE_DEPTH + HINGE_GAP, 4), z)]
-
-
-def placeInSet(native, setOccurrence, inContext, transform):
-    """
-    Puts a part's occurrence where transform says, transform in the set's frame; returns its proxy from the root.
-
-    Root cause (r28_insert_check l1, 17.11.2026): Fusion refuses a transform on the native occurrence in the set's
-    component ("transform overrides can only be set on Occurrence proxy from root component"), it takes it only on the
-    proxy from the root, and there transform2 is in the root's frame (Occurrence.transform2: "in its assembly
-    context"). So the set's world transform goes onto transform first; a set moved in its container keeps its hinges
-    beside it. The second hinge needs none of this: addExistingComponent takes its transform in the set's frame when
-    it's made. Test: tests/test_pred_box_seats.py
-    """
-    world = transform.copy()
-    world.transformBy(setOccurrence.transform2)
-    occurrence = inContext(native, setOccurrence)
-    occurrence.transform2 = world
-    return occurrence
-
-
-def placeAllInSet(first, addCopy, setOccurrence, inContext, transforms):
-    """
-    The first occurrence and one copy per further transform (addCopy makes one in the set's component), each put at
-    its transform (set's frame) through placeInSet; returns their proxies from the root.
-
-    Root cause (r28_insert_check l3, 17.11.2026): a copy made by addExistingComponent with its place, after the first
-    was put, lay at first place + its place (second hinge at y 98.81 = 40.50 + 58.30 mm). Why Fusion composes them
-    isn't known; putting each copy through its proxy sets an absolute place, so what the copy starts with doesn't
-    matter. Test: tests/test_pred_box_seats.py
-    """
-    occurrences = [first] + [addCopy() for _ in transforms[1:]]
-    return [placeInSet(occurrence, setOccurrence, inContext, transform) for occurrence, transform in zip(occurrences, transforms)]
+def hingeOrigins(hinge: str) -> list[tuple[float, float, float]]:
+    """Where the two hinges' component origins go in the box's frame, mm"""
+    (low, depth) = HINGE_BODY_BOX[hinge]
+    first = tuple(round(c - l, 4) for c, l in zip(M3X30_CORNER, low))
+    return [first, (first[0], round(first[1] + depth + HINGE_GAP, 4), first[2])]

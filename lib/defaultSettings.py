@@ -137,6 +137,8 @@ BOX = {
     'magnetDepth': 2.4,
     'magnetDiameter': 6.5,
     'hasJointOrigins': True,
+    # Pred's Hinge_M3x30, see predBoxParts.HINGES (round 28)
+    'hinge': 'M3x30',
 }
 
 # by generator, see configJson.GENERATOR_BIN

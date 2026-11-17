@@ -7,7 +7,8 @@ set, round 28 (p261, plan task 6). The parts are Fusion files in resources/predB
 Each file is inserted once with importManager.importToTarget (plan decision 1, the spike kept timeline, sketches and
 features), further occurrences of a part are the same component again. Latches, handle and pins are jointed rigidly,
 their joint origin on the box's at their seat, turned about z (predBoxSeats.turnAboutZ); the handle's one size
-dimension is bound to the box's label width; the hinges lie beside the box in their print position, not jointed.
+dimension is bound to the box's label width; the hinges of the chosen variant are jointed beside the box in their
+print position.
 """
 
 import os
@@ -32,19 +33,25 @@ def insertParts(
     setOccurrence: adsk.fusion.Occurrence,
     boxOccurrence: adsk.fusion.Occurrence,
     dims: PredBoxDims,
+    hinge: str,
     setName: str,
     inContext,
 ) -> list[adsk.fusion.BRepBody]:
     """
-    The small parts into the set, jointed to the box. Returns their native bodies, each part's once, after box and lid
-    in buildBox's list (plan decision 5). inContext is assembly.inContext
+    The small parts into the set, each jointed rigidly to the box at its seat; the hinges of the chosen variant (a key
+    of predBoxParts.HINGES) at two seats beside the box in their print position. Returns their native bodies, each
+    part's once, after box and lid in buildBox's list (plan decision 5). inContext is assembly.inContext.
+
+    Every part is jointed, none is placed by a transform (Jörg 17.11.2026, "Ja, beides" to Vorschlag J): hinges set by
+    their proxy's transform stayed where they were when the set was stacked, and the position Fusion captured for
+    them stayed in the timeline, suppressed, after a rebuild (fusion-auftraege/r28_cmd.l1.out, .l2.out)
     """
     app = adsk.core.Application.get()
     setComponent = (setOccurrence.nativeObject or setOccurrence).component
     boxComponent = (boxOccurrence.nativeObject or boxOccurrence).component
-    seats = {seat.name: seat for seat in predBoxSeats.seats(dims)}
+    seats = {seat.name: seat for seat in predBoxSeats.seats(dims, hinge)}
     bodies = []
-    for part in predBoxParts.PARTS:
+    for part in predBoxParts.partsFor(hinge):
         before = setComponent.occurrences.count
         # from a temporary copy, Fusion writes a folder _XRef_ beside the file it imports (p292, tempCopy)
         imported = tempCopy.withTempCopy(os.path.join(RESOURCES, part.file), lambda copy: app.importManager.importToTarget(
@@ -61,37 +68,38 @@ def insertParts(
         if part.role == 'Handle':
             bindHandleWidth(component, dims)
         occurrences = [first]
-        if part.seats:
-            for _ in range(part.count - 1):
-                occurrences.append(setComponent.occurrences.addExistingComponent(component, adsk.core.Matrix3D.create()))
-            jointOrigin = component.jointOrigins.itemByName(partJointOriginName(part.role))
-            if jointOrigin is None:
-                raise RuntimeError(f'{part.file} has no joint origin {partJointOriginName(part.role)}')
-            reference = seats[part.seats[0]]
-            for (native, seatName) in zip(occurrences, part.seats):
-                occurrence = inContext(native, setOccurrence)
-                if occurrence.isGroundToParent:
-                    occurrence.isGroundToParent = False
-                boxJointOrigin = boxComponent.jointOrigins.itemByName(predBoxParts.seatJointOriginName(seatName))
-                jointInput = des.rootComponent.joints.createInput(inContext(jointOrigin, occurrence), inContext(boxJointOrigin, boxOccurrence))
-                jointInput.setAsRigidJointMotion()
-                jointInput.angle = adsk.core.ValueInput.createByString(f'{predBoxSeats.turnAboutZ(reference, seats[seatName])} deg')
-                joint = des.rootComponent.joints.add(jointInput)
-                joint.name = f'{setName} {seatName}'
-        else:
-            # the hinges beside the box in their print position, the first where Pred's lies (plan decision 6)
-            transforms = []
-            for (x, y, z) in predBoxSeats.hingePlaces()[:part.count]:
-                transform = adsk.core.Matrix3D.create()
-                transform.translation = adsk.core.Vector3D.create(x / 10, y / 10, z / 10)
-                transforms.append(transform)
-            predBoxSeats.placeAllInSet(
-                first, lambda: setComponent.occurrences.addExistingComponent(component, adsk.core.Matrix3D.create()),
-                setOccurrence, inContext, transforms)
-            if des.designType == adsk.fusion.DesignTypes.ParametricDesignType and des.snapshots.hasPendingSnapshot:
-                des.snapshots.add()
+        for _ in range(part.count - 1):
+            occurrences.append(setComponent.occurrences.addExistingComponent(component, adsk.core.Matrix3D.create()))
+        jointOrigin = component.jointOrigins.itemByName(partJointOriginName(part.role))
+        if jointOrigin is None and part.role == 'Hinge':
+            jointOrigin = addOriginJointOrigin(component, partJointOriginName(part.role))
+        if jointOrigin is None:
+            raise RuntimeError(f'{part.file} has no joint origin {partJointOriginName(part.role)}')
+        reference = seats[part.seats[0]]
+        for (native, seatName) in zip(occurrences, part.seats):
+            occurrence = inContext(native, setOccurrence)
+            if occurrence.isGroundToParent:
+                occurrence.isGroundToParent = False
+            boxJointOrigin = boxComponent.jointOrigins.itemByName(predBoxParts.seatJointOriginName(seatName))
+            jointInput = des.rootComponent.joints.createInput(inContext(jointOrigin, occurrence), inContext(boxJointOrigin, boxOccurrence))
+            jointInput.setAsRigidJointMotion()
+            jointInput.angle = adsk.core.ValueInput.createByString(f'{predBoxSeats.turnAboutZ(reference, seats[seatName])} deg')
+            joint = des.rootComponent.joints.add(jointInput)
+            joint.name = f'{setName} {seatName}'
         bodies += list(component.bRepBodies)
     return bodies
+
+
+def addOriginJointOrigin(component: adsk.fusion.Component, name: str) -> adsk.fusion.JointOrigin:
+    """
+    A joint origin at the component's origin, its axes the component's: the hinge files have none, Pred's hinges lie
+    in their print position in their own frame, so the box's hinge seats (predBoxSeats.hingeOrigins) take that frame
+    as it is
+    """
+    jointOriginInput = component.jointOrigins.createInput(adsk.fusion.JointGeometry.createByPoint(component.originConstructionPoint))
+    jointOrigin = component.jointOrigins.add(jointOriginInput)
+    jointOrigin.name = name
+    return jointOrigin
 
 
 def bindHandleWidth(component: adsk.fusion.Component, dims: PredBoxDims):

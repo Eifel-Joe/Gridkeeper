@@ -162,7 +162,7 @@ def _buildBox(
     # the seats of the small parts (round 28): latches, handle and its pins, upright like the others, each part's joint
     # turns it, see predBoxSeats.turnAboutZ; a box of bodies in the root gets no parts, so no seats either (review)
     if boxOccurrence is not None:
-        createPointJointOrigins(predBoxSeats.seatJointOriginPoints(dims), boxComponent, name=SEAT_JOINT_ORIGINS)
+        createPointJointOrigins(predBoxSeats.seatJointOriginPoints(dims, state.hinge), boxComponent, name=SEAT_JOINT_ORIGINS)
     if boxOccurrence is not None:
         (boxSide,) = createPointJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], boxComponent, name=LID_JOINT_ORIGIN)
         (lidSide,) = createPointJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], lidComponent, name=LID_JOINT_ORIGIN)
@@ -174,7 +174,7 @@ def _buildBox(
 
     # the small parts after Pred (round 28): latches, handle and pins jointed at their seats, hinges beside the box; a
     # box of bodies in the root (a part design kept as it is) has no components to joint, it stays without them
-    partBodies = predBoxInsert.insertParts(des, setOccurrence, boxOccurrence, dims, name, assembly.inContext) if boxOccurrence is not None else []
+    partBodies = predBoxInsert.insertParts(des, setOccurrence, boxOccurrence, dims, state.hinge, name, assembly.inContext) if boxOccurrence is not None else []
 
     if des.designType == adsk.fusion.DesignTypes.ParametricDesignType:
         group = des.timeline.timelineGroups.add(originalTimelinePosition, des.timeline.markerPosition - 1)

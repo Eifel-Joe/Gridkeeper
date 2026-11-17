@@ -28,15 +28,15 @@ def test_build_box_returns_the_native_bodies():
 
 
 def test_build_box_puts_joint_origins_at_the_small_parts_seats():
-    """Round 28, plan task 5: the seats of latches, handle and pins become joint origins in the box component"""
+    """Round 28, plan task 5: the seats of latches, handle, pins and the chosen hinges become joint origins in the box"""
     source = ast.unparse(_function("_buildBox"))
-    assert "createPointJointOrigins(predBoxSeats.seatJointOriginPoints(dims), boxComponent" in source
+    assert "createPointJointOrigins(predBoxSeats.seatJointOriginPoints(dims, state.hinge), boxComponent" in source
 
 
 def test_build_box_inserts_the_small_parts_and_returns_their_bodies_after_box_and_lid():
     """Round 28, plan task 6 and decision 5: the parts come into the set, buildBox gives box and lid first"""
     source = ast.unparse(_function("_buildBox"))
-    assert "predBoxInsert.insertParts(des, setOccurrence, boxOccurrence, dims, name, assembly.inContext)" in source
+    assert "predBoxInsert.insertParts(des, setOccurrence, boxOccurrence, dims, state.hinge, name, assembly.inContext)" in source
     returns = [node for node in ast.walk(_function("_buildBox")) if isinstance(node, ast.Return)]
     assert len(returns) == 1
     assert ast.unparse(returns[0].value) == "[rebuildUtils.nativeBody(base), rebuildUtils.nativeBody(lid)] + partBodies"
@@ -67,6 +67,18 @@ def test_a_single_body_part_has_its_roles_name():
 def test_a_box_of_bodies_in_the_root_gets_no_seats():
     """Review round 28: without components no part is inserted, so the seat joint origins would be clutter"""
     source = ast.unparse(_function("_buildBox"))
-    seat = source.index("predBoxSeats.seatJointOriginPoints(dims)")
+    seat = source.index("predBoxSeats.seatJointOriginPoints(dims, state.hinge)")
     guard = source.rfind("if boxOccurrence is not None", 0, seat)
     assert guard != -1 and source.count("\n", guard, seat) <= 1
+
+
+INSERT = os.path.join(os.path.dirname(SOURCE), "..", "..", "lib", "gridfinityUtils", "predBoxInsert.py")
+
+
+def test_the_hinges_are_jointed_like_the_other_parts_without_a_captured_position():
+    """Jörg 17.11.2026 ("Ja, beides" to Vorschlag J): loose hinges stayed behind when the set was stacked and their
+    captured position stayed suppressed after a rebuild (r28_cmd l1/l2); every part is jointed now, none is placed"""
+    source = open(INSERT, encoding="utf-8").read()
+    assert "snapshots.add" not in source and "transform2" not in source and "placeAllInSet" not in source
+    assert "predBoxParts.partsFor(hinge)" in source and "predBoxSeats.seats(dims, hinge)" in source
+    assert "originConstructionPoint" in source

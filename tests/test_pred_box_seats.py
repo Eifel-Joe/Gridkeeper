@@ -152,20 +152,39 @@ def test_the_box_gets_a_joint_origin_at_every_seat():
         assert (x.value, y.value, z.value) == (by[seatName].x.value, by[seatName].y.value, by[seatName].z.value)
 
 
-# Plan decision 6: the hinges lie beside the box in their print position, the first where Pred's Hinge_M3x30:1 is
-# (pred_parts.json: origin (-51.9986 | 40.5039 | -12.2095) mm), the second beside it in y
-PRED_HINGE = (-51.9986, 40.5039, -12.2095)
-HINGE_DEPTH = 49.3039 - 36.5039
+# The hinges in their print position beside the box, jointed there (Jörg 17.11.2026 on "Scharniere in Druckposition neben
+# der Box festmachen (Vorschlag J), und Lage für alle drei so?": "Ja, beides"): each variant with the corner of its body
+# box where Hinge_M3x30's is (pred_parts.json: origin (-51.9986 | 40.5039 | -12.2095), bodies from (-61.2502 | 36.5039 |
+# -12.2095) mm), the second 5 mm beside it in y from its own depth. Part frames: fusion-auftraege/r28_extract.l5-l7.out
+M3X30_CORNER = (-61.2502, 36.5039, -12.2095)
+HINGE_BODY_BOX = {"M3x30": ((-9.2516, -4.0, 0.0), 12.8), "Pinned": ((-9.2516, -4.0, 0.0), 12.8), "Plain": ((-76.2325, -3.5, 0.0), 12.0)}
 
 
-def test_the_first_hinge_lies_where_preds_does():
-    assert seats.hingePlaces()[0] == pytest.approx(PRED_HINGE)
+def test_the_m3x30_hinge_sits_where_preds_does_by_default():
+    by = _byName((5, 4, 6))
+    assert _mm(by["Hinge 1"]) == pytest.approx((-51.9986, 40.5039, -12.2095), abs=1e-4)
 
 
-def test_the_second_hinge_lies_beside_it_without_touching():
-    first, second = seats.hingePlaces()
-    assert (second[0], second[2]) == pytest.approx((first[0], first[2]))
-    assert second[1] - first[1] > HINGE_DEPTH
+@pytest.mark.parametrize("hinge", sorted(HINGE_BODY_BOX))
+@pytest.mark.parametrize("size", SIZES)
+def test_every_hinge_variants_corner_is_where_m3x30s_is_and_the_second_lies_5_mm_beside(hinge, size):
+    by = {seat.name: seat for seat in seats.seats(_dims(*size), hinge)}
+    (low, depth) = HINGE_BODY_BOX[hinge]
+    first = tuple(a + b for a, b in zip(_mm(by["Hinge 1"]), low))
+    second = tuple(a + b for a, b in zip(_mm(by["Hinge 2"]), low))
+    assert first == pytest.approx(M3X30_CORNER, abs=1e-4)
+    assert second == pytest.approx((M3X30_CORNER[0], M3X30_CORNER[1] + depth + 5.0, M3X30_CORNER[2]), abs=1e-4)
+
+
+def test_the_hinges_lie_as_in_preds_file_unturned():
+    by = _byName((5, 4, 6))
+    assert by["Hinge 1"].xAxis == (1, 0, 0) and by["Hinge 1"].zAxis == (0, 0, 1)
+    assert seats.turnAboutZ(by["Hinge 1"], by["Hinge 2"]) == 0
+
+
+def test_the_hinge_joint_origins_are_built_with_the_others():
+    names = [name for (name, *_rest) in seats.seatJointOriginPoints(_dims(5, 4, 6), "Plain")]
+    assert names[-2:] == ["Hinge 1 joint origin", "Hinge 2 joint origin"]
 
 
 def test_the_handle_half_width_expression_follows_the_box():
@@ -173,71 +192,3 @@ def test_the_handle_half_width_expression_follows_the_box():
     assert half.value * 10 == pytest.approx(49.5)
     assert "gfBox1_baseWidth" in half.expression
 
-
-class _Matrix:
-    """Fusion's Matrix3D reduced to a translation, enough for placeInSet"""
-
-    def __init__(self, x=0.0, y=0.0, z=0.0):
-        self.t = (x, y, z)
-
-    def copy(self):
-        return _Matrix(*self.t)
-
-    def transformBy(self, other):
-        self.t = tuple(a + b for a, b in zip(self.t, other.t))
-
-
-class _Occurrence:
-    """A native occurrence below the root refuses a transform, as Fusion did in r28_insert_check l1 (17.11.2026):
-    'transform overrides can only be set on Occurrence proxy from root component'; its proxy from the root takes it"""
-
-    def __init__(self, transform=None, proxy=False):
-        self._transform = transform or _Matrix()
-        self.proxy = proxy
-
-    @property
-    def transform2(self):
-        return self._transform
-
-    @transform2.setter
-    def transform2(self, value):
-        if not self.proxy:
-            raise RuntimeError("3 : transform overrides can only be set on Occurrence proxy from root component")
-        self._transform = value
-
-
-def test_a_hinge_is_placed_through_its_proxy_from_the_root_in_world_coordinates():
-    setOccurrence = _Occurrence(_Matrix(100.0, 0.0, 50.0), proxy=True)
-    native = _Occurrence()
-    proxies = []
-
-    def inContext(entity, occurrence):
-        assert occurrence is setOccurrence
-        proxy = _Occurrence(entity.transform2, proxy=True)
-        proxies.append(proxy)
-        return proxy
-
-    placed = seats.placeInSet(native, setOccurrence, inContext, _Matrix(-5.2, 4.05, -1.22))
-    assert placed is proxies[0]
-    assert placed.transform2.t == pytest.approx((94.8, 4.05, 48.78))
-    # the set's own transform is left as it was
-    assert setOccurrence.transform2.t == (100.0, 0.0, 50.0)
-
-
-def test_both_hinges_end_up_at_their_places_even_if_a_copy_starts_where_the_first_lies():
-    """r28_insert_check l3 (17.11.2026): the second hinge, made by addExistingComponent with its place, lay at first
-    place + second place; so every hinge is made first and then put at its place through its proxy"""
-    setOccurrence = _Occurrence(_Matrix(), proxy=True)
-    first = _Occurrence()
-
-    def addCopy():
-        # as Fusion did: the copy starts where the first one was put
-        return _Occurrence(first.transform2.copy())
-
-    def inContext(entity, occurrence):
-        proxy = _Occurrence(entity.transform2, proxy=True)
-        entity.proxyOf = proxy
-        return proxy
-
-    placed = seats.placeAllInSet(first, addCopy, setOccurrence, inContext, [_Matrix(-52.0, 40.5, -12.2), _Matrix(-52.0, 58.3, -12.2)])
-    assert [p.transform2.t for p in placed] == [pytest.approx((-52.0, 40.5, -12.2)), pytest.approx((-52.0, 58.3, -12.2))]
