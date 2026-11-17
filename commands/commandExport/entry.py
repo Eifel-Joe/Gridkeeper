@@ -703,12 +703,13 @@ def toOrigin(box: adsk.core.BoundingBox3D) -> adsk.core.Matrix3D:
     )
     return move
 
-def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: str, filament: int | None, layout: dict) -> tuple[int, list[str], list[str], list[int]] | None:
+def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: str, filament: int | None, layout: dict) -> tuple[int, list[str], list[str], list[int], list[int]] | None:
     """
     The bodies in print orientation laid out on the bed, a 3MF per plate (round r29-export; Nutzer 17.11.2026: "Eine
-    Sortierung kann ja nur bei eine 3MF je Platte anständig durchgeführt werden."), the purge tower's corner free when
-    the text is painted. Returns how many have painted letters, the files, the names of the parts too large for the
-    bed and the plates without a free purge corner; none when the files there may not be replaced
+    Sortierung kann ja nur bei eine 3MF je Platte anständig durchgeführt werden."), the purge tower's square free when
+    the text is painted, a chosen Bambu Lab printer's excluded area free. Returns how many have painted letters, the
+    files, the names of the parts too large for the bed, the plates without a free purge square and the plates near an
+    excluded area; none when the files there may not be replaced
     """
     objects = []
     keys = []
