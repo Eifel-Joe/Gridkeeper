@@ -23,7 +23,7 @@ other.
 | **Bin width, X (u)** | 2 | In whole or half base units, 0.5 to 100 |
 | **Bin length, Y (u)** | 3 | In whole or half base units, 0.5 to 100 |
 | **Half grid** | off | Puts the bin on half size feet, for a half grid baseplate; the bin keeps its size in base units |
-| **Bin height, Z (u)** | 5 | Total height in height units, base included, at least 1; the stacking lip adds 3.8 mm on top |
+| **Bin height, Z (u)** | 5 | Total height in height units, base included, at least 1; the stacking lip adds 3.8 mm on top, 4.4 mm with **Trim lip top** off |
 | **Custom shape** | off | Shows a drawing of the bin cells to leave some out |
 
 ### Actual dimensions
