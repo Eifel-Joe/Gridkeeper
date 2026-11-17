@@ -115,6 +115,7 @@ degrees). `"extends": "_bin.json"` takes everything from another preset, so a pr
 | `supersample` | How many times larger than the picture the render is, `3` by default |
 | `exposure`, `saturation` | Stops a viewport picture is brightened by, as a camera's exposure, and how much its colors are deepened, `1` keeps them. `0.85` and `1.4` by default, which bring it close to a ray traced picture of Fusion's. Fusion's viewport has no setting for either, the palette applies them |
 | `output` | Folder of the picture, from the add-in folder |
+| `section` | `{"plane": "xz"}` cuts the model through its middle with a section analysis along `xy`, `xz` or `yz`, the cut faces in the preset's `color`, to show a profile. With `color` `null` Fusion picks the cut's color, it differs between pictures. `"flip": true` keeps the other half |
 
 ### GIFs of model pictures
 
@@ -135,7 +136,11 @@ writes `tools/screenshots/out/gif/<name>-light.gif` and `-dark.gif`, on GitHub's
 transparent. `--pictures` takes the pictures from another folder, `--dialogs` records the dialog animations of
 `loopWith` first. A GIF missing a picture is reported and the others are still made.
 
-The palette in Fusion lists the GIFs after the presets, each with its dialog animation in Fusion's theme, the pictures
+The palette also lists the still screenshots of `shots.json`, the ones without `steps`, after the presets, each
+with **Create** or **Refresh** that runs `screenshots.py --only <name>`. **Refresh all** takes them after the pictures,
+as a menu over the viewport shows one, and before the GIFs.
+
+The palette in Fusion lists the GIFs after the presets and screenshots, each with its dialog animation in Fusion's theme, the pictures
 it still needs, or that its pictures changed since it was made. Its **Create** or **Refresh** makes the pictures it
 needs, then the GIF. The palette runs this script with `--dialogs` for it, once per GIF so its row shows the one being made, after **Refresh all** and for **Make GIFs**, with the Python of
 `tools/screenshots/.venv`, so the screenshot tool has to be set up as above. Its output goes to the log of the
