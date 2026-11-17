@@ -180,3 +180,17 @@ def test_laying_beside_takes_the_joint_out_and_captures_the_new_place():
     assert source.index("joint.deleteMe()") < source.index("placementUtils.findPlacement(")
     assert source.index("occurrence.transform2 = ") < source.index("design.snapshots.add()")
     assert "predBoxLabelLayout.PLATE_BODY_NAME" in source
+
+
+def test_the_label_occurrence_comes_from_the_joint_not_from_its_side():
+    # review: the sides of a joint come without an assembly context (round 20, p220), the joint names its occurrences
+    source = _function(REBUILD_UTILS, "repointJointsByName")
+    assert "getattr(joint, 'occurrenceOne' if side == 'geometryOrOriginTwo' else 'occurrenceTwo')" in source
+
+
+def test_a_label_taken_out_but_not_placed_is_said_as_it_is():
+    # review: once the joint is gone the label lies free where it was built, not with the old box
+    source = _function(REBUILD_UTILS, "_layBeside")
+    assert "finally:" in source
+    tail = _function(REBUILD_UTILS, "repointJointsByName")
+    assert "LAID_FREE" in tail and "LAID_BESIDE" in tail
