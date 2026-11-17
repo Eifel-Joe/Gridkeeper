@@ -152,8 +152,15 @@ class _Builder:
         return feature
 
     def mirror(self, features, plane, step):
+        # Identical copies the mirrored faces. Fusion's default Adjust finds the fillet and chamfer edges again on the
+        # other side and failed #42 Mirror6 with FILLET_NO_EDGE_FOUND once the box came through the command (grounded
+        # container, tagged parameters), though the geometry was the same; leaving out any one of six features also
+        # let it pass. Identical and Optimized built it with the same volume (fusion-auftraege/r27_diag2.log, variants
+        # 7 to 11). Identical rather than Optimized because it searches no edges at all, like the cell pattern (#16).
         mirrors = self.features.mirrorFeatures
-        feature = mirrors.add(mirrors.createInput(collection(features), plane))
+        mirrorInput = mirrors.createInput(collection(features), plane)
+        mirrorInput.patternComputeOption = adsk.fusion.PatternComputeOptions.IdenticalPatternCompute
+        feature = mirrors.add(mirrorInput)
         feature.name = step.split(' ')[1]
         self.step(step)
         return feature
