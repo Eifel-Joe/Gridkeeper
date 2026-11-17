@@ -193,3 +193,15 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
 - Ob Bodenraster und Bin-Füße aus vorhandenen Generatoren maßgleich sind oder Preds Profil nachgebaut werden muss.
 - Maße, die nicht in diesem Dokument stehen, misst der Builder in Preds Datei nach (Lage der Riegel und Scharniere,
   Griffhalter, Schildhalter, Luft unter den Lippen).
+
+## Nachtrag Runde 29: Brücken im Scharnier M3x30 (Jörg, 17.11.2026: „A: Brücken anders“)
+
+- Preds Druckhilfe in der Senkung des M3x30-Scharniers (Sketch5, Extrude25/26: Lagen 0,2 und 0,4 mm am Senkungsboden)
+  ließ sich als Skizze nicht vollständig bestimmt zeichnen: Fusion lehnte eine Bemaßung ab
+  (`VCS_SKETCH_OVER_CONSTRAINTS`, `fusion-auftraege/r29_hinge_diag.log`), auch nach drei Fix-Versuchen.
+- Weg A: Die Form bleibt Preds. Seine zwölf Profile je Lage sind zusammen zwei Kreisabschnitte der Senkung jenseits
+  paralleler 45°-Sehnen, die das Schraubenloch berühren (dünne Lage jenseits x − y = ±1,75√2, dicke jenseits
+  x + y = ±1,75√2). Jeder Abschnitt wird als eigenes Rechteck in eigener Skizze gezeichnet; es ragt über den
+  Senkungsrand in das volle Gelenkauge, wo der Join nichts ändert. Geprüft wird das Volumen auf 0,001 mm³ gegen Preds
+  (`r29_hinge_check`).
+- Klappt das nicht im ersten Lauf, gilt Weg C: 1.1.0 mit dem Scharnier Pinned als Vorgabe, M3x30 später.
