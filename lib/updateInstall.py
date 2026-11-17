@@ -155,11 +155,14 @@ def _sameFiles(folder: str, other: str) -> bool:
                for name in files)
 
 def _prune(folder: str, keep: set[str]) -> None:
-    """Deletes the files below folder that aren't in keep, and folders left empty, as far as it can"""
+    """Deletes the files below folder that aren't in keep, and folders left empty, as far as it can. Compared as the
+    file system does: on Windows copying over lib/Symbols writes lib/symbols/x.svg into the old spelling, that file
+    is kept (second review, test_copy_path_keeps_new_files_whose_folder_differs_in_case)"""
+    keep = {os.path.normcase(name) for name in keep}
     for (root, folders, names) in os.walk(folder, topdown=False):
         for name in names:
             path = os.path.join(root, name)
-            if os.path.relpath(path, folder).replace(os.sep, '/') not in keep:
+            if os.path.normcase(os.path.relpath(path, folder).replace(os.sep, '/')) not in keep:
                 try:
                     os.remove(path)
                 except OSError:
@@ -217,7 +220,8 @@ def _swapByCopy(addinFolder: str, newFolder: str, backupFolder: str, copyFile) -
     _prune(addinFolder, _files(newFolder))
     return 'copied'
 
-def install(release, addinFolder: str, urlopen=None, now=datetime.datetime.now, progress=None, rename=os.replace) -> str:
+def install(release, addinFolder: str, urlopen=None, now=datetime.datetime.now, progress=None, rename=os.replace,
+            lockTimeout: float = 30) -> str:
     """
     Downloads, checks and unpacks the release ZIP, then swaps the add-in folder, see swap; 'renamed' or 'copied'.
     release has version, assetUrl, assetSize and assetDigest, see updateCheck.Release. Raises UpdateError with the
@@ -228,8 +232,9 @@ def install(release, addinFolder: str, urlopen=None, now=datetime.datetime.now, 
         raise UpdateError('This add-in runs from a git checkout, update it with git.')
     if not release.assetUrl:
         raise UpdateError('The release has no ZIP file to install.')
-    if not WORK_LOCK.acquire(blocking=False):
-        raise UpdateError('An update is already running.')
+    # mostly the cleanup at startup holding it, a few seconds at most
+    if not WORK_LOCK.acquire(timeout=lockTimeout):
+        raise UpdateError('Gridkeeper is still tidying up after the last update or installing one, try again in a moment.')
     try:
         return _install(release, addinFolder, urlopen, now, progress, rename)
     finally:

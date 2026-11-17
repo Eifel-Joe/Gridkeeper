@@ -471,8 +471,67 @@ def test_cleanup_orders_backups_of_one_second_by_number(tmp_path):
     assert os.listdir(work) == ["backup-20261117-120000-10"]
 
 
-def test_install_and_cleanup_share_a_lock():
-    assert hasattr(updateInstall.WORK_LOCK, "acquire")
+def test_install_waits_for_the_lock(tmp_path):
+    addin = makeTree(tmp_path / "addins" / "Gridkeeper", OLD)
+    payload = zipBytes({f"Gridkeeper/{name}": data for (name, data) in NEW.items()})
+    asked = []
+    with updateInstall.WORK_LOCK:
+        with pytest.raises(UpdateError, match="tidying up"):
+            updateInstall.install(releaseFor(payload), addin, urlopen=fakeUrlopen(payload, calls=asked), lockTimeout=0.1)
+    assert asked == []
+    assert tree(addin) == OLD
+
+
+def test_cleanup_waits_for_a_running_install(tmp_path):
+    import threading
+    addin = makeTree(tmp_path / "Gridkeeper", OLD)
+    work = tmp_path / ".gridkeeper-update"
+    for name in ["backup-20261101-080000", "backup-20261117-120000"]:
+        makeTree(work / name / "Gridkeeper", {"x": b"x"})
+    with updateInstall.WORK_LOCK:
+        cleanup = threading.Thread(target=updateInstall.cleanupBackups, args=(addin,))
+        cleanup.start()
+        cleanup.join(0.3)
+        # still waiting, nothing deleted while the lock is held
+        assert cleanup.is_alive()
+        assert len(os.listdir(work)) == 2
+    cleanup.join(5)
+    assert os.listdir(work) == ["backup-20261117-120000"]
+
+
+def test_copy_path_keeps_new_files_whose_folder_differs_in_case(tmp_path):
+    # Windows keeps the old folder's spelling when the new version is copied over it, prune must not take the new
+    # version's files in it for leftovers (second review, finding 1)
+    addin = makeTree(tmp_path / "addins" / "Gridkeeper", {"Gridkeeper.py": b"# old\n", "lib/Symbols/Nut.svg": b"<svg old/>"})
+    new = makeTree(tmp_path / "addins" / ".gridkeeper-update" / "new" / "Gridkeeper", {"Gridkeeper.py": b"# new\n", "lib/symbols/nut.svg": b"<svg new/>"})
+    backup = str(tmp_path / "addins" / ".gridkeeper-update" / "backup-1" / "Gridkeeper")
+    os.makedirs(os.path.dirname(backup))
+    assert updateInstall.swap(addin, new, backup, rename=failingAt([], 1, os.replace)) == "copied"
+    result = tree(addin)
+    nuts = [content for (name, content) in result.items() if os.path.normcase(name) == os.path.normcase("lib/symbols/nut.svg")]
+    assert nuts == [b"<svg new/>"]
+    assert result["Gridkeeper.py"] == b"# new\n"
+
+
+def test_copy_path_old_version_not_back_names_backup(tmp_path):
+    (addin, new, backup) = setUpSwap(tmp_path)
+    import shutil
+    lockedSvg = os.path.normcase(os.path.join(addin, "lib", "symbols", "hardware", "nut.svg"))
+    addinPy = os.path.normcase(os.path.join(addin, "Gridkeeper.py"))
+
+    def copyFile(source, target, *args, **kwargs):
+        # the forward copy breaks on the svg after Gridkeeper.py is already new, the way back can't write Gridkeeper.py
+        if os.path.normcase(target) == lockedSvg:
+            raise PermissionError("in use")
+        if os.path.normcase(target) == addinPy and os.path.normcase(source).startswith(os.path.normcase(backup)):
+            raise PermissionError("in use")
+        return shutil.copy2(source, target, *args, **kwargs)
+
+    with pytest.raises(UpdateError) as info:
+        updateInstall.swap(addin, new, backup, rename=failingAt([], 1, os.replace), copyFile=copyFile)
+    assert "not back" in str(info.value)
+    assert backup in str(info.value)
+    assert tree(backup) == OLD
 
 
 def test_carry_over_ignores_case_of_the_new_version(tmp_path):
