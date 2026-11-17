@@ -7,6 +7,7 @@ from .commandCreateBin import entry as commandCreateBin
 from .commandCreateBaseplate import entry as commandCreateBaseplate
 from .commandCreateLabel import entry as commandCreateLabel
 from .commandShowSettings import entry as commandShowSettings
+from .commandExport import entry as commandExport
 from .commandSnapshotTests import entry as commandSnapshotTests
 from .commandModelScreenshots import entry as commandModelScreenshots
 from .. import config
@@ -20,6 +21,7 @@ commands = [
     commandCreateBaseplate,
     commandCreateLabel,
     commandShowSettings,
+    commandExport,
 ]
 # development only, see config.DEV_TOOLS
 if config.DEV_TOOLS:
