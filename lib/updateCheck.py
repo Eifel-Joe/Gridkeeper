@@ -1,0 +1,134 @@
+import dataclasses
+import datetime
+import json
+import os
+import re
+
+# The update check (p310): once a day at startup Gridkeeper asks GitHub for its newest release and offers it when it's
+# newer than the running add-in. Kept free of Fusion imports so it can be unit tested, the dialogs are in
+# commands/commandUpdates, replacing the add-in folder is in lib/updateInstall.py
+
+# only Gridkeeper's own tags count, GridfinityGenerator's vX.Y.Z.W tags and anything else never do
+TAG_PATTERN = re.compile(r'^gridkeeper-v(\d+)\.(\d+)\.(\d+)$')
+VERSION_PATTERN = re.compile(r'^(\d+)\.(\d+)\.(\d+)$')
+# the longest short info shown in the update dialog, the release page has the rest
+SUMMARY_LIMIT = 300
+
+@dataclasses.dataclass(frozen=True)
+class Release:
+    version: tuple[int, int, int]
+    tag: str
+    # the release page with the release notes
+    pageUrl: str
+    summary: str
+    # the ZIP release.yml builds, none when the release has no such asset: it's shown but can't be installed
+    assetUrl: str | None
+    assetSize: int | None
+    # 'sha256:<hex>' as GitHub reports it for the asset
+    assetDigest: str | None
+
+    @property
+    def versionText(self) -> str:
+        return versionText(self.version)
+
+def versionText(version: tuple[int, int, int]) -> str:
+    return '.'.join(str(part) for part in version)
+
+def parseVersion(text: str | None) -> tuple[int, int, int] | None:
+    """X.Y.Z as numbers, none for anything else"""
+    match = VERSION_PATTERN.match(text) if isinstance(text, str) else None
+    return tuple(int(part) for part in match.groups()) if match else None
+
+def tagVersion(tag: str | None) -> tuple[int, int, int] | None:
+    """The version of a gridkeeper-vX.Y.Z tag, none for every other tag"""
+    match = TAG_PATTERN.match(tag) if isinstance(tag, str) else None
+    return tuple(int(part) for part in match.groups()) if match else None
+
+def assetName(version: tuple[int, int, int]) -> str:
+    """The ZIP release.yml uploads, gridkeeper-v1.0.0 -> Gridkeeper-v1.0.0.zip"""
+    return f'Gridkeeper-v{versionText(version)}.zip'
+
+def newestRelease(releases: list, current: tuple[int, int, int]) -> Release | None:
+    """The newest published Gridkeeper release of the GitHub API's release list, none unless it's newer than current"""
+    newest = None
+    for entry in releases if isinstance(releases, list) else []:
+        if not isinstance(entry, dict) or entry.get('draft') or entry.get('prerelease'):
+            continue
+        version = tagVersion(entry.get('tag_name'))
+        if version is None or version <= current or (newest is not None and version <= newest[0]):
+            continue
+        newest = (version, entry)
+    if newest is None:
+        return None
+    (version, entry) = newest
+    assets = entry.get('assets') if isinstance(entry.get('assets'), list) else []
+    asset = next((asset for asset in assets if isinstance(asset, dict) and asset.get('name') == assetName(version)), None)
+    def assetField(name: str, fieldType: type):
+        value = asset.get(name) if asset is not None else None
+        return value if isinstance(value, fieldType) else None
+    return Release(
+        version=version,
+        tag=entry['tag_name'],
+        pageUrl=entry.get('html_url') if isinstance(entry.get('html_url'), str) else '',
+        summary=summary(entry.get('body')),
+        assetUrl=assetField('browser_download_url', str),
+        assetSize=assetField('size', int),
+        assetDigest=assetField('digest', str),
+    )
+
+def summary(body: str | None, limit: int = SUMMARY_LIMIT) -> str:
+    """The first paragraph of the release notes as plain text, headings skipped, cut to limit characters"""
+    if not isinstance(body, str):
+        return ''
+    paragraphs = re.split(r'\n\s*\n', body.replace('\r\n', '\n').replace('\r', '\n'))
+    paragraph = next((text.strip() for text in paragraphs if text.strip() and not text.strip().startswith('#')), '')
+    # markdown links become their text, emphasis and code marks go
+    text = re.sub(r'\[([^\]]*)\]\([^)]*\)', r'\1', paragraph)
+    text = re.sub(r'(\*\*|__|`)', '', text)
+    text = ' '.join(text.split())
+    return text if len(text) <= limit else text[:limit - 1].rstrip() + '…'
+
+def manifestVersion(addinFolder: str) -> tuple[int, int, int] | None:
+    """The version in Gridkeeper.manifest of the add-in folder, none when it can't be read"""
+    try:
+        with open(os.path.join(addinFolder, 'Gridkeeper.manifest'), encoding='utf-8') as file:
+            return parseVersion(json.load(file).get('version'))
+    except (OSError, ValueError, AttributeError):
+        return None
+
+# settings
+
+SETTINGS_FOLDER = 'updateConfig'
+SETTINGS_FILE = 'update.json'
+
+def settingsPath(addinFolder: str) -> str:
+    """Kept in the add-in folder like the dialog defaults, an update carries it over, see updateInstall.carryOver"""
+    return os.path.join(addinFolder, SETTINGS_FOLDER, SETTINGS_FILE)
+
+def readSettings(path: str) -> dict:
+    """The update settings, checking at startup unless a readable file turns it off"""
+    settings = {'checkAtStartup': True}
+    try:
+        with open(path, encoding='utf-8') as file:
+            data = json.load(file)
+    except (OSError, ValueError):
+        return settings
+    if isinstance(data, dict):
+        if isinstance(data.get('checkAtStartup'), bool):
+            settings['checkAtStartup'] = data['checkAtStartup']
+        if isinstance(data.get('lastCheck'), str):
+            settings['lastCheck'] = data['lastCheck']
+    return settings
+
+def writeSettings(path: str, settings: dict) -> bool:
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'w', encoding='utf-8') as file:
+            json.dump(settings, file, indent=1)
+        return True
+    except OSError:
+        return False
+
+def isDue(settings: dict, today: datetime.date) -> bool:
+    """At most one check a calendar day, a failed one counts too so a computer without network doesn't wait each start"""
+    return settings.get('checkAtStartup', True) is not False and settings.get('lastCheck') != today.isoformat()
