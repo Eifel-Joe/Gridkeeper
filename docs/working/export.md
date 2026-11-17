@@ -20,7 +20,7 @@ builds and to colored text.
 | **Bodies** | What goes out. A selected letter or symbol stands for its part; any other body picked goes out as it is |
 | **Format** | **3MF**: one file with all parts in print orientation, laid out on the print bed, see below. **STL** or **STEP**: a file of each part, named after it (a box's *Base*, *Lid* and small parts with the box's name in front, such as *Box 5×4×6 Base*, *Box 5×4×6 Latch*), at the origin with its bottom at zero. STL files come in print orientation, STEP files as designed |
 | **Folder**, **Choose folder...** | Where the files go, the last folder is kept |
-| **File name** | Name of the 3MF file, the part's name for one part |
+| **File name** | Name of the 3MF file, the part's name for one part; with several plates *, plate 1*, *, plate 2* … is added |
 | **Color label text** | 3MF only: the label text gets a color index the slicer prints it in, see below |
 | **Label color index** | The slicer's filament for the label text, counting from 1 as the slicer lists them |
 | **Print bed** › **Printer** | 3MF only: the bed the parts are laid out on, the printers of the baseplate dialog or *Custom* |
@@ -62,10 +62,17 @@ The print orientation of the box's parts follows
 [Pred's storage box](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric) (CC BY-NC).
 
 The parts are then spread over the chosen bed in rows, the largest first, with the **Spacing** between them and to the
-edge. A part that only fits across is turned by 90°. What doesn't fit goes on further plates, the message after the
-export says how many. A part larger than the bed lies alone on a plate of its own and is named in the message. With
-**Color label text** on, the back right corner of every plate stays free for the purge tower: move the slicer's purge
-tower there.
+edge. A part that only fits across is turned by 90°. What doesn't fit goes on further plates, and **each plate is a
+3MF file of its own**: *Gridkeeper parts, plate 1.3mf*, *Gridkeeper parts, plate 2.3mf* and so on, just *Gridkeeper
+parts.3mf* when one plate holds all. A part larger than the bed lies alone on a plate of its own and is named in the
+message after the export. With **Color label text** on, the back right corner of every plate stays free for the purge
+tower: move the slicer's purge tower there. The message names a plate where the corner couldn't be kept free.
+
+The parts of each file are centered on the bed: Bambu Studio, OrcaSlicer and PrusaSlicer move the parts of a 3MF made
+elsewhere to the middle of the bed as a group, so the layout stays as it is when the file is opened. Don't press
+**Arrange** in the slicer, it would spread them anew. A file per plate works in every slicer without changing its
+printer, filament or process settings; a 3MF with several plates in one file would have to bring the slicer's own
+project settings along.
 
 ## Colored label text in the 3MF
 

@@ -112,13 +112,12 @@ def facetsAnnotation(objects: list[MeshObject], filament: int) -> str:
         for (index, meshObject) in enumerate(objects)
     ])
 
-def write(path: str, objects: list[MeshObject], filament: int | None, title: str = '', version: str = '', plates: list[int] | None = None):
+def write(path: str, objects: list[MeshObject], filament: int | None, title: str = '', version: str = '', isLaidOut: bool = False):
     """
-    The objects in one file, painted with the filament unless it's none, see modelXml. Without plates placed on the
-    plate, see placeOnPlate; with the plate of each object (round r29-export) they're laid out already, see
-    printLayout.layOut, and stay where they are
+    The objects in one file, painted with the filament unless it's none, see modelXml. Placed on the plate, see
+    placeOnPlate, unless they're laid out already (round r29-export, printLayout.layOut), then they stay where they are
     """
-    placed = placeOnPlate(objects) if plates is None else objects
+    placed = objects if isLaidOut else placeOnPlate(objects)
     with zipfile.ZipFile(path, 'w', zipfile.ZIP_DEFLATED) as package:
         package.writestr('[Content_Types].xml', CONTENT_TYPES)
         package.writestr('_rels/.rels', RELATIONSHIPS)

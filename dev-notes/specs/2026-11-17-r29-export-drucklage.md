@@ -51,7 +51,16 @@ einstellbar. Und bei zweifarbigem Export auch eine freie Fläche für den Purget
   - Für Teile eines Satzes vernetzt `meshOf` den Körper im Teil-Rahmen und dreht ihn nach seiner Rolle.
   - Alle anderen Teile laufen wie bisher über `transform2`.
   - Neu sind die Dialog-Eingaben und das Speichern.
-- Mehrere Platten: eine Datei mit Bambu/Orca-Platten, Plattengröße = eingegebenes Bett (D3, Jörg 17.11.: „Eine Datei. Plattengröße gemäß Eingabe.“). Format und Lage der Platten nach Bambu-Quelltext, siehe Abschnitt Plattenformat.
+- Mehrere Platten: **eine 3MF je Platte**, „<Name>, plate N.3mf“, bei einer Platte nur „<Name>.3mf“. Jörg 17.11.2026
+  nach der Plattenprobe: „Eine Sortierung kann ja nur bei eine 3MF je Platte anständig durchgeführt werden. Wenn alles
+  in eine 3MF kommt und Bambu/Orca dann selber verteilt kommt alles durcheinander.“ Erste Wahl (D3, „Eine Datei.
+  Plattengröße gemäß Eingabe.“) ist damit überholt.
+  - Plattenprobe 17.11. (`notizen/r29-export-probe/LIESMICH.md`): Bambu übernimmt Platten nur aus einer Datei mit
+    Bambu-Kennung **und** Projekt-Einstellungen. Diese ersetzen Drucker, Filament und Prozess.
+  - Bambu und PrusaSlicer verschieben die Teile einer fremden 3MF als Gruppe in die Bettmitte (Plater.cpp
+    `center_instances_around_point`). Deshalb wird der Inhalt jeder Platte schon zentriert geschrieben. Die
+    Purge-Ecke wird nach dem Zentrieren geprüft. Liegt ein Teil darin, wird die Ecke größer angesetzt. Geht auch das
+    nicht, nennt die Meldung die Platte.
 - STL in Drucklage (je Teil gedreht, ohne Verteilen), STEP unverändert in Konstruktionslage (D4, Jörg 17.11.).
 
 ## Nicht dabei
@@ -65,4 +74,4 @@ einstellbar. Und bei zweifarbigem Export auch eine freie Fläche für den Purget
    2 Baseplates.
 2. Bambu Studio öffnet beide fehlerfrei.
 3. Alle Teile liegen in Drucklage innerhalb des 256er-Betts, mit Abstand und mit freier Purgetower-Ecke.
-4. Was nicht passt, liegt in derselben Datei auf Platte 2 ff.
+4. Was nicht passt, liegt in einer weiteren Datei „…, plate 2.3mf“.

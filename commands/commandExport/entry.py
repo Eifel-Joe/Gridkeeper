@@ -1,5 +1,6 @@
 import adsk.core, adsk.fusion
 import dataclasses
+import math
 import os
 import re
 
@@ -393,22 +394,29 @@ def bedInputChanged(inputs: adsk.core.CommandInputs, changed: adsk.core.CommandI
         finally:
             isApplyingBedPreset = False
     elif changed.id in (BED_WIDTH_INPUT_ID, BED_LENGTH_INPUT_ID) and not isApplyingBedPreset:
-        bedInput.listItems.item(0).isSelected = True
+        # only a size that is no longer the preset's, should Fusion report the preset's own setting late
+        size = printBeds.presetBedSize(bedInput.selectedItem.name) if bedInput.selectedItem is not None else None
+        typed = tuple(adsk.core.ValueCommandInput.cast(inputs.itemById(inputId)).value for inputId in (BED_WIDTH_INPUT_ID, BED_LENGTH_INPUT_ID))
+        if size is not None and not all(math.isclose(a, b, abs_tol=1e-6) for (a, b) in zip(size, typed)):
+            bedInput.listItems.item(0).isSelected = True
 
 def command_input_changed(args: adsk.core.InputChangedEventArgs):
     global dialogFolder, isFileNameTyped
+    # args.inputs only holds the siblings of the changed input, those of the Print bed group in it, the dialog's
+    # inputs are on the command (as the baseplate dialog notes; review r29-export)
+    inputs = args.input.parentCommand.commandInputs
     if args.input.id in (BED_INPUT_ID, BED_WIDTH_INPUT_ID, BED_LENGTH_INPUT_ID):
-        bedInputChanged(args.inputs, args.input)
+        bedInputChanged(inputs, args.input)
     if args.input.id == ALL_INPUT_ID:
-        selectAll(args.inputs, adsk.core.BoolValueCommandInput.cast(args.input).value)
+        selectAll(inputs, adsk.core.BoolValueCommandInput.cast(args.input).value)
     elif args.input.id == BROWSE_INPUT_ID:
         folder = askFolder(dialogFolder)
         if folder is not None:
             dialogFolder = folder
-            adsk.core.TextBoxCommandInput.cast(args.inputs.itemById(FOLDER_INPUT_ID)).text = folder
+            adsk.core.TextBoxCommandInput.cast(inputs.itemById(FOLDER_INPUT_ID)).text = folder
     elif args.input.id == FILE_NAME_INPUT_ID:
         isFileNameTyped = True
-    updateInputs(args.inputs)
+    updateInputs(inputs)
 
 def selectAll(inputs: adsk.core.CommandInputs, isAll: bool):
     """Every visible part in the selection, or what was selected as the dialog opened"""
@@ -526,11 +534,13 @@ def command_execute(args: adsk.core.CommandEventArgs):
         names = fileNames(items)
         if format == FORMAT_3MF:
             fileName = safeFileName(adsk.core.StringValueCommandInput.cast(inputs.itemById(FILE_NAME_INPUT_ID)).value) or defaultFileName(items)
-            path = os.path.join(folder, fileName if fileName.lower().endswith('.3mf') else f'{fileName}.3mf')
-            if not mayReplace([path]):
+            fileName = fileName[:-4] if fileName.lower().endswith('.3mf') else fileName
+            result = export3mf(items, names, folder, fileName, filament if paint else None, layout)
+            if result is None:
                 return
-            (painted, plates, tooLarge) = export3mf(items, names, path, filament if paint else None, layout)
-            ui.messageBox(f'Exported {len(items)} part{"" if len(items) == 1 else "s"} to {path}.{plateNote(plates, tooLarge)}{paintNote(paint, painted, filament)}', CMD_NAME)
+            (painted, paths, tooLarge, noPurge) = result
+            where = paths[0] if len(paths) == 1 else f'{len(paths)} files, a file per plate, in {folder}'
+            ui.messageBox(f'Exported {len(items)} part{"" if len(items) == 1 else "s"} to {where}.{plateNote(tooLarge, noPurge, paint)}{paintNote(paint, painted, filament)}', CMD_NAME)
         else:
             if not mayReplace([os.path.join(folder, f'{name}.{FORMAT_EXTENSIONS[format]}') for name in names]):
                 return
@@ -553,11 +563,13 @@ def paintNote(paint: bool, painted: int, filament: int) -> str:
     bodies = 'the part' if painted == 1 else f'{painted} parts'
     return f'\n\nLabel text of {bodies} is assigned color {filament}.'
 
-def plateNote(plates: int, tooLarge: list[str]) -> str:
-    """How many plates the parts take, and which don't fit the bed"""
-    note = f'\n\nThe parts take {plates} plates.' if plates > 1 else ''
+def plateNote(tooLarge: list[str], noPurge: list[int], paint: bool) -> str:
+    """Which parts don't fit the bed, and which plates have no free corner for the purge tower"""
+    note = ''
     if tooLarge:
         note += '\n\nLarger than the bed, on a plate of its own: ' + ', '.join(tooLarge) + '.'
+    if paint and noPurge:
+        note += '\n\nNo free corner for the purge tower on plate ' + ', '.join(str(plate + 1) for plate in noPurge) + '.'
     return note
 
 def mayReplace(paths: list[str]) -> bool:
@@ -688,11 +700,12 @@ def toOrigin(box: adsk.core.BoundingBox3D) -> adsk.core.Matrix3D:
     )
     return move
 
-def export3mf(items: list[ExportItem], names: list[str], path: str, filament: int | None, layout: dict) -> tuple[int, int, list[str]]:
+def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: str, filament: int | None, layout: dict) -> tuple[int, list[str], list[str], list[int]] | None:
     """
-    All bodies in one file, each in print orientation laid out on the bed and further plates (round r29-export), the
-    purge tower's corner free when the text is painted. Returns how many have painted letters, how many plates there
-    are and the names of the parts too large for the bed
+    The bodies in print orientation laid out on the bed, a 3MF per plate (round r29-export; Jörg 17.11.2026: "Eine
+    Sortierung kann ja nur bei eine 3MF je Platte anständig durchgeführt werden."), the purge tower's corner free when
+    the text is painted. Returns how many have painted letters, the files, the names of the parts too large for the
+    bed and the plates without a free purge corner; none when the files there may not be replaced
     """
     objects = []
     keys = []
@@ -704,18 +717,23 @@ def export3mf(items: list[ExportItem], names: list[str], path: str, filament: in
             meshObject = printMesh(item, name, filament, rotation)
             paintedCount += 1 if meshObject.painted else 0
             objects.append(meshObject)
-            # the halves of a hinge go as one block: one occurrence, one turn
-            keys.append((item.occurrence.fullPathName if item.occurrence is not None else None, rotation))
+            occurrencePath = item.occurrence.fullPathName if item.occurrence is not None else None
+            keys.append(exportParts.printGroupKey(partRoleOf(item.body.parentComponent), occurrencePath, rotation))
             progress.progressValue = index + 1
     finally:
         progress.hide()
     groups = exportParts.printGroups(keys)
     bed = (layout['bedWidth'], layout['bedLength'])
     purge = layout['purge'] if filament is not None else 0.0
-    (laid, plates, tooLarge) = printLayout.layOut([[objects[index] for index in group] for group in groups], bed, layout['spacing'], purge)
-    title = os.path.splitext(os.path.basename(path))[0]
-    threeMf.write(path, [meshObject for (_, meshObject) in laid], filament, title, tagUtils.getGeneratorVersion(), plates=[plate for (plate, _) in laid])
-    return (paintedCount, plates, [names[groups[index][0]] for index in tooLarge])
+    (laid, plates, tooLarge, noPurge) = printLayout.layOut([[objects[index] for index in group] for group in groups], bed, layout['spacing'], purge)
+    titles = [printLayout.plateFileName(fileName, plate, plates) for plate in range(plates)]
+    paths = [os.path.join(folder, f'{title}.3mf') for title in titles]
+    if not mayReplace(paths):
+        return None
+    for (plate, (title, path)) in enumerate(zip(titles, paths)):
+        onPlate = [meshObject for (index, meshObject) in laid if index == plate]
+        threeMf.write(path, onPlate, filament, title, tagUtils.getGeneratorVersion(), isLaidOut=True)
+    return (paintedCount, paths, [names[groups[index][0]] for index in tooLarge], noPurge)
 
 def printRotationOf(item: ExportItem) -> str:
     """How the part turns into its print orientation, by its role in a box set or its label surface, see printLayout"""

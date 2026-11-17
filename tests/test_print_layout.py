@@ -146,7 +146,7 @@ def assert_spaced(footprints, placements, spacing, bed=BED):
 
 def test_parts_that_fit_share_one_plate_spaced_from_each_other_and_the_edge():
     footprints = [(84, 126), (84, 84), (42, 42), (126, 42)]
-    (placements, tooLarge) = printLayout.arrange(footprints, BED, spacing=5, purge=0)
+    (placements, tooLarge, _) = printLayout.arrange(footprints, BED, spacing=5, purge=0)
     assert tooLarge == []
     assert {p.plate for p in placements} == {0}
     assert_spaced(footprints, placements, 5)
@@ -154,7 +154,7 @@ def test_parts_that_fit_share_one_plate_spaced_from_each_other_and_the_edge():
 
 def test_what_does_not_fit_goes_on_the_next_plate():
     footprints = [(200, 200), (200, 200), (30, 30)]
-    (placements, tooLarge) = printLayout.arrange(footprints, BED, spacing=5, purge=0)
+    (placements, tooLarge, _) = printLayout.arrange(footprints, BED, spacing=5, purge=0)
     assert tooLarge == []
     assert placements[0].plate != placements[1].plate
     assert max(p.plate for p in placements) == 1
@@ -163,7 +163,7 @@ def test_what_does_not_fit_goes_on_the_next_plate():
 
 def test_a_part_that_only_fits_across_is_turned():
     footprints = [(100, 300)]
-    (placements, tooLarge) = printLayout.arrange(footprints, (350, 200), spacing=5, purge=0)
+    (placements, tooLarge, _) = printLayout.arrange(footprints, (350, 200), spacing=5, purge=0)
     assert tooLarge == []
     assert placements[0].turned
     assert_spaced(footprints, placements, 5, (350, 200))
@@ -171,7 +171,7 @@ def test_a_part_that_only_fits_across_is_turned():
 
 def test_a_part_larger_than_the_bed_gets_a_plate_of_its_own_and_is_named():
     footprints = [(30, 30), (300, 300), (30, 30)]
-    (placements, tooLarge) = printLayout.arrange(footprints, BED, spacing=5, purge=0)
+    (placements, tooLarge, _) = printLayout.arrange(footprints, BED, spacing=5, purge=0)
     assert tooLarge == [1]
     assert placements[1].plate not in (placements[0].plate, placements[2].plate)
 
@@ -179,7 +179,7 @@ def test_a_part_larger_than_the_bed_gets_a_plate_of_its_own_and_is_named():
 def test_the_purge_corner_back_right_stays_free_on_every_plate():
     footprints = [(40, 40)] * 40
     spacing, purge = 5, 50
-    (placements, _) = printLayout.arrange(footprints, BED, spacing=spacing, purge=purge)
+    (placements, _, _) = printLayout.arrange(footprints, BED, spacing=spacing, purge=purge)
     assert max(p.plate for p in placements) >= 1
     corner = (BED[0] - spacing - purge, BED[1] - spacing - purge, BED[0] - spacing, BED[1] - spacing)
     for (f, p) in zip(footprints, placements):
@@ -189,47 +189,56 @@ def test_the_purge_corner_back_right_stays_free_on_every_plate():
 
 def test_without_a_purge_area_the_corner_is_used():
     footprints = [(40, 40)] * 25
-    (placements, _) = printLayout.arrange(footprints, BED, spacing=5, purge=0)
+    (placements, _, _) = printLayout.arrange(footprints, BED, spacing=5, purge=0)
     assert {p.plate for p in placements} == {0}
 
 
 def test_a_single_part_lies_in_the_middle_of_the_bed():
-    (placements, _) = printLayout.arrange([(84, 42)], BED, spacing=5, purge=0)
+    (placements, _, _) = printLayout.arrange([(84, 42)], BED, spacing=5, purge=0)
     (x0, y0, x1, y1) = rect((84, 42), placements[0])
     assert ((x0 + x1) / 2, (y0 + y1) / 2) == pytest.approx((128, 128))
 
 
 def test_a_single_part_keeps_clear_of_the_purge_corner():
     # in the middle it would reach into the corner, 38 to 218 against 201
-    (placements, tooLarge) = printLayout.arrange([(180, 180)], BED, spacing=5, purge=50)
+    (placements, tooLarge, noPurge) = printLayout.arrange([(180, 180)], BED, spacing=5, purge=50)
     corner = (256 - 55, 256 - 55, 251, 251)
-    assert tooLarge == []
+    assert tooLarge == [] and noPurge == []
     assert not overlap(rect((180, 180), placements[0]), corner, 5 - 1e-9)
 
 
-def test_a_part_that_only_fits_without_the_purge_corner_is_named():
-    (placements, tooLarge) = printLayout.arrange([(30, 30), (200, 200)], BED, spacing=5, purge=50)
-    assert tooLarge == [1]
+def test_a_part_that_fits_the_bed_but_not_beside_the_purge_corner_is_named_apart():
+    # review r29-export: it isn't larger than the bed, the message must not say so
+    (placements, tooLarge, noPurge) = printLayout.arrange([(30, 30), (230, 230)], BED, spacing=5, purge=50)
+    assert tooLarge == []
+    assert noPurge == [1]
     assert placements[1].plate != placements[0].plate
+
+
+def test_a_part_turns_when_only_the_purge_corner_is_in_the_way():
+    # review r29-export: 200 x 150 on 250 x 210 doesn't fit beside the corner unturned, 150 x 200 does
+    footprints = [(200, 150), (20, 20)]
+    (placements, tooLarge, noPurge) = printLayout.arrange(footprints, (250, 210), spacing=5, purge=50)
+    assert tooLarge == [] and noPurge == []
+    assert placements[0].turned and placements[0].plate == 0
+    corner = (250 - 55, 210 - 55, 245, 205)
+    assert not overlap(rect(footprints[0], placements[0]), corner, 5 - 1e-9)
+
+
+def test_a_purge_square_larger_than_the_bed_keeps_every_part_on_one_plate_without_it():
+    (placements, tooLarge, noPurge) = printLayout.arrange([(20, 20), (20, 20)], (100, 100), spacing=5, purge=200)
+    assert tooLarge == []
+    assert sorted(noPurge) == [0, 1] or {p.plate for p in placements} == {0}
 
 
 # ---------------------------------------------------------------------------
 # layOut: groups of meshes onto the plates, Bambu's plate grid
 # ---------------------------------------------------------------------------
 
-def test_plate_origins_follow_bambus_grid():
-    # Bambu Studio PartPlate.cpp: columns ceil(sqrt(n)), a fifth of the plate between plates, rows towards -y
-    assert printLayout.plateOrigin(0, 1, BED) == (0, 0)
-    assert printLayout.plateOrigin(1, 2, BED) == pytest.approx((256 * 1.2, 0))
-    assert printLayout.plateOrigin(2, 3, BED) == pytest.approx((0, -256 * 1.2))
-    assert printLayout.plateOrigin(3, 5, BED) == pytest.approx((0, -256 * 1.2))
-    assert printLayout.plateOrigin(4, 5, BED) == pytest.approx((256 * 1.2, -256 * 1.2))
-
-
-def test_every_group_stands_on_the_plate_inside_its_place():
+def test_every_group_stands_on_its_plate_inside_the_bed():
     groups = [[box("a", 500, 500, -20, 84, 84, 30)], [box("b", -300, 10, 7, 42, 42, 10)]]
-    (laid, plates, tooLarge) = printLayout.layOut(groups, BED, spacing=5, purge=0)
-    assert plates == 1 and tooLarge == []
+    (laid, plates, tooLarge, noPurge) = printLayout.layOut(groups, BED, spacing=5, purge=0)
+    assert plates == 1 and tooLarge == [] and noPurge == []
     for (plate, meshObject) in laid:
         ((x0, x1), (y0, y1), (z0, _)) = bounds(meshObject.vertices)
         assert plate == 0
@@ -237,10 +246,44 @@ def test_every_group_stands_on_the_plate_inside_its_place():
         assert 5 - 1e-9 <= x0 and x1 <= 251 + 1e-9 and 5 - 1e-9 <= y0 and y1 <= 251 + 1e-9
 
 
+def plate_bounds(laid, plate):
+    vertices = [v for (p, m) in laid if p == plate for v in m.vertices]
+    return bounds(vertices)
+
+
+def test_each_plates_parts_are_centered_on_the_bed():
+    # Bambu Studio and PrusaSlicer move the parts of a 3MF not made by them to the middle of the bed as one group
+    # (Plater.cpp center_instances_around_point), centered already they stay where the layout put them
+    groups = [[box(f"p{i}", 0, 0, 0, 60, 40, 10)] for i in range(5)]
+    (laid, plates, _, _) = printLayout.layOut(groups, BED, spacing=5, purge=0)
+    for plate in range(plates):
+        ((x0, x1), (y0, y1), _) = plate_bounds(laid, plate)
+        assert ((x0 + x1) / 2, (y0 + y1) / 2) == pytest.approx((128, 128))
+
+
+def test_the_purge_corner_is_free_after_centering():
+    groups = [[box(f"p{i}", 0, 0, 0, 50, 50, 10)] for i in range(7)]
+    (laid, plates, _, noPurge) = printLayout.layOut(groups, BED, spacing=5, purge=50)
+    assert noPurge == []
+    corner = (256 - 55, 256 - 55, 251, 251)
+    for (plate, meshObject) in laid:
+        ((x0, x1), (y0, y1), _) = bounds(meshObject.vertices)
+        assert not overlap((x0, y0, x1, y1), corner, 5 - 1e-9), meshObject.name
+    for plate in range(plates):
+        ((x0, x1), (y0, y1), _) = plate_bounds(laid, plate)
+        assert ((x0 + x1) / 2, (y0 + y1) / 2) == pytest.approx((128, 128))
+
+
+def test_a_plate_whose_centered_part_takes_the_corner_is_named():
+    # a large part alone lies in the middle of the bed in the slicer, whatever the layout says
+    (laid, plates, tooLarge, noPurge) = printLayout.layOut([[box("big", 0, 0, 0, 230, 230, 10)]], BED, spacing=5, purge=50)
+    assert tooLarge == [] and noPurge == [0]
+
+
 def test_the_halves_of_a_hinge_keep_their_place_to_each_other():
     bottom = box("BottomHingePart", 0, 0, 0, 30, 10, 31.6)
     top = box("TopHingePart", 0, 12, 0, 30, 10, 31.6)
-    (laid, _, _) = printLayout.layOut([[bottom, top], [box("x", 0, 0, 0, 60, 60, 5)]], BED, spacing=5, purge=0)
+    (laid, _, _, _) = printLayout.layOut([[bottom, top], [box("x", 0, 0, 0, 60, 60, 5)]], BED, spacing=5, purge=0)
     placed = {meshObject.name: meshObject for (_, meshObject) in laid}
     delta = [tuple(b - a for (a, b) in zip(p, q)) for (p, q) in zip(bottom.vertices, placed["BottomHingePart"].vertices)]
     delta += [tuple(b - a for (a, b) in zip(p, q)) for (p, q) in zip(top.vertices, placed["TopHingePart"].vertices)]
@@ -248,20 +291,25 @@ def test_the_halves_of_a_hinge_keep_their_place_to_each_other():
         assert d == pytest.approx(delta[0])
 
 
-def test_parts_of_the_second_plate_lie_on_bambus_second_plate():
+def test_what_does_not_fit_lies_on_a_second_plate_of_its_own_coordinates():
     groups = [[box("a", 0, 0, 0, 200, 200, 10)], [box("b", 0, 0, 0, 200, 200, 10)]]
-    (laid, plates, _) = printLayout.layOut(groups, BED, spacing=5, purge=0)
+    (laid, plates, _, _) = printLayout.layOut(groups, BED, spacing=5, purge=0)
     assert plates == 2
-    second = [meshObject for (plate, meshObject) in laid if plate == 1][0]
-    ((x0, x1), (y0, y1), _) = bounds(second.vertices)
-    (ox, oy) = printLayout.plateOrigin(1, 2, BED)
-    assert ox + 5 - 1e-9 <= x0 and x1 <= ox + 251 + 1e-9
-    assert oy + 5 - 1e-9 <= y0 and y1 <= oy + 251 + 1e-9
+    assert sorted(plate for (plate, _) in laid) == [0, 1]
+    for plate in (0, 1):
+        ((x0, x1), (y0, y1), _) = plate_bounds(laid, plate)
+        assert 5 - 1e-9 <= x0 and x1 <= 251 + 1e-9 and 5 - 1e-9 <= y0 and y1 <= 251 + 1e-9
 
 
 def test_a_turned_group_is_turned_about_z_whole():
     groups = [[box("long", 0, 0, 0, 100, 300, 10)]]
-    (laid, _, tooLarge) = printLayout.layOut(groups, (350, 200), spacing=5, purge=0)
+    (laid, _, tooLarge, _) = printLayout.layOut(groups, (350, 200), spacing=5, purge=0)
     assert tooLarge == []
     (_, meshObject) = laid[0]
     assert extent(meshObject.vertices)[:2] == pytest.approx((300, 100))
+
+
+def test_plate_file_names():
+    assert printLayout.plateFileName("Gridkeeper parts", 0, 1) == "Gridkeeper parts"
+    assert printLayout.plateFileName("Gridkeeper parts", 0, 3) == "Gridkeeper parts, plate 1"
+    assert printLayout.plateFileName("Gridkeeper parts", 2, 3) == "Gridkeeper parts, plate 3"

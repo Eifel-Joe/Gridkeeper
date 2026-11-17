@@ -260,3 +260,43 @@ def test_the_export_reads_the_box_label_tag_too():
     source = open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read()
     assert "tagUtils.readBodyTag(native)" not in source
     assert source.count("tagUtils.readExportTag(") >= 2
+
+
+def test_layout_choices_survive_the_config_file():
+    # review r29-export: configparser writes its keys in lower case, bedWidth came back as the default
+    import configparser
+    config = configparser.ConfigParser()
+    config["Export"] = {"bed": "Custom", "bedWidth": "180", "bedLength": "210", "spacing": "8", "purge": "40"}
+    choices = exportParts.layoutChoices(dict(config["Export"]), BED_NAMES)
+    assert (choices["bedWidth"], choices["bedLength"], choices["spacing"], choices["purge"]) == (180.0, 210.0, 8.0, 40.0)
+
+
+def test_only_the_halves_of_a_hinge_are_one_block():
+    # review r29-export: the pieces of a filled area are bodies of one baseplate component, they go apart
+    assert exportParts.printGroupKey("Hinge", "Box:1+Hinge 1:1", "none") == ("Box:1+Hinge 1:1", "none")
+    assert exportParts.printGroupKey(None, "Grid:1", "none")[0] is None
+    assert exportParts.printGroupKey("Latch", "Box:1+Latch:1", "none")[0] is None
+    assert exportParts.printGroupKey("Hinge", None, "none")[0] is None
+
+
+def _entry_function(name):
+    tree = ast.parse(open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read())
+    return ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == name))
+
+
+def test_a_change_in_the_bed_group_updates_the_whole_dialog():
+    # review r29-export: inside a group args.inputs holds only the group's inputs, as the baseplate dialog notes
+    source = _entry_function("command_input_changed")
+    assert "args.input.parentCommand.commandInputs" in source
+    assert "updateInputs(args.inputs)" not in source
+
+
+def test_a_size_typed_turns_the_bed_to_custom_only_when_it_differs_from_the_preset():
+    source = _entry_function("bedInputChanged")
+    assert "math.isclose" in source
+
+
+def test_the_3mf_goes_out_as_a_file_per_plate():
+    source = _entry_function("export3mf")
+    assert "printLayout.plateFileName(" in source
+    assert "exportParts.printGroupKey(" in source
