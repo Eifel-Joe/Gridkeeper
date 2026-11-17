@@ -112,24 +112,17 @@ def sectionSketch(shape: HingeShape):
     return points, curves
 
 
-CLEARANCE_SECTOR = 80.0     # degrees above and below the horizontal on the cut side
-
-
 def clearanceSketch(shape: HingeShape, side: int):
-    """Points and curves of the ring between knuckle and clearance on one side of the axis (side -1 left, +1 right), as
-    the sector 80 degrees above and below the horizontal. It covers the ring where the bar passes (y 0.15..2.5, within
-    some 40 degrees); the rest of the ring is never solid. Not split on the axis: an outline on the world axes has no
-    point to start its chain from (sketchChain.anchor)"""
+    """Points and curves of the sketch that gives the ring between knuckle and clearance on one side of the axis (side
+    -1 left, +1 right): the two circles and a rectangle from the axis outwards past them. The ring's half inside the
+    rectangle is the cut (clearanceProfile); the rest of the ring is never solid where the bar does not pass.
+    No arcs: a sector of two arcs was over-constrained in Fusion (fusion-auftraege/r29_hinge_check l1,
+    VCS_SKETCH_OVER_CONSTRAINTS), circles on a centre hanging on a polygon drew in 'Hinge section'"""
     c = center(shape)
-    a = math.radians(CLEARANCE_SECTOR)
-    ends = []
-    for radius in (shape.clearance, shape.knuckle):
-        for sign in (1, -1):
-            ends.append((c + side * radius * math.cos(a), sign * radius * math.sin(a)))
-    points = ends + [(c, 0.0)]
-    # outer arc top to bottom, line in, inner arc bottom to top, line out
-    curves = [{'kind': 'arc', 'center': 4, 'start': 0, 'end': 1}, {'kind': 'line', 'a': 1, 'b': 3},
-              {'kind': 'arc', 'center': 4, 'start': 3, 'end': 2}, {'kind': 'line', 'a': 2, 'b': 0}]
+    h = shape.clearance + 0.5
+    points = [(c, -h), (c + side * h, -h), (c + side * h, h), (c, h), (c, 0.0)]
+    curves = [{'kind': 'line', 'a': i, 'b': (i + 1) % 4} for i in range(4)]
+    curves += [{'kind': 'circle', 'center': 4}, {'kind': 'circle', 'center': 4}]
     return points, curves
 
 
@@ -449,8 +442,12 @@ def _base(component, shape: HingeShape):
 
     for side, label in ((-1, 'left'), (1, 'right')):
         points, curves = clearanceSketch(shape, side)
-        sketch = _drawPlan(component, xy, f'Clearance {label}', points, curves)
-        (profile,) = list(sketch.sketch.profiles)
+        sketch = _drawPlan(component, xy, f'Clearance {label}', points, curves,
+                           diameters=[2 * shape.knuckle, 2 * shape.clearance])
+        area = _ringArea(shape.knuckle, shape.clearance) / 2
+        # two half rings of that area, inside and outside the rectangle: the one whose centroid lies on the cut side
+        (profile,) = [p for p in sketch.sketch.profiles if abs(p.areaProperties().area * 100 - area) < 1e-3
+                      and side * (sketch.sketch.sketchToModelSpace(p.areaProperties().centroid).x * 10 - c) > 0]
         for number, (_, z0, z1) in enumerate([r for r in clearanceRanges() if r[0] == side]):
             _extrude(component, [profile], cut, z0, z1, name=f'Clearance {label} {number + 1}')
 
