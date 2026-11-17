@@ -136,3 +136,12 @@ def restoresColor(labelColor: str, hasLabel: bool, isCullenect: bool) -> bool:
     when the label style or tab changes (review of round 12)
     """
     return labelColor != '' or (hasLabel and not isCullenect)
+
+
+def paintsOutlineLetterFaces(generateBody: bool, isOutline: bool, labelColor: str) -> bool:
+    """
+    Whether the letter faces of a bin's outline label get upstream's label appearance in Fusion, see labelFaces
+    (upstream round 17.11.2026, d0ad89c). Only without a color: with one the letters are bodies of their own filling the
+    outline cut (p86), the faces under them can't be seen and aren't the letters' tops
+    """
+    return bool(generateBody and isOutline and labelColor == '')
