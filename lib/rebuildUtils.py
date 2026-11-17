@@ -457,9 +457,10 @@ def configWithParameters(generator: str, config: dict, parameters: list, findPar
     The config a body was built with, with the values its parameters have now, so changes made to them since aren't
     undone by building it again. findParameter looks one up by name. A field of a list item goes by its index, like
     compartmentPockets.2.label. Settings a config saved before them doesn't have get the value it was built with, see
-    configJson.OLDER_VALUES
+    configJson.OLDER_VALUES, and settings saved under an older name are read under their new one, see
+    configJson.RENAMED_FIELDS
     """
-    config = configJson.withOlderValues(generator, config)
+    config = configJson.withOlderValues(generator, configJson.renamedSettings(generator, config))
     for (fieldName, parameter) in parameterFields(parameters, findParameter, labelFields):
         isText = parameter.valueType == adsk.fusion.ParameterValueTypes.TextParameterValueType
         if isText:

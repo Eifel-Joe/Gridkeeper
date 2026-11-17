@@ -315,4 +315,27 @@ def test_rebuild_fills_the_older_values_into_a_tagged_config():
         source = file.read()
     body = source[source.index("def configWithParameters("):]
     body = body[:body.index("\ndef ", 1)]
-    assert "config = configJson.withOlderValues(generator, config)" in body
+    assert "config = configJson.withOlderValues(generator, " in body
+
+
+# --- upstream round 17.11. (p13, 3452e56): the plate clearance per edge, renamed on every way settings are read ---
+
+def test_renamed_settings_leave_label_and_unknown_generators_alone():
+    # Cullenect inserts have no renamed settings, a generator a later round adds (the box of round 27) neither
+    assert configJson.renamedSettings(configJson.GENERATOR_LABEL, {"baseWidth": 25}) == {"baseWidth": 25}
+    assert configJson.renamedSettings("box", {"width": 3}) == {"width": 3}
+
+
+def test_old_baseplate_config_reads_the_clearance_per_edge():
+    settings = configJson.withOlderValues(configJson.GENERATOR_BASEPLATE, configJson.renamedSettings(configJson.GENERATOR_BASEPLATE, {"plateClearance": 0.6}))
+    assert settings == {"plateEdgeClearance": 0.3}
+
+
+def test_rebuild_renames_the_settings_of_a_tagged_config():
+    # a baseplate tagged before the rename keeps plateClearance in its tag, its settings and a rebuild read the new name
+    path = os.path.join(PROJECT_ROOT, "lib", "rebuildUtils.py")
+    with open(path, encoding="utf-8") as file:
+        source = file.read()
+    body = source[source.index("def configWithParameters("):]
+    body = body[:body.index("\ndef ", 1)]
+    assert "config = configJson.withOlderValues(generator, configJson.renamedSettings(generator, config))" in body
