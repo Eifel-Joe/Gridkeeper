@@ -106,7 +106,9 @@ Custom Event und Dialoge. Nur Standardbibliothek (`urllib`, `zipfile`, `hashlib`
 - `dialogHtml(release: Release, current: tuple, gitCheckout: bool) -> str` (Fusion-frei, getestet: enthält `versionText`, `A.B.C`, `<a href="{pageUrl}">Release notes</a>`, escapte Kurzinfo; bei `gitCheckout` den Git-Satz aus E10)
 - `start()`/`stop()`: Befehl „Gridkeeper updates“ in Utilities › Add-Ins (`SolidScriptsAddinsPanel` bzw. Panel-ID im Fusion-Job prüfen), Custom Event registrieren; `checkAtStartup` + `isDue` → `lastCheck` setzen, Daemon-Thread `checkForUpdate` → `app.fireCustomEvent(EVENT_ID, json)`; Handler zeigt Update-Dialog, wenn `ui.activeCommand == 'SelectCommand'`, sonst bis 10 × 30 s neu (Timer-Thread + Event); `stop()` unregistert Event.
 - Update-Dialog (E6): Textbox HTML, Haken „Check for updates at startup“, OK „Update now“ (ausgeblendet ohne Asset oder bei Git), Cancel „Later“; OK → `install` (im Haupt-Thread mit Fortschrittsdialog `ui.createProgressDialog`), danach `messageBox` E11.7.
-- Befehls-Dialog (E14): Version, Haken, Knopf „Check now“ (ohne Tagesgrenze, zeigt auch „newest“ und Fehler).
+- `RUNNING_VERSION` wird in `start()` einmal aus dem Manifest gelesen (E13a); Fusion-frei getestet:
+  `versionLine(running, installed) -> str` (`'Running 1.0.0'` bzw. `'Running 1.0.0, installed 1.1.0. Restart Fusion (or reload Gridkeeper) to use 1.1.0.'`).
+- Befehls-Dialog (E14): `versionLine`, Haken, Knopf „Check now“ (ohne Tagesgrenze, zeigt auch „newest“ und Fehler).
 - `run()` in `Gridkeeper.py` unverändert; `cleanupBackups` beim Start im Thread.
 
 - [ ] **Step 1:** Tests `dialogHtml` (drei Fälle, inkl. `<script>` in der Kurzinfo escaped) → RED
@@ -119,7 +121,27 @@ Custom Event und Dialoge. Nur Standardbibliothek (`urllib`, `zipfile`, `hashlib`
 
 - [ ] **Job 1:** echte API → newest 1.0.0, `checkForUpdate` gegen 1.0.0 → None; Download `Gridkeeper-v1.0.0.zip` + `verifyZip` OK; Zeit < 30 s.
 - [ ] **Job 2:** Thread mit Fake-Fetch (9.9.9) → Custom Event im Haupt-Thread empfangen (Handler schreibt Datei statt Dialog); `install` aus lokal gebauter ZIP (Bau wie `release.yml`, Manifest 9.9.9) in Testordner im Scratch, `commandConfig` mitgenommen; Panel-ID von Utilities › Add-Ins ausgeben.
+- [ ] **Job 3 (API-Erkundung, nur lesen):** listet, was Fusion zu Add-ins anbietet (`dir(app)`, Objekte mit
+  „script“/„addin“ im Namen, deren Eigenschaften/Methoden, Eintrag für Gridkeeper mit `isRunning` o. ä.). Ergebnis
+  entscheidet, ob W3 überhaupt möglich ist.
 - [ ] Jobnamen der Hauptsitzung melden, Ergebnis abwarten, Abweichungen per TDD nachziehen.
+
+### Task 6a: Neu-Laden-Matrix (Spec E13) und Folgen für die Meldung
+
+**Files:** Create `dev-notes/tools/update-fusion-jobs/build_test_install.py` (baut aus dem Worktree eine
+Test-Installation wie `release.yml`, Manifest-Version als Parameter, optional Markierung im Befehlsnamen „(9.9.9)“),
+`job4_reload_addin.py` (W4: Neu-Laden wie in `fusion-addin-reload.py`, aber für den Test-Pfad), ggf. `job5_api_restart.py` (W3,
+nur wenn Job 3 einen Weg zeigt); Ergebnis-Tabelle in die Spec (Abschnitt „Messung Neu-Laden“).
+
+- [ ] Vorbereitung (Hauptsitzung/Jörg): Jörgs Gridkeeper stoppen, Test-Installation 9.9.8 hinzufügen und starten.
+- [ ] Je Weg W1, W2, W3 (falls möglich), W4, jeweils nach frischem Fusion-Start: Installer setzt 9.9.9 auf die
+  Platte (Job), Weg anwenden, dann prüfen: „Gridkeeper updates“ zeigt Running/Installed, Bin, Baseplate, Label,
+  Box, Export öffnen und mit Abbrechen schließen, Rechtsklick settings/rebuild/clone auf einem gebauten Teil,
+  Textbefehlsfenster auf Fehler. Klicks macht die Hauptsitzung (Testplan-Checkliste von mir).
+- [ ] Danach: Test-Installation entfernen, Jörgs Gridkeeper wieder starten.
+- [ ] Auswertung in die Spec; Erfolgsmeldung (Task 5) danach festlegen: Knopf „Reload Gridkeeper“ nur bei
+  belegtem sicheren W3/W4, Anleitung bei W2, sonst „Restart Fusion“. Änderung per TDD (Text in `dialogHtml`/
+  `successText(reloadWay)` getestet), Commit „Update: Meldung nach Messung Neu-Laden (p310)“.
 
 ### Task 7: Doku und Changelog
 
