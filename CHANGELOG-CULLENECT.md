@@ -6,6 +6,16 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## 1.1.0 (2026-11-17)
 
+### Box label (round 29)
+
+- **Gridkeeper box label (p262):** a new command makes the label for the holder of a box after
+  [Pred's storage box](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric) (CC BY-NC):
+  Pred's flat plate sized after the box's width, a large text at the left, two lines and up to five
+  [Cullenect](https://github.com/CullenJWebb/Cullenect-Labels) symbols (MIT, CullenJWebb) at the right, raised, set in
+  or flush like the Cullenect inserts. Picking the *Label joint origin* of a box joints the label into its holder; every
+  box now has that joint origin. A command of its own, so a label can be swapped without touching the box. Every
+  sketch is fully constrained.
+
 ### Small parts of the storage box (round 28)
 
 - **Latches, handle, pins and hinges (p261):** every box set now holds Pred's small parts, taken over from
@@ -32,7 +42,7 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   jointed shut; joint origins in every cell, for stacking and for the lid. Settings, rebuild and clone as for bins.
   Changes to Pred's box: magnet holes of a size of your choice, the floor pads and the stacking rim drawn from circles
   instead of arcs. Height 5 is left for later (p264).
-  Latches, hinges and handle followed in round 28, the label is still to come.
+  Latches, hinges and handle followed in round 28, the label in round 29.
 - **Magnet size (p263):** bins, baseplates and boxes have a choice before the magnet cutout depth: 6 × 2 mm magnets
   (2.4 mm deep), 6 × 3 mm magnets (3.4 mm, not for boxes: it would break through the floor) or *Custom*. Only the
   depth is saved, older settings files load unchanged.
