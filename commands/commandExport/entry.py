@@ -322,7 +322,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     formatInput = inputs.addDropDownCommandInput(FORMAT_INPUT_ID, 'Format', adsk.core.DropDownStyles.TextListDropDownStyle)
     for name in FORMATS:
         formatInput.listItems.add(name, name == choices['format'])
-    formatInput.tooltip = '3MF puts every body in one file, STL and STEP give each body a file of its own in the folder'
+    formatInput.tooltip = '3MF lays the bodies out in print orientation on the print bed, a file per plate, STL and STEP give each body a file of its own in the folder'
     folderInput = inputs.addTextBoxCommandInput(FOLDER_INPUT_ID, 'Folder', dialogFolder, 2, True)
     folderInput.tooltip = 'Where the files go, the last folder chosen is kept'
     browseInput = inputs.addBoolValueInput(BROWSE_INPUT_ID, '', False, '', False)
@@ -728,11 +728,17 @@ def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: 
     (laid, plates, tooLarge, noPurge) = printLayout.layOut([[objects[index] for index in group] for group in groups], bed, layout['spacing'], purge)
     titles = [printLayout.plateFileName(fileName, plate, plates) for plate in range(plates)]
     paths = [os.path.join(folder, f'{title}.3mf') for title in titles]
-    if not mayReplace(paths):
+    # the plate files of an earlier export of the name the new one doesn't write, they'd be printed with the new ones
+    written = {os.path.normcase(path) for path in paths}
+    stale = [os.path.join(folder, name) for name in os.listdir(folder)
+             if printLayout.isPlateFileOf(name, fileName) and os.path.normcase(os.path.join(folder, name)) not in written]
+    if not mayReplace(paths + stale):
         return None
     for (plate, (title, path)) in enumerate(zip(titles, paths)):
         onPlate = [meshObject for (index, meshObject) in laid if index == plate]
         threeMf.write(path, onPlate, filament, title, tagUtils.getGeneratorVersion(), isLaidOut=True)
+    for path in stale:
+        os.remove(path)
     return (paintedCount, paths, [names[groups[index][0]] for index in tooLarge], noPurge)
 
 def printRotationOf(item: ExportItem) -> str:

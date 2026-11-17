@@ -18,7 +18,7 @@ builds and to colored text.
 |---|---|
 | **All Gridkeeper parts** | Selects every visible bin, baseplate, Cullenect insert and box with its small parts of the design. Off goes back to what was selected |
 | **Bodies** | What goes out. A selected letter or symbol stands for its part; any other body picked goes out as it is |
-| **Format** | **3MF**: one file with all parts in print orientation, laid out on the print bed, see below. **STL** or **STEP**: a file of each part, named after it (a box's *Base*, *Lid* and small parts with the box's name in front, such as *Box 5×4×6 Base*, *Box 5×4×6 Latch*), at the origin with its bottom at zero. STL files come in print orientation, STEP files as designed |
+| **Format** | **3MF**: the parts in print orientation laid out on the print bed, a file per plate, see below. **STL** or **STEP**: a file of each part, named after it (a box's *Base*, *Lid* and small parts with the box's name in front, such as *Box 5×4×6 Base*, *Box 5×4×6 Latch*), at the origin with its bottom at zero. STL files come in print orientation, STEP files as designed |
 | **Folder**, **Choose folder...** | Where the files go, the last folder is kept |
 | **File name** | Name of the 3MF file, the part's name for one part; with several plates *, plate 1*, *, plate 2* … is added |
 | **Color label text** | 3MF only: the label text gets a color index the slicer prints it in, see below |
@@ -65,7 +65,8 @@ The parts are then spread over the chosen bed in rows, the largest first, with t
 edge. A part that only fits across is turned by 90°. What doesn't fit goes on further plates, and **each plate is a
 3MF file of its own**: *Gridkeeper parts, plate 1.3mf*, *Gridkeeper parts, plate 2.3mf* and so on, just *Gridkeeper
 parts.3mf* when one plate holds all. A part larger than the bed lies alone on a plate of its own and is named in the
-message after the export. With **Color label text** on, the back right corner of every plate stays free for the purge
+message after the export. Plate files of an earlier export of the same name that the new one doesn't write are
+removed, after asking together with the files it replaces. With **Color label text** on, the back right corner of every plate stays free for the purge
 tower: move the slicer's purge tower there. The message names a plate where the corner couldn't be kept free.
 
 The parts of each file are centered on the bed: Bambu Studio, OrcaSlicer and PrusaSlicer move the parts of a 3MF made

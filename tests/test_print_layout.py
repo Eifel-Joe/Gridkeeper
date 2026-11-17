@@ -313,3 +313,31 @@ def test_plate_file_names():
     assert printLayout.plateFileName("Gridkeeper parts", 0, 1) == "Gridkeeper parts"
     assert printLayout.plateFileName("Gridkeeper parts", 0, 3) == "Gridkeeper parts, plate 1"
     assert printLayout.plateFileName("Gridkeeper parts", 2, 3) == "Gridkeeper parts, plate 3"
+
+
+def boxes_of(footprints):
+    return [[box(f"p{i}", 0, 0, 0, w, d, 10)] for (i, (w, d)) in enumerate(footprints)]
+
+
+@pytest.mark.parametrize("footprints", [
+    [(210, 168), (126, 210), (168, 42), (168, 168), (84, 210)],
+    [(168, 84), (168, 210), (42, 126), (210, 42), (210, 168)],
+])
+def test_growing_the_purge_square_never_makes_the_layout_worse(footprints):
+    # review r29-export: the last attempt was taken, one with more plates and no fewer plates without a corner
+    (placements, _, _) = printLayout.arrange(footprints, BED, 5, 50)
+    first = max(p.plate for p in placements) + 1
+    (_, plates, _, noPurge) = printLayout.layOut(boxes_of(footprints), BED, spacing=5, purge=50)
+    assert plates <= first
+    assert len(noPurge) <= first
+
+
+def test_a_part_larger_than_the_bed_is_not_named_twice():
+    (_, _, tooLarge, noPurge) = printLayout.layOut(boxes_of([(300, 300), (30, 30)]), BED, spacing=5, purge=50)
+    assert tooLarge == [0]
+    assert noPurge == []
+
+
+def test_older_plate_files_of_the_same_name_are_known():
+    names = ["Parts.3mf", "Parts, plate 1.3mf", "Parts, plate 12.3mf", "Parts, plate x.3mf", "Parts 2.3mf", "Other.3mf", "parts, PLATE 3.3MF"]
+    assert [n for n in names if printLayout.isPlateFileOf(n, "Parts")] == ["Parts.3mf", "Parts, plate 1.3mf", "Parts, plate 12.3mf", "parts, PLATE 3.3MF"]
