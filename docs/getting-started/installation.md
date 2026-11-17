@@ -25,9 +25,14 @@ Gridkeeper looks for a new version by itself, once a day when Fusion starts. Whe
 **Gridkeeper updates** shows the new version, a few lines about it and a link to its **release notes**, so you know
 what you get before you install it.
 
+![The Gridkeeper updates window offering a new version with its short info, Release notes, Update now and Later](../assets/images/update-dialog-available.png)
+
 - **Update now** downloads the release ZIP from GitHub, checks it and replaces the `Gridkeeper` folder. To load the
   new version, restart Fusion, or stop and run Gridkeeper in **Utilities › Add-Ins › Scripts and Add-Ins**. Until
   then the old one keeps running; finish your work with it or load the new one first.
+
+  ![Gridkeeper updates after an update: the old version still running, the new one installed](../assets/images/updates-dialog-installed.png)
+
 - **Later** leaves everything as it is; the window comes again the next day.
 
 What stays: your saved dialog defaults, the update setting and symbols you added to the symbol folders. Gridkeeper
@@ -52,6 +57,8 @@ and run the add-in again in **Scripts and Add-Ins**. Your saved dialog defaults 
 
 When Gridkeeper runs from a git checkout (the add-in folder has a `.git`), it never replaces it. The window only
 tells you about the new version and links its release notes; update with git.
+
+![Gridkeeper updates in a git checkout: the new version and its release notes, no Update now](../assets/images/updates-dialog-git.png)
 
 ### Checking for updates and your privacy
 

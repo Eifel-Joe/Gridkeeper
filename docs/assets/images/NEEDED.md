@@ -20,6 +20,12 @@ from GridfinityGenerator. The models in `docs/assets/models` are rendered by a F
   dialog, taken by `tools/screenshots` (shots `context-menu-export-scene`, `fusion-dialog-export`), and a 3MF of a bin
   with a colored label and an insert opened in Bambu Studio, for `docs/working/export.md`.
 
+## Taken
+
+- [x] Update check (p310): `update-dialog-available.png`, `updates-dialog-installed.png`, `updates-dialog-git.png`
+  for [Installation and updates](../../getting-started/installation.md#update), from the click test of 17.11.2026 with
+  a test installation 0.9.0 built from the branch (so they show 0.9.0 → 1.0.0, not Gridkeeper 1.0.0 itself).
+
 ## Still to take (after round 28)
 
 - `dialog-box.png`: the Gridkeeper box dialog, and a render of a box 5 × 4 × 6 with its lid and the small parts of
