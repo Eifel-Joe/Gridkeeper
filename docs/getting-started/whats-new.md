@@ -65,6 +65,12 @@ The full list of changes, round by round, is in
   shows the bin's size to the micron, and baseplates set the **Plate edge clearance** per edge (older settings are
   read as half the old gap).
 
+## Updates
+
+- **Update check:** once a day at startup Gridkeeper asks GitHub for a new version and shows it with a link to its
+  release notes; **Update now** replaces the add-in folder, keeping your dialog defaults. Git checkouts are never
+  replaced, and the check can be turned off. See [Update](installation.md#update).
+
 ## The design
 
 - **An assembly of components:** every baseplate, bin and insert is a component of its own, in the containers

@@ -23,6 +23,21 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   (2.4 mm deep), 6 × 3 mm magnets (3.4 mm, not for boxes: it would break through the floor) or *Custom*. Only the
   depth is saved, older settings files load unchanged.
 
+### Update check (p310)
+
+- **Gridkeeper looks for new versions itself:** once a day at startup, in the background, it asks GitHub's API for
+  the newest `gridkeeper-vX.Y.Z` release (GridfinityGenerator's `vX.Y.Z.W` tags never count, nor drafts and
+  pre-releases). A newer one opens **Gridkeeper updates** with the version, the first paragraph of its release text
+  and a link to the release notes.
+- **Update now** downloads the release ZIP, checks it against GitHub's SHA-256, its manifest version and its paths,
+  unpacks it next to the add-in and only then swaps the folders, with the old one as backup and put back on any
+  failure (if Windows won't move the folder, the new version is copied over it after a full backup). Saved dialog
+  defaults, the update setting and added symbols are carried over. Then Fusion has to be restarted.
+- A git checkout is never replaced, there the window only points to the release notes.
+- **Utilities › Add-Ins › Gridkeeper updates** shows the version running and the one installed, checks right away
+  and turns the check at startup off. No network, no message: errors are only logged. The request sends nothing
+  but the user agent `Gridkeeper-update-check`.
+
 ### Merged from upstream: export (17.11.2026)
 
 Commits of FusionGridfinityGenerator by Lev Mishin (Le0Michine, CC BY-NC-SA 4.0), `513e6ab..5627083`, merged with his
