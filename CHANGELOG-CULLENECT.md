@@ -21,7 +21,8 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   its printer, filament and process settings. The choices are kept.
 - **Bambu Lab printers apart (click test):** the printer list of the export and baseplate dialogs has every Bambu
   Lab printer of Bambu Studio's profiles, the old *Bambu Lab A1, P1, X1* entry is split (a baseplate saved with it
-  opens as *Custom* 256 × 256). The export keeps the purge tower's square where Bambu Studio puts the tower.
+  opens as *Custom* 256 × 256). The export keeps the purge tower's square where Bambu Studio puts the tower and,
+  for the P1 and X1, keeps clear of their excluded corner, which made Bambu Studio warn of collisions.
 - **A box set on three plates:** box, lid and small parts each on plates of their own (Nutzer: „Das Zubehör der Box
   sollte auf eine separate Platte. Eine Box müsste je nach Größe 3 Platten gesamt ergeben.“).
 - **Pinned hinge's halves named after it:** *BottomHingePart_Pinned*, *TopHingePart_Pinned* (Pred names them like the

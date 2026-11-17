@@ -41,8 +41,11 @@ einstellbar. Und bei zweifarbigem Export auch eine freie Fläche für den Purget
    - Die Purge-Fläche liegt an der Turm-Standardlage, bei Nicht-Bambu-Druckern und Custom hinten rechts.
    - Die Purge-Fläche bleibt auch nach dem Zentrieren durch den Slicer frei.
    - Die Purge-Fläche wird nur freigehalten, wenn wirklich Schrift bemalt wird.
-   - Sperrzonen der Drucker (`bed_exclude_area`, P1/X1 vorn links) beachtet der Export nicht, Nutzer 17.11.2026: „Die
-     Sperrzone ist Sache des Users.“
+   - Sperrzone (`bed_exclude_area`, nur P1/X1: 18 × 28 mm vorn links): Ist ein Bambu-Drucker gewählt, bleibt sie
+     frei, auch nach dem Zentrieren durch den Slicer, und hat Vorrang vor der Purge-Fläche. Bei Custom und
+     Nicht-Bambu-Druckern ist sie Sache des Users. Nutzer 17.11.2026, zuletzt: „Wenn wir den Drucker exakt vorgeben ist
+     die Sperrzone nicht mehr Sache des Users.“ Die Meldung nennt Platten an der Sperrzone getrennt von denen ohne
+     Purge-Fläche.
    - Box-Satz: Box, Deckel und Zubehör kommen je auf eigene Platten, mindestens 3 Platten je Box. Passt das Zubehör
      nicht auf eine Platte, kommen weitere dazu. Nutzer 17.11.2026: „Das Zubehör der Box sollte auf eine separate
      Platte. Eine Box müsste je nach Größe 3 Platten gesamt ergeben.“

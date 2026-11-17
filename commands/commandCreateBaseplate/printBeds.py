@@ -2,8 +2,8 @@ PRINT_BED_CUSTOM = 'Custom'
 
 # usable bed size X, Y in mm
 PRINT_BED_SIZES: dict[str, tuple[float, float]] = {
-    # Bambu Lab apart (round r29-export, click test 17.11.2026): the export keeps their purge tower's spot free, see
-    # BAMBU_PURGE_ANCHORS. From Bambu Studio 02.09.01.70's printer profiles, printable_area
+    # Bambu Lab apart (round r29-export, click test 17.11.2026): the export keeps their purge tower's spot and excluded
+    # area free, see BAMBU_PURGE_ANCHORS. From Bambu Studio 02.09.01.70's printer profiles, printable_area
     'Bambu Lab A1 mini': (180, 180),
     'Bambu Lab A1': (256, 256),
     'Bambu Lab A2L': (330, 320),
@@ -57,8 +57,18 @@ BAMBU_PURGE_ANCHORS: dict[str, tuple[float, float]] = {
     'Bambu Lab H3C': (1.0, 0.0),
 }
 
+# Areas of the bed a printer keeps free, x0, y0, x1, y1 in mm (bed_exclude_area of the profiles): P1 and X1 wipe the
+# nozzle front left. Bambu Studio warns of a part too close to it, there may be collisions
+EXCLUDED_AREAS: dict[str, list[tuple[float, float, float, float]]] = {
+    'Bambu Lab P1P, P1S, X1, X1C, X1E': [(0, 0, 18, 28)],
+}
+
 _NAMES = {presetLabel(name): name for name in PRINT_BED_SIZES}
 
 def purgeAnchor(label: str) -> tuple[float, float]:
     """Where the slicer puts the purge tower on the bed of the dropdown's label, see BAMBU_PURGE_ANCHORS"""
     return BAMBU_PURGE_ANCHORS.get(_NAMES.get(label), DEFAULT_PURGE_ANCHOR)
+
+def excludedAreas(label: str) -> list[tuple[float, float, float, float]]:
+    """The areas the printer of the dropdown's label keeps free, mm, see EXCLUDED_AREAS"""
+    return list(EXCLUDED_AREAS.get(_NAMES.get(label), []))
