@@ -49,6 +49,10 @@ by hand:
 - **Colored labels** of bins and the **text and symbols of inserts** (bodies of their own, see
   [Colors and multicolor printing](colors.md)): all their triangles are painted.
 
+In the file the index is written the way the slicers' paint tool codes it, not as a plain number: filament 1 is `4`,
+filament 2 is `8`, from filament 3 on `0C`, `1C`, … (in `paint_color`, `slic3rpe:mmu_segmentation` and PrusaSlicer's
+`Metadata/Slic3r_facets_annotation.json`). The slicer shows it as the filament number you picked.
+
 All label text gets the same index, whatever color it has in Fusion. Without **Color label text** the text is still in
 the file, in the part's filament.
 
