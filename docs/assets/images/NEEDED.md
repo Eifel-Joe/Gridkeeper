@@ -15,3 +15,7 @@ from GridfinityGenerator. The models in `docs/assets/models` are rendered by a F
   `bin-lip-full-untrimmed.png`, a 1x1x2 bin cut through its middle, rendered by
   `fusion-auftraege/ug_lip_render.py`; a crop of the bin dialog's **Bin features** with **Lip type** and **Trim lip
   top**, `docs/assets/images/bin-lip-dialog.png`.
+
+- Export (upstream round 17.11.2026, p13/p300): the right-click menu of a bin with **Gridkeeper export** and the export
+  dialog, taken by `tools/screenshots` (shots `context-menu-export-scene`, `fusion-dialog-export`), and a 3MF of a bin
+  with a colored label and an insert opened in Bambu Studio, for `docs/working/export.md`.

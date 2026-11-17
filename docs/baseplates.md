@@ -19,7 +19,7 @@ baseplate is rebuilt in place.
 | **Base width unit, X (mm)** | 42 mm | Size of one grid cell along X |
 | **Base length unit, Y (mm)** | 42 mm | Size of one grid cell along Y |
 | **Bin xy clearance (mm)** | 0.25 mm | Gap on each side between a bin and its cell, the sockets are made larger by it. Keep it the same as the bins' xy clearance. 0.1 to 0.5 mm |
-| **Clearance between plates (mm)** | 0.1 mm | Gap between plates glued side by side, each plate takes half of it on its edge. 0.05 to 0.5 mm |
+| **Plate edge clearance (mm)** | 0.05 mm | How far the edge of a plate stops short of the grid line where it meets another plate; plates glued side by side leave twice it between them. 0.025 to 0.25 mm. Settings saved before 17.11.2026 had the whole gap, *Clearance between plates*, and are read as half of it |
 
 ## Main dimensions
 
@@ -86,8 +86,8 @@ around the grid, 0 or more. The paddings are user parameters of the plate, see [
 
 | Input | Default | What it does |
 |---|---|---|
-| **Extra bottom thickness** | 6.4 mm | Height of the thick bottom of full and skeletonized plates |
-| **Vertical clearance under bins** | 0.5 mm | Cut off the top of the plate, so a bin sits on its feet in the sockets rather than on the ridges between them. 0 to 3 mm |
+| **Bottom padding (mm)** | 6.4 mm | Solid layer under the sockets of full and skeletonized plates, where the magnet sockets and screw holes go |
+| **Top trim (mm)** | 0.5 mm | Cut off the top of the plate, so a bin sits on its feet in the sockets rather than on the ridges between them. 0 to 3 mm |
 | **Add connection holes** | off | Skeletonized plates: holes between the plates for a screw or a glued-in pin |
 | **Connection hole diameter** | 3.2 mm | Up to 5 mm |
 
