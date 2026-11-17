@@ -710,6 +710,7 @@ def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: 
     """
     objects = []
     keys = []
+    kinds = []
     paintedCount = 0
     progress = progressDialog(len(items))
     try:
@@ -719,18 +720,21 @@ def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: 
             paintedCount += 1 if meshObject.painted else 0
             objects.append(meshObject)
             occurrencePath = item.occurrence.fullPathName if item.occurrence is not None else None
-            keys.append(exportParts.printGroupKey(partRoleOf(item.body.parentComponent), occurrencePath, rotation))
+            role = partRoleOf(item.body.parentComponent)
+            keys.append(exportParts.printGroupKey(role, occurrencePath, rotation))
+            tag = tagUtils.readExportTag(item.body)
+            kinds.append(exportParts.plateKind(role, tag[0] if tag is not None else None, item.body.name, setNameOf(item)))
             progress.progressValue = index + 1
     finally:
         progress.hide()
     groups = exportParts.printGroups(keys)
     bed = (layout['bedWidth'], layout['bedLength'])
-    # a purge tower only for painted text, where the printer's slicer puts it, its excluded areas kept free (click test
-    # 17.11.2026: F1 Bambu warned of a box too close to the X1's excluded area, F2 the tower wasn't in the free corner)
+    # a purge tower only for painted text, where the printer's slicer puts it (click test 17.11.2026, F2: the tower
+    # wasn't in the corner kept free). A box set's box, lid and small parts on plates of their own (Nutzer 17.11.2026)
     purge = layout['purge'] if filament is not None and paintedCount > 0 else 0.0
-    (laid, plates, tooLarge, noPurge) = printLayout.layOut(
-        [[objects[index] for index in group] for group in groups], bed, layout['spacing'], purge,
-        printBeds.purgeAnchor(layout['bed']), printBeds.excludedAreas(layout['bed']))
+    (laid, plates, tooLarge, noPurge) = printLayout.layOutKinds(
+        [[objects[index] for index in group] for group in groups], [kinds[group[0]] for group in groups], bed,
+        layout['spacing'], purge, printBeds.purgeAnchor(layout['bed']))
     titles = [printLayout.plateFileName(fileName, plate, plates) for plate in range(plates)]
     paths = [os.path.join(folder, f'{title}.3mf') for title in titles]
     # the plate files of an earlier export of the name the new one doesn't write, they'd be printed with the new ones

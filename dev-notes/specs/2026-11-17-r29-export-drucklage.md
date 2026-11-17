@@ -37,11 +37,15 @@ einstellbar. Und bei zweifarbigem Export auch eine freie Fläche für den Purget
    - Nachtrag nach dem Bambu-Klicktest 17.11.2026, F1/F2, Nutzer: „Ja, so. Aber auch die anderen BambuLab-Drucker mit
      aufnehmen.“
    - Die Liste führt alle Bambu-Lab-Drucker aus den Profilen von Bambu Studio 02.09.01.70 getrennt auf.
-   - Je Drucker kommen dazu die Turm-Standardlage (`default_wipe_tower_pos`) und die Sperrzone (`bed_exclude_area`).
-     P1 und X1 haben eine, 18 × 28 mm vorn links.
+   - Je Drucker kommt dazu die Turm-Standardlage (`default_wipe_tower_pos`).
    - Die Purge-Fläche liegt an der Turm-Standardlage, bei Nicht-Bambu-Druckern und Custom hinten rechts.
-   - Sperrzone und Purge-Fläche bleiben auch nach dem Zentrieren durch den Slicer frei. Die Sperrzone hat Vorrang.
+   - Die Purge-Fläche bleibt auch nach dem Zentrieren durch den Slicer frei.
    - Die Purge-Fläche wird nur freigehalten, wenn wirklich Schrift bemalt wird.
+   - Sperrzonen der Drucker (`bed_exclude_area`, P1/X1 vorn links) beachtet der Export nicht, Nutzer 17.11.2026: „Die
+     Sperrzone ist Sache des Users.“
+   - Box-Satz: Box, Deckel und Zubehör kommen je auf eigene Platten, mindestens 3 Platten je Box. Passt das Zubehör
+     nicht auf eine Platte, kommen weitere dazu. Nutzer 17.11.2026: „Das Zubehör der Box sollte auf eine separate
+     Platte. Eine Box müsste je nach Größe 3 Platten gesamt ergeben.“
 3. **Verteilen.** Die Teile werden zeilenweise nach ihrer Grundfläche auf das Bett gelegt, die größten zuerst. Passt
    ein Teil nur quer, wird es um 90° um Z gedreht. Was nicht mehr auf die Platte passt, kommt auf die nächste. Ein Teil,
    das größer ist als das Bett, kommt allein auf eine Platte, und die Zusammenfassung im Dialog nennt es.

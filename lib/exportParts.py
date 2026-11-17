@@ -197,3 +197,19 @@ def replaceQuestion(replaced: list[str], removed: list[str], folder: str, listed
     names = replaced + removed
     shown = names[:listed] + ([f'and {len(names) - listed} more'] if len(names) > listed else [])
     return f'{question[0].upper()}{question[1:]} in {folder}?\n\n' + '\n'.join(shown)
+
+
+def plateKind(role: str | None, tagName: str | None, bodyName: str, setName: str | None) -> tuple | None:
+    """
+    Which plates a part may share, see printLayout.layOutKinds: a box set's box, its lid and its small parts each
+    plates of their own, per set (Nutzer 17.11.2026: „Das Zubehör der Box sollte auf eine separate Platte. Eine Box
+    müsste je nach Größe 3 Platten gesamt ergeben.“). A box built as bodies in the root has no set, its Base and Lid
+    are told by name. None for every other part, they share plates
+    """
+    if role in SMALL_PART_ROLES:
+        return (setName, 'parts')
+    if role == 'Lid' or (role is None and tagName == 'box' and bodyName == 'Lid'):
+        return (setName, 'lid')
+    if role == 'Box' or (role is None and tagName == 'box'):
+        return (setName, 'box')
+    return None
