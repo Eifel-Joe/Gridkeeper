@@ -50,11 +50,12 @@ def keepShown(jointOrigin: adsk.fusion.JointOrigin | None):
     """
     if jointOrigin is None:
         return
-    for entity in (jointOrigin, getattr(jointOrigin, 'nativeObject', None)):
-        if entity is None:
-            continue
+    # reading a property of an invalid object raises RuntimeError in Fusion, the native one is read in the try too (review)
+    for read in (lambda: jointOrigin, lambda: jointOrigin.nativeObject):
         try:
-            entity.isLightBulbOn = True
+            entity = read()
+            if entity is not None:
+                entity.isLightBulbOn = True
         except Exception as err:
             commonUtils.fileLog(f'A joint origin a label or insert is jointed into not shown again, {err}')
 
