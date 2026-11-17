@@ -22,7 +22,9 @@ Einteilung.“), Muster `2026-11-17-upstream-lippentypen.md`.
 | 9281fc4, 81d91b9 | Contribution Guide | nicht übernehmen |
 | 45d280a, 5627083, 568f7af, 6b15239 | README, Upstream-Bilder, Diagramme, Bild-Vorlagen dieser Commits | nicht übernehmen (alle Upstream-Bilder bleiben gelöscht, README = unsere) |
 
-Offene Frage an die Hauptsitzung (Vorgabe = Einteilung wörtlich): 45d280a und 568f7af ändern außer Doku auch
+**Entschieden (Hauptsitzung, 17.11.):** die `tools/screenshots`-Teile aus 45d280a und 568f7af werden übernommen
+(Entwicklerwerkzeuge, Jörg: Werkzeuge ja, Doku/Bilder nein), ohne Bilder; `shots.json` = unsere Fassung plus die neuen
+Einträge. Die ursprüngliche Frage: 45d280a und 568f7af ändern außer Doku auch
 `tools/screenshots` (Dialog-Aufnahme des Export-Dialogs: `dialogRecorder.py`, `fakeAdsk`, `page/*`; Baseplate-Vorlagen
 `models/baseplate-*.json`, `_baseplate.json` mit `plateEdgeClearance`). Vorgabe: nicht übernehmen, unser Stand bleibt.
 Ausnahme ohne Rückfrage: `tools/screenshots/models/_baseplate.json` bekommt den neuen Feldnamen, sonst lädt die
