@@ -6,14 +6,14 @@
 with boxes printed from Pred's own file: outer size, grooves, latch catches, hinge slots, handle and label holders
 and the stacking rim are Pred's to the millimetre.
 
-Every new box is a component of its own in the container *Boxes*, holding the components *Box* and *Lid*; the lid
-is jointed shut on the box, see [Components and joints](working/components.md).
+Every new box is a component of its own in the container *Boxes*, holding the components *Box* and *Lid* and the
+small parts (latches, handle, handle pins, hinges, see [Small parts](#small-parts)); the lid is jointed shut on the
+box, see [Components and joints](working/components.md).
 
 ![A box 5 × 4 × 6 with its lid, built by Gridkeeper box, and its set Box 5×4×6 with the components Box and Lid in the browser](assets/images/box-5x4x6.png)
 
-!!! note "This round builds box and lid"
-    The latches, hinges, handle with its pins and the label follow with the next version. Box and lid already
-    have every seat for them. Magnet holes are for 6 × 2 mm magnets only: 6 × 3 mm ones would break through the floor.
+!!! note "Magnet holes"
+    Magnet holes are for 6 × 2 mm magnets only: 6 × 3 mm ones would break through the floor.
 
 ## Info
 
@@ -55,6 +55,26 @@ into the box like onto a baseplate. These are always there:
 
 *Lid on box* is part of the box: a rebuild makes it anew as a rigid joint, changes of yours to it are not kept.
 
+## Small parts
+
+Each set holds Pred's small parts as components of their own, each with its bodies ready to print:
+
+| Part | How many | Where |
+|---|---|---|
+| *Latch* | 4 | Jointed in place: two at the front, one on each side at the back |
+| *Handle* | 1 | Jointed at the front, between the handle holders |
+| *Handle pin* | 2 | Jointed in the handle holders, the right one turned round |
+| *Hinge* | 2 | Beside the box, lying as they are printed; not jointed |
+
+The latches, the handle and its pins sit on joint origins of the box, *Latch front left joint origin* and so on; their
+rigid joints are named after the set and the seat, *Box 5×4×6 Latch front left*. When the size changes they move
+with the box. The handle is as wide as the label holder space allows: the label width plus 28.5 mm, so 57 mm at a
+width of 4, 99 mm at 5 and at most 113.5 mm from a width of 6 on. The hinges keep their place beside the box at every
+size.
+
+The parts are taken from Pred's file (`resources/predBox`, see its README): the same shape, with joint origins added,
+sketches fully constrained and Pred's parameters turned into their values.
+
 ## Parameters
 
 The size is in three user parameters, see [Changing parameters](working/parameters.md):
@@ -71,12 +91,13 @@ the box was built with; **Gridkeeper rebuild** places them anew.
 ## Settings, rebuild and clone
 
 Right-click the box, the lid or the set's component (*Box 5×4×6* in the browser) for the settings, **Gridkeeper rebuild** and **Gridkeeper clone**, see
-[Settings, rebuild and clone](working/settings-rebuild-clone.md). A rebuild replaces box and lid together; joints of
+[Settings, rebuild and clone](working/settings-rebuild-clone.md). A rebuild replaces box, lid and small parts together; joints of
 yours on its joint origins move over to the joint origins of the same name.
 
 ## Credits
 
-Pred's Gridfinity Storage Box v1.1 is licensed CC BY-NC. Gridkeeper rebuilds its box and lid in code, with fully
+Pred's Gridfinity Storage Box v1.1 is licensed CC BY-NC. The small parts are Pred's, taken over from Pred's file
+with the changes listed in `resources/predBox/README.md`. Gridkeeper rebuilds its box and lid in code, with fully
 constrained sketches and parameters, and changes it where noted on this page (the magnet holes, the floor pads and
 the stacking rim drawn from circles, the joint origins). The timeline follows Pred's steps, except that the right
 handle and label holders are built directly instead of mirrored from the left ones; the shape stays Pred's.
