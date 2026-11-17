@@ -296,6 +296,10 @@ def selectedBox(inputs: adsk.core.CommandInputs) -> adsk.fusion.JointOrigin | No
 def boxProblem(inputs: adsk.core.CommandInputs, state: InputState) -> str | None:
     """A picked box whose width isn't the chosen one, the label wouldn't fit its holder"""
     box = selectedBox(inputs) if inputs is not None else None
+    if box is not None and not isBoxLabelJointOrigin(box):
+        # another joint origin of the box came through the pick, the build refused it as an unknown error (click test
+        # 17.11.2026); OK stays off with this note
+        return f'Pick the {predBoxSeats.LABEL_JOINT_ORIGIN} at the front of a box'
     cells = boxCells(box) if box is not None else None
     if cells is not None and predBoxLabelLayout.widthChoiceFor(cells) != predBoxLabelLayout.widthChoiceFor(state.cells):
         return f'The picked box takes the label width {predBoxLabelLayout.widthChoiceFor(cells)}'
