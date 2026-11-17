@@ -66,7 +66,7 @@ the box was built with; **Gridkeeper rebuild** places them anew.
 
 ## Settings, rebuild and clone
 
-Right-click the box or the lid for the settings, **Gridkeeper rebuild** and **Gridkeeper clone**, see
+Right-click the box, the lid or the set's component (*Box 5×4×6* in the browser) for the settings, **Gridkeeper rebuild** and **Gridkeeper clone**, see
 [Settings, rebuild and clone](working/settings-rebuild-clone.md). A rebuild replaces box and lid together; joints of
 yours on its joint origins move over to the joint origins of the same name.
 
