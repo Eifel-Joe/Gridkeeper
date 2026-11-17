@@ -339,3 +339,13 @@ def test_rebuild_renames_the_settings_of_a_tagged_config():
     body = source[source.index("def configWithParameters("):]
     body = body[:body.index("\ndef ", 1)]
     assert "config = configJson.withOlderValues(generator, configJson.renamedSettings(generator, config))" in body
+
+
+def test_rebuild_log_compares_under_the_new_names():
+    # the log of an old baseplate's rebuild showed plateEdgeClearance None -> 0.05 instead of its old value halved
+    path = os.path.join(PROJECT_ROOT, "lib", "rebuildUtils.py")
+    with open(path, encoding="utf-8") as file:
+        source = file.read()
+    body = source[source.index("def configChanges("):]
+    body = body[:body.index("\ndef ", 1)] if "\ndef " in body[1:] else body
+    assert "configJson.renamedSettings(generator, " in body

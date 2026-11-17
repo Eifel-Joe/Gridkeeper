@@ -121,11 +121,19 @@ def occurrenceOf(component: adsk.fusion.Component) -> adsk.fusion.Occurrence | N
     occurrences = design.rootComponent.allOccurrencesByComponent(component) if design is not None else None
     return occurrences.item(0) if occurrences is not None and occurrences.count > 0 else None
 
+def isRootComponent(component: adsk.fusion.Component) -> bool:
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    return design is not None and component == design.rootComponent
+
+def isTextComponent(component: adsk.fusion.Component) -> bool:
+    """A part's Text component, never the root, which is named after the document, see exportParts.isTextComponentName"""
+    return exportParts.isTextComponentName(component.name, isRootComponent(component))
+
 def isPartBody(body: adsk.fusion.BRepBody) -> bool:
     """A part the export takes, see exportParts.isPartBody, the body where it's placed or its native one"""
     native = body.nativeObject if body.assemblyContext is not None else body
     tag = tagUtils.readBodyTag(native)
-    return exportParts.isPartBody(tag[0] if tag is not None else None, native.parentComponent.name)
+    return exportParts.isPartBody(tag[0] if tag is not None else None, native.parentComponent.name, isRootComponent(native.parentComponent))
 
 def placedPart(body: adsk.fusion.BRepBody) -> adsk.fusion.BRepBody | None:
     """
@@ -134,7 +142,7 @@ def placedPart(body: adsk.fusion.BRepBody) -> adsk.fusion.BRepBody | None:
     any other body
     """
     native = body.nativeObject if body.assemblyContext is not None else body
-    if not exportParts.isTextComponentName(native.parentComponent.name):
+    if not isTextComponent(native.parentComponent):
         return body if isPartBody(body) else None
     textOccurrence = body.assemblyContext if body.assemblyContext is not None else occurrenceOf(native.parentComponent)
     partOccurrence = textOccurrence.assemblyContext if textOccurrence is not None else None
@@ -152,7 +160,7 @@ def markingsOf(part: adsk.fusion.BRepBody) -> list[ExportItem]:
         return []
     markings = []
     for child in occurrence.childOccurrences:
-        if not exportParts.isTextComponentName(child.component.name):
+        if not isTextComponent(child.component):
             continue
         markings += [ExportItem(body.nativeObject, child) for body in child.bRepBodies if body.isVisible]
     return markings
@@ -180,12 +188,14 @@ def isGridfinityBody(body: adsk.fusion.BRepBody) -> bool:
 
 def occurrenceBodies(occurrence: adsk.fusion.Occurrence) -> list[adsk.fusion.BRepBody]:
     """Its visible parts and those of the occurrences in it, where they're placed. A Text occurrence stands for its part"""
-    if exportParts.isTextComponentName(occurrence.component.name) and occurrence.assemblyContext is not None:
-        occurrence = occurrence.assemblyContext
-    bodies = [body for body in occurrence.bRepBodies if isGridfinityBody(body)]
-    for child in occurrence.childOccurrences:
-        bodies += occurrenceBodies(child)
-    return bodies
+    return exportParts.partBodiesUnder(
+        occurrence,
+        isText=lambda current: isTextComponent(current.component),
+        parentOf=lambda current: current.assemblyContext,
+        childrenOf=lambda current: list(current.childOccurrences),
+        bodiesOf=lambda current: list(current.bRepBodies),
+        isPart=isGridfinityBody,
+    )
 
 def menuSelection(design: adsk.fusion.Design) -> list[adsk.fusion.BRepBody]:
     """
@@ -335,7 +345,7 @@ def gridfinityBodies(design: adsk.fusion.Design) -> list[adsk.fusion.BRepBody]:
     for tagName in exportParts.EXPORT_TAGS:
         for (body, _) in tagUtils.findTaggedBodies(design, tagName):
             component = body.parentComponent
-            if not exportParts.isPartBody(tagName, component.name):
+            if not exportParts.isPartBody(tagName, component.name, component == root):
                 continue
             if component == root:
                 placed = [body]
@@ -379,7 +389,8 @@ def exportItemsOf(entities: list) -> list[ExportItem]:
     """
     bodies: list[adsk.fusion.BRepBody] = []
     def addOccurrence(occurrence: adsk.fusion.Occurrence):
-        bodies.extend(occurrence.bRepBodies)
+        # visible ones, as the dialog's selection takes them, see occurrenceBodies
+        bodies.extend(body for body in occurrence.bRepBodies if body.isVisible)
         for child in occurrence.childOccurrences:
             addOccurrence(child)
 

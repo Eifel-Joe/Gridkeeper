@@ -106,3 +106,57 @@ def test_unpainted_text_meshes_still_complete_the_part():
 def test_a_part_without_text_stays_as_it_is():
     part = triangle_mesh("Baseplate", 0, painted={0})
     assert exportParts.withMarkings(part, [], True) == part
+
+
+# --- review round 17.11.: the parts under an occurrence, a Text occurrence once for its part, the root never Text ---
+
+class Occ:
+    def __init__(self, name, bodies=(), children=(), parent=None):
+        self.name = name
+        self.bodies = list(bodies)
+        self.children = list(children)
+        self.parent = parent
+        for child in self.children:
+            child.parent = self
+
+
+def walk(start):
+    return exportParts.partBodiesUnder(
+        start,
+        isText=lambda occ: exportParts.isTextComponentName(occ.name),
+        parentOf=lambda occ: occ.parent,
+        childrenOf=lambda occ: occ.children,
+        bodiesOf=lambda occ: occ.bodies,
+        isPart=lambda body: not body.startswith("letter"),
+    )
+
+
+def tree():
+    text1 = Occ("Text", ["letter A"])
+    text2 = Occ("Text (1)", ["letter B"])
+    bin1 = Occ("Bin 2x1x3", ["bin 1"], [text1])
+    bin2 = Occ("Bin 1x1x3", ["bin 2"], [text2])
+    bins = Occ("Bins", [], [bin1, bin2])
+    return (bins, bin1, text1)
+
+
+def test_a_container_gives_its_parts_once_each():
+    (bins, _, _) = tree()
+    assert walk(bins) == ["bin 1", "bin 2"]
+
+
+def test_a_part_gives_itself():
+    (_, bin1, _) = tree()
+    assert walk(bin1) == ["bin 1"]
+
+
+def test_a_text_occurrence_stands_for_its_part_and_ends():
+    # climbing to the part and walking down into its Text again went on until the recursion limit
+    (_, _, text1) = tree()
+    assert walk(text1) == ["bin 1"]
+
+
+def test_the_root_is_never_a_text_component():
+    # the root component is named after the document, "Texthalter" mustn't make its parts letters
+    assert not exportParts.isTextComponentName("Texthalter", isRoot=True)
+    assert exportParts.isTextComponentName("Text", isRoot=False)

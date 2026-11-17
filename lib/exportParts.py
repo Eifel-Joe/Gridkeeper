@@ -21,17 +21,40 @@ def isExportTag(tagName: str | None) -> bool:
     return tagName in EXPORT_TAGS
 
 
-def isTextComponentName(name: str) -> bool:
-    """The same test as tagUtils.partTag, so the export and the right-click menu agree on a part's letters"""
-    return name.startswith(TEXT_COMPONENT_NAME)
+def isTextComponentName(name: str, isRoot: bool = False) -> bool:
+    """
+    The same test as tagUtils.partTag, so the export and the right-click menu agree on a part's letters. Never the
+    root component: it is named after the document, which may well start with "Text" (review 17.11.2026)
+    """
+    return not isRoot and name.startswith(TEXT_COMPONENT_NAME)
 
 
-def isPartBody(tagName: str | None, componentName: str) -> bool:
+def isPartBody(tagName: str | None, componentName: str, isRoot: bool = False) -> bool:
     """
     A body exported as a part of its own. The text bodies of a Cullenect insert are tagged like its base, they go with
     the base instead
     """
-    return isExportTag(tagName) and not isTextComponentName(componentName)
+    return isExportTag(tagName) and not isTextComponentName(componentName, isRoot)
+
+
+def partBodiesUnder(occurrence, *, isText, parentOf, childrenOf, bodiesOf, isPart) -> list:
+    """
+    The part bodies of an occurrence and the occurrences in it, for the right-click menu on a component or container.
+    A Text occurrence stands for its part, climbed to once at the start; Text occurrences below aren't walked into,
+    their letters come with their part. Climbing in the walk itself went back and forth between a part and its Text
+    until the recursion limit (review 17.11.2026)
+    """
+    if isText(occurrence) and parentOf(occurrence) is not None:
+        occurrence = parentOf(occurrence)
+
+    def walk(current) -> list:
+        found = [body for body in bodiesOf(current) if isPart(body)]
+        for child in childrenOf(current):
+            if not isText(child):
+                found += walk(child)
+        return found
+
+    return walk(occurrence)
 
 
 def exportTargets(bodies: list, partOf, key) -> list:

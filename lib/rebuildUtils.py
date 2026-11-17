@@ -523,5 +523,7 @@ def configChanges(generator: str, body: adsk.fusion.BRepBody, newConfig: dict) -
     oldConfig = tag[1].get('config') if tag is not None else None
     if not isinstance(oldConfig, dict):
         return 'its old config isn\'t in its tag'
+    # settings saved under an older name compare under their new one, see configJson.RENAMED_FIELDS
+    oldConfig = configJson.renamedSettings(generator, oldConfig)
     changes = [f'  {name}: {oldConfig.get(name)!r} -> {value!r}' for (name, value) in newConfig.items() if oldConfig.get(name) != value]
     return 'changes:\n' + '\n'.join(changes) if len(changes) > 0 else 'no changes to its config'

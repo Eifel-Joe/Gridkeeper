@@ -20,7 +20,7 @@ from ...lib.gridfinityUtils import labelColors
 from ...lib.gridfinityUtils import textStyles
 from ...lib.gridfinityUtils import cullenect
 from ...lib.gridfinityUtils.binBodyTabGenerator import tabFilletAllowance
-from ...lib.gridfinityUtils.binBodyLipGeneratorInput import LIP_TYPES, lipTopTrimHeight, lipHeight
+from ...lib.gridfinityUtils.binBodyLipGeneratorInput import LIP_TYPES, lipHeight
 from ...lib.gridfinityUtils import compartmentLayout
 from ...lib.gridfinityUtils import binShape
 from ...lib.gridfinityUtils import binGrid
