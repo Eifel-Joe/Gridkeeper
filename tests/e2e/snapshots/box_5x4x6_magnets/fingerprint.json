@@ -39,6 +39,106 @@
             "faces": 2159,
             "edges": 5008,
             "vertices": 2906
+        },
+        {
+            "name": "Latch",
+            "file": "body3.smt",
+            "volume": 3232.069075,
+            "area": 3085.727768,
+            "bboxMin": [
+                -11.8,
+                -36.5,
+                0.0
+            ],
+            "bboxMax": [
+                11.8,
+                0.0,
+                7.0
+            ],
+            "lumps": 1,
+            "faces": 323,
+            "edges": 820,
+            "vertices": 498
+        },
+        {
+            "name": "Handle",
+            "file": "body4.smt",
+            "volume": 6136.829861,
+            "area": 3605.363293,
+            "bboxMin": [
+                -49.5,
+                -3.5,
+                -26.5
+            ],
+            "bboxMax": [
+                49.5,
+                3.5,
+                3.5
+            ],
+            "lumps": 1,
+            "faces": 40,
+            "edges": 88,
+            "vertices": 52
+        },
+        {
+            "name": "Handle pin",
+            "file": "body5.smt",
+            "volume": 138.122545,
+            "area": 236.275189,
+            "bboxMin": [
+                58.05,
+                1.2,
+                23.4
+            ],
+            "bboxMax": [
+                77.75,
+                6.3,
+                27.25
+            ],
+            "lumps": 1,
+            "faces": 20,
+            "edges": 50,
+            "vertices": 33
+        },
+        {
+            "name": "BottomHingePart_M3x30",
+            "file": "body6.smt",
+            "volume": 1040.956645,
+            "area": 1180.887097,
+            "bboxMin": [
+                -9.251587,
+                -4.0,
+                0.0
+            ],
+            "bboxMax": [
+                4.0,
+                8.8,
+                31.6
+            ],
+            "lumps": 1,
+            "faces": 63,
+            "edges": 156,
+            "vertices": 98
+        },
+        {
+            "name": "TopHingePart_M3x30",
+            "file": "body7.smt",
+            "volume": 1376.341231,
+            "area": 1651.334022,
+            "bboxMin": [
+                -4.0,
+                -4.0,
+                0.0
+            ],
+            "bboxMax": [
+                9.251587,
+                8.8,
+                31.6
+            ],
+            "lumps": 1,
+            "faces": 85,
+            "edges": 205,
+            "vertices": 129
         }
     ]
 }
