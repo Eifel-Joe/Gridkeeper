@@ -34,6 +34,11 @@ PARTS = [
 ]
 
 
+# bodies of a part file named after what they are: export file names and snapshots go by body names (a part's only body
+# is named after the part when it's inserted, see predBoxInsert)
+BODY_NAMES = {'hingePinned.f3d': {'Body21': 'Hinge pin'}}
+
+
 def partsFor(hinge: str) -> list[Part]:
     """The parts with the chosen hinge variant (a key of HINGES)"""
     return [replace(part, file=HINGES[hinge]) if part.role == 'Hinge' else part for part in PARTS]

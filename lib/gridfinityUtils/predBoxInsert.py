@@ -65,6 +65,8 @@ def insertParts(
         # a part's only body after the part: the pin's is "Body1" in Pred's file, snapshots and export go by body names
         if component.bRepBodies.count == 1:
             component.bRepBodies.item(0).name = part.role
+        for body in component.bRepBodies:
+            body.name = predBoxParts.BODY_NAMES.get(part.file, {}).get(body.name, body.name)
         if part.role == 'Handle':
             bindHandleWidth(component, dims)
         occurrences = [first]

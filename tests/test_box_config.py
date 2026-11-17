@@ -123,3 +123,11 @@ def test_a_box_saved_before_the_choice_rebuilds_with_m3x30():
     current = state(hinge="Plain")
     (loaded, _) = configJson.readConfig(configJson.configText("box", saved), "box", InputState, current)
     assert loaded.hinge == "M3x30"
+
+
+def test_an_unknown_hinge_is_a_problem_before_anything_is_built():
+    """Review R28: a defaults file or a test case with a hinge no longer known reached predBoxParts.partsFor and broke
+    the build halfway, box and lid built, the set's group not made yet"""
+    assert boxConfig.boxProblem(state(hinge="Hinge_X")) == "Unknown hinge Hinge_X, pick one of M3x30, Pinned, Plain"
+    for hinge in ("M3x30", "Pinned", "Plain"):
+        assert boxConfig.boxProblem(state(hinge=hinge)) is None
