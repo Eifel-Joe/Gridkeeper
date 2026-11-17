@@ -37,7 +37,7 @@ def test_stop_deletes_every_definition():
 def test_clone_needs_a_config_in_the_tag():
     # bodies generated before the generator kept the config can't be cloned
     source = ast.unparse(_function('canClone'))
-    assert 'CLONE_COMMANDS' in source and "get('config')" in source and 'dict' in source
+    assert 'CLONE_COMMANDS' in source and 'tagUtils.buildConfig(' in source
 
 
 def test_one_clone_item_in_the_menu():

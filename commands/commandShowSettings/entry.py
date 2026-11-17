@@ -118,11 +118,11 @@ def componentTag(component: adsk.fusion.Component) -> tuple[adsk.fusion.BRepBody
 
 def canRebuild(tag: tuple[adsk.fusion.BRepBody, str, dict] | None) -> bool:
     """Bodies generated before the generator kept the config can't be rebuilt"""
-    return tag is not None and tag[1] in REBUILD_COMMANDS and isinstance(tag[2].get('config'), dict)
+    return tag is not None and tag[1] in REBUILD_COMMANDS and tagUtils.buildConfig(tag[1], tag[2]) is not None
 
 def canClone(tag: tuple[adsk.fusion.BRepBody, str, dict] | None) -> bool:
     """Bodies generated before the generator kept the config can't be cloned"""
-    return tag is not None and tag[1] in CLONE_COMMANDS and isinstance(tag[2].get('config'), dict)
+    return tag is not None and tag[1] in CLONE_COMMANDS and tagUtils.buildConfig(tag[1], tag[2]) is not None
 
 def startRebuild(tag: tuple[adsk.fusion.BRepBody, str, dict]):
     (body, tagName, value) = tag
@@ -227,7 +227,8 @@ def pageHandlers(body: adsk.fusion.BRepBody, tagName: str, value: dict) -> dict[
         'settings': settingsUtils.settingsHtml(value, parameterExpression),
         'buttons': [],
     }
-    if not isinstance(value.get('config'), dict):
+    # a box label built before it kept its whole config shows its settings only, see tagUtils.buildConfig
+    if tagUtils.buildConfig(tagName, value) is None:
         return {browserPages.READY: lambda _: page}
     # tag names are the generator names of configJson
     generatorTitle = configJson.GENERATOR_TITLES[tagName]

@@ -187,3 +187,23 @@ class TestDialog:
 
     def test_the_settings_page_names_a_saved_file(self):
         assert "labelName(" in _function(ENTRY, "configFileName")
+
+
+class TestOlderLabels:
+    """Review: labels built before this change keep {'surface': ...} only, a rebuild filled the rest from the dialog's
+    last state and replaced the label with another. They show their settings, without rebuild and clone"""
+
+    def test_a_config_of_the_surface_only_isnt_one_to_build_from(self):
+        assert tagUtils.buildConfig(BOX_LABEL, {"config": {"surface": "Flush"}}) is None
+
+    def test_a_whole_config_is(self):
+        config = configJson.stateToJson(BOX_LABEL, _state())
+        assert tagUtils.buildConfig(BOX_LABEL, {"config": config}) == config
+
+    def test_other_parts_need_a_config(self):
+        assert tagUtils.buildConfig("bin", {"config": {"binHeight": 3}}) == {"binHeight": 3}
+        assert tagUtils.buildConfig("bin", {}) is None
+
+    def test_the_menu_and_the_page_ask_for_it(self):
+        for name in ("canRebuild", "canClone", "pageHandlers"):
+            assert "tagUtils.buildConfig(" in _function(SETTINGS_ENTRY, name), name
