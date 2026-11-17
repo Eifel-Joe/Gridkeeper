@@ -152,6 +152,12 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
    ab 6 Einheiten Breite) und hat dort keine eigene Skizze. Abweichung von „feste Teile ohne Parameter“: `handle.f3d`
    bekommt eine eigene, vollständig bestimmte Skizze; ihr einziges Breitenmaß wird beim Einfügen per Ausdruck an die
    Schildbreite der Box + 28,5 mm gebunden (`predBoxSeats.handleWidth`). Eigene Benutzerparameter hat das Teil nicht.
+   Nachtrag 17.11.2026 (Runde 28, Jörg: „Am besten doch alle Scharniere mit Auswahl im Generator. Ich hatte zwar das
+   Scharnier M3x30 gesagt, aber ich denke alle drei zum auswählen ist besser.“): Der Box-Dialog bekommt eine Auswahl
+   **Hinge** mit allen drei Scharnier-Varianten aus Preds Datei, Standard M3x30 wie bisher. Die Wahl steht in den
+   Einstellungen der Box (Rebuild und Clone übernehmen sie). Jede Variante kommt wie M3x30 als eigene Datei
+   (`resources/predBox`), zwei Stück in Druckposition neben der Box. Ob die Box je Variante eine andere Aussparung braucht,
+   klärt `fusion-auftraege/r28_hinge_variants.py`; braucht sie eine, wird das vor dem Bau vorgelegt.
 3. **Schild:** gebaut vom Gridkeeper-Schildgenerator (Text, Cullenect-Symbole), Plattengröße nach Preds Formel.
 4. Struktur wie bisher: jedes Teil eine Komponente, im Container „Gridkeeper boxes“ o. ä., Gelenke zwischen Teilen.
 
