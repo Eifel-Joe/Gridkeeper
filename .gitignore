@@ -2,6 +2,8 @@ __pycache__
 /.vscode
 .env
 commandConfig
+# the update settings, see lib/updateCheck.settingsPath
+updateConfig
 *.msi
 *.wixpdb
 /dist

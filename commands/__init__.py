@@ -9,6 +9,7 @@ from .commandCreateLabel import entry as commandCreateLabel
 from .commandCreateBox import entry as commandCreateBox
 from .commandShowSettings import entry as commandShowSettings
 from .commandExport import entry as commandExport
+from .commandUpdates import entry as commandUpdates
 from .commandSnapshotTests import entry as commandSnapshotTests
 from .commandModelScreenshots import entry as commandModelScreenshots
 from .. import config
@@ -24,6 +25,8 @@ commands = [
     commandCreateBox,
     commandShowSettings,
     commandExport,
+    # the update check (p310) last, its dialog may open as soon as Fusion is idle
+    commandUpdates,
 ]
 # development only, see config.DEV_TOOLS
 if config.DEV_TOOLS:
