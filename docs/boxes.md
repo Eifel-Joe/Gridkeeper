@@ -115,7 +115,8 @@ box's group in the timeline and come along with a rebuild or clone. They have an
 A 2.5 mm rim stays free all round, so the holder's lips don't cover text or symbols. The plate lies flat in its
 component as it is printed, the text up; the label joint origin at the middle of its back turns it upright into the
 holder. Each text is driven by a text parameter `gfBoxLabel1_bigText`, `gfBoxLabel1_text1`, `gfBoxLabel1_text2`;
-a longer text is not fitted again. For another box width or other symbols, delete the label and make a new one.
+a longer text is not fitted again. For another width, text or symbols, right-click the label and choose
+**Gridkeeper rebuild**, see [Settings, rebuild and clone](#settings-rebuild-and-clone).
 
 ## Parameters
 
@@ -135,6 +136,11 @@ the box was built with; **Gridkeeper rebuild** places them anew.
 Right-click the box, the lid or the set's component (*Box 5×4×6* in the browser) for the settings, **Gridkeeper rebuild** and **Gridkeeper clone**, see
 [Settings, rebuild and clone](working/settings-rebuild-clone.md). A rebuild replaces box, lid and small parts together; joints of
 yours on its joint origins move over to the joint origins of the same name.
+
+The label has the same three commands: right-click the plate, a letter or a symbol, or the label's component. A
+rebuild builds it anew in its place in the timeline; a label in a holder has its box picked in the dialog already and
+goes into that holder again, a label without a box stays where it was. A clone opens the dialog with the label's
+settings and no box picked, for a second label beside it or for another box.
 
 ## Credits
 
