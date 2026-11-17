@@ -107,10 +107,13 @@ def manifestVersion(addinFolder: str) -> tuple[int, int, int] | None:
 # what the dialogs say, see commands/commandUpdates
 
 GIT_CHECKOUT_TEXT = 'This add-in runs from a git checkout, update it with git.'
-# until the reload test of the spec (E13) shows a way without one
-RESTART_TEXT = 'Restart Fusion to use'
-# spec E11.7; until Fusion restarts the old code runs with the new files on disk, so it says so (review finding 5)
-SUCCESS_RESTART_TEXT = 'Restart Fusion to load it, until then the old version runs.'
+# How the new version gets loaded, measured in Fusion 2706 (spec E13, 17.11.2026): a restart of Fusion, Stop and Run
+# in Scripts and Add-Ins, or Script.stop/run of the API from a script all load it with every command working.
+# Reloading the add-in's modules in place leaves every command dead, without an error, so it's not offered; the
+# add-in restarting itself through the API wasn't measured and would unload the code that has to run it again
+RELOAD_WAYS = 'restart Fusion, or stop and run Gridkeeper in Utilities › Add-Ins › Scripts and Add-Ins'
+# spec E11.7; until then the old code runs with the new files on disk, so it says so (review finding 5)
+SUCCESS_RESTART_TEXT = f'To load it, {RELOAD_WAYS}. Until then the old version runs.'
 
 def dialogHtml(release: Release, current: tuple[int, int, int], gitCheckout: bool) -> str:
     """The text of the update dialog: the new version, its short info and the link to its release notes"""
@@ -133,7 +136,7 @@ def versionLine(running: tuple[int, int, int] | None, installed: tuple[int, int,
     if installed is None or installed == running:
         return f'Running Gridkeeper {versionText(running)}.'
     return (f'Running Gridkeeper {versionText(running)}, installed {versionText(installed)}. '
-            f'{RESTART_TEXT} {versionText(installed)}.')
+            f'{RELOAD_WAYS[0].upper()}{RELOAD_WAYS[1:]}, to use {versionText(installed)}.')
 
 def successText(release: Release) -> str:
     return f'Gridkeeper {release.versionText} is installed. {SUCCESS_RESTART_TEXT}'
