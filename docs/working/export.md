@@ -18,13 +18,17 @@ builds and to colored text.
 |---|---|
 | **All Gridkeeper parts** | Selects every visible bin, baseplate, Cullenect insert and box with its small parts of the design. Off goes back to what was selected |
 | **Bodies** | What goes out. A selected letter or symbol stands for its part; any other body picked goes out as it is |
-| **Format** | **3MF**: one file with all parts, laid out as in the design. **STL** or **STEP**: a file of each part, named after it (a box's *Base*, *Lid* and small parts with the box's name in front, such as *Box 5×4×6 Base*, *Box 5×4×6 Latch*), at the origin with its bottom at zero |
+| **Format** | **3MF**: one file with all parts in print orientation, laid out on the print bed, see below. **STL** or **STEP**: a file of each part, named after it (a box's *Base*, *Lid* and small parts with the box's name in front, such as *Box 5×4×6 Base*, *Box 5×4×6 Latch*), at the origin with its bottom at zero. STL files come in print orientation, STEP files as designed |
 | **Folder**, **Choose folder...** | Where the files go, the last folder is kept |
 | **File name** | Name of the 3MF file, the part's name for one part |
 | **Color label text** | 3MF only: the label text gets a color index the slicer prints it in, see below |
 | **Label color index** | The slicer's filament for the label text, counting from 1 as the slicer lists them |
+| **Print bed** › **Printer** | 3MF only: the bed the parts are laid out on, the printers of the baseplate dialog or *Custom* |
+| **Bed width, X**, **Bed length, Y** | The bed's usable size; typing a size switches the printer to *Custom* |
+| **Spacing** | Space between the parts and to the bed's edge, 5 mm to start with |
+| **Purge tower area** | With **Color label text** on: a square kept free in the back right corner of every plate for the purge tower, 50 mm to start with, 0 for none |
 
-Existing files are only replaced after asking. 3MF and STL meshes are made at Fusion's very high quality.
+The dialog keeps its choices for the next export. Existing files are only replaced after asking. 3MF and STL meshes are made at Fusion's very high quality.
 
 ## Which parts
 
@@ -39,8 +43,29 @@ Existing files are only replaced after asking. 3MF and STL meshes are made at Fu
 Each part is one object in the 3MF and one STL or STEP file, its text and symbol bodies included, so the part comes
 out whole. The text bodies of a part in its own component are never a part of their own.
 
-The 3MF keeps the parts where they are in the design, side by side on the plate. Inserts jointed into the pockets of
-their bins lie on top of the bins there: press **Arrange** in the slicer before slicing.
+## Print orientation and layout in the 3MF
+
+Every part of the 3MF lies the way it is printed, whatever its place in the design:
+
+| Part | Lies on the bed |
+|---|---|
+| Bin, baseplate | standing, as designed |
+| Cullenect insert, box label | on its underside, as it is built in; a **Flush** insert on its text |
+| Box | on its bottom |
+| Lid | as it sits on the box |
+| Latch | flat |
+| Handle | flat, 7 mm high |
+| Handle pin | on its flat side |
+| Hinge | standing, both halves together as printed; the pin of the *Pinned* hinge on its flat side |
+
+The print orientation of the box's parts follows
+[Pred's storage box](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric) (CC BY-NC).
+
+The parts are then spread over the chosen bed in rows, the largest first, with the **Spacing** between them and to the
+edge. A part that only fits across is turned by 90°. What doesn't fit goes on further plates, the message after the
+export says how many. A part larger than the bed lies alone on a plate of its own and is named in the message. With
+**Color label text** on, the back right corner of every plate stays free for the purge tower: move the slicer's purge
+tower there.
 
 ## Colored label text in the 3MF
 

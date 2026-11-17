@@ -6,6 +6,18 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## 1.1.0 (2026-11-17)
 
+### Export in print orientation (round r29-export)
+
+- **Parts in print orientation:** the 3MF lays every part the way it is printed instead of where it is in the design
+  (Jörg: „Noch in 1.1.0, mit Druckbett-Auswahl. Auch für die 3MF bei Bins und Baseplates wichtig. Ebenso Labels.“):
+  the box set's handle flat, its latches flat, the Pinned hinge's pin on its flat side, Cullenect inserts on their
+  underside and Flush ones on their text; bins, baseplates, box, lid and hinges as designed. The box parts follow
+  [Pred's storage box](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric)
+  (CC BY-NC, by Pred). STL files come in print orientation too, STEP stays as designed.
+- **Print bed, spacing, purge tower:** the export dialog picks the bed (the baseplate dialog's printers or a size of
+  its own), the spacing between the parts (5 mm) and, with colored label text, a square kept free for the purge tower
+  (50 mm). The parts are spread over the bed, what doesn't fit goes on further plates. The choices are kept.
+
 ### Small parts drawn in code (round 29)
 
 - **Box from the dialog with its small parts:** with the parts imported from files (round 28) the box command failed at the first small part
