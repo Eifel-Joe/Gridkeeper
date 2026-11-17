@@ -17,6 +17,7 @@ from dataclasses import dataclass
 
 from .dim import Dim
 from .predBox import PredBoxDims
+from .predBoxParts import seatJointOriginName
 
 Axis = tuple[float, float, float]
 
@@ -108,3 +109,11 @@ def handleWidth(d: PredBoxDims) -> Dim:
     macht keinen Sinn."). The inserted handle's width dimension gets this expression
     """
     return d.labelWidth + mm(HANDLE_PAST_LABEL)
+
+
+def seatJointOriginPoints(d: PredBoxDims) -> list[tuple[str, Dim, Dim, Dim]]:
+    """
+    The box's joint origins at the seats, for baseGenerator.createPointJointOrigins: upright, X along X; a part's
+    joint takes its turn about z (turnAboutZ). Round 28, plan task 5
+    """
+    return [(seatJointOriginName(seat.name), seat.x, seat.y, seat.z) for seat in seats(d)]
