@@ -84,7 +84,7 @@ Change the fit: **Socket play (mm)** on the bin (larger is looser) or **Correcti
 the insert (smaller is looser). Print a test insert first.
 
 **The bins don't sit flat on the baseplate.**
-Use the same **Bin xy clearance** on bins and baseplate. **Vertical clearance under bins** lets bins sit on their feet
+Use the same **Bin xy clearance** on bins and baseplate. **Top trim** on the baseplate lets bins sit on their feet
 rather than on the ridges of the plate.
 
 **How do I print the label in a second color?**
