@@ -32,7 +32,9 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 - **Update now** downloads the release ZIP, checks it against GitHub's SHA-256, its manifest version and its paths,
   unpacks it next to the add-in and only then swaps the folders, with the old one as backup and put back on any
   failure (if Windows won't move the folder, the new version is copied over it after a full backup). Saved dialog
-  defaults, the update setting and added symbols are carried over. Then Fusion has to be restarted.
+  defaults, the update setting and added symbols are carried over. The new version loads after a restart of Fusion
+  or Stop and Run in Scripts and Add-Ins, both measured in Fusion with every command working; reloading the add-in's
+  modules in place left the commands dead and isn't offered.
 - A git checkout is never replaced, there the window only points to the release notes.
 - **Utilities › Add-Ins › Gridkeeper updates** shows the version running and the one installed, checks right away
   and turns the check at startup off. No network, no message: errors are only logged. The request sends nothing

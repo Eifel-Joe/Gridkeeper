@@ -25,8 +25,9 @@ Gridkeeper looks for a new version by itself, once a day when Fusion starts. Whe
 **Gridkeeper updates** shows the new version, a few lines about it and a link to its **release notes**, so you know
 what you get before you install it.
 
-- **Update now** downloads the release ZIP from GitHub, checks it and replaces the `Gridkeeper` folder. Then restart
-  Fusion to use the new version. Until then the old one keeps running.
+- **Update now** downloads the release ZIP from GitHub, checks it and replaces the `Gridkeeper` folder. To load the
+  new version, restart Fusion, or stop and run Gridkeeper in **Utilities › Add-Ins › Scripts and Add-Ins**. Until
+  then the old one keeps running; finish your work with it or load the new one first.
 - **Later** leaves everything as it is; the window comes again the next day.
 
 What stays: your saved dialog defaults, the update setting and symbols you added to the symbol folders. Gridkeeper
@@ -55,7 +56,7 @@ tells you about the new version and links its release notes; update with git.
 ### Checking for updates and your privacy
 
 Open **Utilities › Add-Ins › Gridkeeper updates** to see the version running and the one installed (they differ
-after an update until Fusion restarts), to **Check now** and to turn **Check for updates at startup** off or on.
+after an update until Gridkeeper is loaded again), to **Check now** and to turn **Check for updates at startup** off or on.
 The setting is kept in the add-in folder (`updateConfig\update.json`).
 
 The check asks GitHub's public API for the releases of

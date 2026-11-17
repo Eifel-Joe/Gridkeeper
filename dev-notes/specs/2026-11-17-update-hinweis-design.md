@@ -177,3 +177,20 @@ aus einem Git-Checkout, der darf nie angefasst werden.
   nur ältere Sicherungen, `new/` und die ZIP räumt `install` selbst; beide teilen eine Sperre.
 - Mitnehmen (E11.4) vergleicht Pfade ohne Groß-/Kleinschreibung (Windows). Nebenwirkung, von der Hauptsitzung
   akzeptiert: Bilder/SVGs, die eine neue Version absichtlich entfernt, bleiben aus der alten erhalten (Doku nennt es).
+
+## Messung Neu-Laden (E13), 17.11.2026, Fusion 2706.1.17
+Durchgeführt von der Klicktest-Sitzung nach `update-hinweis-neuladen-matrix.md` (Notizordner), Test-Add-in 9.9.8 →
+Installer 9.9.9 (`renamed`). Vor dem Neu-Laden zeigte der Dialog in allen Wegen „Running 9.9.8, installed 9.9.9“.
+
+| Prüfung | W1 Fusion-Neustart | W2 Stop/Run im Dialog | W3 API Script.stop/run (Skript) | W4 Module neu laden |
+|---|---|---|---|---|
+| Läuft 9.9.9 | ja | ja | ja | (Job meldet 9.9.9) |
+| Bin, Baseplate, Label, Box öffnen | ja | ja | ja | **nein**, kein Dialog öffnet sich, kein Fehler im Log |
+| Rechtsklick settings/rebuild/clone, export | ja | ja | ja | nicht prüfbar |
+| Befehle nur einmal | ja | ja | ja | ja |
+
+**Folge für die Meldung:** Erfolgsmeldung und Versionszeile nennen Fusion-Neustart und Stop/Run in Scripts and
+Add-Ins (W1/W2). Kein Knopf: W4 ist kaputt (bestätigt die Beobachtung vom 14.11.), W3 ist nur aus einem Skript
+gemessen; aus dem Add-in selbst müsste der Code, der entladen wird, das Add-in wieder starten — nicht gebaut.
+Nebenbefund für die Projektarbeit: W3 (`app.scripts` → `Script.stop()`/`run()`) taugt als Ersatz für
+`fusion-addin-reload.py`, das die Befehle tot zurücklässt.

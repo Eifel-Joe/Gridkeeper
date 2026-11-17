@@ -221,7 +221,8 @@ def test_dialog_html_quotes_in_url():
 def test_version_line():
     assert updateCheck.versionLine((1, 0, 0), (1, 0, 0)) == "Running Gridkeeper 1.0.0."
     assert updateCheck.versionLine((1, 0, 0), (1, 1, 0)) == (
-        "Running Gridkeeper 1.0.0, installed 1.1.0. Restart Fusion to use 1.1.0.")
+        "Running Gridkeeper 1.0.0, installed 1.1.0. Restart Fusion, or stop and run Gridkeeper in "
+        "Utilities › Add-Ins › Scripts and Add-Ins, to use 1.1.0.")
     assert updateCheck.versionLine(None, None) == "Running Gridkeeper, its version is unknown."
 
 
@@ -229,7 +230,8 @@ def test_success_text():
     newest = updateCheck.newestRelease([release("gridkeeper-v1.1.0")], (1, 0, 0))
     # spec E11.7; until Fusion restarts the old code runs with the new files on disk, it says so (review finding 5)
     assert updateCheck.successText(newest) == (
-        "Gridkeeper 1.1.0 is installed. Restart Fusion to load it, until then the old version runs.")
+        "Gridkeeper 1.1.0 is installed. To load it, restart Fusion, or stop and run Gridkeeper in "
+        "Utilities › Add-Ins › Scripts and Add-Ins. Until then the old version runs.")
 
 
 # asking GitHub
