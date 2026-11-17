@@ -163,6 +163,12 @@ def test_download(tmp_path):
     assert dict(request.header_items()) == {"User-agent": "Gridkeeper-update-check"}
 
 
+def test_download_bad_url(tmp_path):
+    # urlopen isn't reached, the request itself refuses it
+    with pytest.raises(UpdateError, match="download"):
+        updateInstall.download("not a url", str(tmp_path / "a.zip"))
+
+
 def test_download_reports_progress(tmp_path):
     seen = []
     updateInstall.download("https://x/a.zip", str(tmp_path / "a.zip"), urlopen=fakeUrlopen(b"0" * 150000), progress=seen.append)
@@ -403,6 +409,19 @@ def test_install_bad_download_leaves_addin(tmp_path):
         updateInstall.install(release, addin, urlopen=fakeUrlopen(payload))
     assert tree(addin) == OLD
     assert os.listdir(tmp_path / "addins" / ".gridkeeper-update") == []
+
+
+def test_install_unexpected_error_is_update_error(tmp_path):
+    addin = makeTree(tmp_path / "addins" / "Gridkeeper", OLD)
+
+    def urlopen(request, timeout=None):
+        raise RuntimeError("something nobody thought of")
+
+    with pytest.raises(UpdateError):
+        updateInstall.install(Release((1, 1, 0), "https://x/Gridkeeper-v1.1.0.zip", 1, None), addin, urlopen=urlopen)
+    with pytest.raises(UpdateError):
+        updateInstall.install(Release((1, 1, 0), "not a url", 1, None), addin)
+    assert tree(addin) == OLD
 
 
 def test_install_clears_leftovers_of_a_broken_run(tmp_path):

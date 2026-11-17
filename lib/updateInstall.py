@@ -28,8 +28,9 @@ def download(url: str, target: str, urlopen=None, limit: int = MAX_DOWNLOAD, pro
     """Saves url to target, stops at limit bytes. progress is called with the bytes so far after each chunk"""
     import urllib.request
     urlopen = urlopen or urllib.request.urlopen
-    request = urllib.request.Request(url, headers={'User-Agent': USER_AGENT})
     try:
+        # inside, a url the request refuses is a failed download too
+        request = urllib.request.Request(url, headers={'User-Agent': USER_AGENT})
         with urlopen(request, timeout=DOWNLOAD_TIMEOUT) as response, open(target, 'wb') as file:
             size = 0
             while chunk := response.read(64 * 1024):
@@ -227,7 +228,8 @@ def install(release, addinFolder: str, urlopen=None, now=datetime.datetime.now, 
             backupParent = os.path.join(work, f'backup-{stamp}-{count}')
         os.makedirs(backupParent)
         return swap(addinFolder, newFolder, os.path.join(backupParent, ADDIN_FOLDER_NAME))
-    except (UpdateError, OSError) as err:
+    except Exception as err:
+        # swap raises UpdateError only, any other error came before it and left the add-in folder alone
         if backupParent is not None and os.path.isdir(backupParent) and not os.listdir(backupParent):
             os.rmdir(backupParent)
         if isinstance(err, UpdateError):

@@ -266,6 +266,12 @@ def test_fetch_errors_are_none():
         assert len(logs) == 1
 
 
+def test_fetch_bad_url_is_none():
+    logs = []
+    assert updateCheck.fetchReleases(url="not a url", log=logs.append) is None
+    assert len(logs) == 1
+
+
 def _addin(tmp_path, version="1.0.0"):
     (tmp_path / "Gridkeeper.manifest").write_text(json.dumps({"version": version}))
     return str(tmp_path)
