@@ -40,6 +40,25 @@ def inContext(entity, occurrence: adsk.fusion.Occurrence | None):
     return entity.createForAssemblyContext(occurrence) if occurrence is not None else entity
 
 
+def keepShown(jointOrigin: adsk.fusion.JointOrigin | None):
+    """
+    Turns the joint origin's light bulb on, the one seen from the root and its native one. After a label was rebuilt
+    without its box, the box's Label joint origin was off (Jörg's test 17.11.2026; no Gridkeeper code turns a joint
+    origin off, the joint origins a joint used were the ones off). A label's holder or an insert's pocket stays shown so
+    it can be picked again (Jörg: "Allerdings darf er nicht ausgeblendet werden."). Turning a light bulb on isn't worth
+    failing a build, a refusal is logged and the other one still tried
+    """
+    if jointOrigin is None:
+        return
+    # reading a property of an invalid object raises RuntimeError in Fusion, the native one is read in the try too (review)
+    for read in (lambda: jointOrigin, lambda: jointOrigin.nativeObject):
+        try:
+            entity = read()
+            if entity is not None:
+                entity.isLightBulbOn = True
+        except Exception as err:
+            commonUtils.fileLog(f'A joint origin a label or insert is jointed into not shown again, {err}')
+
 def findContainer(des: adsk.fusion.Design, kind: str) -> adsk.fusion.Occurrence | None:
     """The container of the kind in the root, found by its tag so the user may rename it"""
     root = des.rootComponent

@@ -243,3 +243,58 @@ class TestWrongJointOrigin:
         source = _function(ENTRY, "boxProblem")
         assert "not isBoxLabelJointOrigin(box)" in source
         assert "predBoxSeats.LABEL_JOINT_ORIGIN" in source
+
+
+class TestBoxRebuiltWithItsLabel:
+    """The label stays jointed in the holder of a rebuilt box; a box of another width says the label doesn't fit"""
+
+    @pytest.mark.parametrize("widthMm, cells", [(188, 4), (230, 5), (272, 6), (356, 8)])
+    def test_the_cells_of_a_box_by_its_outer_width(self, widthMm, cells):
+        layout = _loadUtils("predBoxLabelLayout")
+        assert layout.cellsOfBoxWidth(widthMm / 10) == cells
+
+    def test_a_label_of_the_box_width_fits(self):
+        assert boxLabelConfig.widthNote("L in holder", 5, 5) is None
+        # from 6 cells on the label is 85 mm wide alike
+        assert boxLabelConfig.widthNote("L in holder", 6, 9) is None
+
+    def test_another_width_is_said(self):
+        note = boxLabelConfig.widthNote("L in holder", 5, 4)
+        assert note.startswith("L in holder: ")
+        assert "Box 5 cells (70.5 mm)" in note and "Box 4 cells (28.5 mm)" in note
+        assert "rebuild the label" in note
+
+    def test_an_unknown_width_says_nothing(self):
+        assert boxLabelConfig.widthNote("L in holder", None, 5) is None
+        assert boxLabelConfig.widthNote("L in holder", 5, None) is None
+
+
+class TestLabelTooWideForTheRebuiltBox:
+    """Jörg 17.11.2026: "Wenn die Box einen Rebuild bekommt, der das Schild zu groß werden lässt, muss das Schild
+    daneben gelegt werden." Of the same label width it stays in, narrower it stays in with a note, too wide it is taken
+    out and laid beside the box with a note"""
+
+    def test_the_same_label_width_stays_in_without_a_note(self):
+        assert boxLabelConfig.labelFit(5, 5) == boxLabelConfig.FIT_SAME
+        assert boxLabelConfig.labelFit(6, 11) == boxLabelConfig.FIT_SAME
+
+    def test_a_label_wider_than_the_holder_goes_beside(self):
+        assert boxLabelConfig.labelFit(5, 4) == boxLabelConfig.FIT_TOO_WIDE
+        assert boxLabelConfig.labelFit(7, 5) == boxLabelConfig.FIT_TOO_WIDE
+
+    def test_a_narrower_label_stays_in(self):
+        assert boxLabelConfig.labelFit(4, 6) == boxLabelConfig.FIT_NARROWER
+
+    def test_an_unknown_width_leaves_it_as_it_is(self):
+        assert boxLabelConfig.labelFit(None, 5) == boxLabelConfig.FIT_SAME
+        assert boxLabelConfig.labelFit(5, None) == boxLabelConfig.FIT_SAME
+
+    def test_the_note_of_a_label_laid_beside(self):
+        note = boxLabelConfig.widthNote("L in holder", 5, 4)
+        assert note.startswith("L in holder: ")
+        assert "too wide" in note and "beside the box" in note
+        assert "Box 5 cells (70.5 mm)" in note and "Box 4 cells (28.5 mm)" in note
+
+    def test_the_note_of_a_narrower_label_left_in(self):
+        note = boxLabelConfig.widthNote("L in holder", 4, 5)
+        assert "stays in the holder" in note and "rebuild the label" in note
