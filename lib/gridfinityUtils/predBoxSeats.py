@@ -111,16 +111,29 @@ def handleWidth(d: PredBoxDims) -> Dim:
     return d.labelWidth + mm(HANDLE_PAST_LABEL)
 
 
+# The box label (round 29, p262, dev-notes/r29/boxlabel-plan.md) is built by a command of its own, not by the box
+# command (Jörg 17.11.2026: "weil man es so besser auch mal austauschen könnte"); it is jointed to this seat, the middle
+# of its back face: Pred's Label:1 at 5 x 4 x 6 is x 81.25 ... 148.75, y 6.45 ... 7.3, z 12.45 ... 36.95 mm
+LABEL_SEAT = 'Label'
+LABEL_JOINT_ORIGIN = seatJointOriginName(LABEL_SEAT)
+LABEL_BACK = 7.3
+
+
+def labelSeat(d: PredBoxDims) -> Seat:
+    """The label's seat in the holder: the box middle, 0.2 mm in front of the slot's back wall, the middle height"""
+    return Seat(LABEL_SEAT, d.midX, mm(LABEL_BACK), d.midZ, (1, 0, 0), (0, 0, 1))
+
+
 def seatJointOriginPoints(d: PredBoxDims, hinge: str = DEFAULT_HINGE) -> list[tuple[str, Dim, Dim, Dim]]:
     """
     The box's joint origins at the seats, for baseGenerator.createPointJointOrigins: upright, X along X; a part's
-    joint takes its turn about z (turnAboutZ). Round 28, plan task 5
+    joint takes its turn about z (turnAboutZ). Round 28, plan task 5. The label's seat last (round 29)
     """
-    return [(seatJointOriginName(seat.name), seat.x, seat.y, seat.z) for seat in seats(d, hinge)]
+    return [(seatJointOriginName(seat.name), seat.x, seat.y, seat.z) for seat in seats(d, hinge) + [labelSeat(d)]]
 
 
 def handleHalfWidth(d: PredBoxDims) -> Dim:
-    """The expression the inserted handle's one size dimension (HandleHalfWidth, resources/predBox/handle.f3d) gets"""
+    """The expression of the handle's half width, predHandle.createHandle draws it with (round 29)"""
     return handleWidth(d) / 2
 
 

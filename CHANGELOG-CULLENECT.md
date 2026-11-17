@@ -6,19 +6,40 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## 1.1.0 (2026-11-17)
 
+### Small parts drawn in code (round 29)
+
+- **Box from the dialog with its small parts:** with the parts imported from files (round 28) the box command failed at the first small part
+  and was taken back: Fusion can't import a part file in a command that shows a dialog
+  (`fusion-auftraege/r28_cmdvariants.log`). Latches, handle, handle pins and the three hinges are now drawn in code,
+  each in Pred's shape to the micrometre (compared with Pred's parts, nothing left over), every sketch fully
+  constrained, inside the box command and so in the box's timeline group; rebuild and clone alike. The part files of
+  round 28 are gone.
+- **Small parts in a colour of their own:** *Gridkeeper box parts*, orange like Pred's latch; box and lid stay as they
+  are (Jörg: „Im Übrigen brauchen Latches, Hinge, Handle und Pin eine andere Farbe als die Box und der Deckel.“).
+
+### Box label (round 29)
+
+- **Gridkeeper box label (p262):** a new command makes the label for the holder of a box after
+  [Pred's storage box](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric) (CC BY-NC):
+  Pred's flat plate sized after the box's width, a large text at the left, two lines and up to five
+  [Cullenect](https://github.com/CullenJWebb/Cullenect-Labels) symbols (MIT, CullenJWebb) at the right, raised, set in
+  or flush like the Cullenect inserts. Picking the *Label joint origin* of a box joints the label into its holder; every
+  box now has that joint origin. A command of its own, so a label can be swapped without touching the box. Every
+  sketch is fully constrained.
+
 ### Small parts of the storage box (round 28)
 
 - **Latches, handle, pins and hinges (p261):** every box set now holds Pred's small parts, taken over from
-  [Pred's file](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric) (CC BY-NC) as
-  Fusion parts in `resources/predBox`: four latches (two at the front, one on each side at the back), the handle and
+  [Pred's file](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric) (CC BY-NC),
+  drawn in code since round 29: four latches (two at the front, one on each side at the back), the handle and
   its two pins, rigidly jointed at joint origins of the box, and two hinges jointed beside the box in their print
   position. The handle follows the label width (+28.5 mm, at most 113.5 mm). **Hinge** picks one of Pred's three
   hinges (M3x30, the default; Pinned; Plain); settings saved before load with M3x30. Every sketch of the parts is fully constrained,
   none uses a user parameter.
 - **Right-click on the set (click test F1):** the set's component offers settings, rebuild and clone like box and lid.
 - **Export file names (click test F3):** box bodies carry the set's name, e.g. *Box 5×4×6 Base*.
-- **No files in the add-in folder (p292):** the parts are inserted from a temporary copy; Fusion's import wrote a
-  folder `_XRef_` beside the part files before.
+- **No files in the add-in folder (p292):** importing the part files wrote a folder `_XRef_` beside them; with the parts
+  drawn in code (round 29) nothing is imported any more.
 
 ### Storage box after Pred (round 27)
 
@@ -32,7 +53,7 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   jointed shut; joint origins in every cell, for stacking and for the lid. Settings, rebuild and clone as for bins.
   Changes to Pred's box: magnet holes of a size of your choice, the floor pads and the stacking rim drawn from circles
   instead of arcs. Height 5 is left for later (p264).
-  Latches, hinges and handle followed in round 28, the label is still to come.
+  Latches, hinges and handle followed in round 28, the label in round 29.
 - **Magnet size (p263):** bins, baseplates and boxes have a choice before the magnet cutout depth: 6 × 2 mm magnets
   (2.4 mm deep), 6 × 3 mm magnets (3.4 mm, not for boxes: it would break through the floor) or *Custom*. Only the
   depth is saved, older settings files load unchanged.

@@ -44,7 +44,7 @@
             "name": "Latch",
             "file": "body3.smt",
             "volume": 3232.069075,
-            "area": 3085.727768,
+            "area": 3085.723822,
             "bboxMin": [
                 -11.8,
                 -36.5,
@@ -123,8 +123,8 @@
         {
             "name": "TopHingePart_M3x30",
             "file": "body7.smt",
-            "volume": 1376.341231,
-            "area": 1651.334022,
+            "volume": 1376.341226,
+            "area": 1651.334021,
             "bboxMin": [
                 -4.0,
                 -4.0,
