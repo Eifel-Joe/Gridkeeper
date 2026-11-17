@@ -16,7 +16,8 @@ Die Teile kommen deshalb einzeln auf `r29-int` (ab `runde-29`), je Teil ein Klic
 
 ## Ein Teil aufnehmen, sobald seine Untersitzung fertig ist
 
-1. Den Teil-Branch, z. B. `r29-handle`, nach `r29-int` mergen (Merge-Commit).
+1. Den Teil-Branch nach `r29-int` mergen (Merge-Commit): Griff `claude/r29-handle-049385`, Riegel
+   `claude/r29-latch-3b0e5c`, Haltestift `claude/r29-pin-251c13`, Scharniere `claude/r29-hinge-a89d58`.
 2. Den Test zuerst: `tests/test_pred_box_parts.py` und `tests/test_box_builder_bodies.py` erwarten die Rolle in
    `DRAWN_ROLES` und einen Zweig für sie in `drawPart`. `test_every_drawn_role_has_its_generator` prüft das.
 3. In `drawPart` den Zweig ergänzen:
