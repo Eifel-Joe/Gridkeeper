@@ -62,27 +62,31 @@ def test_profile_areas_are_preds():
     assert [round(a, 4) for a in areas] == [5.3093, 4.3118, 10.8071]
 
 
-def _chord(r, t):
-    return math.sqrt(max(r * r - t * t, 0.0))
+def _chordIntegral(r, low, high):
+    """Integral of the chord width 2 sqrt(r2 - t2) over t from low to high, closed (review: Simpson over the root's ends
+    was 4e-4 mm3 off, 40 % of the tolerance)"""
+    def G(t):
+        t = max(-r, min(r, t))
+        return t * math.sqrt(max(r * r - t * t, 0.0)) + r * r * math.asin(t / r)
+    return G(high) - G(low) if high > low else 0.0
 
 
 def _section(r, zLow, zHigh, slot):
     """Area of the disk of radius r about the axis between heights zLow and zHigh (about the axis), less the slot of
-    half width slot around the axis' y (Simpson over z, the integrand is smooth between the breaks)"""
+    half width slot around the axis' y: where the chord is wider than the slot the slot takes 2 slot, elsewhere all"""
     low, high = max(-r, zLow), min(r, zHigh)
     if high <= low:
         return 0.0
-    breaks = sorted({low, high} | {b for b in (-math.sqrt(max(r * r - slot * slot, 0)), math.sqrt(max(r * r - slot * slot, 0))) if low < b < high})
-    total = 0.0
-    for a, b in zip(breaks, breaks[1:]):
-        n = 2000
-        h = (b - a) / n
-
-        def width(t):
-            w = _chord(r, t)
-            return 2 * w - 2 * min(w, slot)
-        total += h / 3 * sum((1 if i in (0, n) else 4 if i % 2 else 2) * width(a + i * h) for i in range(n + 1))
-    return total
+    disk = _chordIntegral(r, low, high)
+    if slot <= 0:
+        return disk
+    if slot >= r:
+        return 0.0
+    c = math.sqrt(r * r - slot * slot)
+    inner = (max(low, -c), min(high, c))
+    taken = 2 * slot * max(0.0, inner[1] - inner[0])
+    taken += _chordIntegral(r, low, min(high, -c)) + _chordIntegral(r, max(low, c), high)
+    return disk - taken
 
 
 def _planned_volume():
@@ -111,8 +115,8 @@ def _planned_volume():
             else:
                 r = pin.HEAD_DIAMETER / 2
             return _section(r, zLow, zHigh, width)
-        # sections change with x only on the chamfer (r linear: area quadratic, Simpson exact up to the z integral)
-        n = 2 if middle > pin.X_TIP + pin.CHAMFER else 20
+        # sections change with x only on the chamfer, there r is linear but the cuts make the area no polynomial
+        n = 2 if middle > pin.X_TIP + pin.CHAMFER else 400
         h = (b - a) / n
         volume += h / 3 * sum((1 if i in (0, n) else 4 if i % 2 else 2) * area(a + i * h) for i in range(n + 1))
     return volume
@@ -173,3 +177,21 @@ def test_no_mirror_and_no_user_parameters():
 
 def test_joint_origin_by_the_shared_helper():
     assert "createPointJointOrigins" in ast.unparse(_function("createHandlePin"))
+
+
+def test_the_extrudes_use_the_planned_profiles_and_ranges():
+    """Review round 29: the volume test checks the constants, this pins how createHandlePin uses them (the Fusion check
+    r29_pin_check compares the shape itself)"""
+    calls = [ast.unparse(node) for node in sorted(
+        (node for node in ast.walk(_function("createHandlePin"))
+         if isinstance(node, ast.Call) and ast.unparse(node.func) == "_extrude"), key=lambda node: node.lineno)]
+    assert calls == [
+        "_extrude(component, [shaft], newBody, X_END - X_TIP, name='Shaft')",
+        "_extrude(component, [tipRing], join, X_SHOULDER - X_TIP, body=body, name='Tip')",
+        "_extrude(component, [tipRing, headRing], join, X_END - X_HEAD, start=X_HEAD - X_TIP, body=body, name='Head')",
+        "_extrude(component, [cutProfile], cut, x1 - x0, start=x0 - X_TIP if x0 != X_TIP else None, body=body, name=f'Cut {name}')",
+    ]
+    source = ast.unparse(_function("createHandlePin"))
+    assert "[shaft, tipRing, headRing] = profile.profilesByArea([_ringArea(0, SHAFT_DIAMETER), _ringArea(SHAFT_DIAMETER, TIP_DIAMETER), _ringArea(TIP_DIAMETER, HEAD_DIAMETER)])" in source
+    assert "for (name, x0, x1), cutProfile in zip(cutRanges(), found)" in source
+    assert "cuts.profiles([tuple((tuple((_mm(v) for v in corner)) for corner in boxes[name])) for name in names])" in source

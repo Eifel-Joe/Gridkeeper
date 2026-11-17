@@ -33,8 +33,8 @@ Beide Skizzen auf einer Ebene x = 58,05 mm (Versatz der YZ-Ebene, wie `predBoxGe
    gespiegelt wird nichts.
 6. **Sketch2 „Pin cuts“:** ein geschlossenes I-Profil (unteres Rechteck, Schlitz, oberes Rechteck; 12 Punkte, nur
    waagrecht/senkrecht), dazu zwei Trennlinien. Das ergibt genau drei Profile, voll bestimmt durch `sketchChain`.
-7. **Extrude4/5/6:** Cut unten 19,7 mm, Schlitz 4 mm, oben 2 mm. Die Profile werden über ihren Schwerpunkt gewählt
-   (`profilesWhere`).
+7. **Extrude4/5/6:** Cut unten 19,7 mm, Schlitz 4 mm, oben 2 mm. Die Profile werden über ihre Welt-Boxen gewählt
+   (`WorldSketch.profiles`). Unten und oben haben dieselbe Fläche, deshalb geht `profilesByArea` hier nicht.
 8. **Joint origin** `Handle pin joint origin` bei (77,75 | 3,75 | 24,7) mm über `baseGenerator.createPointJointOrigins`.
    Das ist ein bemaßter Skizzenpunkt auf einer Ebene z = 24,7 mm, Z nach oben, X entlang X, wie in `handlePin.f3d`.
 
