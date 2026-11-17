@@ -16,17 +16,20 @@ from GridfinityGenerator. The models in `docs/assets/models` are rendered by a F
 - Export (upstream round 17.11.2026, p13/p300): the export dialog (shot `fusion-dialog-export`; the click test's one
   shows a folder path with a user name, take it again with a neutral folder), and a 3MF of a bin with a colored label
   and an insert opened in Bambu Studio, for `docs/working/export.md`.
-- Storage boxes (round 28): a render of a box 5 × 4 × 6 with its lid and the small parts (latches, handle with its
-  pins, hinges) for [Storage boxes](../../boxes.md), in place of `box-5x4x6.png`.
-- Storage boxes (round 28): `dialog-box.png` again, now with the group *Small parts* and its **Hinge** choice.
 
 ## Taken (click test 17.11.2026, main session)
 
-- `dialog-box.png`, `box-5x4x6.png` (box and lid, before the small parts): [Storage boxes](../../boxes.md).
+- `dialog-box.png` (with *Small parts* and **Hinge**), `box-5x4x6.png` (with the orange small parts and a label in its
+  holder, round 29), `dialog-box-label.png` (the label dialog): [Storage boxes](../../boxes.md).
 - `dialog-bin-magnet-size.png`: [Base, magnets and screws](../../bins/base.md).
 - `dialog-baseplate-magnet-size.png`: [Baseplates](../../baseplates.md).
 - `bin-lip-dialog.png`: [Body, walls and lip](../../bins/body.md).
 - `context-menu-export-scene.png`: [Exporting for printing](../../working/export.md).
+
+## Taken (joint origins guide)
+
+- `joint-origins-browser.png`, `dialog-insert-pocket.png`, `joint-bin-into-baseplate.png`, `joints-delete.png`:
+  [Components and joints › Joint origins](../../working/components.md#joint-origins), Fusion, master cae4599.
 
 ## Taken (update check, PR #4)
 
