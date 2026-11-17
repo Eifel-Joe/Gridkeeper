@@ -680,8 +680,9 @@ def _buildBin(
         # with the settings it was generated with to show later. Labels aren't bins, they'd count as bins of their own
         for body in generatedBodies:
             tagUtils.tagBody(body, tagUtils.TAG_BIN, settings, binParameters, configJson.stateToJson(configJson.GENERATOR_BIN, state), binParameterPrefix)
-        # the letters of outline labels in their own color, as a slicer can print them, see labelFaces
-        if state.generateBody and state.labelStyle == labelGenerator.LABEL_STYLE_OUTLINE:
+        # the letters of outline labels in their own color, as a slicer can print them, see labelFaces. A colored label
+        # has letter bodies of its own instead (p86)
+        if labelColors.paintsOutlineLetterFaces(state.generateBody, state.labelStyle == labelGenerator.LABEL_STYLE_OUTLINE, state.labelColor):
             try:
                 labelFaces.paintLetterFaces(des, binBody)
             except Exception as err:

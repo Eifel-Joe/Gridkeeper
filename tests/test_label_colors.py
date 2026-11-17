@@ -110,3 +110,19 @@ def test_a_bin_has_a_label_as_the_builder_makes_one():
     assert colors.binHasLabel(True, True, False, True) is False
     assert colors.binHasLabel(False, True, False, False) is False
     assert colors.binHasLabel(True, False, False, False) is False
+
+
+# --- upstream round 17.11. (p13, d0ad89c): outline letters painted in Fusion, only where they're no bodies of their own ---
+
+def test_outline_letters_without_a_color_are_painted():
+    assert colors.paintsOutlineLetterFaces(True, True, '')
+
+
+def test_colored_outline_letters_are_bodies_of_their_own_and_not_painted():
+    # the letters fill the outline cut as bodies in the label color, the faces under them aren't seen (p86)
+    assert not colors.paintsOutlineLetterFaces(True, True, '#D02020')
+
+
+def test_no_painting_without_an_outline_label_or_without_a_body():
+    assert not colors.paintsOutlineLetterFaces(True, False, '')
+    assert not colors.paintsOutlineLetterFaces(False, True, '')
