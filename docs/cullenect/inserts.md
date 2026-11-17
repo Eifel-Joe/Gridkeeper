@@ -79,6 +79,9 @@ pocket the insert goes beside the bins, baseplates and inserts there are.
 When an insert in a pocket is rebuilt, its pocket is picked again already. If Fusion refuses it, the dialog says so;
 pick it again, otherwise the insert is built where it was without a joint.
 
+Finding and picking the right pocket, and undoing the joint, step by step:
+[Picking a joint origin in a dialog](../working/components.md#picking-a-joint-origin-in-a-dialog).
+
 ## Inputs and preview
 
 **Inputs** holds the buttons for defaults and settings files, see [Saving and loading settings](../working/save-load.md).
