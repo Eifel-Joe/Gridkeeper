@@ -6,6 +6,13 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## 1.1.0 (2026-11-17)
 
+### Joint origins explained
+
+- [Joint origins](docs/working/components.md#joint-origins) is now a guide (Jörg: „Wir müssen auf jeden Fall noch
+  anständig erklären, wie die Joints generell genutzt werden …“): which joint origins every model has, how to pick one
+  in the insert and box label dialogs, how to joint a bin into a baseplate or box cell and a box onto a box by hand,
+  and what to do when a joint origin can't be seen or picked.
+
 ### Small parts drawn in code (round 29)
 
 - **Box from the dialog with its small parts:** with the parts imported from files (round 28) the box command failed at the first small part

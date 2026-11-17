@@ -65,7 +65,8 @@ side of the bed. **Result** draws the area, the grid and how it is split into pi
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../assets/gif/baseplate-types-dark.gif"><img src="../assets/gif/baseplate-types-light.gif" alt="Picking each baseplate type, with light, skeletonized and full baseplates"></picture>
 
-**Add joint origins** puts a joint origin at the bottom center of every socket, to joint bins into the plate.
+**Add joint origins** puts a joint origin at the bottom center of every socket, to joint bins into the plate; how,
+step by step, in [Joint origins](working/components.md#jointing-by-hand).
 
 ### Magnet cutouts
 

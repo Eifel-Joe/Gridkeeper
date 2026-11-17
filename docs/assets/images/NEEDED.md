@@ -26,6 +26,11 @@ from GridfinityGenerator. The models in `docs/assets/models` are rendered by a F
 - `bin-lip-dialog.png`: [Body, walls and lip](../../bins/body.md).
 - `context-menu-export-scene.png`: [Exporting for printing](../../working/export.md).
 
+## Taken (joint origins guide)
+
+- `joint-origins-browser.png`, `dialog-insert-pocket.png`, `joint-bin-into-baseplate.png`, `joints-delete.png`:
+  [Components and joints › Joint origins](../../working/components.md#joint-origins), Fusion, master cae4599.
+
 ## Taken (update check, PR #4)
 
 - [x] Update check (p310): `update-dialog-available.png`, `updates-dialog-installed.png`, `updates-dialog-git.png`

@@ -45,7 +45,8 @@ The line below shows the outer size: width and length are the cells plus a 10 mm
 ## Joint origins
 
 **Add joint origins** puts a joint origin in every cell of the floor, *Cell joint origin column-row*, to joint bins
-into the box like onto a baseplate. These are always there:
+into the box like onto a baseplate; how to joint a bin into a cell or a box onto another, step by step, is in
+[Joint origins](working/components.md#jointing-by-hand). These are always there:
 
 | Joint origin | Where |
 |---|---|
@@ -104,7 +105,7 @@ box's group in the timeline and come along with a rebuild or clone. They have an
 
 | Input | Default | What it does |
 |---|---|---|
-| **Box** | none | Optional: pick the *Label joint origin* of a box, the label is jointed into its holder (joint *… in holder*) and **Label width** is set to the box's. Without, the label lies beside the parts there are, e.g. for a reprint |
+| **Box** | none | Optional: pick the *Label joint origin* of a box, the label is jointed into its holder (joint *… in holder*) and **Label width** is set to the box's. Without, the label lies beside the parts there are, e.g. for a reprint. Step by step: [Picking a joint origin in a dialog](working/components.md#picking-a-joint-origin-in-a-dialog) |
 | **Label width** | Box 5 cells (70.5 mm) | Pred's fixed label widths: *Box 4 cells (28.5 mm)*, *Box 5 cells (70.5 mm)*, *Box 6+ cells (85 mm)*; the plate is 3 mm narrower. With a picked box only its own width builds |
 | **Large text** | M3 | One line in large letters (up to 12 mm) at the left, a little over a third of the width; empty leaves the room to the lines |
 | **Line 1**, **Line 2** | Socket head, DIN 912 | Two lines at the right, 4 mm high, smaller when they are long |
