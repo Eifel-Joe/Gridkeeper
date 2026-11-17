@@ -176,11 +176,6 @@ def test_nut_hexagon_is_preds():
     _exactly_determined(points, curves)
 
 
-def test_bridge_sketch_is_exactly_determined():
-    points, curves = hinge.bridgeSketch(0.0)
-    _exactly_determined(points, curves)
-
-
 def _originAnchors(points, curves):
     """Points the chain fixes wholly from the origin: put on it, or dimensioned from it in x and in y"""
     plan = chainPlan.chain(points, curves)
@@ -200,7 +195,9 @@ def _allPlans():
         for count in (1, 2, 3):
             yield hinge.circlesSketch(c, count)
         yield hinge.tabSketch()
-        yield hinge.bridgeSketch(c)
+        for layer in (hinge.THIN_BRIDGE, hinge.THICK_BRIDGE):
+            for points in hinge.bridgeRectangles(c, layer):
+                yield points, [{"kind": "line", "a": i, "b": (i + 1) % 4} for i in range(4)]
         points = hinge.hexagon(c)
         yield points, [{"kind": "line", "a": i, "b": (i + 1) % len(points)} for i in range(len(points))]
     points = hinge.pinProfile()
@@ -239,25 +236,6 @@ def test_no_point_on_a_circle():
         for count in (2, 3):
             points, curves = hinge.circlesSketch(c, count)
             assert not _pointsOnCircles(points, curves, [shape.core, hinge.PLAIN_HOLE, shape.clearance][:count])
-    points, curves = hinge.bridgeSketch(0.0)
-    assert not _pointsOnCircles(points, curves, [hinge.COUNTERBORE / 2])
-
-
-def test_bridge_chords_cross_only_inside():
-    """The chords reach past the circle; outside it no two of them meet, so they close no profile there"""
-    points, curves = hinge.bridgeSketch(0.0)
-    lines = [(points[c["a"]], points[c["b"]]) for c in curves if c["kind"] == "line" and not c.get("construction")]
-    r = hinge.COUNTERBORE / 2
-    for i, (p, q) in enumerate(lines):
-        assert math.hypot(*p) > r and math.hypot(*q) > r
-        for (s, t) in lines[i + 1:]:
-            d = (q[0] - p[0]) * (t[1] - s[1]) - (q[1] - p[1]) * (t[0] - s[0])
-            if abs(d) < 1e-12:
-                continue
-            u = ((s[0] - p[0]) * (t[1] - s[1]) - (s[1] - p[1]) * (t[0] - s[0])) / d
-            v = ((s[0] - p[0]) * (q[1] - p[1]) - (s[1] - p[1]) * (q[0] - p[0])) / d
-            if 0 <= u <= 1 and 0 <= v <= 1:
-                assert math.hypot(p[0] + u * (q[0] - p[0]), p[1] + u * (q[1] - p[1])) < r
 
 
 # Pred's Sketch5 profiles (sketch x, sketch y = -world y; bounding boxes) and the layers he extruded them in:
@@ -280,16 +258,51 @@ THICK = {0, 4, 5, 6, 7, 8, 12, 14, 22, 30, 31, 32}
 
 
 def test_bridge_layers_pick_preds_profiles():
-    """The rule on a profile's box centre (world x, y about the axis) gives Pred's choice for all 33 of his profiles;
-    the profiles inside the 1.75 circle, which our sketch does not have, are left out by it too"""
+    """Each layer is two circle segments beyond parallel 45-degree chords tangent to the screw hole: the rule on Pred's
+    profiles' box centres (world x, y about the axis) gives his choice for all 33 of his profiles"""
     thin, thick = set(), set()
     for index, ((x0, v0), (x1, v1)) in SKETCH5.items():
-        layers = hinge.bridgeLayers((x0 + x1) / 2, -(v0 + v1) / 2)
-        if hinge.THIN_BRIDGE in layers:
+        x, y = (x0 + x1) / 2, -(v0 + v1) / 2
+        if hinge.inBridge(hinge.THIN_BRIDGE, x, y):
             thin.add(index)
-        if hinge.THICK_BRIDGE in layers:
+        if hinge.inBridge(hinge.THICK_BRIDGE, x, y):
             thick.add(index)
     assert (thin, thick) == (THIN, THICK)
+
+
+def test_bridge_layer_areas_are_preds():
+    """Two segments of the counterbore circle (r 2.75) beyond chords 1.75 from the axis; Pred's twelve profiles per
+    layer add up to 5.9006 mm2 (Extrude25 +1.1802 mm3 at 0.2)"""
+    r, h = hinge.COUNTERBORE / 2, hinge.SHAPES["M3x30"].core
+    segment = r * r * math.acos(h / r) - h * math.sqrt(r * r - h * h)
+    assert 2 * segment == pytest.approx(4 * 1.1025 + 6 * 0.0733 + 2 * 0.5254, abs=1e-3)
+    assert 2 * segment * hinge.THIN_BRIDGE == pytest.approx(1.1802, abs=5e-4)
+
+
+def test_bridge_rectangles_cover_the_segments_inside_the_knuckle():
+    """Weg A (Nutzer 17.11.2026: "A: Brücken anders"): each segment is drawn as a rectangle turned 45 degrees whose inner
+    side is the chord; it reaches past the counterbore into the knuckle's solid (r 4 at z 3.5..3.9), where a join adds
+    nothing"""
+    r, h = hinge.COUNTERBORE / 2, hinge.SHAPES["M3x30"].core
+    halfChord = math.sqrt(r * r - h * h)
+    for cx in (0.0, 5.0):
+        for layer in (hinge.THIN_BRIDGE, hinge.THICK_BRIDGE):
+            rectangles = hinge.bridgeRectangles(cx, layer)
+            assert len(rectangles) == 2
+            for points in rectangles:
+                rel = [(x - cx, y) for x, y in points]
+                # the inner side lies on a chord: both ends 1.75 from the axis along the rectangle's normal
+                (x0, y0), (x1, y1) = rel[0], rel[3]
+                nx, ny = (rel[1][0] - x0), (rel[1][1] - y0)
+                length = math.hypot(nx, ny)
+                nx, ny = nx / length, ny / length
+                assert x0 * nx + y0 * ny == pytest.approx(h) and x1 * nx + y1 * ny == pytest.approx(h)
+                assert length >= r - h - 1e-9
+                assert math.hypot(x1 - x0, y1 - y0) / 2 >= halfChord
+                assert max(math.hypot(x, y) for x, y in rel) < hinge.SHAPES["M3x30"].knuckle - 0.3
+                # every point of the rectangle's centre region lies in the layer
+                mx, my = sum(x for x, y in rel) / 4, sum(y for x, y in rel) / 4
+                assert hinge.inBridge(layer, mx, my)
 
 
 def test_bridge_layer_heights_are_preds():
