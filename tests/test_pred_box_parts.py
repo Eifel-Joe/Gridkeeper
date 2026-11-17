@@ -56,3 +56,9 @@ def test_seat_joint_origin_names():
 def test_the_part_files_are_named_once():
     files = [part.file for part in parts.PARTS]
     assert len(files) == len(set(files))
+
+
+def test_the_printed_hinge_pin_has_a_name():
+    """Main session 17.11.2026: Pred's printed pin of Hinge_Pined is "Body21", export file names go by body names"""
+    assert parts.BODY_NAMES == {"hingePinned.f3d": {"Body21": "Hinge pin"}}
+    assert set(parts.BODY_NAMES) <= set(parts.HINGES.values()) | {part.file for part in parts.PARTS}

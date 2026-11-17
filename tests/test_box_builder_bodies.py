@@ -82,3 +82,8 @@ def test_the_hinges_are_jointed_like_the_other_parts_without_a_captured_position
     assert "snapshots.add" not in source and "transform2" not in source and "placeAllInSet" not in source
     assert "predBoxParts.partsFor(hinge)" in source and "predBoxSeats.seats(dims, hinge)" in source
     assert "originConstructionPoint" in source
+
+
+def test_bodies_get_their_names_from_the_part_list():
+    source = open(INSERT, encoding="utf-8").read()
+    assert "predBoxParts.BODY_NAMES.get(part.file" in source
