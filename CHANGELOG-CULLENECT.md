@@ -68,9 +68,10 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   code turns joint origins off, the ones a joint had used were off. Jörg: „Allerdings darf er nicht ausgeblendet
   werden.“ The box label and the Cullenect insert now keep the holder or pocket they are jointed into shown, also
   when a rebuilt box or bin takes the joint over, and a rebuild shows the one the old label or insert leaves.
-- **A rebuilt box keeps its label:** the label's joint moves over to the *Label joint origin* of the rebuilt box. Is
-  the box now of another label width, the label stays in and the note after the rebuild says to rebuild it with that
-  width.
+- **A rebuilt box keeps its label:** the label's joint moves over to the *Label joint origin* of the rebuilt box. Jörg:
+  „Wenn die Box einen Rebuild bekommt, der das Schild zu groß werden lässt, muss das Schild daneben gelegt werden.“
+  A label too wide for the rebuilt box is taken out and laid beside the parts, a narrower one stays in; the note after
+  the rebuild says to rebuild it with the new width.
 
 ### Small parts of the storage box (round 28)
 

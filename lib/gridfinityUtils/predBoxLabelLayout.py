@@ -53,6 +53,8 @@ ROW_GAP = 0.2
 MAX_SYMBOLS = 5
 
 NO_SYMBOL = 'None'
+# the plate's body, its text and symbols 'Box label text 1', 'Box label symbol 1'; free labels are found by it
+PLATE_BODY_NAME = 'Box label'
 
 
 def labelWidth(cells: int) -> float:

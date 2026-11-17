@@ -6,6 +6,7 @@ from typing import Callable
 from . import configJson
 from . import tagUtils
 from . import assembly
+from . import placementUtils
 from .gridfinityUtils import commonUtils
 from .gridfinityUtils import cullenect
 from .gridfinityUtils import boxLabelConfig, predBoxLabelLayout, predBoxSeats
@@ -391,7 +392,8 @@ def repointJointsByName(
     """
     Joints of the user on a joint origin of the old part, its own component or one inside it (a box set: Box and Lid,
     round 27), get the joint origin of the same name in the same place of the new part. The part's own joints, in its
-    timeline group, go with the old part. Returns how many were moved over and a note per joint that couldn't be
+    timeline group, go with the old part. A box label too wide for the rebuilt box isn't moved over, it is laid beside
+    the parts, see _layBeside. Returns how many were moved over and a note per joint that couldn't be or needs a look
     """
     if target.occurrence is None or len(newBodies) == 0:
         return (0, [])
@@ -411,6 +413,8 @@ def repointJointsByName(
     moved = 0
     notes = []
     shown = []
+    # box labels to lay beside: the joint, the label's occurrence and the cells it was built for
+    tooWide = []
     collapsedGroups = []
     for joint in list(design.rootComponent.allJoints):
         item = joint.timelineObject
@@ -429,6 +433,20 @@ def repointJointsByName(
                 notes.append(f'{joint.name}: the new part has no {jointOrigin.name}, the joint goes with the old one')
                 continue
             try:
+                if jointOrigin.name == predBoxSeats.LABEL_JOINT_ORIGIN:
+                    # a box rebuilt with its label in the holder (Jörg: "Noch schöner wäre natürlich, wenn bei Rebuild
+                    # der Joint erhalten bliebe."): the holder stays shown, a label of another width is said. One too
+                    # wide goes beside (Jörg: "Wenn die Box einen Rebuild bekommt, der das Schild zu groß werden lässt,
+                    # muss das Schild daneben gelegt werden.")
+                    shown.append(newJointOrigin)
+                    otherSide = adsk.fusion.JointOrigin.cast(getattr(joint, 'geometryOrOriginTwo' if side == 'geometryOrOriginOne' else 'geometryOrOriginOne'))
+                    (labelCells, boxCells) = (_labelCells(otherSide), _boxCells(newJointOrigin))
+                    widthNote = boxLabelConfig.widthNote(joint.name, labelCells, boxCells)
+                    if boxLabelConfig.labelFit(labelCells, boxCells) == boxLabelConfig.FIT_TOO_WIDE:
+                        tooWide.append((joint, otherSide.assemblyContext, labelCells, widthNote))
+                        continue
+                    if widthNote is not None:
+                        notes.append(widthNote)
                 group = item.parentGroup
                 if group is not None and group.isCollapsed:
                     group.isCollapsed = False
@@ -436,23 +454,65 @@ def repointJointsByName(
                 item.rollTo(True)
                 setattr(joint, side, newJointOrigin)
                 moved += 1
-                if jointOrigin.name == predBoxSeats.LABEL_JOINT_ORIGIN:
-                    # a box rebuilt with its label in the holder (Jörg: "Noch schöner wäre natürlich, wenn bei Rebuild
-                    # der Joint erhalten bliebe."): the holder stays shown, a label of another width is said
-                    shown.append(newJointOrigin)
-                    otherSide = adsk.fusion.JointOrigin.cast(getattr(joint, 'geometryOrOriginTwo' if side == 'geometryOrOriginOne' else 'geometryOrOriginOne'))
-                    widthNote = boxLabelConfig.widthNote(joint.name, _labelCells(otherSide), _boxCells(newJointOrigin))
-                    if widthNote is not None:
-                        notes.append(widthNote)
             except Exception as err:
                 commonUtils.fileLog(f"{LOG_PREFIX} {joint.name} couldn't be moved over to {jointOrigin.name}, {err}")
                 notes.append(f"{joint.name}: couldn't be moved over to the new part, it goes with the old one")
     design.timeline.moveToEnd()
     for group in collapsedGroups:
         group.isCollapsed = True
+    # with the timeline at its end, before the old part goes: its joints would break with it
+    for (joint, occurrence, labelCells, widthNote) in tooWide:
+        if _layBeside(design, joint, occurrence, labelCells):
+            notes.append(widthNote)
+        else:
+            notes.append(f"{joint.name}: the label is too wide for the box now and couldn't be laid beside it, it goes with the old box; rebuild the label")
     for jointOrigin in shown:
         assembly.keepShown(jointOrigin)
     return (moved, notes)
+
+# grid free spots are looked for on, as a new box label's (boxLabelBuilder.PLACEMENT_CELL)
+LABEL_PLACEMENT_CELL = 4.2
+
+def _layBeside(design: adsk.fusion.Design, joint: adsk.fusion.Joint, occurrence: adsk.fusion.Occurrence | None, labelCells: int) -> bool:
+    """
+    Takes the label out of the holder of a box rebuilt too narrow for it and lays it flat at a free spot beside the
+    parts, as a new label without a box. Without its joint Fusion puts it back where it was built, for a jointed label
+    the origin (p391); a new place holds only with its position captured right after it is set (p392: transform2,
+    then snapshots.add). Whether it was laid beside
+    """
+    if occurrence is None:
+        return False
+    try:
+        item = joint.timelineObject
+        group = item.parentGroup if item is not None else None
+        wasCollapsed = group is not None and group.isCollapsed
+        if wasCollapsed:
+            group.isCollapsed = False
+        if item is not None:
+            item.rollTo(True)
+        joint.deleteMe()
+        design.timeline.moveToEnd()
+        if wasCollapsed and group.isValid:
+            group.isCollapsed = True
+        (width, height) = (predBoxLabelLayout.plateWidth(labelCells), predBoxLabelLayout.PLATE_HEIGHT)
+        (x, y) = placementUtils.findPlacement(
+            design,
+            [tagUtils.TAG_BOX, tagUtils.TAG_LABEL, tagUtils.TAG_BIN, tagUtils.TAG_BASEPLATE],
+            predBoxLabelLayout.PLATE_BODY_NAME,
+            (0, 0, width, height),
+            LABEL_PLACEMENT_CELL,
+            LABEL_PLACEMENT_CELL,
+        )
+        place = adsk.core.Matrix3D.create()
+        place.translation = adsk.core.Vector3D.create(x + width / 2, y + height / 2, 0)
+        occurrence.transform2 = place
+        if design.snapshots.hasPendingSnapshot:
+            design.snapshots.add()
+        return True
+    except Exception as err:
+        commonUtils.fileLog(f"{LOG_PREFIX} {joint.name if joint.isValid else 'a box label joint'}: the label wasn't laid beside the box, {err}")
+        design.timeline.moveToEnd()
+        return False
 
 def _labelCells(jointOrigin: adsk.fusion.JointOrigin | None) -> int | None:
     """The cells a box label on the joint origin was built for, from its plate's config, none for anything else"""

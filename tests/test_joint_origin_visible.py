@@ -102,7 +102,8 @@ REBUILD_UTILS = os.path.join(ROOT, "lib", "rebuildUtils.py")
 
 def test_a_rebuilt_box_keeps_its_new_label_holder_shown():
     source = _function(REBUILD_UTILS, "repointJointsByName")
-    assert source.index("setattr(joint, side, newJointOrigin)") < source.index("shown.append(newJointOrigin)")
+    # every new Label joint origin, also one a too wide label isn't moved over to
+    assert "shown.append(newJointOrigin)" in source
     # with the timeline at its end again (review)
     assert source.index("design.timeline.moveToEnd()") < source.index("assembly.keepShown(jointOrigin)")
     assert "predBoxSeats.LABEL_JOINT_ORIGIN" in source
@@ -156,3 +157,26 @@ def test_an_invalid_joint_origin_whose_native_object_raises_doesnt_fail_the_buil
     (keepShown, logged) = _keepShown()
     keepShown(_Invalid())
     assert len(logged) >= 1
+
+
+# -- Jörg 17.11.2026: "Wenn die Box einen Rebuild bekommt, der das Schild zu groß werden lässt, muss das Schild daneben
+# gelegt werden." Fusion puts a part whose joint goes back where it was built (p391, a jointed label: the origin) and
+# keeps a new place only with its position captured right after it is set (p392: transform2, then snapshots.add)
+
+def test_a_label_too_wide_for_the_rebuilt_box_isnt_moved_over():
+    source = _function(REBUILD_UTILS, "repointJointsByName")
+    assert "boxLabelConfig.labelFit(" in source
+    assert "boxLabelConfig.FIT_TOO_WIDE" in source
+    assert source.index("tooWide.append(") < source.index("setattr(joint, side, newJointOrigin)")
+
+
+def test_it_is_laid_beside_with_the_timeline_at_its_end():
+    source = _function(REBUILD_UTILS, "repointJointsByName")
+    assert source.index("design.timeline.moveToEnd()") < source.index("_layBeside(design, ")
+
+
+def test_laying_beside_takes_the_joint_out_and_captures_the_new_place():
+    source = _function(REBUILD_UTILS, "_layBeside")
+    assert source.index("joint.deleteMe()") < source.index("placementUtils.findPlacement(")
+    assert source.index("occurrence.transform2 = ") < source.index("design.snapshots.add()")
+    assert "predBoxLabelLayout.PLATE_BODY_NAME" in source
