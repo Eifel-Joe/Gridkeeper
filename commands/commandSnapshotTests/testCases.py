@@ -173,6 +173,20 @@ GENERATOR_TITLES = {GENERATOR_BIN: 'Bins', GENERATOR_BASEPLATE: 'Baseplates', GE
 # the container each generator builds into, the kind tagged on it, see tagUtils.KIND_* (round 13, p90). Every case builds
 # a new part, so it goes there also in a part design, which turns hybrid for it
 CONTAINER_KINDS = {GENERATOR_BIN: 'bins', GENERATOR_BASEPLATE: 'grid', GENERATOR_LABEL: 'labels', GENERATOR_BOX: 'boxes'}
+# the part roles of Pred's small parts in a box set (lib/gridfinityUtils/predBoxParts.PARTS, round 28), kept here as
+# this module loads without the add-in's package; tests/test_test_cases.py checks they are the same
+BOX_SMALL_PART_ROLES = ['Latch', 'Handle', 'Handle pin', 'Hinge']
+
+
+def smallPartBodies(generator: str, bodies: list[tuple[str, str | None]]) -> list[str]:
+    """
+    Of (key, part role of the body's component) the keys of a box set's small parts. buildBox returns their bodies
+    untagged after box and lid (round 28); without this structureNotes took them for marking bodies outside a Text
+    component and failed every box case. Test: tests/test_test_cases.py
+    """
+    if generator != GENERATOR_BOX:
+        return []
+    return [key for (key, role) in bodies if role in BOX_SMALL_PART_ROLES]
 
 def expectedContainer(generator: str) -> str:
     return CONTAINER_KINDS[generator]

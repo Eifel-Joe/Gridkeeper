@@ -612,3 +612,17 @@ def test_box_case_with_parameters_edits_the_counts(tmp_path):
     case = cases.loadCase(write_case_data(tmp_path, data, name="box"), STATE_CLASSES)
     edited = cases.editedState(case)
     assert (edited.gridX, edited.gridY, edited.heightU) == (7, 4, 10)
+
+
+def test_a_box_cases_small_parts_are_told_apart_from_marking_bodies():
+    """Round 28: buildBox also returns the bodies of Pred's small parts, untagged, each in a component with a part role
+    in the set. structureNotes took them for marking bodies and failed every box case ("isn't in the Text component")"""
+    roles = {"Base": "Box", "Lid": "Lid", "Latch": "Latch", "Body1": "Handle pin", "Text": None}
+    small = cases.smallPartBodies(cases.GENERATOR_BOX, list(roles.items()))
+    assert small == ["Latch", "Body1"]
+    assert cases.smallPartBodies(cases.GENERATOR_BIN, list(roles.items())) == []
+
+
+def test_the_small_part_roles_are_the_box_parts():
+    parts = _load("predBoxParts", "lib", "gridfinityUtils", "predBoxParts.py")
+    assert set(cases.BOX_SMALL_PART_ROLES) == {part.role for part in parts.PARTS}
