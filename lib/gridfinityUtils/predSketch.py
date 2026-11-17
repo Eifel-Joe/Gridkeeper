@@ -141,12 +141,10 @@ class WorldSketch:
                 item = self.sketch.sketchCurves.sketchLines.addByTwoPoints(sketchPoints[curve['a']], sketchPoints[curve['b']])
                 item.isConstruction = curve['construction']
             elif curve['kind'] == 'arc':
-                c, s, e = geometry[curve['center']], geometry[curve['start']], geometry[curve['end']]
-                a0 = math.atan2(s.y - c.y, s.x - c.x)
-                a1 = math.atan2(e.y - c.y, e.x - c.x)
-                sweep = (a1 - a0 + math.pi) % (2 * math.pi) - math.pi
-                item = self.sketch.sketchCurves.sketchArcs.addByCenterStartSweep(c, sketchPoints[curve['start']], sweep)
-                self.sketch.geometricConstraints.addCoincident(item.endSketchPoint, sketchPoints[curve['end']])
+                c = geometry[curve['center']]
+                first, second, sweep = arcDrawing(*[(geometry[curve[k]].x, geometry[curve[k]].y) for k in ('center', 'start', 'end')])
+                item = self.sketch.sketchCurves.sketchArcs.addByCenterStartSweep(c, sketchPoints[curve[first]], sweep)
+                self.sketch.geometricConstraints.addCoincident(item.endSketchPoint, sketchPoints[curve[second]])
                 if curve['center'] in sketchPoints:
                     self.sketch.geometricConstraints.addCoincident(item.centerSketchPoint, sketchPoints[curve['center']])
                 else:
@@ -235,6 +233,20 @@ class WorldSketch:
                 raise ValueError(f'{self.sketch.name}: {len(match)} profiles with area {area} mm2')
             found.append(match[0])
         return found
+
+
+def arcDrawing(center, start, end):
+    """
+    How to draw the shorter arc from start to end around center (sketch x, y): from which end ('start' or 'end'), to
+    which, and the sweep, always counterclockwise. A negative sweep gave an arc with start and end swapped against the
+    points passed: its end tied to the curve's end then over-constrained the mirrored label rail
+    (fusion-auftraege/r27_diag3.log, VCS_SKETCH_OVER_CONSTRAINTS). binBodyGenerator draws its corners the same way.
+    Tested in tests/test_pred_sketch_arcs.py
+    """
+    a0 = math.atan2(start[1] - center[1], start[0] - center[0])
+    a1 = math.atan2(end[1] - center[1], end[0] - center[0])
+    sweep = (a1 - a0 + math.pi) % (2 * math.pi) - math.pi
+    return ('start', 'end', sweep) if sweep > 0 else ('end', 'start', -sweep)
 
 
 def collection(items) -> adsk.core.ObjectCollection:
