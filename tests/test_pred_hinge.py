@@ -115,7 +115,10 @@ def test_clearance_sketches_are_exactly_determined():
         for side in (-1, 1):
             points, curves = hinge.clearanceSketch(shape, side)
             _exactly_determined(points, curves)
-            # the half ring lies on its side of the axis
+            # no arcs (r29_hinge_check l1: the sector of two arcs was over-constrained in Fusion), only lines and the
+            # knuckle and clearance circles; the lines lie on the cut side of the axis
+            assert {c["kind"] for c in curves} == {"line", "circle"}
+            assert sum(1 for c in curves if c["kind"] == "circle") == 2
             assert all(side * (x - hinge.center(shape)) >= -1e-12 for x, y in points)
 
 
