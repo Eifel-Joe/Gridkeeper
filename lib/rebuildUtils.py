@@ -1,4 +1,5 @@
 import adsk.core, adsk.fusion
+import math
 import re
 from dataclasses import dataclass, field
 from typing import Callable
@@ -392,8 +393,8 @@ def repointJointsByName(
     """
     Joints of the user on a joint origin of the old part, its own component or one inside it (a box set: Box and Lid,
     round 27), get the joint origin of the same name in the same place of the new part. The part's own joints, in its
-    timeline group, go with the old part. A box label too wide for the rebuilt box isn't moved over, it is laid beside
-    the parts, see _layBeside. Returns how many were moved over and a note per joint that couldn't be or needs a look
+    timeline group, go with the old part. A box label too wide for the rebuilt box isn't moved over, it is laid in front
+    of the box or beside the parts, see _layBeside. Returns how many were moved over and a note per joint that couldn't be or needs a look
     """
     if target.occurrence is None or len(newBodies) == 0:
         return (0, [])
@@ -413,7 +414,8 @@ def repointJointsByName(
     moved = 0
     notes = []
     shown = []
-    # box labels to lay beside: the joint, the label's occurrence and the cells it was built for
+    # box labels to lay beside: the joint, the label's occurrence, the cells it was built for and the box takes now, and
+    # the rebuilt box's Label joint origin
     tooWide = []
     collapsedGroups = []
     for joint in list(design.rootComponent.allJoints):
@@ -441,12 +443,12 @@ def repointJointsByName(
                     shown.append(newJointOrigin)
                     otherSide = adsk.fusion.JointOrigin.cast(getattr(joint, 'geometryOrOriginTwo' if side == 'geometryOrOriginOne' else 'geometryOrOriginOne'))
                     (labelCells, boxCells) = (_labelCells(otherSide), _boxCells(newJointOrigin))
-                    widthNote = boxLabelConfig.widthNote(joint.name, labelCells, boxCells)
                     if boxLabelConfig.labelFit(labelCells, boxCells) == boxLabelConfig.FIT_TOO_WIDE:
                         # the label's occurrence from the joint: its sides may come without one (round 20, p220, review)
                         labelOccurrence = getattr(joint, 'occurrenceOne' if side == 'geometryOrOriginTwo' else 'occurrenceTwo') or otherSide.assemblyContext
-                        tooWide.append((joint, labelOccurrence, labelCells, widthNote))
+                        tooWide.append((joint, labelOccurrence, labelCells, boxCells, newJointOrigin))
                         continue
+                    widthNote = boxLabelConfig.widthNote(joint.name, labelCells, boxCells)
                     if widthNote is not None:
                         notes.append(widthNote)
                 group = item.parentGroup
@@ -463,11 +465,16 @@ def repointJointsByName(
     for group in collapsedGroups:
         group.isCollapsed = True
     # with the timeline at its end, before the old part goes: its joints would break with it
-    for (joint, occurrence, labelCells, widthNote) in tooWide:
+    # the old set too: still there, it may reach further out in front than the new one
+    oldParts = design.rootComponent.allOccurrencesByComponent(oldNative.component)
+    boxParts = [newPart] + ([oldParts.item(0)] if oldParts.count > 0 else [])
+    for (joint, occurrence, labelCells, boxCells, boxJointOrigin) in tooWide:
         jointName = joint.name
-        laid = _layBeside(design, joint, occurrence, labelCells)
-        if laid == LAID_BESIDE:
-            notes.append(widthNote)
+        laid = _layBeside(design, joint, occurrence, labelCells, boxJointOrigin, boxParts)
+        if laid == LAID_FRONT:
+            notes.append(boxLabelConfig.widthNote(jointName, labelCells, boxCells, place='in front of'))
+        elif laid == LAID_BESIDE:
+            notes.append(boxLabelConfig.widthNote(jointName, labelCells, boxCells))
         elif laid == LAID_FREE:
             notes.append(f"{jointName}: the label is too wide for the box now, it was taken out but lies where it was built; move it and rebuild it with the new width")
         else:
@@ -478,17 +485,27 @@ def repointJointsByName(
 
 # grid free spots are looked for on, as a new box label's (boxLabelBuilder.PLACEMENT_CELL)
 LABEL_PLACEMENT_CELL = 4.2
-# what _layBeside did: laid beside the parts, taken out but left where it was built, or left in
+# what _layBeside did: laid in front of the box, beside the parts, taken out but left where it was built, or left in
+LAID_FRONT = 'front'
 LAID_BESIDE = 'beside'
 LAID_FREE = 'free'
 LAID_NOT = 'not'
 
-def _layBeside(design: adsk.fusion.Design, joint: adsk.fusion.Joint, occurrence: adsk.fusion.Occurrence | None, labelCells: int) -> str:
+def _layBeside(
+    design: adsk.fusion.Design,
+    joint: adsk.fusion.Joint,
+    occurrence: adsk.fusion.Occurrence | None,
+    labelCells: int,
+    boxJointOrigin: adsk.fusion.JointOrigin | None = None,
+    boxParts: list[adsk.fusion.Occurrence] | None = None,
+) -> str:
     """
-    Takes the label out of the holder of a box rebuilt too narrow for it and lays it flat at a free spot beside the
-    parts, as a new label without a box. Without its joint Fusion puts it back where it was built, for a jointed label
-    the origin (p391); a new place holds only with its position captured right after it is set (p392: transform2,
-    then snapshots.add). Returns LAID_BESIDE, LAID_FREE or LAID_NOT
+    Takes the label out of the holder of a box rebuilt too narrow for it and lays it flat in front of the box, its
+    middle on the box's (Nutzer 17.11.2026: "Schild vor die Front wäre besser. Sonst übersieht man es schnell."), see
+    _frontSpot; is something in the way there, at a free spot beside the parts as a new label without a box. Without
+    its joint Fusion puts it back where it was built, for a jointed label the origin (p391); a new place holds only
+    with its position captured right after it is set (p392: transform2, then snapshots.add). Returns LAID_FRONT,
+    LAID_BESIDE, LAID_FREE or LAID_NOT
     """
     if occurrence is None:
         return LAID_NOT
@@ -507,20 +524,28 @@ def _layBeside(design: adsk.fusion.Design, joint: adsk.fusion.Joint, occurrence:
         deleted = True
         design.timeline.moveToEnd()
         (width, height) = (predBoxLabelLayout.plateWidth(labelCells), predBoxLabelLayout.PLATE_HEIGHT)
-        (x, y) = placementUtils.findPlacement(
-            design,
-            [tagUtils.TAG_BOX, tagUtils.TAG_LABEL, tagUtils.TAG_BIN, tagUtils.TAG_BASEPLATE],
-            predBoxLabelLayout.PLATE_BODY_NAME,
-            (0, 0, width, height),
-            LABEL_PLACEMENT_CELL,
-            LABEL_PLACEMENT_CELL,
-        )
+        spot = _frontSpot(design, occurrence, (width, height), boxJointOrigin, boxParts or [])
+        laid = LAID_FRONT
+        if spot is None:
+            (x, y) = placementUtils.findPlacement(
+                design,
+                [tagUtils.TAG_BOX, tagUtils.TAG_LABEL, tagUtils.TAG_BIN, tagUtils.TAG_BASEPLATE],
+                predBoxLabelLayout.PLATE_BODY_NAME,
+                (0, 0, width, height),
+                LABEL_PLACEMENT_CELL,
+                LABEL_PLACEMENT_CELL,
+            )
+            (spot, laid) = ((x + width / 2, y + height / 2, 0), LAID_BESIDE)
+        # the plate lies centred on its component's origin (as findPlacement's spot assumes); turned with the box, its
+        # text reads from the box's front
         place = adsk.core.Matrix3D.create()
-        place.translation = adsk.core.Vector3D.create(x + width / 2, y + height / 2, 0)
+        if spot[2] != 0:
+            place.setToRotation(spot[2] * math.pi / 2, adsk.core.Vector3D.create(0, 0, 1), adsk.core.Point3D.create(0, 0, 0))
+        place.translation = adsk.core.Vector3D.create(spot[0], spot[1], 0)
         occurrence.transform2 = place
         if design.snapshots.hasPendingSnapshot:
             design.snapshots.add()
-        return LAID_BESIDE
+        return laid
     except Exception as err:
         commonUtils.fileLog(f"{LOG_PREFIX} a box label {'taken out' if deleted else 'left in'}, not laid beside the box, {err}")
         return LAID_FREE if deleted else LAID_NOT
@@ -532,6 +557,59 @@ def _layBeside(design: adsk.fusion.Design, joint: adsk.fusion.Joint, occurrence:
                 group.isCollapsed = True
         except Exception as err:
             commonUtils.fileLog(f'{LOG_PREFIX} timeline not put back after laying a box label beside, {err}')
+
+def _frontSpot(
+    design: adsk.fusion.Design,
+    labelOccurrence: adsk.fusion.Occurrence,
+    size: tuple[float, float],
+    boxJointOrigin: adsk.fusion.JointOrigin | None,
+    boxParts: list[adsk.fusion.Occurrence],
+) -> tuple[float, float, int] | None:
+    """
+    Where the label lies in front of the rebuilt box, see placementUtils.frontPlacement, cm. The box's front faces -y
+    in its own frame (its Label joint origin is 7.3 mm behind the front, predBoxSeats.LABEL_BACK, on the box's middle
+    in x). Kept clear of the box set's parts, old and new, and of boxes, bins, baseplates, inserts and box labels, the
+    label itself left out. None when something is in the way or the box can't be read; the caller looks for a free
+    spot then
+    """
+    if boxJointOrigin is None or boxJointOrigin.assemblyContext is None or len(boxParts) == 0:
+        return None
+    try:
+        # the box's place in the root from the native transforms up its path, each relative to its parent: what a
+        # proxy's own transform2 gives isn't relied on
+        boxOccurrence = boxJointOrigin.assemblyContext
+        world = (boxOccurrence.nativeObject or boxOccurrence).transform2.copy()
+        parent = boxOccurrence.assemblyContext
+        while parent is not None:
+            world.transformBy((parent.nativeObject or parent).transform2)
+            parent = parent.assemblyContext
+        centre = (boxJointOrigin.nativeObject or boxJointOrigin).geometry.origin.copy()
+        centre.transformBy(world)
+        front = adsk.core.Vector3D.create(0, -1, 0)
+        front.transformBy(world)
+        labelComponent = (labelOccurrence.nativeObject or labelOccurrence).component
+        labelComponents = [labelComponent] + [child.component for child in labelComponent.allOccurrences]
+        occupied = placementUtils.getOccupiedExtents(
+            design,
+            [tagUtils.TAG_BOX, tagUtils.TAG_LABEL, tagUtils.TAG_BIN, tagUtils.TAG_BASEPLATE],
+            predBoxLabelLayout.PLATE_BODY_NAME,
+            skipComponents=labelComponents,
+        )
+        boxExtents = [extent for part in boxParts for extent in _worldExtents(part)]
+        return placementUtils.frontPlacement((front.x, front.y), (centre.x, centre.y), boxExtents, size, placementUtils.FRONT_GAP, occupied + boxExtents)
+    except Exception as err:
+        commonUtils.fileLog(f'{LOG_PREFIX} the front of the rebuilt box not found for its label, {err}')
+        return None
+
+def _worldExtents(occurrence: adsk.fusion.Occurrence) -> list[tuple[float, float, float, float]]:
+    """World XY extents of the bodies of an occurrence seen from the root (a proxy) and of those inside it"""
+    extents = []
+    for body in occurrence.bRepBodies:
+        box = body.boundingBox
+        extents.append((box.minPoint.x, box.minPoint.y, box.maxPoint.x, box.maxPoint.y))
+    for child in occurrence.childOccurrences:
+        extents += _worldExtents(child)
+    return extents
 
 def _labelCells(jointOrigin: adsk.fusion.JointOrigin | None) -> int | None:
     """The cells a box label on the joint origin was built for, from its plate's config, none for anything else"""
