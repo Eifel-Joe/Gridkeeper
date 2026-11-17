@@ -36,33 +36,22 @@ Spec mit den Nachträgen dieser Runde: `dev-notes/specs/2026-11-16-pred-box-desi
   - Namen nach dem Rebuild (Commit „Rebuild gibt auch den Kleinteilen ihre Namen zurück“).
   - Sitze nur mit Teilen, Körpername des Stifts (6fdc3ed).
   - Auf der Liste: p293 bis p295.
-- `python -m pytest -q`: 1261 grün. `mkdocs build --strict` sauber.
+- **Scharniere festgejointet** (Vorschlag J, Jörg: „Ja, beides“) und **Auswahl Hinge** (M3x30, Pinned, Plain):
+  - `r28_cmd` l3/l4: zwei Sätze mit je eigenen Teilen, 20 Gelenke gesund.
+  - Die Scharniere wandern beim Stapeln mit.
+  - Rebuild 6×4×7 in 695 s, danach nichts ungesund und nichts übrig.
+- **Box-Snapshots** neu abgelegt, alle zehn pass (`r28_snap`, 671f9e9).
+- `origin/master` (PR #4) gemergt (da801b7).
+- `python -m pytest -q`: 1359 grün. `mkdocs build --strict` sauber.
 
 ## Offen
 
-- **Scharnier-Auswahl** (Jörg: alle drei Varianten zur Wahl):
-  - `hingePlain.f3d` (Hinge) und `hingePinned.f3d` (Hinge_Pined) sind übernommen.
-  - Die Box ist bei allen drei Varianten gleich: Ihre Features nutzen nur die vier Schlitz-Parameter, und die
-    nehmen alle drei Varianten.
-  - Offen ist Jörgs Antwort zur Lage von „Hinge“: An Preds Stelle läge es rund 67 mm weiter außen. Vorschlag: an die
-    Stelle von M3x30.
-  - Danach bauen: Auswahl in Dialog, InputState, configJson, Rebuild und Clone.
-- **Lage der Scharniere, Architektur-Entscheidung bei Jörg** (3-Fix-Regel, `r28_cmd` l1/l2):
-  - Die lose gesetzten Scharniere wandern nicht mit, wenn der Satz gestapelt oder verschoben wird.
-  - Das Positions-Element „Position1“ bleibt nach dem Rebuild unterdrückt zurück.
-  - Vorschlag J: die Scharniere starr an zwei Joint origins neben der Box jointen, in Druckposition.
-  - Rebuild-Dauer 667–673 s (R27: 413 s), Ursache noch nicht gemessen.
-- **Task 7:**
-  - In `fusion-auftraege`: `r28_compare` bestanden; `r28_cmd` (zwei Sätze, Stapeln, Rebuild) nach J wiederholen;
-    `r28_snap` (zehn Box-Snapshots neu).
-  - Die Snapshots erst nach der Scharnier-Auswahl ablegen, weil sie die Einstellungen ändert.
-  - Ungeprüft:
-    - ob der Rebuild die alten Teile mit der alten Zeitleisten-Gruppe entfernt (die Teile werden innerhalb der Gruppe
-      eingefügt);
-    - Clone;
-    - Export eines Satzes mit Teilen (Code angepasst, in Fusion ungeprüft);
-    - eine Box in einem Bauteil-Design: dort fügt `buildBox` keine Teile ein, weil es keine Box-Occurrence gibt.
-- Bild der Box mit Kleinteilen für die Doku (`docs/assets/images/NEEDED.md`).
+- `r28_insert_check` mit den Scharnieren Plain und Pinned (läuft).
+- Zweites Review über die gejointeten Scharniere und die Auswahl (läuft).
+- Bild der Box mit Kleinteilen und neues Dialogbild (`docs/assets/images/NEEDED.md`).
+- Ungeprüft in Fusion: Clone; Export eines Satzes mit Teilen (Code angepasst).
+- Liste: p293 (eigenes Gelenk an einem Riegel springt beim Rebuild), p295 (Vorschau fügt die Teile jedes Mal ein),
+  p296 (Bau rund 95 s, Rebuild mit Stapel rund 11,5 min).
 
 ## Fallen
 
