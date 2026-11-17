@@ -3,7 +3,7 @@ Pred's latch (Latch_Experimental) of the storage box after Pred's parametric Gri
 (https://www.printables.com/model/543553, CC BY-NC, by Pred), drawn in code for Gridkeeper (round 29, Jörg 17.11.2026:
 "Wir zeichnen die Teile im Code."). Plan: dev-notes/r29/latch-plan.md.
 
-The part frame is Pred's component frame, as resources/predBox/latch.f3d: the latch lies flat in its print position,
+The part frame is Pred's component frame, as the former resources/predBox/latch.f3d: the latch lies flat in its print position,
 x -11.8..11.8, y -36.5..0, z 0..7 mm. Pred's steps and measures are from fusion-auftraege/r29_walk/Latch_Experimental.json.
 
 Pred builds the left half, patterns the slot features once 10 mm along -y (R-Pattern2, with Chamfer5 and Chamfer7) and
@@ -529,7 +529,7 @@ class _Builder:
                         'Extrude4' if side < 0 else 'Extrude4 right')
 
     def jointOrigin(self):
-        """As resources/predBox/latch.f3d (fusion-auftraege/r28_extract.py): at the part's origin, Z along the part's
+        """As the former resources/predBox/latch.f3d (fusion-auftraege/r28_extract.py): at the part's origin, Z along the part's
         +y, X along its -x; jointed to the box's upright seat it gives the place of Pred's Latch:1"""
         component = self.component
         originInput = component.jointOrigins.createInput(adsk.fusion.JointGeometry.createByPoint(component.originConstructionPoint))
