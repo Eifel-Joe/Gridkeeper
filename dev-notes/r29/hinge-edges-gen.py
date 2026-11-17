@@ -26,6 +26,8 @@ for variant, (name, chamfers) in SETS.items():
                 raise ValueError(e['type'])
         steps.append({'pred': it['name'], 'distance': es['distance']['value'], 'edges': edges})
     out[variant] = steps
+# Pinned has none of these chamfers (Pred's Hinge_Pined): listed empty, so predHinge.predChamfers can insist on the key
+out['Pinned'] = []
 text = json.dumps(out, indent=1)
 open(sys.argv[1], 'w', encoding='utf-8').write(text + '\n')
 print({v: [(s['pred'], s['distance'], len(s['edges'])) for s in st] for v, st in out.items()})

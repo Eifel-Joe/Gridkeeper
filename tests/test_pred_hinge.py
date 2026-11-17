@@ -100,7 +100,7 @@ def test_leaves_fit_the_slots():
         points = hinge.outline(hinge.SHAPES[name])
         assert points[0][1] == pytest.approx(depth)
         assert points[9][0] - points[0][0] == pytest.approx(width)
-        assert width < 2 and depth < 9 and hinge.LENGTH < 32
+        assert width < hinge.SLOT_WIDTH and depth < hinge.SLOT_DEPTH and hinge.LENGTH < hinge.SLOT_LENGTH
 
 
 def test_section_sketch_is_exactly_determined():
@@ -152,8 +152,35 @@ def test_tab_is_preds_rectangle_with_chamfered_corners():
     _close(sorted(lower), sorted((y, hinge.LENGTH - z) for y, z in upper), 1e-9)
     # area: 2.6 x 5.8 less four corners 1.2 x 1.2 / 2; Pred's Chamfer1 took 3.744 mm3 at 1.3 depth
     area = 0.5 * abs(sum(a[0] * b[1] - b[0] * a[1] for a, b in zip(upper, upper[1:] + upper[:1])))
-    assert area == pytest.approx(2.6 * 5.8 - 2 * 1.2 ** 2)
-    assert (2 * 1.2 ** 2) * 1.3 == pytest.approx(2839.1505 - 2835.4065, abs=1e-4)
+    assert area == pytest.approx(2.6 * 5.8 - 2 * hinge.TAB_CORNER ** 2)
+    assert (2 * hinge.TAB_CORNER ** 2) * hinge.TAB_HEIGHT == pytest.approx(2839.1505 - 2835.4065, abs=1e-4)
+
+
+@pytest.mark.parametrize("name", ["M3x30", "Plain"])
+def test_tab_ramp_edges_are_preds_chamfer2_edge(name):
+    """Pred's Chamfer2 edge on his tab (left leaf, upper): x outer face + 1.3, y 5.6, z 22.1..25.5 (M3x30: x -9.2516);
+    the counterparts mirrored at z 15.8 and at the axis"""
+    shape = hinge.SHAPES[name]
+    c = hinge.center(shape)
+    outer = hinge.outline(shape)[2][0] - c
+    (a, b) = hinge.tabRampEdge(shape, -1, False)
+    _close([a, b], [(c - outer - 1.3, 5.6, 22.1), (c - outer - 1.3, 5.6, 25.5)], 1e-9)
+    if name == "M3x30":
+        assert a[0] == pytest.approx(-9.2516, abs=1e-4)
+    (a, b) = hinge.tabRampEdge(shape, 1, True)
+    _close([a, b], [(c + outer + 1.3, 5.6, hinge.LENGTH - 25.5), (c + outer + 1.3, 5.6, hinge.LENGTH - 22.1)], 1e-9)
+
+
+def test_pred_chamfer_lists():
+    """predHingeEdges.json (Pred's chamfers on leaves and knuckles): every variant has its entry, a missing one must not
+    quietly drop chamfers"""
+    steps = {variant: [(s["pred"], s["distance"], len(s["edges"])) for s in hinge.predChamfers(variant)]
+             for variant in hinge.SHAPES}
+    assert steps == {"M3x30": [("Chamfer3", 1.5, 4), ("Chamfer4", 1.0, 2), ("Chamfer5", 0.5, 57)],
+                     "Plain": [("Chamfer3", 1.5, 4), ("Chamfer5", 1.0, 2), ("Chamfer6", 0.5, 58)],
+                     "Pinned": []}
+    with pytest.raises(KeyError):
+        hinge.predChamfers("Unknown")
 
 
 def test_tab_sketch_is_exactly_determined():
@@ -208,8 +235,8 @@ def _allPlans():
 def test_every_sketch_hangs_on_one_origin_anchor():
     """r29_hinge_diag (18:24): in the bridge sketch, eight chords each dimensioned from the origin, Fusion refused the
     second anchor's dimension (hdim origin-P2, VCS_SKETCH_OVER_CONSTRAINTS) in every case tried (plane z 3.9 or XY,
-    compute deferred or not, empty or built). The sketches Fusion took have one point fixed wholly from the origin (the
-    tabs two; a circle's centre may take one of its two dimensions from the origin). Every sketch now is one shape
+    compute deferred or not, empty or built). The sketches Fusion took had one point fixed wholly from the origin (the
+    tabs then two; a circle's centre may take one of its two dimensions from the origin). Every sketch now is one shape
     (construction lines join its parts) with one such anchor"""
     for points, curves in _allPlans():
         assert len(_originAnchors(points, curves)) == 1
@@ -232,9 +259,12 @@ def test_no_point_on_a_circle():
         for side in (-1, 1):
             points, curves = hinge.clearanceSketch(shape, side)
             assert not _pointsOnCircles(points, curves, [shape.knuckle, shape.clearance])
-        for count in (2, 3):
-            points, curves = hinge.circlesSketch(c, count)
-            assert not _pointsOnCircles(points, curves, [shape.core, hinge.PLAIN_HOLE, shape.clearance][:count])
+        # the circle sketches as drawn: gaps, screw hole with counterbore, pin hole with counterbore
+        radii = [[shape.core, shape.clearance], [shape.core, hinge.PLAIN_HOLE, shape.clearance],
+                 [shape.core, hinge.COUNTERBORE / 2], [hinge.PIN_HOLE, hinge.COUNTERBORE / 2]]
+        for sizes in radii:
+            points, curves = hinge.circlesSketch(c, len(sizes))
+            assert not _pointsOnCircles(points, curves, sizes)
 
 
 # Pred's Sketch5 profiles (sketch x, sketch y = -world y; bounding boxes) and the layers he extruded them in:
