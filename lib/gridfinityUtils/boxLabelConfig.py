@@ -9,7 +9,7 @@ Settings are by field name as configJson.stateToJson has them, the symbols by th
 
 import re
 
-from .predBoxLabelLayout import MAX_SYMBOLS, NO_SYMBOL, widthChoiceFor
+from .predBoxLabelLayout import MAX_SYMBOLS, NO_SYMBOL, labelWidth, widthChoiceFor
 
 # the label's text parameters: the end of their name in the document (gfBoxLabel1_text1, kept as built in round 29),
 # the config field each holds and the label the tag gives it; a rebuild takes their values back into the settings, see
@@ -37,16 +37,32 @@ def isHolderJointName(name: str) -> bool:
     return _HOLDER_JOINT.search(name) is not None
 
 
-def widthNote(jointName: str, labelCells: int | None, boxCells: int | None) -> str | None:
+# how a label in the holder fits a rebuilt box, see labelFit
+FIT_SAME = 'same'
+FIT_NARROWER = 'narrower'
+FIT_TOO_WIDE = 'tooWide'
+
+
+def labelFit(labelCells: int | None, boxCells: int | None) -> str:
     """
-    What the note after a box rebuild says of a label left in the holder of a box of another label width, none when it
-    fits or a width isn't known. It stays jointed in (Hauptsitzung 17.11.2026: "dann trotzdem einsetzen und in der
-    Meldung nach dem Rebuild darauf hinweisen")
+    How a label built for labelCells fits the holder of a box boxCells wide. Nutzer 17.11.2026: "Wenn die Box einen
+    Rebuild bekommt, der das Schild zu groß werden lässt, muss das Schild daneben gelegt werden." Too wide goes beside,
+    narrower stays in; a width that isn't known leaves it as it is
     """
     if labelCells is None or boxCells is None or widthChoiceFor(labelCells) == widthChoiceFor(boxCells):
+        return FIT_SAME
+    return FIT_TOO_WIDE if labelWidth(labelCells) > labelWidth(boxCells) else FIT_NARROWER
+
+
+def widthNote(jointName: str, labelCells: int | None, boxCells: int | None) -> str | None:
+    """What the note after a box rebuild says of its label of another label width, none when it fits"""
+    fit = labelFit(labelCells, boxCells)
+    if fit == FIT_SAME:
         return None
-    return (f'{jointName}: the label is {widthChoiceFor(labelCells)} wide, the box now takes {widthChoiceFor(boxCells)}; '
-            'rebuild the label with that width')
+    widths = f'{widthChoiceFor(labelCells)} against {widthChoiceFor(boxCells)} the box takes now'
+    if fit == FIT_TOO_WIDE:
+        return f'{jointName}: the label is too wide for the box now ({widths}), it was laid beside the box; rebuild the label with that width'
+    return f'{jointName}: the label is narrower than the holder now ({widths}), it stays in the holder; rebuild the label with that width'
 
 
 def knownSymbols(symbols: list[str], names: list[str]) -> tuple[list[str], list[str]]:
