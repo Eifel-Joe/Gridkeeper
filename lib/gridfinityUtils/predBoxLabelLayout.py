@@ -25,6 +25,9 @@ from .predBox import PRED
 # Pred's plate, cm (pred_read2.out: EmptyLabel 67.5 x 24.5 x 0.85 mm at 5 x 4 x 6)
 PLATE_HEIGHT = 2.45
 PLATE_THICKNESS = 0.085
+# Label/Sketch1: the corners rounded 3.5 mm; Chamfer1: 0.2 mm all round, front and back (r29_walk/Label.json)
+PLATE_CORNER_RADIUS = 0.35
+PLATE_CHAMFER = 0.02
 # 1.5 mm in from each edge of the box's label width (x 81.25 against the label edge at 79.75 mm)
 PLATE_INSET = 0.15
 # raised, debossed or flush by this much, as Pred's Label_M_Screws (1.25 mm thick, 0.4 mm raised letters)

@@ -23,17 +23,24 @@ def _source(name):
     return ast.unparse(_function(name))
 
 
-def test_the_plate_is_a_dimensioned_rectangle_on_the_origin():
-    """createRectangle: horizontal/vertical, width and height and the corner's distance from the origin dimensioned"""
+def test_the_plate_is_preds_rounded_rectangle_on_the_origin():
+    """Pred's Label/Sketch1 (r29_walk/Label.json): 67.5 x 24.5 mm, corners rounded 3.5 mm. predSketch's rounded
+    rectangle: createRectangle with its corner dimensioned from the origin, four fillets, equal, one radius dimension"""
     source = _source("_plate")
-    assert "sketchUtils.createRectangle(" in source
-    assert "Dim.length(-width / 2)" in source and "Dim.length(-PLATE_HEIGHT / 2)" in source
-    assert "component.xYConstructionPlane" in source
+    assert "WorldSketch(component, component.xYConstructionPlane" in source
+    assert "roundedRectangle(-width / 2, -PLATE_HEIGHT / 2, width / 2, PLATE_HEIGHT / 2, 0, PLATE_CORNER_RADIUS)" in source
+
+
+def test_the_plate_gets_preds_chamfer_all_round_front_and_back():
+    """Pred's Chamfer1: equal distance 0.2 mm, the outline of both faces as tangent chains"""
+    source = _source("_plate")
+    assert "extrude.startFaces" in source and "extrude.endFaces" in source
+    assert "addEqualDistanceChamferEdgeSet(" in source and "PLATE_CHAMFER" in source
 
 
 def test_the_plate_is_preds_thickness_up_from_the_back_face():
     source = _source("_plate")
-    assert "_extrude([sketch.profiles.item(0)], PLATE_THICKNESS, True, component" in source
+    assert "_extrude([sketch.profiles.item(0)], PLATE_THICKNESS, True, component" in source.replace("plateSketch.sketch", "sketch")
 
 
 def test_the_joint_origin_needs_no_sketch():
@@ -63,7 +70,7 @@ def test_no_feature_mirror_and_no_loose_sketches():
     # every sketch the module adds is on the XY plane or the marking plane over the plate
     for node in ast.walk(_tree()):
         if isinstance(node, ast.Call) and ast.unparse(node.func).endswith("sketches.add"):
-            assert ast.unparse(node.args[0]) in ("component.xYConstructionPlane", "plane"), ast.unparse(node)
+            assert ast.unparse(node.args[0]) == "plane", ast.unparse(node)
 
 
 def test_markings_are_preds_04_mm_and_cut_like_the_inserts():

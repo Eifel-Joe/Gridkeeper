@@ -35,7 +35,7 @@ Platte nach Preds Profil (Breite `labelWidth − 3 mm`, 24,5 mm hoch, 0,85 mm di
 │  │        │  │ Zeile 1         (4 mm)   │ │   Zeilen: Versalhöhe 4 mm, schrumpfen auf Breite  [V]
 │  │  M2    │  │ Zeile 2                  │ │
 │  │ (≤12mm)│  ├──────────────────────────┤ │
-│  │        │  │ ⚙ ⚙ ⚙ ⚙ ⚙   (7 mm hoch)  │ │   bis 5 Symbole, 1,5 mm Abstand, links bündig  [V]
+│  │        │  │ ⚙ ⚙ ⚙ ⚙ ⚙   (6 mm hoch)  │ │   bis 5 Symbole, 1,5 mm Abstand, links bündig  [V]
 │  └────────┘  └──────────────────────────┘ │
 └──────────────────────────────────────────┘
    Feld links 35 % der Nutzbreite [V], 2 mm Spalt
@@ -115,6 +115,11 @@ Wiederverwendet: `cullenectLabelGenerator` (`_texts`, `_fixSketch`, `_cutExtrude
    (Schild an *Label joint origin* gejointet, Interferenz mit der Box = 0, Körper-Box = Preds `EmptyLabel`-Lage).
 6. Review (Opus-Subagent) ohne offene Funde, Doku, Commit auf `r29-boxlabel`.
 
-## 6. Offene Daten
+## 6. Preds Platte (r29_walk/Label.json, gelesen 17.11.2026)
 
-- Preds Plattenskizze (10 Kurven) und `Chamfer1` (Kanten, Maß) aus `r29_walk/Label.json`; danach hier eintragen.
+- `Sketch1` (voll bestimmt): Rechteck 67,5 × 24,5 mm mit vier Eckbögen 3,5 mm (10 Kurven: obere und untere Kante in
+  der Mitte geteilt). `Extrude1` 0,85 mm. `Chamfer1`: gleicher Abstand 0,2 mm, tangentiale Kette, Umriss vorn und
+  hinten (16 Kanten). Volumen 1389,6464 mm³, 26 Flächen, 56 Kanten.
+- Nachbau: `predSketch.WorldSketch.roundedRectangle` (createRectangle + vier gleiche Verrundungen, ein Radiusmaß), Fase
+  über je eine Kante der Start- und Endfläche als tangentiale Kette.
+- Symbolreihe 6 mm hoch (statt 7 mm im ersten Entwurf): bei 82 mm Breite passen so vier Schrauben-Symbole. **[V]**

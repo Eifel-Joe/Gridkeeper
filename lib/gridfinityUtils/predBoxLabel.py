@@ -1,12 +1,12 @@
 import adsk.core, adsk.fusion
 
-from . import commonUtils, combineUtils, sketchUtils, cullenectLabelLayout, predBoxLabelLayout, textStyles
+from . import commonUtils, combineUtils, cullenectLabelLayout, predBoxLabelLayout, textStyles
 from .cullenectCatalog import svgSize
 from .cullenectLabelGenerator import _offsetPlane, _extrude, _cutExtrude, _texts, _fixSketch
 from .labelGenerator import _importIcon, _iconProfiles
-from .predBoxLabelLayout import BoxLabelLayout, PLATE_HEIGHT, PLATE_THICKNESS, MARKING_DEPTH
+from .predBoxLabelLayout import BoxLabelLayout, PLATE_HEIGHT, PLATE_THICKNESS, PLATE_CORNER_RADIUS, PLATE_CHAMFER, MARKING_DEPTH
+from .predSketch import WorldSketch
 from .predBoxSeats import LABEL_JOINT_ORIGIN
-from .dim import Dim
 
 # The label of the storage box after Pred's parametric Gridfinity Storage Box v1.1
 # (https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric, CC BY-NC, by Pred), round 29
@@ -52,19 +52,23 @@ def boxLabelLayout(input: BoxLabelInput) -> BoxLabelLayout:
 
 
 def _plate(width: float, component: adsk.fusion.Component, name: str) -> adsk.fusion.BRepBody:
-    """Pred's plate centred on the origin, from z = 0 up by its thickness; the rectangle dimensioned from the origin"""
-    sketch: adsk.fusion.Sketch = component.sketches.add(component.xYConstructionPlane)
-    sketch.name = f'{name} plate sketch'
-    sketchUtils.createRectangle(
-        width,
-        PLATE_HEIGHT,
-        adsk.core.Point3D.create(-width / 2, -PLATE_HEIGHT / 2, 0),
-        sketch,
-        Dim.length(-width / 2),
-        Dim.length(-PLATE_HEIGHT / 2),
-    )
-    body = _extrude([sketch.profiles.item(0)], PLATE_THICKNESS, True, component, f'{name} plate').bodies.item(0)
+    """Pred's plate (Label in Pred's file, r29_walk/Label.json) centred on the origin, from z = 0 up by its thickness:
+    Sketch1 a rectangle with corners rounded 3.5 mm, drawn as predSketch's rounded rectangle (createRectangle with its
+    corner dimensioned from the origin, four equal fillets, one radius dimension), Chamfer1 0.2 mm all round on front and
+    back as tangent chains"""
+    plateSketch = WorldSketch(component, component.xYConstructionPlane, f'{name} plate sketch')
+    plateSketch.roundedRectangle(-width / 2, -PLATE_HEIGHT / 2, width / 2, PLATE_HEIGHT / 2, 0, PLATE_CORNER_RADIUS)
+    sketch = plateSketch.close()
+    extrude = _extrude([sketch.profiles.item(0)], PLATE_THICKNESS, True, component, f'{name} plate')
+    body = extrude.bodies.item(0)
     body.name = PLATE_BODY_NAME
+    # one edge of each face, the tangent chain takes the rest of its outline, as baseGenerator's chamfers
+    edges = adsk.core.ObjectCollection.create()
+    for faces in (extrude.startFaces, extrude.endFaces):
+        edges.add(faces.item(0).edges.item(0))
+    chamferInput = component.features.chamferFeatures.createInput2()
+    chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(edges, adsk.core.ValueInput.createByReal(PLATE_CHAMFER), True)
+    component.features.chamferFeatures.add(chamferInput).name = f'{name} plate chamfer'
     return body
 
 
