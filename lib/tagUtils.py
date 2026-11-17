@@ -105,6 +105,18 @@ def readPartTag(body: adsk.fusion.BRepBody) -> tuple[str, dict] | None:
     attribute = body.attributes.itemByName(TAG_GROUP, TAG_BOX_LABEL)
     return (TAG_BOX_LABEL, parseTagValue(attribute.value)) if attribute is not None else None
 
+# a field every whole config of the part has: a box label built before it was rebuilt and cloned (1.1.0) kept the
+# surface only, for the export (p380); built from that, the rest came from the dialog's last label (review)
+CONFIG_KEY_FIELDS = {TAG_BOX_LABEL: 'bigText'}
+
+def buildConfig(tagName: str, value: dict) -> dict | None:
+    """The config in a tag value the part can be rebuilt and cloned from, none when there's none or not all of it"""
+    config = value.get('config')
+    if not isinstance(config, dict):
+        return None
+    keyField = CONFIG_KEY_FIELDS.get(tagName)
+    return config if keyField is None or keyField in config else None
+
 def readBodyTag(body: adsk.fusion.BRepBody) -> tuple[str, dict] | None:
     """Which generator tagged the body and the tag value, none for bodies it didn't generate"""
     for tagName in (TAG_BIN, TAG_BASEPLATE, TAG_LABEL, TAG_BOX):
