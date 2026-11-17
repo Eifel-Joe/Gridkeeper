@@ -13,5 +13,3 @@ tools/screenshots/dialogs
 /site
 tools/screenshots/out
 
-# Fusion writes copies of imported part files here (round 28, p292); never part of the add-in
-resources/predBox/_XRef_/

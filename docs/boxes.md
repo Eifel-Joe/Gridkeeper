@@ -81,8 +81,10 @@ size, the second 5 mm beside the first.
 | **Pinned** | Pred's *Hinge_Pined*, with a printed pin as a third body |
 | **Plain** | Pred's *Hinge*, the one Pred's file shows |
 
-The parts are taken from Pred's file (`resources/predBox`, see its README): the same shape, with joint origins added,
-sketches fully constrained and Pred's parameters turned into their values.
+The parts are drawn in code in Pred's shape, compared with Pred's own parts to the micrometre, with every sketch fully
+constrained and Pred's parameters turned into values; they are drawn by the box command itself, so they sit in the
+box's group in the timeline and come along with a rebuild or clone. They have an appearance of their own,
+*Gridkeeper box parts*, orange like Pred's latch, so they stand apart from box and lid.
 
 ## Label
 
@@ -133,8 +135,8 @@ yours on its joint origins move over to the joint origins of the same name.
 
 ## Credits
 
-Pred's Gridfinity Storage Box v1.1 is licensed CC BY-NC. The small parts are Pred's, taken over from Pred's file
-with the changes listed in `resources/predBox/README.md`. Gridkeeper rebuilds its box and lid in code, with fully
+Pred's Gridfinity Storage Box v1.1 is licensed CC BY-NC. The small parts are Pred's, drawn in code after Pred's
+file, the same shape. Gridkeeper rebuilds its box and lid in code, with fully
 constrained sketches and parameters, and changes it where noted on this page (the magnet holes, the floor pads and
 the stacking rim drawn from circles, the joint origins). The timeline follows Pred's steps, except that the right
 handle and label holders are built directly instead of mirrored from the left ones; the shape stays Pred's.

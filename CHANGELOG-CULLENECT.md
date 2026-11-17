@@ -6,6 +6,17 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## 1.1.0 (2026-11-17)
 
+### Small parts drawn in code (round 29)
+
+- **Box from the dialog with its small parts:** with the parts imported from files (round 28) the box command failed at the first small part
+  and was taken back: Fusion can't import a part file in a command that shows a dialog
+  (`fusion-auftraege/r28_cmdvariants.log`). Latches, handle, handle pins and the three hinges are now drawn in code,
+  each in Pred's shape to the micrometre (compared with Pred's parts, nothing left over), every sketch fully
+  constrained, inside the box command and so in the box's timeline group; rebuild and clone alike. The part files of
+  round 28 are gone.
+- **Small parts in a colour of their own:** *Gridkeeper box parts*, orange like Pred's latch; box and lid stay as they
+  are (Nutzer: „Im Übrigen brauchen Latches, Hinge, Handle und Pin eine andere Farbe als die Box und der Deckel.“).
+
 ### Box label (round 29)
 
 - **Gridkeeper box label (p262):** a new command makes the label for the holder of a box after
@@ -19,8 +30,8 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 ### Small parts of the storage box (round 28)
 
 - **Latches, handle, pins and hinges (p261):** every box set now holds Pred's small parts, taken over from
-  [Pred's file](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric) (CC BY-NC) as
-  Fusion parts in `resources/predBox`: four latches (two at the front, one on each side at the back), the handle and
+  [Pred's file](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric) (CC BY-NC),
+  drawn in code since round 29: four latches (two at the front, one on each side at the back), the handle and
   its two pins, rigidly jointed at joint origins of the box, and two hinges jointed beside the box in their print
   position. The handle follows the label width (+28.5 mm, at most 113.5 mm). **Hinge** picks one of Pred's three
   hinges (M3x30, the default; Pinned; Plain); settings saved before load with M3x30. Every sketch of the parts is fully constrained,

@@ -133,7 +133,7 @@ def seatJointOriginPoints(d: PredBoxDims, hinge: str = DEFAULT_HINGE) -> list[tu
 
 
 def handleHalfWidth(d: PredBoxDims) -> Dim:
-    """The expression the inserted handle's one size dimension (HandleHalfWidth, resources/predBox/handle.f3d) gets"""
+    """The expression of the handle's half width, predHandle.createHandle draws it with (round 29)"""
     return handleWidth(d) / 2
 
 
