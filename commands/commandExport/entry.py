@@ -7,17 +7,23 @@ from ...lib import tagUtils
 from ...lib import labelFaces
 from ...lib import threeMf
 from ...lib import stlFile
+from ...lib import exportParts
 from ...lib import configUtils
 from ...lib import fusion360utils as futil
 from ...lib.gridfinityUtils import labelGenerator
+from ...lib.gridfinityUtils import labelColors
 from ... import config
+
+# Upstream's export of bins and baseplates (Le0Michine, 4b2f167, round 17.11.2026), for every part our generators make
+# (p300): which tags are parts is exportParts.EXPORT_TAGS, and the colored text and symbol bodies in a part's Text
+# component (p86, p90) go into the part's mesh and file, painted for the slicer in the 3MF
 
 app = adsk.core.Application.get()
 ui = app.userInterface
 
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdExport'
 CMD_NAME = 'Gridkeeper export'
-CMD_Description = 'Export bins and baseplates for printing, 3MF with the label letters in a color of their own, or STL and STEP files'
+CMD_Description = 'Export bins, baseplates, Cullenect inserts and boxes for printing, 3MF with the label text in a color of its own, or STL and STEP files'
 ICON_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources', '')
 # in the context menu after Fusion's Save As Mesh
 SAVE_AS_MESH_COMMAND_ID = 'FusionSaveAsSTLCommand'
@@ -40,7 +46,7 @@ FORMAT_EXTENSIONS = {FORMAT_3MF: '3mf', FORMAT_STL: 'stl', FORMAT_STEP: 'step'}
 # files named in the question whether to replace them, the rest counted
 MAX_LISTED_FILES = 8
 # the 3MF file of more than one body
-DEFAULT_FILE_NAME = 'Gridfinity bins'
+DEFAULT_FILE_NAME = 'Gridkeeper parts'
 # the 3MF and STL meshes, finer than the STL export's high refinement, which the calculator can't be set to
 MESH_QUALITY = adsk.fusion.TriangleMeshQualityOptions.VeryHighQualityTriangleMesh
 # cm, a mesh triangle this close to the plane of a letter face can lie on it
@@ -65,16 +71,22 @@ class ExportItem:
     # native, the occurrence places it
     body: adsk.fusion.BRepBody
     occurrence: adsk.fusion.Occurrence | None
+    # the colored text and symbol bodies of the part, in its Text component, each placed by its occurrence (p300)
+    markings: list['ExportItem'] = dataclasses.field(default_factory=list)
 
     @property
     def hasOutlineLabels(self) -> bool:
-        """Bins built before the label styles had outline labels only"""
+        """
+        Bins built before the label styles had outline labels only. A colored outline label has letter bodies of its
+        own, they're the markings, see labelColors.paintsOutlineLetterFaces
+        """
         tag = tagUtils.readBodyTag(self.body)
         if tag is None or tag[0] != tagUtils.TAG_BIN:
             return False
         settings = tag[1].get('config')
         style = settings.get('labelStyle', labelGenerator.LABEL_STYLE_OUTLINE) if isinstance(settings, dict) else labelGenerator.LABEL_STYLE_OUTLINE
-        return style == labelGenerator.LABEL_STYLE_OUTLINE
+        color = settings.get('labelColor', '') if isinstance(settings, dict) else ''
+        return labelColors.paintsOutlineLetterFaces(True, style == labelGenerator.LABEL_STYLE_OUTLINE, color)
 
 def start():
     global markingMenuHandler
@@ -103,30 +115,73 @@ def selectionEntities(selected: list) -> list:
             entities.append(entity)
     return entities
 
+def occurrenceOf(component: adsk.fusion.Component) -> adsk.fusion.Occurrence | None:
+    """The first place of a component, for a native body, as the settings menu finds it (commandShowSettings)"""
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    occurrences = design.rootComponent.allOccurrencesByComponent(component) if design is not None else None
+    return occurrences.item(0) if occurrences is not None and occurrences.count > 0 else None
+
+def isPartBody(body: adsk.fusion.BRepBody) -> bool:
+    """A part the export takes, see exportParts.isPartBody, the body where it's placed or its native one"""
+    native = body.nativeObject if body.assemblyContext is not None else body
+    tag = tagUtils.readBodyTag(native)
+    return exportParts.isPartBody(tag[0] if tag is not None else None, native.parentComponent.name)
+
+def placedPart(body: adsk.fusion.BRepBody) -> adsk.fusion.BRepBody | None:
+    """
+    The part a body belongs to, where it's placed: itself, or for a letter or symbol in a Text component the part one
+    level up, as tagUtils.partTag finds it (the letters of an insert are tagged too, they still aren't a part). None for
+    any other body
+    """
+    native = body.nativeObject if body.assemblyContext is not None else body
+    if not exportParts.isTextComponentName(native.parentComponent.name):
+        return body if isPartBody(body) else None
+    textOccurrence = body.assemblyContext if body.assemblyContext is not None else occurrenceOf(native.parentComponent)
+    partOccurrence = textOccurrence.assemblyContext if textOccurrence is not None else None
+    if partOccurrence is None:
+        return None
+    return next((partBody for partBody in partOccurrence.bRepBodies if isPartBody(partBody)), None)
+
+def markingsOf(part: adsk.fusion.BRepBody) -> list[ExportItem]:
+    """
+    The visible bodies of the part's Text components, where they're placed. A part in the root, built without a
+    component, has no Text component to find them in
+    """
+    occurrence = part.assemblyContext
+    if occurrence is None:
+        return []
+    markings = []
+    for child in occurrence.childOccurrences:
+        if not exportParts.isTextComponentName(child.component.name):
+            continue
+        markings += [ExportItem(body.nativeObject, child) for body in child.bRepBodies if body.isVisible]
+    return markings
+
 def isTagged(entity) -> bool:
     """
-    A generated body, or an occurrence or component with one among its bodies or those of the occurrences in it. The
-    browser's root is a component, the others are occurrences
+    A part or a letter of one, or an occurrence or component with a part among its bodies or those of the occurrences
+    in it, our containers Grid, Bins and Label too. The browser's root is a component, the others are occurrences
     """
     body = adsk.fusion.BRepBody.cast(entity)
     if body is not None:
-        return tagUtils.readBodyTag(body.nativeObject if body.assemblyContext is not None else body) is not None
+        return placedPart(body) is not None
     occurrence = adsk.fusion.Occurrence.cast(entity)
     if occurrence is not None:
         return isTagged(occurrence.component)
     component = adsk.fusion.Component.cast(entity)
     if component is None:
         return False
-    return any(tagUtils.readBodyTag(body) is not None for body in component.bRepBodies) \
+    return any(placedPart(body) is not None for body in component.bRepBodies) \
         or any(isTagged(child.component) for child in component.occurrences)
 
 def isGridfinityBody(body: adsk.fusion.BRepBody) -> bool:
-    """A visible bin or baseplate, the body where it's placed or its native one"""
-    native = body.nativeObject if body.assemblyContext is not None else body
-    return body.isVisible and tagUtils.readBodyTag(native) is not None
+    """A visible part, the body where it's placed or its native one, its letters come with it"""
+    return body.isVisible and isPartBody(body)
 
 def occurrenceBodies(occurrence: adsk.fusion.Occurrence) -> list[adsk.fusion.BRepBody]:
-    """Its visible bins and baseplates and those of the occurrences in it, where they're placed"""
+    """Its visible parts and those of the occurrences in it, where they're placed. A Text occurrence stands for its part"""
+    if exportParts.isTextComponentName(occurrence.component.name) and occurrence.assemblyContext is not None:
+        occurrence = occurrence.assemblyContext
     bodies = [body for body in occurrence.bRepBodies if isGridfinityBody(body)]
     for child in occurrence.childOccurrences:
         bodies += occurrenceBodies(child)
@@ -134,7 +189,7 @@ def occurrenceBodies(occurrence: adsk.fusion.Occurrence) -> list[adsk.fusion.BRe
 
 def menuSelection(design: adsk.fusion.Design) -> list[adsk.fusion.BRepBody]:
     """
-    The bodies the dialog starts with selected, the visible bins and baseplates of a component or occurrence in its
+    The bodies the dialog starts with selected, the visible parts of a component or occurrence in its
     place, so the selection counts bodies only. Bodies picked themselves stay, whatever they are
     """
     bodies = []
@@ -218,9 +273,9 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     isFileNameTyped = False
     design = adsk.fusion.Design.cast(app.activeProduct)
     # the whole design when its root was picked
-    allInput = inputs.addBoolValueInput(ALL_INPUT_ID, 'All Gridfinity bodies', True, '', isRootSelected(design))
-    allInput.tooltip = 'Selects every visible bin and baseplate of the design, off goes back to what was selected'
-    selectionInput = inputs.addSelectionInput(SELECTION_INPUT_ID, 'Bodies', 'Bins, baseplates or any other bodies to export')
+    allInput = inputs.addBoolValueInput(ALL_INPUT_ID, 'All Gridkeeper parts', True, '', isRootSelected(design))
+    allInput.tooltip = 'Selects every visible bin, baseplate, Cullenect insert and box of the design, with their colored text, off goes back to what was selected'
+    selectionInput = inputs.addSelectionInput(SELECTION_INPUT_ID, 'Bodies', 'Bins, baseplates, Cullenect inserts, boxes or any other bodies to export, a letter stands for its part')
     # bodies only, Fusion puts a selected component in too as the command starts, beside its bodies
     selectionInput.addSelectionFilter(adsk.core.SelectionCommandInput.SolidBodies)
     selectionInput.setSelectionLimits(0, 0)
@@ -236,7 +291,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     fileNameInput = inputs.addStringValueInput(FILE_NAME_INPUT_ID, 'File name', '')
     fileNameInput.tooltip = 'The 3MF file\'s name, the body\'s name for one body'
     paintInput = inputs.addBoolValueInput(PAINT_INPUT_ID, 'Color label text', True, '', choices['paint'])
-    paintInput.tooltip = 'Assigns a color index to the text on outline labels so the slicer paints it automatically'
+    paintInput.tooltip = 'Assigns a color index to label text so the slicer paints it automatically: the letters of outline labels, and the colored text and symbols of bins and Cullenect inserts'
     filamentInput = inputs.addIntegerSpinnerCommandInput(FILAMENT_INPUT_ID, 'Label color index', 1, threeMf.MAX_FILAMENT, 1, choices['filament'])
     filamentInput.tooltip = 'The slicer\'s color the label text prints in, counting from 1 as the slicer lists them'
     inputs.addTextBoxCommandInput(SUMMARY_INPUT_ID, '', '', 2, True)
@@ -262,7 +317,7 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
     updateInputs(args.inputs)
 
 def selectAll(inputs: adsk.core.CommandInputs, isAll: bool):
-    """Every visible bin and baseplate in the selection, or what was selected as the dialog opened"""
+    """Every visible part in the selection, or what was selected as the dialog opened"""
     selectionInput = adsk.core.SelectionCommandInput.cast(inputs.itemById(SELECTION_INPUT_ID))
     selectionInput.clearSelection()
     design = adsk.fusion.Design.cast(app.activeProduct)
@@ -271,12 +326,17 @@ def selectAll(inputs: adsk.core.CommandInputs, isAll: bool):
         selectionInput.addSelection(entity)
 
 def gridfinityBodies(design: adsk.fusion.Design) -> list[adsk.fusion.BRepBody]:
-    """The visible bins and baseplates where they're placed, those of a component in each of its occurrences"""
+    """
+    The visible parts where they're placed, those of a component in each of its occurrences. The tagged letters of a
+    Cullenect insert come with the insert, see exportParts.isPartBody
+    """
     root = design.rootComponent
     bodies = []
-    for tagName in (tagUtils.TAG_BIN, tagUtils.TAG_BASEPLATE):
+    for tagName in exportParts.EXPORT_TAGS:
         for (body, _) in tagUtils.findTaggedBodies(design, tagName):
             component = body.parentComponent
+            if not exportParts.isPartBody(tagName, component.name):
+                continue
             if component == root:
                 placed = [body]
             else:
@@ -300,7 +360,7 @@ def updateInputs(inputs: adsk.core.CommandInputs):
         if not isFileNameTyped:
             fileNameInput.value = defaultFileName(items)
         files = 'one file' if format == FORMAT_3MF else 'a file each'
-        summary = f'{len(items)} bod{"y" if len(items) == 1 else "ies"}, {files}' if items else 'Select bodies to export'
+        summary = f'{len(items)} part{"" if len(items) == 1 else "s"}, {files}' if items else 'Select bodies to export'
     except Exception as err:
         summary = f'Bodies not found, {err}'
     adsk.core.TextBoxCommandInput.cast(inputs.itemById(SUMMARY_INPUT_ID)).text = summary
@@ -310,26 +370,33 @@ def selectedEntities(inputs: adsk.core.CommandInputs) -> list:
     return [selectionInput.selection(index).entity for index in range(selectionInput.selectionCount)]
 
 def exportItems(inputs: adsk.core.CommandInputs) -> list[ExportItem]:
-    """The selected bodies and those of the selected occurrences"""
-    items: list[ExportItem] = []
-    def add(body: adsk.fusion.BRepBody):
-        item = ExportItem(body.nativeObject, body.assemblyContext) if body.assemblyContext is not None else ExportItem(body, None)
-        if not any(other.body == item.body and other.occurrence == item.occurrence for other in items):
-            items.append(item)
+    """
+    The parts of the selected bodies and occurrences, each once with its colored text and symbol bodies: a selected
+    letter stands for its part. Other bodies picked themselves go out as they are
+    """
+    bodies: list[adsk.fusion.BRepBody] = []
     def addOccurrence(occurrence: adsk.fusion.Occurrence):
-        for body in occurrence.bRepBodies:
-            add(body)
+        bodies.extend(occurrence.bRepBodies)
         for child in occurrence.childOccurrences:
             addOccurrence(child)
 
     for entity in selectedEntities(inputs):
         body = adsk.fusion.BRepBody.cast(entity)
         if body is not None:
-            add(body)
+            bodies.append(body)
             continue
         occurrence = adsk.fusion.Occurrence.cast(entity)
         if occurrence is not None:
             addOccurrence(occurrence)
+    def partOf(body: adsk.fusion.BRepBody) -> adsk.fusion.BRepBody:
+        return placedPart(body) or body
+    def key(body: adsk.fusion.BRepBody) -> tuple:
+        # a placed body by its native one and the occurrence placing it, as the 3MF and STEP export take it
+        return (body.nativeObject, body.assemblyContext) if body.assemblyContext is not None else (body, None)
+    items = []
+    for body in exportParts.exportTargets(bodies, partOf, key):
+        (native, occurrence) = key(body)
+        items.append(ExportItem(native, occurrence, markingsOf(body) if isPartBody(body) else []))
     return items
 
 def command_execute(args: adsk.core.CommandEventArgs):
@@ -346,7 +413,7 @@ def command_execute(args: adsk.core.CommandEventArgs):
         saveChoices(folder, format, paint, filament)
         items = exportItems(inputs)
         if len(items) == 0:
-            ui.messageBox('Nothing to export, select bodies or turn on All Gridfinity bodies.', CMD_NAME)
+            ui.messageBox('Nothing to export, select bodies or turn on All Gridkeeper parts.', CMD_NAME)
             return
         names = fileNames(items)
         if format == FORMAT_3MF:
@@ -355,7 +422,7 @@ def command_execute(args: adsk.core.CommandEventArgs):
             if not mayReplace([path]):
                 return
             painted = export3mf(items, names, path, filament if paint else None)
-            ui.messageBox(f'Exported {len(items)} bod{"y" if len(items) == 1 else "ies"} to {path}.{paintNote(paint, painted, filament)}', CMD_NAME)
+            ui.messageBox(f'Exported {len(items)} part{"" if len(items) == 1 else "s"} to {path}.{paintNote(paint, painted, filament)}', CMD_NAME)
         else:
             if not mayReplace([os.path.join(folder, f'{name}.{FORMAT_EXTENSIONS[format]}') for name in names]):
                 return
@@ -374,8 +441,8 @@ def paintNote(paint: bool, painted: int, filament: int) -> str:
     if not paint:
         return ''
     if painted == 0:
-        return '\n\nNo outline label text to color.'
-    bodies = 'the body' if painted == 1 else f'{painted} bodies'
+        return '\n\nNo label text to color.'
+    bodies = 'the part' if painted == 1 else f'{painted} parts'
     return f'\n\nLabel text of {bodies} is assigned color {filament}.'
 
 def mayReplace(paths: list[str]) -> bool:
@@ -439,7 +506,7 @@ def exportEach(items: list[ExportItem], names: list[str], folder: str, format: s
             path = os.path.join(folder, f'{name}.{FORMAT_EXTENSIONS[format]}')
             if format == FORMAT_STL:
                 # the mesh the 3MF takes, Fusion's STL export writes a body where it is
-                meshObject = meshOf(item, name, False)
+                meshObject = partMesh(item, name, None)
                 stlFile.write(path, name, stlFile.atOrigin(meshObject.vertices), meshObject.triangles)
             else:
                 exportStep(scratch, item, name, path)
@@ -452,23 +519,34 @@ def exportEach(items: list[ExportItem], names: list[str], folder: str, format: s
                 previous.activate()
 
 def exportStep(document: adsk.core.Document, item: ExportItem, name: str, path: str):
-    """The body alone in the document, at the origin"""
+    """The body alone in the document with its text and symbol bodies (p300), together at the origin"""
     brepManager = adsk.fusion.TemporaryBRepManager.get()
-    copy = brepManager.copy(item.body)
-    if item.occurrence is not None:
-        brepManager.transform(copy, item.occurrence.transform2)
-    brepManager.transform(copy, toOrigin(copy.boundingBox))
+    copies = []
+    for placed in [item] + item.markings:
+        copy = brepManager.copy(placed.body)
+        if placed.occurrence is not None:
+            brepManager.transform(copy, placed.occurrence.transform2)
+        copies.append(copy)
+    box = copies[0].boundingBox
+    for copy in copies[1:]:
+        box.combine(copy.boundingBox)
+    move = toOrigin(box)
     design = adsk.fusion.Design.cast(document.products.itemByProductType('DesignProductType'))
     # a body is added as it is without a base feature
     design.designType = adsk.fusion.DesignTypes.DirectDesignType
-    body = design.rootComponent.bRepBodies.add(copy)
-    body.name = name
+    bodies = []
     try:
+        for (index, copy) in enumerate(copies):
+            brepManager.transform(copy, move)
+            body = design.rootComponent.bRepBodies.add(copy)
+            body.name = name if index == 0 else f'{name} text {index}'
+            bodies.append(body)
         exportManager = design.exportManager
         if not exportManager.execute(exportManager.createSTEPExportOptions(path, design.rootComponent)):
             raise RuntimeError(f'{name} not written to {path}')
     finally:
-        body.deleteMe()
+        for body in bodies:
+            body.deleteMe()
 
 def toOrigin(box: adsk.core.BoundingBox3D) -> adsk.core.Matrix3D:
     """The move putting the box centered on x and y at 0 with its bottom at z 0, see stlFile.atOrigin"""
@@ -487,7 +565,7 @@ def export3mf(items: list[ExportItem], names: list[str], path: str, filament: in
     progress = progressDialog(len(items))
     try:
         for (index, (item, name)) in enumerate(zip(items, names)):
-            meshObject = meshOf(item, name, filament is not None and item.hasOutlineLabels)
+            meshObject = partMesh(item, name, filament)
             paintedCount += 1 if meshObject.painted else 0
             objects.append(meshObject)
             progress.progressValue = index + 1
@@ -496,6 +574,15 @@ def export3mf(items: list[ExportItem], names: list[str], path: str, filament: in
     title = os.path.splitext(os.path.basename(path))[0]
     threeMf.write(path, objects, filament, title, tagUtils.getGeneratorVersion())
     return paintedCount
+
+def partMesh(item: ExportItem, name: str, filament: int | None) -> threeMf.MeshObject:
+    """
+    The part's mesh with its text and symbol bodies (p300). With a filament the letters of its outline labels and all
+    of its text and symbol triangles are painted, see exportParts.withMarkings
+    """
+    paint = filament is not None
+    meshObject = meshOf(item, name, paint and item.hasOutlineLabels)
+    return exportParts.withMarkings(meshObject, [meshOf(marking, name, False) for marking in item.markings], paint)
 
 def meshOf(item: ExportItem, name: str, paint: bool) -> threeMf.MeshObject:
     """
