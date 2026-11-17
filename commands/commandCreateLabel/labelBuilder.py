@@ -264,6 +264,8 @@ def _buildLabel(
         jointInput.setAsRigidJointMotion()
         joint = root.joints.add(jointInput)
         joint.name = f'{name}{labelConfig.POCKET_JOINT_SUFFIX}'
+        # Fusion turned off the pocket's joint origin for the joint, it stays shown (as the box label's holder)
+        assembly.keepShown(pocket)
 
     if des.designType == adsk.fusion.DesignTypes.ParametricDesignType:
         group = des.timeline.timelineGroups.add(originalTimelinePosition, des.timeline.markerPosition - 1)
@@ -354,6 +356,8 @@ def rebuildLabel(
     if _isAfter(target, pocket):
         raise ValueError("The bin of this pocket comes after the insert in the timeline, the insert can't be rebuilt into it in place")
     old = _insertBody(target)
+    # the pocket the old insert leaves, Fusion turned it off for the old joint, see assembly.keepShown
+    oldPocket = insertPocket(des, body)
     # read where it is built, right after its group: a later move of the body would be taken twice, once in the corner
     # and once when the move gets the new body (review)
     rebuildUtils.rollAfterGroup(target)
@@ -372,4 +376,7 @@ def rebuildLabel(
         bodies = buildLabel(des, state, settings, not isPreview, pocket, corner, parameterPrefix, None if pocket is not None else transform, oldPlace)
         # only the insert itself takes the place of the old one, its text and symbol are bodies of their own
         return bodies[:1]
-    return rebuildUtils.rebuild(des, target, prefix, LABEL_PARAMETER_BASE_NAME, isPreview, build, 'insert')
+    result = rebuildUtils.rebuild(des, target, prefix, LABEL_PARAMETER_BASE_NAME, isPreview, build, 'insert')
+    if not isPreview:
+        assembly.keepShown(oldPocket)
+    return result

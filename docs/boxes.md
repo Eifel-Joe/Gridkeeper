@@ -142,6 +142,10 @@ rebuild builds it anew in its place in the timeline; a label in a holder has its
 goes into that holder again, a label without a box stays where it was. A clone opens the dialog with the label's
 settings and no box picked, for a second label beside it or for another box.
 
+A label that lies free, for example after a rebuild without its box, goes back into a holder with another rebuild:
+pick the box's *Label joint origin* again in the dialog, in the canvas or in the browser under the box's component ›
+*Joint Origins*. The *Label joint origin* stays shown, with a label in it or not.
+
 ## Credits
 
 Pred's Gridfinity Storage Box v1.1 is licensed CC BY-NC. The small parts are Pred's, drawn in code after Pred's

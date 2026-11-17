@@ -40,6 +40,22 @@ def inContext(entity, occurrence: adsk.fusion.Occurrence | None):
     return entity.createForAssemblyContext(occurrence) if occurrence is not None else entity
 
 
+def keepShown(jointOrigin: adsk.fusion.JointOrigin | None):
+    """
+    Turns the joint origin's light bulb on again, the one seen from the root and its native one: Fusion turns off a
+    joint origin a joint uses and doesn't turn it on when the joint goes. A label's holder or an insert's pocket stays
+    shown so it can be picked again (Nutzer 17.11.2026: "Allerdings darf er nicht ausgeblendet werden."). Turning a light
+    bulb on isn't worth failing a build, a refusal is logged
+    """
+    if jointOrigin is None:
+        return
+    try:
+        for entity in (jointOrigin, jointOrigin.nativeObject):
+            if entity is not None:
+                entity.isLightBulbOn = True
+    except Exception as err:
+        commonUtils.fileLog(f'{jointOrigin.name} not shown again, {err}')
+
 def findContainer(des: adsk.fusion.Design, kind: str) -> adsk.fusion.Occurrence | None:
     """The container of the kind in the root, found by its tag so the user may rename it"""
     root = des.rootComponent
