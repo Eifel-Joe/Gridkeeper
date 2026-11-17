@@ -160,7 +160,8 @@ aus einem Git-Checkout, der darf nie angefasst werden.
   gestoppt sein (gleiche Befehls-IDs) und wird danach wieder gestartet; das braucht die Hauptsitzung bzw. Jörg.
   Das Ergebnis kommt als Tabelle in die Spec und bestimmt die Erfolgsmeldung.
 - Handtest (Hauptsitzung/Jörg): Dialog sehen, Link öffnet die Release-Seite, „Update now“ auf einer Test-Installation
-  (Kopie der 1.0.0-ZIP, Manifest auf 0.9.0 gesetzt) ersetzt sie, nach Neustart zeigt Fusion 1.0.0. Damit ist kein
+  (aus diesem Branch gebaut mit Version 0.9.0, `dev-notes/tools/update-fusion-jobs/build_test_install.py`; die
+  1.0.0-ZIP selbst hat den Update-Code nicht) ersetzt sie durch das echte 1.0.0, nach Neustart zeigt Fusion 1.0.0. Damit ist kein
   Test-Release auf GitHub nötig; der Weg über ein echtes neues Release läuft erst mit 1.1.0.
 
 ## Umsetzungsnotizen (Runde Update-Hinweis, 17.11.2026)
