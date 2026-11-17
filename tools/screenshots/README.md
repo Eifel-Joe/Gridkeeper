@@ -32,9 +32,9 @@ A shot in `shots.json`:
 | Key | |
 |---|---|
 | `name` | File name, with `-dark` or `-light` added when it is taken in both themes |
-| `command` | `bin` or `baseplate` |
+| `command` | `bin`, `baseplate` or `export` |
 | `menu` | Instead of a command, Fusion's right-click menu with these `items`, each a `label` with an optional `shortcut` and `icon`, a file from the add-in folder or `eye`, or `{"separator": true}`. `"cutTop": true` tears the top, for a menu going on above. `"hover": true` on an item lights it. `scene` opens the menu on Fusion's viewport, `{"width", "height", "model": {"picture", "x", "y", "width"}, "menuAt": [x, y]}` in dialog pixels, a model picture from the add-in folder, the menu's corner can be above the viewport's top, the pointer rests on the hovered item, at `cursorAt`, shares of its label's width and height. Fusion's own icons aren't drawn, the add-in's are |
-| `values` | Input values by id, as the dialog saves its defaults. Lengths are in cm, or a string such as `"42 mm"`. Groups take `true` or `false` to expand or collapse them |
+| `values` | Input values by id, as the dialog saves its defaults. Lengths are in cm, or a string such as `"42 mm"`. Groups take `true` or `false` to expand or collapse them. The export keeps no defaults, its values are set once the dialog is up: a selection takes how many bodies are selected, a text box its text |
 | `globals` | Values of the command's other state, such as `binShapeCells` or `compartmentPockets` |
 | `defaults` | A saved `ui_input_defaults.json` to start from instead of the original defaults |
 | `inputs` | Input ids to show. The shot takes the part of the dialog from the first to the last of them and tears the edges where it is cut. `<group id>:header` is the header of a group. Leave it out to take the whole dialog |
@@ -115,6 +115,7 @@ degrees). `"extends": "_bin.json"` takes everything from another preset, so a pr
 | `supersample` | How many times larger than the picture the render is, `3` by default |
 | `exposure`, `saturation` | Stops a viewport picture is brightened by, as a camera's exposure, and how much its colors are deepened, `1` keeps them. `0.85` and `1.4` by default, which bring it close to a ray traced picture of Fusion's. Fusion's viewport has no setting for either, the palette applies them |
 | `output` | Folder of the picture, from the add-in folder |
+| `difference` | `{"settings": {"hasLipNotches": false}, "color": "#d73a49"}` builds the model again with the settings changed and shows what sets the preset's model apart from it in the color, what it has more and what it lacks, such as the lip notches. Settings changing nothing fail the preset |
 | `section` | `{"plane": "xz"}` cuts the model through its middle with a section analysis along `xy`, `xz` or `yz`, the cut faces in the preset's `color`, to show a profile. With `color` `null` Fusion picks the cut's color, it differs between pictures. `"flip": true` keeps the other half |
 
 ### GIFs of model pictures

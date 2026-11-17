@@ -100,6 +100,20 @@ def test_unknown_settings_are_skipped(current):
     assert notes.unknown == ["hasLid"]
 
 
+def test_the_old_gap_between_plates_reads_as_half_on_each_plate_edge():
+    plate = case_state("baseplate_2x2_light.json", BASEPLATE, baseplateState.InputState)
+    text = json.dumps({"generator": BASEPLATE, "settings": {"plateClearance": 0.3}})
+    (state, notes) = read(text, plate, BASEPLATE, baseplateState.InputState)
+    assert state.plateEdgeClearance == pytest.approx(0.015)
+    assert "plateClearance" not in notes.unknown
+    assert "plateEdgeClearance" not in [name for (name, _) in notes.missing]
+
+
+def test_a_new_setting_wins_over_its_old_name():
+    settings = configJson.renamedSettings(BASEPLATE, {"plateClearance": 0.3, "plateEdgeClearance": 0.1})
+    assert settings == {"plateEdgeClearance": 0.1}
+
+
 def test_shape_cells_become_tuples(current):
     (state, _) = read(json.dumps({"generator": BIN, "settings": {"shapeCells": [[0, 0], [1, 0]]}}), current)
     assert state.shapeCells == [(0, 0), (1, 0)]
@@ -301,4 +315,37 @@ def test_rebuild_fills_the_older_values_into_a_tagged_config():
         source = file.read()
     body = source[source.index("def configWithParameters("):]
     body = body[:body.index("\ndef ", 1)]
-    assert "config = configJson.withOlderValues(generator, config)" in body
+    assert "config = configJson.withOlderValues(generator, " in body
+
+
+# --- upstream round 17.11. (p13, 3452e56): the plate clearance per edge, renamed on every way settings are read ---
+
+def test_renamed_settings_leave_label_and_unknown_generators_alone():
+    # Cullenect inserts have no renamed settings, a generator a later round adds (the box of round 27) neither
+    assert configJson.renamedSettings(configJson.GENERATOR_LABEL, {"baseWidth": 25}) == {"baseWidth": 25}
+    assert configJson.renamedSettings("box", {"width": 3}) == {"width": 3}
+
+
+def test_old_baseplate_config_reads_the_clearance_per_edge():
+    settings = configJson.withOlderValues(configJson.GENERATOR_BASEPLATE, configJson.renamedSettings(configJson.GENERATOR_BASEPLATE, {"plateClearance": 0.6}))
+    assert settings == {"plateEdgeClearance": 0.3}
+
+
+def test_rebuild_renames_the_settings_of_a_tagged_config():
+    # a baseplate tagged before the rename keeps plateClearance in its tag, its settings and a rebuild read the new name
+    path = os.path.join(PROJECT_ROOT, "lib", "rebuildUtils.py")
+    with open(path, encoding="utf-8") as file:
+        source = file.read()
+    body = source[source.index("def configWithParameters("):]
+    body = body[:body.index("\ndef ", 1)]
+    assert "config = configJson.withOlderValues(generator, configJson.renamedSettings(generator, config))" in body
+
+
+def test_rebuild_log_compares_under_the_new_names():
+    # the log of an old baseplate's rebuild showed plateEdgeClearance None -> 0.05 instead of its old value halved
+    path = os.path.join(PROJECT_ROOT, "lib", "rebuildUtils.py")
+    with open(path, encoding="utf-8") as file:
+        source = file.read()
+    body = source[source.index("def configChanges("):]
+    body = body[:body.index("\ndef ", 1)] if "\ndef " in body[1:] else body
+    assert "configJson.renamedSettings(generator, " in body

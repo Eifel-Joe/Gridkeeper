@@ -45,6 +45,16 @@ The full list of changes, round by round, is in
 - **Cullenect walls:** a bin with Cullenect pockets needs walls of at least 1.2 mm, the dialog says so instead of
   building a weak tab.
 
+## Export
+
+- **Gridkeeper export** in the right-click menu, from GridfinityGenerator (Le0Michine): one 3MF of all parts with the
+  label text painted for Bambu Studio, OrcaSlicer and PrusaSlicer, or an STL or STEP file each. Gridkeeper exports
+  Cullenect inserts too and puts the colored text and symbol bodies of bins and inserts into their part, painted. See
+  [Exporting for printing](../working/export.md).
+- From GridfinityGenerator too: the letters of outline labels show in a color of their own in Fusion, the bin dialog
+  shows the bin's size to the micron, and baseplates set the **Plate edge clearance** per edge (older settings are
+  read as half the old gap).
+
 ## The design
 
 - **An assembly of components:** every baseplate, bin and insert is a component of its own, in the containers
@@ -55,7 +65,7 @@ The full list of changes, round by round, is in
 ## Credits and naming
 
 - The commands are called **Gridkeeper bin**, **Gridkeeper baseplate**, **Gridkeeper label**, **Gridkeeper
-  settings**, **Gridkeeper rebuild** and **Gridkeeper clone**, so they don't mix with the original add-in. Bodies are
+  settings**, **Gridkeeper rebuild**, **Gridkeeper clone** and **Gridkeeper export**, so they don't mix with the original add-in. Bodies are
   still named *Gridfinity bin …*, as before.
 - Installed from the ZIP of a GitHub release, not from the Autodesk App Store, see
   [Installation](installation.md).
