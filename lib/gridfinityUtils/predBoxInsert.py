@@ -14,7 +14,7 @@ Parts come in one by one as their generators are done (predBoxParts.DRAWN_ROLES)
 import adsk.core, adsk.fusion
 
 from .. import tagUtils
-from . import predBoxParts, predBoxSeats, predHandle, predHandlePin, predLatch
+from . import predBoxParts, predBoxSeats, predHandle, predHandlePin, predHinge, predLatch
 from .predBox import PredBoxDims
 
 
@@ -35,6 +35,9 @@ def drawPart(component: adsk.fusion.Component, part: predBoxParts.Part, dims: Pr
         return predHandle.createHandle(component, predBoxSeats.handleHalfWidth(dims).expression)
     if part.role == 'Handle pin':
         return predHandlePin.createHandlePin(component)
+    if part.role == 'Hinge':
+        # in the variant of the box's setting; its joint origin comes from insertParts (addOriginJointOrigin)
+        return predHinge.createHinge(component, hinge)
     raise RuntimeError(f'no generator for {part.role} yet')
 
 

@@ -36,7 +36,7 @@ PARTS = [
 
 # Round 29 (Jörg 17.11.2026: "Wir zeichnen die Teile im Code."): the roles whose part predBoxInsert.drawPart draws.
 # The others stay out of the set until their generator is there (integration step by step, a click test after each)
-DRAWN_ROLES: list[str] = ['Latch', 'Handle', 'Handle pin']
+DRAWN_ROLES: list[str] = ['Latch', 'Handle', 'Handle pin', 'Hinge']
 
 
 def partsFor(hinge: str) -> list[Part]:
