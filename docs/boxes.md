@@ -74,4 +74,5 @@ yours on its joint origins move over to the joint origins of the same name.
 
 Pred's Gridfinity Storage Box v1.1 is licensed CC BY-NC. Gridkeeper rebuilds its box and lid in code, with fully
 constrained sketches and parameters, and changes it where noted on this page (the magnet holes, the floor pads and
-the stacking rim drawn from circles, the joint origins).
+the stacking rim drawn from circles, the joint origins). The timeline follows Pred's steps, except that the right
+handle and label holders are built directly instead of mirrored from the left ones; the shape stays Pred's.

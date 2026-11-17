@@ -139,9 +139,25 @@ def carryItem(item, rules, values):
     return out
 
 
-def expectedItems(step, values):
+def mirrorItem(item, midX):
+    """The item mirrored across the plane x = midX (cm), a face's box keeping min below max"""
+    out = dict(item)
+    for key in ('start', 'end', 'center'):
+        if key in item:
+            x, y, z = item[key]
+            out[key] = [2 * midX - x, y, z]
+    if 'min' in item and 'max' in item:
+        out['min'] = [2 * midX - item['max'][0]] + list(item['min'][1:])
+        out['max'] = [2 * midX - item['min'][0]] + list(item['max'][1:])
+    return out
+
+
+def expectedItems(step, values, mirrored=False):
+    """Pred's items of the step at the box's size; mirrored, those of the right half's counterpart: the generator
+    builds the right handle and label holders itself instead of Pred's #42 Mirror6, see predBoxGenerator.holders"""
     rules = RULES[step]
-    return [carryItem(item, rules, values) for edgeSet in PRED_EDGES[step] for item in edgeSet['items']]
+    items = [carryItem(item, rules, values) for edgeSet in PRED_EDGES[step] for item in edgeSet['items']]
+    return [mirrorItem(item, values['midX']) for item in items] if mirrored else items
 
 
 def _key(point):
