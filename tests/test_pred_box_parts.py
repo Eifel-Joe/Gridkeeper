@@ -71,3 +71,8 @@ def test_only_parts_with_a_generator_are_built():
 def test_the_drawn_roles_are_roles_of_the_set():
     assert set(parts.DRAWN_ROLES) <= {part.role for part in parts.PARTS}
     assert parts.partsToDraw("M3x30") == parts.partsToDraw("M3x30", drawn=parts.DRAWN_ROLES)
+
+
+def test_the_handle_pin_is_the_first_drawn_part():
+    """Round 29: the pin passed its Fusion check first (r29_pin_check), Jörg wants the concept tested with it now"""
+    assert parts.DRAWN_ROLES == ["Handle pin"]
