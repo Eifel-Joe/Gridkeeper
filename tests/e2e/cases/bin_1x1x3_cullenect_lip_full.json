@@ -1,5 +1,5 @@
 {
-    "description": "1x1x3 bin with a Cullenect socket under a full lip: the support under the lip's inner tip stands over the back edge of the socket by no more than a sliver (review of the upstream round 17.11.), the insert still goes in",
+    "description": "1x1x3 bin with a Cullenect socket under a full lip: the support under the lip's inner tip may stand over the back edge of the socket by a sliver (review of the upstream round 17.11.), check that the insert still goes in",
     "generator": "bin",
     "settings": {
         "binWidth": 1,
