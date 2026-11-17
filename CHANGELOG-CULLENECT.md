@@ -1,7 +1,7 @@
 # Changelog — Cullenect labels
 
 Changes of Gridkeeper (`Eifel-Joe/Gridkeeper`, until 16.11.2026 `Eifel-Joe/FusionGridfinityGenerator`) on top of
-GridfinityGenerator by Le0Michine, merged up to 513e6ab (17.11.2026; rounds 1 to 11 were built on v2.2.0.0, round 22 merged v2.4.2.0).
+GridfinityGenerator by Le0Michine, merged up to 5627083 (17.11.2026; rounds 1 to 11 were built on v2.2.0.0, round 22 merged v2.4.2.0).
 Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`, the `vX.Y.Z.W` tags belong to GridfinityGenerator.
 
 ## Unreleased (1.1.0)
@@ -22,6 +22,31 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 - **Magnet size (p263):** bins, baseplates and boxes have a choice before the magnet cutout depth: 6 × 2 mm magnets
   (2.4 mm deep), 6 × 3 mm magnets (3.4 mm, not for boxes: it would break through the floor) or *Custom*. Only the
   depth is saved, older settings files load unchanged.
+
+### Merged from upstream: export (17.11.2026)
+
+Commits of FusionGridfinityGenerator by Lev Mishin (Le0Michine, CC BY-NC-SA 4.0), `513e6ab..5627083`, merged with his
+authorship kept:
+- **Export from the right-click menu** (4b2f167, `lib/stlFile.py`): one 3MF of all selected parts or an STL or STEP file
+  each, the right-click entry below *Save As Mesh*, here called **Gridkeeper export**.
+- **3MF with painted label letters** (e4c885f, `lib/threeMf.py`): the letters get a filament index Bambu Studio,
+  OrcaSlicer and PrusaSlicer pick up without painting by hand.
+- **Colored outline letters in Fusion** (d0ad89c, `lib/labelFaces.py`): the letters of an outline label get an
+  appearance of their own. In this fork only for labels without a color; a colored label has letter bodies of its own.
+- **Exact bin size in the dialog** (a8233fb): the actual dimensions follow the xy clearance and the lip to the micron.
+- **Plate edge clearance per edge** (3452e56): *Clearance between plates* becomes *Plate edge clearance* (half the old
+  gap), *Extra bottom thickness* *Bottom padding*, *Vertical clearance under bins* *Top trim*. Settings saved before
+  are read under the new name, in this fork on every way settings are read (load, rebuild, clone). The settings of five
+  baseplate shape tests carry the new name, their shapes are the same.
+- **Developer tools** (873db19, b287cf3, 45d280a, 568f7af, 2588dd7): model pictures that show what a setting changes,
+  the export dialog in the dialog screenshots, new picture presets; the release workflow on the Node 24 actions. Their
+  output stays in `tools/screenshots/out/`.
+- In this fork (p300): the export takes every part, bins, baseplates, Cullenect inserts and, once merged, the boxes
+  of round 27 (`lib/exportParts.py`, one list to add new parts to). The colored text and symbol bodies of bins and
+  inserts go into the 3MF object, the STL and the STEP file of their part, painted with the label filament in the
+  3MF. A letter in the right-click menu stands for its part.
+- Not taken over: the wiki with its workflow and generator, the contribution guide, the README text and every
+  picture and diagram (the documentation keeps its own), the version bump.
 
 ### Merged from upstream (17.11.2026)
 

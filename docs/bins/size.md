@@ -29,7 +29,9 @@ other.
 ### Actual dimensions
 
 At the end of the section, the **Actual dimensions (mm)** table shows the outer width, length and height the bin will
-have. With the Cullenect label style a second row lists the pocket sizes and the insert width that fits each, e.g.
+have, to the micron: width and length follow the **Bin xy clearance**, the height the lip with **Trim lip top** on or
+off, its sharp top lowered by the clearance. With the Cullenect label style a second row lists the pocket sizes and the
+insert width that fits each, e.g.
 `Cullenect: 2U: pocket 78.3 mm, insert 78 mm`, see [Pockets in bins](../cullenect/pockets.md).
 
 ### Half sizes and half grid

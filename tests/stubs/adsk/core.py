@@ -178,6 +178,22 @@ class CommandInputs:
     """Placeholder: only used in type annotations of lib/settingsUtils.py."""
 
 
+class Vector3D:
+    """Placeholder: only used in type annotations of lib/labelFaces.py (upstream round 17.11.2026)."""
+
+
+class Point3D:
+    """Placeholder: only used in type annotations of lib/labelFaces.py."""
+
+
+class CurveEvaluator3D:
+    """Placeholder: only used in type annotations of lib/labelFaces.py."""
+
+
+class Appearance:
+    """Placeholder: only used in type annotations of lib/labelFaces.py."""
+
+
 class HTMLEventArgs:
     """Placeholder: only used in type annotations of lib/ui/browserPages.py."""
 
