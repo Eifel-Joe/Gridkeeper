@@ -47,6 +47,21 @@ def _isCut(node) -> bool:
             or (isinstance(node, ast.Name) and node.id in CUT_NAMES))
 
 
+def _operations(call: ast.Call):
+    """The arguments that can be the operation: positional ones and an 'operation' keyword"""
+    return list(call.args) + [k.value for k in call.keywords if k.arg == 'operation']
+
+
+def _ownNodes(function):
+    """The nodes of the function without those of functions nested in it (each is checked on its own)"""
+    stack = list(function.body)
+    while stack:
+        node = stack.pop()
+        yield node
+        stack.extend(child for child in ast.iter_child_nodes(node)
+                     if not isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)))
+
+
 @pytest.mark.parametrize('module', sorted(HELPERS))
 def test_cuts_through_helpers_name_their_bodies(module):
     missing = []
@@ -54,24 +69,33 @@ def test_cuts_through_helpers_name_their_bodies(module):
         if not isinstance(node, ast.Call):
             continue
         for name, index in HELPERS[module]:
-            if _calledName(node) == name and len(node.args) > index and _isCut(node.args[index]):
-                if not any(k.arg in ('bodies', 'body') for k in node.keywords):
+            operation = node.args[index] if len(node.args) > index else next(
+                (k.value for k in node.keywords if k.arg == 'operation'), None)
+            if _calledName(node) == name and operation is not None and _isCut(operation):
+                given = [k.value for k in node.keywords if k.arg in ('bodies', 'body')]
+                if not given or (isinstance(given[0], ast.Constant) and given[0].value is None):
                     missing.append(f'{module}.py:{node.lineno}')
     assert missing == []
 
 
 @pytest.mark.parametrize('module', MODULES)
 def test_feature_inputs_for_cuts_set_participants(module):
-    """A function making an extrude, sweep or revolve input for a cut (or for an operation it is given) sets
-    participantBodies; inputs for a new body need none"""
+    """Each extrude, sweep or revolve input for a cut (or for an operation passed in) gets participantBodies set on that
+    very input, in the function that makes it (nested functions are checked on their own); inputs for a new body need
+    none. A helper may set them only when it is given bodies: its cut calls are held to pass them by the test above"""
     missing = []
     for function in ast.walk(_tree(module)):
-        if not isinstance(function, ast.FunctionDef):
+        if not isinstance(function, (ast.FunctionDef, ast.AsyncFunctionDef)):
             continue
-        calls = [node for node in ast.walk(function) if isinstance(node, ast.Call) and _calledName(node) == 'createInput'
-                 and any(_isCut(arg) or (isinstance(arg, ast.Name) and arg.id == 'operation') for arg in node.args)]
-        sets = any(isinstance(node, ast.Attribute) and node.attr == 'participantBodies' and isinstance(node.ctx, ast.Store)
-                   for node in ast.walk(function))
-        if calls and not sets:
-            missing.append(f'{module}.{function.name}')
+        nodes = list(_ownNodes(function))
+        stored = {node.value.id for node in nodes if isinstance(node, ast.Attribute) and node.attr == 'participantBodies'
+                  and isinstance(node.ctx, ast.Store) and isinstance(node.value, ast.Name)}
+        for node in nodes:
+            if not (isinstance(node, ast.Call) and _calledName(node) == 'createInput' and any(
+                    _isCut(arg) or (isinstance(arg, ast.Name) and arg.id == 'operation') for arg in _operations(node))):
+                continue
+            targets = [n.targets[0].id for n in nodes if isinstance(n, ast.Assign) and n.value is node
+                       and isinstance(n.targets[0], ast.Name)]
+            if not targets or targets[0] not in stored:
+                missing.append(f'{module}.{function.name}:{node.lineno}')
     assert missing == []
