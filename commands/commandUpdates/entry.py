@@ -145,7 +145,13 @@ def result_custom_event(args: adsk.core.CustomEventArgs):
                 futil.log(f'Gridkeeper {pendingRelease.versionText} is available, Fusion was busy, asking tomorrow')
             return
         openedByCheck = True
-        ui.commandDefinitions.itemById(CMD_ID).execute()
+        try:
+            ui.commandDefinitions.itemById(CMD_ID).execute()
+        except Exception:
+            # no command_created follows, the next open from the menu is the menu's (second review). Not reset after
+            # a good execute: whether Fusion creates the command during execute or after it isn't known
+            openedByCheck = False
+            raise
     except Exception:
         futil.handle_error('Gridkeeper update check')
 
@@ -192,6 +198,13 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     futil.add_handler(command.inputChanged, command_input_changed, local_handlers=local_handlers)
     futil.add_handler(command.destroy, command_destroy, local_handlers=local_handlers)
 
+def hideProgress(progress: adsk.core.ProgressDialog):
+    try:
+        if progress.isShowing:
+            progress.hide()
+    except Exception as err:
+        futil.log(f'{CMD_NAME}: progress window not closed, {err}')
+
 def installRelease(release: updateCheck.Release) -> bool:
     """Installs release with a progress window, tells the user how it went, whether it's installed"""
     global installing
@@ -207,13 +220,14 @@ def installRelease(release: updateCheck.Release) -> bool:
             adsk.doEvents()
         updateInstall.install(release, ADDIN_FOLDER, progress=downloaded)
     except updateInstall.UpdateError as err:
-        progress.hide()
+        hideProgress(progress)
         futil.log(f'Gridkeeper update to {release.versionText} failed: {err}')
         ui.messageBox(f'Gridkeeper {release.versionText} couldn\'t be installed.\n\n{err}', CMD_NAME)
         return False
     finally:
         installing = False
-    progress.hide()
+        # also when something else went wrong, the caller's error message mustn't sit under it (second review)
+        hideProgress(progress)
     # first, before any input of a dialog that may be gone by now (review finding 1)
     ui.messageBox(updateCheck.successText(release), CMD_NAME)
     return True
