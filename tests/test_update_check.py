@@ -175,6 +175,48 @@ def test_manifest_version_of_the_repo():
     assert updateCheck.manifestVersion(project_root) == expected
 
 
+# what the dialogs say
+
+def test_dialog_html_update():
+    newest = updateCheck.newestRelease([release("gridkeeper-v1.1.0", body="Boxes & <b>lids</b>.")], (1, 0, 0))
+    text = updateCheck.dialogHtml(newest, (1, 0, 0), gitCheckout=False)
+    assert "Gridkeeper 1.1.0 is available (you have 1.0.0)." in text
+    assert '<a href="https://github.com/Eifel-Joe/Gridkeeper/releases/tag/gridkeeper-v1.1.0">Release notes</a>' in text
+    # the release text is the release author's, shown as text
+    assert "Boxes &amp; &lt;b&gt;lids&lt;/b&gt;." in text
+    assert "git checkout" not in text
+
+
+def test_dialog_html_git_checkout():
+    newest = updateCheck.newestRelease([release("gridkeeper-v1.1.0")], (1, 0, 0))
+    text = updateCheck.dialogHtml(newest, (1, 0, 0), gitCheckout=True)
+    assert "This add-in runs from a git checkout, update it with git." in text
+    assert "Release notes" in text
+
+
+def test_dialog_html_without_zip():
+    newest = updateCheck.newestRelease([release("gridkeeper-v1.1.0", asset=False)], (1, 0, 0))
+    text = updateCheck.dialogHtml(newest, (1, 0, 0), gitCheckout=False)
+    assert "has no ZIP file" in text
+
+
+def test_dialog_html_quotes_in_url():
+    newest = updateCheck.Release((1, 1, 0), "gridkeeper-v1.1.0", 'https://x/"><script>', "", None, None, None)
+    assert '"><script>' not in updateCheck.dialogHtml(newest, (1, 0, 0), gitCheckout=False)
+
+
+def test_version_line():
+    assert updateCheck.versionLine((1, 0, 0), (1, 0, 0)) == "Running Gridkeeper 1.0.0."
+    assert updateCheck.versionLine((1, 0, 0), (1, 1, 0)) == (
+        "Running Gridkeeper 1.0.0, installed 1.1.0. Restart Fusion to use 1.1.0.")
+    assert updateCheck.versionLine(None, None) == "Running Gridkeeper, its version is unknown."
+
+
+def test_success_text():
+    newest = updateCheck.newestRelease([release("gridkeeper-v1.1.0")], (1, 0, 0))
+    assert updateCheck.successText(newest) == "Gridkeeper 1.1.0 is installed. Restart Fusion to use it."
+
+
 # asking GitHub
 
 import io
