@@ -169,6 +169,17 @@ def tabOctagon(lower: bool):
     return points
 
 
+def tabSketch():
+    """Points (y, z in mm) and curves of a leaf's tab sketch: both octagons, joined by a construction line so the sketch
+    is one shape with one origin anchor (see bridgeSketch)"""
+    upper, lower = tabOctagon(False), tabOctagon(True)
+    points = upper + lower
+    n = len(upper)
+    curves = [{'kind': 'line', 'a': o + i, 'b': o + (i + 1) % n} for o in (0, n) for i in range(n)]
+    curves.append({'kind': 'line', 'a': 0, 'b': n, 'construction': True})
+    return points, curves
+
+
 def tabRampEdge(shape: HingeShape, side: int, lower: bool):
     """Chamfer2's edge: the tab's outer top edge along z, as ((x, y, z), (x, y, z)) in mm; side -1 left, +1 right"""
     outer = _halfWidths(shape)[2] + TAB_HEIGHT
@@ -213,7 +224,7 @@ def _bridgeLines():
 def bridgeSketch(cx: float):
     """Points and curves of the bridge sketch: the counterbore circle and Pred's eight chords, a little longer (without
     his projected screw hole circle: no profile we extrude touches it but at a tangent point, see bridgeLayers)"""
-    points, curves = [], []
+    points, curves = [(cx, 0.0)], []
     for (x0, y0), (x1, y1) in _bridgeLines():
         # the chords reach BRIDGE_STUB past the circle: ends on it were over-constrained in Fusion
         # (fusion-auftraege/r29_hinge_check l2, VCS_SKETCH_OVER_CONSTRAINTS); outside it they meet nowhere
@@ -222,9 +233,11 @@ def bridgeSketch(cx: float):
         x0, y0, x1, y1 = x0 - dx, y0 - dy, x1 + dx, y1 + dy
         points += [(cx + x0, y0), (cx + x1, y1)]
         curves.append({'kind': 'line', 'a': len(points) - 2, 'b': len(points) - 1})
-    # the circle last: its centre may lie on the origin and hangs on the lines' points
-    points.append((cx, 0.0))
-    curves.append({'kind': 'circle', 'center': len(points) - 1})
+    # construction spokes from the centre join the chords into one shape with one anchor: each chord on its own was
+    # dimensioned from the origin, and Fusion refused the second such anchor (fusion-auftraege/r29_hinge_diag.log)
+    for index in range(1, len(points), 2):
+        curves.append({'kind': 'line', 'a': 0, 'b': index, 'construction': True})
+    curves.append({'kind': 'circle', 'center': 0})
     return points, curves
 
 
@@ -476,11 +489,7 @@ def _tabs(component, shape: HingeShape):
     for side, label in ((-1, 'left'), (1, 'right')):
         x = c + side * outer
         plane = _plane(component, 0, x, f'Leaf {label}')
-        points, curves = [], []
-        for lower in (False, True):
-            octagon, lines = _polygonPlan(tabOctagon(lower))
-            curves += [{'kind': 'line', 'a': l['a'] + len(points), 'b': l['b'] + len(points)} for l in lines]
-            points += octagon
+        points, curves = tabSketch()
         sketch = _drawPlan(component, plane, f'Tabs {label}', points, curves, at=x, axis=0)
         _extrude(component, list(sketch.sketch.profiles), join, x, x + side * TAB_HEIGHT, axis=0, name=f'Tabs {label}')
     ramps = [{'line': list(tabRampEdge(shape, side, lower))} for side in (-1, 1) for lower in (False, True)]

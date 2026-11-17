@@ -181,6 +181,45 @@ def test_bridge_sketch_is_exactly_determined():
     _exactly_determined(points, curves)
 
 
+def _originAnchors(points, curves):
+    """Points the chain fixes wholly from the origin: put on it, or dimensioned from it in x and in y"""
+    plan = chainPlan.chain(points, curves)
+    fromOrigin = {}
+    for c in plan:
+        if len(c) == 3 and c[2] is None:
+            fromOrigin.setdefault(c[1], set()).add(c[0])
+    return {c[1] for c in plan if c[0] == "originAt"} | {p for p, kinds in fromOrigin.items() if kinds == {"hdim", "vdim"}}
+
+
+def _allPlans():
+    for shape in hinge.SHAPES.values():
+        c = hinge.center(shape)
+        yield hinge.sectionSketch(shape)
+        for side in (-1, 1):
+            yield hinge.clearanceSketch(shape, side)
+        for count in (1, 2, 3):
+            yield hinge.circlesSketch(c, count)
+        yield hinge.tabSketch()
+        yield hinge.bridgeSketch(c)
+        points = hinge.hexagon(c)
+        yield points, [{"kind": "line", "a": i, "b": (i + 1) % len(points)} for i in range(len(points))]
+    points = hinge.pinProfile()
+    yield points, [{"kind": "line", "a": i, "b": (i + 1) % len(points)} for i in range(len(points))]
+    for name, points, z0, z1 in hinge.pinCuts():
+        yield points, [{"kind": "line", "a": i, "b": (i + 1) % len(points)} for i in range(len(points))]
+
+
+def test_every_sketch_hangs_on_one_origin_anchor():
+    """r29_hinge_diag (18:24): in the bridge sketch, eight chords each dimensioned from the origin, Fusion refused the
+    second anchor's dimension (hdim origin-P2, VCS_SKETCH_OVER_CONSTRAINTS) in every case tried (plane z 3.9 or XY,
+    compute deferred or not, empty or built). The sketches Fusion took have one point fixed wholly from the origin (the
+    tabs two; a circle's centre may take one of its two dimensions from the origin). Every sketch now is one shape
+    (construction lines join its parts) with one such anchor"""
+    for points, curves in _allPlans():
+        assert len(_originAnchors(points, curves)) == 1
+        _exactly_determined(points, curves)
+
+
 def _pointsOnCircles(points, curves, radii):
     """Points of the plan lying on one of its circles (radii in the circles' order)"""
     circles = [(points[c["center"]], r) for c, r in zip([c for c in curves if c["kind"] == "circle"], radii)]
@@ -207,7 +246,7 @@ def test_no_point_on_a_circle():
 def test_bridge_chords_cross_only_inside():
     """The chords reach past the circle; outside it no two of them meet, so they close no profile there"""
     points, curves = hinge.bridgeSketch(0.0)
-    lines = [(points[c["a"]], points[c["b"]]) for c in curves if c["kind"] == "line"]
+    lines = [(points[c["a"]], points[c["b"]]) for c in curves if c["kind"] == "line" and not c.get("construction")]
     r = hinge.COUNTERBORE / 2
     for i, (p, q) in enumerate(lines):
         assert math.hypot(*p) > r and math.hypot(*q) > r
