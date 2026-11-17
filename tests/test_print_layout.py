@@ -504,3 +504,13 @@ def test_compact_groups_never_take_more_plates_than_full_rows(footprints):
     (_, compact, _, _, _) = printLayout.layOut(boxes_of(footprints), BED, 5, 50, X1_TOWER, X1_EXCLUDED)
     (placements, _, _) = printLayout.arrange(footprints, BED, 5, 50, X1_TOWER, X1_EXCLUDED)
     assert compact <= max(p.plate for p in placements) + 1
+
+
+def test_each_box_gets_a_small_parts_plate_of_its_own():
+    # Jörg 17.11.2026: „Je Box eine Zubehörplatte passt.“
+    groups = boxes_of([(23.6, 36.5), (99, 30), (23.6, 36.5), (99, 30)])
+    kinds = [("Box 1", "parts"), ("Box 1", "parts"), ("Box 2", "parts"), ("Box 2", "parts")]
+    (laid, plates, _, _, _) = printLayout.layOutKinds(groups, kinds, BED, 5, 0)
+    plateOf = {meshObject.name: plate for (plate, meshObject) in laid}
+    assert plates == 2
+    assert plateOf["p0"] == plateOf["p1"] != plateOf["p2"] == plateOf["p3"]
