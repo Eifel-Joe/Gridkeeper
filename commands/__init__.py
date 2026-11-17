@@ -7,6 +7,7 @@ from .commandCreateBin import entry as commandCreateBin
 from .commandCreateBaseplate import entry as commandCreateBaseplate
 from .commandCreateLabel import entry as commandCreateLabel
 from .commandCreateBox import entry as commandCreateBox
+from .commandCreateBoxLabel import entry as commandCreateBoxLabel
 from .commandShowSettings import entry as commandShowSettings
 from .commandExport import entry as commandExport
 from .commandUpdates import entry as commandUpdates
@@ -23,6 +24,7 @@ commands = [
     commandCreateBaseplate,
     commandCreateLabel,
     commandCreateBox,
+    commandCreateBoxLabel,
     commandShowSettings,
     commandExport,
     # the update check (p310) last, its dialog may open as soon as Fusion is idle

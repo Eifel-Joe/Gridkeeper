@@ -145,7 +145,7 @@ def test_the_handle_width_is_preds(size):
 def test_the_box_gets_a_joint_origin_at_every_seat():
     """Task 5: the points for baseGenerator.createPointJointOrigins, named after predBoxParts.seatJointOriginName"""
     d = _dims(5, 4, 6)
-    points = seats.seatJointOriginPoints(d)
+    points = seats.seatJointOriginPoints(d)[:len(parts.SEAT_NAMES)]
     assert [name for (name, *_rest) in points] == [parts.seatJointOriginName(name) for name in parts.SEAT_NAMES]
     by = _byName((5, 4, 6))
     for (name, x, y, z), seatName in zip(points, parts.SEAT_NAMES):
@@ -184,7 +184,7 @@ def test_the_hinges_lie_as_in_preds_file_unturned():
 
 def test_the_hinge_joint_origins_are_built_with_the_others():
     names = [name for (name, *_rest) in seats.seatJointOriginPoints(_dims(5, 4, 6), "Plain")]
-    assert names[-2:] == ["Hinge 1 joint origin", "Hinge 2 joint origin"]
+    assert names[len(parts.SEAT_NAMES) - 2:len(parts.SEAT_NAMES)] == ["Hinge 1 joint origin", "Hinge 2 joint origin"]
 
 
 def test_the_handle_half_width_expression_follows_the_box():
@@ -192,3 +192,38 @@ def test_the_handle_half_width_expression_follows_the_box():
     assert half.value * 10 == pytest.approx(49.5)
     assert "gfBox1_baseWidth" in half.expression
 
+
+
+# The box label (round 29, p262, dev-notes/r29/boxlabel-plan.md): Pred's Label:1 at 5 x 4 x 6, EmptyLabel x 81.25 ...
+# 148.75, y 6.45 ... 7.3, z 12.45 ... 36.95 mm (pred_read2.out). The label command joints it at its back face's middle:
+# the box middle, y 7.3 mm, the middle height; upright, X along X like the other joint origins of the box
+LABEL_BOX = {(5, 4, 6): ((81.25, 6.45, 12.45), (148.75, 7.3, 36.95))}
+
+
+@pytest.mark.parametrize("size", SIZES)
+def test_the_label_seat_is_the_middle_of_the_labels_back_face(size):
+    seat = seats.labelSeat(_dims(*size))
+    d = _dims(*size)
+    assert _mm(seat) == pytest.approx((d.midX.value * 10, 7.3, d.midZ.value * 10), abs=1e-4)
+    assert seat.xAxis == (1, 0, 0) and seat.zAxis == (0, 0, 1)
+    assert seat.name == seats.LABEL_SEAT
+
+
+def test_the_label_seat_at_5_x_4_x_6_is_preds():
+    (low, high) = LABEL_BOX[(5, 4, 6)]
+    seat = seats.labelSeat(_dims(5, 4, 6))
+    assert _mm(seat) == pytest.approx(((low[0] + high[0]) / 2, high[1], (low[2] + high[2]) / 2), abs=1e-4)
+
+
+def test_the_label_seat_follows_the_box_parameters():
+    seat = seats.labelSeat(_dims(5, 4, 6))
+    assert "gfBox1_baseWidth" in seat.x.expression and "gfBox1_heightU" in seat.z.expression
+
+
+def test_the_box_gets_a_label_joint_origin_after_the_parts_seats():
+    points = seats.seatJointOriginPoints(_dims(5, 4, 6))
+    assert len(points) == len(parts.SEAT_NAMES) + 1
+    (name, x, y, z) = points[-1]
+    assert name == "Label joint origin" == seats.LABEL_JOINT_ORIGIN
+    seat = seats.labelSeat(_dims(5, 4, 6))
+    assert (x.value, y.value, z.value) == (seat.x.value, seat.y.value, seat.z.value)
