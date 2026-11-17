@@ -172,3 +172,53 @@ def test_the_handle_half_width_expression_follows_the_box():
     half = seats.handleHalfWidth(_dims(5, 4, 6))
     assert half.value * 10 == pytest.approx(49.5)
     assert "gfBox1_baseWidth" in half.expression
+
+
+class _Matrix:
+    """Fusion's Matrix3D reduced to a translation, enough for placeInSet"""
+
+    def __init__(self, x=0.0, y=0.0, z=0.0):
+        self.t = (x, y, z)
+
+    def copy(self):
+        return _Matrix(*self.t)
+
+    def transformBy(self, other):
+        self.t = tuple(a + b for a, b in zip(self.t, other.t))
+
+
+class _Occurrence:
+    """A native occurrence below the root refuses a transform, as Fusion did in r28_insert_check l1 (17.11.2026):
+    'transform overrides can only be set on Occurrence proxy from root component'; its proxy from the root takes it"""
+
+    def __init__(self, transform=None, proxy=False):
+        self._transform = transform or _Matrix()
+        self.proxy = proxy
+
+    @property
+    def transform2(self):
+        return self._transform
+
+    @transform2.setter
+    def transform2(self, value):
+        if not self.proxy:
+            raise RuntimeError("3 : transform overrides can only be set on Occurrence proxy from root component")
+        self._transform = value
+
+
+def test_a_hinge_is_placed_through_its_proxy_from_the_root_in_world_coordinates():
+    setOccurrence = _Occurrence(_Matrix(100.0, 0.0, 50.0), proxy=True)
+    native = _Occurrence()
+    proxies = []
+
+    def inContext(entity, occurrence):
+        assert occurrence is setOccurrence
+        proxy = _Occurrence(entity.transform2, proxy=True)
+        proxies.append(proxy)
+        return proxy
+
+    placed = seats.placeInSet(native, setOccurrence, inContext, _Matrix(-5.2, 4.05, -1.22))
+    assert placed is proxies[0]
+    assert placed.transform2.t == pytest.approx((94.8, 4.05, 48.78))
+    # the set's own transform is left as it was
+    assert setOccurrence.transform2.t == (100.0, 0.0, 50.0)

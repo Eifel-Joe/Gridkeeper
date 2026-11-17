@@ -80,7 +80,7 @@ def insertParts(
                 transform = adsk.core.Matrix3D.create()
                 transform.translation = adsk.core.Vector3D.create(x / 10, y / 10, z / 10)
                 if index == 0:
-                    first.transform2 = transform
+                    predBoxSeats.placeInSet(first, setOccurrence, inContext, transform)
                 else:
                     occurrences.append(setComponent.occurrences.addExistingComponent(component, transform))
             if des.designType == adsk.fusion.DesignTypes.ParametricDesignType and des.snapshots.hasPendingSnapshot:
