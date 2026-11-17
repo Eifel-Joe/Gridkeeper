@@ -14,7 +14,7 @@ Parts come in one by one as their generators are done (predBoxParts.DRAWN_ROLES)
 import adsk.core, adsk.fusion
 
 from .. import tagUtils
-from . import appearanceUtils, predBoxParts, predBoxSeats, predHandle, predHandlePin, predHinge, predLatch
+from . import appearanceUtils, commonUtils, predBoxParts, predBoxSeats, predHandle, predHandlePin, predHinge, predLatch
 from .predBox import PredBoxDims
 
 
@@ -51,7 +51,7 @@ def insertParts(
     inContext,
 ) -> list[adsk.fusion.BRepBody]:
     """
-    The small parts into the set, each jointed rigidly to the box at its seat; the hinges of the chosen variant (a key
+    The small parts into the set, each jointed rigidly to the box at its seat; the hinges of the chosen variant (one
     of predBoxParts.HINGES) at two seats beside the box in their print position. Returns their native bodies, each
     part's once, after box and lid in buildBox's list (plan decision 5). inContext is assembly.inContext.
 
@@ -63,8 +63,14 @@ def insertParts(
     boxComponent = (boxOccurrence.nativeObject or boxOccurrence).component
     seats = {seat.name: seat for seat in predBoxSeats.seats(dims, hinge)}
     bodies = []
-    # the small parts in a color of their own, box and lid keep theirs (Jörg 17.11.2026)
-    appearance = appearanceUtils.boxPartsAppearance(des) if predBoxParts.partsToDraw(hinge) else None
+    # the small parts in a color of their own, box and lid keep theirs (Jörg 17.11.2026); without a library appearance
+    # to copy they stay uncoloured, the box is built all the same (review round 29: before, a box needed none)
+    appearance = None
+    if predBoxParts.partsToDraw(hinge):
+        try:
+            appearance = appearanceUtils.boxPartsAppearance(des)
+        except appearanceUtils.AppearanceError as err:
+            commonUtils.fileLog(f'small parts of {setName} not coloured, {err}')
     for part in predBoxParts.partsToDraw(hinge):
         first = setComponent.occurrences.addNewComponent(adsk.core.Matrix3D.create())
         component = first.component
@@ -74,7 +80,7 @@ def insertParts(
         # a part's only body after the part: snapshots and export go by body names
         if component.bRepBodies.count == 1:
             component.bRepBodies.item(0).name = part.role
-        for body in component.bRepBodies:
+        for body in (component.bRepBodies if appearance is not None else []):
             body.appearance = appearance
         occurrences = [first]
         for _ in range(part.count - 1):

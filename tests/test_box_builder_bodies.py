@@ -139,3 +139,10 @@ def test_every_small_part_body_gets_the_box_parts_appearance():
     insertParts = ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "insertParts"))
     assert "appearanceUtils.boxPartsAppearance(des)" in insertParts
     assert "body.appearance = appearance" in insertParts
+
+
+def test_a_missing_library_appearance_leaves_the_parts_uncoloured_but_builds_the_box():
+    """Review round 29: without a library appearance to copy (appearanceUtils.AppearanceError) the box command failed,
+    before round 29 a box needed no appearance; the parts are drawn without their colour then"""
+    source = open(INSERT, encoding="utf-8").read()
+    assert "except appearanceUtils.AppearanceError" in source
