@@ -158,6 +158,8 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
    Einstellungen der Box (Rebuild und Clone übernehmen sie). Jede Variante kommt wie M3x30 als eigene Datei
    (`resources/predBox`), zwei Stück in Druckposition neben der Box. Ob die Box je Variante eine andere Aussparung braucht,
    klärt `fusion-auftraege/r28_hinge_variants.py`; braucht sie eine, wird das vor dem Bau vorgelegt.
+   Lage der Scharniere (Nutzer 17.11.2026: „Das passt so für das Scharnier“): das erste dort, wo Preds `Hinge_M3x30:1`
+   liegt, das zweite 5 mm daneben in y (`predBoxSeats.HINGE_GAP`), beide in Druckposition; gilt für alle drei Varianten.
 3. **Schild:** gebaut vom Gridkeeper-Schildgenerator (Text, Cullenect-Symbole), Plattengröße nach Preds Formel.
 4. Struktur wie bisher: jedes Teil eine Komponente, im Container „Gridkeeper boxes“ o. ä., Gelenke zwischen Teilen.
 
