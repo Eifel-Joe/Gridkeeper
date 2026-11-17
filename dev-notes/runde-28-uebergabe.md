@@ -26,7 +26,13 @@ Spec mit den Nachträgen dieser Runde: `dev-notes/specs/2026-11-16-pred-box-desi
   - F4 ist Verhalten des Originals, steht als p291 auf der Liste.
 - **p292:** Der Import schrieb `_XRef_` neben die Teildateien. Jetzt wird aus einer Temp-Kopie importiert
   (`tempCopy`). In Fusion geprüft.
-- `python -m pytest -q`: 1253 grün. `mkdocs build --strict` sauber.
+- **Review** über den ganzen Branch (17.11.). Behoben:
+  - Snapshot-Strukturprüfung (4c02915).
+  - Export der Kleinteile mit Satznamen (0a0f9f8).
+  - Namen nach dem Rebuild (Commit „Rebuild gibt auch den Kleinteilen ihre Namen zurück“).
+  - Sitze nur mit Teilen, Körpername des Stifts (6fdc3ed).
+  - Auf der Liste: p293 bis p295.
+- `python -m pytest -q`: 1261 grün. `mkdocs build --strict` sauber.
 
 ## Offen
 
@@ -45,7 +51,7 @@ Spec mit den Nachträgen dieser Runde: `dev-notes/specs/2026-11-16-pred-box-desi
     - ob der Rebuild die alten Teile mit der alten Zeitleisten-Gruppe entfernt (die Teile werden innerhalb der Gruppe
       eingefügt);
     - Clone;
-    - Export eines Satzes mit Teilen;
+    - Export eines Satzes mit Teilen (Code angepasst, in Fusion ungeprüft);
     - eine Box in einem Bauteil-Design: dort fügt `buildBox` keine Teile ein, weil es keine Box-Occurrence gibt.
 - Bild der Box mit Kleinteilen für die Doku (`docs/assets/images/NEEDED.md`).
 
