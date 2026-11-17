@@ -53,6 +53,8 @@ can't see them in the canvas, open that folder and switch on its light bulb (or 
 mouse over a joint origin in the canvas: Fusion shows its name. In a dialog you can also click a joint origin in the
 browser instead of the canvas.
 
+![The browser with the Joint Origins folder of a 3 × 2 baseplate open, six Socket joint origins, one of them picked and shown in blue in the canvas](../assets/images/joint-origins-browser.png)
+
 ### Picking a joint origin in a dialog
 
 Two Gridkeeper dialogs place their part by a joint origin you pick. Only the right kind of joint origin can be picked;
@@ -66,6 +68,8 @@ others don't light up.
    compartments each pocket has its own: *Compartment 1 pocket joint origin*, *Compartment 2 …* and so on.
 4. The size line says whether the insert fits that pocket; an insert wider or higher than the pocket isn't built.
 5. **OK**: the insert is jointed into the pocket, flush and centered (joint *… in pocket*).
+
+![The Gridkeeper label dialog with Pocket: 1 selected, the bin's Pocket joint origin picked in the browser and shown in blue in the canvas](../assets/images/dialog-insert-pocket.png)
 
 **The box label into its holder**
 
@@ -86,9 +90,10 @@ Without a pick, both dialogs build the part beside the others, unjointed, e.g. f
   insert has its pocket picked again already. A rebuilt box moves joints on its joint origins over to the joint
   origins of the same name, the label's among them. See [Settings, rebuild and clone](settings-rebuild-clone.md).
 - *Clone:* a clone is a new, unjointed part; pick a pocket or a box for it in the dialog.
-- *Undoing the joint:* in the browser, open *Joints* (in the root component, at the top of the browser), right-click
-  the joint (*… in pocket*, *… in holder*) and **Delete**. The part stays in the design and can be moved or jointed
-  anew.
+- *Undoing the joint:* in the browser, open *Relationships › Joints* at the top, right-click the joint (*… in pocket*,
+  *… in holder*) and **Delete**. The part stays in the design and can be moved or jointed anew.
+
+![The browser with Relationships › Joints open, a joint made by hand (Rigid 1) and an insert's joint … in pocket, its context menu with Delete](../assets/images/joints-delete.png)
 
 ### Jointing by hand
 
@@ -101,7 +106,10 @@ models first.
 2. *Component 1*: click a foot joint origin of the bin, e.g. *Foot joint origin 1-1*.
 3. *Component 2*: click the joint origin of the socket it goes into, *Socket joint origin 3-2* of a baseplate or
    *Cell joint origin 3-2* of a box.
-4. *Motion*: **Rigid**. **OK**.
+4. *Motion*: **Rigid**. **OK**. Fusion names the joint *Rigid 1*, *Rigid 2* …; it is listed under
+   *Relationships › Joints*.
+
+![Fusion's Joint dialog: Component 1 the bin with Foot joint origin 1-1 picked in the browser, Component 2 a socket of the baseplate, the bin standing in the plate](../assets/images/joint-bin-into-baseplate.png)
 
 Picking the cell in the bin dialog itself comes later (p312).
 
@@ -122,7 +130,7 @@ or socket joint origins has to be made again. A rebuilt box moves them over by n
 | No joint origins in the canvas | Their light bulb is off: open the component's *Joint Origins* folder in the browser and switch it on. For feet, sockets and cells, the model needs **Add joint origins** |
 | The joint origin can't be clicked in the dialog | It isn't the kind the dialog takes: **Pocket** takes pocket joint origins only, **Box** only a box's *Label joint origin* |
 | The browser shows no joint origins | The folder or the component is collapsed: open the component's arrow, then *Joint Origins* |
-| The part sits in the wrong place | Another joint origin was picked, a neighbouring pocket or cell. Hold the mouse over it to see its name; delete the joint and pick again |
+| The part sits in the wrong place | Another joint origin was picked, a neighbouring pocket or cell. Hold the mouse over it to see its name; delete the joint (*Relationships › Joints*) and pick again |
 | The insert isn't built | It is wider or higher than the pocket, the size line in the dialog says so: pick a pocket that fits or make the insert smaller |
 
 ## The active component
