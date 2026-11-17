@@ -101,3 +101,9 @@ def test_every_drawn_role_has_its_generator():
                                   if isinstance(node, ast.AnnAssign) and getattr(node.target, "id", None) == "DRAWN_ROLES"))
     for role in drawn:
         assert f"'{role}'" in drawPart, role
+
+
+def test_the_pin_is_drawn_by_its_generator():
+    tree = ast.parse(open(INSERT, encoding="utf-8").read())
+    drawPart = ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "drawPart"))
+    assert "predHandlePin.createHandlePin(component)" in drawPart
