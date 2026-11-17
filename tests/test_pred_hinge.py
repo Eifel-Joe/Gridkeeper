@@ -56,7 +56,8 @@ def test_variants_are_the_parts_hinges():
 
 def test_body_names_are_preds():
     assert hinge.SHAPES["M3x30"].bodyNames == ("BottomHingePart_M3x30", "TopHingePart_M3x30")
-    assert hinge.SHAPES["Pinned"].bodyNames == ("BottomHingePart_M3x30", "TopHingePart_M3x30", "Hinge pin")
+    # Nutzer 17.11.2026 (click test F3): Pred names them as M3x30's, in the export and slicer that misled
+    assert hinge.SHAPES["Pinned"].bodyNames == ("BottomHingePart_Pinned", "TopHingePart_Pinned", "Hinge pin")
     assert hinge.SHAPES["Plain"].bodyNames == ("BottomHingePart", "TopHingePart")
 
 
