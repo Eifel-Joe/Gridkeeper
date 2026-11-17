@@ -97,8 +97,26 @@ aus einem Git-Checkout, der darf nie angefasst werden.
     8. Aufräumen: `new/` und die ZIP sofort; Sicherungen beim nächsten Start bis auf die jüngste löschen.
 12. **[Nutzer] Git-Checkout-Sperre doppelt:** der Installer selbst verweigert, wenn im Ziel `.git` existiert (Datei
     oder Ordner), unabhängig vom Dialog.
-13. **[Vorschlag] Kein Neustart durch das Add-in:** Fusion lässt sich nicht sauber selbst neu starten; die Meldung
-    bittet darum. Bis zum Neustart läuft die alte Version weiter (Module sind geladen).
+13. **[Nutzer] Neu laden nach dem Update — messen, nicht annehmen.** Nutzer: „Dran denken, das nach einem Update
+    zumindest das Plugin neu geladen werden muss oder Fusion neu gestartet werden muss. Das sollten wir testen, was
+    da notwendig ist und was funktioniert.“ und „Am 14.11. könnte aber auch ein anderer Fehler gewesen sein.“
+    Bis zum Neu-Laden läuft die alte Version weiter (Module sind geladen). Zu prüfende Wege, jeder unvoreingenommen:
+    - **W1 Fusion-Neustart.**
+    - **W2 Skripte und Add-ins:** Gridkeeper stoppen, dann ausführen (von Hand).
+    - **W3 Fusion-API:** Add-in stoppen/starten über die Add-in-Objekte der API, falls Fusion sie anbietet
+      (vorhandene Eigenschaften und Methoden misst Job 3, nicht aus dem Gedächtnis), aus einem Skript und aus dem
+      Add-in selbst (verzögert über Custom Event, da ein Add-in sich nicht im eigenen Handler beenden sollte).
+    - **W4 Neu-Laden aus dem Add-in:** `stop()`, Module des Pakets aus `sys.modules` entfernen, neu ausführen,
+      `run()` — wie `fusion-addin-reload.py`. Der Befund vom 14.11. (danach öffneten sich die Menübefehle nicht
+      mehr) gilt nur als Hinweis, die Ursache ist offen.
+    **Prüfung je Weg:** danach alle Befehle öffnen — Gridkeeper bin, baseplate, label, box, Export, Rechtsklick
+    settings/rebuild/clone — und die laufende Version prüfen (E13a). **Das Ergebnis bestimmt die Meldung:** gibt es
+    einen sicheren Weg ohne Neustart, bekommt die Erfolgsmeldung einen Knopf dafür (W3/W4) bzw. die Anleitung (W2);
+    sonst bittet sie um den Fusion-Neustart. Ein Fusion-Neustart durch das Add-in selbst ist nicht vorgesehen.
+13a. **[Vorschlag] Laufende Version sichtbar:** beim Start merkt sich das Add-in die Manifest-Version im Speicher.
+    Der Dialog „Gridkeeper updates“ zeigt „Running X, installed Y“; weichen sie ab, steht dort „Restart Fusion (or
+    reload Gridkeeper) to use Y“. Damit ist die laufende Version im Test und für Nutzer prüfbar, ohne dem Manifest
+    auf der Platte zu glauben.
 
 ### Abschalten
 14. **[Vorschlag] Wo:** ein neuer Befehl „Gridkeeper updates“ unter **Utilities › Add-Ins** (nicht in Solid ›
@@ -121,7 +139,7 @@ aus einem Git-Checkout, der darf nie angefasst werden.
 
 ## Nicht dabei
 - Automatisches Update ohne Rückfrage, Vorabversionen, Herunterstufen, „Version überspringen“.
-- Fusion-Neustart durch das Add-in.
+- Fusion-Neustart durch das Add-in (Neu-Laden des Add-ins nur, wenn die Matrix E13 einen sicheren Weg belegt).
 - Update aus dem Git-Checkout heraus (`git pull`).
 - Änderung von `release.yml` oder der Manifest-Version; neue Releases/Tags.
 - Signaturprüfung über den GitHub-Digest hinaus.
@@ -136,6 +154,11 @@ aus einem Git-Checkout, der darf nie angefasst werden.
 - Fusion-Job 2: Hintergrund-Thread mit gefälschter Release-Liste (lokale Datei, Version 9.9.9, ZIP aus dem
   Worktree gebaut wie `release.yml`) → Custom Event kommt im Haupt-Thread an; Installer tauscht in einen
   Testordner unter dem Scratch-Verzeichnis, `commandConfig` ist mitgenommen.
+- Neu-Laden-Matrix (E13): je Weg W1–W4 ein Durchgang auf einer Test-Installation (aus dem Worktree gebaut,
+  Version 9.9.8 → per Installer 9.9.9 mit sichtbarer Markierung); Ergebnis je Weg: laufende Version, jeder der
+  acht Befehle öffnet/öffnet nicht, Fehler im Textbefehlsfenster. des Nutzers Git-Checkout-Add-in muss währenddessen
+  gestoppt sein (gleiche Befehls-IDs) und wird danach wieder gestartet; das braucht die Hauptsitzung bzw. Nutzer.
+  Das Ergebnis kommt als Tabelle in die Spec und bestimmt die Erfolgsmeldung.
 - Handtest (Hauptsitzung/Nutzer): Dialog sehen, Link öffnet die Release-Seite, „Update now“ auf einer Test-Installation
   (Kopie der 1.0.0-ZIP, Manifest auf 0.9.0 gesetzt) ersetzt sie, nach Neustart zeigt Fusion 1.0.0. Damit ist kein
   Test-Release auf GitHub nötig; der Weg über ein echtes neues Release läuft erst mit 1.1.0.
