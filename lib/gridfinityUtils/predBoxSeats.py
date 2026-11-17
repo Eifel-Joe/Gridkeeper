@@ -135,3 +135,21 @@ def hingePlaces() -> list[tuple[float, float, float]]:
     """Where the hinges' origins go in the set, mm; they don't follow the box size"""
     x, y, z = PRED_HINGE_ORIGIN
     return [(x, y, z), (x, round(y + HINGE_DEPTH + HINGE_GAP, 4), z)]
+
+
+def placeInSet(native, setOccurrence, inContext, transform):
+    """
+    Puts a part's occurrence where transform says, transform in the set's frame; returns its proxy from the root.
+
+    Root cause (r28_insert_check l1, 17.11.2026): Fusion refuses a transform on the native occurrence in the set's
+    component ("transform overrides can only be set on Occurrence proxy from root component"), it takes it only on the
+    proxy from the root, and there transform2 is in the root's frame (Occurrence.transform2: "in its assembly
+    context"). So the set's world transform goes onto transform first; a set moved in its container keeps its hinges
+    beside it. The second hinge needs none of this: addExistingComponent takes its transform in the set's frame when
+    it's made. Test: tests/test_pred_box_seats.py
+    """
+    world = transform.copy()
+    world.transformBy(setOccurrence.transform2)
+    occurrence = inContext(native, setOccurrence)
+    occurrence.transform2 = world
+    return occurrence
