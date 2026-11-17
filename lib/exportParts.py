@@ -17,6 +17,16 @@ EXPORT_TAGS = ('bin', 'baseplate', 'label', 'box')
 TEXT_COMPONENT_NAME = 'Text'
 
 
+def partFileName(bodyName: str, setName: str | None) -> str:
+    """
+    The file name of a part's body: a body of a set, the box's Base and Lid, carries the set's name in front, "Box 5×4×6
+    Base"; every box gave "Base.stl", "Base (2).stl" before (click test 17.11.2026, F3)
+    """
+    if not setName or bodyName.startswith(setName):
+        return bodyName
+    return f'{setName} {bodyName}'
+
+
 def isExportTag(tagName: str | None) -> bool:
     return tagName in EXPORT_TAGS
 

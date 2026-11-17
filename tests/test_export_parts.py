@@ -160,3 +160,19 @@ def test_the_root_is_never_a_text_component():
     # the root component is named after the document, "Texthalter" mustn't make its parts letters
     assert not exportParts.isTextComponentName("Texthalter", isRoot=True)
     assert exportParts.isTextComponentName("Text", isRoot=False)
+
+
+# -- file names (click test 17.11.2026, F3): a box's bodies are named Base and Lid, every box exported gave "Base.stl",
+# "Base (2).stl"; the file name carries the set's name, "Box 5×4×6 Base"
+
+def test_a_box_body_is_named_after_its_set():
+    assert exportParts.partFileName("Base", "Box 5×4×6") == "Box 5×4×6 Base"
+    assert exportParts.partFileName("Lid", "Box 7×5×10") == "Box 7×5×10 Lid"
+
+
+def test_a_body_outside_a_set_keeps_its_name():
+    assert exportParts.partFileName("Gridfinity bin 2x1x3", None) == "Gridfinity bin 2x1x3"
+
+
+def test_a_name_that_starts_with_the_set_name_isnt_doubled():
+    assert exportParts.partFileName("Box 5×4×6 Base", "Box 5×4×6") == "Box 5×4×6 Base"
