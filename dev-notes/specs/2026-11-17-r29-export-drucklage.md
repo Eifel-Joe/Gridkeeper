@@ -1,6 +1,6 @@
 # r29-export: Drucklage, Druckbett, Verteilen, Abstand, Purgetower (Gridkeeper 1.1.0)
 
-Stand: 17.11.2026, Entscheidungen D1–D4 von Jörg, Freigabe der Spec ausstehend.
+Stand: 17.11.2026, Entscheidungen D1–D4 von Jörg, Spec und Plan von Jörg freigegeben (17.11.2026).
 
 ## Problem
 Der 3MF-Export (`lib/threeMf.py`, `placeOnPlate`) setzt jedes Teil auf z=0 und lässt die x/y-Lage wie in der
