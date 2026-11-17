@@ -218,6 +218,17 @@ def test_the_hole_cuts_the_half_body_only_before_the_mirror():
     assert "CutFeatureOperation" in hole
 
 
+def test_the_hole_reaches_past_the_arm_by_a_bounded_extent():
+    """r29_handle_check.l1.out: through all from the YZ plane failed ("Could not complete Through All Extrude, body not
+    found to extrude through"). The cut reaches symmetric H + 1 mm to each side, past the arm's outer face at -H, as an
+    expression so it follows the width"""
+    hole = ast.unparse(_function("_pinHole"))
+    assert "setAllExtent" not in hole
+    assert "setSymmetricExtent(adsk.core.ValueInput.createByString(f'({halfWidth}) + {HOLE_PAST_ARM:g} mm'), False)" in hole
+    assert handle.HOLE_PAST_ARM == 1.0
+    assert "_pinHole(component, body, halfWidth)" in ast.unparse(_function("createHandle"))
+
+
 def test_only_the_body_is_mirrored_and_combined():
     """No feature mirror of chamfers or fillets (round 27, Mirror6); a body mirror went in round 28"""
     source = ast.unparse(_function("createHandle"))
