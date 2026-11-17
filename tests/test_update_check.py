@@ -173,3 +173,78 @@ def test_manifest_version_of_the_repo():
         expected = updateCheck.parseVersion(json.load(file)["version"])
     assert expected is not None
     assert updateCheck.manifestVersion(project_root) == expected
+
+
+# asking GitHub
+
+import io
+import socket
+import urllib.error
+
+
+class FakeResponse(io.BytesIO):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        self.close()
+
+
+def fakeUrlopen(payload=None, error=None, calls=None):
+    def urlopen(request, timeout=None):
+        if calls is not None:
+            calls.append((request, timeout))
+        if error is not None:
+            raise error
+        return FakeResponse(payload)
+    return urlopen
+
+
+def test_request_headers_only_neutral():
+    calls = []
+    logs = []
+    result = updateCheck.fetchReleases(urlopen=fakeUrlopen(b"[]", calls=calls), log=logs.append)
+    assert result == []
+    (request, timeout) = calls[0]
+    assert request.full_url == "https://api.github.com/repos/Eifel-Joe/Gridkeeper/releases?per_page=30"
+    assert timeout == 10
+    assert dict(request.header_items()) == {"User-agent": "Gridkeeper-update-check", "Accept": "application/vnd.github+json"}
+    assert request.data is None
+
+
+def test_fetch_errors_are_none():
+    for error in [urllib.error.URLError("offline"), socket.timeout("slow"), TimeoutError("slow"),
+                  urllib.error.HTTPError("https://x", 403, "rate limit", {}, None), ConnectionResetError()]:
+        logs = []
+        assert updateCheck.fetchReleases(urlopen=fakeUrlopen(error=error), log=logs.append) is None
+        assert len(logs) == 1
+    for payload in [b"not json", b'{"message": "Not Found"}', b"\xff\xfe"]:
+        logs = []
+        assert updateCheck.fetchReleases(urlopen=fakeUrlopen(payload), log=logs.append) is None
+        assert len(logs) == 1
+
+
+def _addin(tmp_path, version="1.0.0"):
+    (tmp_path / "Gridkeeper.manifest").write_text(json.dumps({"version": version}))
+    return str(tmp_path)
+
+
+def test_check_for_update(tmp_path):
+    releases = [release("gridkeeper-v1.1.0"), release("gridkeeper-v1.0.0")]
+    newest = updateCheck.checkForUpdate(_addin(tmp_path), fetch=lambda: releases, log=lambda m: None)
+    assert newest.versionText == "1.1.0"
+    assert updateCheck.checkForUpdate(_addin(tmp_path, "1.1.0"), fetch=lambda: releases, log=lambda m: None) is None
+
+
+def test_check_offline_none(tmp_path):
+    assert updateCheck.checkForUpdate(_addin(tmp_path), fetch=lambda: None, log=lambda m: None) is None
+
+
+def test_check_unreadable_manifest_none(tmp_path):
+    logs = []
+    asked = []
+    result = updateCheck.checkForUpdate(_addin(tmp_path, "dev"), fetch=lambda: asked.append(1) or [release("gridkeeper-v1.1.0")], log=logs.append)
+    assert result is None
+    # no question to GitHub without a version to compare with
+    assert asked == []
+    assert len(logs) == 1

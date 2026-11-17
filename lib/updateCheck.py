@@ -132,3 +132,36 @@ def writeSettings(path: str, settings: dict) -> bool:
 def isDue(settings: dict, today: datetime.date) -> bool:
     """At most one check a calendar day, a failed one counts too so a computer without network doesn't wait each start"""
     return settings.get('checkAtStartup', True) is not False and settings.get('lastCheck') != today.isoformat()
+
+# asking GitHub
+
+API_URL = 'https://api.github.com/repos/Eifel-Joe/Gridkeeper/releases?per_page=30'
+# GitHub wants a user agent, this one says nothing about the user, the computer or the version (p310: no personal data)
+USER_AGENT = 'Gridkeeper-update-check'
+TIMEOUT = 10
+
+def fetchReleases(url: str = API_URL, urlopen=None, log=print) -> list | None:
+    """The release list of the GitHub API, none when it can't be had: no network, a timeout, an HTTP error or no list.
+    Errors are only logged, the check is silent at startup"""
+    import urllib.request
+    urlopen = urlopen or urllib.request.urlopen
+    request = urllib.request.Request(url, headers={'User-Agent': USER_AGENT, 'Accept': 'application/vnd.github+json'})
+    try:
+        with urlopen(request, timeout=TIMEOUT) as response:
+            data = json.loads(response.read().decode('utf-8'))
+    except Exception as err:
+        log(f'Gridkeeper update check failed: {type(err).__name__}: {err}')
+        return None
+    if not isinstance(data, list):
+        log('Gridkeeper update check failed: GitHub sent no release list')
+        return None
+    return data
+
+def checkForUpdate(addinFolder: str, fetch=None, log=print) -> Release | None:
+    """The release newer than the add-in in addinFolder, none when there is none or GitHub can't be asked"""
+    current = manifestVersion(addinFolder)
+    if current is None:
+        log(f'Gridkeeper update check skipped: no X.Y.Z version in the manifest of {addinFolder}')
+        return None
+    releases = fetch() if fetch is not None else fetchReleases(log=log)
+    return newestRelease(releases, current) if releases is not None else None
