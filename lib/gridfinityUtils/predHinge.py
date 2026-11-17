@@ -564,7 +564,7 @@ def _pin(component, shape: HingeShape):
 
 
 def createHinge(component: adsk.fusion.Component, hinge: str) -> list[adsk.fusion.BRepBody]:
-    """Draws the hinge (a key of predBoxParts.HINGES) into the given empty component, in Pred's part frame and print
+    """Draws the hinge (one of predBoxParts.HINGES) into the given empty component, in Pred's part frame and print
     position; returns its bodies in Pred's order and with his names (his printed pin as 'Hinge pin')"""
     shape = SHAPES[hinge]
     if component.bRepBodies.count:
