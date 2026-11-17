@@ -163,6 +163,14 @@ def test_download(tmp_path):
     assert dict(request.header_items()) == {"User-agent": "Gridkeeper-update-check"}
 
 
+def test_download_reports_progress(tmp_path):
+    seen = []
+    updateInstall.download("https://x/a.zip", str(tmp_path / "a.zip"), urlopen=fakeUrlopen(b"0" * 150000), progress=seen.append)
+    assert seen[-1] == 150000
+    assert seen == sorted(seen)
+    assert len(seen) >= 2
+
+
 def test_download_stops_over_limit(tmp_path):
     target = str(tmp_path / "a.zip")
     with pytest.raises(UpdateError, match="large"):

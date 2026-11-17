@@ -96,6 +96,38 @@ def manifestVersion(addinFolder: str) -> tuple[int, int, int] | None:
     except (OSError, ValueError, AttributeError):
         return None
 
+# what the dialogs say, see commands/commandUpdates
+
+GIT_CHECKOUT_TEXT = 'This add-in runs from a git checkout, update it with git.'
+# until the reload test of the spec (E13) shows a way without one
+RESTART_TEXT = 'Restart Fusion to use'
+
+def dialogHtml(release: Release, current: tuple[int, int, int], gitCheckout: bool) -> str:
+    """The text of the update dialog: the new version, its short info and the link to its release notes"""
+    import html
+    lines = [f'<b>Gridkeeper {release.versionText} is available (you have {versionText(current)}).</b>']
+    if release.summary:
+        lines.append(html.escape(release.summary))
+    if release.pageUrl:
+        lines.append(f'<a href="{html.escape(release.pageUrl, quote=True)}">Release notes</a>')
+    if gitCheckout:
+        lines.append(GIT_CHECKOUT_TEXT)
+    elif release.assetUrl is None:
+        lines.append('The release has no ZIP file to install, download it from the release page.')
+    return '<br><br>'.join(lines)
+
+def versionLine(running: tuple[int, int, int] | None, installed: tuple[int, int, int] | None) -> str:
+    """The version running, read when the add-in started, and the one on disk an update put there"""
+    if running is None:
+        return 'Running Gridkeeper, its version is unknown.'
+    if installed is None or installed == running:
+        return f'Running Gridkeeper {versionText(running)}.'
+    return (f'Running Gridkeeper {versionText(running)}, installed {versionText(installed)}. '
+            f'{RESTART_TEXT} {versionText(installed)}.')
+
+def successText(release: Release) -> str:
+    return f'Gridkeeper {release.versionText} is installed. {RESTART_TEXT} it.'
+
 # settings
 
 SETTINGS_FOLDER = 'updateConfig'

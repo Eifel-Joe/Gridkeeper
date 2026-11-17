@@ -24,8 +24,8 @@ def isGitCheckout(folder: str) -> bool:
     """A git checkout is never replaced by an update. .git is a folder in a clone and a file in a git worktree"""
     return os.path.exists(os.path.join(folder, '.git'))
 
-def download(url: str, target: str, urlopen=None, limit: int = MAX_DOWNLOAD) -> None:
-    """Saves url to target, stops at limit bytes"""
+def download(url: str, target: str, urlopen=None, limit: int = MAX_DOWNLOAD, progress=None) -> None:
+    """Saves url to target, stops at limit bytes. progress is called with the bytes so far after each chunk"""
     import urllib.request
     urlopen = urlopen or urllib.request.urlopen
     request = urllib.request.Request(url, headers={'User-Agent': USER_AGENT})
@@ -37,6 +37,8 @@ def download(url: str, target: str, urlopen=None, limit: int = MAX_DOWNLOAD) -> 
                 if size > limit:
                     raise UpdateError(f'The download is too large, more than {limit // 2**20} MB.')
                 file.write(chunk)
+                if progress is not None:
+                    progress(size)
     except UpdateError:
         raise
     except Exception as err:
@@ -194,7 +196,7 @@ def _swapByCopy(addinFolder: str, newFolder: str, backupFolder: str, copyFile) -
     _prune(addinFolder, _files(newFolder))
     return 'copied'
 
-def install(release, addinFolder: str, urlopen=None, now=datetime.datetime.now) -> str:
+def install(release, addinFolder: str, urlopen=None, now=datetime.datetime.now, progress=None) -> str:
     """
     Downloads, checks and unpacks the release ZIP, then swaps the add-in folder, see swap; 'renamed' or 'copied'.
     release has version, assetUrl, assetSize and assetDigest, see updateCheck.Release. Raises UpdateError with the
@@ -213,7 +215,7 @@ def install(release, addinFolder: str, urlopen=None, now=datetime.datetime.now) 
         os.makedirs(work, exist_ok=True)
         # a run that broke off may have left its unpacked files
         shutil.rmtree(newParent, ignore_errors=True)
-        download(release.assetUrl, zipPath, urlopen=urlopen)
+        download(release.assetUrl, zipPath, urlopen=urlopen, progress=progress)
         verifyZip(zipPath, release.version, release.assetDigest, release.assetSize)
         newFolder = extract(zipPath, newParent)
         carryOver(addinFolder, newFolder)
