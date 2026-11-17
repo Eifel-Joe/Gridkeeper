@@ -48,11 +48,11 @@ SLOT_MODEL_CHAMFER = 1.0
 
 @dataclass(frozen=True)
 class HingeShape:
-    pred: str
+    pred: str               # Pred's component (r29_walk/<pred>.json)
     bodyNames: tuple
     knuckle: float          # radius of the knuckles
     clearance: float        # radius cut free around a knuckle where the other leaf's bar passes
-    core: float             # radius of the core through the knuckles (screw / pin hole, or the printed core)
+    core: float             # radius of the knuckles' core: kept by the gaps; M3x30's screw hole, Plain's printed core
     leafWidth: float
     leafDepth: float
     inset: float            # the leaves' and the bar chamfer's distance inside Pred's slot model
@@ -75,7 +75,7 @@ PLAIN_HOLE = (4 + 2 * TOLERANCE) / 2
 
 
 def _halfWidths(shape: HingeShape):
-    """(slot model's back, leaf inner, leaf outer, bar end, bar chamfer's top) about the axis, mm"""
+    """(slot model's back, leaf inner, leaf outer, bar end) as x about the axis and the bar chamfer's top as y, mm"""
     back = math.sqrt(shape.clearance ** 2 - SLOT_MODEL_Y ** 2)
     inner = back + SLOT_FROM_BACK + shape.inset
     outer = inner + shape.leafWidth
@@ -115,7 +115,7 @@ def sectionSketch(shape: HingeShape):
 def clearanceSketch(shape: HingeShape, side: int):
     """Points and curves of the sketch that gives the ring between knuckle and clearance on one side of the axis (side
     -1 left, +1 right): the two circles and a rectangle from the axis outwards past them. The ring's half inside the
-    rectangle is the cut (clearanceProfile); the rest of the ring is never solid where the bar does not pass.
+    rectangle is the cut (chosen by area and side in _base); the rest of the ring is never solid where the bar does not pass.
     No arcs: a sector of two arcs was over-constrained in Fusion (fusion-auftraege/r29_hinge_check l1,
     VCS_SKETCH_OVER_CONSTRAINTS), circles on a centre hanging on a polygon drew in 'Hinge section'"""
     c = center(shape)
@@ -218,6 +218,8 @@ BRIDGE_HALF_WIDTH = 2.3     # half their length along the chord (half chord 2.12
 def _bridgeNormals(layer: float):
     """Unit normals of the layer's two chords: the thin layer beyond x - y = +-d, the thick one beyond x + y = +-d"""
     s = 1 / math.sqrt(2)
+    if layer not in (THIN_BRIDGE, THICK_BRIDGE):
+        raise ValueError(f'hinge: no bridge layer {layer}')
     return [(s, -s), (-s, s)] if layer == THIN_BRIDGE else [(s, s), (-s, -s)]
 
 
@@ -338,7 +340,7 @@ def _extrude(component, profiles, operation, start: float, end: float, axis: int
 def _drawPlan(component, plane, name, points, curves, at=0.0, axis=2, diameters=()):
     """A WorldSketch from a plan: points are the plane's two world coordinates in mm, (x, y) at z = at for axis 2,
     (y, z) at x = at for axis 0; circles take the diameters (mm) in their order"""
-    sketch = WorldSketch(component, plane, name)
+    sketch = WorldSketch(component, plane, f'{name} sketch')
 
     def world(p):
         return _world(p[0], p[1], at) if axis == 2 else _world(at, p[0], p[1])
@@ -346,8 +348,6 @@ def _drawPlan(component, plane, name, points, curves, at=0.0, axis=2, diameters=
     for curve in curves:
         if curve['kind'] == 'line':
             sketch.line(world(points[curve['a']]), world(points[curve['b']]), curve.get('construction', False))
-        elif curve['kind'] == 'arc':
-            sketch.arc(world(points[curve['center']]), world(points[curve['start']]), world(points[curve['end']]))
         else:
             sketch.circle(world(points[curve['center']]), _mm(next(sizes)))
     sketch.close()
@@ -357,8 +357,6 @@ def _drawPlan(component, plane, name, points, curves, at=0.0, axis=2, diameters=
 
 def _polygonPlan(points):
     return points, [{'kind': 'line', 'a': i, 'b': (i + 1) % len(points)} for i in range(len(points))]
-
-
 
 
 def _ringArea(inner: float, outer: float) -> float:
@@ -420,7 +418,7 @@ def predChamfers(variant: str):
     """Pred's chamfers on leaves and knuckles, in his order: [{'pred', 'distance', 'edges'}] (predHingeEdges.json, made
     from fusion-auftraege/r29_walk by dev-notes/r29/hinge-edges-gen.py; mm, part frame)"""
     with open(_EDGES_FILE, encoding='utf-8') as f:
-        return json.load(f).get(variant, [])
+        return json.load(f)[variant]
 
 
 # -- the parts ---------------------------------------------------------------------------------------------------------
@@ -534,9 +532,11 @@ def _pinned(component, shape: HingeShape):
 def _pin(component, shape: HingeShape):
     """Pred's printed pin (Body21): a revolve of its half section, the flat and the slot cut, the slot's bottom rounded"""
     c = center(shape)
+    if c != 0.0:
+        raise ValueError('hinge pin: the revolve turns about the z axis, the hinge axis must lie on it')
     newBody = adsk.fusion.FeatureOperations.NewBodyFeatureOperation
     cut = adsk.fusion.FeatureOperations.CutFeatureOperation
-    section = WorldSketch(component, component.xZConstructionPlane, 'Pin section')
+    section = WorldSketch(component, component.xZConstructionPlane, 'Pin section sketch')
     profile = pinProfile()
     for (r0, z0), (r1, z1) in zip(profile, profile[1:] + profile[:1]):
         section.line(_world(c + r0, 0.0, z0), _world(c + r1, 0.0, z1))
@@ -567,6 +567,8 @@ def createHinge(component: adsk.fusion.Component, hinge: str) -> list[adsk.fusio
     """Draws the hinge (a key of predBoxParts.HINGES) into the given empty component, in Pred's part frame and print
     position; returns its bodies in Pred's order and with his names (his printed pin as 'Hinge pin')"""
     shape = SHAPES[hinge]
+    if component.bRepBodies.count:
+        raise ValueError(f'hinge: component {component.name} is not empty')
     _base(component, shape)
     _tabs(component, shape)
     if hinge == 'M3x30':
