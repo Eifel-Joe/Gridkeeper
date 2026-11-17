@@ -32,13 +32,22 @@ einstellbar. Und bei zweifarbigem Export auch eine freie Fläche für den Purget
    Die Rolle kommt aus der Teil-Rolle der Komponente (`partRoleOf`). Bei Box und Deckel ohne Satz kommt sie aus den
    Körpernamen `Base` und `Lid`.
 2. **Druckbett-Auswahl** im Export-Dialog. Die Vorgaben stammen aus `commandCreateBaseplate/printBeds.py` (dieselbe
-   Liste wie im Baseplate-Dialog), dazu „Custom“ mit Breite und Tiefe. Vorgabe ist Bambu Lab A1, P1, X1 (256 × 256 mm).
+   Liste wie im Baseplate-Dialog), dazu „Custom“ mit Breite und Tiefe. Vorgabe ist Bambu Lab P1P, P1S, X1, X1C, X1E
+   (256 × 256 mm).
+   - Nachtrag nach dem Bambu-Klicktest 17.11.2026, F1/F2, Nutzer: „Ja, so. Aber auch die anderen BambuLab-Drucker mit
+     aufnehmen.“
+   - Die Liste führt alle Bambu-Lab-Drucker aus den Profilen von Bambu Studio 02.09.01.70 getrennt auf.
+   - Je Drucker kommen dazu die Turm-Standardlage (`default_wipe_tower_pos`) und die Sperrzone (`bed_exclude_area`).
+     P1 und X1 haben eine, 18 × 28 mm vorn links.
+   - Die Purge-Fläche liegt an der Turm-Standardlage, bei Nicht-Bambu-Druckern und Custom hinten rechts.
+   - Sperrzone und Purge-Fläche bleiben auch nach dem Zentrieren durch den Slicer frei. Die Sperrzone hat Vorrang.
+   - Die Purge-Fläche wird nur freigehalten, wenn wirklich Schrift bemalt wird.
 3. **Verteilen.** Die Teile werden zeilenweise nach ihrer Grundfläche auf das Bett gelegt, die größten zuerst. Passt
    ein Teil nur quer, wird es um 90° um Z gedreht. Was nicht mehr auf die Platte passt, kommt auf die nächste. Ein Teil,
    das größer ist als das Bett, kommt allein auf eine Platte, und die Zusammenfassung im Dialog nennt es.
    Gruppen wie die Scharnierhälften werden als ein Block verteilt.
 4. **Abstand** zwischen den Teilen und zum Bettrand ist einstellbar. Vorgabe 5 mm (D2, Nutzer 17.11.).
-5. **Purgetower.** Ist „Color label text“ an, bleibt hinten rechts ein Quadrat frei. Größe 50 × 50 mm, einstellbar (D2, Nutzer 17.11.). Gilt auf jeder Platte.
+5. **Purgetower.** Ist „Color label text“ an, bleibt an der Turmstelle des Druckers ein Quadrat frei (siehe 2.). Größe 50 × 50 mm, einstellbar (D2, Nutzer 17.11.). Gilt auf jeder Platte.
 6. **Merken.** Bett, Breite, Tiefe, Abstand und Purgetower-Größe werden wie die übrigen Wahlen in der
    Export-Konfiguration gespeichert (`readChoices`/`saveChoices`).
 7. **Nur bei mehreren Teilen.** Ein einzelnes Teil wird nur in Drucklage gedreht und in die Bettmitte gesetzt.
@@ -67,7 +76,6 @@ einstellbar. Und bei zweifarbigem Export auch eine freie Fläche für den Purget
 - Kein Slicer-Projekt mit Druckereinstellungen und keine Filamentzuordnung über das hinaus, was es heute gibt.
 - Keine Drehung von Bins, Baseplates und Labels. Kein Verschachteln: Teile werden nach ihren Grundflächen gelegt, es
   wird nichts ineinander gepackt.
-- Keine Purgetower-Lage pro Drucker, immer hinten rechts.
 
 ## Ende-zu-Ende
 1. Die Hauptsitzung lässt in Fusion den Job `fusion-auftraege/r29_export.py` laufen. Er exportiert:
