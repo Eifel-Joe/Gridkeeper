@@ -22,6 +22,13 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 - **Box label is a part of the export (p380):** All Gridkeeper parts takes the box label with its text, a Flush label
   lies on its text.
 
+### Joint origins explained
+
+- [Joint origins](docs/working/components.md#joint-origins) is now a guide (Nutzer: „Wir müssen auf jeden Fall noch
+  anständig erklären, wie die Joints generell genutzt werden …“): which joint origins every model has, how to pick one
+  in the insert and box label dialogs, how to joint a bin into a baseplate or box cell and a box onto a box by hand,
+  and what to do when a joint origin can't be seen or picked.
+
 ### Small parts drawn in code (round 29)
 
 - **Box from the dialog with its small parts:** with the parts imported from files (round 28) the box command failed at the first small part
@@ -54,8 +61,8 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   none uses a user parameter.
 - **Right-click on the set (click test F1):** the set's component offers settings, rebuild and clone like box and lid.
 - **Export file names (click test F3):** box bodies carry the set's name, e.g. *Box 5×4×6 Base*.
-- **No files in the add-in folder (p292):** the parts are inserted from a temporary copy; Fusion's import wrote a
-  folder `_XRef_` beside the part files before.
+- **No files in the add-in folder (p292):** importing the part files wrote a folder `_XRef_` beside them; with the parts
+  drawn in code (round 29) nothing is imported any more.
 
 ### Storage box after Pred (round 27)
 
