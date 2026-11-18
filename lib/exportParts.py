@@ -217,3 +217,77 @@ def plateKind(role: str | None, tagName: str | None, bodyName: str, setName: str
     if role == 'Box' or (role is None and tagName == 'box'):
         return (setName, 'box')
     return None
+
+
+# Round 37 (p301, spec dev-notes/specs/2026-11-18-r37-export-filaments.md): each label color on a filament of its own.
+# A color is '#RRGGBB' as labelColors has it, '' the label text without a color (outline letters, text left
+# uncolored). The bodies print on filament 1, the slicer's filament of the object
+
+# the most filaments a painted triangle can name, threeMf.MAX_FILAMENT
+MAX_FILAMENT = 18
+FIRST_LABEL_FILAMENT = 2
+# the saved name of the text without a color
+NO_COLOR_KEY = 'none'
+
+
+def assignFilaments(colors: list[str], saved: dict[str, int]) -> dict[str, int]:
+    """
+    The filament of each label color of an export, in their order: the saved one, else the lowest from 2 no other color
+    of the export has; past the last filament the colors share it
+    """
+    assigned = {color: saved[color] for color in colors if color in saved}
+    for color in colors:
+        if color in assigned:
+            continue
+        taken = set(assigned.values())
+        assigned[color] = next((number for number in range(FIRST_LABEL_FILAMENT, MAX_FILAMENT + 1) if number not in taken), MAX_FILAMENT)
+    return {color: assigned[color] for color in colors}
+
+
+def formatLabelFilaments(mapping: dict[str, int]) -> str:
+    """How the dialog saves them, 'D02020=2,none=4'"""
+    return ','.join(f'{color.lstrip("#") or NO_COLOR_KEY}={number}' for (color, number) in mapping.items())
+
+
+def parseLabelFilaments(text: str) -> dict[str, int]:
+    """The saved ones back, see formatLabelFilaments, a broken entry left out"""
+    mapping = {}
+    for entry in text.split(','):
+        (name, _, number) = entry.strip().partition('=')
+        name = name.strip().upper()
+        if name == NO_COLOR_KEY.upper():
+            color = ''
+        elif len(name) == 6 and all(digit in '0123456789ABCDEF' for digit in name):
+            color = f'#{name}'
+        else:
+            continue
+        try:
+            value = int(number)
+        except ValueError:
+            continue
+        if 1 <= value <= MAX_FILAMENT:
+            mapping[color] = value
+    return mapping
+
+
+def mergeLabelFilaments(saved: dict[str, int], shown: dict[str, int]) -> dict[str, int]:
+    """The saved ones with those of the dialog, a color not shown keeps its filament for the next export"""
+    return {**saved, **shown}
+
+
+def labelFilamentChoices(section: dict) -> dict[str, int]:
+    """
+    The saved filaments of the label colors. An export before round 37 saved one filament for all label text,
+    colorIndex: it stays the one of the text without a color, so outline letters print as before. configparser gives
+    its keys in lower case
+    """
+    section = {str(key).lower(): value for (key, value) in section.items()}
+    mapping = parseLabelFilaments(section.get('labelfilaments', ''))
+    if '' not in mapping:
+        try:
+            index = int(section.get('colorindex', ''))
+        except ValueError:
+            index = 0
+        if 1 <= index <= MAX_FILAMENT:
+            mapping[''] = index
+    return mapping

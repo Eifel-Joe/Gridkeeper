@@ -399,3 +399,69 @@ def test_the_dialog_summary_tells_of_a_file_per_plate():
     source = open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read()
     assert "'one file' if format == FORMAT_3MF" not in source
     assert "a 3MF file per plate" in source
+
+
+# --- round 37 (p301): each label color on a filament of its own, bodies on 1 ---
+
+def test_label_colors_get_filaments_from_2_in_their_order():
+    assert exportParts.assignFilaments(["#D02020", "#2060D0", ""], {}) == {"#D02020": 2, "#2060D0": 3, "": 4}
+
+
+def test_a_saved_filament_wins_and_the_others_skip_it():
+    assert exportParts.assignFilaments(["#D02020", "#2060D0"], {"#2060D0": 2}) == {"#D02020": 3, "#2060D0": 2}
+
+
+def test_saved_filaments_of_colors_not_exported_dont_block_a_number():
+    assert exportParts.assignFilaments(["#D02020"], {"#2060D0": 2}) == {"#D02020": 2}
+
+
+def test_two_colors_may_share_a_filament_when_saved_so():
+    assert exportParts.assignFilaments(["#D02020", "#2060D0"], {"#D02020": 2, "#2060D0": 2}) == {"#D02020": 2, "#2060D0": 2}
+
+
+def test_past_the_last_filament_the_colors_share_it():
+    keys = [f"#0000{index:02X}" for index in range(20)]
+    assigned = exportParts.assignFilaments(keys, {})
+    assert [assigned[key] for key in keys] == list(range(2, 19)) + [18, 18, 18]
+    assert exportParts.MAX_FILAMENT == threeMf.MAX_FILAMENT
+
+
+def test_the_label_filaments_are_saved_and_read_back():
+    mapping = {"#D02020": 2, "#2060D0": 3, "": 4}
+    text = exportParts.formatLabelFilaments(mapping)
+    assert text == "D02020=2,2060D0=3,none=4"
+    assert exportParts.parseLabelFilaments(text) == mapping
+
+
+@pytest.mark.parametrize("text", ["", "D02020", "D02020=x", "D02020=0", "D02020=19", "XYZ=2", "=2", ",,"])
+def test_broken_saved_entries_are_left_out(text):
+    assert exportParts.parseLabelFilaments(text + ",2060D0=3") == {"#2060D0": 3}
+
+
+def test_saving_keeps_the_colors_not_shown():
+    assert exportParts.mergeLabelFilaments({"#2060D0": 3, "#D02020": 2}, {"#D02020": 5}) == {"#2060D0": 3, "#D02020": 5}
+
+
+def _config_section(text):
+    import configparser
+    parser = configparser.ConfigParser()
+    parser.read_string(text)
+    return dict(parser["Export"])
+
+
+def test_an_old_config_keeps_its_label_color_index_for_text_without_a_color():
+    # an export before round 37 saved one index for all label text: outline letters keep printing on it
+    section = _config_section("[Export]\nfolder = C:/x\nformat = 3MF\npaint = yes\ncolorIndex = 4\n")
+    assert exportParts.labelFilamentChoices(section) == {"": 4}
+
+
+def test_an_old_config_with_a_broken_index_has_no_saved_filaments():
+    for index in ("x", "0", "19"):
+        assert exportParts.labelFilamentChoices(_config_section(f"[Export]\ncolorIndex = {index}\n")) == {}
+
+
+def test_the_saved_label_filaments_win_over_the_old_index():
+    section = _config_section("[Export]\ncolorIndex = 4\nlabelFilaments = none=6,D02020=2\n")
+    assert exportParts.labelFilamentChoices(section) == {"": 6, "#D02020": 2}
+    section = _config_section("[Export]\ncolorIndex = 4\nlabelFilaments = D02020=2\n")
+    assert exportParts.labelFilamentChoices(section) == {"#D02020": 2, "": 4}
