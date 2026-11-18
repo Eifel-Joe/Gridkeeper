@@ -6,6 +6,27 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased
 
+### Box speed (round 39)
+
+Box after Pred's parametric Gridfinity Storage Box (Printables 543553, CC BY-NC, by Pred), drawn in code.
+- **Faster box build:** every Fusion call gets slower the more model parameters a document holds, and every sketch
+  dimension is one. Sketch points that hang on no box size are now fixed in place instead of held by two dimensions;
+  points on the box's width, length or height keep their dimensions, so changing those parameters still resizes the
+  box. A box brings 965 parameters instead of 1409 (450 sketch dimensions instead of 894), every sketch stays fully
+  constrained and the shape is unchanged. Edges are read by index, which halves those calls. Measured in Fusion, the
+  same session and document layout before and after: the first box 141 → 110 s, a second box beside it 271 → 213 s,
+  the preview 218 → 182 s, a rebuild with two joints moved over 792 → 727 s (most of a rebuild is deleting the old set
+  item by item, unchanged). Decided: the ends and centres of arcs keep their dimensions, Fusion rejected fixed points
+  around concentric arcs as over-constrained (p296, p480).
+- **Rebuild preview:** the old set is hidden by switching its light bulb off instead of suppressing its timeline group,
+  which Fusion always refused for a box (the log said "Cannot suppress/unsuppress group", then every item was suppressed
+  one by one). The preview of a rebuild takes 286 → 219 s. The light bulb is switched back on whenever the dialog
+  closes; a set hidden by hand before stays hidden (p481).
+- **Rebuild with joints of the user:** rebuilding a box with a joint of the user on it broke off with
+  "InternalValidationError : jointOcc" when further joints came after it in the timeline, a second box for example.
+  The joints are now read before any is moved; the same for an insert's pocket joint when a bin is rebuilt (p530).
+- **Snapshot tests:** a case whose build breaks no longer leaves its half-built document open (p531).
+
 ### GridfinityGenerator 2.5 merged (round 38)
 
 Merged from GridfinityGenerator v2.5.0.0 by Le0Michine (Lev Mishin), up to ee027a9 (p13):
