@@ -25,6 +25,7 @@ from types import SimpleNamespace
 import adsk.core, adsk.fusion
 
 from .dim import Dim, valueInput, applyTo
+from . import fusionLists
 from .predSketch import WorldSketch, collection
 from .predBoxEdges import EdgeNotFound, mirrorItem
 
@@ -403,7 +404,7 @@ class _Builder:
     def edges(self, step):
         adds = []
         for kind, size, items in edgeSets(step):
-            found = matchEdges([_toCm(item) for item in items], list(self.body.edges), _edgeItem)
+            found = matchEdges([_toCm(item) for item in items], fusionLists.items(self.body.edges), _edgeItem)
             adds.append((kind, size, found))
         if adds[0][0] == 'fillet':
             fillets = self.features.filletFeatures
@@ -442,7 +443,7 @@ class _Builder:
 
     def sideFace(self, side):
         """The planar face at x = side * 9.8 mm (the largest, should Fusion split it)"""
-        faces = [face for face in self.body.faces
+        faces = [face for face in fusionLists.items(self.body.faces)
                  if face.geometry.objectType == adsk.core.Plane.classType()
                  and abs(abs(face.geometry.normal.x) - 1) < _EPS and abs(face.pointOnFace.x - side * SIDE_X / 10) < _EPS]
         if not faces:
