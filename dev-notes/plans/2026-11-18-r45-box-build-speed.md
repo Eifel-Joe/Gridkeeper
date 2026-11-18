@@ -55,3 +55,20 @@ Spec: dev-notes/specs/2026-11-18-r45-box-build-speed.md. Tests: `python -m pytes
   plus a count of joint-origin sketches, expressions set and C fallbacks per build. Base and branch back to back.
 - [ ] Box snapshot cases box_5x4x6, box_5x4x6_params_7x5x10, box_6x5x7_params_4x3x6, box_5x4x6_lid_closed_params_4x3x8.
 - [ ] Numbers into this plan and the PR.
+
+## Measured (Task 6, 18.11.2026)
+`fusion-auftraege/r45_mess.py` (branch, then base 794253f, same Fusion session, new hybrid document each run) and
+`r45_nach.py` (branch box 1/2 again on the final head after the review fixes):
+
+| Step | Base 794253f | Branch | Branch final |
+|---|---|---|---|
+| Box 1 5×4×6 with parts | 115.4 s, 965 parameters | 81.0 s, 877 | 75.2 s, 877 |
+| Box 2 beside it | 214.1 s, 1946 in all | 143.1 s, 1770 | 146.8 s, 1770 |
+| Rebuild box 1 as 6×4×6, two probe joints (p293) | 471.1 s, green | 315.9 s, green | – |
+| Preview | 196.5 s | 122.7 s | – |
+| Width of box 2 5 → 6 | 12.1 s, +42 mm, healthy | 12.8 s, +42 mm, healthy | – |
+| Rebuild preview (p481) | 231.8 s, green | 143.4 s, green | – |
+
+Branch: no joint-origin sketches, every sketch of the sets fully constrained, no fallback of the edge lookup on the
+final head (the first branch run had three face lookups fall back: #56, #77, #82, rounded corner and L-shaped faces whose
+box middle lies off them; fixed with a grid of probe points). Latch area and volume identical to base.
