@@ -8,6 +8,8 @@ driver in their end. Cullenect has no such symbol, they are **own work of this f
   cut out (slot, hex or torx, at 70 % of Cullenect's size), with or without a security pin (hex, torx). Shaft
   `machine` has a flat end, `tapping` a point.
 - Source: `tools/setscrew/SetScrew.scad`, rendered by `tools/setScrewIcons.py` with OpenSCAD.
+- Lines and arcs: the rendered polygons are rebuilt as lines and circular arcs within 0.01 mm by
+  `dev-notes/tools/arcSymbols.py` (round 40), which `tools/setScrewIcons.py` runs after rendering.
 - It uses the thread, point and driver shapes of `Cullenect.scad` from
   [Cullenect-Labels](https://github.com/CullenJWebb/Cullenect-Labels) by CullenJWebb, MIT License
   (copy in `tools/cullenect/`, license text in `../LICENSE-Cullenect`).

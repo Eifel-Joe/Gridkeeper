@@ -1,0 +1,117 @@
+{
+ "cullenect-crimp-butt-splice.svg": {
+  "areas": [
+   -70.966034,
+   2.889978,
+   2.88998
+  ],
+  "bounds": [
+   -10.0,
+   -2.86421,
+   4.56,
+   2.86421
+  ]
+ },
+ "cullenect-crimp-fork-closed.svg": {
+  "areas": [
+   -62.645644,
+   2.889998
+  ],
+  "bounds": [
+   -10.3,
+   -4.0,
+   5.09999,
+   4.0
+  ]
+ },
+ "cullenect-crimp-fork-open.svg": {
+  "areas": [
+   -64.150669
+  ],
+  "bounds": [
+   -9.09998,
+   -4.0,
+   5.09999,
+   4.0
+  ]
+ },
+ "cullenect-crimp-receptacle-closed.svg": {
+  "areas": [
+   -90.770405,
+   2.889992,
+   1.151976,
+   1.15199,
+   1.152026
+  ],
+  "bounds": [
+   -11.0,
+   -3.35999,
+   4.99998,
+   3.35999
+  ]
+ },
+ "cullenect-crimp-receptacle-open.svg": {
+  "areas": [
+   -92.275348,
+   1.15199,
+   1.151976,
+   1.152026
+  ],
+  "bounds": [
+   -9.79997,
+   -3.35999,
+   4.99998,
+   3.35999
+  ]
+ },
+ "cullenect-crimp-ring-closed.svg": {
+  "areas": [
+   -88.519279,
+   17.963467,
+   2.889997
+  ],
+  "bounds": [
+   -10.6,
+   -3.97807,
+   5.0,
+   3.97807
+  ]
+ },
+ "cullenect-crimp-ring-open.svg": {
+  "areas": [
+   -90.985503,
+   17.963467
+  ],
+  "bounds": [
+   -9.39998,
+   -3.97807,
+   5.0,
+   3.97807
+  ]
+ },
+ "cullenect-crimp-spade-closed.svg": {
+  "areas": [
+   -84.722554,
+   2.889997,
+   1.110447
+  ],
+  "bounds": [
+   -10.6,
+   -3.2,
+   5.0,
+   3.2
+  ]
+ },
+ "cullenect-crimp-spade-open.svg": {
+  "areas": [
+   -86.227627,
+   1.110447
+  ],
+  "bounds": [
+   -9.39998,
+   -3.35999,
+   5.0,
+   3.35999
+  ]
+ }
+}

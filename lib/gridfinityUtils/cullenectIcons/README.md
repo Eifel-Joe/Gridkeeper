@@ -12,6 +12,12 @@ from the original OpenSCAD code:
   with coarser circles (`$fa = 12`, `$fs = 0.2`, passed to `cullenect_hardware`) since round 17: about a tenth of
   the points, so an insert with a nylon lock nut builds in seconds, the contour within 0.05 mm of the fine one,
   which a 0.4 mm nozzle doesn't show (`python tools/cullenectIcons.py --compare <folder of the fine svgs>`).
+- Lines and arcs: OpenSCAD writes every rounding as a polygon (the Torx drive of a countersunk screw was 1670
+  points 0.01 mm apart). Since round 40 the polygons are rebuilt as lines, circular arcs and whole circles by
+  `dev-notes/tools/arcSymbols.py`, within 0.01 mm of the polygon (outline both ways, area of each closed path at most
+  perimeter × 0.01 off): 239 064 polygon points became 19 145 lines and 1 890 arcs. `tools/cullenectIcons.py` and
+  `tools/setScrewIcons.py` run it after rendering. `symbol-check.json` in each folder keeps the outline and areas of
+  the polygons for the tests.
 - Generator: the add-in itself is based on FusionGridfinityGenerator by Le0Michine (CC BY-NC-SA 4.0).
   Gridfinity is by Zack Freedman.
 

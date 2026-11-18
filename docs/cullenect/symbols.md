@@ -1,7 +1,8 @@
 # Symbols
 
 The symbols of the label inserts are svg files drawn from Cullenect's own OpenSCAD code, in
-`lib/gridfinityUtils/cullenectIcons/` of the add-in. The names and their order are Cullenect's.
+`lib/gridfinityUtils/cullenectIcons/` of the add-in. The names and their order are Cullenect's. Their roundings are
+circular arcs rather than the thousands of short lines OpenSCAD writes, within 0.01 mm of them.
 
 ![Inserts with a threaded insert, a set screw, countersunk, pan and socket head screws, a crimp ring, a washer and a nut](../assets/images/insert-symbols.png)
 

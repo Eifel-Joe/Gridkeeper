@@ -1,0 +1,6066 @@
+{
+ "screw_countersunk_machine_full_hex_noflange_nosec.svg": {
+  "areas": [
+   -93.799835,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_full_hex_noflange_sec.svg": {
+  "areas": [
+   -93.799835,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_full_none_noflange_nosec.svg": {
+  "areas": [
+   -93.799835
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_full_phillips_noflange_nosec.svg": {
+  "areas": [
+   -93.799835,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_full_phillips_noflange_sec.svg": {
+  "areas": [
+   -93.799835,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_full_phillips_slot_noflange_nosec.svg": {
+  "areas": [
+   -93.799835,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_full_phillips_slot_noflange_sec.svg": {
+  "areas": [
+   -93.799835,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_full_phillips_square_noflange_nosec.svg": {
+  "areas": [
+   -93.799835,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_full_phillips_square_noflange_sec.svg": {
+  "areas": [
+   -93.799835,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_full_slot_noflange_nosec.svg": {
+  "areas": [
+   -93.799835,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_full_slot_noflange_sec.svg": {
+  "areas": [
+   -93.799835,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_full_square_noflange_nosec.svg": {
+  "areas": [
+   -93.799835,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_full_square_noflange_sec.svg": {
+  "areas": [
+   -93.799835,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_full_torx_noflange_nosec.svg": {
+  "areas": [
+   -93.799835,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_full_torx_noflange_sec.svg": {
+  "areas": [
+   -93.799835,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_full_triangle_noflange_nosec.svg": {
+  "areas": [
+   -93.799835,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_full_triangle_noflange_sec.svg": {
+  "areas": [
+   -93.799835,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_partial_hex_noflange_nosec.svg": {
+  "areas": [
+   -90.799964,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_partial_hex_noflange_sec.svg": {
+  "areas": [
+   -90.799964,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_partial_none_noflange_nosec.svg": {
+  "areas": [
+   -90.799964
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_partial_phillips_noflange_nosec.svg": {
+  "areas": [
+   -90.799964,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_partial_phillips_noflange_sec.svg": {
+  "areas": [
+   -90.799964,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_partial_phillips_slot_noflange_nosec.svg": {
+  "areas": [
+   -90.799964,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_partial_phillips_slot_noflange_sec.svg": {
+  "areas": [
+   -90.799964,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_partial_phillips_square_noflange_nosec.svg": {
+  "areas": [
+   -90.799964,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_partial_phillips_square_noflange_sec.svg": {
+  "areas": [
+   -90.799964,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_partial_slot_noflange_nosec.svg": {
+  "areas": [
+   -90.799964,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_partial_slot_noflange_sec.svg": {
+  "areas": [
+   -90.799964,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_partial_square_noflange_nosec.svg": {
+  "areas": [
+   -90.799964,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_partial_square_noflange_sec.svg": {
+  "areas": [
+   -90.799964,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_partial_torx_noflange_nosec.svg": {
+  "areas": [
+   -90.799964,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_partial_torx_noflange_sec.svg": {
+  "areas": [
+   -90.799964,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_partial_triangle_noflange_nosec.svg": {
+  "areas": [
+   -90.799964,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_machine_partial_triangle_noflange_sec.svg": {
+  "areas": [
+   -90.799964,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_full_hex_noflange_nosec.svg": {
+  "areas": [
+   -85.674786,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_full_hex_noflange_sec.svg": {
+  "areas": [
+   -85.674786,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_full_none_noflange_nosec.svg": {
+  "areas": [
+   -85.674786
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_full_phillips_noflange_nosec.svg": {
+  "areas": [
+   -85.674786,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_full_phillips_noflange_sec.svg": {
+  "areas": [
+   -85.674786,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_full_phillips_slot_noflange_nosec.svg": {
+  "areas": [
+   -85.674786,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_full_phillips_slot_noflange_sec.svg": {
+  "areas": [
+   -85.674786,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_full_phillips_square_noflange_nosec.svg": {
+  "areas": [
+   -85.674786,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_full_phillips_square_noflange_sec.svg": {
+  "areas": [
+   -85.674786,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_full_slot_noflange_nosec.svg": {
+  "areas": [
+   -85.674786,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_full_slot_noflange_sec.svg": {
+  "areas": [
+   -85.674786,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_full_square_noflange_nosec.svg": {
+  "areas": [
+   -85.674786,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_full_square_noflange_sec.svg": {
+  "areas": [
+   -85.674786,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_full_torx_noflange_nosec.svg": {
+  "areas": [
+   -85.674786,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_full_torx_noflange_sec.svg": {
+  "areas": [
+   -85.674786,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_full_triangle_noflange_nosec.svg": {
+  "areas": [
+   -85.674786,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_full_triangle_noflange_sec.svg": {
+  "areas": [
+   -85.674786,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_partial_hex_noflange_nosec.svg": {
+  "areas": [
+   -83.674882,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_partial_hex_noflange_sec.svg": {
+  "areas": [
+   -83.674882,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_partial_none_noflange_nosec.svg": {
+  "areas": [
+   -83.674882
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_partial_phillips_noflange_nosec.svg": {
+  "areas": [
+   -83.674882,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_partial_phillips_noflange_sec.svg": {
+  "areas": [
+   -83.674882,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_partial_phillips_slot_noflange_nosec.svg": {
+  "areas": [
+   -83.674882,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_partial_phillips_slot_noflange_sec.svg": {
+  "areas": [
+   -83.674882,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_partial_phillips_square_noflange_nosec.svg": {
+  "areas": [
+   -83.674882,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_partial_phillips_square_noflange_sec.svg": {
+  "areas": [
+   -83.674882,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_partial_slot_noflange_nosec.svg": {
+  "areas": [
+   -83.674882,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_partial_slot_noflange_sec.svg": {
+  "areas": [
+   -83.674882,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_partial_square_noflange_nosec.svg": {
+  "areas": [
+   -83.674882,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_partial_square_noflange_sec.svg": {
+  "areas": [
+   -83.674882,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_partial_torx_noflange_nosec.svg": {
+  "areas": [
+   -83.674882,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_partial_torx_noflange_sec.svg": {
+  "areas": [
+   -83.674882,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_partial_triangle_noflange_nosec.svg": {
+  "areas": [
+   -83.674882,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_countersunk_tapping_partial_triangle_noflange_sec.svg": {
+  "areas": [
+   -83.674882,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_none_machine_full_none_noflange_nosec.svg": {
+  "areas": [
+   -48.799921
+  ],
+  "bounds": [
+   -11.56,
+   -3.20709,
+   -2.99998,
+   3.20709
+  ]
+ },
+ "screw_none_machine_partial_none_noflange_nosec.svg": {
+  "areas": [
+   -45.799964
+  ],
+  "bounds": [
+   -11.56,
+   -3.20709,
+   -3.0,
+   3.20709
+  ]
+ },
+ "screw_none_tapping_full_none_noflange_nosec.svg": {
+  "areas": [
+   -40.674872
+  ],
+  "bounds": [
+   -11.56,
+   -3.20709,
+   -2.99998,
+   3.20709
+  ]
+ },
+ "screw_none_tapping_partial_none_noflange_nosec.svg": {
+  "areas": [
+   -38.674882
+  ],
+  "bounds": [
+   -11.56,
+   -3.20709,
+   -3.0,
+   3.20709
+  ]
+ },
+ "screw_pan_machine_full_hex_flange_nosec.svg": {
+  "areas": [
+   -108.582678,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_full_hex_flange_sec.svg": {
+  "areas": [
+   -108.582678,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_full_hex_noflange_nosec.svg": {
+  "areas": [
+   -107.082663,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_full_hex_noflange_sec.svg": {
+  "areas": [
+   -107.082663,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_full_none_flange_nosec.svg": {
+  "areas": [
+   -108.582678
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_full_none_noflange_nosec.svg": {
+  "areas": [
+   -107.082663
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_full_phillips_flange_nosec.svg": {
+  "areas": [
+   -108.582678,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_full_phillips_flange_sec.svg": {
+  "areas": [
+   -108.582678,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_full_phillips_noflange_nosec.svg": {
+  "areas": [
+   -107.082663,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_full_phillips_noflange_sec.svg": {
+  "areas": [
+   -107.082663,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_full_phillips_slot_flange_nosec.svg": {
+  "areas": [
+   -108.582678,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_full_phillips_slot_flange_sec.svg": {
+  "areas": [
+   -108.582678,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_full_phillips_slot_noflange_nosec.svg": {
+  "areas": [
+   -107.082663,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_full_phillips_slot_noflange_sec.svg": {
+  "areas": [
+   -107.082663,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_full_phillips_square_flange_nosec.svg": {
+  "areas": [
+   -108.582678,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_full_phillips_square_flange_sec.svg": {
+  "areas": [
+   -108.582678,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_full_phillips_square_noflange_nosec.svg": {
+  "areas": [
+   -107.082663,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_full_phillips_square_noflange_sec.svg": {
+  "areas": [
+   -107.082663,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_full_slot_flange_nosec.svg": {
+  "areas": [
+   -108.582678,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_full_slot_flange_sec.svg": {
+  "areas": [
+   -108.582678,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_full_slot_noflange_nosec.svg": {
+  "areas": [
+   -107.082663,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_full_slot_noflange_sec.svg": {
+  "areas": [
+   -107.082663,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_full_square_flange_nosec.svg": {
+  "areas": [
+   -108.582678,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_full_square_flange_sec.svg": {
+  "areas": [
+   -108.582678,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_full_square_noflange_nosec.svg": {
+  "areas": [
+   -107.082663,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_full_square_noflange_sec.svg": {
+  "areas": [
+   -107.082663,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_full_torx_flange_nosec.svg": {
+  "areas": [
+   -108.582678,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_full_torx_flange_sec.svg": {
+  "areas": [
+   -108.582678,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_full_torx_noflange_nosec.svg": {
+  "areas": [
+   -107.082663,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_full_torx_noflange_sec.svg": {
+  "areas": [
+   -107.082663,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_full_triangle_flange_nosec.svg": {
+  "areas": [
+   -108.582678,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_full_triangle_flange_sec.svg": {
+  "areas": [
+   -108.582678,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_full_triangle_noflange_nosec.svg": {
+  "areas": [
+   -107.082663,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_full_triangle_noflange_sec.svg": {
+  "areas": [
+   -107.082663,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_partial_hex_flange_nosec.svg": {
+  "areas": [
+   -105.582771,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_partial_hex_flange_sec.svg": {
+  "areas": [
+   -105.582771,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_partial_hex_noflange_nosec.svg": {
+  "areas": [
+   -104.082756,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_partial_hex_noflange_sec.svg": {
+  "areas": [
+   -104.082756,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_partial_none_flange_nosec.svg": {
+  "areas": [
+   -105.582771
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_partial_none_noflange_nosec.svg": {
+  "areas": [
+   -104.082756
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_partial_phillips_flange_nosec.svg": {
+  "areas": [
+   -105.582771,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_partial_phillips_flange_sec.svg": {
+  "areas": [
+   -105.582771,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_partial_phillips_noflange_nosec.svg": {
+  "areas": [
+   -104.082756,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_partial_phillips_noflange_sec.svg": {
+  "areas": [
+   -104.082756,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_partial_phillips_slot_flange_nosec.svg": {
+  "areas": [
+   -105.582771,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_partial_phillips_slot_flange_sec.svg": {
+  "areas": [
+   -105.582771,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_partial_phillips_slot_noflange_nosec.svg": {
+  "areas": [
+   -104.082756,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_partial_phillips_slot_noflange_sec.svg": {
+  "areas": [
+   -104.082756,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_partial_phillips_square_flange_nosec.svg": {
+  "areas": [
+   -105.582771,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_partial_phillips_square_flange_sec.svg": {
+  "areas": [
+   -105.582771,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_partial_phillips_square_noflange_nosec.svg": {
+  "areas": [
+   -104.082756,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_partial_phillips_square_noflange_sec.svg": {
+  "areas": [
+   -104.082756,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_partial_slot_flange_nosec.svg": {
+  "areas": [
+   -105.582771,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_partial_slot_flange_sec.svg": {
+  "areas": [
+   -105.582771,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_partial_slot_noflange_nosec.svg": {
+  "areas": [
+   -104.082756,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_partial_slot_noflange_sec.svg": {
+  "areas": [
+   -104.082756,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_partial_square_flange_nosec.svg": {
+  "areas": [
+   -105.582771,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_partial_square_flange_sec.svg": {
+  "areas": [
+   -105.582771,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_partial_square_noflange_nosec.svg": {
+  "areas": [
+   -104.082756,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_partial_square_noflange_sec.svg": {
+  "areas": [
+   -104.082756,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_partial_torx_flange_nosec.svg": {
+  "areas": [
+   -105.582771,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_partial_torx_flange_sec.svg": {
+  "areas": [
+   -105.582771,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_partial_torx_noflange_nosec.svg": {
+  "areas": [
+   -104.082756,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_partial_torx_noflange_sec.svg": {
+  "areas": [
+   -104.082756,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_partial_triangle_flange_nosec.svg": {
+  "areas": [
+   -105.582771,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_partial_triangle_flange_sec.svg": {
+  "areas": [
+   -105.582771,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_machine_partial_triangle_noflange_nosec.svg": {
+  "areas": [
+   -104.082756,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_machine_partial_triangle_noflange_sec.svg": {
+  "areas": [
+   -104.082756,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_full_hex_flange_nosec.svg": {
+  "areas": [
+   -100.457629,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_full_hex_flange_sec.svg": {
+  "areas": [
+   -100.457629,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_full_hex_noflange_nosec.svg": {
+  "areas": [
+   -98.957614,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_full_hex_noflange_sec.svg": {
+  "areas": [
+   -98.957614,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_full_none_flange_nosec.svg": {
+  "areas": [
+   -100.457629
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_full_none_noflange_nosec.svg": {
+  "areas": [
+   -98.957614
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_full_phillips_flange_nosec.svg": {
+  "areas": [
+   -100.457629,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_full_phillips_flange_sec.svg": {
+  "areas": [
+   -100.457629,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_full_phillips_noflange_nosec.svg": {
+  "areas": [
+   -98.957614,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_full_phillips_noflange_sec.svg": {
+  "areas": [
+   -98.957614,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_full_phillips_slot_flange_nosec.svg": {
+  "areas": [
+   -100.457629,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_full_phillips_slot_flange_sec.svg": {
+  "areas": [
+   -100.457629,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_full_phillips_slot_noflange_nosec.svg": {
+  "areas": [
+   -98.957614,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_full_phillips_slot_noflange_sec.svg": {
+  "areas": [
+   -98.957614,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_full_phillips_square_flange_nosec.svg": {
+  "areas": [
+   -100.457629,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_full_phillips_square_flange_sec.svg": {
+  "areas": [
+   -100.457629,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_full_phillips_square_noflange_nosec.svg": {
+  "areas": [
+   -98.957614,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_full_phillips_square_noflange_sec.svg": {
+  "areas": [
+   -98.957614,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_full_slot_flange_nosec.svg": {
+  "areas": [
+   -100.457629,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_full_slot_flange_sec.svg": {
+  "areas": [
+   -100.457629,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_full_slot_noflange_nosec.svg": {
+  "areas": [
+   -98.957614,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_full_slot_noflange_sec.svg": {
+  "areas": [
+   -98.957614,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_full_square_flange_nosec.svg": {
+  "areas": [
+   -100.457629,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_full_square_flange_sec.svg": {
+  "areas": [
+   -100.457629,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_full_square_noflange_nosec.svg": {
+  "areas": [
+   -98.957614,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_full_square_noflange_sec.svg": {
+  "areas": [
+   -98.957614,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_full_torx_flange_nosec.svg": {
+  "areas": [
+   -100.457629,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_full_torx_flange_sec.svg": {
+  "areas": [
+   -100.457629,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_full_torx_noflange_nosec.svg": {
+  "areas": [
+   -98.957614,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_full_torx_noflange_sec.svg": {
+  "areas": [
+   -98.957614,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_full_triangle_flange_nosec.svg": {
+  "areas": [
+   -100.457629,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_full_triangle_flange_sec.svg": {
+  "areas": [
+   -100.457629,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_full_triangle_noflange_nosec.svg": {
+  "areas": [
+   -98.957614,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_full_triangle_noflange_sec.svg": {
+  "areas": [
+   -98.957614,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_partial_hex_flange_nosec.svg": {
+  "areas": [
+   -98.457689,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_partial_hex_flange_sec.svg": {
+  "areas": [
+   -98.457689,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_partial_hex_noflange_nosec.svg": {
+  "areas": [
+   -96.957674,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_partial_hex_noflange_sec.svg": {
+  "areas": [
+   -96.957674,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_partial_none_flange_nosec.svg": {
+  "areas": [
+   -98.457689
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_partial_none_noflange_nosec.svg": {
+  "areas": [
+   -96.957674
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_partial_phillips_flange_nosec.svg": {
+  "areas": [
+   -98.457689,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_partial_phillips_flange_sec.svg": {
+  "areas": [
+   -98.457689,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_partial_phillips_noflange_nosec.svg": {
+  "areas": [
+   -96.957674,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_partial_phillips_noflange_sec.svg": {
+  "areas": [
+   -96.957674,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_partial_phillips_slot_flange_nosec.svg": {
+  "areas": [
+   -98.457689,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_partial_phillips_slot_flange_sec.svg": {
+  "areas": [
+   -98.457689,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_partial_phillips_slot_noflange_nosec.svg": {
+  "areas": [
+   -96.957674,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_partial_phillips_slot_noflange_sec.svg": {
+  "areas": [
+   -96.957674,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_partial_phillips_square_flange_nosec.svg": {
+  "areas": [
+   -98.457689,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_partial_phillips_square_flange_sec.svg": {
+  "areas": [
+   -98.457689,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_partial_phillips_square_noflange_nosec.svg": {
+  "areas": [
+   -96.957674,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_partial_phillips_square_noflange_sec.svg": {
+  "areas": [
+   -96.957674,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_partial_slot_flange_nosec.svg": {
+  "areas": [
+   -98.457689,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_partial_slot_flange_sec.svg": {
+  "areas": [
+   -98.457689,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_partial_slot_noflange_nosec.svg": {
+  "areas": [
+   -96.957674,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_partial_slot_noflange_sec.svg": {
+  "areas": [
+   -96.957674,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_partial_square_flange_nosec.svg": {
+  "areas": [
+   -98.457689,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_partial_square_flange_sec.svg": {
+  "areas": [
+   -98.457689,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_partial_square_noflange_nosec.svg": {
+  "areas": [
+   -96.957674,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_partial_square_noflange_sec.svg": {
+  "areas": [
+   -96.957674,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_partial_torx_flange_nosec.svg": {
+  "areas": [
+   -98.457689,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_partial_torx_flange_sec.svg": {
+  "areas": [
+   -98.457689,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_partial_torx_noflange_nosec.svg": {
+  "areas": [
+   -96.957674,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_partial_torx_noflange_sec.svg": {
+  "areas": [
+   -96.957674,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_partial_triangle_flange_nosec.svg": {
+  "areas": [
+   -98.457689,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_partial_triangle_flange_sec.svg": {
+  "areas": [
+   -98.457689,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_pan_tapping_partial_triangle_noflange_nosec.svg": {
+  "areas": [
+   -96.957674,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_pan_tapping_partial_triangle_noflange_sec.svg": {
+  "areas": [
+   -96.957674,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_full_hex_flange_nosec.svg": {
+  "areas": [
+   -99.576109,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_full_hex_flange_sec.svg": {
+  "areas": [
+   -99.576109,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_full_hex_noflange_nosec.svg": {
+  "areas": [
+   -98.067628,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_full_hex_noflange_sec.svg": {
+  "areas": [
+   -98.067628,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_full_none_flange_nosec.svg": {
+  "areas": [
+   -99.576109
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_full_none_noflange_nosec.svg": {
+  "areas": [
+   -98.067628
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_full_phillips_flange_nosec.svg": {
+  "areas": [
+   -99.576109,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_full_phillips_flange_sec.svg": {
+  "areas": [
+   -99.576109,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_full_phillips_noflange_nosec.svg": {
+  "areas": [
+   -98.067628,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_full_phillips_noflange_sec.svg": {
+  "areas": [
+   -98.067628,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_full_phillips_slot_flange_nosec.svg": {
+  "areas": [
+   -99.576109,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_full_phillips_slot_flange_sec.svg": {
+  "areas": [
+   -99.576109,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_full_phillips_slot_noflange_nosec.svg": {
+  "areas": [
+   -98.067628,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_full_phillips_slot_noflange_sec.svg": {
+  "areas": [
+   -98.067628,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_full_phillips_square_flange_nosec.svg": {
+  "areas": [
+   -99.576109,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_full_phillips_square_flange_sec.svg": {
+  "areas": [
+   -99.576109,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_full_phillips_square_noflange_nosec.svg": {
+  "areas": [
+   -98.067628,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_full_phillips_square_noflange_sec.svg": {
+  "areas": [
+   -98.067628,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_full_slot_flange_nosec.svg": {
+  "areas": [
+   -99.576109,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_full_slot_flange_sec.svg": {
+  "areas": [
+   -99.576109,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_full_slot_noflange_nosec.svg": {
+  "areas": [
+   -98.067628,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_full_slot_noflange_sec.svg": {
+  "areas": [
+   -98.067628,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_full_square_flange_nosec.svg": {
+  "areas": [
+   -99.576109,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_full_square_flange_sec.svg": {
+  "areas": [
+   -99.576109,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_full_square_noflange_nosec.svg": {
+  "areas": [
+   -98.067628,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_full_square_noflange_sec.svg": {
+  "areas": [
+   -98.067628,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_full_torx_flange_nosec.svg": {
+  "areas": [
+   -99.576109,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_full_torx_flange_sec.svg": {
+  "areas": [
+   -99.576109,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_full_torx_noflange_nosec.svg": {
+  "areas": [
+   -98.067628,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_full_torx_noflange_sec.svg": {
+  "areas": [
+   -98.067628,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_full_triangle_flange_nosec.svg": {
+  "areas": [
+   -99.576109,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_full_triangle_flange_sec.svg": {
+  "areas": [
+   -99.576109,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_full_triangle_noflange_nosec.svg": {
+  "areas": [
+   -98.067628,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_full_triangle_noflange_sec.svg": {
+  "areas": [
+   -98.067628,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_partial_hex_flange_nosec.svg": {
+  "areas": [
+   -96.576202,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_partial_hex_flange_sec.svg": {
+  "areas": [
+   -96.576202,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_partial_hex_noflange_nosec.svg": {
+  "areas": [
+   -95.067721,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_partial_hex_noflange_sec.svg": {
+  "areas": [
+   -95.067721,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_partial_none_flange_nosec.svg": {
+  "areas": [
+   -96.576202
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_partial_none_noflange_nosec.svg": {
+  "areas": [
+   -95.067721
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_partial_phillips_flange_nosec.svg": {
+  "areas": [
+   -96.576202,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_partial_phillips_flange_sec.svg": {
+  "areas": [
+   -96.576202,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_partial_phillips_noflange_nosec.svg": {
+  "areas": [
+   -95.067721,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_partial_phillips_noflange_sec.svg": {
+  "areas": [
+   -95.067721,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_partial_phillips_slot_flange_nosec.svg": {
+  "areas": [
+   -96.576202,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_partial_phillips_slot_flange_sec.svg": {
+  "areas": [
+   -96.576202,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_partial_phillips_slot_noflange_nosec.svg": {
+  "areas": [
+   -95.067721,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_partial_phillips_slot_noflange_sec.svg": {
+  "areas": [
+   -95.067721,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_partial_phillips_square_flange_nosec.svg": {
+  "areas": [
+   -96.576202,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_partial_phillips_square_flange_sec.svg": {
+  "areas": [
+   -96.576202,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_partial_phillips_square_noflange_nosec.svg": {
+  "areas": [
+   -95.067721,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_partial_phillips_square_noflange_sec.svg": {
+  "areas": [
+   -95.067721,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_partial_slot_flange_nosec.svg": {
+  "areas": [
+   -96.576202,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_partial_slot_flange_sec.svg": {
+  "areas": [
+   -96.576202,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_partial_slot_noflange_nosec.svg": {
+  "areas": [
+   -95.067721,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_partial_slot_noflange_sec.svg": {
+  "areas": [
+   -95.067721,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_partial_square_flange_nosec.svg": {
+  "areas": [
+   -96.576202,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_partial_square_flange_sec.svg": {
+  "areas": [
+   -96.576202,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_partial_square_noflange_nosec.svg": {
+  "areas": [
+   -95.067721,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_partial_square_noflange_sec.svg": {
+  "areas": [
+   -95.067721,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_partial_torx_flange_nosec.svg": {
+  "areas": [
+   -96.576202,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_partial_torx_flange_sec.svg": {
+  "areas": [
+   -96.576202,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_partial_torx_noflange_nosec.svg": {
+  "areas": [
+   -95.067721,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_partial_torx_noflange_sec.svg": {
+  "areas": [
+   -95.067721,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_partial_triangle_flange_nosec.svg": {
+  "areas": [
+   -96.576202,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_partial_triangle_flange_sec.svg": {
+  "areas": [
+   -96.576202,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_machine_partial_triangle_noflange_nosec.svg": {
+  "areas": [
+   -95.067721,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_machine_partial_triangle_noflange_sec.svg": {
+  "areas": [
+   -95.067721,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_full_hex_flange_nosec.svg": {
+  "areas": [
+   -91.451061,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_full_hex_flange_sec.svg": {
+  "areas": [
+   -91.451061,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_full_hex_noflange_nosec.svg": {
+  "areas": [
+   -89.94258,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_full_hex_noflange_sec.svg": {
+  "areas": [
+   -89.94258,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_full_none_flange_nosec.svg": {
+  "areas": [
+   -91.451061
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_full_none_noflange_nosec.svg": {
+  "areas": [
+   -89.94258
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_full_phillips_flange_nosec.svg": {
+  "areas": [
+   -91.451061,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_full_phillips_flange_sec.svg": {
+  "areas": [
+   -91.451061,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_full_phillips_noflange_nosec.svg": {
+  "areas": [
+   -89.94258,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_full_phillips_noflange_sec.svg": {
+  "areas": [
+   -89.94258,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_full_phillips_slot_flange_nosec.svg": {
+  "areas": [
+   -91.451061,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_full_phillips_slot_flange_sec.svg": {
+  "areas": [
+   -91.451061,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_full_phillips_slot_noflange_nosec.svg": {
+  "areas": [
+   -89.94258,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_full_phillips_slot_noflange_sec.svg": {
+  "areas": [
+   -89.94258,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_full_phillips_square_flange_nosec.svg": {
+  "areas": [
+   -91.451061,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_full_phillips_square_flange_sec.svg": {
+  "areas": [
+   -91.451061,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_full_phillips_square_noflange_nosec.svg": {
+  "areas": [
+   -89.94258,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_full_phillips_square_noflange_sec.svg": {
+  "areas": [
+   -89.94258,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_full_slot_flange_nosec.svg": {
+  "areas": [
+   -91.451061,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_full_slot_flange_sec.svg": {
+  "areas": [
+   -91.451061,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_full_slot_noflange_nosec.svg": {
+  "areas": [
+   -89.94258,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_full_slot_noflange_sec.svg": {
+  "areas": [
+   -89.94258,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_full_square_flange_nosec.svg": {
+  "areas": [
+   -91.451061,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_full_square_flange_sec.svg": {
+  "areas": [
+   -91.451061,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_full_square_noflange_nosec.svg": {
+  "areas": [
+   -89.94258,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_full_square_noflange_sec.svg": {
+  "areas": [
+   -89.94258,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_full_torx_flange_nosec.svg": {
+  "areas": [
+   -91.451061,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_full_torx_flange_sec.svg": {
+  "areas": [
+   -91.451061,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_full_torx_noflange_nosec.svg": {
+  "areas": [
+   -89.94258,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_full_torx_noflange_sec.svg": {
+  "areas": [
+   -89.94258,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_full_triangle_flange_nosec.svg": {
+  "areas": [
+   -91.451061,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_full_triangle_flange_sec.svg": {
+  "areas": [
+   -91.451061,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_full_triangle_noflange_nosec.svg": {
+  "areas": [
+   -89.94258,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_full_triangle_noflange_sec.svg": {
+  "areas": [
+   -89.94258,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_partial_hex_flange_nosec.svg": {
+  "areas": [
+   -89.45112,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_partial_hex_flange_sec.svg": {
+  "areas": [
+   -89.45112,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_partial_hex_noflange_nosec.svg": {
+  "areas": [
+   -87.942639,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_partial_hex_noflange_sec.svg": {
+  "areas": [
+   -87.942639,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_partial_none_flange_nosec.svg": {
+  "areas": [
+   -89.45112
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_partial_none_noflange_nosec.svg": {
+  "areas": [
+   -87.942639
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_partial_phillips_flange_nosec.svg": {
+  "areas": [
+   -89.45112,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_partial_phillips_flange_sec.svg": {
+  "areas": [
+   -89.45112,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_partial_phillips_noflange_nosec.svg": {
+  "areas": [
+   -87.942639,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_partial_phillips_noflange_sec.svg": {
+  "areas": [
+   -87.942639,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_partial_phillips_slot_flange_nosec.svg": {
+  "areas": [
+   -89.45112,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_partial_phillips_slot_flange_sec.svg": {
+  "areas": [
+   -89.45112,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_partial_phillips_slot_noflange_nosec.svg": {
+  "areas": [
+   -87.942639,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_partial_phillips_slot_noflange_sec.svg": {
+  "areas": [
+   -87.942639,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_partial_phillips_square_flange_nosec.svg": {
+  "areas": [
+   -89.45112,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_partial_phillips_square_flange_sec.svg": {
+  "areas": [
+   -89.45112,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_partial_phillips_square_noflange_nosec.svg": {
+  "areas": [
+   -87.942639,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_partial_phillips_square_noflange_sec.svg": {
+  "areas": [
+   -87.942639,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_partial_slot_flange_nosec.svg": {
+  "areas": [
+   -89.45112,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_partial_slot_flange_sec.svg": {
+  "areas": [
+   -89.45112,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_partial_slot_noflange_nosec.svg": {
+  "areas": [
+   -87.942639,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_partial_slot_noflange_sec.svg": {
+  "areas": [
+   -87.942639,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_partial_square_flange_nosec.svg": {
+  "areas": [
+   -89.45112,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_partial_square_flange_sec.svg": {
+  "areas": [
+   -89.45112,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_partial_square_noflange_nosec.svg": {
+  "areas": [
+   -87.942639,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_partial_square_noflange_sec.svg": {
+  "areas": [
+   -87.942639,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_partial_torx_flange_nosec.svg": {
+  "areas": [
+   -89.45112,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_partial_torx_flange_sec.svg": {
+  "areas": [
+   -89.45112,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_partial_torx_noflange_nosec.svg": {
+  "areas": [
+   -87.942639,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_partial_torx_noflange_sec.svg": {
+  "areas": [
+   -87.942639,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_partial_triangle_flange_nosec.svg": {
+  "areas": [
+   -89.45112,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_partial_triangle_flange_sec.svg": {
+  "areas": [
+   -89.45112,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_roundh_tapping_partial_triangle_noflange_nosec.svg": {
+  "areas": [
+   -87.942639,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_roundh_tapping_partial_triangle_noflange_sec.svg": {
+  "areas": [
+   -87.942639,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_full_hex_flange_nosec.svg": {
+  "areas": [
+   -110.299871,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_full_hex_flange_sec.svg": {
+  "areas": [
+   -110.299871,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_full_hex_noflange_nosec.svg": {
+  "areas": [
+   -108.799871,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_full_hex_noflange_sec.svg": {
+  "areas": [
+   -108.799871,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_full_none_flange_nosec.svg": {
+  "areas": [
+   -110.299871
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_full_none_noflange_nosec.svg": {
+  "areas": [
+   -108.799871
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_full_phillips_flange_nosec.svg": {
+  "areas": [
+   -110.299871,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_full_phillips_flange_sec.svg": {
+  "areas": [
+   -110.299871,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_full_phillips_noflange_nosec.svg": {
+  "areas": [
+   -108.799871,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_full_phillips_noflange_sec.svg": {
+  "areas": [
+   -108.799871,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_full_phillips_slot_flange_nosec.svg": {
+  "areas": [
+   -110.299871,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_full_phillips_slot_flange_sec.svg": {
+  "areas": [
+   -110.299871,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_full_phillips_slot_noflange_nosec.svg": {
+  "areas": [
+   -108.799871,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_full_phillips_slot_noflange_sec.svg": {
+  "areas": [
+   -108.799871,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_full_phillips_square_flange_nosec.svg": {
+  "areas": [
+   -110.299871,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_full_phillips_square_flange_sec.svg": {
+  "areas": [
+   -110.299871,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_full_phillips_square_noflange_nosec.svg": {
+  "areas": [
+   -108.799871,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_full_phillips_square_noflange_sec.svg": {
+  "areas": [
+   -108.799871,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_full_slot_flange_nosec.svg": {
+  "areas": [
+   -110.299871,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_full_slot_flange_sec.svg": {
+  "areas": [
+   -110.299871,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_full_slot_noflange_nosec.svg": {
+  "areas": [
+   -108.799871,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_full_slot_noflange_sec.svg": {
+  "areas": [
+   -108.799871,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_full_square_flange_nosec.svg": {
+  "areas": [
+   -110.299871,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_full_square_flange_sec.svg": {
+  "areas": [
+   -110.299871,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_full_square_noflange_nosec.svg": {
+  "areas": [
+   -108.799871,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_full_square_noflange_sec.svg": {
+  "areas": [
+   -108.799871,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_full_torx_flange_nosec.svg": {
+  "areas": [
+   -110.299871,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_full_torx_flange_sec.svg": {
+  "areas": [
+   -110.299871,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_full_torx_noflange_nosec.svg": {
+  "areas": [
+   -108.799871,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_full_torx_noflange_sec.svg": {
+  "areas": [
+   -108.799871,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_full_triangle_flange_nosec.svg": {
+  "areas": [
+   -110.299871,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_full_triangle_flange_sec.svg": {
+  "areas": [
+   -110.299871,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_full_triangle_noflange_nosec.svg": {
+  "areas": [
+   -108.799871,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_full_triangle_noflange_sec.svg": {
+  "areas": [
+   -108.799871,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_partial_hex_flange_nosec.svg": {
+  "areas": [
+   -107.299964,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_partial_hex_flange_sec.svg": {
+  "areas": [
+   -107.299964,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_partial_hex_noflange_nosec.svg": {
+  "areas": [
+   -105.799964,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_partial_hex_noflange_sec.svg": {
+  "areas": [
+   -105.799964,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_partial_none_flange_nosec.svg": {
+  "areas": [
+   -107.299964
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_partial_none_noflange_nosec.svg": {
+  "areas": [
+   -105.799964
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_partial_phillips_flange_nosec.svg": {
+  "areas": [
+   -107.299964,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_partial_phillips_flange_sec.svg": {
+  "areas": [
+   -107.299964,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_partial_phillips_noflange_nosec.svg": {
+  "areas": [
+   -105.799964,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_partial_phillips_noflange_sec.svg": {
+  "areas": [
+   -105.799964,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_partial_phillips_slot_flange_nosec.svg": {
+  "areas": [
+   -107.299964,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_partial_phillips_slot_flange_sec.svg": {
+  "areas": [
+   -107.299964,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_partial_phillips_slot_noflange_nosec.svg": {
+  "areas": [
+   -105.799964,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_partial_phillips_slot_noflange_sec.svg": {
+  "areas": [
+   -105.799964,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_partial_phillips_square_flange_nosec.svg": {
+  "areas": [
+   -107.299964,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_partial_phillips_square_flange_sec.svg": {
+  "areas": [
+   -107.299964,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_partial_phillips_square_noflange_nosec.svg": {
+  "areas": [
+   -105.799964,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_partial_phillips_square_noflange_sec.svg": {
+  "areas": [
+   -105.799964,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_partial_slot_flange_nosec.svg": {
+  "areas": [
+   -107.299964,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_partial_slot_flange_sec.svg": {
+  "areas": [
+   -107.299964,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_partial_slot_noflange_nosec.svg": {
+  "areas": [
+   -105.799964,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_partial_slot_noflange_sec.svg": {
+  "areas": [
+   -105.799964,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_partial_square_flange_nosec.svg": {
+  "areas": [
+   -107.299964,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_partial_square_flange_sec.svg": {
+  "areas": [
+   -107.299964,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_partial_square_noflange_nosec.svg": {
+  "areas": [
+   -105.799964,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_partial_square_noflange_sec.svg": {
+  "areas": [
+   -105.799964,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_partial_torx_flange_nosec.svg": {
+  "areas": [
+   -107.299964,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_partial_torx_flange_sec.svg": {
+  "areas": [
+   -107.299964,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_partial_torx_noflange_nosec.svg": {
+  "areas": [
+   -105.799964,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_partial_torx_noflange_sec.svg": {
+  "areas": [
+   -105.799964,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_partial_triangle_flange_nosec.svg": {
+  "areas": [
+   -107.299964,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_partial_triangle_flange_sec.svg": {
+  "areas": [
+   -107.299964,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_machine_partial_triangle_noflange_nosec.svg": {
+  "areas": [
+   -105.799964,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_machine_partial_triangle_noflange_sec.svg": {
+  "areas": [
+   -105.799964,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_full_hex_flange_nosec.svg": {
+  "areas": [
+   -102.174822,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_full_hex_flange_sec.svg": {
+  "areas": [
+   -102.174822,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_full_hex_noflange_nosec.svg": {
+  "areas": [
+   -100.674822,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_full_hex_noflange_sec.svg": {
+  "areas": [
+   -100.674822,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_full_none_flange_nosec.svg": {
+  "areas": [
+   -102.174822
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_full_none_noflange_nosec.svg": {
+  "areas": [
+   -100.674822
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_full_phillips_flange_nosec.svg": {
+  "areas": [
+   -102.174822,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_full_phillips_flange_sec.svg": {
+  "areas": [
+   -102.174822,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_full_phillips_noflange_nosec.svg": {
+  "areas": [
+   -100.674822,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_full_phillips_noflange_sec.svg": {
+  "areas": [
+   -100.674822,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_full_phillips_slot_flange_nosec.svg": {
+  "areas": [
+   -102.174822,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_full_phillips_slot_flange_sec.svg": {
+  "areas": [
+   -102.174822,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_full_phillips_slot_noflange_nosec.svg": {
+  "areas": [
+   -100.674822,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_full_phillips_slot_noflange_sec.svg": {
+  "areas": [
+   -100.674822,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_full_phillips_square_flange_nosec.svg": {
+  "areas": [
+   -102.174822,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_full_phillips_square_flange_sec.svg": {
+  "areas": [
+   -102.174822,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_full_phillips_square_noflange_nosec.svg": {
+  "areas": [
+   -100.674822,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_full_phillips_square_noflange_sec.svg": {
+  "areas": [
+   -100.674822,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_full_slot_flange_nosec.svg": {
+  "areas": [
+   -102.174822,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_full_slot_flange_sec.svg": {
+  "areas": [
+   -102.174822,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_full_slot_noflange_nosec.svg": {
+  "areas": [
+   -100.674822,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_full_slot_noflange_sec.svg": {
+  "areas": [
+   -100.674822,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_full_square_flange_nosec.svg": {
+  "areas": [
+   -102.174822,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_full_square_flange_sec.svg": {
+  "areas": [
+   -102.174822,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_full_square_noflange_nosec.svg": {
+  "areas": [
+   -100.674822,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_full_square_noflange_sec.svg": {
+  "areas": [
+   -100.674822,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_full_torx_flange_nosec.svg": {
+  "areas": [
+   -102.174822,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_full_torx_flange_sec.svg": {
+  "areas": [
+   -102.174822,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_full_torx_noflange_nosec.svg": {
+  "areas": [
+   -100.674822,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_full_torx_noflange_sec.svg": {
+  "areas": [
+   -100.674822,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_full_triangle_flange_nosec.svg": {
+  "areas": [
+   -102.174822,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_full_triangle_flange_sec.svg": {
+  "areas": [
+   -102.174822,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_full_triangle_noflange_nosec.svg": {
+  "areas": [
+   -100.674822,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_full_triangle_noflange_sec.svg": {
+  "areas": [
+   -100.674822,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_partial_hex_flange_nosec.svg": {
+  "areas": [
+   -100.174882,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_partial_hex_flange_sec.svg": {
+  "areas": [
+   -100.174882,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_partial_hex_noflange_nosec.svg": {
+  "areas": [
+   -98.674882,
+   16.237875
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_partial_hex_noflange_sec.svg": {
+  "areas": [
+   -98.674882,
+   16.237875,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_partial_none_flange_nosec.svg": {
+  "areas": [
+   -100.174882
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_partial_none_noflange_nosec.svg": {
+  "areas": [
+   -98.674882
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_partial_phillips_flange_nosec.svg": {
+  "areas": [
+   -100.174882,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_partial_phillips_flange_sec.svg": {
+  "areas": [
+   -100.174882,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_partial_phillips_noflange_nosec.svg": {
+  "areas": [
+   -98.674882,
+   9.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_partial_phillips_noflange_sec.svg": {
+  "areas": [
+   -98.674882,
+   1.976542,
+   1.976542,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_partial_phillips_slot_flange_nosec.svg": {
+  "areas": [
+   -100.174882,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_partial_phillips_slot_flange_sec.svg": {
+  "areas": [
+   -100.174882,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_partial_phillips_slot_noflange_nosec.svg": {
+  "areas": [
+   -98.674882,
+   7.66596
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_partial_phillips_slot_noflange_sec.svg": {
+  "areas": [
+   -98.674882,
+   0.976542,
+   1.976542,
+   1.976542,
+   0.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_partial_phillips_square_flange_nosec.svg": {
+  "areas": [
+   -100.174882,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_partial_phillips_square_flange_sec.svg": {
+  "areas": [
+   -100.174882,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_partial_phillips_square_noflange_nosec.svg": {
+  "areas": [
+   -98.674882,
+   11.586329
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_partial_phillips_square_noflange_sec.svg": {
+  "areas": [
+   -98.674882,
+   11.586329,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_partial_slot_flange_nosec.svg": {
+  "areas": [
+   -100.174882,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_partial_slot_flange_sec.svg": {
+  "areas": [
+   -100.174882,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_partial_slot_noflange_nosec.svg": {
+  "areas": [
+   -98.674882,
+   5.33298
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_partial_slot_noflange_sec.svg": {
+  "areas": [
+   -98.674882,
+   1.976542,
+   1.976542
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_partial_square_flange_nosec.svg": {
+  "areas": [
+   -100.174882,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_partial_square_flange_sec.svg": {
+  "areas": [
+   -100.174882,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_partial_square_noflange_nosec.svg": {
+  "areas": [
+   -98.674882,
+   17.999824
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_partial_square_noflange_sec.svg": {
+  "areas": [
+   -98.674882,
+   17.999824,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_partial_torx_flange_nosec.svg": {
+  "areas": [
+   -100.174882,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_partial_torx_flange_sec.svg": {
+  "areas": [
+   -100.174882,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_partial_torx_noflange_nosec.svg": {
+  "areas": [
+   -98.674882,
+   13.747328
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_partial_torx_noflange_sec.svg": {
+  "areas": [
+   -98.674882,
+   13.747328,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_partial_triangle_flange_nosec.svg": {
+  "areas": [
+   -100.174882,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_partial_triangle_flange_sec.svg": {
+  "areas": [
+   -100.174882,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.5,
+   3.0,
+   5.5
+  ]
+ },
+ "screw_socket_tapping_partial_triangle_noflange_nosec.svg": {
+  "areas": [
+   -98.674882,
+   11.691315
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ },
+ "screw_socket_tapping_partial_triangle_noflange_sec.svg": {
+  "areas": [
+   -98.674882,
+   11.691315,
+   -1.767006
+  ],
+  "bounds": [
+   -11.56,
+   -5.0,
+   3.0,
+   5.0
+  ]
+ }
+}

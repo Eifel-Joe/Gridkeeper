@@ -74,6 +74,8 @@ def main() -> int:
     started = time.time()
     with tempfile.TemporaryDirectory() as workFolder, concurrent.futures.ThreadPoolExecutor(args.jobs) as pool:
         errors = [error for error in pool.map(lambda job: render(args.openscad, job, workFolder), jobs) if error]
+    # as lines and arcs, see dev-notes/tools/arcSymbols.py (round 40)
+    cullenectIcons.rebuildSymbols([os.path.join(args.out, catalog.SETSCREWS_FOLDER)])
     print(f'done in {time.time() - started:.0f} s, {len(jobs) - len(errors)} rendered, {len(errors)} failed')
     for error in errors:
         print('FAILED', error, file=sys.stderr)
