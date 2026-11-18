@@ -127,3 +127,19 @@ def test_the_box_label_finds_the_front_of_the_box_by_the_seat_place():
     body = ast.unparse(_function(_source("lib", "rebuildUtils.py"), "_frontSpot"))
     assert "jointOriginPlace(boxJointOrigin.nativeObject or boxJointOrigin)" in body
     assert "geometry.origin" not in body
+
+
+def test_no_code_reads_a_joint_origin_place_by_its_geometry():
+    """Sister paths of _frontSpot (review request round 45): the only geometry.origin reads left in the add-in are of
+    construction planes; a joint origin's place goes through jointOriginPlace. Joints, the rebuild's repointing (by
+    name and seat), cells, stacking, lid, small parts and export don't read a joint origin's place at all"""
+    found = []
+    for folder in ("lib", "commands"):
+        for (directory, _, files) in os.walk(os.path.join(ROOT, folder)):
+            for file in files:
+                if not file.endswith(".py"):
+                    continue
+                for (number, line) in enumerate(open(os.path.join(directory, file), encoding="utf-8"), 1):
+                    if "geometry.origin" in line and "plane.geometry.origin" not in line:
+                        found.append(f"{file}:{number}: {line.strip()}")
+    assert found == []
