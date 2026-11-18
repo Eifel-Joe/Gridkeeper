@@ -127,3 +127,9 @@ def test_the_cell_isnt_part_of_the_settings():
     tree = ast.parse(open(os.path.join(ROOT, "commands", "commandCreateBin", "inputState.py"), encoding="utf-8").read())
     fields = [node.target.id for node in ast.walk(tree) if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name)]
     assert [field for field in fields if "cell" in field.lower()] == ["shapeCells"]
+
+
+def test_a_rebuilt_baseplate_keeps_the_bins_jointed_into_its_cells():
+    """Round 31, spec decision 6: joints onto the old baseplate's socket joint origins move to the new one by name"""
+    source = _source(os.path.join(ROOT, "commands", "commandCreateBaseplate", "baseplateBuilder.py"), "rebuildBaseplate")
+    assert "jointsByName=True" in source
