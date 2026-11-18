@@ -130,7 +130,7 @@ class WorldSketch:
             fillets.append(arcs.addFillet(first, first.endSketchPoint.geometry, second, second.startSketchPoint.geometry, radius.value))
         for fillet in fillets[1:]:
             self.sketch.geometricConstraints.addEqual(fillets[0], fillet)
-        applyTo(self.sketch.sketchDimensions.addRadialDimension(fillets[0], fillets[0].startSketchPoint.geometry, True).parameter, radius)
+        _drive(self.sketch.sketchDimensions.addRadialDimension(fillets[0], fillets[0].startSketchPoint.geometry, True).parameter, radius)
 
     def _chain(self):
         geometry = [self._sketchPoint3D(world) for world in self.worldPoints]
@@ -188,7 +188,7 @@ class WorldSketch:
                 circle = drawn[item[1]]
                 c = circle.centerSketchPoint.geometry
                 dimension = dimensions.addDiameterDimension(circle, adsk.core.Point3D.create(c.x + 0.4, c.y + 0.1, 0), True)
-                applyTo(dimension.parameter, self.curves[item[1]]['diameter'])
+                _drive(dimension.parameter, self.curves[item[1]]['diameter'])
             else:
                 i, j = item[1], item[2]
                 axis = 0 if kind == 'hdim' else 1
@@ -199,7 +199,7 @@ class WorldSketch:
                 text = adsk.core.Point3D.create((a.x + b.x) / 2 + 0.25 + shift, (a.y + b.y) / 2 + 0.25 + shift, 0)
                 dimension = dimensions.addDistanceDimension(second, sketchPoints[i], H if axis == 0 else V, text, True)
                 value = self._coordinate(i, axis) if j is None else self._coordinate(i, axis) - self._coordinate(j, axis)
-                applyTo(dimension.parameter, value.abs())
+                _drive(dimension.parameter, value.abs())
 
     # -- reading -----------------------------------------------------------------------------------------------------
 
@@ -249,6 +249,19 @@ class WorldSketch:
                 raise ValueError(f'{self.sketch.name}: {len(match)} profiles with area {area} mm2')
             found.append(match[0])
         return found
+
+
+def _drive(parameter, value):
+    """
+    A dimension follows its dim's expression only when the dim depends on a parameter (round 45, p480). Two points that
+    hang on the same measure keep their distance whatever the parameter: the dimension stays at the value it was drawn
+    with, which is that distance, and costs no Parameter.expression call (129 of 215 per box, 195 ms each in a second box,
+    fusion-auftraege/r45_probe.log, r45_profil.log). The sketch stays fully constrained, the dimension is still there.
+    Tested in tests/test_pred_sketch_constant.py
+    """
+    if isinstance(value, Dim) and not value.dependsOnParameters:
+        return
+    applyTo(parameter, value)
 
 
 def arcDrawing(center, start, end):
