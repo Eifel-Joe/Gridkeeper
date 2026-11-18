@@ -8,6 +8,7 @@ import adsk.core
 from ...lib import fusion360utils as futil
 from ...lib import updateCheck
 from ...lib import updateInstall
+from ...lib import selfReload
 from ... import config
 
 # The update check (p310, dev-notes/specs/2026-11-17-update-hinweis-design.md): once a day at startup a background
@@ -32,6 +33,13 @@ RESULT_EVENT_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_updateCheckResult'
 # the dialog waits for Fusion to be idle, tried again this often this many seconds apart, see result_custom_event
 SHOW_RETRY_SECONDS = 30
 SHOW_RETRIES = 10
+# Reload Gridkeeper (p321, lib/selfReload.py): the add-in stops and runs itself from this custom event, never in a
+# handler of its own command. It waits for Gridkeeper's dialogs to close, tried this often this many seconds apart
+RELOAD_EVENT_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_reload'
+RELOAD_RETRY_SECONDS = 2
+RELOAD_RETRIES = 30
+# the ids of every Gridkeeper command start with it
+COMMAND_PREFIX = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_'
 
 INFO_INPUT = 'updateInfo'
 CHECK_AT_STARTUP_INPUT = 'checkAtStartup'
@@ -56,6 +64,11 @@ retryTimer: threading.Timer | None = None
 openedByCheck = False
 # an update is being installed, a second click or Check now waits (review finding 1)
 installing = False
+# what OK of the open dialog does: 'update' (opened by the check), 'reload' (from the menu, spec R1) or None
+okAction: str | None = None
+# Reload Gridkeeper waiting for a Gridkeeper dialog to close, see reload_custom_event
+reloadTries = 0
+reloadTimer: threading.Timer | None = None
 
 def start():
     global runningVersion, stopped, showRetries
@@ -75,6 +88,8 @@ def start():
     # left over when the add-in wasn't stopped
     app.unregisterCustomEvent(RESULT_EVENT_ID)
     futil.add_handler(app.registerCustomEvent(RESULT_EVENT_ID), result_custom_event, local_handlers=event_handlers)
+    app.unregisterCustomEvent(RELOAD_EVENT_ID)
+    futil.add_handler(app.registerCustomEvent(RELOAD_EVENT_ID), reload_custom_event, local_handlers=event_handlers)
     settings = updateCheck.readSettings(updateCheck.settingsPath(ADDIN_FOLDER))
     today = datetime.date.today()
     if updateCheck.isDue(settings, today):
@@ -86,12 +101,17 @@ def start():
         threading.Thread(target=cleanUpInBackground, name='Gridkeeper update cleanup', daemon=True).start()
 
 def stop():
-    global stopped, event_handlers, retryTimer
+    global stopped, event_handlers, retryTimer, reloadTimer
     stopped = True
     if retryTimer is not None:
         retryTimer.cancel()
         retryTimer = None
+    if reloadTimer is not None:
+        reloadTimer.cancel()
+        reloadTimer = None
     app.unregisterCustomEvent(RESULT_EVENT_ID)
+    # also when the reload itself stops the add-in from this event's handler, measured harmless (p321)
+    app.unregisterCustomEvent(RELOAD_EVENT_ID)
     event_handlers = []
     panel = ui.workspaces.itemById(WORKSPACE_ID).toolbarPanels.itemById(PANEL_ID)
     control = panel.controls.itemById(CMD_ID) if panel is not None else None
@@ -155,11 +175,53 @@ def result_custom_event(args: adsk.core.CustomEventArgs):
     except Exception:
         futil.handle_error('Gridkeeper update check')
 
+# Reload Gridkeeper (p321)
+
+def requestReload():
+    """Reloads Gridkeeper once Fusion is idle and no Gridkeeper dialog is open, see reload_custom_event"""
+    global reloadTries
+    reloadTries = 0
+    # Fusion 2706 answered False when a script fired an add-in's event, the handler ran anyway (p321 measurement)
+    app.fireCustomEvent(RELOAD_EVENT_ID, 'reload')
+
+def retryReload():
+    if not stopped:
+        app.fireCustomEvent(RELOAD_EVENT_ID, 'retry')
+
+def reload_custom_event(args: adsk.core.CustomEventArgs):
+    global reloadTries, reloadTimer
+    try:
+        step = selfReload.nextStep(ui.activeCommand, COMMAND_PREFIX, reloadTries, RELOAD_RETRIES)
+        if step == 'wait':
+            reloadTries += 1
+            reloadTimer = threading.Timer(RELOAD_RETRY_SECONDS, retryReload)
+            # Fusion never waits for it when it closes
+            reloadTimer.daemon = True
+            reloadTimer.start()
+            return
+        if step == 'giveUp':
+            ui.messageBox(selfReload.GAVE_UP_TEXT, CMD_NAME)
+            return
+        scripts = app.scripts
+        # by its folder only, a clone and a worktree are both named Gridkeeper (spec R2)
+        script = selfReload.ownScript([scripts.item(index) for index in range(scripts.count)], ADDIN_FOLDER)
+        if script is None:
+            ui.messageBox(selfReload.NOT_FOUND_TEXT, CMD_NAME)
+            return
+        futil.log(f'Gridkeeper reloads itself, running {runningVersion}, on disk {updateCheck.manifestVersion(ADDIN_FOLDER)}')
+        # stop() runs Gridkeeper's stop, this module's included; the code here still runs to its end (measured)
+        failed = selfReload.reloadScript(script)
+        if failed is not None:
+            futil.log(f'Gridkeeper reload failed: {failed.reason}')
+            ui.messageBox(selfReload.failedText(failed), CMD_NAME)
+    except Exception:
+        futil.handle_error('Reload Gridkeeper', show_message_box=True)
+
 # the dialog
 
-def infoHtml() -> str:
+def infoHtml(reloadButton: bool = False) -> str:
     installed = updateCheck.manifestVersion(ADDIN_FOLDER)
-    lines = [updateCheck.versionLine(runningVersion, installed)]
+    lines = [updateCheck.versionLine(runningVersion, installed, reloadButton)]
     if pendingRelease is not None and (installed is None or pendingRelease.version > installed):
         lines.append(updateCheck.dialogHtml(pendingRelease, installed or runningVersion or (0, 0, 0), updateInstall.isGitCheckout(ADDIN_FOLDER)))
     return '<br><br>'.join(lines)
@@ -171,21 +233,28 @@ def canInstall() -> bool:
             and not updateInstall.isGitCheckout(ADDIN_FOLDER))
 
 def command_created(args: adsk.core.CommandCreatedEventArgs):
-    global openedByCheck
+    global openedByCheck, okAction
     command = args.command
     # opened by the check with a release to install: OK is Update now, Cancel is Later (spec E6)
     updateDialog = openedByCheck and canInstall()
     openedByCheck = False
-    command.isOKButtonVisible = updateDialog
+    # from the menu while another version than the running one is on disk: OK is Reload Gridkeeper (p321, spec R1).
+    # OK and not a button input: a command can't end itself in its own events, OK closes the dialog, then it reloads
+    reloadDialog = not updateDialog and selfReload.reloadOffered(runningVersion, updateCheck.manifestVersion(ADDIN_FOLDER))
+    okAction = 'update' if updateDialog else 'reload' if reloadDialog else None
+    command.isOKButtonVisible = okAction is not None
     if updateDialog:
         command.okButtonText = 'Update now'
         command.cancelButtonText = 'Later'
-        futil.add_handler(command.execute, command_execute, local_handlers=local_handlers)
     else:
+        if reloadDialog:
+            command.okButtonText = 'Reload Gridkeeper'
         command.cancelButtonText = 'Close'
+    if okAction is not None:
+        futil.add_handler(command.execute, command_execute, local_handlers=local_handlers)
     command.setDialogInitialSize(420, 300)
     inputs = command.commandInputs
-    info = inputs.addTextBoxCommandInput(INFO_INPUT, '', infoHtml(), 8, True)
+    info = inputs.addTextBoxCommandInput(INFO_INPUT, '', infoHtml(reloadDialog), 8, True)
     info.isFullWidth = True
     # in the dialog opened from the menu, after Check now found a release
     updateNow = inputs.addBoolValueInput(UPDATE_NOW_INPUT, 'Update now', False, '', False)
@@ -205,11 +274,12 @@ def hideProgress(progress: adsk.core.ProgressDialog):
     except Exception as err:
         futil.log(f'{CMD_NAME}: progress window not closed, {err}')
 
-def installRelease(release: updateCheck.Release) -> bool:
-    """Installs release with a progress window, tells the user how it went, whether it's installed"""
+def installRelease(release: updateCheck.Release) -> str | None:
+    """Installs release with a progress window, tells the user how it went and asks whether to reload. None when it
+    isn't installed, else 'reload' or 'installed'"""
     global installing
     if installing:
-        return False
+        return None
     installing = True
     progress = ui.createProgressDialog()
     try:
@@ -223,19 +293,26 @@ def installRelease(release: updateCheck.Release) -> bool:
         hideProgress(progress)
         futil.log(f'Gridkeeper update to {release.versionText} failed: {err}')
         ui.messageBox(f'Gridkeeper {release.versionText} couldn\'t be installed.\n\n{err}', CMD_NAME)
-        return False
+        return None
     finally:
         installing = False
         # also when something else went wrong, the caller's error message mustn't sit under it (second review)
         hideProgress(progress)
-    # first, before any input of a dialog that may be gone by now (review finding 1)
-    ui.messageBox(updateCheck.successText(release), CMD_NAME)
-    return True
+    # first, before any input of a dialog that may be gone by now (review finding 1). p321: Yes reloads Gridkeeper
+    answer = ui.messageBox(updateCheck.successQuestion(release), CMD_NAME,
+                           adsk.core.MessageBoxButtonTypes.YesNoButtonType, adsk.core.MessageBoxIconTypes.QuestionIconType)
+    if answer == adsk.core.DialogResults.DialogYes:
+        requestReload()
+        return 'reload'
+    return 'installed'
 
 def command_execute(args: adsk.core.CommandEventArgs):
-    """Update now of the dialog the check opened"""
+    """OK: Update now of the dialog the check opened, Reload Gridkeeper of the one from the menu (spec R1)"""
     try:
-        if canInstall():
+        if okAction == 'reload':
+            # the dialog closes after this, the reload waits for it
+            requestReload()
+        elif okAction == 'update' and canInstall():
             installRelease(pendingRelease)
     except Exception:
         futil.handle_error(f'{CMD_NAME} failed', show_message_box=True)
@@ -266,19 +343,22 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
                 futil.log(line)
             installed = updateCheck.manifestVersion(ADDIN_FOLDER) or runningVersion
             if releases is None:
-                info.formattedText = f'{updateCheck.versionLine(runningVersion, installed)}<br><br>GitHub couldn\'t be asked: {logs[-1] if logs else "no answer"}'
+                info.formattedText = f'{updateCheck.versionLine(runningVersion, installed, okAction == "reload")}<br><br>GitHub couldn\'t be asked: {logs[-1] if logs else "no answer"}'
             elif installed is None:
-                info.formattedText = f'{updateCheck.versionLine(runningVersion, installed)}<br><br>The installed version is unknown, it can\'t be compared.'
+                info.formattedText = f'{updateCheck.versionLine(runningVersion, installed, okAction == "reload")}<br><br>The installed version is unknown, it can\'t be compared.'
             else:
                 pendingRelease = updateCheck.newestRelease(releases, installed)
-                info.formattedText = infoHtml() if pendingRelease is not None else f'{updateCheck.versionLine(runningVersion, installed)}<br><br>You have the newest version.'
+                info.formattedText = infoHtml(okAction == "reload") if pendingRelease is not None else f'{updateCheck.versionLine(runningVersion, installed, okAction == "reload")}<br><br>You have the newest version.'
             inputs.itemById(UPDATE_NOW_INPUT).isVisible = canInstall()
             inputs.itemById(RELEASE_NOTES_INPUT).isVisible = pendingRelease is not None and bool(pendingRelease.pageUrl)
         elif changed.id == UPDATE_NOW_INPUT and canInstall():
-            if installRelease(pendingRelease):
+            installed = installRelease(pendingRelease)
+            if installed is not None:
                 # the dialog may have been closed meanwhile, the update is in place anyway
                 try:
-                    info.formattedText = infoHtml()
+                    # Yes to reload: it waits for this dialog to close (p321, spec R2)
+                    info.formattedText = infoHtml(okAction == 'reload') + ('<br><br><b>Close this dialog to reload Gridkeeper.</b>'
+                                                       if installed == 'reload' else '')
                     inputs.itemById(UPDATE_NOW_INPUT).isVisible = False
                 except Exception as err:
                     futil.log(f'{CMD_NAME}: dialog not updated after the update, {err}')

@@ -81,3 +81,19 @@ def test_reload_script_stopped_but_not_started():
         result = selfReload.reloadScript(script)
         assert not result.stillRunning
         assert script.calls == ['stop', 'run']
+
+
+WAYS = "restart Fusion, or stop and run Gridkeeper in Utilities › Add-Ins › Scripts and Add-Ins"
+
+
+def test_failed_texts_end_with_the_ways_by_hand():
+    assert selfReload.failedText(selfReload.ReloadFailed("Fusion didn't stop it", True)) == (
+        f"Gridkeeper couldn't reload itself, Fusion didn't stop it. The old version runs on. To load the new one, {WAYS}.")
+    assert selfReload.failedText(selfReload.ReloadFailed("Fusion stopped it but didn't start it again", False)) == (
+        "Gridkeeper couldn't reload itself, Fusion stopped it but didn't start it again. Gridkeeper is stopped now. "
+        "To start it, restart Fusion, or run Gridkeeper in Utilities › Add-Ins › Scripts and Add-Ins.")
+    assert selfReload.NOT_FOUND_TEXT == (
+        f"Gridkeeper couldn't reload itself, Fusion doesn't list it under its folder. To load the new version, {WAYS}.")
+    assert selfReload.GAVE_UP_TEXT == (
+        "Gridkeeper didn't reload, one of its dialogs stayed open. Close it and click Reload Gridkeeper in "
+        f"Gridkeeper updates, or {WAYS}.")

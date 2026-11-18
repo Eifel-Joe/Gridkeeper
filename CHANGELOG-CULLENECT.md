@@ -6,7 +6,13 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased
 
-### Developer commands in git worktrees (round 33)
+### Reload Gridkeeper, developer commands in git worktrees (round 33)
+
+- **Reload Gridkeeper:** after an update Gridkeeper asks „Reload Gridkeeper now to use it?“, and the Gridkeeper updates
+  dialog has a Reload Gridkeeper button whenever the version on disk isn't the one running, also in a git checkout
+  after a pull or a branch switch (Jörg: Fusion doesn't load the new code by itself there). Gridkeeper stops and runs
+  itself through Fusion's API once its dialogs are closed; measured 18.11.2026 that every command works afterwards.
+  Restarting Fusion, or Stop and Run in Scripts and Add-Ins, still work and are named when the reload fails (p321).
 
 - **Developer commands in a git worktree:** the snapshot tests and the model images command show whenever the add-in
   runs from a git checkout, also from a git worktree, where `.git` is a file instead of a folder. They use the same

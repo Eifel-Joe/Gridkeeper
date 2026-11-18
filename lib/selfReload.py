@@ -1,6 +1,8 @@
 import os
 from dataclasses import dataclass
 
+from . import updateCheck
+
 # Reload Gridkeeper (p321, dev-notes/specs/2026-11-18-runde-33-design.md): the add-in stops and runs itself through
 # Fusion's API, app.scripts and its own Script. Measured 18.11.2026 in Fusion 2706 (update spec, "Messung
 # Selbst-Neustart"): from a custom event handler of the add-in, stop() and run() both work, the new version then runs
@@ -49,3 +51,17 @@ def reloadScript(script) -> ReloadFailed | None:
     except Exception as err:
         return ReloadFailed(f'Fusion stopped it but didn\'t start it again: {err}', False)
     return None
+
+# what the messages say, each ends with the ways by hand
+
+NOT_FOUND_TEXT = ("Gridkeeper couldn't reload itself, Fusion doesn't list it under its folder. "
+                  f'To load the new version, {updateCheck.RELOAD_WAYS}.')
+GAVE_UP_TEXT = ("Gridkeeper didn't reload, one of its dialogs stayed open. Close it and click Reload Gridkeeper in "
+                f'Gridkeeper updates, or {updateCheck.RELOAD_WAYS}.')
+
+def failedText(failed: ReloadFailed) -> str:
+    if failed.stillRunning:
+        return (f"Gridkeeper couldn't reload itself, {failed.reason}. The old version runs on. "
+                f'To load the new one, {updateCheck.RELOAD_WAYS}.')
+    return (f"Gridkeeper couldn't reload itself, {failed.reason}. Gridkeeper is stopped now. "
+            'To start it, restart Fusion, or run Gridkeeper in Utilities › Add-Ins › Scripts and Add-Ins.')
