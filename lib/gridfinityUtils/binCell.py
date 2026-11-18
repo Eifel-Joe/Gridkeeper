@@ -33,12 +33,6 @@ def isCellJointName(name: str) -> bool:
     return _CELL_JOINT.search(name) is not None
 
 
-def placementPoint(baseWidth: float, baseLength: float, xyClearance: float) -> tuple[float, float]:
-    """XY of the center of the bin's front left cell, in cm: cells start a clearance before the origin (as
-    baseGenerator.cellCenters), a half grid bin has its feet in it but the cell is a whole one"""
-    return (baseWidth / 2 - xyClearance, baseLength / 2 - xyClearance)
-
-
 def offersCellPick(isNewBin: bool, hasBaseplateOrBox: bool) -> bool:
     """The dialog offers the cell only for a new bin, a rebuilt one keeps its joint (Jörg 18.11.2026), and only with a
     baseplate or box in the design (Jörg 17.11.2026)"""
