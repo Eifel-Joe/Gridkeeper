@@ -43,8 +43,9 @@ OLDER_VALUES = {
         'cullenectSocketOffset': 0.3,
     },
     GENERATOR_BASEPLATE: {'plateEdgeClearance': _xyClearanceAtPlateEdges},
-    # boxes of round 27 had no hinge setting; every box got Pred's M3x30 once there were hinges (round 28)
-    GENERATOR_BOX: {'hinge': 'M3x30'},
+    # boxes of round 27 had no hinge setting; every box got Pred's M3x30 once there were hinges (round 28). Before the
+    # choice of the lid's top every lid had Pred's grid on it (round 30, p311)
+    GENERATOR_BOX: {'hinge': 'M3x30', 'lidTop': 'Grid'},
 }
 
 def withOlderValues(generator: str, settings: dict) -> dict:

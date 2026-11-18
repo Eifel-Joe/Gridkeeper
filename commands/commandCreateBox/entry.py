@@ -56,6 +56,7 @@ INFO_GROUP = 'info_group'
 SIZE_GROUP = 'size_group'
 MAGNET_GROUP = 'magnet_group'
 JOINT_GROUP = 'joint_group'
+LID_GROUP = 'lid_group'
 PARTS_GROUP = 'parts_group'
 INPUT_CHANGES_GROUP = 'input_changes_group'
 PREVIEW_GROUP = 'preview_group'
@@ -69,6 +70,7 @@ MAGNET_DEPTH_INPUT = 'magnet_height'
 MAGNET_DIAMETER_INPUT = 'magnet_diameter'
 JOINT_ORIGINS_INPUT = 'joint_origins'
 HINGE_DROPDOWN = 'hinge'
+LID_TOP_DROPDOWN = 'lid_top'
 INPUT_CHANGES_BUTTONS_BROWSER = 'input_changes_buttons'
 CONFIG_BUTTONS_BROWSER = 'config_buttons'
 SHOW_PREVIEW_INPUT = 'show_preview'
@@ -202,6 +204,15 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
 
     jointGroup = addGroup(inputs, JOINT_GROUP, 'Joint origins')
     addBool(jointGroup.children, JOINT_ORIGINS_INPUT, 'Add joint origins', 'A joint origin in every cell of the floor, to joint bins into the box')
+
+    # the lid's top (round 30, p311, Nutzer 18.11.2026: "Lid top: Grid / Closed", "Standard bleibt Raster")
+    lidGroup = addGroup(inputs, LID_GROUP, 'Lid')
+    lidTopDropdown = lidGroup.children.addDropDownCommandInput(LID_TOP_DROPDOWN, 'Lid top', adsk.core.DropDownStyles.TextListDropDownStyle)
+    for name in predBoxConfig.LID_TOPS:
+        lidTopDropdown.listItems.add(name, name == uiState.getState(LID_TOP_DROPDOWN))
+    lidTopDropdown.tooltip = ("Grid: a Gridfinity grid on top of the lid to stand bins on, as in Pred's file. "
+                              "Closed: a flat closed top, sturdier; the stacking tabs in its corners stay, boxes still stack")
+    uiState.registerCommandInput(lidTopDropdown)
 
     # Pred's three hinges (round 28, Nutzer 17.11.2026: "alle drei zum auswählen ist besser"), the box is the same for all
     partsGroup = addGroup(inputs, PARTS_GROUP, 'Small parts')
@@ -371,7 +382,7 @@ def generateBox(args: adsk.core.CommandEventArgs, mayChangeDocument: bool = True
 
 
 def initUiState():
-    for group in (INFO_GROUP, SIZE_GROUP, MAGNET_GROUP, JOINT_GROUP, PARTS_GROUP, INPUT_CHANGES_GROUP, PREVIEW_GROUP):
+    for group in (INFO_GROUP, SIZE_GROUP, MAGNET_GROUP, JOINT_GROUP, LID_GROUP, PARTS_GROUP, INPUT_CHANGES_GROUP, PREVIEW_GROUP):
         uiState.initValue(group, True, adsk.core.GroupCommandInput.classType())
     spinner = adsk.core.IntegerSpinnerCommandInput.classType()
     value = adsk.core.ValueCommandInput.classType()
@@ -386,6 +397,7 @@ def initUiState():
     uiState.initValue(MAGNET_DIAMETER_INPUT, DEFAULT_STATE.magnetDiameter, value)
     uiState.initValue(JOINT_ORIGINS_INPUT, DEFAULT_STATE.hasJointOrigins, boolean)
     uiState.initValue(HINGE_DROPDOWN, DEFAULT_STATE.hinge, dropdown)
+    uiState.initValue(LID_TOP_DROPDOWN, DEFAULT_STATE.lidTop, dropdown)
     uiState.initValue(SHOW_PREVIEW_INPUT, False, boolean)
     recordedDefaults = configUtils.readJsonConfig(UI_INPUT_DEFAULTS_CONFIG_PATH)
     if recordedDefaults:
@@ -409,6 +421,7 @@ def getInputsState() -> InputState:
         magnetDiameter=uiState.getState(MAGNET_DIAMETER_INPUT),
         hasJointOrigins=uiState.getState(JOINT_ORIGINS_INPUT),
         hinge=uiState.getState(HINGE_DROPDOWN),
+        lidTop=uiState.getState(LID_TOP_DROPDOWN),
     )
 
 
@@ -424,10 +437,14 @@ def applyInputsState(state: InputState):
     uiState.setValue(MAGNET_DIAMETER_INPUT, state.magnetDiameter)
     uiState.setValue(JOINT_ORIGINS_INPUT, state.hasJointOrigins)
     uiState.setValue(HINGE_DROPDOWN, state.hinge)
+    uiState.setValue(LID_TOP_DROPDOWN, state.lidTop)
 
 
 def readConfig(text: str, source: str) -> InputState | None:
-    choices = {'hinge': configJson.Choice(list(predBoxParts.HINGES), predBoxParts.DEFAULT_HINGE)}
+    choices = {
+        'hinge': configJson.Choice(list(predBoxParts.HINGES), predBoxParts.DEFAULT_HINGE),
+        'lidTop': configJson.Choice(list(predBoxConfig.LID_TOPS), predBoxConfig.DEFAULT_LID_TOP),
+    }
     return configButtons.readConfig(text, source, configJson.GENERATOR_BOX, InputState, getInputsState(), choices)
 
 
