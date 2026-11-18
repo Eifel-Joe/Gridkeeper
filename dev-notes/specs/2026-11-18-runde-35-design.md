@@ -37,7 +37,7 @@ Profilauswahl; Strenge der Snapshot-Prüfung für Bins/Baseplates (bleibt „rep
 - pytest: `addFrame` bestimmt alle vier Ecken (Waagrecht/Senkrecht + 4 Maße, Fortpflanzung über alle Punkte) und
   liegt um den Abstand außerhalb des Umrisses. Quelltext-Test: `baseGenerator` zeichnet keinen Rahmen mehr per
   `addTwoPointRectangle`.
-- Fusion (Code aus `wt-r35`): `bin_3x3x4_l_shape_lip_full` bzw. ein L-Form-Bin mit Kerben,
+- Fusion (Code aus `wt-r35`): `bin_3x3x4_l_shape_lip_notches` (L-Form mit Kerben),
   `bin_2x2x3_l_shape_half_grid`, `baseplate_3x2_full`, `baseplate_2x2_light_magnets_3mm`, `baseplate_fill_area_pieces`
   (Stückschnitt): alle Skizzen `isFullyConstrained`, Snapshots unverändert grün.
 
