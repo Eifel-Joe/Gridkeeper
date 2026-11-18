@@ -67,8 +67,12 @@ seit fbd3146 (vor dem ersten Config-Stand) unverändert. Nichts zu tun.
 
 ## Nicht dabei
 
-- `fitTolerance` (Fill-Area-Baseplates bis 3010f3f): die Funktion ist entfernt, eine Config damit wird wie bisher als
-  „Not recognised, skipped“ gemeldet und ohne sie gebaut.
+- `fitTolerance` (Fill-Area-Baseplates, gespeichert 13.–14.11.2026 vor 3010f3f, Vorgabe 1,0 mm): Upstream hat die
+  Funktion entfernt. Eine Config damit wird wie bisher als „Not recognised, skipped“ gemeldet und baut **je Achse um
+  fitTolerance (1 mm) größer**, der Spalt zur Schubladenwand sinkt von xy-Spiel + 0,5 mm auf das xy-Spiel.
+  Nachbilden über die Flächenmaße wäre auch nicht deckungsgleich (Platte 0,5 mm versetzt). Hauptsitzung 18.11. nach
+  des Nutzers Festlegung zu p302: Altlasten von vor 1.0.0 werden nicht angegangen („Zu diesem Zeitpunkt hatte außer uns
+  niemand das Plugin.“). Fund aus dem Opus-Review.
 - Ein eigener Hinweis im Dialog „mit altem Wert gefüllt“ (die Lippen-Felder melden es auch nicht).
 - Gespeicherte Dialog-Vorgaben („Save as default“) – das sind keine Configs einer Bin.
 - Versionsnummer (bleibt 1.1.0).
