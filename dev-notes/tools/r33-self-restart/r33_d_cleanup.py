@@ -31,7 +31,11 @@ def run(_context):
     for script in find(COPY):
         if script.isRunning:
             print("stop copy ->", script.stop())
-        print("unlink copy ->", script.unlink())
+        try:
+            print("unlink copy ->", script.unlink())
+        except RuntimeError as err:
+            # a script in Fusion's own AddIns folder is never linked (measured 18.11.), deleting the folder removes it
+            print("unlink copy: not linked,", err)
     show("test copy", find(COPY))
     git = find(GIT)
     if len(git) == 1 and not git[0].isRunning:
