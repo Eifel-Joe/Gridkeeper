@@ -94,8 +94,8 @@ its size changes or when it is moved or stacked. The handle is as wide as the la
 width of 4, 99 mm at 5 and at most 113.5 mm from a width of 6 on. The hinges keep their place beside the box at every
 size, the second 5 mm beside the first.
 
-The preview (**Show preview**) shows box and lid only, the small parts come with **OK**: inserting them made every
-preview slow. A joint of yours on one of the parts, say on the front left latch, stays on that part when the box is
+The preview (**Show preview**) shows box and lid only, the small parts and the joint origins come with **OK**:
+making them made every preview slow. A joint of yours on one of the parts, say on the front left latch, stays on that part when the box is
 rebuilt; the rebuild tells the four latches, the two pins and the two hinges apart by their seat.
 
 **Hinge** in the group *Small parts* picks one of Pred's three hinges; the box is the same for all three:

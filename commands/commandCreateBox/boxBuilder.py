@@ -74,7 +74,7 @@ def buildBox(
     if problem is not None:
         raise ValueError(problem)
     plan = designIntent.structurePlan(des.designIntent, mayChangeDocument, assembly.rebuildKind(oldPlace))
-    return assembly.buildWithStructure(des, plan, lambda: _buildBox(des, state, settings, plan, parameterPrefix, occurrenceTransform, oldPlace, withParts=mayChangeDocument))
+    return assembly.buildWithStructure(des, plan, lambda: _buildBox(des, state, settings, plan, parameterPrefix, occurrenceTransform, oldPlace, forOk=mayChangeDocument))
 
 
 def _buildBox(
@@ -85,7 +85,7 @@ def _buildBox(
     parameterPrefix: str | None,
     occurrenceTransform: adsk.core.Matrix3D | None,
     oldPlace: assembly.OldPlace | None,
-    withParts: bool = True,
+    forOk: bool = True,
 ) -> list[adsk.fusion.BRepBody]:
     name = boxName(state)
     # the container comes before the box's timeline group, see assembly.partPlace
@@ -157,29 +157,33 @@ def _buildBox(
 
     # joint origins last, their sketches don't follow moves (as binBuilder). The floor cells always: the bin dialog
     # joints a new bin into one (round 31, p312), state.hasJointOrigins of older configs is left aside;
-    # an older box without them gets them when it is rebuilt, its joints move over by name, see rebuildBox
-    centers = [(column, row, Dim.length(x), Dim.length(y)) for (column, row, x, y) in predBoxConfig.cellCenters(state.gridX, state.gridY)]
-    createPointJointOrigins(cellJointOriginPoints(centers, CELL_JOINT_ORIGIN, Dim.length(predBoxConfig.CELL_JOINT_Z)), boxComponent, name=CELL_JOINT_ORIGIN)
-    (stackBottom,) = createPointJointOrigins([(STACK_BOTTOM_JOINT_ORIGIN, dims.midX, dims.midY, dims.bottom)], boxComponent, name=STACK_BOTTOM_JOINT_ORIGIN)
-    (stackTop,) = createPointJointOrigins([(STACK_TOP_JOINT_ORIGIN, dims.midX, dims.midY, dims.bodyTop)], lidComponent, name=STACK_TOP_JOINT_ORIGIN)
-    # the seats of the small parts (round 28): latches, handle and its pins, upright like the others, each part's joint
-    # turns it, see predBoxSeats.turnAboutZ; a box of bodies in the root gets no parts, so no seats either (review)
-    if boxOccurrence is not None:
-        createPointJointOrigins(predBoxSeats.seatJointOriginPoints(dims, state.hinge), boxComponent, name=SEAT_JOINT_ORIGINS)
-    if boxOccurrence is not None:
-        (boxSide,) = createPointJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], boxComponent, name=LID_JOINT_ORIGIN)
-        (lidSide,) = createPointJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], lidComponent, name=LID_JOINT_ORIGIN)
-        # the lid shut on the box, rigid like Pred's closed box; it's part of the set, a rebuild makes it anew (rigid)
-        jointInput = des.rootComponent.joints.createInput(assembly.inContext(lidSide, lidOccurrence), assembly.inContext(boxSide, boxOccurrence))
-        jointInput.setAsRigidJointMotion()
-        joint = des.rootComponent.joints.add(jointInput)
-        joint.name = f'{name} {LID_JOINT_NAME}'
+    # an older box without them gets them when it is rebuilt, its joints move over by name, see rebuildBox.
+    # Only for OK (round 36, p296): the six calls took 20-100 s, 75 s in a preview that is thrown away and that
+    # nothing joints to (rebuildUtils.rebuild hands the preview's bodies back as they are); the lid lies shut on the
+    # box by its geometry, the joint only holds it there
+    if forOk:
+        centers = [(column, row, Dim.length(x), Dim.length(y)) for (column, row, x, y) in predBoxConfig.cellCenters(state.gridX, state.gridY)]
+        createPointJointOrigins(cellJointOriginPoints(centers, CELL_JOINT_ORIGIN, Dim.length(predBoxConfig.CELL_JOINT_Z)), boxComponent, name=CELL_JOINT_ORIGIN)
+        (stackBottom,) = createPointJointOrigins([(STACK_BOTTOM_JOINT_ORIGIN, dims.midX, dims.midY, dims.bottom)], boxComponent, name=STACK_BOTTOM_JOINT_ORIGIN)
+        (stackTop,) = createPointJointOrigins([(STACK_TOP_JOINT_ORIGIN, dims.midX, dims.midY, dims.bodyTop)], lidComponent, name=STACK_TOP_JOINT_ORIGIN)
+        # the seats of the small parts (round 28): latches, handle and its pins, upright like the others, each part's joint
+        # turns it, see predBoxSeats.turnAboutZ; a box of bodies in the root gets no parts, so no seats either (review)
+        if boxOccurrence is not None:
+            createPointJointOrigins(predBoxSeats.seatJointOriginPoints(dims, state.hinge), boxComponent, name=SEAT_JOINT_ORIGINS)
+        if boxOccurrence is not None:
+            (boxSide,) = createPointJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], boxComponent, name=LID_JOINT_ORIGIN)
+            (lidSide,) = createPointJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], lidComponent, name=LID_JOINT_ORIGIN)
+            # the lid shut on the box, rigid like Pred's closed box; it's part of the set, a rebuild makes it anew (rigid)
+            jointInput = des.rootComponent.joints.createInput(assembly.inContext(lidSide, lidOccurrence), assembly.inContext(boxSide, boxOccurrence))
+            jointInput.setAsRigidJointMotion()
+            joint = des.rootComponent.joints.add(jointInput)
+            joint.name = f'{name} {LID_JOINT_NAME}'
 
     # the small parts after Pred (round 28): latches, handle and pins jointed at their seats, hinges beside the box; a
     # box of bodies in the root (a part design kept as it is) has no components to joint, it stays without them.
-    # A preview leaves them out (round 36, p295): inserting them made every preview slow, it shows box and lid and
-    # their seats, OK builds the whole set
-    partBodies = predBoxInsert.insertParts(des, setOccurrence, boxOccurrence, dims, state.hinge, name, assembly.inContext) if boxOccurrence is not None and withParts else []
+    # A preview leaves them out (round 36, p295): inserting them made every preview slow, it shows box and lid,
+    # OK builds the whole set
+    partBodies = predBoxInsert.insertParts(des, setOccurrence, boxOccurrence, dims, state.hinge, name, assembly.inContext) if boxOccurrence is not None and forOk else []
 
     if des.designType == adsk.fusion.DesignTypes.ParametricDesignType:
         group = des.timeline.timelineGroups.add(originalTimelinePosition, des.timeline.markerPosition - 1)

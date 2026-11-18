@@ -39,7 +39,9 @@ case: "Handle pin right"), box rebuilt (other size); afterwards the joint's box 
 
 ### Decision
 The preview (`mayChangeDocument=False`, new box and rebuild preview) builds box and lid only, without the small parts.
-The seat joint origins stay (cheap, the parts are what costs). OK builds as before, with parts. The dialog's preview
+Decided after the Fusion measurement (p296): the preview makes no joint origins either (cells, stack, seats, lid) and
+no lid joint; they took 20–100 s, 75 s in a preview, and nothing reads them there. OK builds as before, with parts
+and every joint origin. The dialog's preview
 text says that the preview shows box and lid without the small parts.
 
 ### End-to-end criterion
