@@ -4,7 +4,7 @@ import json
 import zipfile
 from xml.sax.saxutils import escape, quoteattr
 
-# 3MF files of meshes, the triangles of label letters painted with a filament the slicer picks up. Kept free of
+# 3MF files of meshes, the triangles of label letters painted with the filaments the slicer picks up. Kept free of
 # Fusion imports so it can be unit tested.
 # The slicers keep their filament painting on the triangles, as their paint tool saves it: Bambu Studio and
 # OrcaSlicer in paint_color, PrusaSlicer in slic3rpe:mmu_segmentation, both coded the same, see paintCode. They read
@@ -38,8 +38,9 @@ class MeshObject:
     vertices: list[tuple[float, float, float]]
     # vertex indices, counterclockwise seen from outside
     triangles: list[tuple[int, int, int]]
-    # indices of the triangles painted with the filament
-    painted: set[int] = dataclasses.field(default_factory=set)
+    # the painted triangles by index, each with its filament numbered from 1 (round 37, p301: each label color on a
+    # filament of its own), the others print in the object's filament
+    painted: dict[int, int] = dataclasses.field(default_factory=dict)
 
 def paintCode(filament: int) -> str:
     """
@@ -69,12 +70,14 @@ def _number(value: float) -> str:
     text = f'{value:.4f}'.rstrip('0').rstrip('.')
     return '0' if text == '-0' else text
 
-def modelXml(objects: list[MeshObject], filament: int | None, title: str = '', version: str = '', date: datetime.date | None = None) -> str:
+def isPainted(objects: list[MeshObject]) -> bool:
+    return any(meshObject.painted for meshObject in objects)
+
+def modelXml(objects: list[MeshObject], title: str = '', version: str = '', date: datetime.date | None = None) -> str:
     """
-    The model part of the file, the painted triangles get the filament unless it's none. Named after the generator in
-    the version, with the title and the day it was made, as the slicers show of a project
+    The model part of the file, each painted triangle with its filament's code. Named after the generator in the
+    version, with the title and the day it was made, as the slicers show of a project
     """
-    code = paintCode(filament) if filament is not None else None
     application = f'{APPLICATION} {version}' if version else APPLICATION
     lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
@@ -84,7 +87,7 @@ def modelXml(objects: list[MeshObject], filament: int | None, title: str = '', v
     ]
     if title:
         lines.append(f' <metadata name="Title">{escape(title)}</metadata>')
-    if code is not None:
+    if isPainted(objects):
         lines.append(' <metadata name="slic3rpe:MmPaintingVersion">1</metadata>')
     lines.append(' <resources>')
     for (index, meshObject) in enumerate(objects):
@@ -92,7 +95,9 @@ def modelXml(objects: list[MeshObject], filament: int | None, title: str = '', v
         lines += [f'     <vertex x="{_number(x)}" y="{_number(y)}" z="{_number(z)}"/>' for (x, y, z) in meshObject.vertices]
         lines += ['    </vertices>', '    <triangles>']
         for (triangleIndex, (a, b, c)) in enumerate(meshObject.triangles):
-            paint = f' paint_color="{code}" slic3rpe:mmu_segmentation="{code}"' if code is not None and triangleIndex in meshObject.painted else ''
+            filament = meshObject.painted.get(triangleIndex)
+            code = paintCode(filament) if filament is not None else None
+            paint = f' paint_color="{code}" slic3rpe:mmu_segmentation="{code}"' if code is not None else ''
             lines.append(f'     <triangle v1="{a}" v2="{b}" v3="{c}"{paint}/>')
         lines += ['    </triangles>', '   </mesh>', '  </object>']
     lines += [' </resources>', ' <build>']
@@ -100,27 +105,26 @@ def modelXml(objects: list[MeshObject], filament: int | None, title: str = '', v
     lines += [' </build>', '</model>']
     return '\n'.join(lines)
 
-def facetsAnnotation(objects: list[MeshObject], filament: int) -> str:
+def facetsAnnotation(objects: list[MeshObject]) -> str:
     """PrusaSlicer 3's list of the painted triangles of each object, by the object's id in the model, see modelXml"""
-    code = paintCode(filament)
     return json.dumps([
         {
-            'mmSegmentationFacets': [{'triangle': triangle, 'dividing': code} for triangle in sorted(meshObject.painted)],
+            'mmSegmentationFacets': [{'triangle': triangle, 'dividing': paintCode(meshObject.painted[triangle])} for triangle in sorted(meshObject.painted)],
             'mmSegmentationFacetsVersion': 1,
             'id': index + 1,
         }
         for (index, meshObject) in enumerate(objects)
     ])
 
-def write(path: str, objects: list[MeshObject], filament: int | None, title: str = '', version: str = '', isLaidOut: bool = False):
+def write(path: str, objects: list[MeshObject], title: str = '', version: str = '', isLaidOut: bool = False):
     """
-    The objects in one file, painted with the filament unless it's none, see modelXml. Placed on the plate, see
+    The objects in one file, their triangles painted as they are, see modelXml. Placed on the plate, see
     placeOnPlate, unless they're laid out already (round r29-export, printLayout.layOut), then they stay where they are
     """
     placed = objects if isLaidOut else placeOnPlate(objects)
     with zipfile.ZipFile(path, 'w', zipfile.ZIP_DEFLATED) as package:
         package.writestr('[Content_Types].xml', CONTENT_TYPES)
         package.writestr('_rels/.rels', RELATIONSHIPS)
-        package.writestr('3D/3dmodel.model', modelXml(placed, filament, title, version))
-        if filament is not None:
-            package.writestr(FACETS_ANNOTATION_PATH, facetsAnnotation(objects, filament))
+        package.writestr('3D/3dmodel.model', modelXml(placed, title, version))
+        if isPainted(objects):
+            package.writestr(FACETS_ANNOTATION_PATH, facetsAnnotation(objects))
