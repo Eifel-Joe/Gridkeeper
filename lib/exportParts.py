@@ -260,8 +260,8 @@ def filamentOfChoice(name: str | None) -> int | None:
 def keepTypedFilaments(changed: dict[str, int], shown: dict[str, int], assigned: dict[str, int]) -> dict[str, int]:
     """
     The filaments changed by hand in the dialog: those already known and each shown one that isn't the number it was
-    assigned. Fusion fires a spinner's change event only for some ways of leaving the field (click test round 37: a
-    typed number was lost when the selection changed), so the dialog reads its spinners before it rebuilds them.
+    assigned. The dialog reads its filament lists before it rebuilds them, so a number changed whose change event
+    didn't reach us still stays (the spinners used first lost typed numbers that way, click test round 37).
     Numbers left as assigned stay automatic and may change with the selection; for a color changed before, the number
     shown wins, also when it's back at the assigned one (review round 37)
     """

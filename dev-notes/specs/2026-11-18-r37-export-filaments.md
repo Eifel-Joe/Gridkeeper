@@ -48,7 +48,7 @@ Nicht dabei: Texte, die der User von Hand umgefärbt hat; sie zählen als „ohn
 
 ## Export-Dialog (`commands/commandExport/entry.py`)
 
-- Der Spinner „Label color index“ entfällt. Neu unter „Color label text“: eine Gruppe „Label filaments“ mit einem
+- Der Spinner „Label color index“ entfällt. Neu unter „Color label text“: eine Gruppe „Label filaments“ mit einer
   Auswahlliste 1 … 18 je Farbe der aktuellen Auswahl, Name „Red text“, „#123456 text“ (`labelColors.choiceOf`) bzw.
   „Text without color“; Tooltip nennt, dass 1 das Filament der Körper ist. Entscheidung: Liste statt Spinner, weil
   Fusion eine in einen Spinner getippte Zahl verwirft, wenn direkt aus dem Feld auf OK geklickt wird (Klicktest D,
