@@ -28,6 +28,11 @@ Turn off the preview (**Show auto update preview (slow)**, **Show preview (slow)
 preview once** to look at the result now and then. Large baseplates with joint origins and inserts with many-point
 symbols take a few seconds.
 
+**A value I typed was ignored.**
+Fusion takes a value typed into an input only a moment after the last key. Clicked straight after typing, OK builds
+with the value the input had before; that goes for every input of every dialog. Press **Tab** after typing, or wait
+a moment, before clicking OK.
+
 **OK is greyed out.**
 An input is out of range or a check failed; the dialog says which where it can. See
 [Messages and locked OK](messages.md#ok-stays-locked).

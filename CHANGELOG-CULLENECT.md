@@ -6,6 +6,14 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased
 
+### Typed values in the dialogs (round 41)
+
+- A value typed into an input and OK clicked straight after (within about 0.3 s) was ignored: Fusion takes typed text
+  only a moment after the last key, and neither reports the change nor gives the new value on OK, measured for every
+  kind of input (spinners, lengths, sliders, text). No other kind of input avoids it, so nothing changes in the
+  dialogs; the FAQ says to press Tab or wait a moment before OK. Decided: documented, not worked around
+  (p490).
+
 ### Faster deletion of the old part on a rebuild (round 43)
 
 - **Rebuild with joints moved over:** when a rebuild moves joints to the new part (a bin in a cell of a rebuilt
