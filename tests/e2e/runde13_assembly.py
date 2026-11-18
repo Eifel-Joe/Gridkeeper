@@ -68,7 +68,7 @@ def run(_context: str):
 
     # 2. jointed into its pocket, the other beside everything
     insertBox = world(jointed[0])
-    floor = pocket.geometry.origin
+    floor = pocket.transform.translation  # offset joint origins since round 46, see jointOriginPlace
     offsets = ((insertBox.minPoint.x + insertBox.maxPoint.x) / 2 - floor.x, (insertBox.minPoint.y + insertBox.maxPoint.y) / 2 - floor.y, insertBox.minPoint.z - floor.z)
     check('2 the insert sits mid floor of its pocket', all(abs(value) * 10 < TOLERANCE_MM for value in offsets), str([round(value * 10, 4) for value in offsets]))
     check('2 its joint is healthy', all(joint.healthState == adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState for joint in root.allJoints) and len(root.allJoints) == 1)
@@ -87,7 +87,7 @@ def run(_context: str):
     newOccurrence = occurrenceOf(rebuilt[0])
     check('3 the rebuilt bin is in Bins', newOccurrence.assemblyContext is not None and newOccurrence.assemblyContext.component.name == 'Bins')
     check('3 the root is active afterwards', des.activeComponent == root)
-    newFloor = newOccurrence.component.jointOrigins.itemByName('Compartment 2 pocket joint origin').createForAssemblyContext(newOccurrence).geometry.origin
+    newFloor = newOccurrence.component.jointOrigins.itemByName('Compartment 2 pocket joint origin').createForAssemblyContext(newOccurrence).transform.translation
     insertBox = world(jointed[0])
     check('7 the insert sits on the floor of the new pocket', abs(insertBox.minPoint.z - newFloor.z) * 10 < TOLERANCE_MM and abs(newFloor.z - floor.z) > 0.1, f'{round(floor.z * 10, 2)} -> {round(newFloor.z * 10, 2)} mm')
     check('7 its joint is healthy', all(joint.healthState == adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState for joint in root.allJoints) and len(root.allJoints) == 1)

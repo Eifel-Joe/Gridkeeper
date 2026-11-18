@@ -58,7 +58,7 @@ def centeredGrid(run, name, body, prefix, step):
     if not origins:
         run.check(f'{name}: joint origins found', False)
         return
-    points = [origin.geometry.origin for origin in origins]
+    points = [origin.transform.translation for origin in origins]  # offset joint origins since round 46
     xs = sorted({round(point.x, 4) for point in points})
     ys = sorted({round(point.y, 4) for point in points})
     box = body.boundingBox

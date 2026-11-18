@@ -72,8 +72,10 @@ class Run:
     def world(self, jointOrigin):
         """The joint origin's point in the root: a proxy's geometry is in the root already. Its native geometry came in the
         root too and transformed by the occurrence again was off by the bin's move (r31 step 1, 18.11.2026: bin
-        104.75 mm, cell 62.75 mm, the bin's body at 42 mm where cell 2-2 starts)"""
-        return jointOrigin.geometry.origin
+        104.75 mm, cell 62.75 mm, the bin's body at 42 mm where cell 2-2 starts). Read from its transform: the geometry of
+        an offset joint origin (round 46) is the component's origin point, see jointOriginLayout.jointOriginPlace"""
+        translation = jointOrigin.transform.translation
+        return adsk.core.Point3D.create(translation.x, translation.y, translation.z)
 
     def healthy(self, name):
         timeline = self.des.timeline
