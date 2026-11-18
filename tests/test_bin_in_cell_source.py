@@ -89,3 +89,41 @@ def test_label_and_bin_share_the_root_proxy_and_timeline_order():
     label = open(LABEL_BUILDER, encoding="utf-8").read()
     assert "assembly.jointOriginInRoot(" in label and "def _inRoot" not in label
     assert "rebuildUtils.comesAfter(" in label and "def _isAfter" not in label
+
+
+BIN_ENTRY = os.path.join(ROOT, "commands", "commandCreateBin", "entry.py")
+
+
+def test_the_dialog_offers_the_cell_only_for_a_new_bin_with_a_baseplate_or_box():
+    source = _source(BIN_ENTRY, "command_created")
+    assert "binCell.offersCellPick(dialogWorkflow != WORKFLOW_REBUILD, binBuilder.hasCellParts(" in source
+    assert "addSelectionInput(BIN_CELL_INPUT_ID" in source
+    assert "addSelectionFilter(adsk.core.SelectionCommandInput.JointOrigins)" in source
+    assert "setSelectionLimits(0, 1)" in source
+    assert "args.command.select, command_select" in source
+
+
+def test_only_cells_can_be_picked():
+    source = _source(BIN_ENTRY, "command_select")
+    assert "BIN_CELL_INPUT_ID" in source
+    assert "args.isSelectable = binBuilder.isCellJointOrigin(" in source
+
+
+def test_cells_are_the_baseplates_sockets_and_the_box_floor_not_the_lid():
+    source = _source(BIN_BUILDER, "isCellJointOrigin")
+    assert "binCell.cellOf(" in source
+    assert "tagUtils.TAG_BASEPLATE" in source and "tagUtils.TAG_BOX" in source
+    assert "LID_ROLE" in source
+
+
+def test_the_new_bin_is_built_into_the_cell_picked():
+    source = _source(BIN_ENTRY, "generateBin")
+    assert "binBuilder.buildBin(des, state, settings, mayChangeDocument=not isPreview, cell=selectedCell(args.command.commandInputs))" in source
+
+
+def test_the_cell_isnt_part_of_the_settings():
+    """Round 32 asks every config field for its value in older models, the cell isn't one: it only places a new bin"""
+    assert "BIN_PLACEMENT_GROUP_ID" in _source(BIN_ENTRY, "snapshotSettings")
+    tree = ast.parse(open(os.path.join(ROOT, "commands", "commandCreateBin", "inputState.py"), encoding="utf-8").read())
+    fields = [node.target.id for node in ast.walk(tree) if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name)]
+    assert [field for field in fields if "cell" in field.lower()] == ["shapeCells"]

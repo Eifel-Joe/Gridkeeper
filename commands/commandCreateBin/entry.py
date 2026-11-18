@@ -19,6 +19,7 @@ from ...lib.gridfinityUtils import labelGenerator
 from ...lib.gridfinityUtils import labelColors
 from ...lib.gridfinityUtils import textStyles
 from ...lib.gridfinityUtils import cullenect
+from ...lib.gridfinityUtils import binCell
 from ...lib.gridfinityUtils.binBodyTabGenerator import tabFilletAllowance
 from ...lib.gridfinityUtils.binBodyLipGeneratorInput import LIP_TYPES, lipHeight
 from ...lib.gridfinityUtils import compartmentLayout
@@ -127,6 +128,9 @@ BIN_BASE_FEATURES_GROUP_ID = 'bin_base_features_group'
 USER_CHANGES_GROUP_ID = 'user_changes_group'
 PREVIEW_GROUP_ID = 'preview_group'
 INFO_GROUP = 'info_group'
+# where a new bin goes, a cell of a baseplate or box (round 31, p312), not kept with the settings
+BIN_PLACEMENT_GROUP_ID = 'bin_placement_group'
+BIN_CELL_INPUT_ID = 'bin_cell'
 
 BIN_BASE_WIDTH_UNIT_INPUT_ID = 'base_width_unit'
 BIN_BASE_LENGTH_UNIT_INPUT_ID = 'base_length_unit'
@@ -861,6 +865,18 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     infoGroup.isExpanded = commandUIState.getState(INFO_GROUP)
     commandUIState.registerCommandInput(infoGroup)
 
+    # a new bin jointed into a cell of a baseplate or box (round 31, p312), only offered when there's one (Jörg
+    # 17.11.2026) and not for a rebuilt bin, it keeps its joint (Jörg 18.11.2026). Neither remembered nor in the settings
+    if binCell.offersCellPick(dialogWorkflow != WORKFLOW_REBUILD, binBuilder.hasCellParts(adsk.fusion.Design.cast(app.activeProduct))):
+        placementGroup = inputs.addGroupCommandInput(BIN_PLACEMENT_GROUP_ID, 'Placement')
+        placementGroup.isExpanded = True
+        cellInput = placementGroup.children.addSelectionInput(BIN_CELL_INPUT_ID, 'Cell', 'A cell joint origin of a baseplate or of the floor of a box')
+        cellInput.addSelectionFilter(adsk.core.SelectionCommandInput.JointOrigins)
+        cellInput.setSelectionLimits(0, 1)
+        cellInput.tooltip = ('Optional: pick a cell joint origin of a baseplate or of the floor of a box, the bin is jointed there '
+            'with its front left cell. Without, it goes beside the other bins. Baseplates offer their cells with Add joint '
+            'origins, a box without cell joint origins gets them when it is rebuilt.')
+
     basicSizesGroup = inputs.addGroupCommandInput(BIN_BASIC_SIZES_GROUP, 'Basic sizes')
     basicSizesGroup.isExpanded = commandUIState.getState(BIN_BASIC_SIZES_GROUP)
     commandUIState.registerCommandInput(basicSizesGroup)
@@ -1116,6 +1132,20 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     futil.add_handler(args.command.validateInputs, command_validate_input, local_handlers=local_handlers)
     futil.add_handler(args.command.destroy, command_destroy, local_handlers=local_handlers)
     futil.add_handler(args.command.incomingFromHTML, command_incoming_from_html, local_handlers=local_handlers)
+    futil.add_handler(args.command.select, command_select, local_handlers=local_handlers)
+
+def command_select(args: adsk.core.SelectionEventArgs):
+    """Only the cells of baseplates and box floors can be picked as the cell, see binBuilder.isCellJointOrigin"""
+    if args.activeInput is None or args.activeInput.id != BIN_CELL_INPUT_ID:
+        return
+    args.isSelectable = binBuilder.isCellJointOrigin(adsk.fusion.JointOrigin.cast(args.selection.entity))
+
+def selectedCell(inputs: adsk.core.CommandInputs) -> adsk.fusion.JointOrigin | None:
+    """The cell picked for a new bin, none without the input (no baseplate or box, a rebuild) or a pick"""
+    cellInput = adsk.core.SelectionCommandInput.cast(inputs.itemById(BIN_CELL_INPUT_ID))
+    if cellInput is None or cellInput.selectionCount == 0:
+        return None
+    return adsk.fusion.JointOrigin.cast(cellInput.selection(0).entity)
 
 
 # This event handler is called when the user clicks the OK button in the command dialog or
@@ -1398,7 +1428,7 @@ def saveUIInputsAsDefaults():
 def snapshotSettings(inputs: adsk.core.CommandInputs) -> list[dict]:
     settings = settingsUtils.snapshotInputs(
         inputs,
-        [INFO_GROUP, USER_CHANGES_GROUP_ID, PREVIEW_GROUP_ID, BIN_REAL_DIMENSIONS_TABLE],
+        [INFO_GROUP, USER_CHANGES_GROUP_ID, PREVIEW_GROUP_ID, BIN_REAL_DIMENSIONS_TABLE, BIN_PLACEMENT_GROUP_ID],
         SETTINGS_TITLE,
     )
     # the drawing isn't an input with a value, it holds the grid size too
@@ -1561,7 +1591,7 @@ def generateBin(args: adsk.core.CommandEventArgs, isPreview: bool):
         if rebuildBodyToken is not None:
             (builtBodies, rebuildNotes) = binBuilder.rebuildBin(des, findRebuildBody(des), state, settings, isPreview)
         else:
-            builtBodies = binBuilder.buildBin(des, state, settings, mayChangeDocument=not isPreview)
+            builtBodies = binBuilder.buildBin(des, state, settings, mayChangeDocument=not isPreview, cell=selectedCell(args.command.commandInputs))
         futil.log(f'{CMD_NAME} {binBuilder.binDisplayName(state)} generated in {time.perf_counter() - startTime:.3f}s')
     except UnsupportedDesignTypeException as err:
         args.executeFailed = True
