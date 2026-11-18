@@ -6,6 +6,21 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased
 
+### Faster symbols (round 40)
+
+- **Symbols of lines and arcs:** OpenSCAD writes every rounding of a symbol as a polygon, the Torx drive of a
+  countersunk screw was 1670 points 0.01 mm apart. The symbol files are rebuilt as lines, circular arcs and whole
+  circles within 0.01 mm of the polygons: 239 064 points became 19 145 lines and 1 890 arcs, the Torx symbol 54
+  segments (p371). The symbols of Cullenect-Labels by CullenJWebb (MIT) keep their origin and license, the rebuild is
+  noted next to them; the tool is `dev-notes/tools/arcSymbols.py`, the render tools run it after rendering.
+- **One import per symbol:** a symbol was imported four times to measure and place it, five times on bin labels. It is
+  imported once now, scale and position worked out from the file. Measured in Fusion: a box label with the
+  countersunk Torx symbol 40.9 s → 0.8 s, an insert with it 40.4 s → 1.1 s; on a bin label the symbol takes 0.6 to
+  0.7 s instead of 1.8 to 3.7 s.
+- Two insert test cases build their symbol a few hundredths of a percent different in volume, round instead of
+  faceted; their snapshots are updated. A hand-made svg in the symbol folders, drawn with other commands, circles or
+  transforms, still works: it is imported once and scaled into place.
+
 ### GridfinityGenerator 2.5 merged (round 38)
 
 Merged from GridfinityGenerator v2.5.0.0 by Le0Michine (Lev Mishin), up to ee027a9 (p13):

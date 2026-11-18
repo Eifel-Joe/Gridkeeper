@@ -71,6 +71,22 @@ Belegt außerdem:
 - Skizzenpunkte eines Imports = Segmente + Bögen (je Bogen sein Mittelpunkt) – Hex nut 10, Prototyp Torx 73, Probe 6.
 - `Sketch.move` nimmt nur gleichmäßige Skalierung (auch in z); Verschieben geht.
 
+## Messung in Fusion (nachher, 18.11.2026, Branch r40-symbol-speed 07f8d08)
+
+| Bau | vorher | nachher |
+|---|---|---|
+| Box-Schild 5 Felder, Torx-Senkkopf | 40,9 s | **0,8 s** (Import 0,08 s, eine Kurve je Segment: 54) |
+| Einleger 1U, Senkkopf Torx | 40,4 s | **1,1 s** |
+| Bin 2×1×3, Hex nut (Symbolanteil) | 7,9 s (1,8 s) | 7,3 s (0,6 s) |
+| Bin 2×1×3, Crimp butt splice (Symbolanteil) | 12,1 s (3,7 s) | 9,9 s (0,7 s) |
+
+Lage je Symbol (Torx, Linsenkopf, Hex nut, Crimp ring, von Hand gezeichnete svg) auf XY, 35° gekippt und XZ: 0,00000 mm
+Abweichung. Profile wie bei den Polygonen (Torx 1 gefülltes, Fläche 5,604 = 5,604 mm²; Linsenkopf 2, 6,7626 →
+6,7603 mm²). Symbol-Skizzen voll bestimmt. Snapshots: Bin-Fälle mit Symbol und vier Einleger-Fälle unverändert,
+`label_1u_set_screw_hex` (+0,06 % Symbolvolumen) und `label_25mm_free` (−0,04 %) neu abgenommen.
+Fund dabei: `Sketch.move` verschiebt fixierte Import-Kurven nicht (meldet aber True); `_importIcon` löst sie für die
+Verschiebung und fixiert sie danach wieder.
+
 ## Optionen
 
 - **A, Symbole in Linien, Bögen, Kreise (und Splines) zerlegen (Vorgabe):** Werkzeug `dev-notes/tools/arcSymbols.py`,
