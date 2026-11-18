@@ -37,8 +37,15 @@ class Box:
 
 
 class Curve:
+    """An imported curve is fixed, as Fusion leaves it; Sketch.move doesn't move fixed geometry (Fusion 18.11.2026)"""
     def __init__(self, box):
         self.boundingBox = box
+        self.isFixed = True
+
+
+class SketchPoint:
+    def __init__(self):
+        self.isFixed = True
 
 
 class Curves(list):
@@ -78,6 +85,7 @@ class RecordingSketch:
         self.moves = []
         self.sketchCurves = Curves()
         self.sketchPoints = Curves()
+        self.originPoint = SketchPoint()
         self.off = off
         self.handBounds = handBounds
         self.allowThrowaway = allowThrowaway
@@ -103,15 +111,18 @@ class RecordingSketch:
             unit = svgSymbol.SVG_UNIT_CM * scale
             (b0, b1, b2, b3) = self.handBounds
             self.sketchCurves.append(Curve(Box(b0 * unit + x, -b3 * unit + y, b2 * unit + x, -b1 * unit + y)))
-            self.sketchPoints += [object()] * 4
+            self.sketchPoints += [SketchPoint() for _ in range(4)]
             return True
         bounds = svgSymbol.readSymbol(path).bounds
         unit = svgSymbol.SVG_UNIT_CM * scale
         self.sketchCurves.append(Curve(Box(bounds[0] * unit + x + self.off[0], -bounds[3] * unit + y + self.off[1],
                                            bounds[2] * unit + x + self.off[0], -bounds[1] * unit + y + self.off[1])))
+        self.sketchPoints.append(SketchPoint())
         return True
 
     def move(self, entities, matrix):
+        assert not any(curve.isFixed for curve in self.sketchCurves), 'fixed curves are not moved'
+        assert not any(point.isFixed for point in self.sketchPoints), 'fixed points are not moved'
         self.moves.append((list(entities), matrix.translation))
         return True
 
@@ -148,6 +159,8 @@ def test_import_icon_moves_when_fusion_puts_it_elsewhere():
     [(curves, translation)] = sketch.moves
     assert len(curves) == 1
     assert translation == pytest.approx((-0.01, 0.02, 0))
+    # fixed again afterwards, as the import left them
+    assert all(curve.isFixed for curve in sketch.sketchCurves) and all(point.isFixed for point in sketch.sketchPoints)
 
 
 def test_icon_measure_reads_the_file():

@@ -184,7 +184,16 @@ def _importIcon(sketch: adsk.fusion.Sketch, path: str, minX: float, minY: float,
         for axis in range(3):
             shift.setCell(axis, axis, factor)
         shift.translation = adsk.core.Vector3D.create(offsetX, offsetY, 0)
-        sketch.move(commonUtils.objectCollectionFromList([sketch.sketchCurves.item(index) for index in range(sketch.sketchCurves.count)]), shift)
+        # the import leaves its curves and points fixed, and a move leaves fixed geometry where it is while still
+        # returning True (Fusion 18.11.2026): let go for the move, fixed again after it as the import left them
+        curves = [sketch.sketchCurves.item(index) for index in range(sketch.sketchCurves.count)]
+        points = [point for point in sketch.sketchPoints if point != sketch.originPoint]
+        fixed = [entity for entity in curves + points if entity.isFixed]
+        for entity in fixed:
+            entity.isFixed = False
+        sketch.move(commonUtils.objectCollectionFromList(curves), shift)
+        for entity in fixed:
+            entity.isFixed = True
     commonUtils.debugLog(f'icon {os.path.basename(path)} placed at {placed[0] * factor:.3f}, {placed[1] * factor:.3f}, expected {minX:.3f}, {minY:.3f}')
 
 def _iconMeasure(sketch: adsk.fusion.Sketch, path: str) -> tuple[float, int] | None:
