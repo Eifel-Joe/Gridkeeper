@@ -11,8 +11,8 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 - A number typed into a length input without its unit ("2.9") stayed so in the field instead of "2.90 mm" as the
   dialog shows its values when it opens; the part was built right all along. The field now shows the formatted value
   in the bin, baseplate, box, label and export dialogs. Formulas ("10 + 2"), other units ("1 in"), angles and inputs
-  without a unit stay as typed. Set during Fusion's change event the field kept the typed text, so the text is set
-  right after it (p291).
+  without a unit stay as typed, so do numbers with more decimals than the field shows ("1.125"), they'd be rounded.
+  Set during Fusion's change event the field kept the typed text, so the text is set right after it (p291).
 - A value typed into an input and OK clicked straight after (within about 0.3 s) was ignored: Fusion takes typed text
   only a moment after the last key, and neither reports the change nor gives the new value on OK, measured for every
   kind of input (spinners, lengths, sliders, text). No other kind of input avoids it, so nothing changes in the

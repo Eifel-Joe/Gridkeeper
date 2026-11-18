@@ -12,7 +12,13 @@ den Feldtext ablesen.
 4. Dasselbe Feld `0.1 in` → Tab. Erwartet: bleibt `0.1 in`.
 5. **Tab overhang angle** `40` → Tab. Erwartet: unverändert wie getippt (Winkel werden nicht umformatiert).
 6. **Bin height, Z (u)** `3.5` → Tab. Erwartet: unverändert wie getippt (Feld ohne Einheit).
-7. Wandstärke wieder `2.9` → Tab, dann OK.
+7. Dasselbe Feld `1.125` → Tab. Erwartet: bleibt `1.125` (mehr Stellen als die Anzeige, der Wert wird nicht gerundet).
+8. Tippen mit Pause, **ohne** das Feld zu verlassen: Feld markieren, `2.` tippen, 2 s warten, `95` tippen, 2 s warten,
+   dann erst Tab.
+   - Erwartet: Feld zeigt am Ende `2.95 mm`. Während des Tippens springt der Text nicht um (kein `2.00 mm` mitten im
+     Tippen, kein `2.00 mm95`, Cursor bleibt am Ende). Dasselbe mit `2`, Pause, `5` → am Ende `25.00 mm`.
+   - Falls es doch umspringt: Befund mit genauem Feldtext melden, nicht weiter klicken.
+9. Wandstärke wieder `2.9` → Tab, dann OK.
    - Erwartet: Bin entsteht ohne Fehler, Wand 2.9 mm (Messen oder Parameter). Kein Hängen, kein Flackern im Feld
      (keine Endlosschleife).
 

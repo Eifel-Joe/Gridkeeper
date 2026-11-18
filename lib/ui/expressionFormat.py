@@ -1,3 +1,4 @@
+import math
 import re
 
 import adsk.core
@@ -14,7 +15,7 @@ handlers = []
 pendingInputs: list[adsk.core.ValueCommandInput] = []
 
 # A plain number, as typed into a length input, with or without the input's unit
-_PLAIN_NUMBER = r'\s*[-+]?(?:\d+(?:\.\d*)?|\.\d+)\s*'
+_PLAIN_NUMBER = r'\s*([-+]?(?:\d+(?:\.\d*)?|\.\d+))\s*'
 
 
 def start():
@@ -48,7 +49,11 @@ def normalize_custom_event(args: adsk.core.CustomEventArgs):
             formatted = app.activeProduct.unitsManager.formatInternalValue(valueInput.value, valueInput.unitType, True)
             expression = normalizedExpression(valueInput.expression, valueInput.unitType, formatted)
             if expression is not None:
+                typed = valueInput.expression
                 valueInput.expression = expression
+                # a text Fusion won't take (a decimal comma of another locale, say) would lock OK, the typed one stays
+                if not valueInput.isValidExpression:
+                    valueInput.expression = typed
         except Exception as err:
             futil.log(f'Length input not formatted, {err}')
 
@@ -61,7 +66,13 @@ def normalizedExpression(expression: str, unitType: str, formatted: str) -> str 
     """
     if not unitType or unitType == 'deg':
         return None
-    if re.fullmatch(_PLAIN_NUMBER + f'(?:{re.escape(unitType)})?\\s*', expression or '') is None:
+    plainNumber = _PLAIN_NUMBER + f'(?:{re.escape(unitType)})?\\s*'
+    typed = re.fullmatch(plainNumber, expression or '')
+    shown = re.fullmatch(plainNumber, formatted or '')
+    if typed is None or shown is None:
+        return None
+    # the formatted text has the display precision: "1.125" would become "1.13 mm", another value (review r41)
+    if not math.isclose(float(typed.group(1)), float(shown.group(1)), rel_tol=1e-12, abs_tol=1e-12):
         return None
     # nothing to set when it's shown so already, a set is what might come round as a change again
     return formatted if formatted != expression else None

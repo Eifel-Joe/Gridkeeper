@@ -160,3 +160,30 @@ def test_an_error_on_one_input_leaves_the_others_formatted(app):
     expressionFormat.normalize_custom_event(None)
     assert fine.expression == '2.90 mm'
     assert expressionFormat.pendingInputs == []
+
+
+# ---------------------------------------------------------------------------
+# Review r41: the formatted text is rounded to the display precision, it must not change the value
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize(('expression', 'formatted'), [('1.125', '1.13 mm'), ('0.25', '0.3 mm'), ('2.999 mm', '3.00 mm')])
+def test_more_decimals_than_shown_stay_as_typed(expression, formatted):
+    assert normalizedExpression(expression, 'mm', formatted) is None
+
+
+def test_trailing_zeros_and_a_bare_point_keep_the_value():
+    assert normalizedExpression('2.50', 'mm', '2.5 mm') == '2.5 mm'
+    assert normalizedExpression('3.', 'mm', '3.00 mm') == '3.00 mm'
+
+
+def test_a_formatted_text_fusion_wont_take_is_set_back(app):
+    class _Refusing(_LengthInput):
+        def __setattr__(self, name, value):
+            _LengthInput.__setattr__(self, name, value)
+            if name == 'expression' and value == '2.90 mm':
+                object.__setattr__(self, 'isValidExpression', False)
+
+    lengthInput = _Refusing('2.9 mm')
+    expressionFormat.request(lengthInput)
+    expressionFormat.normalize_custom_event(None)
+    assert lengthInput.expression == '2.9 mm'
