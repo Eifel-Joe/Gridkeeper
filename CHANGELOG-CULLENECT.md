@@ -71,6 +71,14 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   runs from a git checkout, also from a git worktree, where `.git` is a file instead of a folder. They use the same
   check as the update lock (p320).
 
+### Trim sketches fully constrained (round 35)
+
+- **Shaped bins and baseplates:** the sketches *Outer clearance trim sketch* (bins with a shape, e.g. an L-shape or
+  a shape in half cells, p282) and *Plate outline trim sketch* / *Plate pieces cut sketch* (baseplates, p290) are
+  fully constrained now. The frame around the outline, whose region the cut takes, had no position or size; it is
+  dimensioned from the sketch origin like the other rectangles of the generator. The geometry stays the same. Both
+  sketches came from GridfinityGenerator by Le0Michine.
+
 ## 1.1.0 (2026-11-17)
 
 ### Export in print orientation (round r29-export)
