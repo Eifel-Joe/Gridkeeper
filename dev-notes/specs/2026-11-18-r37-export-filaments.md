@@ -49,9 +49,11 @@ Nicht dabei: Texte, die der User von Hand umgefärbt hat; sie zählen als „ohn
 ## Export-Dialog (`commands/commandExport/entry.py`)
 
 - Der Spinner „Label color index“ entfällt. Neu unter „Color label text“: eine Gruppe „Label filaments“ mit einem
-  Spinner je Farbe der aktuellen Auswahl, Name „Red text“, „#123456 text“ (`labelColors.choiceOf`) bzw.
-  „Text without color“; Bereich 1 … 18; Tooltip nennt, dass 1 das Filament der Körper ist.
-- Die Spinner werden bei jeder Auswahländerung neu aufgebaut. Werte, die der User im offenen Dialog geändert hat,
+  Auswahlliste 1 … 18 je Farbe der aktuellen Auswahl, Name „Red text“, „#123456 text“ (`labelColors.choiceOf`) bzw.
+  „Text without color“; Tooltip nennt, dass 1 das Filament der Körper ist. Entscheidung: Liste statt Spinner, weil
+  Fusion eine in einen Spinner getippte Zahl verwirft, wenn direkt aus dem Feld auf OK geklickt wird (Klicktest D,
+  kein inputChanged, Wert unverändert).
+- Die Listen werden bei jeder Auswahländerung neu aufgebaut. Werte, die der User im offenen Dialog geändert hat,
   bleiben bei einer Auswahländerung erhalten. Ohne farbigen Text in der Auswahl: Gruppe unsichtbar.
 - Sichtbar nur bei 3MF und „Color label text“ an.
 - Meldung nach dem Export: „Label text of 2 parts: Red text on filament 2, Blue text on filament 3.“ statt „assigned color N“.
@@ -69,5 +71,5 @@ Nicht dabei: Texte, die der User von Hand umgefärbt hat; sie zählen als „ohn
   `D02020=3` → rot `0C`, blau `8`; Speichern/Lesen der Zuordnung; Auswahl zwei Farben + ohne Farbe.
 - Fusion (ein Slot-Job): zwei Bins mit rotem und blauem Label, `export3mf` aus dem Worktree, 3MF lesen: zwei
   verschiedene Paint-Codes, Körper unbemalt.
-- Klicktest `dev-notes/klicktest-r37.md`: Spinner je Farbe, Nummer ändern, exportieren, Dialog neu öffnen → Nummer
+- Klicktest `dev-notes/klicktest-r37.md`: Liste je Farbe, Nummer ändern, exportieren, Dialog neu öffnen → Nummer
   gemerkt.

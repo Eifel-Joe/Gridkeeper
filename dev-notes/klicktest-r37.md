@@ -20,11 +20,11 @@ Vor dem Test die gemerkten Export-Einstellungen sichern: `wt-r37\commands\comman
 4. Format STL. Erwartet: Gruppe weg. Zurück auf 3MF.
 
 ## C – Ändern, Auswahl wechseln, merken
-1. *Blue text* auf **5** stellen.
+1. *Blue text* in der Liste auf **5** stellen.
 2. **All Gridkeeper parts** aus, nur den blauen Bin wählen.
    - Erwartet: nur *Blue text* = **5** (geänderter Wert bleibt).
 3. Wieder **All Gridkeeper parts** an.
-   - Erwartet: *Text without color* 4, *Red text* 2, *Blue text* 5; kein Spinner springt beim Klicken weg.
+   - Erwartet: *Text without color* 4, *Red text* 2, *Blue text* 5; keine Liste springt beim Klicken weg.
 4. OK, Export in einen Testordner.
    - Erwartet: Meldung nennt „Label text of 3 parts: Text without color on filament 4, Red text on filament 2, Blue
      text on filament 5.“ (Reihenfolge wie im Dialog).
@@ -33,7 +33,9 @@ Vor dem Test die gemerkten Export-Einstellungen sichern: `wt-r37\commands\comman
      (Reihenfolge egal).
 
 ## D – Gemerkte Farbe nicht in der Auswahl
-1. Nur den roten Bin wählen, *Red text* auf **3** stellen, exportieren.
+1. Nur den roten Bin wählen, *Red text* in der Liste auf **3** stellen und **direkt OK** klicken (ohne Tab/Enter).
+   - Erwartet: Meldung „Red text on filament 3“; `labelFilaments` enthält `D02020=3`.
+   - Die Nummern sind eine Auswahlliste 1 … 18, kein Zahlenfeld zum Tippen.
 2. Export erneut, alle Teile.
    - Erwartet: *Red text* 3, *Blue text* 5 (blieb gemerkt, obwohl nicht exportiert), *Text without color* 4.
 

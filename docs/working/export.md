@@ -22,7 +22,7 @@ builds and to colored text.
 | **Folder**, **Choose folder...** | Where the files go, the last folder is kept |
 | **File name** | Name of the 3MF file, the part's name for one part; with several plates *, plate 1*, *, plate 2* … is added |
 | **Color label text** | 3MF only: each label color gets a filament the slicer prints it in, see below |
-| **Label filaments** | With **Color label text** on: one entry per label color of the selected parts, such as *Red text*, *Blue text* or *Text without color*, with the slicer's filament it prints in, counting from 1 as the slicer lists them. The parts print on filament 1. Each color starts on a filament of its own, 2, 3 …; a number you change is kept for the next export |
+| **Label filaments** | With **Color label text** on: a list per label color of the selected parts, such as *Red text*, *Blue text* or *Text without color*, to pick the slicer's filament it prints in, 1 to 18, counting from 1 as the slicer lists them. The parts print on filament 1. Each color starts on a filament of its own, 2, 3 …; a number you change is kept for the next export |
 | **Print bed** › **Printer** | 3MF only: your printer, see [Choosing the printer](#choosing-the-printer); its bed size, where its slicer puts the purge tower and the area it keeps free come with it |
 | **Bed width, X**, **Bed length, Y** | The bed's usable size; typing a size switches the printer to *Custom* |
 | **Spacing** | Space between the parts and to the bed's edge, 5 mm to start with |

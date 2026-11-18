@@ -572,3 +572,33 @@ def test_a_filament_typed_back_to_its_assigned_number_beats_the_one_stored_befor
     # review r37: blue typed 5 (event arrived, stored), then typed back to 3 without an event
     changed = exportParts.keepTypedFilaments({BLUE: 5}, {BLUE: 3}, {BLUE: 3})
     assert changed == {BLUE: 3}
+
+
+# Click test r37 D: a number typed into a Fusion spinner and confirmed by clicking OK straight from the field never
+# reached the command (no inputChanged, value unchanged). Decided: a list 1 to 18 per color instead of a spinner.
+def test_filament_choices_are_the_numbers_1_to_18():
+    assert exportParts.filamentChoices() == [str(n) for n in range(1, 19)]
+
+
+def test_a_filament_choice_reads_back_as_its_number():
+    assert exportParts.filamentOfChoice("7") == 7
+    assert exportParts.filamentOfChoice("18") == 18
+
+
+def test_a_filament_choice_outside_the_list_reads_as_none():
+    for name in ("", "0", "19", "x", None):
+        assert exportParts.filamentOfChoice(name) is None
+
+
+def test_the_dialog_offers_each_color_a_list_of_filaments_not_a_spinner():
+    source = open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read()
+    assert "IntegerSpinnerCommandInput" not in source
+    update = _entry_function("updateFilamentInputs")
+    assert "addDropDownCommandInput(" in update
+    assert "exportParts.filamentChoices()" in update
+
+
+def test_the_dialog_reads_a_filament_from_the_selected_list_item():
+    assert "exportParts.filamentOfChoice(" in _entry_function("selectedFilament")
+    for name in ("shownFilaments", "command_input_changed"):
+        assert "selectedFilament(" in _entry_function(name), name

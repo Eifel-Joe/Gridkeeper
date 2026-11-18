@@ -432,7 +432,9 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
     # another color gets then (round 37)
     color = colorOfFilamentInput(args.input.id)
     if color is not None:
-        dialogFilaments[color] = adsk.core.IntegerSpinnerCommandInput.cast(args.input).value
+        filament = selectedFilament(adsk.core.DropDownCommandInput.cast(args.input))
+        if filament is not None:
+            dialogFilaments[color] = filament
         return
     # args.inputs only holds the siblings of the changed input, those of the Print bed group in it, the dialog's
     # inputs are on the command (as the baseplate dialog notes; review r29-export)
@@ -518,13 +520,22 @@ def colorOfFilamentInput(inputId: str) -> str | None:
     name = inputId[len(FILAMENT_INPUT_PREFIX):]
     return '' if name == exportParts.NO_COLOR_KEY else f'#{name}'
 
-def filamentInputs(inputs: adsk.core.CommandInputs) -> list[adsk.core.IntegerSpinnerCommandInput]:
+def filamentInputs(inputs: adsk.core.CommandInputs) -> list[adsk.core.DropDownCommandInput]:
+    """
+    A list of filaments per label color, not a spinner: Fusion drops a number typed into a spinner when OK is clicked
+    straight from the field, without a change event (click test round 37), a list item counts as soon as it's picked
+    """
     group = adsk.core.GroupCommandInput.cast(inputs.itemById(FILAMENTS_GROUP_ID))
-    return [adsk.core.IntegerSpinnerCommandInput.cast(group.children.item(index)) for index in range(group.children.count)]
+    return [adsk.core.DropDownCommandInput.cast(group.children.item(index)) for index in range(group.children.count)]
+
+def selectedFilament(filamentInput: adsk.core.DropDownCommandInput) -> int | None:
+    item = filamentInput.selectedItem
+    return exportParts.filamentOfChoice(item.name if item is not None else None)
 
 def shownFilaments(inputs: adsk.core.CommandInputs) -> dict[str, int]:
     """The filament of each label color in the dialog"""
-    return {colorOfFilamentInput(spinner.id): spinner.value for spinner in filamentInputs(inputs)}
+    shown = {colorOfFilamentInput(filamentInput.id): selectedFilament(filamentInput) for filamentInput in filamentInputs(inputs)}
+    return {color: filament for (color, filament) in shown.items() if filament is not None}
 
 def updateFilamentInputs(inputs: adsk.core.CommandInputs, colors: list[str], isShown: bool):
     """
@@ -533,16 +544,18 @@ def updateFilamentInputs(inputs: adsk.core.CommandInputs, colors: list[str], isS
     """
     global dialogFilaments, dialogAssigned
     group = adsk.core.GroupCommandInput.cast(inputs.itemById(FILAMENTS_GROUP_ID))
-    if [spinner.id for spinner in filamentInputs(inputs)] != [filamentInputId(color) for color in colors]:
-        # a typed number whose change event Fusion didn't fire would go with its input (click test round 37)
+    if [filamentInput.id for filamentInput in filamentInputs(inputs)] != [filamentInputId(color) for color in colors]:
+        # a number changed without its change event reaching us would go with its input (click test round 37)
         dialogFilaments = exportParts.keepTypedFilaments(dialogFilaments, shownFilaments(inputs), dialogAssigned)
-        for spinner in filamentInputs(inputs):
-            spinner.deleteMe()
+        for filamentInput in filamentInputs(inputs):
+            filamentInput.deleteMe()
         dialogAssigned = exportParts.assignFilaments(colors, dialogFilaments)
         for (color, filament) in dialogAssigned.items():
             name = labelColors.textName(color)
-            spinner = group.children.addIntegerSpinnerCommandInput(filamentInputId(color), name, 1, threeMf.MAX_FILAMENT, 1, filament)
-            spinner.tooltip = f'{name}: the slicer\'s filament it prints in, 1 is the filament of the parts'
+            filamentInput = group.children.addDropDownCommandInput(filamentInputId(color), name, adsk.core.DropDownStyles.TextListDropDownStyle)
+            for choice in exportParts.filamentChoices():
+                filamentInput.listItems.add(choice, choice == str(filament))
+            filamentInput.tooltip = f'{name}: the slicer\'s filament it prints in, 1 is the filament of the parts'
     group.isVisible = isShown and len(colors) > 0
 
 def selectedEntities(inputs: adsk.core.CommandInputs) -> list:

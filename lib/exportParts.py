@@ -244,6 +244,19 @@ def distinctLabelColors(perPart: list[list[str]]) -> list[str]:
     return colors
 
 
+def filamentChoices() -> list[str]:
+    """
+    The items of a color's filament list in the export dialog, 1 to MAX_FILAMENT. A list, not a spinner: Fusion drops
+    a number typed into a spinner when OK is clicked straight from the field (click test round 37)
+    """
+    return [str(number) for number in range(1, MAX_FILAMENT + 1)]
+
+
+def filamentOfChoice(name: str | None) -> int | None:
+    """The filament of a list item, see filamentChoices, none for anything else"""
+    return int(name) if name in filamentChoices() else None
+
+
 def keepTypedFilaments(changed: dict[str, int], shown: dict[str, int], assigned: dict[str, int]) -> dict[str, int]:
     """
     The filaments changed by hand in the dialog: those already known and each shown one that isn't the number it was
