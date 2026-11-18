@@ -12,6 +12,7 @@ from ...lib import exportParts
 from ...lib import printLayout
 from ...lib import configUtils
 from ...lib import fusion360utils as futil
+from ...lib.ui import expressionFormat
 from ...lib.gridfinityUtils import labelGenerator
 from ...lib.gridfinityUtils import labelColors
 from ... import config
@@ -439,6 +440,9 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
     # args.inputs only holds the siblings of the changed input, those of the Print bed group in it, the dialog's
     # inputs are on the command (as the baseplate dialog notes; review r29-export)
     inputs = args.input.parentCommand.commandInputs
+    if args.input.id in (BED_WIDTH_INPUT_ID, BED_LENGTH_INPUT_ID, SPACING_INPUT_ID, PURGE_INPUT_ID):
+        # "2.9" typed stays so in the field, it's shown as "2.90 mm" like in the other dialogs (p291)
+        expressionFormat.request(adsk.core.ValueCommandInput.cast(args.input))
     if args.input.id in (BED_INPUT_ID, BED_WIDTH_INPUT_ID, BED_LENGTH_INPUT_ID):
         bedInputChanged(inputs, args.input)
     if args.input.id == ALL_INPUT_ID:

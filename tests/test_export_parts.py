@@ -602,3 +602,14 @@ def test_the_dialog_reads_a_filament_from_the_selected_list_item():
     assert "exportParts.filamentOfChoice(" in _entry_function("selectedFilament")
     for name in ("shownFilaments", "command_input_changed"):
         assert "selectedFilament(" in _entry_function(name), name
+
+
+def test_typed_lengths_of_the_export_dialog_are_shown_formatted():
+    # round 41, p291: "2.9" typed into the bed or spacing inputs is shown as "2.90 mm" like in the other dialogs
+    source = open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read()
+    assert "from ...lib.ui import expressionFormat" in source
+    changed = source[source.index("def command_input_changed("):source.index("\ndef ", source.index("def command_input_changed(") + 1)]
+    call = changed.index("expressionFormat.request(")
+    lengths = changed[changed.rindex("if args.input.id in (", 0, call):call]
+    for inputId in ("BED_WIDTH_INPUT_ID", "BED_LENGTH_INPUT_ID", "SPACING_INPUT_ID", "PURGE_INPUT_ID"):
+        assert inputId in lengths
