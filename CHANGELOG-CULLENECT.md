@@ -34,6 +34,24 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   removed since (3010f3f, Le0Michine) builds 1 mm larger along each axis (its default tolerance), the setting is
   reported as not recognised. Older than 1.0.0, nobody else had the add-in then.
 
+### A new bin into a cell (round 31, p312)
+
+- **Cell in the bin dialog:** a new section **Placement** picks a cell joint origin of a baseplate or of the floor of
+  a box, the new bin is jointed into it (joint *… in cell*), as inserts are into their pockets. A bin larger than
+  1 × 1 goes there with its front left cell. Without a baseplate or box in the design the
+  section isn't there and the bin is built beside the others as before. Offered are the cells of every baseplate
+  and the floor cells inside a box, not the grid on its lid; only for new bins.
+- **Rebuilt bins keep their cell:** a rebuilt bin is jointed into its cell again, a bin whose parameters are only
+  set keeps its joint anyway. The bin has a joint origin of
+  its own for it, *Cell placement joint origin* at its front left cell, also in a half grid.
+- **Boxes always have their cell joint origins:** the box dialog's **Add joint origins** is gone, every box gets a
+  joint origin in each floor cell. A box built without them gets them when it is rebuilt; only joint origins are
+  added, its geometry stays the same. The box is after
+  [Pred's storage box](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric)
+  (CC BY-NC, by Pred).
+- **Rebuilt baseplates keep their bins:** a baseplate rebuild moves the joints on its socket joint origins over to
+  those of the same name, as the box rebuild does; before, a bin jointed into a socket lost its joint.
+
 ## 1.1.0 (2026-11-17)
 
 ### Export in print orientation (round r29-export)

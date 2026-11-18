@@ -31,14 +31,21 @@ def test_a_config_with_an_unknown_hinge_gets_the_default():
     assert "'hinge': configJson.Choice(list(predBoxParts.HINGES), predBoxParts.DEFAULT_HINGE)" in source
 
 
+def test_the_dialog_has_no_joint_origins_checkbox_any_more():
+    """Round 31: the floor cells always get joint origins, the field stays in the state for older configs"""
+    assert "JOINT_ORIGINS_INPUT" not in _function("command_created")
+    assert "hasJointOrigins=True" in _function("getInputsState")
+    assert "JOINT_ORIGINS_INPUT" not in _function("applyInputsState")
+
+
 # Round 30, p311 (Nutzer 18.11.2026: "Lid top: Grid / Closed", "Standard bleibt Raster")
 
 def test_the_dialog_has_a_lid_group_with_the_lid_tops():
     source = _function("command_created")
     assert "LID_TOP_DROPDOWN" in source and "predBoxConfig.LID_TOPS" in source
     assert "addGroup(inputs, LID_GROUP, 'Lid')" in source
-    # between the joint origins and the small parts
-    assert source.index("JOINT_GROUP") < source.index("LID_GROUP") < source.index("PARTS_GROUP")
+    # between the magnet holes and the small parts (the joint origins group went in round 31)
+    assert source.index("MAGNET_GROUP") < source.index("LID_GROUP") < source.index("PARTS_GROUP")
     assert "LID_GROUP" in _function("initUiState")
 
 

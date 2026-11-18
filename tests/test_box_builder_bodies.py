@@ -146,3 +146,10 @@ def test_a_missing_library_appearance_leaves_the_parts_uncoloured_but_builds_the
     before round 29 a box needed no appearance; the parts are drawn without their colour then"""
     source = open(INSERT, encoding="utf-8").read()
     assert "except appearanceUtils.AppearanceError" in source
+
+
+def test_build_box_always_puts_joint_origins_into_the_floor_cells():
+    """Round 31, p312: a new bin can be jointed into a cell of the box floor, every box has them, whatever an older config says"""
+    source = ast.unparse(_function("_buildBox"))
+    assert "cellJointOriginPoints(centers, CELL_JOINT_ORIGIN" in source
+    assert "state.hasJointOrigins" not in source
