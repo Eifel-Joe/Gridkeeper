@@ -14,6 +14,23 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   dialogs; the FAQ says to press Tab or Enter or wait a moment before OK. Decided: documented, not worked around
   (p490).
 
+### Faster deletion of the old part on a rebuild (round 43)
+
+- **Rebuild with joints moved over:** when a rebuild moves joints to the new part (a bin in a cell of a rebuilt
+  baseplate or box, an insert in the pocket of a rebuilt bin, a box label or a joint of the user on a rebuilt box),
+  the old part used to be deleted item by item. Deleting it in one go dropped the moved joints: they still depended
+  on the old joint origin they had used. Now those few joint origins go first, then the rest in one go, and the
+  joints stay. Measured in Fusion: deleting the old box of a 5×4×6 box rebuilt as 6×4×6 with two joints moved took
+  21 s instead of 252–274 s, and the whole rebuild 254 s (727 s in the round 39 measurement). A baseplate with a bin
+  in a cell took 0.6 s instead of 2.7 s, a bin with an insert 0.9 s instead of 5.4 s. Where the one-go delete
+  can't be trusted (a joint origin not found or not deleted, the old items not in one piece, the delete refused),
+  the code deletes item by item as before and writes so to the add-in log. Bin, insert, baseplate, box and box label
+  rebuilds share this code; the box label rebuild wasn't measured (p533).
+- **Joint names after a rebuild:** a bin rebuilt in its cell had its joint named "… in cell (1)", and "(2)" after
+  the next rebuild; inserts got "… in pocket (1)". Fusion numbered the new joint because the old one still existed.
+  Once the old part is gone, the joint the rebuild made gets its name back without the counter, or the lowest free
+  one. Joints that existed before the rebuild keep their names, the user's own included (p430).
+
 ### Box speed (round 39)
 
 Box after Pred's parametric Gridfinity Storage Box (Printables 543553, CC BY-NC, by Pred), drawn in code.
