@@ -658,7 +658,7 @@ def _buildBin(
                     tabOriginX + compartmentTabInput.length,
                     tabOriginY,
                     binBodyInput.tabWidth,
-                    tabOriginZ - Dim.length(tabTopClearance(binBodyInput.labelStyle)),
+                    tabOriginZ - Dim.length(tabTopClearance(binBodyInput.labelStyle, binBodyInput.tabTopOffset)),
                     binBodyInput.cullenectUnitWidth,
                     binBodyInput.cullenectSocketOffset,
                     binBodyInput.tabOverhangAngle,

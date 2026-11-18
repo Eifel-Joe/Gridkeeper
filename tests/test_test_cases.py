@@ -626,3 +626,11 @@ def test_a_box_cases_small_parts_are_told_apart_from_marking_bodies():
 def test_the_small_part_roles_are_the_box_parts():
     parts = _load("predBoxParts", "lib", "gridfinityUtils", "predBoxParts.py")
     assert set(cases.BOX_SMALL_PART_ROLES) == {part.role for part in parts.PARTS}
+
+
+def test_the_ledge_check_reaches_down_to_the_raised_dividers_at_every_tab_top_offset():
+    """Raised dividers start at the divider top, lowered by the tab top offset (round 38): with 2 mm 6.4 mm under the
+    lip top, the old fixed reach of 5 mm stopped above them"""
+    assert cases.raisedDividersReach(0.05) == pytest.approx(0.5)
+    assert cases.raisedDividersReach(0.2) > 0.44 + 0.2
+    assert cases.raisedDividersReach(0) == pytest.approx(0.5)

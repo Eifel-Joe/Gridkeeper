@@ -303,7 +303,8 @@ def createGridfinityBinBody(
                 (input.compartmentsByX, input.compartmentsByY),
                 wall,
             )
-            raisedCornersBottomZ = binBodyTotalHeight - Dim.length(const.BIN_TAB_TOP_CLEARANCE)
+            # the raised dividers stand on the dividers lowered by the tab top offset (round 38)
+            raisedCornersBottomZ = binBodyTotalHeight - Dim.length(input.tabTopOffset)
             bodiesToMerge.extend(createRaisedDividers(
                 input.raisedDividers,
                 (compartmentsMinX, compartmentsMinY),
@@ -311,6 +312,7 @@ def createGridfinityBinBody(
                 (input.compartmentsByX, input.compartmentsByY),
                 wall,
                 binBodyTotalHeight,
+                input.tabTopOffset,
                 lipInput,
                 targetComponent,
             ))
@@ -373,7 +375,7 @@ def createGridfinityBinBody(
                     labelMaxX,
                     tabOriginY,
                     input.tabWidth,
-                    binBodyTotalHeight - Dim.length(tabTopClearance(input.labelStyle)),
+                    binBodyTotalHeight - Dim.length(tabTopClearance(input.labelStyle, input.tabTopOffset)),
                     input.cullenectUnitWidth,
                     input.cullenectSocketOffset,
                     input.tabOverhangAngle,
@@ -413,6 +415,7 @@ def createRaisedDividers(
     counts: tuple[int, int],
     wall: Dim,
     binBodyTotalHeight: Dim,
+    topOffset: float,
     lipInput: BinBodyLipGeneratorInput,
     targetComponent: adsk.fusion.Component,
 ) -> list[adsk.fusion.BRepBody]:
@@ -423,9 +426,10 @@ def createRaisedDividers(
     crossing divider, and half a wall into the outer walls, which keeps every box corner off the sketch axes
     """
     boxes: list[adsk.fusion.BRepBody] = []
-    bottomZ = binBodyTotalHeight - Dim.length(const.BIN_TAB_TOP_CLEARANCE)
+    # from the divider top, lowered by the tab top offset (upstream c2e12c0, round 38)
+    bottomZ = binBodyTotalHeight - Dim.length(topOffset)
     # up to the lip top, trimmed or not (upstream round 17.11.2026, p13)
-    height = const.BIN_TAB_TOP_CLEARANCE + const.BIN_LIP_EXTRA_HEIGHT - lipInput.topTrimHeight
+    height = topOffset + const.BIN_LIP_EXTRA_HEIGHT - lipInput.topTrimHeight
     for (index, segment) in enumerate(segments):
         # across is the axis the wall stands on, along the one it runs on
         (across, along) = (0, 1) if segment.axis == 'x' else (1, 0)
