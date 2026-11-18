@@ -234,14 +234,19 @@ NO_COLOR_KEY = 'none'
 def assignFilaments(colors: list[str], saved: dict[str, int]) -> dict[str, int]:
     """
     The filament of each label color of an export, in their order: the saved one, else the lowest from 2 no other color
-    of the export has; past the last filament the colors share it
+    has, of the export or saved. Saved ones count too: red exported alone got 2, blue alone 2 as well, together they
+    shared it unasked (review round 37). With every filament saved, the lowest no other color of the export has; past
+    the last filament the colors share it
     """
     assigned = {color: saved[color] for color in colors if color in saved}
+    numbers = range(FIRST_LABEL_FILAMENT, MAX_FILAMENT + 1)
     for color in colors:
         if color in assigned:
             continue
         taken = set(assigned.values())
-        assigned[color] = next((number for number in range(FIRST_LABEL_FILAMENT, MAX_FILAMENT + 1) if number not in taken), MAX_FILAMENT)
+        everTaken = taken | set(saved.values())
+        assigned[color] = next((number for number in numbers if number not in everTaken), None) \
+            or next((number for number in numbers if number not in taken), MAX_FILAMENT)
     return {color: assigned[color] for color in colors}
 
 

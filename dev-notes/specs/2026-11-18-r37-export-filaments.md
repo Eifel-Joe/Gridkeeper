@@ -29,7 +29,9 @@ Nicht dabei: Texte, die der User von Hand umgefärbt hat; sie zählen als „ohn
 
 - Schlüssel: `'#RRGGBB'` oder `''` (ohne Farbe). Reihenfolge = erstes Auftreten in der Export-Reihenfolge.
 - `assignFilaments(keys, saved)`: gemerkte Nummer, wenn vorhanden (1 … 18); sonst die kleinste Nummer ≥ 2, die keine
-  andere Farbe dieses Exports hat. Sind 2 … 18 belegt, bekommt jede weitere 18.
+  andere Farbe hat, weder dieses Exports noch gemerkt (Review: rot allein → 2, blau allein → 2, zusammen dann still auf
+  einem Filament). Sind alle gemerkt vergeben, die kleinste freie dieses Exports; sind 2 … 18 belegt, bekommt jede
+  weitere 18. Gespeichert wird die Zuordnung, mit der exportiert wurde.
 - Zwei Farben dürfen dieselbe Nummer bekommen, wenn der User sie so einstellt (gleiches Filament gewollt).
 - Gemerkt in `commandConfig`, Abschnitt `Export`, Schlüssel `labelFilaments`, Format `D02020=2,2060D0=3,none=4`.
   Beim Export werden die Nummern der gezeigten Farben übernommen, gemerkte andere Farben bleiben stehen.
@@ -52,7 +54,7 @@ Nicht dabei: Texte, die der User von Hand umgefärbt hat; sie zählen als „ohn
 - Die Spinner werden bei jeder Auswahländerung neu aufgebaut. Werte, die der User im offenen Dialog geändert hat,
   bleiben bei einer Auswahländerung erhalten. Ohne farbigen Text in der Auswahl: Gruppe unsichtbar.
 - Sichtbar nur bei 3MF und „Color label text“ an.
-- Meldung nach dem Export: „Label text: Red on filament 2, Blue on filament 3.“ statt „assigned color N“.
+- Meldung nach dem Export: „Label text of 2 parts: Red text on filament 2, Blue text on filament 3.“ statt „assigned color N“.
 - Turm-Fläche: unverändert, sobald etwas bemalt ist.
 
 ## Nicht dabei

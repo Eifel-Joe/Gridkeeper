@@ -418,8 +418,16 @@ def test_a_saved_filament_wins_and_the_others_skip_it():
     assert exportParts.assignFilaments(["#D02020", "#2060D0"], {"#2060D0": 2}) == {"#D02020": 3, "#2060D0": 2}
 
 
-def test_saved_filaments_of_colors_not_exported_dont_block_a_number():
-    assert exportParts.assignFilaments(["#D02020"], {"#2060D0": 2}) == {"#D02020": 2}
+def test_a_new_color_skips_the_saved_filaments_of_other_colors():
+    # review round 37: red exported alone got 2, blue alone 2 too, together they shared a filament unasked
+    assert exportParts.assignFilaments(["#D02020"], {"#2060D0": 2}) == {"#D02020": 3}
+    assigned = exportParts.assignFilaments(["#2060D0"], {"#D02020": 2})
+    assert exportParts.assignFilaments(["#D02020", "#2060D0"], {"#D02020": 2, **assigned}) == {"#D02020": 2, "#2060D0": 3}
+
+
+def test_when_every_filament_is_saved_a_new_color_takes_one_free_in_the_export():
+    saved = {f"#0000{index:02X}": index for index in range(2, 19)}
+    assert exportParts.assignFilaments(["#D02020", "#000005"], saved) == {"#D02020": 2, "#000005": 5}
 
 
 def test_two_colors_may_share_a_filament_when_saved_so():
@@ -497,3 +505,10 @@ def test_a_filament_changed_by_hand_is_kept_without_rebuilding_the_inputs():
     after_keeping = source.split("dialogFilaments[color] = ")[1].splitlines()
     assert after_keeping[1].strip() == "return"
     assert "!= [filamentInputId(color) for color in colors]" in _entry_function("updateFilamentInputs")
+
+
+def test_the_filaments_that_go_out_are_saved():
+    # review round 37: a color assigned only at export time wasn't saved
+    source = _entry_function("command_execute")
+    assert "saveChoices(folder, format, paint, {**shown, **filaments}, layout)" in source
+    assert source.index("filaments = exportParts.assignFilaments(") < source.index("saveChoices(")

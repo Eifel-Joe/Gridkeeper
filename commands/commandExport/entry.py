@@ -591,8 +591,11 @@ def command_execute(args: adsk.core.CommandEventArgs):
             if folder is None:
                 return
         layout = layoutOf(inputs)
-        saveChoices(folder, format, paint, shown, layout)
         items = exportItems(inputs)
+        # the dialog shows every color of the parts, one missing is assigned anew; each is kept as it goes out (review
+        # round 37: a color only assigned here wasn't saved)
+        filaments = exportParts.assignFilaments(labelColorsOf(items), {**dialogFilaments, **shown})
+        saveChoices(folder, format, paint, {**shown, **filaments}, layout)
         if len(items) == 0:
             ui.messageBox('Nothing to export, select bodies or turn on All Gridkeeper parts.', CMD_NAME)
             return
@@ -600,9 +603,7 @@ def command_execute(args: adsk.core.CommandEventArgs):
         if format == FORMAT_3MF:
             fileName = safeFileName(adsk.core.StringValueCommandInput.cast(inputs.itemById(FILE_NAME_INPUT_ID)).value) or defaultFileName(items)
             fileName = fileName[:-4] if fileName.lower().endswith('.3mf') else fileName
-            # the dialog shows every color of the parts, one missing is assigned anew
-            filaments = exportParts.assignFilaments(labelColorsOf(items), {**dialogFilaments, **shown}) if paint else None
-            result = export3mf(items, names, folder, fileName, filaments, layout)
+            result = export3mf(items, names, folder, fileName, filaments if paint else None, layout)
             if result is None:
                 return
             (painted, paths, tooLarge, noPurge, nearExcluded) = result
