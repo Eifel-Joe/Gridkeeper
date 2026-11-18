@@ -6,6 +6,14 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased
 
+### Typed lengths shown formatted (round 41)
+
+- A number typed into a length input without its unit ("2.9") stayed so in the field instead of "2.90 mm" as the
+  dialog shows its values when it opens; the part was built right all along. The field now shows the formatted value
+  in the bin, baseplate, box, label and export dialogs. Formulas ("10 + 2"), other units ("1 in"), angles and inputs
+  without a unit stay as typed. Set during Fusion's change event the field kept the typed text, so the text is set
+  right after it (p291).
+
 ### Box speed (round 39)
 
 Box after Pred's parametric Gridfinity Storage Box (Printables 543553, CC BY-NC, by Pred), drawn in code.
