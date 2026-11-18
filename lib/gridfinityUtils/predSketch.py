@@ -34,6 +34,18 @@ def _dim(value):
     return value if isinstance(value, Dim) else Dim.length(value)
 
 
+def fixablePoints(worldPoints, xAxis, yAxis) -> set:
+    """
+    The points whose two sketch coordinates are plain numbers, no expression on a box parameter in them (round 39,
+    p480): such a point never moves when a parameter changes, the chain fixes it in place instead of binding it with two
+    dimensions, see sketchChain. The coordinate along the sketch's normal is left aside, it only places the plane
+    """
+    def plain(value):
+        # by the kind, not by class: tests load the dim module more than once
+        return not getattr(value, 'isExpression', False)
+    return {index for (index, world) in enumerate(worldPoints) if plain(world[xAxis[0]]) and plain(world[yAxis[0]])}
+
+
 class WorldSketch:
     def __init__(self, component: adsk.fusion.Component, plane, name: str):
         self.component = component
@@ -124,7 +136,8 @@ class WorldSketch:
         geometry = [self._sketchPoint3D(world) for world in self.worldPoints]
         plan = sketchChain.chain([(g.x, g.y) for g in geometry],
                                  [{k: v for k, v in curve.items() if k in ('kind', 'a', 'b', 'center', 'start', 'end')}
-                                  for curve in self.curves])
+                                  for curve in self.curves],
+                                 fixable=fixablePoints(self.worldPoints, self.xAxis, self.yAxis))
         sketchPoints = {}
         used = set()
         for curve in self.curves:
@@ -168,6 +181,9 @@ class WorldSketch:
                 constraints.addVertical(drawn[item[1]])
             elif kind == 'originAt':
                 constraints.addCoincident(self.sketch.originPoint, sketchPoints[item[1]])
+            elif kind == 'fixed':
+                # a plain-number point, fixed where it is: no dimension, no model parameter (round 39, p480)
+                sketchPoints[item[1]].isFixed = True
             elif kind == 'diameter':
                 circle = drawn[item[1]]
                 c = circle.centerSketchPoint.geometry
