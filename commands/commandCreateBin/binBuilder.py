@@ -116,6 +116,14 @@ def outlineCells(state: InputState) -> list[tuple[int, int]]:
     """Cells of the outline grid the bin covers, half cells in a half grid or for sizes ending in a half, see gridDivisions"""
     return binShape.footShapeToOutline(shapeCells(state), *feetSize(state), outlineCellsPerFoot(state))
 
+def shelledTabOriginY(baseLength: float, binLength: float, xyClearance: float) -> Dim:
+    """
+    Y of the tab's back top corner in a shelled bin: the back wall, the shell keeps the outer size. A shelled bin builds
+    no scoop, so there is no front placement at the lip's inner edge (round 34, p281; the original generator had one
+    for a light lip, which never ran)
+    """
+    return baseLength * binLength - Dim.length(xyClearance * 2)
+
 def isShaped(state: InputState) -> bool:
     """A custom shape leaving cells out, a full one builds a plain bin"""
     return state.hasCustomShape and not binShape.isRectangle(shapeCells(state), *feetGridSize(state))
@@ -563,11 +571,7 @@ def _buildBin(
         if state.hasTab and not shaped:
             compartmentTabInput = BinBodyTabGeneratorInput()
             tabOriginX = Dim.length(binBodyInput.wallThickness) + binBodyInput.baseWidth * max(0, min(binBodyInput.tabPosition, binBodyInput.binWidth - binBodyInput.tabLength))
-            if binBodyInput.hasLip and binBodyInput.hasScoop:
-                tabOriginY = Dim.length(const.BIN_LIP_WALL_THICKNESS)
-            else:
-                # back wall, the shell keeps the outer size
-                tabOriginY = binBodyInput.baseLength * binBodyInput.binLength - Dim.length(binBodyInput.xyClearance * 2)
+            tabOriginY = shelledTabOriginY(binBodyInput.baseLength, binBodyInput.binLength, binBodyInput.xyClearance)
             tabOriginZ = binBodyTopHeight(binBodyInput)
             compartmentTabInput.origin = adsk.core.Point3D.create(tabOriginX.value, tabOriginY.value, tabOriginZ.value)
             compartmentTabInput.originX = tabOriginX
