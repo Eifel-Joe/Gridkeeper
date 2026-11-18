@@ -4,6 +4,14 @@ Changes of Gridkeeper (`Eifel-Joe/Gridkeeper`, until 16.11.2026 `Eifel-Joe/Fusio
 GridfinityGenerator by Le0Michine, merged up to 5627083 (17.11.2026; rounds 1 to 11 were built on v2.2.0.0, round 22 merged v2.4.2.0).
 Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`, the `vX.Y.Z.W` tags belong to GridfinityGenerator.
 
+## Unreleased
+
+### Developer commands in git worktrees (round 33)
+
+- **Developer commands in a git worktree:** the snapshot tests and the model images command show whenever the add-in
+  runs from a git checkout, also from a git worktree, where `.git` is a file instead of a folder. They use the same
+  check as the update lock (p320).
+
 ## 1.1.0 (2026-11-17)
 
 ### Export in print orientation (round r29-export)
