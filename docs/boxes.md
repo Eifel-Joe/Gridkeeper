@@ -45,9 +45,11 @@ The line below shows the outer size: width and length are the cells plus a 10 mm
 
 ## Joint origins
 
-**Add joint origins** puts a joint origin in every cell of the floor, *Cell joint origin column-row*, to joint bins
-into the box like onto a baseplate; how to joint a bin into a cell or a box onto another, step by step, is in
-[Joint origins](working/components.md#jointing-by-hand). These are always there:
+Every cell of the floor has a joint origin, *Cell joint origin column-row*, to joint bins into the box like onto a
+baseplate: the bin dialog puts a new bin into one ([Picking a joint origin in a dialog](working/components.md#picking-a-joint-origin-in-a-dialog)),
+by hand see [Joint origins](working/components.md#jointing-by-hand). There used to be a checkbox **Add joint
+origins** for them; a box built without them gets them when it is rebuilt, nothing else of it changes. These are
+always there too:
 
 | Joint origin | Where |
 |---|---|

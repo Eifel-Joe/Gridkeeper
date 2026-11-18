@@ -202,9 +202,6 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     addLength(magnetGroup.children, MAGNET_DEPTH_INPUT, 'Magnet cutout depth', 'At most 2.6 mm, 0.2 mm of floor stays under the magnet')
     addLength(magnetGroup.children, MAGNET_DIAMETER_INPUT, 'Magnet cutout diameter', '3 to 8.5 mm, the pad around the hole grows with it')
 
-    jointGroup = addGroup(inputs, JOINT_GROUP, 'Joint origins')
-    addBool(jointGroup.children, JOINT_ORIGINS_INPUT, 'Add joint origins', 'A joint origin in every cell of the floor, to joint bins into the box')
-
     # the lid's top (round 30, p311, Jörg 18.11.2026: "Lid top: Grid / Closed", "Standard bleibt Raster")
     lidGroup = addGroup(inputs, LID_GROUP, 'Lid')
     lidTopDropdown = lidGroup.children.addDropDownCommandInput(LID_TOP_DROPDOWN, 'Lid top', adsk.core.DropDownStyles.TextListDropDownStyle)
@@ -419,7 +416,8 @@ def getInputsState() -> InputState:
         hasMagnets=uiState.getState(MAGNETS_INPUT),
         magnetDepth=uiState.getState(MAGNET_DEPTH_INPUT),
         magnetDiameter=uiState.getState(MAGNET_DIAMETER_INPUT),
-        hasJointOrigins=uiState.getState(JOINT_ORIGINS_INPUT),
+        # the floor cells always get joint origins (round 31, p312), the field stays for older configs
+        hasJointOrigins=True,
         hinge=uiState.getState(HINGE_DROPDOWN),
         lidTop=uiState.getState(LID_TOP_DROPDOWN),
     )
@@ -435,7 +433,6 @@ def applyInputsState(state: InputState):
     uiState.setValue(MAGNET_SIZE_DROPDOWN, magnetSizes.choiceForDepth(state.magnetDepth, magnetSizes.BOX_CHOICES))
     uiState.setValue(MAGNET_DEPTH_INPUT, state.magnetDepth)
     uiState.setValue(MAGNET_DIAMETER_INPUT, state.magnetDiameter)
-    uiState.setValue(JOINT_ORIGINS_INPUT, state.hasJointOrigins)
     uiState.setValue(HINGE_DROPDOWN, state.hinge)
     uiState.setValue(LID_TOP_DROPDOWN, state.lidTop)
 

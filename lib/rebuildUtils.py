@@ -12,6 +12,7 @@ from .gridfinityUtils import commonUtils
 from .gridfinityUtils import cullenect
 from .gridfinityUtils import boxLabelConfig, predBoxLabelLayout, predBoxSeats
 from .gridfinityUtils import timelineRemoval
+from .gridfinityUtils import binCell
 
 # Rebuilding a generated body at its place in the timeline: the new one is built right after the old one's timeline
 # group, the features after it that use the old bodies get the new ones and the old group goes. Features picking a
@@ -451,6 +452,10 @@ def repointJointsByName(
                     widthNote = boxLabelConfig.widthNote(joint.name, labelCells, boxCells)
                     if widthNote is not None:
                         notes.append(widthNote)
+                if binCell.cellOf(jointOrigin.name) is not None:
+                    # a bin jointed into a cell of the baseplate or box (round 31): the cell stays shown, as the bin
+                    # command keeps it (review)
+                    shown.append(newJointOrigin)
                 group = item.parentGroup
                 if group is not None and group.isCollapsed:
                     group.isCollapsed = False
@@ -735,6 +740,19 @@ def configWithParameters(generator: str, config: dict, parameters: list, findPar
         elif len(path) == 1 and fieldName in config:
             config[fieldName] = value
     return config
+
+def comesAfter(target: RebuildTarget, jointOrigin: adsk.fusion.JointOrigin | None) -> bool:
+    """Whether the part the joint origin is of comes after the target in the timeline: the rebuild builds right after
+    the old group, where that joint origin isn't there yet. An insert's pocket (review round 18), a bin's cell (round 31).
+    The part may sit in a set, a box's floor cells are in its component Box (round 27), either may be the later one
+    (as boxLabelBuilder._isAfter)"""
+    occurrence = jointOrigin.assemblyContext if jointOrigin is not None else None
+    while occurrence is not None:
+        item = (occurrence.nativeObject or occurrence).timelineObject
+        if item is not None and any(later == item for later in target.laterItems):
+            return True
+        occurrence = occurrence.assemblyContext
+    return False
 
 def rebuild(
     design: adsk.fusion.Design,

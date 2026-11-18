@@ -37,7 +37,10 @@ which model is rebuilt.
 - Features that used a face or an edge of the old body may need them picked again; Gridkeeper lists them in a message
   after the rebuild.
 - A bin or baseplate stays in the component it was in.
-- Inserts in the pockets of a rebuilt bin are jointed into the pockets of the same name again.
+- Inserts in the pockets of a rebuilt bin are jointed into the pockets of the same name again. A bin the bin dialog
+  put into a cell goes into that cell again.
+- A rebuilt baseplate moves joints on its socket joint origins over to those of the same name, bins jointed into it
+  stay in.
 - A rebuilt box replaces box and lid together, where the old set stood; your joints on its joint origins move over
   to the joint origins of the same name, see [Storage boxes](../boxes.md).
 - A rebuilt insert is drawn from the bottom left corner of the old one; if it was in a pocket, the dialog has that
