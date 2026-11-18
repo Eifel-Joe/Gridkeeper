@@ -141,6 +141,17 @@ def stepRebuild(run):
     run.token('binA', bodies[0])
     run.check('binA rebuilt without notes', len(notes) == 0, str(notes))
     run.binInCell('binA rebuilt', bodies[0], cell(2, 2))
+    # the half grid bin rebuilt for real too, its placement joint origin stays at the whole cell's center
+    (state, settings) = run.case('bin_1_5x2_5x3_half_grid', binWidth=1, binLength=1, binType='Solid')
+    (bodies, notes) = run.binBuilder.rebuildBin(run.des, run.entity('binB'), state, settings, False)
+    run.token('binB', bodies[0])
+    run.check('binB rebuilt without notes', len(notes) == 0, str(notes))
+    run.binInCell('binB rebuilt', bodies[0], cell(3, 3))
+    # a height only sets the parameter, the timeline and the joint stay
+    (state, settings) = run.case('bin_1x1x3_plain', binWidth=2, binHeight=5)
+    (bodies, notes) = run.binBuilder.rebuildBin(run.des, run.entity('binC'), state, settings, False)
+    run.check('binC height set by its parameter without notes', len(notes) == 0, str(notes))
+    run.binInCell('binC after its height changed', run.entity('binC'), cell(1, 1))
     (state, settings) = run.case('baseplate_3x2_full', plateWidth=3, plateLength=3, hasJointOrigins=True, plateType='Light')
     (bodies, notes) = run.plateBuilder.rebuildBaseplate(run.des, run.entity('plate'), state, settings, False)
     run.token('plate', bodies[0])
@@ -174,6 +185,12 @@ def stepBoxBin(run):
     body = run.binBuilder.buildBin(run.des, state, settings, cell=cell)[0]
     run.token('binD', body)
     run.binInCell('binD in the box', body, run.boxCell(1, 1))
+    # rebuilt for real: the cell is three levels down, Boxes, the set and its Box (review)
+    (state, settings) = run.case('bin_1x1x3_plain', binWidth=2, binType='Solid')
+    (bodies, notes) = run.binBuilder.rebuildBin(run.des, run.entity('binD'), state, settings, False)
+    run.token('binD', bodies[0])
+    run.check('binD rebuilt without notes', len(notes) == 0, str(notes))
+    run.binInCell('binD rebuilt in the box', bodies[0], run.boxCell(1, 1))
     run.healthy('boxbin')
 
 

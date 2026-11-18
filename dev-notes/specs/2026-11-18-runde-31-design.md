@@ -84,7 +84,8 @@ vorderen linken **Raster**zelle, und bei geformten Bins fehlt er, wenn die Ecke 
 Neues Modul `lib/gridfinityUtils/binCell.py`:
 - `cellOf(jointOriginName)` → (Spalte, Reihe) für `Socket joint origin c-r` / `Cell joint origin c-r`, sonst None.
 - `isCellJointName(name)`, `cellJointName(binName)` (Suffix ` in cell`, Fusion-Zähler „ (2)“ erlaubt).
-- `placementPoint(baseWidth, baseLength, xyClearance)` → Mitte der vorderen linken Rasterzelle.
+- (Umsetzung: die Mitte der vorderen linken Rasterzelle kommt aus `baseGenerator.cellCenters` mit den Einheits-Parametern
+  des Bins, nicht aus einer eigenen Funktion, damit die Skizzenmaße den Parametern folgen.)
 - `offersCellPick(isNewBin, hasBaseplateOrBox)`.
 Dazu Tests: Box-Dialog ohne Kästchen, Box-Builder ruft Zell-Joint-Origins unabhängig von `hasJointOrigins` auf (Stub).
 

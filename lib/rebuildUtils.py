@@ -12,6 +12,7 @@ from .gridfinityUtils import commonUtils
 from .gridfinityUtils import cullenect
 from .gridfinityUtils import boxLabelConfig, predBoxLabelLayout, predBoxSeats
 from .gridfinityUtils import timelineRemoval
+from .gridfinityUtils import binCell
 
 # Rebuilding a generated body at its place in the timeline: the new one is built right after the old one's timeline
 # group, the features after it that use the old bodies get the new ones and the old group goes. Features picking a
@@ -451,6 +452,10 @@ def repointJointsByName(
                     widthNote = boxLabelConfig.widthNote(joint.name, labelCells, boxCells)
                     if widthNote is not None:
                         notes.append(widthNote)
+                if binCell.cellOf(jointOrigin.name) is not None:
+                    # a bin jointed into a cell of the baseplate or box (round 31): the cell stays shown, as the bin
+                    # command keeps it (review)
+                    shown.append(newJointOrigin)
                 group = item.parentGroup
                 if group is not None and group.isCollapsed:
                     group.isCollapsed = False

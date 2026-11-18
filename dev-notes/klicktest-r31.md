@@ -13,7 +13,8 @@ Add-in aus `D:\Entwicklung\Gridfinity\wt-r31` laden. Spec: `dev-notes/specs/2026
      und Boxen.
 3. In „Cell“ klicken, mit der Maus über Joint Origins fahren.
    - Erwartet: `Socket joint origin …` der 3×3-Platte leuchtet und ist wählbar. Fuß-Joint-Origins eines vorhandenen
-     Bins (falls mit Add joint origins gebaut) und Taschen-Joint-Origins sind **nicht** wählbar.
+     Bins (falls mit Add joint origins gebaut) und Taschen-Joint-Origins sind **nicht** wählbar. Die 2×2-Platte ohne
+     Joint Origins bietet nichts an (ihre Sockel haben keine).
 4. `Socket joint origin 2-2` wählen, Größe 1×1, OK.
    - Erwartet: Bin steht in der mittleren Zelle. Browser › Relationships › Joints: `Bin … in cell`.
      `Socket joint origin 2-2` bleibt sichtbar.
@@ -21,7 +22,7 @@ Add-in aus `D:\Entwicklung\Gridfinity\wt-r31` laden. Spec: `dev-notes/specs/2026
    - Erwartet: Bin belegt Zellen 1-1 und 2-1 (vorn links, nach rechts).
 
 ## C – Box-Bodenzelle
-1. Box 3×2 bauen. Im Box-Dialog gibt es **kein** Kästchen „Add joint origins“ mehr.
+1. Box 4×3 bauen (kleinste Box). Im Box-Dialog gibt es **kein** Kästchen „Add joint origins“ mehr.
 2. Bin-Dialog, in „Cell“ klicken.
    - Erwartet: `Cell joint origin …` der Box (Komponente *Box*) wählbar; *Stack top joint origin*, *Lid joint
      origin*, Sitz-Joint-Origins, *Label joint origin* **nicht** wählbar.
@@ -34,7 +35,7 @@ Add-in aus `D:\Entwicklung\Gridfinity\wt-r31` laden. Spec: `dev-notes/specs/2026
 2. Bin type ändern (z. B. Solid → Hollow, damit es ein echter Neubau ist), OK.
    - Erwartet: Bin steht wieder in Zelle 2-2, Gelenk `… in cell` vorhanden, keine Warnmeldung zum Gelenk.
 3. Die 3×3-Baseplate neu bauen (Rechtsklick „Gridkeeper rebuild“, z. B. Typ ändern), OK.
-   - Erwartet: Bins aus B bleiben in ihren Zellen.
+   - Erwartet: Bins aus B bleiben in ihren Zellen, die belegten Sockel-Joint-Origins bleiben sichtbar.
 4. Die Box aus C neu bauen (z. B. Höhe ändern), OK.
    - Erwartet: Bin aus C bleibt in Zelle 1-1.
 

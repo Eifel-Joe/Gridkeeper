@@ -109,8 +109,8 @@ Without a pick, the dialogs build the part beside the others, unjointed, e.g. fo
 
 ### Jointing by hand
 
-Everything else is jointed with Fusion's **Assemble › Joint** (shortcut **J**). Turn on **Add joint origins** for the
-models first.
+Everything else is jointed with Fusion's **Assemble › Joint** (shortcut **J**). Turn on **Add joint origins** for bins and
+baseplates first; a box has its cell joint origins anyway.
 
 **A bin into a baseplate or a box cell**
 
@@ -140,8 +140,8 @@ over by name.
 
 | What you see | Why, and what to do |
 |---|---|
-| No joint origins in the canvas | Their light bulb is off: open the component's *Joint Origins* folder in the browser and switch it on. For feet, sockets and cells, the model needs **Add joint origins** |
-| The joint origin can't be clicked in the dialog | It isn't the kind the dialog takes: **Pocket** takes pocket joint origins only, **Box** only a box's *Label joint origin*, **Cell** only sockets of a baseplate and cells of a box floor |
+| No joint origins in the canvas | Their light bulb is off: open the component's *Joint Origins* folder in the browser and switch it on. Feet of a bin and sockets of a baseplate need **Add joint origins**, the cells of a box are always there |
+| The joint origin can't be clicked in the dialog | It isn't the kind the dialog takes: **Pocket** takes pocket joint origins only, **Box** only a box's *Label joint origin*, **Cell** only sockets of a baseplate and cells of a box floor, of parts in components of their own (not bodies in the root of a part design) |
 | The browser shows no joint origins | The folder or the component is collapsed: open the component's arrow, then *Joint Origins* |
 | The part sits in the wrong place | Another joint origin was picked, a neighbouring pocket or cell. Hold the mouse over it to see its name; delete the joint (*Relationships › Joints*) and pick again |
 | The insert isn't built | It is wider or higher than the pocket, the size line in the dialog says so: pick a pocket that fits or make the insert smaller |
