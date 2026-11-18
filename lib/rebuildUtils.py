@@ -331,6 +331,28 @@ def removeOldGroup(target: RebuildTarget, oneByOne: bool = False) -> list[str]:
         group.deleteMe(False)
     return timelineRemoval.deleteOneByOne(target.groupItems, timeline, lambda message: commonUtils.fileLog(f'{LOG_PREFIX} {message} ({groupName})'))
 
+def readJointEnds(joints) -> list:
+    """
+    Each joint with its timeline item and what its sides hold, read in one go before anything is moved: moving a joint
+    over rolls the marker back before it, and reading the sides of the joints further on, rolled back then, raised
+    "InternalValidationError : jointOcc" (round 39, p530: a box rebuilt with a second box after it, its own joints
+    later in the timeline, fusion-auftraege/r39_mess.log). Per joint (joint, item, sides), sides a list of
+    (side, joint origin, its occurrence, the other side's joint origin, the other side's occurrence) for each side that
+    is a joint origin
+    """
+    ends = []
+    for joint in joints:
+        values = {name: getattr(joint, name) for name in ('geometryOrOriginOne', 'geometryOrOriginTwo', 'occurrenceOne', 'occurrenceTwo')}
+        sides = []
+        for (side, occurrence, other, otherOccurrence) in (('geometryOrOriginOne', 'occurrenceOne', 'geometryOrOriginTwo', 'occurrenceTwo'),
+                                                           ('geometryOrOriginTwo', 'occurrenceTwo', 'geometryOrOriginOne', 'occurrenceOne')):
+            jointOrigin = adsk.fusion.JointOrigin.cast(values[side])
+            if jointOrigin is None:
+                continue
+            sides.append((side, jointOrigin, values[occurrence], adsk.fusion.JointOrigin.cast(values[other]), values[otherOccurrence]))
+        ends.append((joint, joint.timelineObject, sides))
+    return ends
+
 def repointJoints(
     design: adsk.fusion.Design,
     target: RebuildTarget,
@@ -369,17 +391,15 @@ def repointJoints(
     # items of a collapsed group can't be rolled to ("Associated feature is invalid", Fusion 15.11.2026), the group of
     # the insert holding the joint is expanded meanwhile, as in replaceBodies
     collapsedGroups = []
-    for joint in list(design.rootComponent.allJoints):
-        for side in ('geometryOrOriginOne', 'geometryOrOriginTwo'):
-            jointOrigin = adsk.fusion.JointOrigin.cast(getattr(joint, side))
-            if jointOrigin is None or (jointOrigin.nativeObject or jointOrigin).parentComponent != oldComponent or jointOrigin.name not in remap:
+    for (joint, item, sides) in readJointEnds(list(design.rootComponent.allJoints)):
+        for (side, jointOrigin, _, otherSide, _) in sides:
+            if (jointOrigin.nativeObject or jointOrigin).parentComponent != oldComponent or jointOrigin.name not in remap:
                 continue
             newName = remap[jointOrigin.name]
             if newName is None:
                 notes.append(f'{joint.name}: the new {newComponent.name} has no {jointOrigin.name}, the joint goes with the old one')
                 continue
             try:
-                item = joint.timelineObject
                 group = item.parentGroup
                 if group is not None and group.isCollapsed:
                     group.isCollapsed = False
@@ -393,7 +413,6 @@ def repointJoints(
                 commonUtils.debugLog(f'{LOG_PREFIX} {joint.name} now uses {newName} of the new part')
                 # a narrower pocket of the same name, after other base units or compartments, may no longer take the
                 # insert, the label command wouldn't joint it there (spec 12), the rebuild says so (review)
-                otherSide = adsk.fusion.JointOrigin.cast(getattr(joint, 'geometryOrOriginTwo' if side == 'geometryOrOriginOne' else 'geometryOrOriginOne'))
                 insertSize = insertSizeMm(otherSide) if otherSide is not None else None
                 pocketSize = cullenect.readPocketTagValue(pocketTag(newPocket) or '')
                 if insertSize is not None and pocketSize is not None:
@@ -502,18 +521,13 @@ def repointJointsByName(
     # the rebuilt box's Label joint origin
     tooWide = []
     collapsedGroups = []
-    for joint in allJoints:
-        item = joint.timelineObject
+    for (joint, item, sides) in readJointEnds(allJoints):
         if item is not None and isGroupItem(target.group, item):
             continue
-        for side in ('geometryOrOriginOne', 'geometryOrOriginTwo'):
-            jointOrigin = adsk.fusion.JointOrigin.cast(getattr(joint, side))
-            if jointOrigin is None:
-                continue
+        for (side, jointOrigin, jointOccurrence, otherSide, otherOccurrence) in sides:
             component = (jointOrigin.nativeObject or jointOrigin).parentComponent
             if not any(component == old for old in oldComponents):
                 continue
-            jointOccurrence = getattr(joint, 'occurrenceOne' if side == 'geometryOrOriginOne' else 'occurrenceTwo')
             newJointOrigin = newJointOrigins.get(oldJointOriginKey(jointOrigin, oldNative, seats, jointOccurrence))
             if newJointOrigin is None:
                 notes.append(f'{joint.name}: the new part has no {jointOrigin.name}, the joint goes with the old one')
@@ -525,11 +539,10 @@ def repointJointsByName(
                     # wide goes beside (decided 17.11.2026: when a box rebuild makes the
                     # label too wide, the label is laid beside it)
                     shown.append(newJointOrigin)
-                    otherSide = adsk.fusion.JointOrigin.cast(getattr(joint, 'geometryOrOriginTwo' if side == 'geometryOrOriginOne' else 'geometryOrOriginOne'))
                     (labelCells, boxCells) = (_labelCells(otherSide), _boxCells(newJointOrigin))
                     if boxLabelConfig.labelFit(labelCells, boxCells) == boxLabelConfig.FIT_TOO_WIDE:
                         # the label's occurrence from the joint: its sides may come without one (round 20, p220, review)
-                        labelOccurrence = getattr(joint, 'occurrenceOne' if side == 'geometryOrOriginTwo' else 'occurrenceTwo') or otherSide.assemblyContext
+                        labelOccurrence = otherOccurrence or otherSide.assemblyContext
                         tooWide.append((joint, labelOccurrence, labelCells, boxCells, newJointOrigin))
                         continue
                     widthNote = boxLabelConfig.widthNote(joint.name, labelCells, boxCells)

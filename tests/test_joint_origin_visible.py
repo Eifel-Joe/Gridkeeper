@@ -183,7 +183,8 @@ def test_laying_beside_takes_the_joint_out_and_captures_the_new_place():
 def test_the_label_occurrence_comes_from_the_joint_not_from_its_side():
     # review: the sides of a joint come without an assembly context (round 20, p220), the joint names its occurrences
     source = _function(REBUILD_UTILS, "repointJointsByName")
-    assert "getattr(joint, 'occurrenceOne' if side == 'geometryOrOriginTwo' else 'occurrenceTwo')" in source
+    # the other side's occurrence, read by readJointEnds before anything is moved (round 39, p530)
+    assert "labelOccurrence = otherOccurrence or otherSide.assemblyContext" in source
 
 
 def test_a_label_taken_out_but_not_placed_is_said_as_it_is():
