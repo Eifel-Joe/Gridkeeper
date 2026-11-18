@@ -21,8 +21,8 @@ builds and to colored text.
 | **Format** | **3MF**: the parts in print orientation laid out on the print bed, a file per plate, see below. **STL** or **STEP**: a file of each part, named after it (a box's *Base*, *Lid* and small parts with the box's name in front, such as *Box 5×4×6 Base*, *Box 5×4×6 Latch*), at the origin with its bottom at zero. STL files come in print orientation, STEP files as designed |
 | **Folder**, **Choose folder...** | Where the files go, the last folder is kept |
 | **File name** | Name of the 3MF file, the part's name for one part; with several plates *, plate 1*, *, plate 2* … is added |
-| **Color label text** | 3MF only: the label text gets a color index the slicer prints it in, see below |
-| **Label color index** | The slicer's filament for the label text, counting from 1 as the slicer lists them |
+| **Color label text** | 3MF only: each label color gets a filament the slicer prints it in, see below |
+| **Label filaments** | With **Color label text** on: one entry per label color of the selected parts, such as *Red text*, *Blue text* or *Text without color*, with the slicer's filament it prints in, counting from 1 as the slicer lists them. The parts print on filament 1. Each color starts on a filament of its own, 2, 3 …; a number you change is kept for the next export |
 | **Print bed** › **Printer** | 3MF only: your printer, see [Choosing the printer](#choosing-the-printer); its bed size, where its slicer puts the purge tower and the area it keeps free come with it |
 | **Bed width, X**, **Bed length, Y** | The bed's usable size; typing a size switches the printer to *Custom* |
 | **Spacing** | Space between the parts and to the bed's edge, 5 mm to start with |
@@ -115,20 +115,31 @@ project settings along.
 
 ## Colored label text in the 3MF
 
-With **Color label text** on, the triangles of the label text are painted with the **Label color index**, the way the
-slicers' paint tool stores it. Bambu Studio, OrcaSlicer and PrusaSlicer print them in that filament without painting
-by hand:
+With **Color label text** on, the triangles of the label text are painted with the filament of their color from
+**Label filaments**, the way the slicers' paint tool stores it. Bambu Studio, OrcaSlicer and PrusaSlicer print them in
+that filament without painting by hand:
 
 - **Outline labels without a color:** the tops of the letters are painted.
 - **Colored labels** of bins and the **text and symbols of inserts** (bodies of their own, see
   [Colors and multicolor printing](colors.md)): all their triangles are painted.
 
-In the file the index is written the way the slicers' paint tool codes it, not as a plain number: filament 1 is `4`,
-filament 2 is `8`, from filament 3 on `0C`, `1C`, … (in `paint_color`, `slic3rpe:mmu_segmentation` and PrusaSlicer's
-`Metadata/Slic3r_facets_annotation.json`). The slicer shows it as the filament number you picked.
+### Which filament each color gets
 
-All label text gets the same index, whatever color it has in Fusion. Without **Color label text** the text is still in
-the file, in the part's filament.
+The parts themselves print on filament 1. Every label color found in the selected parts gets a filament of its own,
+in the order the colors are found: red text on 2, blue text on 3, and so on; label text without a color (the letters of
+outline labels, text left at *None*) counts as one more color of its own. A color you exported before keeps the
+filament it had, the others take the next free one. Set two colors to the same number to print them in one filament.
+The dialog remembers each color's filament for the next export, also for colors not in the current selection.
+
+The color is the one Gridkeeper gave the text in Fusion (*Label color* of a bin, *Text color* of an insert or box
+label). Text you recolored by hand in Fusion with another appearance is not told apart: it counts as text without a
+color.
+
+In the file the filament is written the way the slicers' paint tool codes it, not as a plain number: filament 1 is
+`4`, filament 2 is `8`, from filament 3 on `0C`, `1C`, … (in `paint_color`, `slic3rpe:mmu_segmentation` and
+PrusaSlicer's `Metadata/Slic3r_facets_annotation.json`). The slicer shows it as the filament number you picked.
+
+Without **Color label text** the text is still in the file, in the part's filament.
 
 !!! note "Known limits"
     - A bin built as bodies in the root component, without a component of its own (older designs), has no *Text*
@@ -137,9 +148,11 @@ the file, in the part's filament.
     - An insert in the root component exports its text and symbol bodies as parts of their own, unpainted. Clone it
       into a component the same way.
     - STL and STEP files have no colors. In STEP the text bodies are bodies of their own beside the part.
+    - Label text recolored by hand in Fusion keeps no color of its own in the 3MF, it prints on the filament of
+      *Text without color*. Give it a color in the bin, insert or box label dialog instead.
 
 ## In the slicer
 
 1. Open the 3MF in Bambu Studio, OrcaSlicer or PrusaSlicer.
-2. Make sure the filament list has a filament at the **Label color index** you picked.
-3. Slice and check in the preview that the letters print in that filament.
+2. Make sure the filament list has a filament at each number of **Label filaments**, in the color you want there.
+3. Slice and check in the preview that the letters of each color print in their filament.

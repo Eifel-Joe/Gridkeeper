@@ -64,6 +64,17 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   runs from a git checkout, also from a git worktree, where `.git` is a file instead of a folder. They use the same
   check as the update lock (p320).
 
+### Each label color on a filament of its own (round 37)
+
+- **Label filaments in the export dialog:** the 3MF export painted all label text with one filament, red and blue
+  text alike. It now gives each label color a filament of its own: the parts print on filament 1, the first color on
+  2, the next on 3 and so on, label text without a color counting as one more color (p301). The dialog lists the colors
+  of the selected parts under **Label filaments**, such as *Red text* and *Blue text*, each with its filament; a number
+  changed there is kept for the next export. The single **Label color index** is gone; the index an earlier export
+  saved stays the filament of label text without a color, so outline labels print as before.
+  Decided: automatic numbers that can be changed in the dialog and are remembered. The color is the one Gridkeeper
+  gave the text; text recolored by hand in Fusion counts as text without a color.
+
 ## 1.1.0 (2026-11-17)
 
 ### Export in print orientation (round r29-export)
