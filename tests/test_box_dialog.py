@@ -29,3 +29,10 @@ def test_the_hinge_goes_into_the_state_and_back():
 def test_a_config_with_an_unknown_hinge_gets_the_default():
     source = _function("readConfig")
     assert "'hinge': configJson.Choice(list(predBoxParts.HINGES), predBoxParts.DEFAULT_HINGE)" in source
+
+
+def test_the_dialog_has_no_joint_origins_checkbox_any_more():
+    """Round 31: the floor cells always get joint origins, the field stays in the state for older configs"""
+    assert "JOINT_ORIGINS_INPUT" not in _function("command_created")
+    assert "hasJointOrigins=True" in _function("getInputsState")
+    assert "JOINT_ORIGINS_INPUT" not in _function("applyInputsState")
