@@ -10,7 +10,8 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 - **A joint on a small part stays on it:** a joint of yours on one of the four latches, a handle pin or a hinge of a
   box went to the last latch (pin, hinge) when the box was rebuilt (p293). The four latches are one component; the
-  rebuild now tells them apart by the seat the set joints each of them to, *Latch front left* and so on.
+  rebuild now tells them apart by the seat the set joints each of them to, *Latch front left* and so on. A part
+  that isn't jointed at its seat any more can't be told apart; its joint stays with the old set and the rebuild says so.
 - **Preview without the small parts:** the box dialog's preview builds box and lid only, the small parts come with
   OK (p295); inserting them made every preview slow. The checkbox's tooltip says so. Box after
   [Pred's storage box](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric)

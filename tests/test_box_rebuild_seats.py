@@ -153,3 +153,33 @@ def test_the_rebuild_keys_joint_origins_by_seat():
     source = ast.unparse(_function("repointJointsByName"))
     for name in ("seatsByOccurrence(", "newJointOriginKeys(", "oldJointOriginKey("):
         assert name in source
+
+
+def test_the_part_is_the_joint_origins_context_even_when_the_joint_names_a_higher_occurrence():
+    """Review round 36: oldJointOriginKey and newJointOriginKeys go by the part's own occurrence; should a joint name
+    the set or the container as its occurrence, the joint origin's context is still the part"""
+    (seatsByOccurrence,) = _load("seatsByOccurrence")
+    (setOccurrence, latches, joints) = _set("S")
+    higher = [_joint(j.geometryOrOriginOne, j.geometryOrOriginTwo, setOccurrence, setOccurrence) for j in joints]
+    seats = seatsByOccurrence(higher)
+    assert [seats[occurrence.fullPathName] for occurrence in latches] == LATCH_SEATS
+
+
+def test_a_joint_on_a_seat_joint_origin_of_the_box_keeps_its_key():
+    """A joint of the user onto the box's own seat joint origin is on the box, one occurrence, no seat"""
+    (seatsByOccurrence, oldJointOriginKey) = _load("seatsByOccurrence", "oldJointOriginKey")
+    (oldSet, _, oldJoints) = _set("Old")
+    box = oldSet.childOccurrences[0]
+    seat = next(j for j in box.component.jointOrigins if j.name == "Latch front left joint origin").createForAssemblyContext(box)
+    assert oldJointOriginKey(seat, oldSet, seatsByOccurrence(oldJoints)) == ("Box", "", "Latch front left joint origin")
+
+
+def test_a_part_of_an_old_set_without_its_seat_joint_finds_no_new_part():
+    """Review round 36: a latch not jointed at a seat can't be told apart from the others, its joint isn't moved to
+    some latch but stays with the old set, the rebuild says so (repointJointsByName's note)"""
+    (seatsByOccurrence, newJointOriginKeys, oldJointOriginKey) = _load("seatsByOccurrence", "newJointOriginKeys", "oldJointOriginKey")
+    (oldSet, oldLatches, _) = _set("Old")
+    (newSet, _, newJoints) = _set("New")
+    seats = seatsByOccurrence(newJoints)
+    userSide = oldLatches[0].component.jointOrigins[0].createForAssemblyContext(oldLatches[0])
+    assert oldJointOriginKey(userSide, oldSet, seats) not in newJointOriginKeys(newSet, seats)

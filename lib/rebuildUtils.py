@@ -391,8 +391,8 @@ def seatsByOccurrence(joints) -> dict[str, str]:
     The seat of each small part of a box set, by its occurrence's full path: the set joints every part at a seat, a box
     joint origin named after it (predBoxParts.seatJointOriginName), the occurrence on the other side of that joint is
     the part. Round 36 (p293): the four latches, two handle pins and two hinges are each one component, only their seat
-    tells them apart. A joint's side may come without an occurrence (round 20, p220), the joint origin's context is
-    the part then
+    tells them apart. The part is the context of its joint origin; a joint's side may come without an occurrence
+    (round 20, p220)
     """
     seats = {}
     for joint in joints:
@@ -402,7 +402,9 @@ def seatsByOccurrence(joints) -> dict[str, str]:
             if seat is None:
                 continue
             otherJointOrigin = adsk.fusion.JointOrigin.cast(getattr(joint, other))
-            occurrence = getattr(joint, otherOccurrence) or (otherJointOrigin.assemblyContext if otherJointOrigin is not None else None)
+            # the joint origin's own context first, as oldJointOriginKey and newJointOriginKeys go by the part's
+            # occurrence; the joint's occurrence only when it has none (review round 36)
+            occurrence = (otherJointOrigin.assemblyContext if otherJointOrigin is not None else None) or getattr(joint, otherOccurrence)
             if occurrence is not None:
                 seats[occurrence.fullPathName] = seat
     return seats
