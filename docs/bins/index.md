@@ -27,6 +27,10 @@ The dialog is long, its sections are described on these pages:
 | **Position** | Snap to free spot | *Snap to free spot* puts a new bin on the free grid spot closest to the origin, beside the bins already there. *Center on origin* centers the bin on the origin; a centered bin is centered again when it is rebuilt, also with a new size, and its joint origins go with it |
 | **Cell** | none | A cell of a baseplate or box to joint the new bin into, see [Picking a joint origin in a dialog](../working/components.md#picking-a-joint-origin-in-a-dialog). A picked cell wins: **Position** is greyed out then |
 
+![The Placement group of the bin dialog: Cell not picked, Position Center on origin](../assets/images/dialog-bin-placement.png)
+
+![The Placement group with a cell picked: Position greyed out](../assets/images/dialog-bin-placement-cell.png)
+
 A bin rebuilt in place stays where it was, unless it is centered. Settings files and bins of older versions without
 the setting load as *Snap to free spot*, as they were built. The position option is from GridfinityGenerator 2.5 by
 Le0Michine.

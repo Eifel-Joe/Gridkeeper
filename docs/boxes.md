@@ -18,7 +18,7 @@ box, see [Components and joints](working/components.md).
 
 ## Info
 
-![The Gridkeeper box dialog: Info, Size 5 × 4 × 6 with the outer size 230 × 188 × 65 mm, Magnet holes, Joint origins, Lid with the Lid top choice and Small parts with the Hinge choice](assets/images/dialog-box.png)
+![The Gridkeeper box dialog: Info, Size 5 × 4 × 6 with the outer size 230 × 188 × 65 mm with lid, Magnet holes, Lid with the Lid top choice, Small parts with the Hinge choice, Inputs and Preview](assets/images/dialog-box.png)
 
 A link to this page, the credit to Pred and the version of the add-in. When the dialog was opened by
 **Gridkeeper rebuild**, it says which box is rebuilt in place.

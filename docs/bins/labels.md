@@ -17,6 +17,8 @@ top, for a label. With several compartments every compartment gets its own tab.
 | **Hollow tab** | off | Shells the tab with the wall thickness. With a single compartment it is opened through the back wall of the bin, with more compartments it is left closed. On by default for shelled bins, locked off for bins with creased walls |
 | **Open through side walls** | off | Also opens a hollow tab through the side walls where it runs into them. Single compartment only |
 
+![The Label tab inputs of the bin dialog with Tab top offset 2 mm](../assets/images/dialog-bin-tab-top-offset.png)
+
 ![A 3 × 2 bin with three compartments, their label tabs and dividers 2 mm below the top with Tab top offset 2 mm](../assets/models/bin-tab-top-offset.png)
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/bin-label-tab-options-dark.gif"><img src="../../assets/gif/bin-label-tab-options-light.gif" alt="Changing the label tab length and position in the dialog, with the bin for each"></picture>
