@@ -20,6 +20,9 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 - **Plate edge clearance up to 0.5 mm:** the largest bin xy clearance, so baseplates saved before the plate edge
   clearance build the same with any xy clearance (it stopped at 0.25 mm, half the whole gap of upstream's setting;
   nothing in the geometry needs that).
+- **Not reproduced:** a fill area baseplate saved on 13 or 14.11.2026 with the fit tolerance GridfinityGenerator
+  removed since (3010f3f, Le0Michine) builds 1 mm larger along each axis (its default tolerance), the setting is
+  reported as not recognised. Older than 1.0.0, nobody else had the add-in then.
 
 ## 1.1.0 (2026-11-17)
 
