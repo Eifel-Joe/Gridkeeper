@@ -18,6 +18,7 @@ import math
 import adsk.core, adsk.fusion
 
 from .dim import Dim, DimKind
+from . import fusionLists
 from . import predSketch
 
 BODY_NAME = 'Handle'
@@ -111,7 +112,7 @@ def createHandle(component: adsk.fusion.Component, halfWidth: str) -> list[adsk.
     top = _cm(ABOVE_AXIS)
 
     def edges(test):
-        return [e for e in body.edges if test(e.startVertex.geometry, e.endVertex.geometry)]
+        return [e for e in fusionLists.items(body.edges) if test(e.startVertex.geometry, e.endVertex.geometry)]
 
     # Fillet1: the arm's two top edges, along X on the top face's sides
     topEdges = edges(lambda a, b: _near(a.z, top) and _near(b.z, top) and _near(abs(a.y), half) and _near(a.y, b.y))

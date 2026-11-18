@@ -416,6 +416,9 @@ def test_no_user_parameters():
     assert "userParameters" not in names
 
 
+from tests.test_edge_lists import Collection
+
+
 class _CountingBody:
     """A stand-in body whose edges count how often they are walked; each walk of Fusion's BRepEdges is a call per edge"""
 
@@ -426,7 +429,7 @@ class _CountingBody:
     @property
     def edges(self):
         self.walks += 1
-        return list(self.names)
+        return Collection(self.names)
 
 
 def test_the_hinge_edges_walk_each_body_once_per_call(monkeypatch):

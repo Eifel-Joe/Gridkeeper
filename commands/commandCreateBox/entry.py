@@ -334,6 +334,8 @@ def command_incoming_from_html(args: adsk.core.HTMLEventArgs):
 
 
 def command_destroy(args: adsk.core.CommandEventArgs):
+    # first, whatever ended the command: the old set a rebuild preview hid comes back (round 39, p481)
+    rebuildUtils.restoreHiddenForPreview()
     global local_handlers
     global rebuildBodyToken
     local_handlers = []

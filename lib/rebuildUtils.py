@@ -138,11 +138,26 @@ def rollAfterGroup(target: RebuildTarget):
     target.group.isCollapsed = True
     target.group.rollTo(False)
 
-def hideOldBody(target: RebuildTarget):
+# occurrences a preview hid by their light bulb, turned back on when the command ends, see restoreHiddenForPreview
+_hiddenForPreview = []
+
+def hideOldBody(target: RebuildTarget, byLightBulb: bool = False):
     """
-    For a preview, the old bodies stay where the new ones are shown otherwise. Turning their light bulbs off left them
-    shown, the group is suppressed instead, its items one by one when Fusion won't suppress the group
+    For a preview, the old bodies stay where the new ones are shown otherwise. Turning the bodies' light bulbs off left
+    them shown, the group is suppressed instead, its items one by one when Fusion won't suppress the group.
+    byLightBulb (the box, round 39, p481): the old set's occurrence's light bulb goes off instead. Fusion never
+    suppresses a box set's group ("Some group features are not suppression-configurable"), its 298 items went one by
+    one after that message in every preview; the light bulb hides all its bodies at once (fusion-auftraege/
+    r39_probe.log). A part of bodies in the root has no occurrence and goes the old way
     """
+    if byLightBulb and target.occurrence is not None:
+        # only one that is on: a set the user hid stays hidden after the command (review round 39), and a preview
+        # recomputed after Fusion's undo of the last one records the set once
+        if target.occurrence.isLightBulbOn:
+            target.occurrence.isLightBulbOn = False
+            if not any(hidden == target.occurrence for hidden in _hiddenForPreview):
+                _hiddenForPreview.append(target.occurrence)
+        return
     try:
         target.group.isSuppressed = True
         return
@@ -153,6 +168,20 @@ def hideOldBody(target: RebuildTarget):
             item.isSuppressed = True
         except RuntimeError as err:
             commonUtils.debugLog(f'{LOG_PREFIX} {item.name} wasn\'t suppressed for the preview, {err}')
+
+def restoreHiddenForPreview():
+    """
+    Turns the light bulbs hideOldBody turned off back on, once, when the command ends whichever way (cancel, OK,
+    failure). Fusion undoes a preview by itself; this holds should it not. A set gone with OK is no longer valid
+    """
+    hidden = list(_hiddenForPreview)
+    _hiddenForPreview.clear()
+    for occurrence in hidden:
+        try:
+            if occurrence.isValid and not occurrence.isLightBulbOn:
+                occurrence.isLightBulbOn = True
+        except RuntimeError as err:
+            commonUtils.fileLog(f'{LOG_PREFIX} an old part hidden for the preview stayed hidden, {err}')
 
 def bodyMap(target: RebuildTarget, newBodies: list[adsk.fusion.BRepBody]) -> list[tuple[adsk.fusion.BRepBody, adsk.fusion.BRepBody]]:
     """
@@ -302,6 +331,28 @@ def removeOldGroup(target: RebuildTarget, oneByOne: bool = False) -> list[str]:
         group.deleteMe(False)
     return timelineRemoval.deleteOneByOne(target.groupItems, timeline, lambda message: commonUtils.fileLog(f'{LOG_PREFIX} {message} ({groupName})'))
 
+def readJointEnds(joints) -> list:
+    """
+    Each joint with its timeline item and what its sides hold, read in one go before anything is moved: moving a joint
+    over rolls the marker back before it, and reading the sides of the joints further on, rolled back then, raised
+    "InternalValidationError : jointOcc" (round 39, p530: a box rebuilt with a second box after it, its own joints
+    later in the timeline, fusion-auftraege/r39_mess.log). Per joint (joint, item, sides), sides a list of
+    (side, joint origin, its occurrence, the other side's joint origin, the other side's occurrence) for each side that
+    is a joint origin
+    """
+    ends = []
+    for joint in joints:
+        values = {name: getattr(joint, name) for name in ('geometryOrOriginOne', 'geometryOrOriginTwo', 'occurrenceOne', 'occurrenceTwo')}
+        sides = []
+        for (side, occurrence, other, otherOccurrence) in (('geometryOrOriginOne', 'occurrenceOne', 'geometryOrOriginTwo', 'occurrenceTwo'),
+                                                           ('geometryOrOriginTwo', 'occurrenceTwo', 'geometryOrOriginOne', 'occurrenceOne')):
+            jointOrigin = adsk.fusion.JointOrigin.cast(values[side])
+            if jointOrigin is None:
+                continue
+            sides.append((side, jointOrigin, values[occurrence], adsk.fusion.JointOrigin.cast(values[other]), values[otherOccurrence]))
+        ends.append((joint, joint.timelineObject, sides))
+    return ends
+
 def repointJoints(
     design: adsk.fusion.Design,
     target: RebuildTarget,
@@ -340,17 +391,15 @@ def repointJoints(
     # items of a collapsed group can't be rolled to ("Associated feature is invalid", Fusion 15.11.2026), the group of
     # the insert holding the joint is expanded meanwhile, as in replaceBodies
     collapsedGroups = []
-    for joint in list(design.rootComponent.allJoints):
-        for side in ('geometryOrOriginOne', 'geometryOrOriginTwo'):
-            jointOrigin = adsk.fusion.JointOrigin.cast(getattr(joint, side))
-            if jointOrigin is None or (jointOrigin.nativeObject or jointOrigin).parentComponent != oldComponent or jointOrigin.name not in remap:
+    for (joint, item, sides) in readJointEnds(list(design.rootComponent.allJoints)):
+        for (side, jointOrigin, _, otherSide, _) in sides:
+            if (jointOrigin.nativeObject or jointOrigin).parentComponent != oldComponent or jointOrigin.name not in remap:
                 continue
             newName = remap[jointOrigin.name]
             if newName is None:
                 notes.append(f'{joint.name}: the new {newComponent.name} has no {jointOrigin.name}, the joint goes with the old one')
                 continue
             try:
-                item = joint.timelineObject
                 group = item.parentGroup
                 if group is not None and group.isCollapsed:
                     group.isCollapsed = False
@@ -364,7 +413,6 @@ def repointJoints(
                 commonUtils.debugLog(f'{LOG_PREFIX} {joint.name} now uses {newName} of the new part')
                 # a narrower pocket of the same name, after other base units or compartments, may no longer take the
                 # insert, the label command wouldn't joint it there (spec 12), the rebuild says so (review)
-                otherSide = adsk.fusion.JointOrigin.cast(getattr(joint, 'geometryOrOriginTwo' if side == 'geometryOrOriginOne' else 'geometryOrOriginOne'))
                 insertSize = insertSizeMm(otherSide) if otherSide is not None else None
                 pocketSize = cullenect.readPocketTagValue(pocketTag(newPocket) or '')
                 if insertSize is not None and pocketSize is not None:
@@ -473,34 +521,35 @@ def repointJointsByName(
     # the rebuilt box's Label joint origin
     tooWide = []
     collapsedGroups = []
-    for joint in allJoints:
-        item = joint.timelineObject
+    for (joint, item, sides) in readJointEnds(allJoints):
         if item is not None and isGroupItem(target.group, item):
             continue
-        for side in ('geometryOrOriginOne', 'geometryOrOriginTwo'):
-            jointOrigin = adsk.fusion.JointOrigin.cast(getattr(joint, side))
-            if jointOrigin is None:
-                continue
+        for (side, jointOrigin, jointOccurrence, otherSide, otherOccurrence) in sides:
             component = (jointOrigin.nativeObject or jointOrigin).parentComponent
             if not any(component == old for old in oldComponents):
                 continue
-            jointOccurrence = getattr(joint, 'occurrenceOne' if side == 'geometryOrOriginOne' else 'occurrenceTwo')
             newJointOrigin = newJointOrigins.get(oldJointOriginKey(jointOrigin, oldNative, seats, jointOccurrence))
             if newJointOrigin is None:
                 notes.append(f'{joint.name}: the new part has no {jointOrigin.name}, the joint goes with the old one')
                 continue
             try:
+                # rolled to first: the marker may still stand before a joint moved earlier, the label's bodies after it
+                # rolled back, and its width check found no plate (review round 39)
+                group = item.parentGroup
+                if group is not None and group.isCollapsed:
+                    group.isCollapsed = False
+                    collapsedGroups.append(group)
+                item.rollTo(True)
                 if jointOrigin.name == predBoxSeats.LABEL_JOINT_ORIGIN:
                     # a box rebuilt with its label in the holder (it is nicer when the joint is kept on
                     # rebuild): the holder stays shown, a label of another width is said. One too
                     # wide goes beside (decided 17.11.2026: when a box rebuild makes the
                     # label too wide, the label is laid beside it)
                     shown.append(newJointOrigin)
-                    otherSide = adsk.fusion.JointOrigin.cast(getattr(joint, 'geometryOrOriginTwo' if side == 'geometryOrOriginOne' else 'geometryOrOriginOne'))
                     (labelCells, boxCells) = (_labelCells(otherSide), _boxCells(newJointOrigin))
                     if boxLabelConfig.labelFit(labelCells, boxCells) == boxLabelConfig.FIT_TOO_WIDE:
                         # the label's occurrence from the joint: its sides may come without one (round 20, p220, review)
-                        labelOccurrence = getattr(joint, 'occurrenceOne' if side == 'geometryOrOriginTwo' else 'occurrenceTwo') or otherSide.assemblyContext
+                        labelOccurrence = otherOccurrence or otherSide.assemblyContext
                         tooWide.append((joint, labelOccurrence, labelCells, boxCells, newJointOrigin))
                         continue
                     widthNote = boxLabelConfig.widthNote(joint.name, labelCells, boxCells)
@@ -510,11 +559,6 @@ def repointJointsByName(
                     # a bin jointed into a cell of the baseplate or box (round 31): the cell stays shown, as the bin
                     # command keeps it (review)
                     shown.append(newJointOrigin)
-                group = item.parentGroup
-                if group is not None and group.isCollapsed:
-                    group.isCollapsed = False
-                    collapsedGroups.append(group)
-                item.rollTo(True)
                 setattr(joint, side, newJointOrigin)
                 moved += 1
             except Exception as err:
@@ -817,6 +861,7 @@ def rebuild(
     build: Callable[[tuple[float, float], str | None, adsk.core.Matrix3D | None, assembly.OldPlace | None], list[adsk.fusion.BRepBody]],
     title: str,
     jointsByName: bool = False,
+    hideByLightBulb: bool = False,
 ) -> tuple[list[adsk.fusion.BRepBody], list[str]]:
     """
     Builds the replacement of the target in its place, keeping the features after it. build gets the placement, the
@@ -827,7 +872,7 @@ def rebuild(
     """
     transform = target.occurrence.transform2 if target.occurrence is not None else None
     if isPreview:
-        hideOldBody(target)
+        hideOldBody(target, byLightBulb=hideByLightBulb)
         return (build(target.placement, None, transform, target.oldPlace), [])
 
     oldNames = tagParameterNames(target.bodies[0])

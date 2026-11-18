@@ -14,6 +14,7 @@ from dataclasses import dataclass
 import adsk.core, adsk.fusion
 
 from .dim import Dim, valueInput
+from . import fusionLists
 from .predBox import PredBoxDims
 from .predSketch import WorldSketch, collection
 from . import predBoxEdges
@@ -119,9 +120,9 @@ class _Builder:
         faceItems = [item for item in expected if item['kind'] == 'face']
         picked = []
         if edgeItems:
-            picked += predBoxEdges.matchItems(edgeItems, list(body.edges), _edgeItem)
+            picked += predBoxEdges.matchItems(edgeItems, fusionLists.items(body.edges), _edgeItem)
         if faceItems:
-            picked += predBoxEdges.matchItems(faceItems, list(body.faces), _faceItem)
+            picked += predBoxEdges.matchItems(faceItems, fusionLists.items(body.faces), _faceItem)
         return picked
 
     def chamfer(self, step, name=None, body=None, mirrored=False):
@@ -264,7 +265,7 @@ class _Builder:
         floorCut = self.extrude([floor], adsk.fusion.FeatureOperations.CutFeatureOperation, mm(-1.6), bodies=[self.base],
                                 name='Floor')
         # Variant b: the 5.05 mm blends of the pads into the floor edges as a fillet, not as sketch arcs
-        edges = [edge for edge in self.base.edges if _isVerticalAt(edge, blends, -0.16, 0.0)]
+        edges = [edge for edge in fusionLists.items(self.base.edges) if _isVerticalAt(edge, blends, -0.16, 0.0)]
         if len(edges) != len(blends):
             raise ValueError(f'floor pads: {len(edges)} blend edges found, {len(blends)} expected')
         fillets = self.features.filletFeatures

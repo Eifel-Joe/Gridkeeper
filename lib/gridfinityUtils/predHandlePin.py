@@ -21,6 +21,7 @@ import math
 import adsk.core, adsk.fusion
 
 from .dim import Dim, valueInput
+from . import fusionLists
 from .predSketch import WorldSketch, collection
 
 BODY_NAME = 'Handle pin'
@@ -125,7 +126,7 @@ def _tipEdge(body: adsk.fusion.BRepBody) -> adsk.fusion.BRepEdge:
     y, z = AXIS
     center = (X_TIP / 10, y / 10, z / 10)
     found = []
-    for edge in body.edges:
+    for edge in fusionLists.items(body.edges):
         circle = adsk.core.Circle3D.cast(edge.geometry)
         if circle is None:
             continue

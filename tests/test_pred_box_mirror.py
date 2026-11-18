@@ -67,6 +67,9 @@ def test_the_mirror_copies_the_faces(monkeypatch):
     assert steps == ["#73 Mirror2"]
 
 
+from tests.test_edge_lists import Collection  # noqa: E402
+
+
 def test_the_right_holders_pick_the_mirrored_edges(monkeypatch):
     """The right handle and label holders' chamfers and fillets look up the left ones' edges mirrored across the box
     middle (round 27: built as the counterpart instead of Pred's #42 Mirror6)"""
@@ -77,6 +80,6 @@ def test_the_right_holders_pick_the_mirrored_edges(monkeypatch):
     right = edges.expectedItems("#40 Chamfer29", values, mirrored=True)
     monkeypatch.setattr(generator, "_edgeItem", lambda edge: edge)
     builder = generator._Builder.__new__(generator._Builder)
-    builder.base = SimpleNamespace(edges=left + right, faces=[])
+    builder.base = SimpleNamespace(edges=Collection(left + right), faces=Collection([]))
     assert builder._pick("#40 Chamfer29", values, mirrored=True) == right
     assert builder._pick("#40 Chamfer29", values) == left

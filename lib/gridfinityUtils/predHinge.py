@@ -25,6 +25,7 @@ from dataclasses import dataclass
 import adsk.core, adsk.fusion
 
 from .dim import Dim, valueInput
+from . import fusionLists
 from .predSketch import WorldSketch, collection
 
 # -- Pred's slot and tolerance ----------------------------------------------------------------------------------------
@@ -406,7 +407,7 @@ def _edgeMatches(edge, item) -> bool:
 def _edges(bodies, items, label):
     # the bodies' edges once per call: walked again for every item, Fusion's BRepEdges cost ~49 000 calls (~22 s) a
     # build with Pred's 127 chamfer edges (round 36, p296, test_the_hinge_edges_walk_each_body_once_per_call)
-    edges = [edge for body in bodies for edge in body.edges]
+    edges = fusionLists.itemsOfAll(body.edges for body in bodies)
     found = []
     for item in items:
         match = [edge for edge in edges if _edgeMatches(edge, item)]

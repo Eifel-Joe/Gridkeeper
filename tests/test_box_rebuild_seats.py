@@ -196,7 +196,9 @@ def test_a_joint_whose_joint_origin_comes_native_takes_the_part_from_the_joints_
 def test_the_rebuild_passes_the_joints_occurrence_of_the_side():
     source = ast.unparse(_function("repointJointsByName"))
     assert "oldJointOriginKey(jointOrigin, oldNative, seats, " in source
-    assert "'occurrenceOne' if side == 'geometryOrOriginOne' else 'occurrenceTwo'" in source
+    # the side's own occurrence, paired with its side by readJointEnds (round 39, p530, test_rebuild_joint_ends)
+    assert "for side, jointOrigin, jointOccurrence, otherSide, otherOccurrence in sides" in source
+    assert "oldJointOriginKey(jointOrigin, oldNative, seats, jointOccurrence)" in source
 
 
 def test_a_part_of_an_old_set_without_its_seat_joint_finds_no_new_part():

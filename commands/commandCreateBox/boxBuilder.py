@@ -219,7 +219,9 @@ def rebuildBox(
         # parts (round 28) aren't tagged and come and go with the set's timeline group
         bodies = buildBox(des, state, settings, not isPreview, parameterPrefix, transform, oldPlace)
         return [body for body in bodies if tagUtils.readBodyTag(body) is not None]
-    (bodies, notes) = rebuildUtils.rebuild(des, target, prefix, BOX_PARAMETER_BASE_NAME, isPreview, build, 'box', jointsByName=True)
+    # the old set hidden by its light bulb in a preview, Fusion won't suppress a set's group (round 39, p481)
+    (bodies, notes) = rebuildUtils.rebuild(des, target, prefix, BOX_PARAMETER_BASE_NAME, isPreview, build, 'box', jointsByName=True,
+                                           hideByLightBulb=True)
     if not isPreview:
         _renameParts(bodies)
     return (bodies, notes)
