@@ -58,7 +58,7 @@ listed edge (127 items).
 
 ## Task 7: hinge edges walked once per call (p296)
 
-- Test `tests/test_pred_hinge_edges.py`: stand-in bodies counting how often their `edges` is walked; `_edges` with
+- Test in `tests/test_pred_hinge.py`: stand-in bodies counting how often their `edges` is walked; `_edges` with
   many items walks each body once. RED: walked once per item.
 - `predHinge._edges`: the bodies' edges into one list before the loop. GREEN, full suite.
 - Sister paths: `predLatch.edges` and `predBoxGenerator._pick` already take `list(body.edges)` once per call.
@@ -81,3 +81,14 @@ before the removal; a change only with a test and the main session's yes, else a
 One Fusion job like `r36_mess` mode p293 (box 1, rebuild with the two probe joints, close) plus a preview, compare
 with the table above; p293 must stay green. `Parameter.expression` stays as it is (Fusion recomputes the design on
 each change; no cheap way found) – noted as an open point.
+
+## Outcome (round 36)
+
+- p293: green in Fusion at 5568bad and again at 5b34670 (two probe joints, front left latch and right handle pin,
+  stay on the part at the same seat after a rebuild to 6×4×6, healthy).
+- Task 9: no change. Deleting the group as a whole takes a moved joint along (Fusion 15.11.2026), item by item keeps
+  it; deleteOneByOne already rolls back first.
+- Task 10 (5b34670, an R37 document open alongside): box 1 200 s (before 192), rebuild 598 s (591), preview 191 s
+  with no joint origins (before 328 s with 75 s of joint origins, in a document holding two sets). BRepEdges calls
+  ~49 000 → ~34 000 a build; the remaining ~29 000 come from createPredBox itself, noted at p480. Build and rebuild
+  aren't measurably faster; Fusion's recompute of a growing design dominates (p480).
