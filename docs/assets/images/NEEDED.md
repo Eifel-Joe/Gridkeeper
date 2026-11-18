@@ -15,6 +15,9 @@ from GridfinityGenerator. The models in `docs/assets/models` are rendered by a F
   shows a folder path with a user name, take it again with a neutral folder), and a 3MF of a bin with a colored label
   and an insert opened in Bambu Studio, for `docs/working/export.md`.
 
+- Closed lid (round 30, p311): `dialog-box.png` again with the new group *Lid* (after round 31, which changes the
+  dialog too). For [Storage boxes](../../boxes.md).
+
 ## Taken (click test 17.11.2026, main session)
 
 - `dialog-box.png` (with *Small parts* and **Hinge**), `box-5x4x6.png` (with the orange small parts and a label in its
@@ -25,6 +28,11 @@ from GridfinityGenerator. The models in `docs/assets/models` are rendered by a F
 - `context-menu-export-scene.png`: [Exporting for printing](../../working/export.md).
 - `docs/assets/models/bin-lip-light.png`, `bin-lip-full.png`, `bin-lip-full-untrimmed.png` (lip types, p13): a 1x1x2
   bin cut through its middle, rendered by `fusion-auftraege/ug_lip_render.py`: [Body, walls and lip](../../bins/body.md).
+
+## Taken (click test round 30, main session)
+
+- `box-lid-closed.png`: a box 5 × 4 × 6 with **Lid top** *Closed*, in the view of `box-5x4x6.png`:
+  [Storage boxes › Lid](../../boxes.md#lid).
 
 ## Taken (joint origins guide)
 

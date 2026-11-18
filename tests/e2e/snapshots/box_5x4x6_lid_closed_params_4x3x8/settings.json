@@ -1,0 +1,11 @@
+{
+    "gridX": 5,
+    "gridY": 4,
+    "heightU": 6,
+    "hasMagnets": false,
+    "magnetDepth": 2.4,
+    "magnetDiameter": 6.5,
+    "hasJointOrigins": true,
+    "hinge": "M3x30",
+    "lidTop": "Closed"
+}

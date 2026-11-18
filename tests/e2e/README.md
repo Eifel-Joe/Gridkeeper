@@ -133,6 +133,8 @@ This page is written from the case files, run `python3 tests/e2e/write_readme.py
 |  | [box_4x3x8](cases/box_4x3x8.json) | Narrow box 4 x 3, height 8 |
 |  | [box_5x3x9](cases/box_5x3x9.json) | Box 5 x 3, height 9 |
 |  | [box_5x4x6](cases/box_5x4x6.json) | Pred's own box 5 x 4 x 6 |
+|  | [box_5x4x6_lid_closed](cases/box_5x4x6_lid_closed.json) | Box 5 x 4 x 6 with a closed lid: flat on top, no grid, the stacking tabs in its corners kept (p311) |
+|  | [box_5x4x6_lid_closed_params_4x3x8](cases/box_5x4x6_lid_closed_params_4x3x8.json) | Box 5 x 4 x 6 with a closed lid, its parameters changed to 4 x 3 x 8. Sets `gfBox1_baseWidth` 4 mm, `gfBox1_baseLength` 3 mm, `gfBox1_heightU` 8 mm once built, a run compares that with a build using those values from the start |
 |  | [box_5x4x6_magnets](cases/box_5x4x6_magnets.json) | Box 5 x 4 x 6 with magnet holes for 6 x 2 mm magnets |
 |  | [box_5x4x6_params_7x5x10](cases/box_5x4x6_params_7x5x10.json) | Box 5 x 4 x 6, its parameters changed to 7 x 5 x 10. Sets `gfBox1_baseWidth` 7 mm, `gfBox1_baseLength` 5 mm, `gfBox1_heightU` 10 mm once built, a run compares that with a build using those values from the start |
 |  | [box_6x5x7](cases/box_6x5x7.json) | Box 6 x 5 x 7, the label holder at its widest (85 mm) |
