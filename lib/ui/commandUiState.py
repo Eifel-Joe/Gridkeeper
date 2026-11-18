@@ -1,4 +1,4 @@
-import adsk.core, adsk.fusion, traceback
+import adsk.core, adsk.fusion, math, traceback
 from ...lib import fusion360utils as futil
 from . import expressionFormat
 
@@ -97,7 +97,10 @@ class CommandUiState:
         elif isinstance(input, adsk.core.ValueCommandInput):
             if isinstance(value, str):
                 input.expression = value
-            else:
+            elif not math.isclose(input.value, value, rel_tol=1e-9, abs_tol=1e-12):
+                # set only when it differs: the bin dialog refreshes every input after each change, and a value set
+                # again left the typed "1.5" on screen while the API had "1.50 mm" already, so expressionFormat
+                # found nothing to set (round 41 click test)
                 input.value = value
         elif isinstance(input, adsk.core.DropDownCommandInput):
             for i in range(0, input.listItems.count):

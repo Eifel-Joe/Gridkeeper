@@ -287,3 +287,47 @@ def test_the_add_in_starts_and_stops_the_length_format():
     stop = source[source.index("def stop():"):]
     assert "expressionFormat.start()" in start
     assert "expressionFormat.stop()" in stop
+
+
+# ---------------------------------------------------------------------------
+# Round 41 click test: the bin dialog refreshes every input after each change. Setting a length input's value, even
+# to the same value, made Fusion keep the typed text on screen while the API already had "1.50 mm", so the
+# formatting found nothing to set.
+# ---------------------------------------------------------------------------
+
+class _CountingLength(core.ValueCommandInput):
+    def __init__(self, input_id, value, unit_type="mm"):
+        super().__init__(input_id, value, unit_type)
+        self.valueSets = 0
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, v):
+        self.valueSets = getattr(self, "valueSets", 0) + 1
+        self._value = v
+
+
+class TestRefreshLeavesUnchangedLengths:
+    def test_a_length_with_the_state_value_is_not_set_again(self, monkeypatch):
+        state = CommandUiState("test")
+        inp = _CountingLength("wall", 0.15000000000000002)
+        inp.expression = "1.5 mm"
+        state.initValue("wall", 0.15, core.ValueCommandInput.classType())
+        state.registerCommandInput(inp)
+        inp.valueSets = 0
+        state.forceUIRefresh()
+        assert inp.valueSets == 0
+        assert inp.expression == "1.5 mm"
+
+    def test_a_length_with_another_value_is_set(self):
+        state = CommandUiState("test")
+        inp = _CountingLength("wall", 0.12)
+        state.initValue("wall", 0.15, core.ValueCommandInput.classType())
+        state.registerCommandInput(inp)
+        inp.valueSets = 0
+        state.forceUIRefresh()
+        assert inp.valueSets == 1
+        assert inp.value == 0.15
