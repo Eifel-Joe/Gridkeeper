@@ -193,6 +193,39 @@ def matchItems(expected, candidates, key):
     return picked
 
 
+def probePoint(item):
+    """
+    A point (cm) on the expected item to ask Fusion what lies there (round 45, p296): a line's midpoint, an arc's start
+    (the edges meeting there, the arc among them), the middle of a face's box (on the face for the flat rectangles
+    Pred's faces are; when not, nothing is found and the generator walks the body)
+    """
+    if item['kind'] == 'line':
+        return [(a + b) / 2 for a, b in zip(item['start'], item['end'])]
+    if item['kind'] == 'arc':
+        return list(item['start'])
+    if item['kind'] == 'face':
+        return [(a + b) / 2 for a, b in zip(item['min'], item['max'])]
+    raise ValueError(f"no probe point for a {item['kind']}")
+
+
+def pickByPoint(expected, find, key):
+    """
+    The expected items looked up where they are (round 45, p296): find(item) gives the body's edges or faces at the
+    item's probePoint, the one whose item form (key) has the item's signature is taken, as matchItems does over the
+    whole body. None as soon as one isn't found that way: the caller walks the whole body then. Reading every edge
+    took 11-16 s per box (34 294 edges.item, fusion-auftraege/r45_profil.log), a lookup 0.25 ms (r45_probe.log).
+    Tested in tests/test_pred_box_pick.py
+    """
+    picked = []
+    for item in expected:
+        signature = _signature(item)
+        found = next((candidate for candidate in find(item) if _signature(key(candidate)) == signature), None)
+        if found is None:
+            return None
+        picked.append(found)
+    return picked
+
+
 def _near(item, candidates, key, distance=0.3):
     """Candidates of the same kind with a point within distance (cm) of one of the item's, for the error message"""
     points = [item[k] for k in ('start', 'end', 'center', 'min', 'max') if k in item]

@@ -120,10 +120,25 @@ class _Builder:
         faceItems = [item for item in expected if item['kind'] == 'face']
         picked = []
         if edgeItems:
-            picked += predBoxEdges.matchItems(edgeItems, fusionLists.items(body.edges), _edgeItem)
+            picked += self._lookup(step, edgeItems, body, adsk.fusion.BRepEntityTypes.BRepEdgeEntityType, body.edges, _edgeItem)
         if faceItems:
-            picked += predBoxEdges.matchItems(faceItems, fusionLists.items(body.faces), _faceItem)
+            picked += self._lookup(step, faceItems, body, adsk.fusion.BRepEntityTypes.BRepFaceEntityType, body.faces, _faceItem)
         return picked
+
+    def _lookup(self, step, items, body, entityType, everything, key):
+        """The items where they are expected (round 45, p296, predBoxEdges.pickByPoint); when one isn't found there,
+        today's walk over the whole body (everything), logged"""
+        found = predBoxEdges.pickByPoint(items, lambda item: self._near(predBoxEdges.probePoint(item), entityType, body), key)
+        if found is not None:
+            return found
+        from .commonUtils import debugLog
+        debugLog(f'Gridfinity box {step}: not every item found at its place, walking the whole body')
+        return predBoxEdges.matchItems(items, fusionLists.items(everything), key)
+
+    def _near(self, point, entityType, body):
+        """The edges or faces of the body at the point (cm, the component's frame), r45_probe.log: exactly the edge"""
+        hits = self.component.findBRepUsingPoint(adsk.core.Point3D.create(*point), entityType, NEAR_TOLERANCE, False)
+        return [hit for hit in fusionLists.items(hits) if hit.body == body]
 
     def chamfer(self, step, name=None, body=None, mirrored=False):
         [edgeSet] = predBoxEdges.PRED_EDGES[step]
@@ -265,7 +280,11 @@ class _Builder:
         floorCut = self.extrude([floor], adsk.fusion.FeatureOperations.CutFeatureOperation, mm(-1.6), bodies=[self.base],
                                 name='Floor')
         # Variant b: the 5.05 mm blends of the pads into the floor edges as a fillet, not as sketch arcs
-        edges = [edge for edge in fusionLists.items(self.base.edges) if _isVerticalAt(edge, blends, -0.16, 0.0)]
+        # looked up midway up each expected edge (round 45, p296), the walk over the base's edges only when that misses
+        edges = [edge for (x, y) in blends for edge in self._near((x, y, -0.08), adsk.fusion.BRepEntityTypes.BRepEdgeEntityType, self.base)
+                 if _isVerticalAt(edge, [(x, y)], -0.16, 0.0)]
+        if len(edges) != len(blends):
+            edges = [edge for edge in fusionLists.items(self.base.edges) if _isVerticalAt(edge, blends, -0.16, 0.0)]
         if len(edges) != len(blends):
             raise ValueError(f'floor pads: {len(edges)} blend edges found, {len(blends)} expected')
         fillets = self.features.filletFeatures
@@ -690,6 +709,10 @@ class _Builder:
         if len(magnets) != 4:
             raise ValueError(f'FloorPads: {len(magnets)} magnet profiles')
         return floor, magnets, blends
+
+
+# how far from a lookup point an edge or face may be, cm; the coordinates are exact sums of Pred's dimensions
+NEAR_TOLERANCE = 1e-5
 
 
 def _withTangentChainFallback(add):
