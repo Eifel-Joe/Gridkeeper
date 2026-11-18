@@ -1,9 +1,5 @@
 # p321: Gridkeeper reloads itself through Fusion's API (app.scripts, its own Script.stop and run), measured 18.11.2026
 # in dev-notes/specs/2026-11-17-update-hinweis-design.md. The Fusion-free decisions of lib/selfReload.py
-import os
-
-import pytest
-
 from lib import selfReload
 
 
@@ -46,17 +42,22 @@ def test_own_script_by_folder_never_by_name():
     scripts = [other, clone, copy]
     assert selfReload.ownScript(scripts, 'D:/Entwicklung/Gridfinity/Gridkeeper') is clone
     assert selfReload.ownScript(scripts, 'C:/Users/x/AppData/Roaming/Autodesk/Autodesk Fusion 360/API/AddIns/Gridkeeper/') is copy
-
-
-# Fusion on Windows gives the folder with / while __file__ has \ and may differ in case; os.path.normcase evens that
-# out on Windows only, on the Linux CI it keeps both (CI 18.11.2026), so these cases run where Fusion does
-@pytest.mark.skipif(os.name != 'nt', reason='Windows path rules: case and \\ are evened out by normcase only there')
-def test_own_script_windows_spelling():
-    clone = FakeScript('D:/Entwicklung/Gridfinity/Gridkeeper')
-    copy = FakeScript('C:/Users/x/AppData/Roaming/Autodesk/Autodesk Fusion 360/API/AddIns/Gridkeeper')
-    scripts = [clone, copy]
+    # Fusion on Windows gives the folder with / while __file__ has \ and may differ in case
     assert selfReload.ownScript(scripts, r'D:\Entwicklung\Gridfinity\Gridkeeper') is clone
     assert selfReload.ownScript(scripts, r'c:\users\x\appdata\roaming\autodesk\autodesk fusion 360\api\addins\gridkeeper\\') is copy
+
+
+def test_own_script_compares_the_same_on_every_runner(monkeypatch):
+    # CI 18.11.2026: on the Linux runner os.path is posixpath, whose normcase keeps case and backslashes. The comparison
+    # mustn't depend on the OS it runs on: Windows spellings are evened out, macOS paths stay equal to themselves
+    import os
+    import posixpath
+    monkeypatch.setattr(os, 'path', posixpath)
+    clone = FakeScript('D:/Entwicklung/Gridfinity/Gridkeeper')
+    mac = FakeScript('/Users/x/Library/Application Support/Autodesk/Autodesk Fusion 360/API/AddIns/Gridkeeper')
+    scripts = [clone, mac]
+    assert selfReload.ownScript(scripts, r'd:\entwicklung\gridfinity\gridkeeper') is clone
+    assert selfReload.ownScript(scripts, '/Users/x/Library/Application Support/Autodesk/Autodesk Fusion 360/API/AddIns/Gridkeeper/') is mac
 
 
 def test_own_script_none_unless_exactly_one():
