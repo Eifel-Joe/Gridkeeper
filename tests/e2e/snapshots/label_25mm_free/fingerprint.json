@@ -3,11 +3,11 @@
         {
             "name": "Gridfinity label 25 mm M3",
             "file": "body1.smt",
-            "volume": 278.104626,
-            "area": 695.816973,
+            "volume": 278.117609,
+            "area": 700.662733,
             "bboxMin": [
                 0.0,
-                -0.0,
+                0.0,
                 0.0
             ],
             "bboxMax": [
@@ -16,9 +16,9 @@
                 1.2
             ],
             "lumps": 1,
-            "faces": 293,
-            "edges": 855,
-            "vertices": 568
+            "faces": 116,
+            "edges": 323,
+            "vertices": 212
         },
         {
             "name": "Gridfinity label 25 mm M3 text 1",
@@ -63,8 +63,8 @@
         {
             "name": "Gridfinity label 25 mm M3 symbol 1",
             "file": "body4.smt",
-            "volume": 35.516691,
-            "area": 205.654879,
+            "volume": 35.503707,
+            "area": 205.589821,
             "bboxMin": [
                 10.34,
                 -0.0,
@@ -76,9 +76,9 @@
                 1.2
             ],
             "lumps": 1,
-            "faces": 218,
-            "edges": 648,
-            "vertices": 432
+            "faces": 40,
+            "edges": 114,
+            "vertices": 76
         }
     ]
 }

@@ -2,7 +2,7 @@ import os
 import math
 import adsk.core, adsk.fusion
 
-from . import const, commonUtils, combineUtils, appearanceUtils, textStyles, binLabelLayout, sketchUtils
+from . import const, commonUtils, combineUtils, appearanceUtils, textStyles, binLabelLayout, sketchUtils, svgSymbol
 from .dim import Dim, valueInput, applyTo
 
 LABEL_STYLE_OUTLINE = 'Outline'
@@ -148,46 +148,75 @@ def _iconProfiles(sketch: adsk.fusion.Sketch) -> list[adsk.fusion.Profile]:
             and (a.maxPoint.x - a.minPoint.x) * (a.maxPoint.y - a.minPoint.y) > (b.maxPoint.x - b.minPoint.x) * (b.maxPoint.y - b.minPoint.y)
     return [profile for profile in profiles if sum(1 for other in profiles if contains(other, profile)) % 2 == 0]
 
-def _importMeasured(sketch: adsk.fusion.Sketch, path: str, x: float, y: float, scale: float, keep: bool = False) -> tuple[float, float, float, float] | None:
-    """Bounds of the svg imported at the given position and scale into the sketch when kept, else into a throwaway
-    sketch on the same plane. Deleting the sketch is quick, deleting curves one by one took 0.3 s each, minutes for the
-    thousand curves of a Cullenect hardware symbol"""
-    target = sketch if keep else sketch.parentComponent.sketches.add(sketch.referencePlane)
-    target.importSVG(path, x, y, scale)
-    bounds = _sketchCurvesBounds(target)
-    if not keep:
-        target.deleteMe()
-    return bounds
+def _iconCurvesBounds(sketch: adsk.fusion.Sketch) -> tuple[float, float, float, float] | None:
+    """Bounds of the sketch's curves from their bounding boxes, exact for arcs (sampling missed their bulge by a few
+    thousandths of a millimetre)"""
+    boxes = [curve.boundingBox for curve in [sketch.sketchCurves.item(index) for index in range(sketch.sketchCurves.count)]]
+    if len(boxes) == 0:
+        return None
+    return (min(box.minPoint.x for box in boxes), min(box.minPoint.y for box in boxes),
+            max(box.maxPoint.x for box in boxes), max(box.maxPoint.y for box in boxes))
 
 def _importIcon(sketch: adsk.fusion.Sketch, path: str, minX: float, minY: float, height: float):
-    """Imports the svg scaled to the given height with its bottom left corner at the given point.
-    How the svg units and import position map to the sketch isn't documented, so the svg is imported
-    to measure both and then imported where it belongs"""
-    bounds = _importMeasured(sketch, path, 0, 0, 1)
-    if bounds is None:
+    """
+    Imports the svg into the (empty) sketch scaled to the given height with its bottom left corner at the given point,
+    in one import. Round 40 (p371): it took three probe imports into throwaway sketches to learn how importSVG maps svg
+    units and position, and each measured its bounds curve by curve, about 1 ms a curve; a Torx symbol of 1700 lines
+    took 28 s of a 41 s box label. The mapping is fixed (measured in Fusion, see svgSymbol.SVG_UNIT_CM) and the
+    outline is in the file, so svgSymbol works out scale and position. Should Fusion put it elsewhere or draw it
+    another size all the same, the curves are moved and scaled there, a move rather than another import. A file svgSymbol can't read (dropped in by hand,
+    drawn with relative commands, circles or transforms) is imported as it is and scaled and moved there by one
+    uniform scaling move
+    """
+    try:
+        symbol = svgSymbol.readSymbol(path)
+    except ValueError:
+        symbol = None
+    (x, y, scale) = svgSymbol.importArguments(symbol.bounds, minX, minY, height) if symbol is not None else (0, 0, 1)
+    sketch.importSVG(path, x, y, scale)
+    placed = _iconCurvesBounds(sketch)
+    if placed is None or placed[3] - placed[1] <= 0:
         return
-    scale = height / (bounds[3] - bounds[1])
-    scaled = _importMeasured(sketch, path, 0, 0, scale)
-    # the position moves the import by a unit step in each direction, one way or the other
-    stepped = _importMeasured(sketch, path, 1, 1, scale)
-    directionX = 1 if stepped[0] >= scaled[0] else -1
-    directionY = 1 if stepped[1] >= scaled[1] else -1
-    targetMinX = minX
-    targetMinY = minY
-    placed = _importMeasured(sketch, path, (targetMinX - scaled[0]) * directionX, (targetMinY - scaled[1]) * directionY, scale, keep=True)
-    commonUtils.debugLog(f'icon {os.path.basename(path)} placed at {placed[0]:.3f}, {placed[1]:.3f}, expected {targetMinX:.3f}, {targetMinY:.3f}')
+    # a readable file is drawn at its height already; should Fusion draw it another size all the same, the move
+    # scales it there too
+    drawnHeight = placed[3] - placed[1]
+    factor = height / drawnHeight if symbol is None or abs(drawnHeight - height) > 1e-4 else 1
+    (offsetX, offsetY) = (minX - placed[0] * factor, minY - placed[1] * factor)
+    if factor != 1 or max(abs(offsetX), abs(offsetY)) > 1e-4:
+        shift = adsk.core.Matrix3D.create()
+        for axis in range(3):
+            shift.setCell(axis, axis, factor)
+        shift.translation = adsk.core.Vector3D.create(offsetX, offsetY, 0)
+        # the import leaves its curves and points fixed, and a move leaves fixed geometry where it is while still
+        # returning True (Fusion 18.11.2026): let go for the move, fixed again after it as the import left them
+        curves = [sketch.sketchCurves.item(index) for index in range(sketch.sketchCurves.count)]
+        points = [point for point in sketch.sketchPoints if point != sketch.originPoint]
+        fixed = [entity for entity in curves + points if entity.isFixed]
+        for entity in fixed:
+            entity.isFixed = False
+        sketch.move(commonUtils.objectCollectionFromList(curves), shift)
+        for entity in fixed:
+            entity.isFixed = True
+    commonUtils.debugLog(f'icon {os.path.basename(path)} placed at {placed[0] * factor:.3f}, {placed[1] * factor:.3f}, expected {minX:.3f}, {minY:.3f}')
 
 def _iconMeasure(sketch: adsk.fusion.Sketch, path: str) -> tuple[float, int] | None:
-    """Width of the drawn icon per unit of its height and the number of its points, from an import into a throwaway
-    sketch on the same plane"""
-    target = sketch.parentComponent.sketches.add(sketch.referencePlane)
-    target.importSVG(path, 0, 0, 1)
-    bounds = _sketchCurvesBounds(target)
-    points = target.sketchPoints.count - 1
-    target.deleteMe()
-    if bounds is None or bounds[3] - bounds[1] <= 0:
+    """Width of the drawn icon per unit of its height and the number of sketch points its import makes, read from the
+    file (svgSymbol) rather than from an import into a throwaway sketch (round 40); only a file svgSymbol can't read
+    is measured by such an import"""
+    try:
+        symbol = svgSymbol.readSymbol(path)
+    except ValueError:
+        target = sketch.parentComponent.sketches.add(sketch.referencePlane)
+        target.importSVG(path, 0, 0, 1)
+        bounds = _iconCurvesBounds(target)
+        points = target.sketchPoints.count - 1
+        target.deleteMe()
+        if bounds is None or bounds[3] - bounds[1] <= 0:
+            return None
+        return ((bounds[2] - bounds[0]) / (bounds[3] - bounds[1]), points)
+    if symbol.bounds[3] - symbol.bounds[1] <= 0:
         return None
-    return ((bounds[2] - bounds[0]) / (bounds[3] - bounds[1]), points)
+    return (symbol.aspect, symbol.pointCount)
 
 
 def _offsetPlane(component: adsk.fusion.Component, base: adsk.fusion.ConstructionPlane, offset: Dim, name: str) -> adsk.fusion.ConstructionPlane:

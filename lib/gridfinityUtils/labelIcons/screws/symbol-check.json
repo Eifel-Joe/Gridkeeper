@@ -1,0 +1,158 @@
+{
+ "button-head-phillips-screw.svg": {
+  "areas": [
+   -1369.0896,
+   -2123.716634,
+   -448.0
+  ],
+  "bounds": [
+   7.0,
+   10.5,
+   92.5,
+   79.5
+  ]
+ },
+ "button-head-phillips-self-tapping-screw.svg": {
+  "areas": [
+   -1258.3396,
+   -2123.716634,
+   -448.0
+  ],
+  "bounds": [
+   7.0,
+   10.5,
+   92.5,
+   88.0
+  ]
+ },
+ "button-head-screw.svg": {
+  "areas": [
+   -1369.0896,
+   -2123.716634,
+   498.96
+  ],
+  "bounds": [
+   7.0,
+   10.5,
+   92.5,
+   79.5
+  ]
+ },
+ "button-head-self-tapping-screw.svg": {
+  "areas": [
+   -1258.3396,
+   -2123.716634,
+   498.96
+  ],
+  "bounds": [
+   7.0,
+   10.5,
+   92.5,
+   88.0
+  ]
+ },
+ "button-head-slotted-screw.svg": {
+  "areas": [
+   -1369.0896,
+   -2123.716634,
+   304.0
+  ],
+  "bounds": [
+   7.0,
+   10.5,
+   92.5,
+   79.5
+  ]
+ },
+ "countersunk-phillips-screw.svg": {
+  "areas": [
+   -1359.5,
+   -2123.716634,
+   -448.0
+  ],
+  "bounds": [
+   7.0,
+   10.5,
+   92.5,
+   79.5
+  ]
+ },
+ "countersunk-phillips-self-tapping-screw.svg": {
+  "areas": [
+   -1248.75,
+   -2123.716634,
+   -448.0
+  ],
+  "bounds": [
+   7.0,
+   10.5,
+   92.5,
+   88.0
+  ]
+ },
+ "countersunk-screw.svg": {
+  "areas": [
+   -1359.5,
+   -2123.716634,
+   498.96
+  ],
+  "bounds": [
+   7.0,
+   10.5,
+   92.5,
+   79.5
+  ]
+ },
+ "countersunk-self-tapping-screw.svg": {
+  "areas": [
+   -1248.75,
+   -2123.716634,
+   498.96
+  ],
+  "bounds": [
+   7.0,
+   10.5,
+   92.5,
+   88.0
+  ]
+ },
+ "countersunk-slotted-screw.svg": {
+  "areas": [
+   -1359.5,
+   -2123.716634,
+   304.0
+  ],
+  "bounds": [
+   7.0,
+   10.5,
+   92.5,
+   79.5
+  ]
+ },
+ "grub-screw.svg": {
+  "areas": [
+   -869.5,
+   -2123.716634,
+   498.96
+  ],
+  "bounds": [
+   14.5,
+   25.5,
+   92.5,
+   79.5
+  ]
+ },
+ "socket-head-screw.svg": {
+  "areas": [
+   -1531.75,
+   -2123.716634,
+   498.96
+  ],
+  "bounds": [
+   7.0,
+   10.5,
+   92.5,
+   79.5
+  ]
+ }
+}

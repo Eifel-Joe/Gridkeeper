@@ -1,0 +1,136 @@
+{
+ "screw_none_machine_full_hex_noflange_nosec.svg": {
+  "areas": [
+   -48.799921,
+   -28.261279,
+   7.956532
+  ],
+  "bounds": [
+   -12.56,
+   -3.20709,
+   3.0,
+   3.20709
+  ]
+ },
+ "screw_none_machine_full_hex_noflange_sec.svg": {
+  "areas": [
+   -48.799921,
+   -28.261279,
+   7.956532,
+   -0.865827
+  ],
+  "bounds": [
+   -12.56,
+   -3.20709,
+   3.0,
+   3.20709
+  ]
+ },
+ "screw_none_machine_full_slot_noflange_nosec.svg": {
+  "areas": [
+   -48.799921,
+   -28.261279,
+   2.613103
+  ],
+  "bounds": [
+   -12.56,
+   -3.20709,
+   3.0,
+   3.20709
+  ]
+ },
+ "screw_none_machine_full_torx_noflange_nosec.svg": {
+  "areas": [
+   -48.799921,
+   -28.261279,
+   6.736142
+  ],
+  "bounds": [
+   -12.56,
+   -3.20709,
+   3.0,
+   3.20709
+  ]
+ },
+ "screw_none_machine_full_torx_noflange_sec.svg": {
+  "areas": [
+   -48.799921,
+   -28.261279,
+   6.736142,
+   -0.865827
+  ],
+  "bounds": [
+   -12.56,
+   -3.20709,
+   3.0,
+   3.20709
+  ]
+ },
+ "screw_none_tapping_full_hex_noflange_nosec.svg": {
+  "areas": [
+   -40.674848,
+   -28.261279,
+   7.956532
+  ],
+  "bounds": [
+   -12.56,
+   -3.20709,
+   3.0,
+   3.20709
+  ]
+ },
+ "screw_none_tapping_full_hex_noflange_sec.svg": {
+  "areas": [
+   -40.674848,
+   -28.261279,
+   7.956532,
+   -0.865827
+  ],
+  "bounds": [
+   -12.56,
+   -3.20709,
+   3.0,
+   3.20709
+  ]
+ },
+ "screw_none_tapping_full_slot_noflange_nosec.svg": {
+  "areas": [
+   -40.674848,
+   -28.261279,
+   2.613103
+  ],
+  "bounds": [
+   -12.56,
+   -3.20709,
+   3.0,
+   3.20709
+  ]
+ },
+ "screw_none_tapping_full_torx_noflange_nosec.svg": {
+  "areas": [
+   -40.674848,
+   -28.261279,
+   6.736142
+  ],
+  "bounds": [
+   -12.56,
+   -3.20709,
+   3.0,
+   3.20709
+  ]
+ },
+ "screw_none_tapping_full_torx_noflange_sec.svg": {
+  "areas": [
+   -40.674848,
+   -28.261279,
+   6.736142,
+   -0.865827
+  ],
+  "bounds": [
+   -12.56,
+   -3.20709,
+   3.0,
+   3.20709
+  ]
+ }
+}

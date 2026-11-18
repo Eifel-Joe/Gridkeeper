@@ -1,3 +1,6 @@
 The icons named cullenect-*.svg in the folders next to this file are symbols of Cullenect-Labels by
 CullenJWebb (https://github.com/CullenJWebb/Cullenect-Labels, MIT License). The license text is in
 ../cullenectIcons/LICENSE-Cullenect, the origin in ../cullenectIcons/README.md.
+They are copies of the hardware symbols there, rebuilt from the rendered polygons as lines and circular arcs
+within 0.01 mm by dev-notes/tools/arcSymbols.py (round 40). The icons without the prefix are drawn by
+tools/labelIcons.py, their polygons go through the same tool.
