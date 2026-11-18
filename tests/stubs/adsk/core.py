@@ -218,7 +218,3 @@ class Application:
     @staticmethod
     def get() -> "_App":
         return _App()
-
-
-class CustomEventArgs:
-    """Only for annotations (lib/ui/expressionFormat.py)"""

@@ -1,6 +1,6 @@
 # R41 – Dialog-Eingaben: Zahl ohne Einheit formatieren (p291), getippter Spinnerwert beim OK (p490)
 
-Status: freigegeben; p490 entschieden (F mit Doku-Satz).
+Status: abgeschlossen. p490: F mit Doku-Satz. p291: nach Klicktest zurückgenommen, als Fusion-Grenze offen gelassen.
 
 ## Problem
 
@@ -69,6 +69,7 @@ setzen → **Anzeige „2.90 mm“**, kein weiteres `inputChanged`.
 1. p291: Nach einer getippten Zahl ohne Einheit zeigt ein Längenfeld den Wert normalisiert („2.90 mm“, Format wie beim
    Öffnen des Dialogs). Formeln („10 + 2“, „a*2“) und Werte mit anderer Einheit („1 in“) bleiben, wie getippt. Keine
    Rückkopplung: das Setzen löst keine Endlosschleife aus. Gilt für alle Dialoge mit `CommandUiState` und den Export.
+   *(nicht erfüllbar, siehe „Ergebnis p291“)*
 2. p490: siehe Entscheidung unten – kein Feldtyp liefert den Wert bei sofortigem OK.
 3. Rechenwerte, gespeicherte Voreinstellungen (`toDict`, Config-Dateien) und Snapshot-Fälle ändern sich nicht.
 
@@ -96,27 +97,31 @@ Building, gilt für alle Dialoge) und eine Zeile im CHANGELOG. Die Auswahlliste 
 | b | in `validateInputs` normalisieren – gemessen: Anzeige bleibt „2.9“, verworfen |
 | c | per Custom Event nach `inputChanged` normalisieren – gemessen: Anzeige „2.90 mm“ ✔ |
 
-**Entscheidung: c.** Umsetzung zentral in `lib/ui/expressionFormat.py`:
-- reine Funktion `normalizedExpression(expression, unitType, formatted)` → `formatted`, wenn `unitType` eine Längeneinheit
-  ist (nicht `''`, nicht `deg`), der Ausdruck eine bloße Zahl mit optional genau dieser Einheit ist und sich vom
-  formatierten Text unterscheidet; sonst `None`.
-- `start()`/`stop()` registrieren bzw. entfernen ein Custom Event (Muster wie `commandModelScreenshots`), aufgerufen aus
-  `commands/__init__.py` neben `selection.start()/stop()`.
-- `request(input)` merkt das Feld vor und feuert das Event; der Handler formatiert jedes noch gültige vorgemerkte Feld
-  mit `unitsManager.formatInternalValue(value, unitType, True)` und setzt `expression` nur bei Abweichung (keine
-  Schleife, gemessen kein Folge-`inputChanged`).
-- Aufruf aus `CommandUiState.onInputUpdate` (Zweig `ValueCommandInput`, nicht `deg`) und aus dem `inputChanged` des
-  Exports für seine Längenfelder.
+Umgesetzt war c (`lib/ui/expressionFormat.py`: bloße Zahl in der Feldeinheit → `formatInternalValue`, nur wenn der
+Wert gleich bleibt; Aufruf aus `CommandUiState.onInputUpdate` und dem Export; dazu setzte `forceUIRefresh` Längen nur
+noch bei geändertem Wert, sonst hielt die API schon „1.50 mm“, während das Feld „1.5“ zeigte).
+
+## Ergebnis p291 (Klicktest im Bin-Dialog, Add-in aus dem Worktree, Protokoll im Add-in)
+
+- „1.6“ + Tab → „1.60 mm“; „1.7 mm“ → „1.70 mm“; „1 + 0.5“, „0.05 in“, „1.125“ blieben, wie getippt. Ungültige Werte
+  (außerhalb des Bereichs) wurden nicht angefasst.
+- **Tippen mit Pause im Feld:** „1.“ getippt, 2 s gewartet → Fusion feuert `inputChanged` schon jetzt, mit dem Ausdruck
+  `'1 mm'`; die Formatierung setzte „1.00 mm“ mitten im Tippen, das weitergetippte „55“ ergab „1.00 mm55“ (ungültig).
+- Fusion meldet getippten Text nach einer kurzen Tipp-Pause, nicht erst beim Verlassen des Feldes; die API hat kein
+  Signal „Eingabe fertig“ oder „Feld hat den Fokus“. Eine Pause ist von Tab nicht zu unterscheiden.
+- Weitere Wege: erst formatieren, wenn ein *anderes* Feld geändert wird (sicher, aber „2.9“ bliebe nach Tab stehen,
+  bis man woanders etwas ändert); zeitverzögert per Thread (zerstört die Eingabe bei längerer Tipp-Pause genauso).
+
+**Entscheidung: Formatierung weglassen.** p291 ist kosmetisch, gerechnet wird richtig; jede Formatierung nach
+`inputChanged` kann eine Eingabe mitten im Tippen zerstören. Der Umbau (Formatierung und `forceUIRefresh`-Änderung) ist
+zurückgenommen; p291 bleibt als Fusion-Grenze dokumentiert, keine Code-Änderung.
 
 ## Nicht dabei
 
 - Keine Eingabearten umbauen (p490: kein Feldtyp hilft, siehe oben).
-- Winkel- und einheitenlose Felder (`(u)`, `deg`) werden nicht umformatiert – Fusion zeigt dort ohnehin, was getippt
-  wurde, und `formatInternalValue` liefert ohne Einheit keine feste Stellenzahl.
 - Keine Versionsänderung.
 
 ## Ende-zu-Ende-Kriterium
 
-Klicktest im echten Dialog (`dev-notes/klicktest-r41.md`): In Bin, Baseplate, Box, Label und Export ein Längenfeld
-„2.9“ + Tab → Feld zeigt „2.90 mm“; „2.9 mm“ ebenso; „10+2“ und „1 in“ bleiben, wie getippt; Winkel- und (u)-Felder
-unverändert; erzeugtes Teil wie mit 2.90 mm.
+p490: Messung oben (alle Feldarten, OK < 0,3 s nach dem letzten Zeichen) und FAQ-Eintrag „A value I typed was ignored.“
+in `docs/help/faq.md`. p291: Klicktest-Befund oben; keine Code-Änderung im Diff.

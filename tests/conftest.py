@@ -71,18 +71,6 @@ sys.modules["FusionGridfinityGenerator.lib.fusion360utils"] = fu_pkg
 # ── 4. Load the real commandUiState into the virtual package ─────────────────
 import importlib.util
 
-# commandUiState imports expressionFormat from its own package (round 41)
-fu_pkg.add_handler = futil_stub.add_handler
-_ef_spec = importlib.util.spec_from_file_location(
-    "FusionGridfinityGenerator.lib.ui.expressionFormat",
-    os.path.join(project_root, "lib", "ui", "expressionFormat.py"),
-)
-_ef_mod = importlib.util.module_from_spec(_ef_spec)
-_ef_mod.__package__ = "FusionGridfinityGenerator.lib.ui"
-sys.modules["FusionGridfinityGenerator.lib.ui.expressionFormat"] = _ef_mod
-lib_ui_pkg.expressionFormat = _ef_mod
-_ef_spec.loader.exec_module(_ef_mod)
-
 _cu_path = os.path.join(project_root, "lib", "ui", "commandUiState.py")
 _spec    = importlib.util.spec_from_file_location(
     "FusionGridfinityGenerator.lib.ui.commandUiState",

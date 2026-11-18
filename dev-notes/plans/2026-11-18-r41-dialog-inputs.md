@@ -1,4 +1,4 @@
-# Plan Runde 41: Längenfelder formatieren (p291); p490 dokumentiert
+# Plan Runde 41: Längenfelder formatieren (p291, zurückgenommen); p490 dokumentiert
 
 Spec: `dev-notes/specs/2026-11-18-r41-dialog-inputs.md`. TDD, `python -m pytest` nach jedem Task, ein Commit je
 grünem Task. p490: entschieden F, keine Code-Tasks, nur Doku-Satz in T5.
@@ -20,6 +20,10 @@ grünem Task. p490: entschieden F, keine Code-Tasks, nur Doku-Satz in T5.
   `dev-notes/klicktest-r41.md` (Spec-Kriterium, je Dialog ein Längenfeld). p490: Satz in `docs/help/faq.md` (Building) und CHANGELOG-Zeile.
 - [ ] **T6 Review** (Opus-Subagent), Funde prüfen; Klicktest-Meldung an die Hauptsitzung; PR-Text an die
   Hauptsitzung, Push, PR gegen `master`, CI.
+
+**Nach dem Klicktest:** T1–T4 umgesetzt, im Bin-Dialog formatierte die Änderung mitten im Tippen (Fusion feuert
+`inputChanged` schon bei einer Tipp-Pause). Entscheidung: Formatierung weglassen; T1–T4, der Klicktest und die
+`forceUIRefresh`-Änderung sind zurückgenommen. Im Diff bleiben FAQ-Satz und CHANGELOG zu p490 sowie Spec und Plan.
 
 Keine Fusion-Skriptprüfung nötig: es entsteht keine Geometrie, das Verhalten ist nur im echten Dialog sichtbar
 (Klicktest). Snapshot-Fälle unberührt (Werte ändern sich nicht).

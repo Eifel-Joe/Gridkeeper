@@ -1,6 +1,5 @@
-import adsk.core, adsk.fusion, math, traceback
+import adsk.core, adsk.fusion, traceback
 from ...lib import fusion360utils as futil
-from . import expressionFormat
 
 class SingleInputState:
     def __init__(self, inputId: str, inputValue: any, inputType: str):
@@ -58,9 +57,6 @@ class CommandUiState:
                 self.inputState[inputId] = SingleInputState(inputId, input.expression, input.objectType)
             else:
                 self.inputState[inputId] = SingleInputState(inputId, input.value, input.objectType)
-                if input.unitType:
-                    # "2.9" typed into a length input stays so in the field, it's shown as "2.90 mm" (p291)
-                    expressionFormat.request(input)
         elif isinstance(input, adsk.core.DropDownCommandInput):
             self.inputState[inputId] = SingleInputState(inputId, input.selectedItem.name, input.objectType)
         elif isinstance(input, adsk.core.GroupCommandInput):
@@ -97,10 +93,7 @@ class CommandUiState:
         elif isinstance(input, adsk.core.ValueCommandInput):
             if isinstance(value, str):
                 input.expression = value
-            elif not math.isclose(input.value, value, rel_tol=1e-9, abs_tol=1e-12):
-                # set only when it differs: the bin dialog refreshes every input after each change, and a value set
-                # again left the typed "1.5" on screen while the API had "1.50 mm" already, so expressionFormat
-                # found nothing to set (round 41 click test)
+            else:
                 input.value = value
         elif isinstance(input, adsk.core.DropDownCommandInput):
             for i in range(0, input.listItems.count):

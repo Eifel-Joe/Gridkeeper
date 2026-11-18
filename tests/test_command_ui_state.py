@@ -5,7 +5,6 @@ Tests for CommandUiState.
 import sys
 import os
 
-import pytest
 import adsk.core as core
 from FusionGridfinityGenerator.lib.ui.commandUiState import CommandUiState
 
@@ -242,92 +241,3 @@ class TestCommandUiStateSetValue:
         assert state.getState("flag") is False
         assert inp.value is True
         assert state.inputState["flag"].type == core.BoolValueCommandInput.classType()
-
-
-# ---------------------------------------------------------------------------
-# A typed length is shown formatted (round 41, p291)
-# ---------------------------------------------------------------------------
-
-class TestLengthFormatRequest:
-    def _requests(self, monkeypatch):
-        import sys
-        expressionFormat = sys.modules["FusionGridfinityGenerator.lib.ui.expressionFormat"]
-        requested = []
-        monkeypatch.setattr(expressionFormat, "request", requested.append)
-        return requested
-
-    def test_a_length_input_is_formatted_after_the_change(self, monkeypatch):
-        requested = self._requests(monkeypatch)
-        state = CommandUiState("test")
-        inp = core.ValueCommandInput("wall", 0.29, "mm")
-        inp.expression = "2.9 mm"
-        state.onInputUpdate(inp)
-        assert requested == [inp]
-        assert state.getState("wall") == 0.29
-
-    @pytest.mark.parametrize("unit", ["deg", ""])
-    def test_angles_and_inputs_without_unit_are_not(self, monkeypatch, unit):
-        requested = self._requests(monkeypatch)
-        state = CommandUiState("test")
-        state.onInputUpdate(core.ValueCommandInput("angle", 45, unit))
-        assert requested == []
-
-    def test_spinners_are_not(self, monkeypatch):
-        requested = self._requests(monkeypatch)
-        state = CommandUiState("test")
-        state.onInputUpdate(core.IntegerSpinnerCommandInput("count", 3))
-        assert requested == []
-
-
-def test_the_add_in_starts_and_stops_the_length_format():
-    with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "commands", "__init__.py"), encoding="utf-8") as f:
-        source = f.read()
-    assert "from ..lib.ui import expressionFormat" in source
-    start = source[source.index("def start():"):source.index("def stop():")]
-    stop = source[source.index("def stop():"):]
-    assert "expressionFormat.start()" in start
-    assert "expressionFormat.stop()" in stop
-
-
-# ---------------------------------------------------------------------------
-# Round 41 click test: the bin dialog refreshes every input after each change. Setting a length input's value, even
-# to the same value, made Fusion keep the typed text on screen while the API already had "1.50 mm", so the
-# formatting found nothing to set.
-# ---------------------------------------------------------------------------
-
-class _CountingLength(core.ValueCommandInput):
-    def __init__(self, input_id, value, unit_type="mm"):
-        super().__init__(input_id, value, unit_type)
-        self.valueSets = 0
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, v):
-        self.valueSets = getattr(self, "valueSets", 0) + 1
-        self._value = v
-
-
-class TestRefreshLeavesUnchangedLengths:
-    def test_a_length_with_the_state_value_is_not_set_again(self, monkeypatch):
-        state = CommandUiState("test")
-        inp = _CountingLength("wall", 0.15000000000000002)
-        inp.expression = "1.5 mm"
-        state.initValue("wall", 0.15, core.ValueCommandInput.classType())
-        state.registerCommandInput(inp)
-        inp.valueSets = 0
-        state.forceUIRefresh()
-        assert inp.valueSets == 0
-        assert inp.expression == "1.5 mm"
-
-    def test_a_length_with_another_value_is_set(self):
-        state = CommandUiState("test")
-        inp = _CountingLength("wall", 0.12)
-        state.initValue("wall", 0.15, core.ValueCommandInput.classType())
-        state.registerCommandInput(inp)
-        inp.valueSets = 0
-        state.forceUIRefresh()
-        assert inp.valueSets == 1
-        assert inp.value == 0.15
