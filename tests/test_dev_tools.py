@@ -2,6 +2,7 @@
 # (.git folder) and in a git worktree (.git file). config.py is loaded the way Fusion loads it, as part of the add-in's
 # package, from a copy of the real config.py and lib/updateInstall.py
 import importlib
+import importlib.util
 import itertools
 import os
 import shutil

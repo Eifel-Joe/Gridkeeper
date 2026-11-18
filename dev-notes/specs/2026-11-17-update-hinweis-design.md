@@ -195,3 +195,20 @@ Add-Ins (W1/W2). Kein Knopf: W4 ist kaputt (bestätigt die Beobachtung vom 14.11
 gemessen; aus dem Add-in selbst müsste der Code, der entladen wird, das Add-in wieder starten — nicht gebaut.
 Nebenbefund für die Projektarbeit: W3 (`app.scripts` → `Script.stop()`/`run()`) taugt als Ersatz für
 `fusion-addin-reload.py`, das die Befehle tot zurücklässt.
+
+## Messung Selbst-Neustart (Runde 33, p321), 18.11.2026, Fusion 2706.1.17
+Offen war W3 **aus dem Add-in selbst**. Gemessen auf einer Testkopie in Fusions AddIns-Ordner (Manifest 9.9.1, Git-Add-in
+währenddessen gestoppt), Werkzeug `dev-notes/tools/r33-self-restart/`. Eine Sonde nur in der Kopie: ein Custom-Event-
+Handler im Add-in sucht sein eigenes `Script` (über `folder`) und ruft `stop()`, dann `run()`. Vor dem Auslösen wurde das
+Manifest der Kopie auf 9.9.2 gesetzt (simuliertes Update).
+
+| Prüfung | Ergebnis |
+|---|---|
+| `stop()` / `run()` aus dem eigenen Handler | beide `True`, keine Ausnahme |
+| Neuer Start | ja, 1 s später: Manifest 9.9.2, neues Modulobjekt, `runningVersion (9, 9, 2)` |
+| Updates, Bin, Baseplate, Label, Box öffnen (execute → `activeCommand`) | alle fünf aktiv, Dialoge bauen ihre Eingaben auf |
+
+Eigenheiten: `fireCustomEvent` aus einem Skript gab `False` zurück, der Handler lief trotzdem. `Script.isRunning` und
+`Script.version` zeigen direkt nach `run()` noch den alten Stand. `unlink()` geht für Add-ins im Standard-AddIns-Ordner
+nicht („script is not linked“). **Folge:** Der Selbst-Neustart aus dem Add-in geht; ein Knopf „Reload Gridkeeper“ ist
+machbar (Spec-Ergänzung `2026-11-18-runde-33-design.md`).
