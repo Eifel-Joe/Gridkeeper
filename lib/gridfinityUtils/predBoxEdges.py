@@ -193,6 +193,64 @@ def matchItems(expected, candidates, key):
     return picked
 
 
+# a face is asked for at a grid of points over its box, the middle first: Pred's flat faces are rectangles, rounded
+# corners and L shapes, the middle of a corner's box lies off it (r45_mess.log: #56, #77, #82 found nothing there)
+_FACE_GRID = [0.5, 0.0, 1.0, 0.25, 0.75]
+
+
+def probePoints(item):
+    """
+    Points (cm) on or around the expected item to ask Fusion what lies there, in order (round 45, p296): a line's
+    midpoint, an arc's start (the edges meeting there, the arc among them), a grid over a face's box
+    """
+    if item['kind'] == 'line':
+        return [[(a + b) / 2 for a, b in zip(item['start'], item['end'])]]
+    if item['kind'] == 'arc':
+        return [list(item['start'])]
+    if item['kind'] == 'face':
+        low, high = item['min'], item['max']
+        # the face is flat across one axis (Pred's faces are planes along the box axes), the grid spans the other two
+        span = [axis for axis in range(3) if abs(high[axis] - low[axis]) > _EPS]
+        points = []
+        for u in _FACE_GRID:
+            for v in (_FACE_GRID if len(span) > 1 else [0.0]):
+                point = [(a + b) / 2 for a, b in zip(low, high)]
+                for (axis, t) in zip(span, (u, v)):
+                    point[axis] = low[axis] + t * (high[axis] - low[axis])
+                points.append(point)
+        return points
+    raise ValueError(f"no probe point for a {item['kind']}")
+
+
+def pickByPoint(expected, find, key):
+    """
+    The expected items looked up where they are (round 45, p296): find(point) gives the body's edges or faces there,
+    at the item's probePoints in turn; the one whose item form (key) has the item's signature is taken, as matchItems
+    does over the whole body. None as soon as one isn't found that way, or two different ones have its signature at a
+    point (the walk takes the first in the body's order, a lookup might take another; review round 45): the caller
+    walks the whole body then. Reading every edge took 11-16 s per box (34 294 edges.item,
+    fusion-auftraege/r45_profil.log), a lookup 0.25 ms (r45_probe.log). Tested in tests/test_pred_box_pick.py
+    """
+    picked = []
+    for item in expected:
+        signature = _signature(item)
+        found = None
+        for point in probePoints(item):
+            matches = []
+            for candidate in find(point):
+                if _signature(key(candidate)) == signature and not any(candidate == match for match in matches):
+                    matches.append(candidate)
+            if len(matches) > 1:
+                return None
+            if matches:
+                found = matches[0]
+                break
+        if found is None:
+            return None
+        picked.append(found)
+    return picked
+
+
 def _near(item, candidates, key, distance=0.3):
     """Candidates of the same kind with a point within distance (cm) of one of the item's, for the error message"""
     points = [item[k] for k in ('start', 'end', 'center', 'min', 'max') if k in item]

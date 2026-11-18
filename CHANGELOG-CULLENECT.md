@@ -6,6 +6,26 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased
 
+### Box build speed (round 45)
+
+- **Box build and rebuild faster:** measured in Fusion with the same document steps back to back (box 5×4×6 with
+  its small parts, a second one beside it, the first rebuilt as 6×4×6 with two joints of the user on its parts, a
+  preview, a rebuild preview): the first box 75 s instead of 115 s, the second 147 s instead of 214 s, the rebuild
+  316 s instead of 471 s, the preview 123 s instead of 197 s, the rebuild preview 143 s instead of 232 s. A box
+  brings 877 model parameters instead of 965, so every later box in the document gains too (p296, p480).
+  - The box's joint origins (cells, stacking, lid, the seats of the small parts) sit on the component's origin
+    with offsets that follow the box parameters, instead of each having a construction plane, a sketch, a point and
+    two dimensions of its own: same place, same axes, same behaviour on a parameter change.
+  - A sketch dimension between two points that hang on the same measure never changes; it keeps its value instead
+    of getting an expression (129 of 215 per box).
+  - Chamfers and fillets look their edges and faces up where they are expected instead of reading every edge of the
+    box (about 34 000 per build); when one isn't found that way, the whole body is read as before and the add-in
+    log says so.
+  - The box label of a rebuilt box finds the front of the box through its joint origin's position, which counts
+    those offsets.
+  - Boxes already in a document keep their joint origins as they are until they are rebuilt. Bins, baseplates and
+    inserts keep their sketch joint origins for now.
+
 ### Privacy note
 
 - `documentation/PRIVACY_POLICY.md` was GridfinityGenerator's generated policy for the Autodesk App Store (website,

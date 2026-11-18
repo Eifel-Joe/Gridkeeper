@@ -9,8 +9,7 @@ from ...lib.gridfinityUtils import commonUtils, componentNames, designIntent, pa
 from ...lib.gridfinityUtils import predBoxConfig, predBoxSeats, predBoxInsert
 from ...lib.gridfinityUtils.predBox import PredBoxDims
 from ...lib.gridfinityUtils.predBoxGenerator import createPredBox, PredBoxOptions
-from ...lib.gridfinityUtils.baseGenerator import createPointJointOrigins
-from ...lib.gridfinityUtils.jointOriginLayout import cellJointOriginPoints
+from ...lib.gridfinityUtils.jointOriginLayout import cellJointOriginPoints, createOffsetJointOrigins
 from ...lib.gridfinityUtils.dim import Dim
 from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
 from .inputState import InputState
@@ -155,7 +154,8 @@ def _buildBox(
     for body in (base, lid):
         tagUtils.tagBody(rebuildUtils.nativeBody(body), tagUtils.TAG_BOX, settings, boxParameters, config, prefix)
 
-    # joint origins last, their sketches don't follow moves (as binBuilder). The floor cells always: the bin dialog
+    # joint origins last, they don't follow moves (as binBuilder); without sketches since round 45 (p480, offsets on the
+    # origin point, see jointOriginLayout.createOffsetJointOrigins). The floor cells always: the bin dialog
     # joints a new bin into one (round 31, p312), state.hasJointOrigins of older configs is left aside;
     # an older box without them gets them when it is rebuilt, its joints move over by name, see rebuildBox.
     # Only for OK (round 36, p296): the six calls took 20-100 s, 75 s in a preview that is thrown away and that
@@ -163,16 +163,16 @@ def _buildBox(
     # box by its geometry, the joint only holds it there
     if forOk:
         centers = [(column, row, Dim.length(x), Dim.length(y)) for (column, row, x, y) in predBoxConfig.cellCenters(state.gridX, state.gridY)]
-        createPointJointOrigins(cellJointOriginPoints(centers, CELL_JOINT_ORIGIN, Dim.length(predBoxConfig.CELL_JOINT_Z)), boxComponent, name=CELL_JOINT_ORIGIN)
-        (stackBottom,) = createPointJointOrigins([(STACK_BOTTOM_JOINT_ORIGIN, dims.midX, dims.midY, dims.bottom)], boxComponent, name=STACK_BOTTOM_JOINT_ORIGIN)
-        (stackTop,) = createPointJointOrigins([(STACK_TOP_JOINT_ORIGIN, dims.midX, dims.midY, dims.bodyTop)], lidComponent, name=STACK_TOP_JOINT_ORIGIN)
+        createOffsetJointOrigins(cellJointOriginPoints(centers, CELL_JOINT_ORIGIN, Dim.length(predBoxConfig.CELL_JOINT_Z)), boxComponent, name=CELL_JOINT_ORIGIN)
+        (stackBottom,) = createOffsetJointOrigins([(STACK_BOTTOM_JOINT_ORIGIN, dims.midX, dims.midY, dims.bottom)], boxComponent, name=STACK_BOTTOM_JOINT_ORIGIN)
+        (stackTop,) = createOffsetJointOrigins([(STACK_TOP_JOINT_ORIGIN, dims.midX, dims.midY, dims.bodyTop)], lidComponent, name=STACK_TOP_JOINT_ORIGIN)
         # the seats of the small parts (round 28): latches, handle and its pins, upright like the others, each part's joint
         # turns it, see predBoxSeats.turnAboutZ; a box of bodies in the root gets no parts, so no seats either (review)
         if boxOccurrence is not None:
-            createPointJointOrigins(predBoxSeats.seatJointOriginPoints(dims, state.hinge), boxComponent, name=SEAT_JOINT_ORIGINS)
+            createOffsetJointOrigins(predBoxSeats.seatJointOriginPoints(dims, state.hinge), boxComponent, name=SEAT_JOINT_ORIGINS)
         if boxOccurrence is not None:
-            (boxSide,) = createPointJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], boxComponent, name=LID_JOINT_ORIGIN)
-            (lidSide,) = createPointJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], lidComponent, name=LID_JOINT_ORIGIN)
+            (boxSide,) = createOffsetJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], boxComponent, name=LID_JOINT_ORIGIN)
+            (lidSide,) = createOffsetJointOrigins([(LID_JOINT_ORIGIN, dims.midX, dims.midY, dims.lidCut)], lidComponent, name=LID_JOINT_ORIGIN)
             # the lid shut on the box, rigid like Pred's closed box; it's part of the set, a rebuild makes it anew (rigid)
             jointInput = des.rootComponent.joints.createInput(assembly.inContext(lidSide, lidOccurrence), assembly.inContext(boxSide, boxOccurrence))
             jointInput.setAsRigidJointMotion()

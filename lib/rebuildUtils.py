@@ -15,6 +15,7 @@ from .gridfinityUtils import timelineRemoval
 from .gridfinityUtils import jointNames
 from .gridfinityUtils import componentNames
 from .gridfinityUtils import binCell
+from .gridfinityUtils.jointOriginLayout import jointOriginPlace
 
 # Rebuilding a generated body at its place in the timeline: the new one is built right after the old one's timeline
 # group, the features after it that use the old bodies get the new ones and the old group goes. Features picking a
@@ -768,7 +769,8 @@ def _frontSpot(
         while parent is not None:
             world.transformBy((parent.nativeObject or parent).transform2)
             parent = parent.assemblyContext
-        centre = (boxJointOrigin.nativeObject or boxJointOrigin).geometry.origin.copy()
+        # by its transform: the box's joint origins sit on the box's origin with offsets since round 45 (p480)
+        centre = jointOriginPlace(boxJointOrigin.nativeObject or boxJointOrigin)
         centre.transformBy(world)
         front = adsk.core.Vector3D.create(0, -1, 0)
         front.transformBy(world)

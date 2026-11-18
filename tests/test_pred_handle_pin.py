@@ -176,7 +176,7 @@ def test_no_mirror_and_no_user_parameters():
 
 
 def test_joint_origin_by_the_shared_helper():
-    assert "createPointJointOrigins" in ast.unparse(_function("createHandlePin"))
+    assert "createOffsetJointOrigins" in ast.unparse(_function("createHandlePin"))
 
 
 def test_the_extrudes_use_the_planned_profiles_and_ranges():
