@@ -1,0 +1,75 @@
+"""
+A new bin jointed into a cell of a baseplate or of the floor of a box (round 31, p312): which joint origins are cells,
+the joint's name, where the bin's own placement joint origin sits and when the dialog offers the pick.
+binCell has no Fusion import, so it is loaded as a plain file.
+"""
+
+import os
+import importlib.util
+
+import pytest
+
+PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "lib", "gridfinityUtils", "binCell.py")
+spec = importlib.util.spec_from_file_location("binCellUnderTest", PATH)
+binCell = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(binCell)
+
+
+@pytest.mark.parametrize("name, cell", [
+    ("Socket joint origin 2-3", (2, 3)),
+    ("Cell joint origin 1-1", (1, 1)),
+    ("Socket joint origin 12-10", (12, 10)),
+])
+def test_cells_of_baseplates_and_boxes(name, cell):
+    assert binCell.cellOf(name) == cell
+
+
+@pytest.mark.parametrize("name", [
+    "Foot joint origin 1-1",
+    "Pocket joint origin 1",
+    "Cell placement joint origin",
+    "Cell joint origin plane 1",
+    "Stack top joint origin",
+    "Socket joint origin 1-1 (1)",
+    "",
+])
+def test_other_joint_origins_are_no_cells(name):
+    assert binCell.cellOf(name) is None
+
+
+def test_the_placement_joint_origin_is_no_cell():
+    assert binCell.cellOf(binCell.PLACEMENT_JOINT_ORIGIN) is None
+
+
+def test_joint_name():
+    assert binCell.cellJointName("Bin 2x1x3") == "Bin 2x1x3 in cell"
+
+
+@pytest.mark.parametrize("name, isCell", [
+    ("Bin 2x1x3 in cell", True),
+    ("Bin 2x1x3 in cell (2)", True),
+    ("Insert 1u in pocket", False),
+    ("Bin in cell holder", False),
+])
+def test_cell_joint_names(name, isCell):
+    assert binCell.isCellJointName(name) is isCell
+
+
+def test_placement_point_is_the_center_of_the_front_left_cell():
+    (x, y) = binCell.placementPoint(4.2, 4.2, 0.025)
+    assert x == pytest.approx(2.075) and y == pytest.approx(2.075)
+
+
+def test_placement_point_follows_an_own_base_unit():
+    (x, y) = binCell.placementPoint(5.0, 4.2, 0.025)
+    assert x == pytest.approx(2.475) and y == pytest.approx(2.075)
+
+
+@pytest.mark.parametrize("isNewBin, hasParts, offered", [
+    (True, True, True),
+    (True, False, False),
+    (False, True, False),
+    (False, False, False),
+])
+def test_the_pick_is_offered_for_new_bins_with_a_baseplate_or_box(isNewBin, hasParts, offered):
+    assert binCell.offersCellPick(isNewBin, hasParts) is offered
