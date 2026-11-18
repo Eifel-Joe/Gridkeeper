@@ -11,7 +11,8 @@ never a tangency. rank() checks a chain numerically (pytest).
 Fusion-free. Points are (x, y) in sketch coordinates; curves are dicts:
   {'kind': 'line', 'a': i, 'b': j}, {'kind': 'arc', 'center': c, 'start': i, 'end': j}, {'kind': 'circle', 'center': c}
 Result: ('horizontal'|'vertical'|'diameter', curve), ('hdim'|'vdim', point, otherPoint or None for the origin),
-('originAt', point) for a shape that starts on the origin.
+('originAt', point) for a shape that starts on the origin, ('fixed', point) for a point of the set fixable (its sketch
+coordinates plain numbers, round 39) that the chain would otherwise bind with two dimensions.
 """
 
 import math
@@ -57,6 +58,9 @@ def _function(constraint, curves, radiusIndex):
     if kind == 'originAt':
         get = X if constraint[2] == 'x' else Y
         return lambda v: get(v, constraint[1])
+    if kind == 'fixedAt':
+        get = X if constraint[2] == 'x' else Y
+        return lambda v: get(v, constraint[1])
     if kind == 'diameter':
         index = radiusIndex[constraint[1]]
         return lambda v: v[index]
@@ -87,7 +91,7 @@ def _variables(constraint, curves, radiusIndex):
         pointIndices = [a['center'], a['start'], a['end']]
     elif kind == 'diameter':
         return [radiusIndex[constraint[1]]]
-    elif kind == 'originAt':
+    elif kind in ('originAt', 'fixedAt'):
         pointIndices = [constraint[1]]
     else:
         pointIndices = [constraint[1]] + ([] if constraint[2] is None else [constraint[2]])
@@ -151,7 +155,12 @@ def rank(points, curves, constraints):
         if curve['kind'] == 'arc':
             count += basis.add(_row(('arcEnds', index), curves, radiusIndex, values))
     for constraint in constraints:
-        rows = [('originAt', constraint[1], 'x'), ('originAt', constraint[1], 'y')] if constraint[0] == 'originAt' else [constraint]
+        if constraint[0] in ('originAt', 'fixed'):
+            # a point on the origin or fixed where it is: both its coordinates are bound
+            kind = 'originAt' if constraint[0] == 'originAt' else 'fixedAt'
+            rows = [(kind, constraint[1], 'x'), (kind, constraint[1], 'y')]
+        else:
+            rows = [constraint]
         for item in rows:
             count += basis.add(_row(item, curves, radiusIndex, values))
     return count
@@ -160,10 +169,25 @@ def rank(points, curves, constraints):
 # -- the chain -------------------------------------------------------------------------------------------------------
 
 class _Chain:
-    def __init__(self, points):
+    def __init__(self, points, fixable=frozenset()):
         self.points = points
+        self.fixable = fixable
         self.known = set()
         self.out = []
+
+    def fixInPlace(self, p) -> bool:
+        """
+        A point whose sketch coordinates are plain numbers is fixed where it is instead of bound by two dimensions
+        (round 39, p480): it never moves when a parameter changes, and a fixed point is no model parameter, each of
+        which makes every later Fusion call dearer (fusion-auftraege/r39_probe2.log). Only where the chain would give it
+        two dimensions; one bound by a single dimension (an arc end on its circle, a centre on a chord) would be bound
+        twice
+        """
+        if p not in self.fixable:
+            return False
+        self.out.append(('fixed', p))
+        self.known.add(p)
+        return True
 
     def _differs(self, p, reference, axis):
         other = 0.0 if reference is None else self.points[reference][axis]
@@ -191,6 +215,8 @@ class _Chain:
                 return
         chosen = next((p for p in candidates if abs(self.points[p][0]) > _EPS and abs(self.points[p][1]) > _EPS),
                       candidates[0])
+        if self.fixInPlace(chosen):
+            return
         for axis in (0, 1):
             self.fixAxis(chosen, axis, [None] + self.references(chosen))
         self.known.add(chosen)
@@ -201,6 +227,11 @@ class _Chain:
             return
         known, new = (a, b) if a in self.known else (b, a)
         (kx, ky), (nx, ny) = self.points[known], self.points[new]
+        level = abs(ky - ny) < _EPS or abs(kx - nx) < _EPS
+        # a level or plumb end only beside a fixable neighbour: beside one that hangs on a parameter the condition
+        # decides where the end goes after a change, as before
+        if (not level or known in self.fixable) and self.fixInPlace(new):
+            return
         if abs(ky - ny) < _EPS:
             self.out.append(('horizontal', index))
             self.fixAxis(new, 0, self.references(new, [known]))
@@ -235,9 +266,10 @@ class _Chain:
             # its centre flipped there after a width change (fusion-auftraege/r27_diag4.log, Chamfer30 lost its edge)
             known = s if s in self.known else e
             other = e if known == s else s
-            self.fixAxis(other, 0, self.references(other, [known]))
-            self.fixAxis(other, 1, self.references(other, [known]))
-            self.known.add(other)
+            if not self.fixInPlace(other):
+                self.fixAxis(other, 0, self.references(other, [known]))
+                self.fixAxis(other, 1, self.references(other, [known]))
+                self.known.add(other)
             self.arc(index, curve)
             return
         new = [p for p in (s, e) if p not in self.known]
@@ -245,14 +277,15 @@ class _Chain:
             raise ValueError('sketch chain: arc with its centre and both ends fixed elsewhere')
         if len(new) == 2:
             first = new.pop(0)
-            self.fixAxis(first, 0, self.references(first, [c]))
-            self.fixAxis(first, 1, self.references(first, [c]))
-            self.known.add(first)
+            if not self.fixInPlace(first):
+                self.fixAxis(first, 0, self.references(first, [c]))
+                self.fixAxis(first, 1, self.references(first, [c]))
+                self.known.add(first)
         self.onCircle(new[0], c)
 
     def circle(self, index, curve):
         c = curve['center']
-        if c not in self.known:
+        if c not in self.known and not self.fixInPlace(c):
             for axis in (0, 1):
                 self.fixAxis(c, axis, [None] + self.references(c))
             self.known.add(c)
@@ -263,7 +296,7 @@ def _ends(curve):
     return [curve[k] for k in ('a', 'b', 'start', 'end', 'center') if k in curve]
 
 
-def chain(points, curves):
+def chain(points, curves, fixable=frozenset()):
     parent = list(range(len(points)))
 
     def find(i):
@@ -276,7 +309,7 @@ def chain(points, curves):
         ends = _ends(curve)
         for m in ends[1:]:
             parent[find(m)] = find(ends[0])
-    state = _Chain(points)
+    state = _Chain(points, fixable)
     roots = []
     for curve in curves:
         root = find(_ends(curve)[0])
