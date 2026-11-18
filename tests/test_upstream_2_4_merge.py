@@ -72,18 +72,19 @@ def test_cullenect_bin_with_color_and_dividers_round_trips():
     assert back == settings
 
 
-def test_config_saved_by_upstream_keeps_our_inputs_from_the_dialog():
+def test_config_saved_by_upstream_builds_without_our_settings():
+    # it kept the dialog's values for them until round 32; p280 (Nutzer): "Es werden keine Einstellungen aktiviert,
+    # welche die Config nicht her gibt", so it gets the values bins had before them, see configJson.OLDER_VALUES
     current = configJson.stateFromJson(BIN, binState.InputState, {
         **defaultSettings.BIN, "labelColor": "#2060D0", "hasDividersToTop": True, "cullenectSocketOffset": 0.5,
     })
     upstream = {name: value for (name, value) in defaultSettings.BIN.items()
                 if name not in ("labelColor", "hasDividersToTop", "cullenectSocketOffset")}
     (state, notes) = configJson.readConfig(json.dumps({"generator": BIN, "settings": upstream}), BIN, binState.InputState, current)
-    assert state.labelColor == "#2060D0"
-    assert state.hasDividersToTop is True
-    assert state.cullenectSocketOffset == pytest.approx(0.05)
-    missing = [name for (name, _) in notes.missing]
-    assert sorted(missing) == ["cullenectSocketOffset", "hasDividersToTop", "labelColor"]
+    assert state.labelColor == ""
+    assert state.hasDividersToTop is False
+    assert state.cullenectSocketOffset == pytest.approx(0.03)
+    assert notes.missing == []
 
 
 # --- the color of a config goes back into the dialog's dropdown and custom text ---
