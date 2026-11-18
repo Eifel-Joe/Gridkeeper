@@ -7,6 +7,15 @@ import re
 _COUNTED = re.compile(r'^(?P<base>.+) \((?P<count>\d+)\)$')
 
 
+def countedBase(name: str) -> str | None:
+    """
+    The name without the counter at its end, none for a name without one. A component's name ending in "(n)" may be the
+    generator's own (from a label text): the rebuild drops it only when the base is the name it asked for (round 44)
+    """
+    match = _COUNTED.match(name)
+    return match.group('base') if match is not None else None
+
+
 def freedName(name: str, taken: list[str]) -> str | None:
     """
     The lowest free name below the joint's own, the base first, then "base (1)" and on; none when the name has no

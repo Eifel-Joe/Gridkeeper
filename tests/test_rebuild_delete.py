@@ -169,10 +169,101 @@ def _freedName(name, taken):
 def test_rebuild_drops_the_counters_after_the_old_group_is_gone_and_not_on_a_preview():
     body = [ast.unparse(statement) for statement in _function("rebuild").body]
     before = next(i for (i, line) in enumerate(body) if "existingJoints(design)" in line)
-    build = next(i for (i, line) in enumerate(body) if line.startswith("newBodies = build("))
+    build = next(i for (i, line) in enumerate(body) if "newBodies = build(" in line)
     remove = next(i for (i, line) in enumerate(body) if "removeOldGroup(" in line)
     # whether joints were moved from what was noted, not the count of the notes (review round 43)
     assert "jointsMoved=len(target.movedFrom) > 0" in body[remove]
     drop = next(i for (i, line) in enumerate(body) if line.startswith("dropJointCounters(design,"))
     preview = next(i for (i, line) in enumerate(body) if line.startswith("if isPreview"))
     assert preview < before < build < remove < drop
+
+
+class _NamedComponent:
+    def __init__(self, name, refuse=False):
+        self._name = name
+        self.refuse = refuse
+        self.isValid = True
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        if self.refuse:
+            raise RuntimeError("3 : rename refused")
+        self._name = value
+
+
+def _dropComponentCounters(components, named):
+    log = _Log()
+    # the real names module: the counter may go down to one below its own, not only to the base
+    from tests.test_joint_origin_layout import _load as _loadUtil
+    drop = _load("dropComponentCounters", jointNames=_loadUtil("jointNames"), commonUtils=log, LOG_PREFIX="test")
+    design = types.SimpleNamespace(allComponents=components)
+    drop(design, named)
+    return log
+
+
+def test_a_component_the_build_named_drops_fusions_counter_once_the_old_one_is_gone():
+    # round 44 (p570): the old bin "B" is gone, the new one asked for "B" got "B (1)" while it was there
+    new = _NamedComponent("B (1)")
+    text = _NamedComponent("Text (3)")
+    other = _NamedComponent("Text")
+    user = _NamedComponent("Mine (2)")
+    _dropComponentCounters([new, text, other, user], [(new, "B"), (text, "Text")])
+    assert new.name == "B"
+    # another part still holds the base: the counter goes to the lowest free one only
+    assert text.name == "Text (1)"
+    # not named by the build, the user's own "(n)" included: untouched
+    assert other.name == "Text"
+    assert user.name == "Mine (2)"
+
+
+def test_a_name_the_generator_asked_for_with_a_counter_of_its_own_stays():
+    # review round 44: a label text "M3 (2)" names the insert "... M3 (2)"; its base was the old insert's name, yet
+    # Fusion counted nothing, the name is what was asked for
+    new = _NamedComponent("Gridfinity label 1U M3 (2)")
+    _dropComponentCounters([new], [(new, "Gridfinity label 1U M3 (2)")])
+    assert new.name == "Gridfinity label 1U M3 (2)"
+
+
+def test_a_name_counted_from_another_base_stays():
+    # "Mine (1)" isn't Fusion's count of the asked "B"
+    new = _NamedComponent("Mine (1)")
+    _dropComponentCounters([new], [(new, "B")])
+    assert new.name == "Mine (1)"
+
+
+def test_a_component_gone_again_is_skipped():
+    gone = _NamedComponent("B (1)")
+    gone.isValid = False
+    _dropComponentCounters([], [(gone, "B")])
+    assert gone.name == "B (1)"
+
+
+def test_a_component_fusion_wont_rename_keeps_its_name_logged():
+    new = _NamedComponent("B (1)", refuse=True)
+    log = _dropComponentCounters([new], [(new, "B")])
+    assert new.name == "B (1)"
+    assert any("kept its name" in message for message in log.messages)
+
+
+def test_rebuild_records_the_names_while_building_and_drops_the_counters_after_the_old_group_is_gone():
+    statements = _function("rebuild").body
+    body = [ast.unparse(statement) for statement in statements]
+    preview = next(i for (i, line) in enumerate(body) if line.startswith("if isPreview"))
+    build = next(i for (i, line) in enumerate(body) if "newBodies = build(" in line)
+    # the build runs inside the recording, nothing else does
+    assert body[build].startswith("with componentNames.recording() as named:")
+    assert len(statements[build].body) == 1
+    remove = next(i for (i, line) in enumerate(body) if "removeOldGroup(" in line)
+    drop = next(i for (i, line) in enumerate(body) if line.startswith("dropComponentCounters(design, named)"))
+    assert preview < build < remove < drop
+
+
+def test_a_name_fusion_doesnt_list_among_the_components_doesnt_stop_the_rebuild():
+    # review round 44: a component whose name isn't in allComponents' names raised ValueError past the RuntimeError
+    new = _NamedComponent("B (1)")
+    _dropComponentCounters([], [(new, "B")])
+    assert new.name == "B"
