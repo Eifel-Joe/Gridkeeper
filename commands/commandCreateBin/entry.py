@@ -865,8 +865,8 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     infoGroup.isExpanded = commandUIState.getState(INFO_GROUP)
     commandUIState.registerCommandInput(infoGroup)
 
-    # a new bin jointed into a cell of a baseplate or box (round 31, p312), only offered when there's one (Jörg
-    # 17.11.2026) and not for a rebuilt bin, it keeps its joint (Jörg 18.11.2026). Neither remembered nor in the settings
+    # a new bin jointed into a cell of a baseplate or box (round 31, p312), only offered when there's one
+    # and not for a rebuilt bin, it keeps its joint. Neither remembered nor in the settings
     if binCell.offersCellPick(dialogWorkflow != WORKFLOW_REBUILD, binBuilder.hasCellParts(adsk.fusion.Design.cast(app.activeProduct))):
         placementGroup = inputs.addGroupCommandInput(BIN_PLACEMENT_GROUP_ID, 'Placement')
         placementGroup.isExpanded = True

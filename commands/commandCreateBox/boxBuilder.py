@@ -155,7 +155,7 @@ def _buildBox(
         tagUtils.tagBody(rebuildUtils.nativeBody(body), tagUtils.TAG_BOX, settings, boxParameters, config, prefix)
 
     # joint origins last, their sketches don't follow moves (as binBuilder). The floor cells always: the bin dialog
-    # joints a new bin into one (round 31, p312, Jörg 18.11.2026), state.hasJointOrigins of older configs is left aside;
+    # joints a new bin into one (round 31, p312), state.hasJointOrigins of older configs is left aside;
     # an older box without them gets them when it is rebuilt, its joints move over by name, see rebuildBox
     centers = [(column, row, Dim.length(x), Dim.length(y)) for (column, row, x, y) in predBoxConfig.cellCenters(state.gridX, state.gridY)]
     createPointJointOrigins(cellJointOriginPoints(centers, CELL_JOINT_ORIGIN, Dim.length(predBoxConfig.CELL_JOINT_Z)), boxComponent, name=CELL_JOINT_ORIGIN)

@@ -1,9 +1,9 @@
 import re
 
-# A new bin jointed into a cell of a baseplate or of the floor of a box (round 31, p312, Jörg 17.11.2026: "Das passt
-# so."): the cell picked takes the bin's front left cell. The names of the cells are those of the baseplate's and the
-# box's joint origins (jointOriginLayout.cellJointOriginPoints), the lid has none, its stacking grid isn't offered
-# (Jörg 18.11.2026). No Fusion import, so it can be unit tested.
+# A new bin jointed into a cell of a baseplate or of the floor of a box (round 31, p312): the cell picked takes the
+# bin's front left cell. The names of the cells are those of the baseplate's and the box's joint origins
+# (jointOriginLayout.cellJointOriginPoints), the lid has none, its stacking grid isn't offered. No Fusion import, so it
+# can be unit tested.
 
 SOCKET_PREFIX = 'Socket joint origin'
 BOX_CELL_PREFIX = 'Cell joint origin'
@@ -34,6 +34,6 @@ def isCellJointName(name: str) -> bool:
 
 
 def offersCellPick(isNewBin: bool, hasBaseplateOrBox: bool) -> bool:
-    """The dialog offers the cell only for a new bin, a rebuilt one keeps its joint (Jörg 18.11.2026), and only with a
-    baseplate or box in the design (Jörg 17.11.2026)"""
+    """The dialog offers the cell only for a new bin, a rebuilt one keeps its joint, and only with a
+    baseplate or box in the design"""
     return isNewBin and hasBaseplateOrBox
