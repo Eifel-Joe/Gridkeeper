@@ -83,30 +83,37 @@ def test_targets_are_told_apart_by_their_key():
 
 # --- the text bodies in the part's mesh ---
 
-def triangle_mesh(name, offset, painted=()):
-    return threeMf.MeshObject(name, [(offset, 0, 0), (offset + 1, 0, 0), (offset, 1, 0)], [(0, 1, 2)], set(painted))
+def triangle_mesh(name, offset, painted=None):
+    return threeMf.MeshObject(name, [(offset, 0, 0), (offset + 1, 0, 0), (offset, 1, 0)], [(0, 1, 2)], dict(painted or {}))
 
 
 def test_text_meshes_join_their_part_and_are_painted():
-    part = threeMf.MeshObject("Bin", [(0, 0, 0), (1, 0, 0), (0, 1, 0), (1, 1, 0)], [(0, 1, 2), (1, 3, 2)], {1})
-    merged = exportParts.withMarkings(part, [triangle_mesh("t1", 5), triangle_mesh("t2", 9)], True)
+    part = threeMf.MeshObject("Bin", [(0, 0, 0), (1, 0, 0), (0, 1, 0), (1, 1, 0)], [(0, 1, 2), (1, 3, 2)], {1: 4})
+    merged = exportParts.withMarkings(part, [(triangle_mesh("t1", 5), 2), (triangle_mesh("t2", 9), 2)])
     assert merged.name == "Bin"
     assert len(merged.vertices) == 10
     assert merged.triangles == [(0, 1, 2), (1, 3, 2), (4, 5, 6), (7, 8, 9)]
     # the part's own painted letters stay, every text triangle is painted
-    assert merged.painted == {1, 2, 3}
+    assert merged.painted == {1: 4, 2: 2, 3: 2}
+
+
+def test_each_text_mesh_is_painted_with_its_colors_filament():
+    # round 37 (p301): red text on 2, blue on 3
+    part = triangle_mesh("Bin", 0)
+    merged = exportParts.withMarkings(part, [(triangle_mesh("red", 5), 2), (triangle_mesh("blue", 9), 3)])
+    assert merged.painted == {1: 2, 2: 3}
 
 
 def test_unpainted_text_meshes_still_complete_the_part():
     part = triangle_mesh("Insert", 0)
-    merged = exportParts.withMarkings(part, [triangle_mesh("t", 5)], False)
+    merged = exportParts.withMarkings(part, [(triangle_mesh("t", 5), None)])
     assert merged.triangles == [(0, 1, 2), (3, 4, 5)]
-    assert merged.painted == set()
+    assert merged.painted == {}
 
 
 def test_a_part_without_text_stays_as_it_is():
-    part = triangle_mesh("Baseplate", 0, painted={0})
-    assert exportParts.withMarkings(part, [], True) == part
+    part = triangle_mesh("Baseplate", 0, painted={0: 2})
+    assert exportParts.withMarkings(part, []) == part
 
 
 # --- review round 17.11.: the parts under an occurrence, a Text occurrence once for its part, the root never Text ---

@@ -91,23 +91,24 @@ def exportTargets(bodies: list, partOf, key) -> list:
     return targets
 
 
-def withMarkings(part, markings: list, paint: bool):
+def withMarkings(part, markings: list):
     """
     The part's mesh (threeMf.MeshObject) with the meshes of its text and symbol bodies added, where they are, so the
-    slicer gets the part whole. With paint every text triangle is painted with the label filament, the part's own
-    painted letters (outline labels) stay painted either way
+    slicer gets the part whole. markings are (mesh, filament) pairs: every triangle of a marking with a filament is
+    painted with it, each color on its own (round 37, p301), none leaves it unpainted. The part's own painted letters
+    (outline labels) stay painted as they are
     """
     if len(markings) == 0:
         return part
     vertices = list(part.vertices)
     triangles = list(part.triangles)
-    painted = set(part.painted)
-    for marking in markings:
+    painted = dict(part.painted)
+    for (marking, filament) in markings:
         offset = len(vertices)
         vertices += marking.vertices
         for triangle in marking.triangles:
-            if paint:
-                painted.add(len(triangles))
+            if filament is not None:
+                painted[len(triangles)] = filament
             triangles.append(tuple(vertex + offset for vertex in triangle))
     return dataclasses.replace(part, vertices=vertices, triangles=triangles, painted=painted)
 
