@@ -47,7 +47,8 @@ Dialog screenshots, taken by the main session:
 ## Taken (round 38, rendered by `fusion-auftraege/r38_render.py`)
 
 - `docs/assets/models/bin-magnet-cutouts.png`, `-with-tabs.png`, `-and-screw-holes-with-groove.png` again, with the
-  chamfered magnet sockets; `bin-tab-top-offset.png`, `baseplate-padding-connection-holes.png` new. View, color and
+  chamfered magnet sockets; `bin-tab-top-offset.png`, `baseplate-padding-connection-holes.png`, `baseplate-magnet-socket-chamfer.png` (cut
+  through a socket) new. View, color and
   crop as the pictures of round 26 (orthographic, `#4A82C8`, content plus 20 px).
 
 ## Taken (joint origins guide)

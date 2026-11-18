@@ -78,6 +78,8 @@ more than 0, typed with *Custom*). Only the depth is saved; settings files with 
 Every magnet socket has a 0.5 mm chamfer around its opening, so magnets go in easier; it is always there (from
 GridfinityGenerator 2.5 by Le0Michine).
 
+![A full 1 × 1 baseplate cut through a magnet socket: the chamfer around the socket's opening](assets/models/baseplate-magnet-socket-chamfer.png)
+
 ![The magnet settings of the baseplate dialog: Magnet size 6×3 mm sets the cutout depth to 3.4 mm](assets/images/dialog-baseplate-magnet-size.png)
 
 ### Screw holes
