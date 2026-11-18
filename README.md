@@ -51,7 +51,9 @@ Gridkeeper is installed from a GitHub release, **not** from the Autodesk App Sto
 
 **Gridkeeper bin**, **Gridkeeper baseplate**, **Gridkeeper label** and **Gridkeeper box** now show in **Solid › Create**.
 
-**Update:** unpack the ZIP of the new release over the old folder and restart Fusion. Gridkeeper runs beside the
+**Update:** Gridkeeper updates offers new releases, installs them and can reload itself. By hand: unpack the ZIP of
+the new release over the old folder and click **Reload Gridkeeper** in **Utilities › Add-Ins › Gridkeeper updates**
+(or restart Fusion). Gridkeeper runs beside the
 original GridfinityGenerator.
 
 Details in the [installation guide](https://eifel-joe.github.io/Gridkeeper/getting-started/installation/).

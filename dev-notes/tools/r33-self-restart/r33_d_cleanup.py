@@ -1,0 +1,47 @@
+# Round 33 (p321) job D: stops and unlinks the TEST copy and runs the git add-in again. The copy's folder is removed
+# afterwards with build_copy.py --remove.
+import os, time
+import adsk.core
+
+GIT = r"D:\Entwicklung\Gridfinity\Gridkeeper"
+COPY = os.path.join(os.environ["APPDATA"], "Autodesk", "Autodesk Fusion 360", "API", "AddIns", "Gridkeeper")
+
+
+def norm(path):
+    return os.path.normcase(os.path.normpath(path or ""))
+
+
+def find(folder):
+    scripts = adsk.core.Application.get().scripts
+    return [scripts.item(i) for i in range(scripts.count) if norm(scripts.item(i).folder) == norm(folder)]
+
+
+def show(label, found):
+    print(label, [(s.name, s.folder, s.version, s.isRunning, s.isRunOnStartup) for s in found])
+
+
+def probeLog():
+    path = os.path.join(COPY, "probe.log")
+    print("probe.log:")
+    print(open(path, encoding="utf-8").read() if os.path.exists(path) else "(none)")
+
+
+def run(_context):
+    probeLog()
+    for script in find(COPY):
+        if script.isRunning:
+            print("stop copy ->", script.stop())
+        try:
+            print("unlink copy ->", script.unlink())
+        except RuntimeError as err:
+            # a script in Fusion's own AddIns folder is never linked (measured 18.11.), deleting the folder removes it
+            print("unlink copy: not linked,", err)
+    show("test copy", find(COPY))
+    git = find(GIT)
+    if len(git) == 1 and not git[0].isRunning:
+        print("run git ->", git[0].run())
+    git = find(GIT)
+    show("git add-in", git)
+    # main session 18.11.: the copy is gone from app.scripts, the git add-in runs, the copy's run at startup stays off
+    print("CHECK copy not in app.scripts:", "ok" if not find(COPY) else "FAILED")
+    print("CHECK git add-in running:", "ok" if len(git) == 1 and git[0].isRunning else "FAILED")
