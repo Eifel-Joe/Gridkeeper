@@ -3,7 +3,9 @@
 # logs every start and, on the custom event GridkeeperR33SelfRestart, stops and runs its own add-in through Fusion's API
 # from inside the add-in, as a "Reload Gridkeeper" button would. Plain Python, run outside Fusion:
 #   python dev-notes/tools/r33-self-restart/build_copy.py          builds the copy
-#   python dev-notes/tools/r33-self-restart/build_copy.py --remove removes it (after job D stopped and unlinked it)
+#   python dev-notes/tools/r33-self-restart/build_copy.py --no-probe builds it without the probe (the product's
+#                                                         Reload Gridkeeper is tested, job r33_e_reload)
+#   python dev-notes/tools/r33-self-restart/build_copy.py --remove removes it (after job D stopped it)
 import json
 import os
 import shutil
@@ -81,7 +83,7 @@ def stop(context):
 '''
 
 
-def build():
+def build(probe=True):
     if os.path.exists(COPY):
         sys.exit(f'{COPY} exists, not touched')
     for entry in RELEASE_FILES:
@@ -101,8 +103,9 @@ def build():
     with open(manifestPath, 'w', encoding='utf-8') as file:
         json.dump(manifest, file, indent='\t')
     with open(os.path.join(COPY, 'Gridkeeper.py'), 'a', encoding='utf-8') as file:
-        file.write(PROBE)
-    print('built', COPY, VERSION, 'has .git:', os.path.exists(os.path.join(COPY, '.git')))
+        # without the probe a marker only, so --remove recognises the copy
+        file.write(PROBE if probe else '\n# --- round 33 self-restart probe, TEST COPY ONLY: left out (--no-probe) ---\n')
+    print('built', COPY, VERSION, 'probe' if probe else 'no probe', 'has .git:', os.path.exists(os.path.join(COPY, '.git')))
 
 
 def remove():
@@ -115,4 +118,4 @@ def remove():
 
 
 if __name__ == '__main__':
-    remove() if '--remove' in sys.argv else build()
+    remove() if '--remove' in sys.argv else build(probe='--no-probe' not in sys.argv)
