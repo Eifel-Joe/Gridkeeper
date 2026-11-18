@@ -736,6 +736,19 @@ def configWithParameters(generator: str, config: dict, parameters: list, findPar
             config[fieldName] = value
     return config
 
+def comesAfter(target: RebuildTarget, jointOrigin: adsk.fusion.JointOrigin | None) -> bool:
+    """Whether the part the joint origin is of comes after the target in the timeline: the rebuild builds right after
+    the old group, where that joint origin isn't there yet. An insert's pocket (review round 18), a bin's cell (round 31).
+    The part may sit in a set, a box's floor cells are in its component Box (round 27), either may be the later one
+    (as boxLabelBuilder._isAfter)"""
+    occurrence = jointOrigin.assemblyContext if jointOrigin is not None else None
+    while occurrence is not None:
+        item = (occurrence.nativeObject or occurrence).timelineObject
+        if item is not None and any(later == item for later in target.laterItems):
+            return True
+        occurrence = occurrence.assemblyContext
+    return False
+
 def rebuild(
     design: adsk.fusion.Design,
     target: RebuildTarget,

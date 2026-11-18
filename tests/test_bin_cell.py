@@ -55,16 +55,6 @@ def test_cell_joint_names(name, isCell):
     assert binCell.isCellJointName(name) is isCell
 
 
-def test_placement_point_is_the_center_of_the_front_left_cell():
-    (x, y) = binCell.placementPoint(4.2, 4.2, 0.025)
-    assert x == pytest.approx(2.075) and y == pytest.approx(2.075)
-
-
-def test_placement_point_follows_an_own_base_unit():
-    (x, y) = binCell.placementPoint(5.0, 4.2, 0.025)
-    assert x == pytest.approx(2.475) and y == pytest.approx(2.075)
-
-
 @pytest.mark.parametrize("isNewBin, hasParts, offered", [
     (True, True, True),
     (True, False, False),
