@@ -437,10 +437,10 @@ def repointJointsByName(
                 continue
             try:
                 if jointOrigin.name == predBoxSeats.LABEL_JOINT_ORIGIN:
-                    # a box rebuilt with its label in the holder (Nutzer: "Noch schöner wäre natürlich, wenn bei Rebuild
-                    # der Joint erhalten bliebe."): the holder stays shown, a label of another width is said. One too
-                    # wide goes beside (Nutzer: "Wenn die Box einen Rebuild bekommt, der das Schild zu groß werden lässt,
-                    # muss das Schild daneben gelegt werden.")
+                    # a box rebuilt with its label in the holder (it is nicer when the joint is kept on
+                    # rebuild): the holder stays shown, a label of another width is said. One too
+                    # wide goes beside (decided 17.11.2026: when a box rebuild makes the
+                    # label too wide, the label is laid beside it)
                     shown.append(newJointOrigin)
                     otherSide = adsk.fusion.JointOrigin.cast(getattr(joint, 'geometryOrOriginTwo' if side == 'geometryOrOriginOne' else 'geometryOrOriginOne'))
                     (labelCells, boxCells) = (_labelCells(otherSide), _boxCells(newJointOrigin))
@@ -508,7 +508,7 @@ def _layBeside(
 ) -> str:
     """
     Takes the label out of the holder of a box rebuilt too narrow for it and lays it flat in front of the box, its
-    middle on the box's (Nutzer 17.11.2026: "Schild vor die Front wäre besser. Sonst übersieht man es schnell."), see
+    middle on the box's (decided 17.11.2026: in front of the front is better, otherwise it is easily overlooked), see
     _frontSpot; is something in the way there, at a free spot beside the parts as a new label without a box. Without
     its joint Fusion puts it back where it was built, for a jointed label the origin (p391); a new place holds only
     with its position captured right after it is set (p392: transform2, then snapshots.add). Returns LAID_FRONT,

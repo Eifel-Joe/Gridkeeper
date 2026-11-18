@@ -1,7 +1,7 @@
 """
 Round 23, p234: the add-in shows as Gridkeeper everywhere, its command ids no longer collide with the original
 FusionGridfinityGenerator, and what parts already built carry stays as it is, so they still show their settings and can
-be rebuilt and cloned (Nutzer 16.11.2026: "Name Gridkeeper ueberall sichtbar; interne Kennungen bleiben"). The modules
+be rebuilt and cloned (16.11.2026: the name Gridkeeper is visible everywhere, internal identifiers stay). The modules
 need Fusion to load, their constants are read from the source.
 """
 
@@ -149,7 +149,7 @@ def test_error_reports_go_to_the_renamed_repository():
 
 
 def test_dialog_help_links_go_to_the_gridkeeper_docs():
-    # Nutzer, 16.11.2026: "Here on our GitHub" in the bin dialog still opened the original's wiki
+    # 16.11.2026: "Here on our GitHub" in the bin dialog still opened the original's wiki
     for (path, source) in _sources('commands/**/*.py', 'lib/**/*.py', 'commands/**/*.html', 'lib/**/*.html'):
         assert 'Le0Michine/FusionGridfinityGenerator/wiki' not in source, path
     bins = open(os.path.join(ROOT, 'commands/commandCreateBin/entry.py'), encoding='utf-8').read()

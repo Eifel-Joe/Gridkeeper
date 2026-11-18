@@ -114,8 +114,8 @@ def test_by_default_only_the_occurrence_is_colored(appearances):
     assert bodies[0].appearance is None
 
 
-# Nutzer 17.11.2026: "Im Übrigen brauchen Latches, Hinge, Handle und Pin eine andere Farbe als die Box und der Deckel."
-# Orange like the latch in Pred's file (the main session's choice, Nutzer may change it), one appearance per document
+# 17.11.2026: latches, hinge, handle and pins get a colour other than the box and lid.
+# Orange like the latch in Pred's file (the main session's choice, may be changed), one appearance per document
 
 def test_the_small_parts_have_an_appearance_of_their_own():
     appearanceUtils = _load()

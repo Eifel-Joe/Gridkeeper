@@ -89,7 +89,7 @@ def pocketSizeMm(pocket: adsk.fusion.JointOrigin | None) -> tuple[float, float] 
 
 def pocketProblem(state: InputState, pocket: adsk.fusion.JointOrigin | None) -> str | None:
     """Why the insert can't go into the chosen pocket, none without one or when it fits. A pocket that's gone, a
-    joint origin of no pocket or one too small: nothing is built (Nutzer 15.11.2026)"""
+    joint origin of no pocket or one too small: nothing is built (15.11.2026)"""
     if pocket is None:
         return None
     size = pocketSizeMm(pocket)

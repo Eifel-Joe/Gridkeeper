@@ -34,7 +34,7 @@ LABEL_ICONS_FOLDER = os.path.join(PROJECT_ROOT, 'lib', 'gridfinityUtils', 'label
 SCREW_RESOLUTION = '$fa = 3; $fs = 0.1;'
 # Round 17, p51: a hardware symbol of a thousand points took 15 s to import into an insert, a sketch point costs time.
 # Passed to the module call, which overrides Cullenect's own setting inside it: coarser circles, the contour within
-# MAX_DEVIATION of the fine one, which a 0.4 mm nozzle doesn't show (Nutzer 15.11.2026), checked with --compare
+# MAX_DEVIATION of the fine one, which a 0.4 mm nozzle doesn't show (15.11.2026), checked with --compare
 HARDWARE_RESOLUTION = '$fa = 12, $fs = 0.2'
 MAX_DEVIATION = 0.05
 

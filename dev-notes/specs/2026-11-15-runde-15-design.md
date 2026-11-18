@@ -1,13 +1,13 @@
 # Runde 15: Raster und Bin-Geometrie
 
-Stand 15.11.2026, von Nutzer in der Hauptsitzung freigegeben. Sammelbetrieb R14–R18 (CLAUDE.md in
+Stand 15.11.2026, in der Hauptsitzung freigegeben. Sammelbetrieb R14–R18 (CLAUDE.md in
 `D:\Entwicklung\Gridfinity`, „Ergänzung Sammelbetrieb“): Branch von `runde-14-18`, Merge zurück dorthin.
 
 ## Punkte
 - p170 „Joint Origins an Bin-Füßen und Grundplatten-Aufnahmen folgen geänderten Rastermaßen nicht“
 - p60 „Cullenect-Taschen folgen einer geänderten Rasterbreite nicht ganz, wenn Fächer neben dem Raster liegen“
 - p101 „Rundung der hochgezogenen Trennwände bei Wänden ab 2 mm nicht ganz nahtlos“
-- p35 „Cullenect-Tasche bei sehr dünnen Wänden im Druck prüfen“ (Entscheidung Nutzer 15.11.2026, siehe unten)
+- p35 „Cullenect-Tasche bei sehr dünnen Wänden im Druck prüfen“ (Entscheidung 15.11.2026, siehe unten)
 
 ## Befund (Code, 15.11.)
 - p170: `createCellJointOrigins` (`baseGenerator.py:520`) legt alle Punkte in eine Skizze mit Referenzmaßen
@@ -23,15 +23,15 @@ Stand 15.11.2026, von Nutzer in der Hauptsitzung freigegeben. Sammelbetrieb R14�
 ## Entscheidungen
 1. **p170:** Fuß- und Grundplatten-Joint-Origins über `createPointJointOrigins` (eine Skizze je Punkt, treibende
    Maße). Bauzeit vorher/nachher messen (4x2-Bin, 6x6-Grundplatte) und ins Übergabeprotokoll. Wird die 6x6-Grundplatte
-   um mehr als 50 % langsamer, im Protokoll für Nutzer vermerken, nicht eigenmächtig anders lösen.
+   um mehr als 50 % langsamer, im Protokoll vermerken, nicht eigenmächtig anders lösen.
 2. **p60:** Die Min/Max-Wahl wird als Ausdruck (`min()`/`max()` in Fusion-Parameterausdrücken) gebaut, nicht per
    `.value` zur Bauzeit. Größenstufe (`units`) und `socketFitsDepth` bleiben Bauzeit-Entscheidungen; springt eine
    Stufe nach einer Änderung, ist ein Neubau nötig – das kommt in CHANGELOG und Protokoll.
 3. **p101:** Nahtlose Rundung auch über die Stufe bei Wänden ab 2 mm (z. B. bis zur Stufe sweepen, den Rest getrennt).
    Gelingt es nach drei Versuchen nicht: bisheriger Stand bleibt, Punkt bleibt offen, ein Satz ins Protokoll.
 
-4. **p35 – Mindestwand für Cullenect 1,2 mm.** Nutzer 15.11.2026: „Standard für Cullenect ist 1,2mm. Dicker geht,
-   dünner nicht.“ Der Label-Stil Cullenect ist nur mit Wandstärke ≥ 1,2 mm zulässig. Bei dünnerer Wand meldet der
+4. **p35 – Mindestwand für Cullenect 1,2 mm.** Entscheidung 15.11.2026: Standard für Cullenect ist 1,2 mm; dicker geht,
+   dünner nicht. Der Label-Stil Cullenect ist nur mit Wandstärke ≥ 1,2 mm zulässig. Bei dünnerer Wand meldet der
    Bin-Dialog das Problem und sperrt OK (wie die übrigen Dialogprüfungen); dasselbe beim Laden einer Konfiguration und
    beim Neubau per Rechtsklick. Dickere Wände (z. B. 2 und 3 mm) mit Cullenect müssen bauen – das Ende-zu-Ende-Skript
    prüft das. Bereits gebaute Bins werden nicht angefasst.

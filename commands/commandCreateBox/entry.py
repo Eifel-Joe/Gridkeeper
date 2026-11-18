@@ -202,7 +202,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     addLength(magnetGroup.children, MAGNET_DEPTH_INPUT, 'Magnet cutout depth', 'At most 2.6 mm, 0.2 mm of floor stays under the magnet')
     addLength(magnetGroup.children, MAGNET_DIAMETER_INPUT, 'Magnet cutout diameter', '3 to 8.5 mm, the pad around the hole grows with it')
 
-    # the lid's top (round 30, p311, Nutzer 18.11.2026: "Lid top: Grid / Closed", "Standard bleibt Raster")
+    # the lid's top (round 30, p311, 18.11.2026: Grid / Closed, Grid stays the default)
     lidGroup = addGroup(inputs, LID_GROUP, 'Lid')
     lidTopDropdown = lidGroup.children.addDropDownCommandInput(LID_TOP_DROPDOWN, 'Lid top', adsk.core.DropDownStyles.TextListDropDownStyle)
     for name in predBoxConfig.LID_TOPS:
@@ -211,7 +211,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
                               "Closed: a flat closed top, sturdier; the stacking tabs in its corners stay, boxes still stack")
     uiState.registerCommandInput(lidTopDropdown)
 
-    # Pred's three hinges (round 28, Nutzer 17.11.2026: "alle drei zum auswählen ist besser"), the box is the same for all
+    # Pred's three hinges (round 28, 17.11.2026: all three can be picked), the box is the same for all
     partsGroup = addGroup(inputs, PARTS_GROUP, 'Small parts')
     hingeDropdown = partsGroup.children.addDropDownCommandInput(HINGE_DROPDOWN, 'Hinge', adsk.core.DropDownStyles.TextListDropDownStyle)
     for name in predBoxParts.HINGES:

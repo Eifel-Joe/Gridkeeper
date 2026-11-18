@@ -65,7 +65,7 @@ def test_the_pinned_hinges_pin_lies_on_its_flat():
 
 
 def test_a_flush_label_lies_on_its_text():
-    # Nutzer 17.11.2026: "Flush kommt auf die Schrift alle anderen auf die Unterseite, wie sie auch eingebaut werden."
+    # 17.11.2026: Flush lies on its lettering, all others on their underside, the way they are installed
     assert printLayout.printRotation(None, "Label", "Flush") == printLayout.ROTATE_X_180
 
 
@@ -345,7 +345,7 @@ def test_older_plate_files_of_the_same_name_are_known():
 
 # ---------------------------------------------------------------------------
 # Bambu click test 17.11.2026: the purge tower's spot (F2) and the excluded area of a Bambu Lab printer chosen (F1;
-# Nutzer: „Wenn wir den Drucker exakt vorgeben ist die Sperrzone nicht mehr Sache des Users.“)
+# when the printer is given exactly, the exclusion zone is no longer the user's concern)
 # ---------------------------------------------------------------------------
 
 X1_TOWER = (0.644, 0.977)
@@ -391,8 +391,7 @@ def test_a_shelf_skips_past_the_tower_spot():
 
 
 # ---------------------------------------------------------------------------
-# Nutzer 17.11.2026: „Das Zubehör der Box sollte auf eine separate Platte. Eine Box müsste je nach Größe 3 Platten
-# gesamt ergeben.“
+# 17.11.2026: the box's accessories go on a separate plate; a box comes to 3 plates depending on its size
 # ---------------------------------------------------------------------------
 
 def test_parts_of_different_kinds_never_share_a_plate():
@@ -467,8 +466,8 @@ def test_box_lid_and_small_parts_keep_their_own_plates_clear_of_the_excluded_are
 
 
 # ---------------------------------------------------------------------------
-# Nutzer 17.11.2026, his own test: „Was mir nicht gefällt ist, dass die Kleinteile über die volle Breite angelegt sind.
-# Diese könnten kompakter verteilt sein. Das muss nicht alles nebeneinander liegen.“
+# 17.11.2026, found in testing: the small parts were laid across the full width; they can be spread more compactly,
+# not all side by side
 # ---------------------------------------------------------------------------
 
 SMALL_PARTS = [(99, 30), (13.3, 12.8), (13.3, 12.8), (5.1, 31.6), (5.1, 31.6), (19.7, 5.1), (19.7, 5.1),
@@ -507,7 +506,7 @@ def test_compact_groups_never_take_more_plates_than_full_rows(footprints):
 
 
 def test_each_box_gets_a_small_parts_plate_of_its_own():
-    # Nutzer 17.11.2026: „Je Box eine Zubehörplatte passt.“
+    # 17.11.2026: one accessory plate per box fits
     groups = boxes_of([(23.6, 36.5), (99, 30), (23.6, 36.5), (99, 30)])
     kinds = [("Box 1", "parts"), ("Box 1", "parts"), ("Box 2", "parts"), ("Box 2", "parts")]
     (laid, plates, _, _, _) = printLayout.layOutKinds(groups, kinds, BED, 5, 0)

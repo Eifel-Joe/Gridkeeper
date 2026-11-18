@@ -18,10 +18,10 @@ class Part:
     seats: list[str] = field(default_factory=list)
 
 
-# Nutzer 16.11.2026: "Je Box werden auch 4 Latches gebraucht.", "Latches 2 vorne und 2 jeweils einer seitlich hinten",
-# "Handle_Pins werden auch zwei gebraucht.", "Ich würde die Scharniere in Druckposition belassen."
-# Nutzer 17.11.2026: "alle drei zum auswählen ist besser": Pred's three hinges (Hinge_M3x30, Hinge_Pined, Hinge), M3x30
-# the default; "Ja, beides" to Vorschlag J: they are jointed too, in their print position beside the box
+# Decided 16.11.2026: 4 latches per box, 2 at the front and one at each side at the back, 2 handle pins, the hinges
+# stay in print position.
+# Decided 17.11.2026: all three can be picked: Pred's three hinges (Hinge_M3x30, Hinge_Pined, Hinge), M3x30
+# the default; they are jointed too, in their print position beside the box
 HINGES = ('M3x30', 'Pinned', 'Plain')
 DEFAULT_HINGE = 'M3x30'
 
@@ -33,7 +33,7 @@ PARTS = [
 ]
 
 
-# Round 29 (Nutzer 17.11.2026: "Wir zeichnen die Teile im Code."): the roles whose part predBoxInsert.drawPart draws.
+# Round 29 (17.11.2026: the parts are drawn in code): the roles whose part predBoxInsert.drawPart draws.
 # The others stay out of the set until their generator is there (integration step by step, a click test after each)
 DRAWN_ROLES: list[str] = ['Latch', 'Handle', 'Handle pin', 'Hinge']
 

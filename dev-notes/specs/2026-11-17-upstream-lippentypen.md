@@ -3,7 +3,7 @@
 Stand 2026-11-17. Punkt p13. Branch `claude/upstream-2026-11-16-e588a3` von `master` (3091fc6), eigener Worktree.
 `git merge --no-ff upstream/master`: Upstream `Le0Michine/FusionGridfinityGenerator` `master`, Merge-Basis fba170e,
 neuer Stand 513e6ab, 13 Commits von Lev Mishin (Le0Michine), CC BY-NC-SA 4.0. Version bleibt 1.0.0.
-Einteilung von Nutzer freigegeben („Passt so“), Vorgehen wie Runde 12 (`2026-11-15-upstream-2-4-merge.md`) und Runde 22.
+Einteilung freigegeben („Passt so“), Vorgehen wie Runde 12 (`2026-11-15-upstream-2-4-merge.md`) und Runde 22.
 
 ## Probelauf
 
@@ -77,7 +77,7 @@ unverändert grün (Vorgaben = bisheriges Verhalten).
   Verrundung bei leichter Lippe beginnt. Beim „Add new“ von `bin_3x2x3_dividers_to_top_3_columns_lip_full` nicht blind
   annehmen: Log auf „sweep … failed“/„filleted“ prüfen, die 8 Wandecken im Schnitt ansehen.
 - Fund 4 (Fusion/Druck): Cullenect-Tasche unter voller Lippe – rechnerisch ragt die Stütze ~0,05 mm über die Hinterkante
-  der Tasche. Neuer Fall `bin_1x1x3_cullenect_lip_full` (Add new, Schnitt ansehen); Einsetzen des Einlegers auf des Nutzers
+  der Tasche. Neuer Fall `bin_1x1x3_cullenect_lip_full` (Add new, Schnitt ansehen); Einsetzen des Einlegers auf der
   Testliste.
 - Fund 5 (Upstream, nicht hier): geschalte Bin mit Lippe und Schaufel setzt den Tab an `BIN_LIP_WALL_THICKNESS`, auch
   bei voller Lippe.

@@ -1,6 +1,6 @@
 """
-Tests for Pred's hinges drawn in code (round 29, Nutzer 17.11.2026: "Wir zeichnen die Teile im Code.", "Am besten doch alle
-Scharniere mit Auswahl im Generator."). Expected values come from Pred's components read step by step
+Tests for Pred's hinges drawn in code (round 29, 17.11.2026: the parts are drawn in code, all hinges
+selectable in the generator). Expected values come from Pred's components read step by step
 (fusion-auftraege/r29_walk/Hinge_M3x30.json, Hinge_Pined.json, Hinge.json; mm, rounded there to 0.0001). The plan data of
 predHinge is Fusion-free; what needs Fusion is checked in its source (ast), the shape itself in Fusion
 (fusion-auftraege/r29_hinge_check.py).
@@ -56,7 +56,7 @@ def test_variants_are_the_parts_hinges():
 
 def test_body_names_are_preds():
     assert hinge.SHAPES["M3x30"].bodyNames == ("BottomHingePart_M3x30", "TopHingePart_M3x30")
-    # Nutzer 17.11.2026 (click test F3): Pred names them as M3x30's, in the export and slicer that misled
+    # 17.11.2026 (click test F3): Pred names them as M3x30's, in the export and slicer that misled
     assert hinge.SHAPES["Pinned"].bodyNames == ("BottomHingePart_Pinned", "TopHingePart_Pinned", "Hinge pin")
     assert hinge.SHAPES["Plain"].bodyNames == ("BottomHingePart", "TopHingePart")
 
@@ -310,7 +310,7 @@ def test_bridge_layer_areas_are_preds():
 
 
 def test_bridge_rectangles_cover_the_segments_inside_the_knuckle():
-    """Weg A (Nutzer 17.11.2026: "A: Brücken anders"): each segment is drawn as a rectangle turned 45 degrees whose inner
+    """Weg A (17.11.2026: bridges done differently): each segment is drawn as a rectangle turned 45 degrees whose inner
     side is the chord; it reaches past the counterbore into the knuckle's solid (r 4 at z 3.5..3.9), where a join adds
     nothing"""
     r, h = hinge.COUNTERBORE / 2, hinge.SHAPES["M3x30"].core

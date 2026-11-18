@@ -1,6 +1,6 @@
 """
 Tests for the settings of the storage box after Pred (round 27, p260): the smallest box, the magnet holes the box can
-take (Nutzer 16.11.2026: "Box nur 6×2", custom up to 2.6 mm, diameter like the baseplate), the name, the joint origins in
+take (16.11.2026: box only 6x2, custom up to 2.6 mm, diameter like the baseplate), the name, the joint origins in
 the floor and the config the dialog saves.
 """
 
@@ -54,7 +54,7 @@ def test_config_round_trip_in_mm():
 @pytest.mark.parametrize("changes, message", [
     ({"gridX": 3}, "Width must be at least 4 units"),
     ({"gridY": 2}, "Length must be at least 3 units"),
-    # Nutzer 16.11.2026: "Mindesthöhe 6. vorerst." (height 5 is p264)
+    # 16.11.2026: minimum height 6 for now (height 5 is p264)
     ({"heightU": 5}, "Height must be at least 6 units"),
     ({"hasMagnets": True, "magnetDepth": 0.27}, "Magnet holes deeper than 2.6 mm would break through the floor"),
     ({"hasMagnets": True, "magnetDepth": 0}, "The magnet holes need a depth"),
@@ -108,7 +108,7 @@ def test_spinner_takes_a_parameter_beyond_its_limits(value, limits):
     assert boxConfig.spinnerLimits(6, 30, value) == limits
 
 
-# Nutzer 17.11.2026: "alle drei zum auswählen ist besser"; the choice is a setting of the box, rebuild and clone take it
+# 17.11.2026: all three variants are selectable; the choice is a setting of the box, rebuild and clone take it
 
 def test_the_hinge_is_a_box_setting_m3x30_by_default():
     assert state().hinge == "M3x30"
@@ -133,7 +133,7 @@ def test_an_unknown_hinge_is_a_problem_before_anything_is_built():
         assert boxConfig.boxProblem(state(hinge=hinge)) is None
 
 
-# Round 30, p311 (Nutzer 18.11.2026): the lid's top is a Gridfinity grid or closed, the grid stays the default and a box
+# Round 30, p311 (18.11.2026): the lid's top is a Gridfinity grid or closed, the grid stays the default and a box
 # saved before the choice builds with it
 
 def test_the_lid_top_is_a_box_setting_grid_by_default():

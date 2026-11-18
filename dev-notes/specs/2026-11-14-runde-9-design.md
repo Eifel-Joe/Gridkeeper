@@ -2,13 +2,13 @@
 
 Stand 2026-11-14. Ergänzt `2026-11-14-cullenect-labels-design.md` (Abschnitt Text, Befund Spike, p50).
 Punkte p84 „Einleger: Text bricht schon beim Erzeugen um und ragt über den Rand“ und p70 „Einleger: deutlich längerer
-Text ragt über den Einleger hinaus“ (des Nutzers Wahl: „Text einzeilig ohne Umbruch“).
+Text ragt über den Einleger hinaus“ (Wahl: Text einzeilig ohne Umbruch).
 
 ## Befund (Fusion, 14.11.2026)
-- des Nutzers Einleger 1U „Welle 6mm“, bündig, ohne Symbol: Text in Arial, 4,961 mm, im mehrzeiligen Rahmen x 1–35 mm.
+- Einleger 1U „Welle 6mm“, bündig, ohne Symbol: Text in Arial, 4,961 mm, im mehrzeiligen Rahmen x 1–35 mm.
   Die Anpassung misst die **Umrisse** der Buchstaben (34,27 mm bei 5 mm Höhe) und passte die Zeile auf genau 34,0 mm
   ein. Fusion bricht im Rahmen nach der **Laufweite** um (Umrisse plus Seitenabstände der Buchstaben): Im selben
-  Rahmen wird „Welle 6mm“ zweizeilig, y −0,94 bis 11,85 mm (in des Nutzers Dokument und im Nachbau gleich).
+  Rahmen wird „Welle 6mm“ zweizeilig, y −0,94 bis 11,85 mm (in Nutzerdokument und im Nachbau gleich).
 - Text entlang einer Linie (`setAsAlongPath`, links ausgerichtet, über der Linie) bricht nie um: Mit Text-Parameter
   auf 170 mm verlängert bleibt er ein Band gleicher Höhe, die Extrusion nimmt neue Buchstaben mit, gesund.
   Er beginnt mit dem Seitenabstand des ersten Buchstabens (0–0,5 mm rechts der Linie) und reicht um den
@@ -32,7 +32,7 @@ Text ragt über den Einleger hinaus“ (des Nutzers Wahl: „Text einzeilig ohne
   umbrechen, ist eigener Punkt.
 
 ## Prüfung
-- pytest: Reserve in `fittedLineHeight`, Prüfung `insertTextProblems` (des Nutzers gemessener Fall rot), Testfälle mit
+- pytest: Reserve in `fittedLineHeight`, Prüfung `insertTextProblems` (gemessener Fall rot), Testfälle mit
   `texts` (Text-Parameter nach dem Erzeugen).
 - Snapshot-Lauf: jeder Einleger-Fall prüft, dass die Buchstabenkörper so viele y-Bänder bilden wie Zeilen und auf dem
   Einleger liegen (verlängerter Text: rechts darf er weiterlaufen). Neue Fälle `label_1u_welle_6mm` (vorher rot:

@@ -1,7 +1,7 @@
 """
 Pred's latch (Latch_Experimental) of the storage box after Pred's parametric Gridfinity Storage Box v1.1
-(https://www.printables.com/model/543553, CC BY-NC, by Pred), drawn in code for Gridkeeper (round 29, Nutzer 17.11.2026:
-"Wir zeichnen die Teile im Code."). Plan: dev-notes/r29/latch-plan.md.
+(https://www.printables.com/model/543553, CC BY-NC, by Pred), drawn in code for Gridkeeper (round 29, 17.11.2026:
+the parts are drawn in code). Plan: dev-notes/r29/latch-plan.md.
 
 The part frame is Pred's component frame, as the former resources/predBox/latch.f3d: the latch lies flat in its print position,
 x -11.8..11.8, y -36.5..0, z 0..7 mm. Pred's steps and measures are from fusion-auftraege/r29_walk/Latch_Experimental.json.
@@ -13,7 +13,7 @@ mirrors the finished half with its fillets and chamfers (Mirror1). Gridkeeper bu
   body and are left out, lines ending on x = 0 run through.
 - Each side face gets its own sketch (Sketch2, Sketch2 right) with both slots; the face's outline as lines of its own.
 - Fillets and chamfers take Pred's edges and their mirror images in one feature each.
-Every sketch is fully constrained (Nutzer: "Denk nur dran, dass alle Zeichnungen vollständig bestimmt sein müssen.").
+Every sketch is fully constrained (requirement of 17.11.2026: all sketches fully constrained).
 Tested in tests/test_pred_latch.py.
 """
 

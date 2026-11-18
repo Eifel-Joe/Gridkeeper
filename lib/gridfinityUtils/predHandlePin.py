@@ -1,7 +1,7 @@
 """
 Pred's handle pin (component HandlePin of Pred's parametric Gridfinity Storage Box v1.1,
-https://www.printables.com/model/543553, CC BY-NC, by Pred) drawn in code, round 29 (Nutzer 17.11.2026: "Wir zeichnen die
-Teile im Code."). Until round 28 it was inserted from resources/predBox/handlePin.f3d, which fails in the execute of a
+https://www.printables.com/model/543553, CC BY-NC, by Pred) drawn in code, round 29 (17.11.2026: the parts are drawn
+in code). Until round 28 it was inserted from resources/predBox/handlePin.f3d, which fails in the execute of a
 command with inputs (fusion-auftraege/r28_cmdvariants.log).
 
 The pin lies in Pred's part frame (that of handlePin.f3d): its axis along x through (y 3.75 | z 24.7) mm, tip at x 58.05,
@@ -11,8 +11,8 @@ empty component, and the handle is another part), so the same end positions beco
 on one plane at the tip, x 58.05, and everything is extruded towards +x:
   Extrude1 shaft d 2.6 over 19.7, Extrude2 tip d 3.5 over 2, Extrude3 head d 5.1 from 16.4 over 3.3, Chamfer1 1 mm at
   the tip, then cuts: below z 23.4 over the whole length, the 0.6 mm slot 4 deep, above z 26.0 over the tip.
-Every sketch is fully constrained (predSketch, sketchChain; Nutzer: "Denk nur dran, dass alle Zeichnungen vollständig
-bestimmt sein müssen."). No user parameters, no mirrored features. Values here are mm, Fusion gets cm.
+Every sketch is fully constrained (predSketch, sketchChain; requirement of 17.11.2026: all sketches
+fully constrained). No user parameters, no mirrored features. Values here are mm, Fusion gets cm.
 Tested in tests/test_pred_handle_pin.py, the shape against Pred's in fusion-auftraege/r29_pin_check.py.
 """
 

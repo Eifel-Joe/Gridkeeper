@@ -1,6 +1,6 @@
 # Integration der gezeichneten Kleinteile (Runde 29), Zweig `r29-int`
 
-Nutzer 17.11.2026: „So wie eine Sitzung fertig ist, kann ja sofort ein Testlauf mit Klicktest durchgeführt werden.“
+Vorgabe 17.11.2026: Sobald eine Sitzung fertig ist, läuft sofort ein Testlauf mit Klicktest.
 Die Teile kommen deshalb einzeln auf `r29-int` (ab `runde-29`), je Teil ein Klicktest im echten Dialog.
 
 ## Gerüst (Stand dieses Zweigs)

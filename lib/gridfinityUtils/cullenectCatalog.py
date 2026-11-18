@@ -134,7 +134,7 @@ def screwChoices(combinations: set[tuple], selection: dict) -> tuple[dict[str, l
     What the label dialog offers for each building block and the selection corrected to a symbol there is. A block
     offers the values that make a symbol with the blocks before it (SCREW_FIELDS order), a value without one is
     replaced by the first that has one, so a head change keeps the other choices where it can. The spec has invalid
-    combinations locked in the dialog, Nutzer could pick head None with driver Hex and got no symbol (p85)
+    combinations locked in the dialog, one could pick head None with driver Hex and got no symbol (p85)
     """
     orders = {'head': HEADS, 'shaft': SHAFTS, 'threads': THREADS, 'driver': DRIVERS, 'flange': [False, True], 'security': [False, True]}
     corrected = dict(selection)

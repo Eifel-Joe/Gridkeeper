@@ -1,15 +1,15 @@
 # r29-export: Drucklage, Druckbett, Verteilen, Abstand, Purgetower (Gridkeeper 1.1.0)
 
-Stand: 17.11.2026, Entscheidungen D1–D4 von Nutzer, Spec und Plan von Nutzer freigegeben (17.11.2026).
+Stand: 17.11.2026, Entscheidungen D1–D4, Spec und Plan freigegeben (17.11.2026).
 
 ## Problem
 Der 3MF-Export (`lib/threeMf.py`, `placeOnPlate`) setzt jedes Teil auf z=0 und lässt die x/y-Lage wie in der
 Konstruktion. Box-Sätze landen übereinander in Einbaulage (Deckel nicht umgedreht, Riegel hochkant). Mehrere Bins oder
 Baseplates liegen, wie sie im Design stehen, auch über das Bett hinaus.
 
-Nutzer, 17.11.2026: „Noch in 1.1.0, mit Druckbett-Auswahl. Auch für die 3MF bei Bins und Baseplates wichtig. Ebenso
-Labels. Natürlich nur wenn es mehrere Druckteile sind. Auch wichtig ist ein Abstand der Teile zueinander, gerne
-einstellbar. Und bei zweifarbigem Export auch eine freie Fläche für den Purgetower.“
+Vorgabe 17.11.2026: Noch in 1.1.0, mit Druckbett-Auswahl. Auch für die 3MF bei Bins und Baseplates wichtig, ebenso
+für Labels, natürlich nur bei mehreren Druckteilen. Wichtig ist auch ein Abstand der Teile zueinander, gerne
+einstellbar, und bei zweifarbigem Export eine freie Fläche für den Purgetower.
 
 ## Anforderungen
 1. **Drucklage je Rolle.** Die Regel gilt im Rahmen des Teils, also in seiner eigenen Komponente. Sie gilt damit für alle
@@ -18,15 +18,15 @@ einstellbar. Und bei zweifarbigem Export auch eine freie Fläche für den Purget
    | Rolle | Drehung im Teil-Rahmen | Beleg |
    |---|---|---|
    | Bin, Baseplate | keine, sie bleiben stehend wie im Design | Auftrag |
-   | Cullenect-Label, Stil `Flush` | 180° um X, Schrift aufs Bett | Nutzer 17.11.: „Flush kommt auf die Schrift alle anderen auf die Unterseite, wie sie auch eingebaut werden.“ |
+   | Cullenect-Label, Stil `Flush` | 180° um X, Schrift aufs Bett | Vorgabe 17.11.: Flush kommt auf die Schrift, alle anderen auf die Unterseite, wie sie auch eingebaut werden |
    | Cullenect-Label, `Embossed`/`Debossed` | keine, Unterseite aufs Bett (Einbaulage) | ebenda |
-   | Box-Schild | wie Cullenect-Label nach seinem Stil (`predBoxLabel.SURFACES`) | Annahme, Nutzer bestätigt beim Testtermin |
+   | Box-Schild | wie Cullenect-Label nach seinem Stil (`predBoxLabel.SURFACES`) | Annahme, bestätigt beim Testtermin |
    | Box (`Base`) | keine | Boden unten |
-   | Deckel (`Lid`) | keine, Einbaulage (D1, Nutzer 17.11.) | Nutzer |
+   | Deckel (`Lid`) | keine, Einbaulage (D1, 17.11.) | Vorgabe |
    | Latch | keine: der Teil-Rahmen liegt flach, z 0…7 | Preds Datei, `dev-notes/r29/latch.md` |
    | Handle | +90° um X, flach, 7 mm hoch | hergeleitet: Preds Griff ist 7 mm dick |
    | Handle pin | keine, liegt auf der Abflachung | hergeleitet |
-   | Hinge, alle drei Varianten: Hälften | keine, stehend; beide Hälften behalten ihre Lage zueinander | Nutzer 16.11.: „Scharniere in Druckposition belassen“ |
+   | Hinge, alle drei Varianten: Hälften | keine, stehend; beide Hälften behalten ihre Lage zueinander | Vorgabe 16.11.: Scharniere in Druckposition belassen |
    | Hinge Pinned: `Hinge pin` | −90° um X, Abflachung aufs Bett, eigenes Teil | hergeleitet |
 
    Die Rolle kommt aus der Teil-Rolle der Komponente (`partRoleOf`). Bei Box und Deckel ohne Satz kommt sie aus den
@@ -34,8 +34,8 @@ einstellbar. Und bei zweifarbigem Export auch eine freie Fläche für den Purget
 2. **Druckbett-Auswahl** im Export-Dialog. Die Vorgaben stammen aus `commandCreateBaseplate/printBeds.py` (dieselbe
    Liste wie im Baseplate-Dialog), dazu „Custom“ mit Breite und Tiefe. Vorgabe ist Bambu Lab P1P, P1S, X1, X1C, X1E
    (256 × 256 mm).
-   - Nachtrag nach dem Bambu-Klicktest 17.11.2026, F1/F2, Nutzer: „Ja, so. Aber auch die anderen BambuLab-Drucker mit
-     aufnehmen.“
+   - Nachtrag nach dem Bambu-Klicktest 17.11.2026, F1/F2, Entscheidung: so, aber auch die anderen BambuLab-Drucker mit
+     aufnehmen.
    - Die Liste führt alle Bambu-Lab-Drucker aus den Profilen von Bambu Studio 02.09.01.70 getrennt auf.
    - Je Drucker kommt dazu die Turm-Standardlage (`default_wipe_tower_pos`).
    - Die Purge-Fläche liegt an der Turm-Standardlage, bei Nicht-Bambu-Druckern und Custom hinten rechts.
@@ -43,18 +43,18 @@ einstellbar. Und bei zweifarbigem Export auch eine freie Fläche für den Purget
    - Die Purge-Fläche wird nur freigehalten, wenn wirklich Schrift bemalt wird.
    - Sperrzone (`bed_exclude_area`, nur P1/X1: 18 × 28 mm vorn links): Ist ein Bambu-Drucker gewählt, bleibt sie
      frei, auch nach dem Zentrieren durch den Slicer, und hat Vorrang vor der Purge-Fläche. Bei Custom und
-     Nicht-Bambu-Druckern ist sie Sache des Users. Nutzer 17.11.2026, zuletzt: „Wenn wir den Drucker exakt vorgeben ist
-     die Sperrzone nicht mehr Sache des Users.“ Die Meldung nennt Platten an der Sperrzone getrennt von denen ohne
+     Nicht-Bambu-Druckern ist sie Sache des Users. Entscheidung 17.11.2026, zuletzt: Wenn der Drucker exakt vorgegeben ist,
+     ist die Sperrzone nicht mehr Sache des Users. Die Meldung nennt Platten an der Sperrzone getrennt von denen ohne
      Purge-Fläche.
    - Box-Satz: Box, Deckel und Zubehör kommen je auf eigene Platten, mindestens 3 Platten je Box. Passt das Zubehör
-     nicht auf eine Platte, kommen weitere dazu. Nutzer 17.11.2026: „Das Zubehör der Box sollte auf eine separate
-     Platte. Eine Box müsste je nach Größe 3 Platten gesamt ergeben.“
+     nicht auf eine Platte, kommen weitere dazu. Vorgabe 17.11.2026: Das Zubehör der Box soll auf eine separate
+     Platte; eine Box ergibt je nach Größe 3 Platten gesamt.
 3. **Verteilen.** Die Teile werden zeilenweise nach ihrer Grundfläche auf das Bett gelegt, die größten zuerst. Passt
    ein Teil nur quer, wird es um 90° um Z gedreht. Was nicht mehr auf die Platte passt, kommt auf die nächste. Ein Teil,
    das größer ist als das Bett, kommt allein auf eine Platte, und die Zusammenfassung im Dialog nennt es.
    Gruppen wie die Scharnierhälften werden als ein Block verteilt.
-4. **Abstand** zwischen den Teilen und zum Bettrand ist einstellbar. Vorgabe 5 mm (D2, Nutzer 17.11.).
-5. **Purgetower.** Ist „Color label text“ an, bleibt an der Turmstelle des Druckers ein Quadrat frei (siehe 2.). Größe 50 × 50 mm, einstellbar (D2, Nutzer 17.11.). Gilt auf jeder Platte.
+4. **Abstand** zwischen den Teilen und zum Bettrand ist einstellbar. Vorgabe 5 mm (D2, 17.11.).
+5. **Purgetower.** Ist „Color label text“ an, bleibt an der Turmstelle des Druckers ein Quadrat frei (siehe 2.). Größe 50 × 50 mm, einstellbar (D2, 17.11.). Gilt auf jeder Platte.
 6. **Merken.** Bett, Breite, Tiefe, Abstand und Purgetower-Größe werden wie die übrigen Wahlen in der
    Export-Konfiguration gespeichert (`readChoices`/`saveChoices`).
 7. **Nur bei mehreren Teilen.** Ein einzelnes Teil wird nur in Drucklage gedreht und in die Bettmitte gesetzt.
@@ -67,9 +67,9 @@ einstellbar. Und bei zweifarbigem Export auch eine freie Fläche für den Purget
   - Für Teile eines Satzes vernetzt `meshOf` den Körper im Teil-Rahmen und dreht ihn nach seiner Rolle.
   - Alle anderen Teile laufen wie bisher über `transform2`.
   - Neu sind die Dialog-Eingaben und das Speichern.
-- Mehrere Platten: **eine 3MF je Platte**, „<Name>, plate N.3mf“, bei einer Platte nur „<Name>.3mf“. Nutzer 17.11.2026
-  nach der Plattenprobe: „Eine Sortierung kann ja nur bei eine 3MF je Platte anständig durchgeführt werden. Wenn alles
-  in eine 3MF kommt und Bambu/Orca dann selber verteilt kommt alles durcheinander.“ Erste Wahl (D3, „Eine Datei.
+- Mehrere Platten: **eine 3MF je Platte**, „<Name>, plate N.3mf“, bei einer Platte nur „<Name>.3mf“. Entscheidung 17.11.2026
+  nach der Plattenprobe: Eine Sortierung ist nur bei einer 3MF je Platte anständig möglich; kommt alles
+  in eine 3MF und Bambu/Orca verteilt selbst, gerät alles durcheinander. Erste Wahl (D3, „Eine Datei.
   Plattengröße gemäß Eingabe.“) ist damit überholt.
   - Plattenprobe 17.11. (`notizen/r29-export-probe/LIESMICH.md`): Bambu übernimmt Platten nur aus einer Datei mit
     Bambu-Kennung **und** Projekt-Einstellungen. Diese ersetzen Drucker, Filament und Prozess.
@@ -77,7 +77,7 @@ einstellbar. Und bei zweifarbigem Export auch eine freie Fläche für den Purget
     `center_instances_around_point`). Deshalb wird der Inhalt jeder Platte schon zentriert geschrieben. Die
     Purge-Ecke wird nach dem Zentrieren geprüft. Liegt ein Teil darin, wird die Ecke größer angesetzt. Geht auch das
     nicht, nennt die Meldung die Platte.
-- STL in Drucklage (je Teil gedreht, ohne Verteilen), STEP unverändert in Konstruktionslage (D4, Nutzer 17.11.).
+- STL in Drucklage (je Teil gedreht, ohne Verteilen), STEP unverändert in Konstruktionslage (D4, 17.11.).
 
 ## Nicht dabei
 - Kein Slicer-Projekt mit Druckereinstellungen und keine Filamentzuordnung über das hinaus, was es heute gibt.

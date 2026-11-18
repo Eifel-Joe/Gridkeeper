@@ -330,9 +330,9 @@ def test_an_unknown_design_intent_after_is_an_error(tmp_path):
         cases.loadCase(write_case_data(tmp_path, data), STATE_CLASSES)
 
 
-# A raised divider corner carries on from the compartment corner below without a ledge (p83, the user's hand test): small
+# A raised divider corner carries on from the compartment corner below without a ledge (p83, found in a hand test): small
 # upward faces left where the two meet are reported. Faces as (area mm2, width mm, length mm), from Fusion
-def test_ledges_reports_the_sickles_of_bin():
+def test_ledges_reports_the_sickles_of_the_hand_test_bin():
     faces = [(0.3635, 2.24, 1.33), (0.0542, 2.55, 2.55), (484.99, 125.5, 83.5)]
     notes = cases.raisedCornerLedges(faces)
     assert len(notes) == 2
@@ -356,7 +356,7 @@ def test_text_on_one_line_inside_the_insert_passes():
 
 
 def test_wrapped_welle_6mm_fails():
-    # p84, measured in the user's document: "Welle" y 6.8 to 11.9 mm, "6mm" y -0.9 to 4.1 mm
+    # p84, measured in a test document: "Welle" y 6.8 to 11.9 mm, "6mm" y -0.9 to 4.1 mm
     letters = [(1.0, 6.8, 6.0, 11.9), (6.5, 6.8, 18.1, 11.9), (1.0, -0.9, 13.0, 4.1)]
     notes = cases.insertTextProblems(INSERT_BOX, letters, ONE_LINE)
     assert any('line 1 in 2 bands' in note for note in notes)
@@ -406,13 +406,13 @@ def test_only_label_cases_set_texts(tmp_path):
 
 def test_welle_6mm_cases_are_there():
     loaded = {case.name: case for case in cases.loadCases(CASES_FOLDER, STATE_CLASSES)}
-    nutzer = loaded["label_1u_welle_6mm"]
-    assert (nutzer.state.line1, nutzer.state.line2, nutzer.state.showScrew, nutzer.state.hardware, nutzer.state.surface, nutzer.state.textStyle) ==         ("Welle 6mm", "", False, "none", "Flush", "Regular")
+    welle = loaded["label_1u_welle_6mm"]
+    assert (welle.state.line1, welle.state.line2, welle.state.showScrew, welle.state.hardware, welle.state.surface, welle.state.textStyle) ==         ("Welle 6mm", "", False, "none", "Flush", "Regular")
     assert loaded["label_1u_welle_6mm_text_edited"].texts["gfLabel1_text1"].startswith("Welle 6mm")
 
 
 def test_two_line_heavy_case_is_there():
-    # the two lines of the user's slicer picture in the style that prints with a 0.4 mm nozzle (p130)
+    # the two lines of a slicer picture in the style that prints with a 0.4 mm nozzle (p130)
     case = cases.loadCase(os.path.join(CASES_FOLDER, "label_1u_two_lines_heavy.json"), STATE_CLASSES)
     state = case.state
     assert (state.line1, state.line2, state.surface, state.textStyle) == ("5mm", "Hex key", "Flush", "Heavy")

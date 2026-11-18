@@ -162,7 +162,7 @@ Bei Cullenect im Bin: `tabWidth = effectiveTabWidth(...)`, `tabTopAngle = 0`, ke
 
 - [ ] **Step 1:** Akzeptanzkriterium vorab festhalten (nicht per pytest testbar): In Fusion eine 1x1x3-Bin „Cullenect“ erzeugen; Messung ergibt Tasche 36,30 × 11,30 × 1,20 mm (±0,01), Rippen 0,20 × 0,40 mm ab 0,20 über Boden; alle Skizzen `isFullyConstrained`; Timeline ohne Fehler; danach `gfBaseWidth` = 40 mm ⇒ Tasche 34,30 mm und mittig.
 - [ ] **Step 2:** Umsetzen.
-- [ ] **Step 3:** Prüfung nach Step 1 in Fusion (Fusion-MCP `fusion_mcp_execute` oder Nutzer), Messwerte und Constraint-Liste ins Protokoll; `python -m pytest -q` grün.
+- [ ] **Step 3:** Prüfung nach Step 1 in Fusion (Fusion-MCP `fusion_mcp_execute` oder von Hand), Messwerte und Constraint-Liste ins Protokoll; `python -m pytest -q` grün.
 - [ ] **Step 4:** Commit.
 
 ### Task 4: Bin-Dialog — Sichtbarkeit, Taschen-Toleranz, Breitenanzeige
@@ -196,8 +196,8 @@ Verhalten: Bei Stil Cullenect sind Text, Icon, Fett und Neigung deaktiviert (Wer
 
 - [ ] **Step 1: Failing tests:** zwei Fake-Skizzen, eine unbestimmt ⇒ Liste mit ihrem Namen; `constraintFailure('bin', 'bin_1x1x3_cullenect', ['x'])` ist Text, `constraintFailure('label', 'label_1u_screw_text', ['x'])` ist Text, `constraintFailure('bin', 'bin_1x1x3_plain', ['x'])` ist `None`; `test_every_case_in_the_repo_loads` lädt die neuen Fälle.
 - [ ] **Step 2:** FAIL. **Step 3:** Umsetzen.
-- [ ] **Step 4:** pytest grün. In Fusion „Gridfinity tests: update snapshots“ nur für die neuen Fälle, dann „run“ für alle: alle grün, Constraint-Meldungen der Bestandsfälle an Nutzer (Liste im PR-Text).
-- [ ] **Step 5:** Commit. **Live-Test (Nutzer):** Probedruck 1x1-Bin + Original-Cullenect-Einleger klickt, hält, löst sich.
+- [ ] **Step 4:** pytest grün. In Fusion „Gridfinity tests: update snapshots“ nur für die neuen Fälle, dann „run“ für alle: alle grün, Constraint-Meldungen der Bestandsfälle melden (Liste im PR-Text).
+- [ ] **Step 5:** Commit. **Live-Test:** Probedruck 1x1-Bin + Original-Cullenect-Einleger klickt, hält, löst sich.
 
 ---
 
@@ -240,7 +240,7 @@ Ungültig: Flansch bei `countersunk` oder `none`; Antrieb ≠ `none` bei Kopf `n
 
 ### Task 8: Spike — Text- und SVG-Skizzen vollständig bestimmt
 
-Klärt vor dem Generator, wie `SketchText` und importierte SVG-Kurven in Fusion `isFullyConstrained` werden (Spec: SVG `isFixed`, Text an bemaßte Konstruktion). Ergebnis: kurze Notiz in `dev-notes/specs/2026-11-14-cullenect-labels-design.md` (Abschnitt „Vollständig bestimmte Skizzen“, Befund mit Datum) und ein Wegwerf-Skript im Scratchpad. Kein Produktionscode. Gleichzeitig Befund zu den bestehenden Text/Icon-Labels (Outline/Engraved/Embossed) für Nutzer.
+Klärt vor dem Generator, wie `SketchText` und importierte SVG-Kurven in Fusion `isFullyConstrained` werden (Spec: SVG `isFixed`, Text an bemaßte Konstruktion). Ergebnis: kurze Notiz in `dev-notes/specs/2026-11-14-cullenect-labels-design.md` (Abschnitt „Vollständig bestimmte Skizzen“, Befund mit Datum) und ein Wegwerf-Skript im Scratchpad. Kein Produktionscode. Gleichzeitig Befund zu den bestehenden Text/Icon-Labels (Outline/Engraved/Embossed).
 
 - [ ] **Step 1:** In Fusion: Skizze mit Mehrzeilen-Text, Eckpunkte des Textrahmens bemaßen/fixieren ⇒ `isFullyConstrained`? SVG importieren, alle Kurven `isFixed = True` ⇒ `isFullyConstrained`? Außerdem messen: welche Fusion-Texthöhe ergibt Großbuchstaben so hoch wie Cullenects `text(size = 5)` in Open Sans (OpenSCAD-`size` ist nicht die Fusion-Texthöhe) — Ergebnis legt `CULLENECT_TEXT_HEIGHT` in Task 9 fest.
 - [ ] **Step 2:** Befund notieren, Commit (nur Spec-Notiz).
@@ -267,7 +267,7 @@ Klärt vor dem Generator, wie `SketchText` und importierte SVG-Kurven in Fusion 
 
 Geometrie: Grundkörper aus drei Extrusionen (0–0,2 voll, 0,2–0,8 Einzug 0,2, 0,8–1,2 voll), Ecken r 0,5, Breiten-Bemaßung als Ausdruck auf den Breiten-Parameter. Text/Symbol 0,2 mm: erhaben auf 1,2–1,4; vertieft/bündig 1,0–1,2 aus dem Grundkörper geschnitten, Körper bleibt erhalten. Symbol-Kurven `isFixed`, Lage per Verschieben-Feature abhängig von der Breite (Spec).
 
-- [ ] **Step 1:** Akzeptanzkriterium vorab: 1U-Einleger mit Text „M3x10“ + Schraube: Außenmaß 36,00 × 11,00 × 1,20 mm, Einzug 0,20 mm zwischen 0,2 und 0,8 mm Höhe (±0,01); zwei Körper; alle Skizzen bestimmt; Breiten-Parameter auf 78 mm ⇒ Symbol bleibt rechts, keine Timeline-Fehler. Vergleich mit des Nutzers gedruckten Einlegern (f3z, in Fusion geöffnet).
+- [ ] **Step 1:** Akzeptanzkriterium vorab: 1U-Einleger mit Text „M3x10“ + Schraube: Außenmaß 36,00 × 11,00 × 1,20 mm, Einzug 0,20 mm zwischen 0,2 und 0,8 mm Höhe (±0,01); zwei Körper; alle Skizzen bestimmt; Breiten-Parameter auf 78 mm ⇒ Symbol bleibt rechts, keine Timeline-Fehler. Vergleich mit gedruckten Einlegern (f3z, in Fusion geöffnet).
 - [ ] **Step 2:** Umsetzen. **Step 3:** Prüfung in Fusion, Messwerte protokollieren. **Step 4:** Commit.
 
 ### Task 11: Befehl, Dialog, Snapshot-Fälle
@@ -286,7 +286,7 @@ Dialog: Auswahllisten aus `cullenectCatalog.screwOptions`/`listHardwareIcons`, K
 - [ ] **Step 1: Failing tests:** neuer Generator lädt (`test_every_case_in_the_repo_loads` mit `STATE_CLASSES` inkl. Label), `offsetX`/`offsetY`/`widthMm` werden mm→cm umgerechnet; der Constraint-Check ist für Generator `label` streng (Task 5).
 - [ ] **Step 2:** FAIL. **Step 3:** Umsetzen.
 - [ ] **Step 4:** pytest grün; in Fusion Snapshots der vier Label-Fälle anlegen, alle Fälle „run“ grün, Constraint-Check grün.
-- [ ] **Step 5:** Commit. **Live-Test (Nutzer):** Einleger 1U zweifarbig drucken, klickt in die neue Tasche und in eine Original-Cullenect-Bin.
+- [ ] **Step 5:** Commit. **Live-Test:** Einleger 1U zweifarbig drucken, klickt in die neue Tasche und in eine Original-Cullenect-Bin.
 
 ---
 
@@ -294,7 +294,7 @@ Dialog: Auswahllisten aus `cullenectCatalog.screwOptions`/`listHardwareIcons`, K
 
 **Entschieden (Runde 1, nach Plan, Dauerfreigabe):** Taschenbreite (A) — Standardbreiten in 0,5U-Schritten mit 1,0 mm Mindestrand; Original-Einleger passen in jede Tasche, auch in Fach-Laschen. Verworfen (B): freie Breite = Laschenlänge − 2 × 1,4 mm — 1U-Bin exakt 36,3 mm, ein 1x1-Fach der 4x2-Bin aber 37,6 mm (Original-Einleger hätte 1,3 mm Spiel).
 
-**Offen für Nutzer, vor Runde 4 klären** (Auslegung der Spec, keine Abweichung):
+**Offen, vor Runde 4 klären** (Auslegung der Spec, keine Abweichung):
 1. **Oberfläche „vertieft“ vs. „bündig“:** Laut Spec bleibt bei „vertieft“ der Füllkörper erhalten — dann sind beide gleich. Vorschlag: bei „vertieft“ Füllkörper ausgeblendet (wird nicht exportiert, kann eingeblendet werden), bei „bündig“ sichtbar.
 2. **Zwei Textzeilen:** Vorschlag übereinander, statt Cullenects zweitem Text auf derselben Zeile rechts.
 3. **Fach-Laschen automatisch aufs Fach verlängern** (statt `tabLength` von Hand)? Plan: nein, Bestandsverhalten.

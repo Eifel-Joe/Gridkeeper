@@ -1,15 +1,15 @@
 # Aufbewahrungsbox nach Pred
 
-Stand 16.11.2026, des Nutzers Wunsch: „Als nächstes würde ich gerne Boxen wie diese hier … noch integrieren.“
+Stand 16.11.2026, Wunsch: als Nächstes Boxen wie diese integrieren.
 Vorbild: [Gridfinity Storage Box by Pred (now parametric)](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric),
 Fusion-Datei `GridfinityStorageBox_Parametric v1.1.f3d` (letzter Stand, 09.11.2023; eine Pred-Box „v2“ gibt es nicht).
 
 ## Warum
 
-Nutzer hat Preds Boxen gedruckt und nutzt sie; sie stapeln und verriegeln gut. Gridkeeper soll weitere Boxen in anderen
+Preds Boxen sind gedruckt und im Einsatz; sie stapeln und verriegeln gut. Gridkeeper soll weitere Boxen in anderen
 Größen bauen, die **mit diesen gedruckten Boxen zusammenpassen**: aufeinander stapeln, mit denselben Riegeln verriegeln.
-Box und Deckel allein nützen nichts, der ganze Satz mit Zubehör gehört dazu (Nutzer: „Box und Deckel ohne das Zubehör
-bringt leider nichts.“).
+Box und Deckel allein nützen nichts, der ganze Satz mit Zubehör gehört dazu (Box und Deckel ohne das Zubehör
+bringen nichts).
 
 ## Ziele
 
@@ -32,7 +32,7 @@ bringt leider nichts.“).
 
 ## Anti-Ziele
 
-- Eine Box, die gut aussieht, aber auf des Nutzers gedruckten Boxen nicht sitzt oder deren Riegel nicht greifen, ist ein
+- Eine Box, die gut aussieht, aber auf gedruckten Boxen nicht sitzt oder deren Riegel nicht greifen, ist ein
   Fehlschlag, auch wenn alle Tests grün sind.
 
 ## Lizenz und Credits
@@ -58,8 +58,8 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
 - Skizzen der Kleinteile: Riegel (Experimental), Haltestift und leeres Schild vollständig bestimmt. Scharnier M3x30:
   `HingeTabDetails` (4 freie Kurven) und `Sketch3` (6 freie Kurven) nicht. Griff: keine eigene Skizze, seine Extrusion
   hängt an einer Skizze der Box.
-- **Druck- statt Einbauposition** (Nutzer: „Obacht bei den Scharnieren. Die sind in Druckposition ausgerichtet. Das ist
-  nicht die Einbauposition!“): In Preds Datei liegen alle Scharniere neben der Box in Druckposition (Hinge_M3x30 bei
+- **Druck- statt Einbauposition** (Obacht bei den Scharnieren: sie sind in Druckposition ausgerichtet, das ist
+  nicht die Einbauposition): In Preds Datei liegen alle Scharniere neben der Box in Druckposition (Hinge_M3x30 bei
   x −61 … −43 mm, z −12,2 … 19,4 mm, stehend), ebenso `Latch_Experimental` flach am Ursprung (z 0 … 7 mm). Nur der
   normale `Latch` und der Griff sitzen an der Box. Die Einbaulage von Scharnier und Riegel lässt sich also **nicht** aus
   ihrer Lage in Preds Datei übernehmen, sondern muss aus den Aufnahmen der Box abgeleitet werden (Scharnierschlitz:
@@ -67,7 +67,7 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
   Skizzen wie `Latch_Experimental`).
 - Riegel „Latch_Experimental“: gleiche Skizzen wie „Latch“, dazu ein Rechteckmuster (`R-Pattern2`).
 
-## Wege (Nutzer hat B gewählt)
+## Wege (B gewählt)
 
 - **A, alles im Code nachbauen:** volle Regeltreue, aber für die Kleinteile rund 130 Schritte mit Rundungen im Code.
 - **B, Box/Deckel/Schild im Code, Kleinteile mitgeliefert (gewählt):** Kleinteile sind größenunabhängig; genau Preds
@@ -75,7 +75,7 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
 - **C, Preds Datei als Vorlage parametrieren:** verworfen, übernimmt Mirror2-Fehler, nicht bestimmte Skizze,
   252 Schritte (≈ 50 s je Neuberechnung), passt nicht zu Settings/Rebuild/Clone.
 
-## Entscheidungen (Nutzer, 16.11.2026)
+## Entscheidungen (16.11.2026)
 
 - Ganzer Satz, nicht nur Box und Deckel.
 - Riegel: **Latch_Experimental**.
@@ -96,24 +96,24 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
 
   Großes Feld links, zwei Textzeilen rechts, darunter eine Reihe Cullenect-Symbole (so viele die Breite fasst). Text und
   Symbole erhaben, vertieft oder bündig, eigene Farbe, wie bei den Einlegern.
-- Mindesthöhe **5** Einheiten (Nutzer: „Ist es ein Problem auch 5u zu erzeugen???“ – nein: Preds Mirror2-Fehler kommt aus
+- Mindesthöhe **5** Einheiten (Frage, ob 5u ein Problem ist – nein: Preds Mirror2-Fehler kommt aus
   seiner Zeitleiste, Gridkeeper wählt Kanten bei jedem Bau neu; die Körper sind bei 5 gültig).
 - Das Schild behält **Preds flaches Plattenprofil** (passt in Preds Halter). Erhabener Text ist erlaubt: Preds eigenes
-  `Label_M_Screws` ist 1,25 mm statt 0,85 mm dick, also 0,4 mm erhabene Schrift (Nutzer: „Gibt es einen triftigen Grund
-  dafür, dass erhabener Text nicht funktionieren sollte?“).
-- **Joint origins** (Nutzer bei der Freigabe: „Ja, freigegeben. Mit Joint origins.“), wie bei Bins und Baseplates:
+  `Label_M_Screws` ist 1,25 mm statt 0,85 mm dick, also 0,4 mm erhabene Schrift (kein triftiger Grund,
+  dass erhabener Text nicht funktionieren sollte).
+- **Joint origins** (bei der Freigabe: mit Joint origins), wie bei Bins und Baseplates:
   - Option **Add joint origins**: je ein Joint origin unten mittig in jeder Zelle des Box-Bodens, um Bins in die Box zu
     jointen (wie die Sockel der Baseplate, mit dem Raster mitwandernd).
   - An jedem Sitz eines Kleinteils außer den Scharnieren (Riegel, Griff, Haltestift, Schild) ein Joint origin; diese
     Kleinteile werden daran gejointet. Der Deckel wird geschlossen auf die Box gejointet.
-- **Scharniere bleiben in Druckposition** (Nutzer: „Ich würde die Scharniere in Druckposition belassen.“): Die beiden
+- **Scharniere bleiben in Druckposition** (Entscheidung: Scharniere in Druckposition belassen): Die beiden
   Scharniere M3x30 liegen neben der Box in Preds Druckausrichtung (stehend, beide Hälften verbunden wie in Preds Datei)
   und werden nicht in die Box gejointet.
   - Festlegung der Hauptsitzung: je ein Joint origin mittig auf der Unterseite der Box und oben auf dem Deckel, um Boxen
     aufeinander zu jointen.
-- des Nutzers gedruckte Boxen sind keine Messreferenz („Ignoriere meine Boxen“); Referenz ist Preds Datei v1.1.
+- gedruckte Boxen sind keine Messreferenz (Vorgabe: eigene gedruckte Boxen ignorieren); Referenz ist Preds Datei v1.1.
 
-## Festlegungen der Hauptsitzung (nach Builder-Check, von Nutzer korrigierbar)
+## Festlegungen der Hauptsitzung (nach Builder-Check, korrigierbar)
 
 - Preds Werte gelten fest (42 mm Raster, Scharnierspiel 0,15 mm, Schildformel); die Box folgt nicht den globalen
   Gridkeeper-Einstellungen, damit die Passung zu Preds Boxen sicher bleibt.
@@ -123,10 +123,9 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
   ≈ 28,5 mm breit).
 - Erhabene Schrift Vorgabe 0,4 mm, höchstens so viel, wie der Halter Luft lässt (Builder misst in Preds Halter nach).
   Text und Symbole bleiben im Mittelfeld; der Rand bleibt frei, nach Preds Hinweis 2–3 mm (Builder misst die Lippen).
-- Der Satz enthält **4 Riegel** (Nutzer: „Je Box werden auch 4 Latches gebraucht.“ und „Latches 2 vorne und 2 jeweils
-  einer seitlich hinten“): 2 vorn und an jeder Seite einer, jeweils an der hinteren Seitenaufnahme (`SideCatchTabs`,
+- Der Satz enthält **4 Riegel** (Vorgabe: je Box 4 Latches, 2 vorne und je einer seitlich hinten): 2 vorn und an jeder Seite einer, jeweils an der hinteren Seitenaufnahme (`SideCatchTabs`,
   Lage misst der Builder in Preds Datei). Dazu 2 Scharniere M3x30.
-- **2 Haltestifte** für den Griff (Nutzer: „Handle_Pins werden auch zwei gebraucht. In der Konstruktion ist nur einer.“):
+- **2 Haltestifte** für den Griff (Vorgabe: zwei Handle_Pins, in der Konstruktion ist nur einer):
   einer je Griffseite. In Preds Datei steckt nur einer (`HandlePin:1` bei x 58 … 78 mm, links); der zweite sitzt
   gespiegelt an der rechten Griffaufnahme (Lage misst der Builder an `HandleBoltHoles`).
 - Eigener Feature-Branch je Runde, Ziel `master` laut Release-Steckbrief (der Sammelbetrieb R14–R19 ist beendet).
@@ -136,7 +135,7 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
 1. **Box und Deckel** baut der Generator im Code wie Bins und Baseplates: vollständig bestimmte Skizzen, Maße aus Preds
    Datei, Benutzerparameter `gfBox1_baseWidth`, `gfBox1_baseLength`, `gfBox1_heightU`. Bodenraster und Bin-Füße im Deckel
    aus den vorhandenen Generatoren (`baseplateGenerator`, `baseGenerator`), soweit maßgleich zu Pred.
-   Nachtrag 17.11.2026 (Nutzer: „Ja, A bauen“): Die rechten Griff- und Schildhalter baut der Generator selbst als
+   Nachtrag 17.11.2026 (Entscheidung: A bauen): Die rechten Griff- und Schildhalter baut der Generator selbst als
    Gegenstück der linken (x über die Boxmitte gespiegelt, Fasen- und Rundungskanten ebenso), statt Preds `#42 Mirror6`.
    Fusion konnte diese Feature-Spiegelung je nach Dokumentzustand nicht nachrechnen (`FILLET_NO_EDGE_FOUND`), auch mit
    dem Compute-Typ Identical nicht (`fusion-auftraege/r27_diag2.log`, `r27_cmd.out`). Die Form bleibt Preds, die
@@ -147,31 +146,31 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
    Druckposition (siehe Befund); im Maßvergleich wird die Einbaulage gegen die Aufnahmen der Box geprüft (Riegel auf den
    Haken wie `Latch:1`). Die Scharniere bleiben in Druckposition neben der Box; ihre Passung zum Schlitz prüft der
    Maßvergleich über die Maße (Länge, Tiefe, Breite der Laschen gegen `HingeSlot…`).
-   Nachtrag 17.11.2026 (Runde 28, Nutzer: „Der Griff bleibt bei Max. 113,5mm stehen. Breiter macht keinen Sinn.“): Der
+   Nachtrag 17.11.2026 (Runde 28, Entscheidung: Der Griff bleibt bei maximal 113,5 mm, breiter ergibt keinen Sinn): Der
    Griff ist in Preds Datei kein festes Teil. Er ist so breit wie das Schild plus 28,5 mm (57 / 99 / 113,5 mm bei 4 / 5 /
    ab 6 Einheiten Breite) und hat dort keine eigene Skizze. Abweichung von „feste Teile ohne Parameter“: `handle.f3d`
    bekommt eine eigene, vollständig bestimmte Skizze; ihr einziges Breitenmaß wird beim Einfügen per Ausdruck an die
    Schildbreite der Box + 28,5 mm gebunden (`predBoxSeats.handleWidth`). Eigene Benutzerparameter hat das Teil nicht.
-   Nachtrag 17.11.2026 (Runde 28, Nutzer: „Am besten doch alle Scharniere mit Auswahl im Generator. Ich hatte zwar das
-   Scharnier M3x30 gesagt, aber ich denke alle drei zum auswählen ist besser.“): Der Box-Dialog bekommt eine Auswahl
+   Nachtrag 17.11.2026 (Runde 28, Entscheidung: alle Scharniere mit Auswahl im Generator; zunächst war nur
+   M3x30 vorgesehen, alle drei zur Auswahl ist besser): Der Box-Dialog bekommt eine Auswahl
    **Hinge** mit allen drei Scharnier-Varianten aus Preds Datei, Standard M3x30 wie bisher. Die Wahl steht in den
    Einstellungen der Box (Rebuild und Clone übernehmen sie). Jede Variante kommt wie M3x30 als eigene Datei
    (`resources/predBox`), zwei Stück in Druckposition neben der Box. Ob die Box je Variante eine andere Aussparung braucht,
    klärt `fusion-auftraege/r28_hinge_variants.py`; braucht sie eine, wird das vor dem Bau vorgelegt.
-   Lage der Scharniere (Nutzer 17.11.2026: „Das passt so für das Scharnier“): das erste dort, wo Preds `Hinge_M3x30:1`
+   Lage der Scharniere (Entscheidung 17.11.2026: passt so für das Scharnier): das erste dort, wo Preds `Hinge_M3x30:1`
    liegt, das zweite 5 mm daneben in y (`predBoxSeats.HINGE_GAP`), beide in Druckposition; gilt für alle drei Varianten.
-   Nachtrag 17.11.2026 (Runde 28, Nutzer auf „Scharniere in Druckposition neben der Box festmachen (Vorschlag J), und Lage
-   für alle drei so?“: „Ja, beides“): Die Scharniere werden starr gejointet, an zwei Joint origins der Box *Hinge 1 joint
+   Nachtrag 17.11.2026 (Runde 28, Entscheidung zum Vorschlag, die Scharniere in Druckposition neben der Box festzumachen (Vorschlag J) und die Lage
+   für alle drei so zu übernehmen: beides ja): Die Scharniere werden starr gejointet, an zwei Joint origins der Box *Hinge 1 joint
    origin* und *Hinge 2 joint origin* neben der Box in Druckposition, nicht in Einbaulage. So wandern sie mit dem Satz,
    und es gibt kein Positions-Element in der Zeitleiste. Anlass: lose gesetzt blieben sie beim Stapeln liegen, und ihr
    Positions-Element blieb nach dem Rebuild unterdrückt stehen (`fusion-auftraege/r28_cmd.l1.out`, `.l2.out`). Lage je
    Variante: die Ecke ihres Körperquaders (kleinstes x, y, z) dort, wo die von `Hinge_M3x30:1` liegt, das zweite
    Scharnier 5 mm daneben in y, gerechnet von der eigenen Tiefe. Vorgabe M3x30. Damit gilt oben „werden nicht in die
    Box gejointet“ nur noch im Sinn von: nicht in Einbaulage.
-   Nachtrag 17.11.2026 (Runde 29, Nutzer: „Im Übrigen brauchen Latches, Hinge, Handle und Pin eine andere Farbe als die
-   Box und der Deckel.“): Alle Körper der Kleinteile (Riegel, Griff, Haltestifte, Scharnierhälften und der gedruckte
+   Nachtrag 17.11.2026 (Runde 29, Vorgabe: Latches, Hinge, Handle und Pin brauchen eine andere Farbe als die
+   Box und der Deckel): Alle Körper der Kleinteile (Riegel, Griff, Haltestifte, Scharnierhälften und der gedruckte
    Stift) bekommen die Darstellung *Gridkeeper box parts*, orange (#F07800) wie der Riegel in Preds Datei (Festlegung
-   der Hauptsitzung, Nutzer kann sie ändern). Sie wird je Dokument einmal angelegt und wiederverwendet, beim Erzeugen,
+   der Hauptsitzung, änderbar). Sie wird je Dokument einmal angelegt und wiederverwendet, beim Erzeugen,
    Rebuild und Clone gleich. Box und Deckel bleiben, wie sie sind; die Geometrie ändert sich nicht.
 3. **Schild:** gebaut vom Gridkeeper-Schildgenerator (Text, Cullenect-Symbole), Plattengröße nach Preds Formel.
 4. Struktur wie bisher: jedes Teil eine Komponente, im Container „Gridkeeper boxes“ o. ä., Gelenke zwischen Teilen.
@@ -189,7 +188,7 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
 - Alle Skizzen des Satzes sind vollständig bestimmt (Snapshot-Test).
 - Snapshot-Tests für mehrere Größen und Höhen (5 bis 10), auch nach Parameteränderung; ein Prüfwert sichert den
   Abstand (0,5 mm bei Höhe 5) zwischen wandernder Kante und unterer Rille.
-- Probedruck durch Nutzer: Deckel schließt, Riegel greifen, zwei Gridkeeper-Boxen stapeln und verriegeln, das Schild
+- Probedruck: Deckel schließt, Riegel greifen, zwei Gridkeeper-Boxen stapeln und verriegeln, das Schild
   sitzt im Halter.
 
 ## Offen für den Builder
@@ -199,7 +198,7 @@ Kleinteil-Dateien tragen einen Herkunftsvermerk.
 - Maße, die nicht in diesem Dokument stehen, misst der Builder in Preds Datei nach (Lage der Riegel und Scharniere,
   Griffhalter, Schildhalter, Luft unter den Lippen).
 
-## Nachtrag Runde 29: Brücken im Scharnier M3x30 (Nutzer, 17.11.2026: „A: Brücken anders“)
+## Nachtrag Runde 29: Brücken im Scharnier M3x30 (Entscheidung 17.11.2026: Brücken anders)
 
 - Preds Druckhilfe in der Senkung des M3x30-Scharniers (Sketch5, Extrude25/26: Lagen 0,2 und 0,4 mm am Senkungsboden)
   ließ sich als Skizze nicht vollständig bestimmt zeichnen: Fusion lehnte eine Bemaßung ab

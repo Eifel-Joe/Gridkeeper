@@ -713,7 +713,7 @@ def _buildBin(
         )
 
     if len(pockets) > 0:
-        # always, the label command joints an insert into them (p160, Nutzer 15.11.2026). After the placement like the
+        # always, the label command joints an insert into them (p160, 15.11.2026). After the placement like the
         # feet's, with the size of the pocket in mm, an insert and a bin have base units of their own
         offsetX = Dim.length(binPlacement[0])
         offsetY = Dim.length(binPlacement[1])

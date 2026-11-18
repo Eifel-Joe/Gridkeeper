@@ -3,9 +3,9 @@ The 3MF export's print layout (round r29-export, spec dev-notes/specs/2026-11-17
 turned into its print orientation, the parts spread over the print bed with spacing, further plates for what doesn't
 fit, the purge tower's corner kept free when the label text is painted. Fusion-free and in mm, as threeMf.MeshObject.
 
-Nutzer 17.11.2026: "Noch in 1.1.0, mit Druckbett-Auswahl. Auch für die 3MF bei Bins und Baseplates wichtig. Ebenso
-Labels. Natürlich nur wenn es mehrere Druckteile sind. Auch wichtig ist ein Abstand der Teile zueinander, gerne
-einstellbar. Und bei zweifarbigem Export auch eine freie Fläche für den Purgetower."
+Requirements of 17.11.2026: in 1.1.0, with a print bed choice, also for the 3MF of bins, baseplates and labels, only
+when there are several parts to print; a spacing between the parts, preferably adjustable; with a two-color export a
+free area for the purge tower.
 """
 
 import dataclasses
@@ -25,7 +25,7 @@ SURFACE_FLUSH = 'Flush'
 # the body of the Pinned hinge that is the pin, predHinge.SHAPES['Pinned']
 HINGE_PIN_BODY = 'Hinge pin'
 
-# Defaults of the export dialog, Nutzer 17.11.2026 (D2): 5 mm between the parts and to the bed's edge, a 50 mm square
+# Defaults of the export dialog, 17.11.2026 (D2): 5 mm between the parts and to the bed's edge, a 50 mm square
 # for the purge tower (Bambu's tower is 35 mm wide, the rest is room for its brim and moving it)
 DEFAULT_SPACING = 5.0
 DEFAULT_PURGE = 50.0
@@ -36,8 +36,8 @@ def printRotation(role: str | None, bodyName: str, surface: str | None) -> str:
     How a part turns into its print orientation, in its own frame: a part of a box set in its component's frame, which
     the set's joints only turn about z, so one rule holds for every seat (the four latches). Pred's latch, handle pin,
     hinges and box lie as printed there; the handle lies flat on its -y face, 7 mm high; the Pinned hinge's pin on its
-    flat. The lid stays as built (Nutzer 17.11.2026, D1). A Flush label lies on its text, every other label on its
-    underside as it's built in (Nutzer 17.11.2026). Bins and baseplates stand as designed
+    flat. The lid stays as built (17.11.2026, D1). A Flush label lies on its text, every other label on its
+    underside as it's built in (17.11.2026). Bins and baseplates stand as designed
     """
     if role == 'Handle':
         return ROTATE_X_PLUS_90
@@ -202,7 +202,7 @@ def _touches(box: tuple, area: tuple, spacing: float) -> bool:
 
 
 def plateFileName(name: str, plate: int, plateCount: int) -> str:
-    """The 3MF of a plate (Nutzer 17.11.2026: one 3MF per plate), the name alone when there is one plate"""
+    """The 3MF of a plate (17.11.2026: one 3MF per plate), the name alone when there is one plate"""
     return name if plateCount == 1 else f'{name}, plate {plate + 1}'
 
 
@@ -300,8 +300,8 @@ def _layOutOnce(groups: list[list], bed: tuple[float, float], spacing: float, pu
     with its plate, how many plates, the groups too large for the bed, the plates where the purge square couldn't be
     kept free and those near an excluded area, apart, so the message names each for what it is (review r29-export),
     leaving out the plates of a part too large for the bed, it is named already. The excluded areas are those of a
-    Bambu Lab printer chosen (Nutzer 17.11.2026: „Wenn wir den Drucker exakt vorgeben ist die Sperrzone nicht mehr Sache
-    des Users.“)
+    Bambu Lab printer chosen (decided 17.11.2026: when the printer is given exactly, the excluded zone is no
+    longer the user's business)
 
     Bambu Studio and PrusaSlicer move the parts of a 3MF not made by them as one group to the middle of the bed
     (Bambu Studio Plater.cpp center_instances_around_point, Bambu probe A 17.11.2026), so each plate's parts are
@@ -371,8 +371,8 @@ def _layOutOnce(groups: list[list], bed: tuple[float, float], spacing: float, pu
                 blocked = blocked + result[6]
         return best
 
-    # Rows over the whole bed laid the small parts of a box side by side across it (Nutzer 17.11.2026: „Diese könnten
-    # kompakter verteilt sein. Das muss nicht alles nebeneinander liegen.“): rows as wide as a square of the parts'
+    # Rows over the whole bed laid the small parts of a box side by side across it (17.11.2026: they could be
+    # laid out more compactly, not all side by side): rows as wide as a square of the parts'
     # area with their spacing, widened step by step while that costs a plate or an area kept free that full rows keep
     full = bestWith(None)
     best = full
@@ -400,8 +400,8 @@ def layOutKinds(groups: list[list], kinds: list, bed: tuple[float, float], spaci
                 purgeAnchor: tuple[float, float] = (1.0, 1.0), excluded: list[tuple] = ()) -> tuple[list[tuple[int, object]], int, list[int], list[int], list[int]]:
     """
     As layOut, the groups of one kind on plates of their own, the kinds in the order they first come, their plates
-    numbered on. A box set's box, lid and small parts are three kinds (Nutzer 17.11.2026: „Das Zubehör der Box sollte auf
-    eine separate Platte. Eine Box müsste je nach Größe 3 Platten gesamt ergeben.“), see exportParts.plateKind
+    numbered on. A box set's box, lid and small parts are three kinds (decided 17.11.2026: the box accessories go on a separate
+    plate, a box gives 3 plates in all depending on its size), see exportParts.plateKind
     """
     order: list = []
     for kind in kinds:

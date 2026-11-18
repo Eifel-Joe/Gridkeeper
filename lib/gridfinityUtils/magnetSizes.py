@@ -1,6 +1,6 @@
 """
 The magnet size choice before the free "Magnet cutout depth" field of bins, baseplates and boxes (round 27, p263).
-Nutzer 16.11.2026: "Magnetlöcher einstellbar. 2,4mm für 2mm Magnete und 3,4mm für 3mm Magnete." The choice only writes
+Decided 16.11.2026: adjustable magnet holes, 2.4 mm for 2 mm magnets and 3.4 mm for 3 mm magnets. The choice only writes
 the depth field; settings keep the depth alone, the choice is read back from it, so older settings files with other
 depths load unchanged. Fusion-free, cm.
 """
@@ -11,7 +11,7 @@ CUSTOM = 'Custom'
 MAGNET_SIZES = [(SIZE_6X2, 0.24), (SIZE_6X3, 0.34)]
 
 ALL_CHOICES = [SIZE_6X2, SIZE_6X3, CUSTOM]
-# Nutzer 16.11.2026: "Box nur 6×2", 3.4 mm would break through Pred's 2.8 mm floor pad
+# Decided 16.11.2026: box with 6x2 mm magnets only, 3.4 mm would break through Pred's 2.8 mm floor pad
 BOX_CHOICES = [SIZE_6X2, CUSTOM]
 
 _TOLERANCE = 1e-6

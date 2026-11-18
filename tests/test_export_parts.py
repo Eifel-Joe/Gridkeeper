@@ -230,7 +230,7 @@ def test_the_default_bed_is_one_of_the_baseplate_dialogs():
     assert printBeds.PRINT_BED_PRESETS[exportParts.DEFAULT_BED] == (exportParts.DEFAULT_BED_SIZE, exportParts.DEFAULT_BED_SIZE)
 
 
-def test_layout_choices_default_to_values():
+def test_layout_choices_default_to_the_documented_values():
     choices = exportParts.layoutChoices({}, BED_NAMES)
     assert choices == {"bed": "Bambu Lab P1P, P1S, X1, X1C, X1E (256 x 256 mm)", "bedWidth": 256.0, "bedLength": 256.0, "spacing": 5.0, "purge": 50.0}
 
@@ -343,8 +343,8 @@ def test_an_older_plate_file_that_cant_be_removed_doesnt_fail_the_export():
 
 
 def test_the_layout_keeps_the_printers_tower_spot_and_excluded_area_free():
-    # Bambu click test 17.11.2026 (F1, F2); Nutzer: „Wenn wir den Drucker exakt vorgeben ist die Sperrzone nicht mehr
-    # Sache des Users.“
+    # Bambu click test 17.11.2026 (F1, F2): when the printer is given exactly, the exclusion zone is no longer
+    # the user's concern
     source = _entry_function("export3mf")
     assert "printBeds.purgeAnchor(layout['bed'])" in source
     assert "printBeds.excludedAreas(layout['bed'])" in source
@@ -378,8 +378,7 @@ def test_the_purge_square_only_when_label_text_is_painted():
     (None, "boxLabel", "Box label", None, None),
 ])
 def test_a_box_sets_box_lid_and_small_parts_go_on_plates_of_their_own(role, tag, body, setName, kind):
-    # Nutzer 17.11.2026: „Das Zubehör der Box sollte auf eine separate Platte. Eine Box müsste je nach Größe 3 Platten
-    # gesamt ergeben.“
+    # 17.11.2026: the box's accessories go on a separate plate; a box comes to 3 plates depending on its size
     assert exportParts.plateKind(role, tag, body, setName) == kind
 
 
@@ -396,7 +395,7 @@ def test_the_old_shared_bambu_bed_is_read_as_the_p1_and_x1():
 
 
 def test_the_dialog_summary_tells_of_a_file_per_plate():
-    # the user's test 17.11.2026: the summary still said "26 parts, one file" after the export got a 3MF per plate
+    # Found in testing 17.11.2026: the summary still said "26 parts, one file" after the export got a 3MF per plate
     source = open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read()
     assert "'one file' if format == FORMAT_3MF" not in source
     assert "a 3MF file per plate" in source

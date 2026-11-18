@@ -29,7 +29,7 @@ BOX_NAME_PREFIX = 'Box '
 # the components of a set in the box's own component, the lid is split off the box like in Pred's file
 BOX_COMPONENT_NAME = 'Box'
 LID_COMPONENT_NAME = 'Lid'
-# joint origins (Nutzer 16.11.2026: "Mit Joint origins."), the seats of the small parts follow in round 28
+# joint origins (decided 16.11.2026), the seats of the small parts follow in round 28
 CELL_JOINT_ORIGIN = 'Cell joint origin'
 STACK_BOTTOM_JOINT_ORIGIN = 'Stack bottom joint origin'
 STACK_TOP_JOINT_ORIGIN = 'Stack top joint origin'

@@ -117,7 +117,7 @@ def labelLayout(
         lineCenters = [middle + pitch / 2, middle - pitch / 2]
         # to the bottom edge also when debossed: the rim is kept by the symbol only, as the spec says. Keeping it for
         # the descenders too was taken back (Hauptsitzung 15.11.2026), two debossed lines would no longer build in
-        # Regular and Bold, Nutzer decides (round 17 hand-over)
+        # Regular and Bold, to be decided (round 17 hand-over)
         (lineHeight, descenderLimit) = descenderLineHeight(const.CULLENECT_TWO_LINE_TEXT_HEIGHT, lineCenters[1], 0, textStyle)
         lineHeights = [lineHeight] * 2
     else:
@@ -166,7 +166,7 @@ def layoutProblem(layout: LabelLayout) -> str | None:
 
 
 # share of the room for a line that stays free when its text is fitted (p84). The width is measured on the outlines of
-# the letters, Fusion lays a text out by their advance, wider by the side bearings: the user's "Welle 6mm" was fitted to
+# the letters, Fusion lays a text out by their advance, wider by the side bearings: the "Welle 6mm" label was fitted to
 # exactly 34 mm of outline and Fusion took it for longer than its box
 TEXT_WIDTH_RESERVE = 0.05
 
@@ -182,7 +182,7 @@ def fittedLineHeight(lineHeight: float, measuredWidth: float, availableWidth: fl
 # Round 17, p52: room kept free before the symbol when a text is fitted. The text is fitted once, when the insert is
 # built; a width made smaller later moves the symbol to the left towards it. Up to this much narrower they don't touch,
 # much narrower the insert is to be built anew. Without a symbol the right edge comes closer the same way, the room is
-# kept there too (round 21, p233, Nutzer at the test day)
+# kept there too (round 21, p233, test day)
 SHRINK_ROOM = 0.1
 
 
@@ -260,8 +260,8 @@ def insertProblem(
 
 # --- an insert jointed into a pocket of a bin (round 13, p100, p160)
 
-# shown in the label dialog, the insert isn't built then (Nutzer 15.11.2026: "Gar nichts. Hinweis, dass diese Tasche
-# nicht passt und eine passende gewählt werden soll.")
+# shown in the label dialog, the insert isn't built then (decided 15.11.2026: nothing built, a hint that this pocket
+# does not fit and a fitting one is to be picked)
 POCKET_MISFIT = 'This pocket is too small for the insert, pick one that fits'
 
 def insertFitsPocket(insertWidthMm: float, insertHeightMm: float, pocketWidthMm: float, pocketHeightMm: float) -> bool:

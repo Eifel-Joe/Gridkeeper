@@ -1,6 +1,6 @@
 # Übergabe: neue Runde „Kleinteile im Code zeichnen“ (Release-Blocker 1.1.0)
 
-Stand 17.11.2026, aus Runde 28 und dem Blocker. Nutzer hält diesen Weg für den richtigen: Die Teile entstehen im
+Stand 17.11.2026, aus Runde 28 und dem Blocker. Dieser Weg gilt als der richtige: Die Teile entstehen im
 selben Befehl wie Box und Deckel und landen damit von selbst in der Zeitleisten-Gruppe der Box.
 
 ## Warum
@@ -10,7 +10,7 @@ selben Befehl wie Box und Deckel und landen damit von selbst in der Zeitleisten-
 - Die Teile nach dem Befehl einzufügen (Branch `box-teile-nach-befehl`, Versuche 1–4) scheiterte an der Zeitleiste:
   - Neue Gruppen sind zugeklappt; dann scheitern index und rollTo (`r28_groupindex.log`).
   - Aufgeklappt scheiterte danach `TimelineGroup.deleteMe(False)` (Klicktest Versuch 4, 17:12:49).
-- Vereinbarung mit Nutzer: kein Versuch 5 auf diesem Weg.
+- Vereinbarung: kein Versuch 5 auf diesem Weg.
 
 ## Welche Teile
 
@@ -81,6 +81,6 @@ Tiefe −0,5 bzw. −0,2). Die Ausdrücke stehen in `fusion-auftraege/r28_hinge_
 ## Bis dahin
 
 - `master` (1.1.0, 0afa26a) fügt die Teile im Dialog per Import ein und scheitert dort.
-- Ob 1.1.0 so bleibt oder die Teile im Dialog vorerst ausgelassen werden, entscheidet Nutzer.
+- Ob 1.1.0 so bleibt oder die Teile im Dialog vorerst ausgelassen werden, ist zu entscheiden.
 - Der Branch `box-teile-nach-befehl` (bis c3df9f5) ist nicht mergefähig. Er enthält aber diese Übergabe und die
   belegten Befunde in `boxPartsLater.py` und im Spec-Nachtrag.

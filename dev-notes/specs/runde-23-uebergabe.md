@@ -1,6 +1,6 @@
 # Runde 23 – Übergabe: Umbenennen in Gridkeeper (p234)
 
-Stand 2026-11-16. Branch `runde-23` von `master` (fce1f12), nicht gepusht, nicht gemergt. des Nutzers Entscheidungen
+Stand 2026-11-16. Branch `runde-23` von `master` (fce1f12), nicht gepusht, nicht gemergt. Entscheidungen
 (16.11.): Der Name „Gridkeeper“ ist überall sichtbar, die internen Kennungen bleiben.
 
 ## Plan (zur Freigabe)
@@ -81,7 +81,7 @@ Kein kritischer Fund. Umgang:
   dem Fenstertitel „Gridfinity bin“. Jetzt heißt er wie das Teil (`SETTINGS_TITLE`, mit Test). Teile von vor R23
   zeigen ohnehin „Gridfinity …“.
 - **(M6) behoben:** Der Test prüft jetzt alle `PALETTE_TITLE`, alte IDs auch in HTML/JS und die Issue-Links.
-- **Für Nutzer und die Release-Notes (R24):**
+- **Für die Release-Notes (R24):**
   - (M2) Die Version springt von 2.4.0.0 auf 1.0.0. Teile zeigen „Generated with version …“ mit der Version ihres
     Baus; nichts vergleicht Versionen.
   - (M3) Mit den neuen Befehls-IDs verliert Fusion einmal angepinnte Werkzeuge, Tastenkürzel und Palettenpositionen
