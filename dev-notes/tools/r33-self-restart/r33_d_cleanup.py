@@ -36,4 +36,8 @@ def run(_context):
     git = find(GIT)
     if len(git) == 1 and not git[0].isRunning:
         print("run git ->", git[0].run())
-    show("git add-in", find(GIT))
+    git = find(GIT)
+    show("git add-in", git)
+    # main session 18.11.: the copy is gone from app.scripts, the git add-in runs, the copy's run at startup stays off
+    print("CHECK copy not in app.scripts:", "ok" if not find(COPY) else "FAILED")
+    print("CHECK git add-in running:", "ok" if len(git) == 1 and git[0].isRunning else "FAILED")
