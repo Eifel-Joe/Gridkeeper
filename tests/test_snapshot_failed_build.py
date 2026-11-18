@@ -1,7 +1,7 @@
 """
 Round 39, p531: a case whose build broke left its document open: buildCase raised before handing the document back,
 runCase never recorded it, closeCaseDocument didn't find it (twelve half-built box documents after one run,
-_scratch/r39 run 1). buildCase closes its document, unsaved, when the build breaks, and raises on.
+the first snapshot run of round 39). buildCase closes its document, unsaved, when the build breaks, and raises on.
 """
 
 import ast
