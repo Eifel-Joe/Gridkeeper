@@ -1,6 +1,6 @@
 """
-Settings, rebuild and clone of the box label (Hauptsitzung for 1.1.0, Jörg after his test: "Die Box-Labels haben die
-Punkte [Gridkeeper settings / rebuild / clone im Rechtsklick] nicht. Warum? Die Cullenect-Label haben es."). As the
+Settings, rebuild and clone of the box label (for 1.1.0: the box labels lacked the Gridkeeper settings, rebuild and
+clone entries of the right-click menu that the Cullenect labels have). As the
 Cullenect insert (round 18, p150): the plate's tag keeps the whole config, the right-click menu offers settings, rebuild
 and clone, a rebuild builds the label anew in place and jointed into its holder again, a clone opens the dialog with the
 settings and no box. The Fusion parts are read as source, the plain parts are loaded.
@@ -270,8 +270,7 @@ class TestBoxRebuiltWithItsLabel:
 
 
 class TestLabelTooWideForTheRebuiltBox:
-    """Jörg 17.11.2026: "Wenn die Box einen Rebuild bekommt, der das Schild zu groß werden lässt, muss das Schild
-    daneben gelegt werden." Of the same label width it stays in, narrower it stays in with a note, too wide it is taken
+    """17.11.2026: when a rebuild makes the label too big for the box, the label is laid beside it. Of the same label width it stays in, narrower it stays in with a note, too wide it is taken
     out and laid beside the box with a note"""
 
     def test_the_same_label_width_stays_in_without_a_note(self):
@@ -301,7 +300,7 @@ class TestLabelTooWideForTheRebuiltBox:
 
 
 def test_the_note_of_a_label_laid_in_front_of_the_box():
-    # Jörg 17.11.2026: "Schild vor die Front wäre besser. Sonst übersieht man es schnell."
+    # 17.11.2026: in front of the front the label is easy to see
     note = boxLabelConfig.widthNote("L in holder", 5, 4, place="in front of")
     assert "laid in front of the box" in note
     assert "laid beside the box" in boxLabelConfig.widthNote("L in holder", 5, 4)

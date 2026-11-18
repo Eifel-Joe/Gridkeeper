@@ -133,12 +133,12 @@ Test-Installation wie `release.yml`, Manifest-Version als Parameter, optional Ma
 `job4_reload_addin.py` (W4: Neu-Laden wie in `fusion-addin-reload.py`, aber für den Test-Pfad), ggf. `job5_api_restart.py` (W3,
 nur wenn Job 3 einen Weg zeigt); Ergebnis-Tabelle in die Spec (Abschnitt „Messung Neu-Laden“).
 
-- [x] Vorbereitung (Hauptsitzung/Jörg): Jörgs Gridkeeper stoppen, Test-Installation 9.9.8 hinzufügen und starten.
+- [x] Vorbereitung (Hauptsitzung): Gridkeeper stoppen, Test-Installation 9.9.8 hinzufügen und starten.
 - [x] Je Weg W1, W2, W3 (falls möglich), W4, jeweils nach frischem Fusion-Start: Installer setzt 9.9.9 auf die
   Platte (Job), Weg anwenden, dann prüfen: „Gridkeeper updates“ zeigt Running/Installed, Bin, Baseplate, Label,
   Box, Export öffnen und mit Abbrechen schließen, Rechtsklick settings/rebuild/clone auf einem gebauten Teil,
   Textbefehlsfenster auf Fehler. Klicks macht die Hauptsitzung (Testplan-Checkliste von mir).
-- [x] Danach: Test-Installation entfernen, Jörgs Gridkeeper wieder starten.
+- [x] Danach: Test-Installation entfernen, Gridkeeper wieder starten.
 - [x] Auswertung in die Spec; Erfolgsmeldung (Task 5) danach festlegen: Knopf „Reload Gridkeeper“ nur bei
   belegtem sicheren W3/W4, Anleitung bei W2, sonst „Restart Fusion“. Änderung per TDD (Text in `dialogHtml`/
   `successText(reloadWay)` getestet), Commit „Update: Meldung nach Messung Neu-Laden (p310)“.

@@ -137,7 +137,7 @@ def test_owned_parameters_are_found_by_their_owner(monkeypatch):
 
 
 def test_container_names_are_literal():
-    # stored in user documents and shown in the browser, Joerg's names (round 13, p90)
+    # stored in user documents and shown in the browser, the names (round 13, p90)
     assert tagUtils.TAG_CONTAINER == "container"
     assert tagUtils.CONTAINER_NAMES == {"grid": "Grid", "bins": "Bins", "labels": "Label", "boxes": "Boxes"}
     assert (tagUtils.KIND_GRID, tagUtils.KIND_BINS, tagUtils.KIND_LABELS) == ("grid", "bins", "labels")

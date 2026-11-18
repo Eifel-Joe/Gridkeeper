@@ -304,9 +304,9 @@ Schick mir deine Antworten und die Nummern der Handtests, die nicht gepasst habe
 
 <sub>Stand 16.11.2026, Sammelbranch `runde-14-18`. Belege je Runde in `dev-notes/specs/runde-NN-uebergabe.md`.</sub>
 
-## Ergebnis (Jörg, 16.11.2026)
+## Ergebnis (16.11.2026)
 
-- **Handtests:** alle bestanden. Tests 4, 13, 14 und 15 hat Jörg gedruckt bzw. im Slicer geprüft. Die übrigen liefen per Skript oder per Desktop-Steuerung.
+- **Handtests:** alle bestanden. Tests 4, 13, 14 und 15 wurden gedruckt bzw. im Slicer geprüft. Die übrigen liefen per Skript oder per Desktop-Steuerung.
 - **Antworten:**
   - **1A:** Kerbe hinnehmen.
   - **2A:** Hinweis ab der Druckgrenze, als p232 neu.

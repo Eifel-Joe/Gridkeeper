@@ -125,7 +125,7 @@ class BinLabelFit:
 
 def fitBinLabel(contentWidth: float, contentHeight: float, iconAspect: float | None, measuredWidth: float, measuredHeight: float, style: str) -> BinLabelFit:
     """Sizes of the text and icon of a bin label, the text measured at a text height of contentHeight (round 22, p13,
-    Joerg: "Wie das Original", upstream f1cb49b by Le0Michine). The icon keeps its full size, as tall as the letters can
+    as the original, upstream f1cb49b by Le0Michine). The icon keeps its full size, as tall as the letters can
     be at most, only limited by the label width; the text shrinks to the width left after the icon and gap, not below
     the least height that prints (round 19). Before, icon and letters shrank together"""
     tallest = contentHeight * const.BIN_LABEL_TEXT_HEIGHT_RATIO

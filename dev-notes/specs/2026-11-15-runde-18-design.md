@@ -1,6 +1,6 @@
 # Runde 18: Einleger neu bauen und Einstellungen
 
-Stand 15.11.2026, von Jörg in der Hauptsitzung freigegeben. Sammelbetrieb R14–R18, Branch von `runde-14-18`
+Stand 15.11.2026, in der Hauptsitzung freigegeben. Sammelbetrieb R14–R18, Branch von `runde-14-18`
 nach dem Merge von R14 (beide berühren den Label-Befehl).
 
 ## Punkte

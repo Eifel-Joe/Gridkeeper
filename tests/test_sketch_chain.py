@@ -1,5 +1,5 @@
 """
-Tests for the constraint chain of the box sketches (round 27, task 3b, Jörg: "Ja, Formen-Weg"). A rank picking plan
+Tests for the constraint chain of the box sketches (round 27, task 3b, decided: the shapes way). A rank picking plan
 was rejected by Fusion (fusion-auftraege/r27_sketches2/3.out); the chain fixes the points one after another like
 sketchUtils.createRectangle: a shape's first point from the origin, every further point with exactly two dimensions to
 points already fixed, real horizontal/vertical lines with that condition instead of a dimension. Never a dimension of

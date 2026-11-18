@@ -15,7 +15,7 @@ from .inputState import InputState
 # (https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric, CC BY-NC, by Pred) from an
 # InputState, round 29 (p262, dev-notes/r29/boxlabel-plan.md): Gridkeeper text and Cullenect symbols
 # (https://github.com/CullenJWebb/Cullenect-Labels, MIT, by CullenJWebb) on Pred's plate. A command of its own, not part
-# of the box command (Jörg 17.11.2026: "weil man es so besser auch mal austauschen könnte").
+# of the box command (decided 17.11.2026: so it can be swapped out more easily).
 
 ICONS_FOLDER = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
@@ -185,7 +185,7 @@ def _buildBoxLabel(
     )
     appearanceUtils.colorPart(marking, textOccurrence, state.textColor)
     # the export takes the plate as a part with its marking, Flush lies on its text (p380, round r29-export); the
-    # settings menu, rebuild and clone take the whole config (1.1.0, Jörg: "Die Box-Labels haben die Punkte [...] nicht")
+    # settings menu, rebuild and clone take the whole config (1.1.0: box labels lacked these menu entries)
     tagUtils.tagBody(plate, tagUtils.TAG_BOX_LABEL, settings, labelParameters, configJson.stateToJson(configJson.GENERATOR_BOX_LABEL, state), prefix)
     if occurrence is None and spot is not None:
         # no occurrence to carry the spot: the bodies themselves move there

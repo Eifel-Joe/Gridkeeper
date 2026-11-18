@@ -10,8 +10,8 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 - **Lid top: Grid or Closed:** the box dialog has a group *Lid* with **Lid top**. *Closed* builds the lid flat and
   closed on top instead of with a Gridfinity grid, sturdier; the stacking tabs in its corners stay, so boxes still
-  stack (Jörg: „Box steht auf Deckel. Und der Deckel hat doch in den Ecken Rastnasen, die in den Boden der Box
-  greifen.“). The default stays the grid, and boxes saved before the choice rebuild with it (Jörg, 18.11.2026).
+  stack (a box stands on its lid, and the tabs in the lid's corners reach into the box's floor). The default stays the
+  grid, and boxes saved before the choice rebuild with it.
   Underneath both lids are the same and hold the bins alike. The box follows
   [Pred's storage box](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric)
   (CC BY-NC, by Pred); the closed top is Gridkeeper's change to it.
@@ -19,8 +19,8 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 ### Older bins build as they were saved (round 32)
 
 - **No settings a config doesn't give:** a bin, baseplate or box saved before a setting existed takes the value that
-  built it on Load from file, rebuild and clone, not the one the dialog has (Jörg: „Ältere Bins werden erstellt, wie
-  sie gespeichert wurden. Es werden keine Einstellungen aktiviert, welche die Config nicht her gibt.“, p280). Bins:
+  built it on Load from file, rebuild and clone, not the one the dialog has (p280: older bins are built as they were saved, no setting is
+  switched on that the config doesn't give). Bins:
   sharp shell, no dividers up to the top, no label color, 0.3 mm play of a Cullenect insert, light lip trimmed flat as
   before. Baseplates: the bin xy clearance at the edges where plates meet, as before they had a clearance of their
   own. Configs of GridfinityGenerator by Le0Michine build the same way.
@@ -68,8 +68,7 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ### Export in print orientation (round r29-export)
 
-- **Parts in print orientation:** the 3MF lays every part the way it is printed instead of where it is in the design
-  (Jörg: „Noch in 1.1.0, mit Druckbett-Auswahl. Auch für die 3MF bei Bins und Baseplates wichtig. Ebenso Labels.“):
+- **Parts in print orientation:** the 3MF lays every part the way it is printed instead of where it is in the design:
   the box set's handle flat, its latches flat, the Pinned hinge's pin on its flat side, Cullenect inserts on their
   underside and Flush ones on their text; bins, baseplates, box, lid and hinges as designed. The box parts follow
   [Pred's storage box](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric)
@@ -77,17 +76,16 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 - **Print bed, spacing, purge tower:** the export dialog picks the bed (the baseplate dialog's printers or a size of
   its own), the spacing between the parts (5 mm) and, with colored label text, a square kept free for the purge tower
   (50 mm). The parts are spread over the bed, what doesn't fit goes on further plates, a 3MF file per plate
-  (Jörg: „Eine Sortierung kann ja nur bei eine 3MF je Platte anständig durchgeführt werden.“), so the slicer keeps
+  (a sorting only works properly with one 3MF per plate), so the slicer keeps
   its printer, filament and process settings. The choices are kept.
 - **Bambu Lab printers apart (click test):** the printer list of the export and baseplate dialogs has every Bambu
   Lab printer of Bambu Studio's profiles, the old *Bambu Lab A1, P1, X1* entry is split (a baseplate saved with it
   opens as *Custom* 256 × 256). The export keeps the purge tower's square where Bambu Studio puts the tower and,
   for the P1 and X1, keeps clear of their excluded corner, which made Bambu Studio warn of collisions.
 - **Parts as a compact group:** the parts of a plate lie as a roughly square group in the middle of the bed, not in
-  a row across its whole width (Jörg: „Was mir nicht gefällt ist, dass die Kleinteile über die volle Breite angelegt
-  sind. Diese könnten kompakter verteilt sein.“).
-- **A box set on three plates:** box, lid and small parts each on plates of their own (Jörg: „Das Zubehör der Box
-  sollte auf eine separate Platte. Eine Box müsste je nach Größe 3 Platten gesamt ergeben.“).
+  a row across its whole width.
+- **A box set on three plates:** box, lid and small parts each on plates of their own, so a box comes to three plates
+  depending on its size.
 - **Pinned hinge's halves named after it:** *BottomHingePart_Pinned*, *TopHingePart_Pinned* (Pred names them like the
   M3x30 hinge's).
 - **Box label is a part of the export (p380):** All Gridkeeper parts takes the box label with its text, a Flush label
@@ -95,8 +93,7 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ### Joint origins explained
 
-- [Joint origins](docs/working/components.md#joint-origins) is now a guide (Jörg: „Wir müssen auf jeden Fall noch
-  anständig erklären, wie die Joints generell genutzt werden …“): which joint origins every model has, how to pick one
+- [Joint origins](docs/working/components.md#joint-origins) is now a guide: which joint origins every model has, how to pick one
   in the insert and box label dialogs, how to joint a bin into a baseplate or box cell and a box onto a box by hand,
   and what to do when a joint origin can't be seen or picked.
 
@@ -109,7 +106,7 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   constrained, inside the box command and so in the box's timeline group; rebuild and clone alike. The part files of
   round 28 are gone.
 - **Small parts in a colour of their own:** *Gridkeeper box parts*, orange like Pred's latch; box and lid stay as they
-  are (Jörg: „Im Übrigen brauchen Latches, Hinge, Handle und Pin eine andere Farbe als die Box und der Deckel.“).
+  are; latches, hinge, handle and pins get a colour other than the box and lid.
 
 ### Box label (round 29)
 
@@ -120,18 +117,16 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   or flush like the Cullenect inserts. Picking the *Label joint origin* of a box joints the label into its holder; every
   box now has that joint origin. A command of its own, so a label can be swapped without touching the box. Every
   sketch is fully constrained.
-- **Settings, rebuild and clone for the box label:** Jörg after his test: „Die Box-Labels haben die Punkte
-  [Gridkeeper settings / rebuild / clone im Rechtsklick] nicht. Warum? Die Cullenect-Label haben es.“ Now they do,
+- **Settings, rebuild and clone for the box label:** the box labels lacked the Gridkeeper settings, rebuild and clone
+  entries of the right-click menu that the Cullenect labels have. Now they do,
   like the Cullenect inserts: the label keeps its settings, a rebuild builds it anew in place and jointed into the
   holder of its box again, a clone opens the dialog with its settings and no box.
 - **The holder stays shown:** after a rebuild without its box the box's *Label joint origin* was hidden; no Gridkeeper
-  code turns joint origins off, the ones a joint had used were off. Jörg: „Allerdings darf er nicht ausgeblendet
-  werden.“ The box label and the Cullenect insert now keep the holder or pocket they are jointed into shown, also
+  code turns joint origins off, the ones a joint had used were off. The joint origin must not be hidden. The box label and the Cullenect insert now keep the holder or pocket they are jointed into shown, also
   when a rebuilt box or bin takes the joint over, and a rebuild shows the one the old label or insert leaves.
-- **A rebuilt box keeps its label:** the label's joint moves over to the *Label joint origin* of the rebuilt box. Jörg:
-  „Wenn die Box einen Rebuild bekommt, der das Schild zu groß werden lässt, muss das Schild daneben gelegt werden.“
+- **A rebuilt box keeps its label:** the label's joint moves over to the *Label joint origin* of the rebuilt box.
   A label too wide for the rebuilt box is taken out and laid flat in front of the box, 10 mm in front of the handle and
-  centred on the box (Jörg: „Schild vor die Front wäre besser. Sonst übersieht man es schnell.“); is something in the
+  centred on the box (in front of the front it is easy to see); is something in the
   way there, it goes to a free spot beside the parts. A narrower one stays in; the note after the rebuild says where
   the label is and to rebuild it with the new width.
 
@@ -256,7 +251,7 @@ Six commits of FusionGridfinityGenerator by Le0Michine (CC BY-NC-SA 4.0) merged 
   inserts too.
 - **More label icons:** button head and countersunk screws (Phillips, slotted, self-tapping, Phillips self-tapping), a
   grub screw and a hex locknut.
-- **Label icon keeps its full size** (Joerg: "as the original"): only the text shrinks to the width left after the
+- **Label icon keeps its full size** (as in the original): only the text shrinks to the width left after the
   icon, the letters stand on the icon's bottom. Rebuilt in this fork's label code, the least text height of round 19
   still applies.
 - Not taken over, decided in this fork: the version bumps (the version stayed 2.4.0.0 until the rename to Gridkeeper 1.0.0); rebuilding with a new label
@@ -341,7 +336,7 @@ Six commits of FusionGridfinityGenerator by Le0Michine (CC BY-NC-SA 4.0) merged 
   The corners of dividers up to the top are now rounded in one go on both sides of it, at 2 and 3 mm walls, instead of
   falling back to a smaller rounding with a step.
 - **Cullenect needs 1.2 mm walls (p35):** the Cullenect label style needs a wall of at least 1.2 mm, the Cullenect
-  standard (Joerg: thicker is fine, thinner not). Below it the bin dialog keeps OK locked and says why in the
+  standard (thicker is fine, thinner not). Below it the bin dialog keeps OK locked and says why in the
   Cullenect row of the dimensions table, also when a config is loaded or a bin is rebuilt. Bins built before stay.
 
 ### Labels after a text change (round 14)
@@ -494,11 +489,11 @@ the walls, shelled bins with rounded offsets, a clearance between baseplates glu
 
 ### Fixed
 
-- **Insert lettering printable with a 0.4 mm nozzle (p130):** Joerg's slicer left parts of the insert text out,
+- **Insert lettering printable with a 0.4 mm nozzle (p130):** A slicer left parts of the insert text out,
   above all two lines („5mm“ over „Hex key“). Arial at the insert's text heights has strokes of 0.4–0.6 mm, a 0.4 mm
   nozzle lays 0.42–0.45 mm lines. The label dialog's „Bold“ switch is now a **Text style** choice: Regular, Bold or
   **Heavy** (Arial Black, the default for new inserts, about twice the stroke). Measured in Fusion on built inserts:
-  M4x5 beside a screw 1.00 mm mean stroke (was 0.56), Joerg's „Welle 6mm“ 0.87 mm (was 0.52), two lines 0.76 mm (was
+  M4x5 beside a screw 1.00 mm mean stroke (was 0.56), the insert "Welle 6mm" 0.87 mm (was 0.52), two lines 0.76 mm (was
   0.39) and 99 % of it within reach of one line. Text and symbol are now **0.4 mm thick (two layers)** instead of one,
   raised or set in, on every surface; a full-height symbol set in now cuts through the top layer to the latch.
   Heavy runs about 20 % wider, a long text is fitted smaller by that. The text keeps its font when its text parameter
@@ -518,7 +513,7 @@ the walls, shelled bins with rounded offsets, a clearance between baseplates glu
   None with driver Hex had no svg and locked OK. Each dropdown now offers only what makes a symbol with the choices
   above it, a choice that doesn't moves to the first one that does; flange and security pin are locked where none
   exists.
-- **Insert text on one line:** Joerg's 1U insert „Welle 6mm“ came out as two lines hanging over the insert. The text
+- **Insert text on one line:** A 1U insert "Welle 6mm" came out as two lines hanging over the insert. The text
   was fitted to exactly the width of its box by the outlines of its letters, Fusion breaks a box by their advance,
   which is wider. Each text line now stands on a fixed line of its own instead of in a box, so it never breaks, and
   fitting leaves 5 % of the width free. A text made longer later (`gfLabel1_text1`, `_text2`) is not fitted again: it

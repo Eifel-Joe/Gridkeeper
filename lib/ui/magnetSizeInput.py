@@ -2,8 +2,8 @@ import adsk.core
 
 from ..gridfinityUtils import magnetSizes
 
-# The magnet size choice before the free "Magnet cutout depth" field (round 27, p263; Jörg 16.11.2026: "Magnetlöcher
-# einstellbar. 2,4mm für 2mm Magnete und 3,4mm für 3mm Magnete. Baseplates und Bins auch anpassen."). The choice only
+# The magnet size choice before the free "Magnet cutout depth" field (round 27, p263; decided 16.11.2026: adjustable
+# magnet holes, 2.4 mm for 2 mm magnets and 3.4 mm for 3 mm magnets, also for baseplates and bins). The choice only
 # writes the depth field; settings keep the depth, the choice is read back from it, see magnetSizes.
 
 LABEL = 'Magnet size'

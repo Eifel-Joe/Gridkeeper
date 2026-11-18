@@ -6,8 +6,8 @@ box parameters, so the joint origins built there follow a size change.
 
 Measured in Pred's file at 5 x 4 x 6 and 7 x 5 x 10 (fusion-auftraege/r28_tmp/pred_parts.json, tests/test_pred_box_seats.py):
 - Latch: Pred's Latch:1 in front on the left, its origin 31 mm from the left wall, 0.25 mm in front of the wall, 0.05 mm
-  under the box top; its x along -X, its z into the box. Jörg 16.11.2026: "Latches 2 vorne und 2 jeweils einer seitlich
-  hinten": the other front one 31 mm from the right wall, the side ones 31 mm from the back wall, each turned to its wall.
+  under the box top; its x along -X, its z into the box. Decided 16.11.2026: 2 latches at the front and one at each side
+  at the back: the other front one 31 mm from the right wall, the side ones 31 mm from the back wall, each turned to its wall.
 - Handle pin: Pred's HandlePin ends at the handle bolt plane (the generator's lab(77.75)) and is centred on the bolt
   hole, 3.75 mm from the front and on the box middle height; the right one turned half round about z.
 - Handle: on the pin axis in the box middle, it hangs from there (26.5 mm down, 3.5 mm up in Pred's file).
@@ -105,14 +105,14 @@ HANDLE_PAST_LABEL = 28.5
 def handleWidth(d: PredBoxDims) -> Dim:
     """
     The handle's width, the one measure of a small part that follows the box: the label width + 28.5 mm, so 57 mm at 4
-    cells wide, 99 mm at 5 and 113.5 mm from 6 on (Jörg 17.11.2026: "Der Griff bleibt bei Max. 113,5mm stehen. Breiter
-    macht keinen Sinn."). The inserted handle's width dimension gets this expression
+    cells wide, 99 mm at 5 and 113.5 mm from 6 on (decided 17.11.2026: the handle stops at a maximum of 113.5 mm, wider makes no
+    sense). The inserted handle's width dimension gets this expression
     """
     return d.labelWidth + mm(HANDLE_PAST_LABEL)
 
 
 # The box label (round 29, p262, dev-notes/r29/boxlabel-plan.md) is built by a command of its own, not by the box
-# command (Jörg 17.11.2026: "weil man es so besser auch mal austauschen könnte"); it is jointed to this seat, the middle
+# command (decided 17.11.2026: so it can be swapped out more easily); it is jointed to this seat, the middle
 # of its back face: Pred's Label:1 at 5 x 4 x 6 is x 81.25 ... 148.75, y 6.45 ... 7.3, z 12.45 ... 36.95 mm
 LABEL_SEAT = 'Label'
 LABEL_JOINT_ORIGIN = seatJointOriginName(LABEL_SEAT)
@@ -137,8 +137,8 @@ def handleHalfWidth(d: PredBoxDims) -> Dim:
     return handleWidth(d) / 2
 
 
-# The hinges in their print position beside the box, jointed there at their component's origin (Jörg 17.11.2026, "Ja,
-# beides" to Vorschlag J): each variant with the corner of its body box (least x, y, z) where Hinge_M3x30's is in Pred's
+# The hinges in their print position beside the box, jointed there at their component's origin (decided
+# 17.11.2026): each variant with the corner of its body box (least x, y, z) where Hinge_M3x30's is in Pred's
 # file, the second 5 mm beside it in y from its own depth; they don't follow the box size. mm, from
 # fusion-auftraege/r28_tmp/pred_parts.json and the part files (r28_extract.l5-l7.out)
 M3X30_CORNER = (-61.2502, 36.5039, -12.2095)

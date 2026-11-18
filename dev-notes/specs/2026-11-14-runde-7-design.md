@@ -34,7 +34,7 @@ Körper in der Wurzel (auch in der Baugruppe). Bauteilkonstruktion erlaubt keine
 auch mit vorhandenen Körpern; Körper, Timeline und Parameter bleiben (in Fusion belegt), zurück auf Bauteil geht dann
 nicht mehr.
 
-**Entscheidung Jörg (14.11.):** „Label stellt automatisch auf Hybridkonstruktion um. Gerne mit kleinem Hinweisfenster.“
+**Entscheidung (14.11.):** Label stellt automatisch auf Hybridkonstruktion um, gerne mit kleinem Hinweisfenster.
 Umsetzung: `designIntent.componentPlan` – Bauteil wird beim OK auf hybrid umgestellt, Einleger als Komponente, danach
 ein Hinweisfenster. Die Vorschau ändert das Dokument nicht (baut in die Wurzel). Baugruppe: Komponente ohne Umstellung.
 Bin und Baseplate bleiben unverändert. Neuer Fall `label_1u_screw_text_part`.

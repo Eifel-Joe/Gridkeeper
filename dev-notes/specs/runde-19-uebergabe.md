@@ -2,8 +2,8 @@
 
 Stand 2026-11-16. Branch `runde-19`, abgezweigt von `runde-14-18` (976fd0f) und mit `runde-14-18` (6c1a32f, Ergänzung
 p210) gemergt. Nicht gepusht, nicht gemergt.
-- Spec: `dev-notes/specs/2026-11-15-runde-19-design.md`. Die Hauptsitzung hat sie auf Jörgs Auftrag geschrieben, Jörg sieht
-  sie beim Testtermin.
+- Spec: `dev-notes/specs/2026-11-15-runde-19-design.md`. Die Hauptsitzung hat sie auf Auftrag geschrieben; sie wird
+  beim Testtermin gesichtet.
 - Plan: `dev-notes/plans/2026-11-16-runde-19.md`, von der Hauptsitzung freigegeben, mit diesen Antworten:
   1. Die Untergrenze bremst nur das Verkleinern für die Breite.
   2. Kein Nachführen über ein Ereignis in dieser Runde.
@@ -55,7 +55,7 @@ Kein kritischer Fund. Umgang:
   - Klein (M1): Die Meldung bei einer Lasche, die niedriger ist als die Untergrenze, nennt jetzt die Lasche.
   - Klein (M3): Kommentare angepasst.
   - E2E e: Text im Dialog geändert, Bin ohne Farbe (der alte Parameter-Weg).
-- **Wichtig, bewusst so, auf Jörgs Liste:**
+- **Wichtig, bewusst so, auf der Testliste:**
   - (I3) Ein Bin, dessen Text früher unter die Untergrenze verkleinert gebaut wurde, lässt sich bei einem echten Neubau
     nicht mehr bauen, auch wenn der Text gleich bleibt. Ebenso eine Lasche, die niedriger ist als die Untergrenze, mit
     einem Text, der für die Breite kleiner werden müsste.
@@ -91,9 +91,9 @@ Kein kritischer Fund. Umgang:
 
 Ändert man den Text nur über den Parameter, ohne neu zu bauen, kann er weiter über den Rand laufen. Eine Nachführung
 beim Schließen des Parameter-Dialogs (`ui.commandTerminated`) wäre möglich, ist aber nicht gebaut: Sie liefe bei jeder
-Parameteränderung und legte einen eigenen Undo-Schritt an. Das ist eine Frage an Jörg.
+Parameteränderung und legte einen eigenen Undo-Schritt an. Das ist eine offene Frage.
 
-## Handtest-Liste und Fragen an Jörg
+## Handtest-Liste und Fragen
 
 1. Bin 2x1 mit zwei Fächern, Label „Bolzen“, Bold. Den Text-Parameter in Fusion um „ M4x2“ verlängern, dann
    Rechtsklick und „Gridfinity rebuild“, OK: Die Schrift ist kleiner und liegt in jedem Fach auf dem Label.

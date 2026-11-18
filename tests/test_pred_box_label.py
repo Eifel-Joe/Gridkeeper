@@ -1,7 +1,6 @@
 """
 The box label module (round 29, p262, dev-notes/r29/boxlabel-plan.md) needs Fusion to run, so these tests read its
-source: the parts the plan makes binding, every sketch fully constrained (Jörg 17.11.2026: "Denk nur dran, dass alle
-Zeichnungen vollständig bestimmt sein müssen."), no feature mirror (dev-notes/r29/README.md), the joint origin in the
+source: the parts the plan makes binding, every sketch fully constrained (17.11.2026: all sketches must be fully constrained), no feature mirror (dev-notes/r29/README.md), the joint origin in the
 part frame, the markings like the Cullenect inserts'.
 """
 

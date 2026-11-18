@@ -1,6 +1,6 @@
 # Runde 21: Hinweis an der Druckgrenze, Luft ohne Symbol
 
-Stand 16.11.2026. Jörg: „Starte Runde 21 mit p232 und p233“. Die Entscheidungen sind Jörgs Antworten am Testtermin.
+Stand 16.11.2026. Auftrag: Runde 21 mit p232 und p233 starten. Die Entscheidungen sind Antworten am Testtermin.
 Branch `runde-21` von `master` (c27c32c).
 
 ## Punkte
@@ -19,7 +19,7 @@ ist eine zweite Zahl. Die beiden passen nicht zusammen:
 | Bold | 3,64 mm | 3,42 mm |
 | Heavy | 2,79 mm | 3,05 mm |
 
-**Entscheidung (Jörg, Testtermin Frage 2):** Der Hinweis kommt ab der Druckgrenze. Er folgt `minTextHeight(style)`,
+**Entscheidung (Testtermin Frage 2):** Der Hinweis kommt ab der Druckgrenze. Er folgt `minTextHeight(style)`,
 derselben Quelle wie die Untergrenze; die mittlere Strichbreite und `MIN_STROKE` entfallen. Das gilt überall, wo der
 Hinweis entsteht:
 - Bin-Dialog: Bin-Label und Fach-Labels;
@@ -40,7 +40,7 @@ breiter machen, Heavy).
 damit ein später um bis zu 1 mm schmalerer Einleger das Symbol nicht an den Text schiebt. Ohne Symbol fehlt diese Luft:
 Bei −1 mm Breite reicht der Text bis an den rechten Rand.
 
-**Entscheidung (Jörg, Testtermin Frage 3):** Auch ohne Symbol bleibt beim Einpassen 1 mm Luft, ein- und zweizeilig,
+**Entscheidung (Testtermin Frage 3):** Auch ohne Symbol bleibt beim Einpassen 1 mm Luft, ein- und zweizeilig,
 bei allen Breiten. Kurzer Text, der ohnehin nicht an den Rand reicht, bleibt unverändert.
 
 ## Nicht dabei

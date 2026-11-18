@@ -1,7 +1,7 @@
 """
 The handle of the storage box after Pred's parametric Gridfinity Storage Box v1.1
 (https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric, CC BY-NC, by Pred), drawn in
-code (round 29, Jörg 17.11.2026: "Wir zeichnen die Teile im Code."). Before, resources/predBox/handle.f3d was inserted,
+code (round 29, 17.11.2026: the parts are drawn in code). Before, resources/predBox/handle.f3d was inserted,
 which fails in a command with a dialog (fusion-auftraege/r28_cmdvariants.log).
 
 Built as fusion-auftraege/r28_handle_build.py did, whose result had Pred's volume at both widths (r28_handle_build.l5.out):
@@ -10,8 +10,8 @@ Built as fusion-auftraege/r28_handle_build.py did, whose result had Pred's volum
 - Extrude 7 mm symmetric, Fillet r 3.5 at the arm's 2 top edges, Chamfer 1 mm at 14 edges, the pin hole d 3.5 through
   the arm, the body mirrored at YZ and combined (a body mirror, not a feature mirror of chamfers: round 27, Mirror6).
 The part frame is the seat (predBoxSeats 'Handle'): origin in the handle's middle on the pin axis, z up. The one size is
-the half width H, an expression on the box parameters (predBoxSeats.handleHalfWidth; Jörg 17.11.2026: "Der Griff bleibt
-bei Max. 113,5mm stehen. Breiter macht keinen Sinn."). No user parameters. Tested in tests/test_pred_handle.py.
+the half width H, an expression on the box parameters (predBoxSeats.handleHalfWidth; decided 17.11.2026: the handle stops
+at a maximum of 113.5 mm, wider makes no sense). No user parameters. Tested in tests/test_pred_handle.py.
 """
 
 import math

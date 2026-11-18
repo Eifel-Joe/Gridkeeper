@@ -110,7 +110,7 @@ def test_reversed_line_matches():
     assert edges.matchItems([line], [reversed_], key=lambda candidate: candidate) == [reversed_]
 
 
-# -- the right handle and label holders, built as the left ones' counterpart (round 27, Jörg 17.11.2026: "Ja, A bauen")
+# -- the right handle and label holders, built as the left ones' counterpart (round 27, 17.11.2026: variant A)
 # instead of Pred's #42 Mirror6, which Fusion failed to replay depending on unrelated document state
 # (fusion-auftraege/r27_diag2.log, r27_cmd.out)
 

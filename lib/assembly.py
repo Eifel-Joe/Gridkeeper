@@ -5,7 +5,7 @@ from typing import Callable, TypeVar
 from . import tagUtils
 from .gridfinityUtils import commonUtils, designIntent
 
-# Where bins, baseplates and inserts go in the design (round 13, p90, Joerg 15.11.2026): the root holds a container per
+# Where bins, baseplates and inserts go in the design (round 13, p90, 15.11.2026): the root holds a container per
 # kind, Grid, Bins and Label, each part is a component of its own in it, its colored text and symbol bodies are in a
 # component Text inside the part, so they export apart for a multicolor print.
 #
@@ -24,7 +24,7 @@ TEXT_COMPONENT_NAME = tagUtils.TEXT_COMPONENT_NAME
 @dataclass
 class OldPlace:
     """Where a part rebuilt in place was: bodies in the root, or a component in the parent occurrence (None for the
-    root). The new one goes to the same place, Joerg 15.11.2026: old parts stay where they are"""
+    root). The new one goes to the same place, 15.11.2026: old parts stay where they are"""
     isComponent: bool
     parent: adsk.fusion.Occurrence | None = None
 
@@ -43,9 +43,9 @@ def inContext(entity, occurrence: adsk.fusion.Occurrence | None):
 def keepShown(jointOrigin: adsk.fusion.JointOrigin | None):
     """
     Turns the joint origin's light bulb on, the one seen from the root and its native one. After a label was rebuilt
-    without its box, the box's Label joint origin was off (Jörg's test 17.11.2026; no Gridkeeper code turns a joint
+    without its box, the box's Label joint origin was off (found in testing 17.11.2026; no Gridkeeper code turns a joint
     origin off, the joint origins a joint used were the ones off). A label's holder or an insert's pocket stays shown so
-    it can be picked again (Jörg: "Allerdings darf er nicht ausgeblendet werden."). Turning a light bulb on isn't worth
+    it can be picked again (it must not be hidden). Turning a light bulb on isn't worth
     failing a build, a refusal is logged and the other one still tried
     """
     if jointOrigin is None:
@@ -178,7 +178,7 @@ def buildWithStructure(des: adsk.fusion.Design, plan: designIntent.StructurePlan
     Runs the build, a part design switched to hybrid first when the plan says so. A part design left hybrid without the
     part couldn't go back, so on an error the new occurrences of the root are taken out and the document switched back,
     the error goes on. The root is active afterwards: an active component shows every other one half transparent and the
-    user had to switch back each time (Joerg 15.11.2026), also after a failed build
+    user had to switch back each time (15.11.2026), also after a failed build
     """
     try:
         if not plan.switchToHybrid:

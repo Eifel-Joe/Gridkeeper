@@ -1,6 +1,6 @@
 """
-Pred's latch (Latch_Experimental) drawn in code, round 29 (Jörg 17.11.2026: "Wir zeichnen die Teile im Code.", "Denk nur
-dran, dass alle Zeichnungen vollständig bestimmt sein müssen."). Plan: dev-notes/r29/latch-plan.md.
+Pred's latch (Latch_Experimental) drawn in code, round 29 (17.11.2026: the parts are drawn in code, all sketches
+must be fully constrained). Plan: dev-notes/r29/latch-plan.md.
 
 Pred builds the left half and mirrors the finished body (Mirror1, with its fillets and chamfers) and patterns the slot
 features (R-Pattern2, with two chamfers). Gridkeeper builds both halves and both slots directly (README round 29: no

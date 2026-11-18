@@ -1,8 +1,8 @@
 # Runde 19: Bin-Label-Text beim Verlängern
 
-Stand 15.11.2026. Von der Hauptsitzung geschrieben auf Jörgs Auftrag („Setz die offenen neuen Punkte auch mit in die
-Bearbeitung. Je mehr erledigt ist bis ich wieder da bin desto besser.“). Die Entscheidung unten legt Jörg beim
-Testtermin noch einmal vor. Branch von `runde-14-18` nach dem Merge von R18.
+Stand 15.11.2026. Von der Hauptsitzung geschrieben auf Auftrag (offene neue Punkte mit in die Bearbeitung, möglichst viel
+erledigen). Die Entscheidung unten wird beim
+Testtermin noch einmal vorgelegt. Branch von `runde-14-18` nach dem Merge von R18.
 
 ## Punkt
 - p181 „Bin-Label-Text läuft beim Verlängern über den Bin-Rand“
@@ -37,14 +37,14 @@ meldet es.
 - Kurzer Text verlängert, der noch passt: Höhe unverändert.
 - Label-Skizzen vollständig bestimmt, Timeline ohne Fehler; pytest und Snapshot-Tests grün.
 
-## Ergänzung p210 (Jörg 16.11.2026: „P210 auch in Runde 19“)
+## Ergänzung p210 (16.11.2026: p210 auch in Runde 19)
 - p210 „Einleger mit zwei Zeilen: Umlaut-Punkte der oberen Zeile ragen oben über den Rand“
 - **Entscheidung:** Spiegelbild von p110 aus Runde 17. Zuerst in Fusion messen (Ä, Ö, Ü in Regular, Bold, Heavy,
   zwei Zeilen, Höhenkorrektur 0 und −1 mm). Ragt etwas über die Oberkante des Einlegers, wird die Schrift wie bei p110
   so weit verkleinert, dass die Oberlängen samt Umlaut-Punkten innerhalb bleiben, nicht unter die Untergrenze; sonst
   meldet die Prüfung das Problem und der Dialog sperrt OK. Ragt nichts über, wird nichts gebaut, der Beleg kommt ins
   Protokoll und p210 ist erledigt.
-- Ein Randabstand bei „vertieft“ wie beim Symbol gehört nicht dazu (dieselbe offene Frage an Jörg wie bei den
+- Ein Randabstand bei „vertieft“ wie beim Symbol gehört nicht dazu (dieselbe offene Frage wie bei den
   Unterlängen, Übergabe Runde 17).
 - **Ende-zu-Ende:** Einleger zwei Zeilen „ÄÖÜ“/„gjpy“, −1 mm: höchster Punkt der Schrift ≤ Oberkante Einleger,
   tiefster ≥ Unterkante.

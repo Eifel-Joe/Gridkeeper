@@ -261,7 +261,7 @@ def buildCase(case: testCases.TestCase) -> tuple[adsk.core.Document, list[adsk.f
 
 def activeComponentNotes(design: adsk.fusion.Design) -> list[str]:
     """Why the case fails for a generator that leaves its new component active: Fusion then shows every other
-    component half transparent and the user has to switch back (Joerg 15.11.2026)"""
+    component half transparent and the user has to switch back (15.11.2026)"""
     active = design.activeComponent
     if active == design.rootComponent:
         return []

@@ -26,7 +26,7 @@ def test_no_part_comes_from_a_file_any_more():
 
 
 def test_every_part_is_jointed_the_hinges_beside_the_box():
-    """Jörg 17.11.2026 ("Ja, beides" to Vorschlag J): the hinges are jointed too, in their print position beside the box"""
+    """17.11.2026: the hinges are jointed too, in their print position beside the box"""
     jointed = {part.role: part.seats for part in parts.PARTS}
     assert jointed == {
         "Latch": ["Latch front left", "Latch front right", "Latch left", "Latch right"],
@@ -36,7 +36,7 @@ def test_every_part_is_jointed_the_hinges_beside_the_box():
     }
 
 
-# Jörg 17.11.2026: "alle drei zum auswählen ist besser", M3x30 the default
+# 17.11.2026: all three variants are selectable, M3x30 the default
 def test_the_three_hinge_variants():
     assert parts.HINGES == ("M3x30", "Pinned", "Plain")
     assert parts.DEFAULT_HINGE == "M3x30"
@@ -61,9 +61,9 @@ def test_seat_joint_origin_names():
 
 
 
-# Round 29 (Jörg 17.11.2026: "Wir zeichnen die Teile im Code."): parts are drawn in the box command, no file is
-# imported; on the integration branch a part comes in once its generator is there (Jörg: "So wie eine Sitzung fertig
-# ist, kann ja sofort ein Testlauf mit Klicktest durchgeführt werden."), the others stay out
+# Round 29 (17.11.2026: the parts are drawn in code): parts are drawn in the box command, no file is
+# imported; on the integration branch a part comes in once its generator is there (so a click test can run as soon as a part
+# is finished), the others stay out
 
 def test_only_parts_with_a_generator_are_built():
     assert parts.partsToDraw("M3x30", drawn=[]) == []

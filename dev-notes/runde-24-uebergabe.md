@@ -7,7 +7,7 @@ Branch `runde-24` im Worktree `wt-doku`, von master fce1f12. Kein Push, kein Mer
 1. Interne Notizen aus `docs/` holen: `docs/specs` → `dev-notes/specs`, `docs/plans` → `dev-notes/plans` (git mv),
    Verweise in Tests und e2e-Skripten angepasst. `docs/` gehört danach allein der Website.
 2. MkDocs-Material-Gerüst: `mkdocs.yml` (wie SpoolmanScale-Docs, ohne i18n), `.github/workflows/pages.yml` mit
-   `mkdocs build --strict` (wirkt erst nach Jörgs Freigabe, Pages muss im Repo eingeschaltet werden).
+   `mkdocs build --strict` (wirkt erst nach Freigabe, Pages muss im Repo eingeschaltet werden).
 3. Bilder: die Original-Bilder `documentation/assets` nach `docs/assets` verschoben (MkDocs liest nur `docs/`), noch
    passende davon eingebunden. Neue Bilder als Platzhalter `docs/assets/images/<name>.png` (graue Platzhalter-PNG, damit
    `--strict` baut), Liste in `docs/assets/images/NEEDED.md`.
@@ -48,7 +48,7 @@ Commits je Teil.
 - Release-ZIP heißt noch `GridfinityGenerator-<tag>.zip` (`release.yml`); Doku nennt keinen Dateinamen.
 - „Gridkeeper tests: update snapshots“ in der Doku angenommen (Runde 23 nannte nur „tests: run“).
 
-## Vollständigkeits-Prüfliste (Jörg 16.11.2026: „wirklich alles erklären“)
+## Vollständigkeits-Prüfliste (Vorgabe 16.11.2026: wirklich alles erklären)
 
 Erzeugt aus `commands/*/entry.py` (jedes `add…Input`-Label und die Feld-Tupel der Schleifen) gegen die Doku: ein Feld
 gilt als erklärt, wenn eine Seite es fett (`**Label**`) oder als Überschrift nennt. Ergebnis: 0 fehlend. Bedeutung,

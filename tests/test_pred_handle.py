@@ -1,8 +1,7 @@
 """
-Pred's handle drawn in code (round 29, Jörg 17.11.2026: "Wir zeichnen die Teile im Code."), after
+Pred's handle drawn in code (round 29, 17.11.2026: the parts are drawn in code), after
 fusion-auftraege/r28_handle_build.py, whose half profile gave Pred's volume at both widths (r28_handle_build.l5.out).
-The profile is fully determined by the sketch chain (Jörg: "Denk nur dran, dass alle Zeichnungen vollständig bestimmt
-sein müssen."), its one size is the half width H as an expression on the box parameters (predBoxSeats.handleHalfWidth).
+The profile is fully determined by the sketch chain (all sketches must be fully constrained), its one size is the half width H as an expression on the box parameters (predBoxSeats.handleHalfWidth).
 Lengths in mm here, cm in the module.
 """
 

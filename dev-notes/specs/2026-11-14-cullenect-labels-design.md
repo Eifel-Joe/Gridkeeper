@@ -5,11 +5,11 @@ Stand: 2026-11-14 · Branch `feature/cullenect-labels` im Fork `Eifel-Joe/Fusion
 
 ## Zweck und Warum
 
-Jörg will Gridfinity-Teile nicht mehr aus der unübersichtlichen Flut fertiger Online-Dateien
+Ziel ist, Gridfinity-Teile nicht mehr aus der unübersichtlichen Flut fertiger Online-Dateien
 zusammensuchen, sondern alles aus **einem** Werkzeug erzeugen: dem Fusion-Add-in
 *GridfinityGenerator* (Le0Michine). Diesem fehlt genau eine Sache: **austauschbare Labels**.
 Seit v2.0 kann der Generator Text/Icons nur direkt in die Lasche drucken (Outline / Engraved /
-Embossed). Jörg nutzt aber das Klick-System **Cullenect** (CullenJWebb): Einleger werden einmal
+Embossed). Der Nutzer arbeitet aber mit dem Klick-System **Cullenect** (CullenJWebb): Einleger werden einmal
 gedruckt und in eine Tasche der Bin-Lasche eingeklickt, umsteckbar zwischen Bins.
 
 Erfolg heißt: Im Generator eine Bin mit Cullenect-Aufnahme erzeugen, im Generator den passenden
@@ -34,7 +34,7 @@ und passt auch in Bins/Einleger aus dem originalen Cullenect-Ökosystem.
 
 ## Anti-Ziele (wäre ein Fehlschlag, auch wenn es „funktioniert“)
 
-- **Nicht vollständig bestimmte Skizzen.** Jörgs harte Anforderung: jede Skizze, die der neue Code
+- **Nicht vollständig bestimmte Skizzen.** Harte Anforderung: jede Skizze, die der neue Code
   anlegt, ist *fully constrained*, sonst brechen Modelle beim Ändern der Parameter.
 - Einleger, die nicht in Original-Cullenect-Bins passen, bzw. Taschen, die keine Original-Einleger
   aufnehmen (eigenes Inselmaß).
@@ -49,9 +49,9 @@ und passt auch in Bins/Einleger aus dem originalen Cullenect-Ökosystem.
 - **Upstream-tauglich bauen:** Code-Stil, Struktur, Testart und Namensgebung des Projekts
   übernehmen, damit ein späterer PR an Le0Michine möglich bleibt. Diese Spec liegt in `dev-notes/specs/`
   als eigener Commit, der bei einem PR weggelassen werden kann.
-- **Fusion-Dokumenttyp:** Ab Generator 2.x funktioniert auch eine Bauteil-Konstruktion (Jörg, 14.11.:
-  „Mit der aktuellen Version des Generator muss man nichts mehr umstellen auf Hybrid. Es geht jetzt
-  auch in Bauteilkonstruktion.“); nur die alte App-Store-Version 1.2.7 brauchte Hybrid. Der
+- **Fusion-Dokumenttyp:** Ab Generator 2.x funktioniert auch eine Bauteil-Konstruktion (Stand 14.11.:
+  mit der aktuellen Version muss nicht mehr auf Hybrid umgestellt werden, es geht auch in
+  Bauteilkonstruktion); nur die alte App-Store-Version 1.2.7 brauchte Hybrid. Der
   Label-Befehl verhält sich wie Bin/Baseplate.
 - **Installation zum Testen:** Fusion lädt den Fork per Shift+S → „+“ direkt aus
   `D:\Entwicklung\Gridfinity\FusionGridfinityGenerator`; die bisher geladene Kopie
@@ -71,8 +71,8 @@ und passt auch in Bins/Einleger aus dem originalen Cullenect-Ökosystem.
 | Text/Symbol | 0,2 mm (eine Schicht) erhaben, vertieft oder bündig |
 
 Maßgeblich bei Widerspruch: `Cullenect.scad` (Module `cullenect_base_v2`, `cullenect_socket`)
-und die Zeichnungen `Documentation/Dimensions_Cullenect_v2_*`. Jörg stellt zusätzlich eine STEP
-seiner gedruckten Einleger bereit — Passungs-Referenz zum Gegenprüfen.
+und die Zeichnungen `Documentation/Dimensions_Cullenect_v2_*`. Zusätzlich liegt eine STEP
+der gedruckten Einleger vor — Passungs-Referenz zum Gegenprüfen.
 
 ## Ansätze (betrachtet)
 
@@ -81,7 +81,7 @@ seiner gedruckten Einleger bereit — Passungs-Referenz zum Gegenprüfen.
 2. **Eigenes Fusion-Skript „Tasche auf gewählte Fläche“** — unabhängig vom Generator, ein Klick
    pro Bin; aber zweites Werkzeug, kein Einleger-Generator. Verworfen.
 3. **Generator selbst erweitern** (Label-Stil „Cullenect“ + Befehl „Gridfinity Label“) —
-   **gewählt** von Jörg: alles aus einem Werkzeug, nutzt die vorhandene Label-/Icon-/Parameter-
+   **gewählt:** alles aus einem Werkzeug, nutzt die vorhandene Label-/Icon-/Parameter-
    Infrastruktur von v2.x. Preis: Fork pflegen (upstream-Updates nachziehen), solange kein PR.
 
 ## Entscheidungen
@@ -91,7 +91,7 @@ seiner gedruckten Einleger bereit — Passungs-Referenz zum Gegenprüfen.
 - Neuer Wert in der vorhandenen Label-Stil-Auswahl (`LABEL_STYLES` in
   `lib/gridfinityUtils/labelGenerator.py`), neben Outline/Engraved/Embossed.
 - Ist er gewählt, werden Text- und Icon-Felder der Lasche im Dialog ausgeblendet/deaktiviert
-  *(Claudes Vorschlag, von Jörg bestätigt)*.
+  *(Claudes Vorschlag, bestätigt)*.
 - Die Tasche wird in die Oberseite der Label-Lasche geschnitten, in X mittig auf der Lasche, in Y
   so, dass die Tasche vollständig auf der Laschen-Oberseite liegt *(Builder-Call: genaue Y-Lage;
   Vorgabe: mittig auf der Oberseite)*.
@@ -102,7 +102,7 @@ seiner gedruckten Einleger bereit — Passungs-Referenz zum Gegenprüfen.
   muss für jede so entstehende Breite einen Einleger erzeugen können (Breite frei in mm).
 - **Laschenbreite:** Bei „Cullenect“ wird die Laschenbreite auf ein Minimum angehoben, das die
   11,3-mm-Tasche plus Rand trägt *(Builder-Call; Vorgabe 14 mm wie Gridfinity Extended; Default
-  des Generators ist 13 mm)*. Ist der Nutzer-Wert größer, gilt der Nutzer-Wert.
+  des Generators ist 13 mm)*. Ist der eingegebene Wert größer, gilt er.
 - **Rastermaß ≠ 42 mm** *(Claudes Call)*: Die Taschenbreite ist ein Ausdruck auf
   `gfBaseWidth` (`gfBaseWidth · n − 6 mm + Toleranz`), genau wie Cullenect selbst
   (`label_width * gridfinityX − 6`). Beim Standardraster 42 mm ergibt das exakt Cullenect-Maß und
@@ -159,7 +159,7 @@ seiner gedruckten Einleger bereit — Passungs-Referenz zum Gegenprüfen.
 
 ### Symbole
 
-- Quelle: Cullenect `OpenSCAD/Cullenect.scad` (MIT). OpenSCAD ist auf Jörgs Rechner unter
+- Quelle: Cullenect `OpenSCAD/Cullenect.scad` (MIT). OpenSCAD ist auf Rechner unter
   `C:\Program Files\OpenSCAD` installiert. Das Konvertierungsskript wird im Repo unter `tools/`
   abgelegt, damit es reproduzierbar ist.
 - **Vorab gerendert, nicht zur Laufzeit zusammengesetzt** *(Claudes Call)*: Das Skript lässt
@@ -184,11 +184,11 @@ seiner gedruckten Einleger bereit — Passungs-Referenz zum Gegenprüfen.
   Fach-Laschen). Der Generator erfüllt die Regel also bereits; sie gilt damit für **alle**
   Skizzen der erzeugten Bins und Einleger, und der neue Code reiht sich ein. Nicht geprüft
   wurden die vorhandenen Text-/Icon-Labels (Outline/Engraved/Embossed) — der Code importiert
-  SVGs ohne `isFixed`; das prüft der Constraint-Check mit, ein Befund dort wird Jörg gemeldet,
+  SVGs ohne `isFixed`; das prüft der Constraint-Check mit, ein Befund dort wird gemeldet,
   aber nicht ungefragt im Bestandscode behoben.
 - Alle vom neuen Code angelegten Skizzen sind fully constrained (Prüfung über
   `Sketch.isFullyConstrained`).
-- Importierte SVG-Kurven sind in Fusion lose. Lösung *(Claudes Vorschlag, von Jörg bestätigt)*:
+- Importierte SVG-Kurven sind in Fusion lose. Lösung *(Claudes Vorschlag, bestätigt)*:
   SVG-Kurven in ihrer Skizze fixieren (`isFixed`), die Lage des Symbols über ein parametrisches
   Verschieben-Feature steuern, dessen Distanz an der Label-Breite hängt. So bleibt jede Skizze
   bestimmt, und das Symbol wandert bei Breitenänderung mit.
@@ -206,7 +206,7 @@ seiner gedruckten Einleger bereit — Passungs-Referenz zum Gegenprüfen.
     `isFullyConstrained`. Preis: der Text hängt nicht mehr an einem Text-Parameter.
   - **Umsetzung (Runde 4, überholt):** Einleger-Text wurde explodiert und fixiert, Text ändern = neu
     generieren (Abweichung von der Spec, Punkt p50).
-  - **Entscheidung Jörg 14.11.2026 (p50): „Live-Text“.** Der Einleger-Text bleibt echter `SketchText`,
+  - **Entscheidung 14.11.2026 (p50): Live-Text.** Der Einleger-Text bleibt echter `SketchText`,
     je Zeile an einen Text-User-Parameter gebunden (`gfLabelN_text1`, `gfLabelN_text2`, Mechanismus wie
     die Bin-Labels: `sketchText.textParameter.expression = <Parameter>`), also nachträglich änderbar.
     Textrahmen und alle übrigen Punkte und Kurven der Textskizze sind fixiert. **Einzige Ausnahme** von
@@ -240,16 +240,16 @@ seiner gedruckten Einleger bereit — Passungs-Referenz zum Gegenprüfen.
 2. **E2E-Snapshot-Fälle (`tests/e2e/cases`)** neu: Bin 1x1x3 Cullenect, 2x1x3 Cullenect mit
    geänderten Basis-Parametern (`gfBaseWidth`), Bin mit Fach-Laschen Cullenect, **Bin 4x2 mit
    gemischter Fächeraufteilung** (vorne ein Fach über 4 Zellen, hinten ein Fach über 2 Zellen +
-   zwei Einzelfächer; Jörgs Anwendungsfall, jede Fach-Lasche mit eigener Tasche passender Breite),
+   zwei Einzelfächer; Anwendungsfall, jede Fach-Lasche mit eigener Tasche passender Breite),
    Einleger 1U mit
    Schraube+Text, Einleger 2U mit Hardware, Einleger freie mm-Breite. In Fusion über
    „Gridfinity tests: run“; alle bestehenden Fälle bleiben grün.
 3. **Constraint-Check:** Skript prüft nach jedem neuen E2E-Fall, dass alle Skizzen der erzeugten
    Komponenten `isFullyConstrained` sind, und dass Parameter-Extremwerte (1×1×2 bis 6×4×12,
    Einleger 1U bis 6U) ohne Timeline-Fehler durchlaufen.
-4. **Passung digital:** Einleger und Tasche gegen `Cullenect.scad`-Geometrie bzw. Jörgs
+4. **Passung digital:** Einleger und Tasche gegen `Cullenect.scad`-Geometrie bzw. die
    Einleger-STEP vermessen (Maße innerhalb ±0,01 mm der Referenz).
-5. **Passung real (Jörg):** Probedruck 1U-Bin + Einleger, klickt ein, hält, lässt sich lösen;
+5. **Passung real:** Probedruck 1U-Bin + Einleger, klickt ein, hält, lässt sich lösen;
    zusätzlich ein Original-Cullenect-Einleger in der neuen Tasche.
 
 ## Dem Builder überlassen

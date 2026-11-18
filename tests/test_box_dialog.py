@@ -1,5 +1,5 @@
 """
-The box dialog's hinge choice (round 28, Jörg 17.11.2026: "alle drei zum auswählen ist besser"): a dropdown with the
+The box dialog's hinge choice (round 28, 17.11.2026: all three variants are selectable): a dropdown with the
 three variants of predBoxParts.HINGES, read into and back from the state, and a config's unknown hinge becomes the
 default. entry.py needs Fusion to load, so its source is read.
 """
@@ -38,7 +38,7 @@ def test_the_dialog_has_no_joint_origins_checkbox_any_more():
     assert "JOINT_ORIGINS_INPUT" not in _function("applyInputsState")
 
 
-# Round 30, p311 (Jörg 18.11.2026: "Lid top: Grid / Closed", "Standard bleibt Raster")
+# Round 30, p311 (18.11.2026: "Lid top: Grid / Closed", the default stays the grid)
 
 def test_the_dialog_has_a_lid_group_with_the_lid_tops():
     source = _function("command_created")

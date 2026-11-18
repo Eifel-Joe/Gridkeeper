@@ -172,8 +172,8 @@ def test_placement_with_a_single_tag_still_works(monkeypatch):
     assert placementUtils.findPlacement(design, "bin", "Gridfinity bin ", (0, 0, 4.1, 4.1), 4.2, 4.2) == (0, 0)
 
 
-# --- a box label taken out of the holder of a box rebuilt too narrow for it goes in front of the box (Jörg
-# 17.11.2026: "Schild vor die Front wäre besser. Sonst übersieht man es schnell."). cm, as in the code
+# --- a box label taken out of the holder of a box rebuilt too narrow for it goes in front of the box (17.11.2026:
+# in front of the front the label is easy to see). cm, as in the code
 
 LABEL = (7.05, 2.45)  # a 5 cells label lying flat: width along its x, height along its y
 GAP = 1.0  # cm, placementUtils.FRONT_GAP

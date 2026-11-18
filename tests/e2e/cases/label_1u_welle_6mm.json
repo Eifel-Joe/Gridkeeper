@@ -1,5 +1,5 @@
 {
-    "description": "Joerg's 1U insert \"Welle 6mm\", flush, no symbol: Fusion broke the line in two and hung it off the insert (p84), the text stays one line on it",
+    "description": "A 1U insert \"Welle 6mm\", flush, no symbol: Fusion broke the line in two and hung it off the insert (p84), the text stays one line on it",
     "generator": "label",
     "settings": {
         "line1": "Welle 6mm",

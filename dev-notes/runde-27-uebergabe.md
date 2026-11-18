@@ -30,9 +30,9 @@ und Abweichungen: `dev-notes/plans/2026-11-16-runde-27.md`. Spec: `dev-notes/spe
   - Box-Rebuild mit Parametern außerhalb der Drehfeld-Grenzen.
   - Marker im Fehlerfall nicht wieder am Ende.
 - `python -m pytest -q`: 1093 grün, 1 rot (`test_every_snapshot_has_its_settings`, die Box-Snapshots fehlen noch). `mkdocs build --strict` sauber.
-- Bilder der Box und der Magnetgrößen-Auswahl erst nach Runde 28 (Jörg), Liste in `docs/assets/images/NEEDED.md`.
+- Bilder der Box und der Magnetgrößen-Auswahl erst nach Runde 28, Liste in `docs/assets/images/NEEDED.md`.
 
-## Abweichungen von der Spec (Jörg freigegeben, Wortlaut im Plan)
+## Abweichungen von der Spec (freigegeben, Wortlaut im Plan)
 
 - Mindesthöhe 6 statt 5 („Mindesthöhe 6. vorerst.“). Höhe 5 ist p264, die Fälle dafür liegen in `dev-notes/box-height5-cases/`.
 - Box-Magnete nur 6×2 plus Custom bis 2,6 mm („Box nur 6×2“).
@@ -48,7 +48,7 @@ Fusion-Neustart; der Generator direkt baute. Eingrenzung in `fusion-auftraege27
 - Mirror6 kippt auf Kleinigkeiten: Ohne irgendeins von sechs der zehn gespiegelten Features baut er (V7). Fusions
   Standard-Compute-Typ Adjust scheitert, Identical und Optimized bauen (V9 bis V11).
 - Fix 1, Identical (824dad7): `r27_compare` bestanden, `r27_cmd` mit einem Design-Attribut scheiterte wieder.
-- Fix 2, Weg A (Jörg: „Ja, A bauen“, 69c0e59): rechte Griff- und Schildhalter als Gegenstück mit gespiegelten
+- Fix 2, Weg A (Entscheidung: A bauen, 69c0e59): rechte Griff- und Schildhalter als Gegenstück mit gespiegelten
   x-Koordinaten und Kantenauswahlen, kein Mirror6 mehr. Spec-Nachtrag „Bauweise“.
 - Dabei gefunden (`r27_diag3.log`, ca5173e): Fusion legt einen Bogen mit negativem Sweep mit vertauschten Enden an,
   die gespiegelte Schiene war überbestimmt. Bögen werden jetzt immer gegen den Uhrzeigersinn gezeichnet.

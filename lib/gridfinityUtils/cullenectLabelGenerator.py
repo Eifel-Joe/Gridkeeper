@@ -117,7 +117,7 @@ def _addLineText(sketch: adsk.fusion.Sketch, text: str, height: float, baseline:
 def _texts(sketch: adsk.fusion.Sketch, layout: cullenectLabelLayout.LabelLayout, lines: list[str], textParameters: list, style: str, withTwins: bool, timer: commonUtils.StepTimer) -> tuple[list, list]:
     """The text lines at the left, each shrunk to fit in front of the symbol, as live text driven by its text parameter
     so it can be edited later, and with twins a second text on top of each, driven by the same parameter. Each line
-    stands on a fixed baseline; Fusion may not report a sketch with live text as fully constrained, the one exception Jörg allowed
+    stands on a fixed baseline; Fusion may not report a sketch with live text as fully constrained, the one exception allowed
     on 14.11.2026 (p50, see the spec). Exploding the text into fixed curves kept it from changing, that was round 4.
     The twins are there for a second extrusion: Fusion refuses to extrude the same text twice in one run ("invalid
     input argument"), and cutting with the bodies of the first instead loses letters a later text adds.
@@ -134,7 +134,7 @@ def _texts(sketch: adsk.fusion.Sketch, layout: cullenectLabelLayout.LabelLayout,
         textStyles.noteText(text, style, textHeight)
         # Each line stands on a line of its own instead of in a box (p84, p70): Fusion breaks text in a box where it
         # takes it for longer than the box, by the advance of the letters, wider than their outlines that were
-        # measured. Joerg's "Welle 6mm", fitted to exactly 34 mm, came out as two lines hanging off the insert, and a
+        # measured. The "Welle 6mm" label, fitted to exactly 34 mm, came out as two lines hanging off the insert, and a
         # text made longer later broke the same way. Text along a line never breaks, a longer text runs on to the
         # right, towards the symbol. Tried in Fusion 14.11.2026: one band of letters up to 170 mm long, the extrusion
         # takes the letters a longer text adds. Its baseline goes under the middle by half the capitals' height, as

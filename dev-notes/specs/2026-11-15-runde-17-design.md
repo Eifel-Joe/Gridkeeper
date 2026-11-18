@@ -1,6 +1,6 @@
 # Runde 17: Einleger-Geometrie
 
-Stand 15.11.2026, von Jörg in der Hauptsitzung freigegeben. Sammelbetrieb R14–R18, Branch von `runde-14-18`
+Stand 15.11.2026, in der Hauptsitzung freigegeben. Sammelbetrieb R14–R18, Branch von `runde-14-18`
 nach dem Merge von R14 (beide ändern den Einleger-Generator).
 
 ## Punkte
@@ -9,7 +9,7 @@ nach dem Merge von R14 (beide ändern den Einleger-Generator).
 - p52 „Einleger-Text passt sich einer nachträglich kleineren Breite nicht an“
 - p51 „Hardware-Symbole schneller machen (Einleger mit Mutter braucht gut 20 Sekunden)“
 
-## Druckbarkeit (Jörg 15.11.2026)
+## Druckbarkeit (15.11.2026)
 Maßstab: 0,4-mm-Düse, Bambu-Standard-Druckprofil (0,2 mm Schicht), bestenfalls Arachne-Wandgenerator.
 
 **Schriftgrößen-Untergrenze:** Keine Verkleinerung unter die Größe, bei der der dünnste Strich der verwendeten Schrift
@@ -40,7 +40,7 @@ Die Prüfung meldet das Problem und der Dialog sperrt OK, wie die übrigen Einle
 - Bauzeit Einleger mit Nylonmutter < 5 s; Crimp-Ring gemessen und protokolliert.
 - pytest grün, Snapshot-Tests grün (bekannte p30-Fälle ausgenommen).
 
-## Ergänzung p180 (Jörg 15.11.2026: „Setz die offenen neuen Punkte auch mit in die Bearbeitung“)
+## Ergänzung p180 (15.11.2026: offene neue Punkte mit in die Bearbeitung)
 - p180 „Große Cullenect-Symbole in Bin-Labels werden noch verschoben“
 - **Entscheidung (Hauptsitzung):** Nach den gröberen Symbolen aus p51 die Punktzahl und die Zeit für das Setzen der
   Maße je Cullenect-Symbol messen. Die Grenze `ICON_POINTS_HELD_BY_DIMS` (heute 40) so anheben, dass jedes Symbol, das

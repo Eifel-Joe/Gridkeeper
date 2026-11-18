@@ -11,8 +11,8 @@ TAG_LABEL = 'label'
 # storage boxes after Pred (round 27), on the box and on the lid body
 TAG_BOX = 'box'
 # the box label's plate (round r29-export, p380), a tag of its own: readBodyTag, the generators' tags, leaves it out, it
-# isn't a Cullenect insert. readPartTag knows it, for the export, the settings menu, rebuild and clone (1.1.0, Jörg: "Die
-# Box-Labels haben die Punkte [...] nicht. Warum? Die Cullenect-Label haben es."); its config is the whole dialog's
+# isn't a Cullenect insert. readPartTag knows it, for the export, the settings menu, rebuild and clone (1.1.0: box labels
+# lacked these entries that the Cullenect labels have); its config is the whole dialog's
 TAG_BOX_LABEL = 'boxLabel'
 # on a user parameter of a bin, the config field its value is, see tagParameterField
 TAG_PARAMETER_FIELD = 'parameterField'
@@ -25,7 +25,7 @@ KIND_GRID = 'grid'
 KIND_BINS = 'bins'
 KIND_LABELS = 'labels'
 KIND_BOXES = 'boxes'
-# names the containers get, Joerg 15.11.2026, the user may rename them, they are found by the tag
+# names the containers get, 15.11.2026, the user may rename them, they are found by the tag
 CONTAINER_NAMES = {KIND_GRID: 'Grid', KIND_BINS: 'Bins', KIND_LABELS: 'Label', KIND_BOXES: 'Boxes'}
 # on the joint origin of a Cullenect pocket, the value holds its size in mm, see cullenect.pocketTagValue
 TAG_POCKET = 'pocket'

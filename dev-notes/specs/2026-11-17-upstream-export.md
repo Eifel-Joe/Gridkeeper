@@ -4,10 +4,9 @@ Stand 2026-11-17. Rundenname „Upstream-Runde 17.11.“. Punkte p13 „Eigene K
 halten“ und p300 „Export und 3MF auch für Box, Kleinteile und Cullenect-Einleger“. Branch
 `claude/upstream-2026-11-17-e953b0`, abgezweigt von PR #1 (`claude/upstream-2026-11-16-e588a3`, 6bff877).
 `git merge --no-ff upstream/master`: Upstream `Le0Michine/FusionGridfinityGenerator`, 513e6ab..5627083, 20 Commits von
-Lev Mishin (Le0Michine), CC BY-NC-SA 4.0. Version bleibt 1.0.0. Einteilung von Jörg („Passt so zusammen mit der
-Einteilung.“), Muster `2026-11-17-upstream-lippentypen.md`.
+Lev Mishin (Le0Michine), CC BY-NC-SA 4.0. Version bleibt 1.0.0. Einteilung freigegeben, Muster `2026-11-17-upstream-lippentypen.md`.
 
-## Einteilung (Jörg)
+## Einteilung
 
 | Commit | Inhalt | Umgang |
 |---|---|---|
@@ -23,7 +22,7 @@ Einteilung.“), Muster `2026-11-17-upstream-lippentypen.md`.
 | 45d280a, 5627083, 568f7af, 6b15239 | README, Upstream-Bilder, Diagramme, Bild-Vorlagen dieser Commits | nicht übernehmen (alle Upstream-Bilder bleiben gelöscht, README = unsere) |
 
 **Entschieden (Hauptsitzung, 17.11.):** die `tools/screenshots`-Teile aus 45d280a und 568f7af werden übernommen
-(Entwicklerwerkzeuge, Jörg: Werkzeuge ja, Doku/Bilder nein), ohne Bilder; `shots.json` = unsere Fassung plus die neuen
+(Entwicklerwerkzeuge, Vorgabe: Werkzeuge ja, Doku/Bilder nein), ohne Bilder; `shots.json` = unsere Fassung plus die neuen
 Einträge. Die ursprüngliche Frage: 45d280a und 568f7af ändern außer Doku auch
 `tools/screenshots` (Dialog-Aufnahme des Export-Dialogs: `dialogRecorder.py`, `fakeAdsk`, `page/*`; Baseplate-Vorlagen
 `models/baseplate-*.json`, `_baseplate.json` mit `plateEdgeClearance`). Vorgabe: nicht übernehmen, unser Stand bleibt.
@@ -124,7 +123,7 @@ bleibt.
    STL. Prüft: 4 Teile, kein Text-Körper als eigener Teil, je Label-Teil eingefärbte Dreiecke > 0 (Einleger: genau die
    Text-Dreiecke), STL-Dateien je Teil; Rechtsklick-Erkennung `isTagged` für Buchstabe, Bin, Container. Plus
    Snapshot-Stichprobe Baseplates (Umbenennung) und Umriss-Bins (Einfärben ändert keine Geometrie).
-3. Jörg: 3MF in Bambu Studio/OrcaSlicer öffnen, Farben prüfen (Testplan im PR-Text).
+3. 3MF in Bambu Studio/OrcaSlicer öffnen, Farben prüfen (Testplan im PR-Text).
 
 ## Neue Funde
 

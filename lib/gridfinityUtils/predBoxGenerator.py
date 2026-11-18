@@ -263,7 +263,7 @@ class _Builder:
         self.step('#13 Sketch21')
         floorCut = self.extrude([floor], adsk.fusion.FeatureOperations.CutFeatureOperation, mm(-1.6), bodies=[self.base],
                                 name='Floor')
-        # Jörg: "Versuche b" - the 5.05 mm blends of the pads into the floor edges as a fillet, not as sketch arcs
+        # Variant b: the 5.05 mm blends of the pads into the floor edges as a fillet, not as sketch arcs
         edges = [edge for edge in self.base.edges if _isVerticalAt(edge, blends, -0.16, 0.0)]
         if len(edges) != len(blends):
             raise ValueError(f'floor pads: {len(edges)} blend edges found, {len(blends)} expected')
@@ -372,8 +372,8 @@ class _Builder:
         # feature mirror of chamfers and fillets (FILLET_NO_EDGE_FOUND, CHAMFER_NO_EDGE_FOUND) depending on document
         # state with no part in the geometry: a grounded container, tagged parameters, an attribute of the design.
         # Fusion's Identical compute type only moved the failure (fusion-auftraege/r27_diag2.log, r27_cmd.out). Built
-        # itself, every chamfer and fillet finds its own edges, mirrored across the box middle (Jörg 17.11.2026: "Ja, A
-        # bauen"). Same shape as Pred, the timeline differs: no Mirror6, the right half's features follow the left's.
+        # itself, every chamfer and fillet finds its own edges, mirrored across the box middle (decided 17.11.2026: build variant
+        # A). Same shape as Pred, the timeline differs: no Mirror6, the right half's features follow the left's.
         self.holders(mirrored=True)
         self.fillet('#43 Fillet11')
 
@@ -518,7 +518,7 @@ class _Builder:
         self.slideFillet = self.fillet('#54 Fillet2')
 
         # stacking: a quarter ring on top of each corner, a matching groove under each corner
-        # Jörg: "Versuche b" - full circles and two radius lines instead of concentric arcs
+        # Variant b: full circles and two radius lines instead of concentric arcs
         stack = WorldSketch(c, self.topPlane, 'StackingTab')
         corner = (mm(14), mm(14), top)
         stack.circle(corner, mm(21.5))
@@ -657,7 +657,7 @@ class _Builder:
         self.chamfer('#84 Chamfer12', body=self.lid)
 
     def floorPads(self):
-        """Pred's Sketch21 for the first cell, built the way Jörg chose ("Versuche b", 16.11.2026): floor inside
+        """Pred's Sketch21 for the first cell, built as chosen on 16.11.2026 (variant b): floor inside
         12.85..49.15 mm with 1.15 mm corners; each pad is a circle (magnet / 2 + 0.75 mm) and two lines from the circle
         to the floor edges, the 5.05 mm blends of Pred's arcs follow as a fillet after the cut (floorGrid).
         Returns the floor profile, the magnet profiles and the places (x, y in cm) of the edges to blend."""

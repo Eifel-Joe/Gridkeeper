@@ -2,7 +2,7 @@
 Text styles of the labels and how thin their letters come out (p130). Plain math, no Fusion, lengths in cm.
 
 A 0.4 mm nozzle lays lines ~0.42-0.45 mm wide. Arial at the insert's text heights has strokes of 0.4-0.6 mm and the
-slicer left parts of the letters out (Joerg, 15.11.2026). How low a text of each style still prints is measured on its
+slicer left parts of the letters out (15.11.2026). How low a text of each style still prints is measured on its
 thinnest stroke, see minTextHeight (round 17). The hint on thin text follows the same limit (round 21, p232).
 """
 
@@ -22,11 +22,11 @@ _FONTS = {
 }
 
 # Round 21, p232: the hint on thin text came from an estimated mean stroke under 0.6 mm (round 11), a second number
-# beside the measured print limit: Heavy was hinted only below 2.79 mm, its limit is 3.05 mm. Joerg (test day,
-# question 2): the hint from the print limit on, minTextHeight is the one source now
+# beside the measured print limit: Heavy was hinted only below 2.79 mm, its limit is 3.05 mm. Decided on the test day
+# (question 2): the hint from the print limit on, minTextHeight is the one source now
 
 # Round 17: no text shrinks below the height where the thinnest stroke of its font is narrower than one line of a
-# 0.4 mm nozzle (Joerg 15.11.2026: 0.4 mm nozzle, Bambu standard profile, Arachne). Measured in Fusion on 15.11.2026
+# 0.4 mm nozzle (15.11.2026: 0.4 mm nozzle, Bambu standard profile, Arachne). Measured in Fusion on 15.11.2026
 # (job r17_font): the outlines of A-Z a-z 0-9 at 10 mm, stroke across the letter from each point of the outline, the 1 %
 # quantile away from sharp corners, see tools/fontStroke.py. Regular 0.903 mm, Bold 1.170 mm, Heavy 1.313 mm
 THINNEST_STROKE_FACTORS = {

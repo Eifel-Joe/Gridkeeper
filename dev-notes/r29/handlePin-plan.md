@@ -61,8 +61,8 @@ Keine Benutzerparameter, nur feste mm-Werte, intern in cm.
 - Alle Skizzen `isFullyConstrained`, Zeitleiste gesund.
 - Joint origin: Ort und Achsen gleich dem der .f3d.
 - Körpername `Handle pin`.
-- Ausgabe `r29_pin_check.log`. Der Job schließt sein Dokument am Ende wieder (wie `r29_handle_check`); Jörgs
-  Dokumente werden nicht angefasst.
+- Ausgabe `r29_pin_check.log`. Der Job schließt sein Dokument am Ende wieder (wie `r29_handle_check`); Nutzerdokumente
+  werden nicht angefasst.
 
 ## Grenzen
 

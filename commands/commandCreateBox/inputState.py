@@ -15,9 +15,9 @@ class InputState:
     magnetDiameter: float
     # a joint origin in every cell of the floor, to joint bins into the box
     hasJointOrigins: bool
-    # which of Pred's hinges the set gets, one of predBoxParts.HINGES (round 28, Jörg 17.11.2026: "alle drei zum
-    # auswählen ist besser")
+    # which of Pred's hinges the set gets, one of predBoxParts.HINGES (round 28, 17.11.2026: all three can be
+    # picked)
     hinge: str
-    # the lid's top, one of predBoxConfig.LID_TOPS: Pred's Gridfinity grid or a closed flat top (round 30, p311, Jörg
-    # 18.11.2026: "Standard bleibt Raster")
+    # the lid's top, one of predBoxConfig.LID_TOPS: Pred's Gridfinity grid or a closed flat top (round 30, p311,
+    # 18.11.2026: Grid stays the default)
     lidTop: str

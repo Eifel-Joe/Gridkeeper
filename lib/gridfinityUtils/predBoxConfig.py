@@ -10,10 +10,10 @@ from . import predBoxParts
 
 MIN_GRID_X = 4
 MIN_GRID_Y = 3
-# Jörg 16.11.2026: "Mindesthöhe 6. vorerst." At 5 the holders reach the lid joint and Pred's chamfer there fails
+# Decided 16.11.2026: minimum height 6 for now. At 5 the holders reach the lid joint and Pred's chamfer there fails
 # (dev-notes/plans/2026-11-16-runde-27.md, p264)
 MIN_HEIGHT_U = 6
-# Pred's magnet hole sits in a 2.8 mm pad, 0.2 mm of floor stays under it (Jörg 16.11.2026: "Box nur 6×2", custom up
+# Pred's magnet hole sits in a 2.8 mm pad, 0.2 mm of floor stays under it (decided 16.11.2026: 6x2 mm magnets only, custom up
 # to 2.6 mm); the pad's radius is the magnet's plus 0.75 mm and fits into the cell corner up to 8.5 mm
 MAGNET_DEPTH_MAX = 0.26
 MAGNET_DIAMETER_MIN = 0.3
@@ -22,7 +22,7 @@ MAGNET_DIAMETER_MAX = 0.85
 PRED_MAGNET_DIAMETER = 0.65
 
 
-# the lid's top (round 30, p311, Jörg 18.11.2026): Pred's Gridfinity grid, or closed and flat, sturdier, the stacking
+# the lid's top (round 30, p311, 18.11.2026): Pred's Gridfinity grid, or closed and flat, sturdier, the stacking
 # tabs in its corners kept so boxes still stack ("Standard bleibt Raster")
 LID_TOP_GRID = 'Grid'
 LID_TOP_CLOSED = 'Closed'

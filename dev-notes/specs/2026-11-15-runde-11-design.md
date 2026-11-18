@@ -1,12 +1,12 @@
 # Runde 11 – Beschriftung druckbar mit 0,4-mm-Düse
 
 Stand 2026-11-15. Ergänzt `2026-11-14-cullenect-labels-design.md`. Punkt p130 „Einleger: Schrift und Symbole zu dünn
-für eine 0,4-mm-Düse“. Jörgs Entscheidungen in der Sitzung (15.11.): Weg B (Arial Black) mit Hinweis; die Schrift soll „anständig mit
+für eine 0,4-mm-Düse“. Entscheidungen in der Sitzung (15.11.): Weg B (Arial Black) mit Hinweis; die Schrift soll „anständig mit
 0,4er Nozzle druckbar sein und eine Dicke von 0,4 mm, also 2 Layer à 0,2 mm haben“.
 
 ## Problem
 
-Jörgs Slicer (0,4-mm-Düse, Einleger bündig, mehrfarbig) lässt Teile der Beschriftung leer, vor allem die zweizeilige
+Slicer (0,4-mm-Düse, Einleger bündig, mehrfarbig) lässt Teile der Beschriftung leer, vor allem die zweizeilige
 Schrift („5mm“ über „Hex key“). Die Einleger setzen den Text in Arial normal, 5 mm Schrifthöhe einzeilig, 3,5 mm
 zweizeilig, verkleinert, wenn er nicht in die Breite passt (`fittedLineHeight`, 5 % Reserve).
 
@@ -16,7 +16,7 @@ Eine 0,4-mm-Düse legt Wände mit ~0,42–0,45 mm Linienbreite. Ein Strich ab ~0
 unabhängig vom Wandgenerator des Slicers. Zwischen 0,42 und 0,9 mm hängt es vom Slicer ab (Arachne legt eine
 breitere Einzelbahn, der klassische Generator eine oder keine). Unter ~0,6 mm mittlerer Strichbreite fallen auch bei
 einer Bahn sichtbar Teile weg: Arial normal zweizeilig (0,39 mm) verliert bei 0,42 mm Bahnbreite 35 % der Fläche –
-das ist Jörgs Slicer-Bild. Ziel: einzeilig ≥ 0,9 mm, zweizeilig so breit, wie der Platz zulässt, nie unter 0,6 mm
+das zeigt der Slicer. Ziel: einzeilig ≥ 0,9 mm, zweizeilig so breit, wie der Platz zulässt, nie unter 0,6 mm
 ohne Hinweis. Zweizeilig erreicht Heavy 0,76 mm: eine breite Bahn, 99 % der Fläche – zwei volle Wände gibt die
 Höhe von 11 mm für zwei Zeilen nicht her (siehe D).
 
@@ -50,7 +50,7 @@ Arial Black 0,215. Symbole (Madenschraube, Gewindeeinsatz) haben > 1,1 mm, unkri
 | D Zweite Zeile 4,0 statt 3,5 mm | mit B 0,87 / 85 % | Unterlängen („y“) rücken auf 11 mm Einlegerhöhe an die nächste Zeile bzw. den Rand – verworfen |
 | E Hinweis bei zu dünner Schrift | macht Schrumpfen durch lange Texte sichtbar | kleine reine Rechnung, ergänzt B |
 
-**Entscheidung (Jörg, 15.11.): B mit Hinweis E.**
+**Entscheidung (15.11.): B mit Hinweis E.**
 
 ## Umsetzung
 
@@ -89,7 +89,7 @@ Arial Black 0,215. Symbole (Madenschraube, Gewindeeinsatz) haben > 1,1 mm, unkri
   beim Schließen des Befehls: Mit Vorschau übernimmt Fusion deren Ergebnis, ohne Execute (Review 15.11.). Gleicher
   Text auf mehreren Fächern steht einmal da.
 - Die Schwelle 0,6 statt 0,9: Mit 0,9 meldete jeder zweizeilige Einleger (Heavy 0,76 mm), obwohl er mit einer Bahn
-  vollständig druckt (99 %). Die Meldung soll nur kommen, wo wirklich Teile fehlen werden. (Eigene Wahl, Jörg prüft.)
+  vollständig druckt (99 %). Die Meldung soll nur kommen, wo wirklich Teile fehlen werden. (Eigene Wahl, im Test zu prüfen.)
 
 ### Testfälle und Snapshots
 - Fall-JSONs der Einleger: `isBold` → `textStyle` (`false` → `Regular`, `true` → `Bold`). Die Schrift der alten Fälle
@@ -108,14 +108,14 @@ Arial Black 0,215. Symbole (Madenschraube, Gewindeeinsatz) haben > 1,1 mm, unkri
 ## Ende-zu-Ende-Kriterium
 1. In Fusion gebaut: Einleger „M4x5“ und „Welle 6mm“ einzeilig, „5mm“/„Hex key“ zweizeilig, bündig, Vorgabe Heavy –
    dieselbe Messung wie oben: einzeilig in voller Höhe (M4x5) mittel ≥ 0,9 mm und ≥ 90 % bei 0,9; zweizeilig
-   ≥ 95 % bei 0,42. Ein eingepasster Text (Welle 6mm auf Jörgs Einleger, ~20 % breiter als bisher) wird mit seiner
+   ≥ 95 % bei 0,42. Ein eingepasster Text (Welle 6mm auf dem Einleger, ~20 % breiter als bisher) wird mit seiner
    Höhe und Strichbreite berichtet; er liegt erwartbar bei ~0,85 mm, über der Hinweisschwelle.
 2. Textparameter ändern: Text bleibt Arial Black, Breite eingepasst wie bisher.
 3. Langer Text, der unter 0,6 mm schrumpft, zeigt den Hinweis.
 4. `python -m pytest` grün; Snapshot-Lauf: Einleger-Fälle nur um die Dicke geändert (begründet neu abgelegt), Bin-Fälle
    unverändert, neuer Fall grün, nur die 4 bekannten roten.
 5. Die Beschriftungskörper eines gebauten Einlegers sind 0,4 mm dick (Bounding Box in z).
-6. Jörg: Slicer mit 0,4-mm-Düse zeigt die zweizeilige Schrift vollständig; Probedruck.
+6. Slicer mit 0,4-mm-Düse zeigt die zweizeilige Schrift vollständig; Probedruck.
 
 ## Nachtrag nach der Umsetzung (15.11.)
 - Messung an gebauten Einlegern (bündig, Heavy): M4x5 neben Schraube 4,7 mm → 1,00 mm mittel, 99 % / 93 %;

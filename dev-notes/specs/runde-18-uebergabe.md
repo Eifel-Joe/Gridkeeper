@@ -1,7 +1,7 @@
 # Runde 18 – Übergabe
 
 Stand 2026-11-16. Branch `runde-18` (von `runde-14-18` 96815d7), nicht gepusht, nicht gemergt.
-- Spec: `dev-notes/specs/2026-11-15-runde-18-design.md`, von Jörg freigegeben.
+- Spec: `dev-notes/specs/2026-11-15-runde-18-design.md`, freigegeben.
 - Plan: `dev-notes/plans/2026-11-15-runde-18.md` (626c893), von der Hauptsitzung freigegeben, mit diesen Antworten:
   - Einleger werden immer neu gebaut.
   - Die Tasche ist vorbelegt.
@@ -86,13 +86,13 @@ Kein kritischer Fund. Umgang:
 In `gfLabel2_text1` zählt nichts ab 0:
 - `gfLabel2` ist das Präfix des zweiten Einlegers im Dokument. E2E b baut zwei Einleger, der erste ist `gfLabel1`.
 - `text1`/`text2` nummerieren die Text-Parameter des Einlegers in Reihenfolge der nicht leeren Zeilen. Das gilt seit
-  den Text-Parametern (`LABEL_TEXT_PARAMETERS`), die Namen stehen in Jörgs Dokumenten und bleiben deshalb.
+  den Text-Parametern (`LABEL_TEXT_PARAMETERS`), die Namen stehen in Nutzerdokumenten und bleiben deshalb.
 - Ein Einleger nur mit Zeile 2 hat also einen Parameter `…_text1` mit dem Label „Text line 2“. Das Label sagt die
   Zeile, und der Neubau richtet sich danach (`labelConfig.textLines`).
-- Jörg (16.11.2026, über die Hauptsitzung): „Passt so“, die Namen bleiben, wie sie sind.
+- Entscheidung (16.11.2026, über die Hauptsitzung): passt so, die Namen bleiben, wie sie sind.
 - Bins benennen ihre Label-Parameter nach eigenem Schema (`gfBinN_…`) und sind davon nicht berührt.
 
-## Für Jörg (Testtermin)
+## Testtermin
 
 1. **Joint wird neu angelegt:** Ein Einleger in einer Tasche bekommt beim Neubau einen neuen Joint in dieselbe Tasche.
    Der alte geht mit der alten Timeline-Gruppe. Eigene Verweise auf den alten Joint gehen dabei verloren.

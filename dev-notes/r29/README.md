@@ -1,6 +1,6 @@
 # Runde 29: Preds Kleinteile im Code zeichnen. Gemeinsame Regeln für alle Teile
 
-Jörg 17.11.2026: „Wir zeichnen die Teile im Code.“ Warum, und was es schon gibt, steht in
+Entscheidung 17.11.2026: Die Teile werden im Code gezeichnet. Warum, und was es schon gibt, steht in
 `dev-notes/runde-29-kleinteile-im-code.md`. Spec: `dev-notes/specs/2026-11-16-pred-box-design.md`. Für die Bauweise
 gelten auch die Nachträge von Runde 28.
 
@@ -20,7 +20,7 @@ Je Teil eine Untersitzung mit eigenem Auftrag: `latch.md`, `handle.md`, `handleP
 - **Joint origin** mit demselben Namen, Ort und denselben Achsen wie in der `.f3d`. Die Werte stehen im Auftrag.
 - **Körpernamen** wie bisher: ein einzelner Körper heißt wie die Rolle (`Latch`, `Handle`, `Handle pin`). Die
   Scharniere behalten Preds Namen, der gedruckte Stift heißt `Hinge pin` (benennt der Generator selbst).
-- **Pflicht: jede Skizze vollständig bestimmt** (`Sketch.isFullyConstrained`; Jörg: „Denk nur dran, dass alle Zeichnungen vollständig bestimmt sein müssen.“). Geprüft per pytest des Plans und in Fusion; die freien Kurven/Punkte von Preds Skizzen stehen in der Walk-JSON (`freeCurves`, `freePoints`).
+- **Pflicht: jede Skizze vollständig bestimmt** (`Sketch.isFullyConstrained`; Vorgabe: Alle Zeichnungen müssen vollständig bestimmt sein.). Geprüft per pytest des Plans und in Fusion; die freien Kurven/Punkte von Preds Skizzen stehen in der Walk-JSON (`freeCurves`, `freePoints`).
   - Keine Benutzerparameter. Nur der Griff hat eine Breite, die als Ausdruck an den Box-Parametern hängt.
   - Längen intern in cm, Tests in mm (Projekt-`CLAUDE.md`).
   - Werkzeuge: `predSketch.py`, `sketchChain.py`, `arcDrawing`.
@@ -28,7 +28,7 @@ Je Teil eine Untersitzung mit eigenem Auftrag: `latch.md`, `handle.md`, `handleP
 - **Keine Feature-Spiegelung von Fasen oder Rundungen** (Runde 27, Mirror6, `FILLET_NO_EDGE_FOUND`):
   - Gegenstücke direkt bauen, Kanten mit gespiegelten Koordinaten wählen (`predBoxEdges.mirrorItem`).
   - Eine Körper-Spiegelung (Mirror mit Körper als Eingabe, combine) wie in `r28_handle_build` ging in Runde 28.
-    Bevor eine Fase oder Rundung gespiegelt wird, das mit Jörg bzw. der Hauptsitzung klären.
+    Bevor eine Fase oder Rundung gespiegelt wird, das mit der Hauptsitzung klären.
 
 ## Grundlagen
 

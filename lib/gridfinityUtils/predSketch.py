@@ -2,7 +2,7 @@
 Fully constrained sketches drawn from world coordinates, for the box after Pred (round 27).
 
 Shapes are given with points as three dims in the box's frame (cm). The sketch collects them and, on close(), draws and
-binds them the way the existing generators do (Jörg: "Ja, Formen-Weg"):
+binds them the way the existing generators do (the shapes way, as decided):
 - rounded rectangles as in baseGenerator: sketchUtils.createRectangle, four fillets, equal radii, one radius dimension;
 - every other shape as a chain (sketchChain): its first point from the origin, every further point with dimensions to
   points already fixed, real horizontal and vertical lines with that condition; circles by centre and diameter.

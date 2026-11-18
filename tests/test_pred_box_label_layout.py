@@ -171,8 +171,7 @@ class TestTitle:
 
 
 class TestWidthChoices:
-    """Jörg 17.11.2026: "Da das Schild ja feste Breiten hat, sollte es nur ein Auswahlmenü dafür geben. Nicht frei
-    einstellbar." Pred's label widths: box 4 cells 28.5 mm, 5 cells 70.5 mm, from 6 cells 85 mm"""
+    """17.11.2026: the label has fixed widths, so the width is a choice menu, not a free setting. Pred's label widths: box 4 cells 28.5 mm, 5 cells 70.5 mm, from 6 cells 85 mm"""
 
     def test_three_fixed_widths(self):
         assert layout.widthChoices() == [("Box 4 cells (28.5 mm)", 4), ("Box 5 cells (70.5 mm)", 5), ("Box 6+ cells (85 mm)", 6)]

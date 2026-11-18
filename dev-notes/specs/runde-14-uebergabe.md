@@ -1,7 +1,7 @@
 # Runde 14 – Übergabe
 
 Stand 2026-11-15. Branch `runde-14` (von `runde-14-18` 6321253), nicht gepusht, nicht gemergt. Spec
-`dev-notes/specs/2026-11-15-runde-14-design.md` (von Jörg freigegeben), Plan `dev-notes/plans/2026-11-15-runde-14.md` (5f3e381,
+`dev-notes/specs/2026-11-15-runde-14-design.md` (freigegeben), Plan `dev-notes/plans/2026-11-15-runde-14.md` (5f3e381,
 von der Hauptsitzung freigegeben).
 Punkte: p72 „Bin-Labels: Text mit mehr Buchstaben kann beim Ändern verrutschen“, p120 „Eingefärbte Beschriftung: nach
 Textänderung sind neue Buchstaben nicht eingefärbt“, p71 „Einleger: nach Textänderung neue Buchstaben ohne Namen und
@@ -13,7 +13,7 @@ Kennung“, p53 „Mehrfarbdruck: Text und Symbol sind mehrere Körper“.
 |---|---|---|
 | p72 | umgesetzt: Text von Bin- und Fach-Labels entsteht an der fertigen Stelle, Schnitt/Vereinen in der Extrusion; farbige Buchstaben gleich an der Stelle, an die die Bin verschoben wird | E2E a–g ALL OK, f/g vorher ROT |
 | p120 | umgesetzt: Farbe an der Text-Occurrence, neue Buchstaben zeigen sie, auch im 3MF | Probe Q5, E2E b, d, e, f, g |
-| p71 | umgesetzt: Rechtsklick auf einen Buchstaben in „Text“ findet Bin bzw. Einleger; neue Buchstaben heißen wie von Fusion vergeben („Körper7“, Jörg 15.11.) | pytest, E2E c |
+| p71 | umgesetzt: Rechtsklick auf einen Buchstaben in „Text“ findet Bin bzw. Einleger; neue Buchstaben heißen wie von Fusion vergeben („Körper7“, Entscheidung 15.11.) | pytest, E2E c |
 | p53 | **offen**: 3MF zeigt jeden Buchstaben als eigenes Objekt, keine Gruppe „Text“ | Probe Q5, siehe unten |
 
 ## Belege
@@ -114,12 +114,12 @@ Gemessen an einer 2x1x3-Bin, Label „AB“ → „ABCDE“, `heightUnit` 7→10
 
 ## Offen / neue Punkte
 
-- p53 offen (siehe oben). Für Jörgs Testtermin: Fasst sein Slicer die Körper einer Komponente zusammen?
+- p53 offen (siehe oben). Für Testtermin: Fasst sein Slicer die Körper einer Komponente zusammen?
 - p180 „Große Cullenect-Symbole in Bin-Labels werden noch verschoben“.
 - p181 „Bin-Label-Text läuft beim Verlängern über den Bin-Rand“: Ein Text, der das Label schon füllt, behält beim
   Verlängern seine Höhe und läuft nach rechts über (E2E: bis 105 mm bei 99,5 mm Bin). Das E2E lässt das nach rechts zu.
 
-## Handtest für Jörg (Testtermin nach R18)
+## Handtest (Testtermin nach R18)
 
 1. Neues Dokument, zwei Bins mit Label (eine graviert, eine farbig erhaben, eine davon gekippt), dazu ein Fach-Label.
    Text-Parameter um drei Buchstaben verlängern: alle Buchstaben bleiben auf der Lasche, graviert in die Bin, erhaben

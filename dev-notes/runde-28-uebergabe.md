@@ -8,10 +8,10 @@ Spec mit den Nachträgen dieser Runde: `dev-notes/specs/2026-11-16-pred-box-desi
 - **Kleinteile im Satz:** 4 Riegel (Preds Latch_Experimental), Griff, 2 Haltestifte, 2 Scharniere (Hinge_M3x30).
   - Riegel, Griff und Stifte sind starr an Joint origins der Box gejointet. Die Gelenke heißen „<Satz> <Sitz>“.
   - Die Scharniere liegen in Druckposition neben der Box: das erste an Preds Stelle, das zweite 5 mm daneben in y
-    (Jörg: „Das passt so für das Scharnier“).
+    (Entscheidung: passt so für das Scharnier).
   - Die Teile sind `.f3d` in `resources/predBox`, aus Preds Datei übernommen. Herkunft und Änderungen stehen in der
     README dort.
-  - Die Griffbreite folgt der Schildbreite: Schildbreite + 28,5 mm, höchstens 113,5 mm (Jörg).
+  - Die Griffbreite folgt der Schildbreite: Schildbreite + 28,5 mm, höchstens 113,5 mm (Vorgabe).
 - **Fusion-Prüfung** `r28_insert_check` l5 und l6 (17.11.), beide OK:
   - 5×4×6 → 7×5×10 und 5×4×6 → 4×3×6.
   - Alle Teile da, 8 Gelenke gesund.
@@ -36,7 +36,7 @@ Spec mit den Nachträgen dieser Runde: `dev-notes/specs/2026-11-16-pred-box-desi
   - Namen nach dem Rebuild (Commit „Rebuild gibt auch den Kleinteilen ihre Namen zurück“).
   - Sitze nur mit Teilen, Körpername des Stifts (6fdc3ed).
   - Auf der Liste: p293 bis p295.
-- **Scharniere festgejointet** (Vorschlag J, Jörg: „Ja, beides“) und **Auswahl Hinge** (M3x30, Pinned, Plain):
+- **Scharniere festgejointet** (Vorschlag J, Entscheidung: beides) und **Auswahl Hinge** (M3x30, Pinned, Plain):
   - `r28_cmd` l3/l4: zwei Sätze mit je eigenen Teilen, 20 Gelenke gesund.
   - Die Scharniere wandern beim Stapeln mit.
   - Rebuild 6×4×7 in 695 s, danach nichts ungesund und nichts übrig.
@@ -65,6 +65,6 @@ Spec mit den Nachträgen dieser Runde: `dev-notes/specs/2026-11-16-pred-box-desi
 - Zeitleisten-Gruppen melden `healthState` 5 (Unknown). Nur ihre Einträge zählen.
 - `sketches.add(face)` projiziert die Kanten der Fläche. Für eigene Skizzen auf Flächen `addWithoutEdges` nehmen.
 
-## Nicht löschen ohne Jörg
+## Nicht löschen ohne Freigabe
 
-`wt-r27merge` und der Branch `runde-27-merge` aus Runde 27 können weg. Das entscheidet Jörg über die Hauptsitzung.
+`wt-r27merge` und der Branch `runde-27-merge` aus Runde 27 können weg. Das entscheidet die Hauptsitzung.

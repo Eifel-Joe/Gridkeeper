@@ -1,7 +1,7 @@
 """
 Pred's hinges (components Hinge_M3x30, Hinge_Pined and Hinge of Pred's parametric Gridfinity Storage Box v1.1,
-https://www.printables.com/model/543553, CC BY-NC, by Pred) drawn in code, round 29 (Jörg 17.11.2026: "Wir zeichnen die
-Teile im Code.", "Am besten doch alle Scharniere mit Auswahl im Generator."). Until round 28 they were inserted from
+https://www.printables.com/model/543553, CC BY-NC, by Pred) drawn in code, round 29 (17.11.2026: the parts are drawn
+in code, all hinges selectable in the generator). Until round 28 they were inserted from
 resources/predBox/hinge*.f3d, which fails in the execute of a command with inputs (fusion-auftraege/r28_cmdvariants.log).
 
 Each hinge lies in Pred's part frame (that of its .f3d), in print position: the knuckles' axis along z through
@@ -11,8 +11,8 @@ dev-notes/r29/hinge-plan.md. The three variants share one shape (a U of two leav
 in the radii, the leaves' thickness and depth, and their extras (M3x30: screw hole, nut trap, counterbore with bridges;
 Pinned: hole for the printed pin, two counterbores, the pin; Plain: the knuckles turn on a core printed in place).
 Pred's measures hang on the box's slot (HingeSlotLength 32, Depth 9, Width 2, FromBack 3) and the tolerance 0.15; they
-are values here (no user parameters). Every sketch is fully constrained (predSketch, sketchChain; Jörg: "Denk nur dran,
-dass alle Zeichnungen vollständig bestimmt sein müssen."). No mirrored features (README of round 29, Mirror6): Pred's
+are values here (no user parameters). Every sketch is fully constrained (predSketch, sketchChain; requirement of 17.11.2026:
+all sketches fully constrained). No mirrored features (README of round 29, Mirror6): Pred's
 Mirror2/3/4 are built as counterparts. Values here are mm, Fusion gets cm.
 Tested in tests/test_pred_hinge.py, the shape against Pred's in fusion-auftraege/r29_hinge_check.py.
 """
@@ -63,7 +63,7 @@ SHAPES = {
     'M3x30': HingeShape('Hinge_M3x30', ('BottomHingePart_M3x30', 'TopHingePart_M3x30'),
                         knuckle=8 / 2, clearance=(8 + 2 * TOLERANCE) / 2, core=3.5 / 2,
                         leafWidth=SLOT_WIDTH - 0.4, leafDepth=SLOT_DEPTH - 0.2, inset=0.2),
-    # Pinned's halves named after it, Pred names them as M3x30's (Jörg 17.11.2026, click test F3: misleading in the
+    # Pinned's halves named after it, Pred names them as M3x30's (17.11.2026, click test F3: misleading in the
     # export and the slicer)
     'Pinned': HingeShape('Hinge_Pined', ('BottomHingePart_Pinned', 'TopHingePart_Pinned', 'Hinge pin'),
                          knuckle=8 / 2, clearance=(8 + 2 * TOLERANCE) / 2, core=3.5 / 2,
@@ -207,7 +207,7 @@ def hexagon(cx: float):
     return [(cx + r, 0.0), (cx + r / 2, h), (cx - r / 2, h), (cx - r, 0.0), (cx - r / 2, -h), (cx + r / 2, -h)]
 
 
-# Weg A (Jörg 17.11.2026: "A: Brücken anders"): Pred's Sketch5, a square and a square turned 45 degrees round the
+# Way A (decided 17.11.2026: bridges done differently): Pred's Sketch5, a square and a square turned 45 degrees round the
 # screw hole as chords of the counterbore, could not be drawn fully constrained (fusion-auftraege/r29_hinge_diag.log:
 # Fusion refused a dimension, VCS_SKETCH_OVER_CONSTRAINTS, after three fixes). His twelve profiles per layer add up to
 # two circle segments beyond parallel 45-degree chords tangent to the hole, so each segment is drawn as a rectangle of

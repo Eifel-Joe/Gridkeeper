@@ -1,5 +1,5 @@
 """
-Tests for Pred's handle pin drawn in code (round 29, Jörg 17.11.2026: "Wir zeichnen die Teile im Code."). Expected values
+Tests for Pred's handle pin drawn in code (round 29, 17.11.2026: the parts are drawn in code). Expected values
 come from Pred's HandlePin read step by step (fusion-auftraege/r29_walk/HandlePin.json): Sketch1's profile areas, the
 body box and the volume after Extrude6, 138.1225 mm3. The plan data of predHandlePin is Fusion-free; what needs Fusion is
 checked in its source (ast), the shape itself in Fusion (fusion-auftraege/r29_pin_check.py).
@@ -41,7 +41,7 @@ def _exactly_determined(points, curves):
 
 
 def test_profile_sketch_is_exactly_determined():
-    """Jörg: "Denk nur dran, dass alle Zeichnungen vollständig bestimmt sein müssen." Three circles on one centre"""
+    """All sketches must be fully constrained. Three circles on one centre"""
     points = [pin.AXIS]
     curves = [{"kind": "circle", "center": 0} for _ in pin.DIAMETERS]
     _exactly_determined(points, curves)

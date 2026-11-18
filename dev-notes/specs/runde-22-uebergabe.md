@@ -1,6 +1,6 @@
 # Runde 22 – Übergabe: Commits des Originals übernehmen (p13)
 
-Stand 2026-11-16. Branch `runde-22` von `master` (4da7731). Jörg: „Auch die neuen Commits von Upstream übernehmen.“
+Stand 2026-11-16. Branch `runde-22` von `master` (4da7731). Auftrag: auch die neuen Commits von Upstream übernehmen.
 Upstream `Le0Michine/FusionGridfinityGenerator` `master` (fba170e), 6 Commits von Lev Mishin (Le0Michine):
 
 | Commit | Inhalt | Überschneidung mit uns |
@@ -37,7 +37,7 @@ abgebrochen. Vorgehen je Stelle:
    Notiz hier.
 6. **README und Screenshots von 4ae7afb übernehmen, wie sie sind.** README-Änderungen ohne Konflikt.
 
-## Rückfrage (Hauptsitzung / Jörg)
+## Rückfrage (Hauptsitzung)
 
 **Bin-Label-Icon: Upstreams Regel „Icon volle Größe, nur Text schrumpft“ übernehmen?**
 - **A, übernehmen (Empfehlung):**
@@ -54,7 +54,7 @@ abgebrochen. Vorgehen je Stelle:
 
 - pytest, Review (Opus) mit Blick auf die Konfliktstellen, CHANGELOG-Abschnitt „Merged from upstream“ mit Credits an
   Le0Michine.
-- Fusion, nur betroffene Fälle (Jörgs Wunsch): Reload; Snapshots der Bin-Fälle mit Label-Icon
+- Fusion, nur betroffene Fälle (Wunsch): Reload; Snapshots der Bin-Fälle mit Label-Icon
   (`bin_2x1x3_label_icon_text_embossed`, `…_colored`) und eine Probe der neuen Icons (Hex-Kontermutter, eine neue
   Schraube) auf einem Bin-Label; Rebuild mit geändertem Text (E2E R19 a, e, f).
 - **Handtests für die Desktop-Steuerung:**
@@ -70,13 +70,13 @@ Merge-Commit 1e5d9e4 (`git merge upstream/master`). Die sechs Commits von Lev Mi
 - **1 (Kontextmenü Clone):** übernommen, Texte auf „bin, baseplate or label“.
 - **2 (`parameterEdits`):** unsere Fassung.
 - **3 (`createLabel`):** vorerst unsere Fassung, Stelle im Code mit „OPEN (round 22, p13)“ markiert. Entscheidung A/B
-  steht aus (Hauptsitzung fragt Jörg).
+  steht aus (Hauptsitzung klärt es).
 - **4 (Icons):** übernommen.
 - **5 (Manifest):** Git hatte es ohne Konflikt auf 2.4.2.0 gemergt, zurück auf 2.4.0.0.
 - **6 (README, Screenshots, `tools/labelIcons.py`):** übernommen.
 - pytest: `920 passed`.
 
-## Punkt 3 entschieden: Variante A (Jörg: „Wie das Original“)
+## Punkt 3 entschieden: Variante A (Entscheidung: wie das Original)
 
 - Upstreams Regel ist in unserem Code nachgebaut, die Hunks selbst passten nicht.
   - `binLabelLayout.fitBinLabel`: Das Icon behält seine volle Größe (so hoch, wie die Buchstaben höchstens sein dürfen),

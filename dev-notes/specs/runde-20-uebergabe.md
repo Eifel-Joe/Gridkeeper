@@ -1,7 +1,7 @@
 # Runde 20 – Übergabe (Fix-Runde)
 
 Stand 2026-11-16. Branch `runde-20` von `runde-14-18` (bd6098b), nicht gepusht, nicht gemergt. Auftrag der
-Hauptsitzung nach dem Handtest per Desktop-Steuerung (Jörg: „Ja, beheben“). Keine eigene Spec, der Plan steht hier.
+Hauptsitzung nach dem Handtest per Desktop-Steuerung (Entscheidung: beheben). Keine eigene Spec, der Plan steht hier.
 
 Punkte:
 - p220 „Einleger per Rechtsklick neu bauen: Dialog stürzt ab, wenn der Einleger in einer Tasche sitzt“

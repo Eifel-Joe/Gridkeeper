@@ -12,14 +12,14 @@ from .predBoxSeats import LABEL_JOINT_ORIGIN
 # (https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric, CC BY-NC, by Pred), round 29
 # (p262, dev-notes/r29/boxlabel-plan.md): Pred's flat plate (Label, Label_M_Screws in Pred's file), Gridkeeper text and
 # Cullenect symbols (https://github.com/CullenJWebb/Cullenect-Labels, MIT, by CullenJWebb) on it, raised, debossed or
-# flush like on the Cullenect inserts. Built by the box label command, not the box command (Jörg 17.11.2026: "weil man
-# es so besser auch mal austauschen könnte").
+# flush like on the Cullenect inserts. Built by the box label command, not the box command (decided 17.11.2026: so it
+# can be swapped out more easily).
 #
 # Part frame: the plate lies flat as it is printed, text up (+z), the middle of its back face at the origin; the box
 # label joint origin there has Z along +y and X along +x, so jointed to the box's Label joint origin (upright, X along
 # X, predBoxSeats.labelSeat) the plate stands in the holder: +y up, the text towards the front (-y of the box).
-# Every sketch is fully constrained (Jörg 17.11.2026: "Denk nur dran, dass alle Zeichnungen vollständig bestimmt sein
-# müssen."); the text sketches on fixed baselines like the inserts' (p50, round 6: Fusion reports them constrained).
+# Every sketch is fully constrained (requirement of 17.11.2026: all sketches fully
+# constrained); the text sketches on fixed baselines like the inserts' (p50, round 6: Fusion reports them constrained).
 
 SURFACE_EMBOSSED = 'Embossed'
 SURFACE_DEBOSSED = 'Debossed'

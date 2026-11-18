@@ -3,7 +3,7 @@ Puts the small parts of the storage box after Pred's parametric Gridfinity Stora
 (https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric, CC BY-NC, by Pred) into a box
 set; which parts, how many and where they sit are in predBoxParts and predBoxSeats.
 
-Round 29 (Jörg 17.11.2026: "Wir zeichnen die Teile im Code."): every part is drawn by its generator into a new
+Round 29 (17.11.2026: the parts are drawn in code): every part is drawn by its generator into a new
 component of the set, in the box command, so it lands in the set's timeline group. Importing the former part
 files failed in a command with a dialog (fusion-auftraege/r28_cmdvariants.log). Further occurrences of a part are
 the same component again. Every part is jointed rigidly, its joint origin on the box's at its seat, turned about z
@@ -31,7 +31,7 @@ def drawPart(component: adsk.fusion.Component, part: predBoxParts.Part, dims: Pr
     if part.role == 'Latch':
         return predLatch.createLatch(component)
     if part.role == 'Handle':
-        # its width follows the label width, an expression on gfBoxN_baseWidth (Jörg: at most 113.5 mm)
+        # its width follows the label width, an expression on gfBoxN_baseWidth (at most 113.5 mm)
         return predHandle.createHandle(component, predBoxSeats.handleHalfWidth(dims).expression)
     if part.role == 'Handle pin':
         return predHandlePin.createHandlePin(component)
@@ -55,7 +55,7 @@ def insertParts(
     of predBoxParts.HINGES) at two seats beside the box in their print position. Returns their native bodies, each
     part's once, after box and lid in buildBox's list (plan decision 5). inContext is assembly.inContext.
 
-    Every part is jointed, none is placed by a transform (Jörg 17.11.2026, "Ja, beides" to Vorschlag J): hinges set by
+    Every part is jointed, none is placed by a transform (decided 17.11.2026): hinges set by
     their proxy's transform stayed where they were when the set was stacked, and the position Fusion captured for
     them stayed in the timeline, suppressed, after a rebuild (fusion-auftraege/r28_cmd.l1.out, .l2.out)
     """
@@ -63,7 +63,7 @@ def insertParts(
     boxComponent = (boxOccurrence.nativeObject or boxOccurrence).component
     seats = {seat.name: seat for seat in predBoxSeats.seats(dims, hinge)}
     bodies = []
-    # the small parts in a color of their own, box and lid keep theirs (Jörg 17.11.2026); without a library appearance
+    # the small parts in a color of their own, box and lid keep theirs (17.11.2026); without a library appearance
     # to copy they stay uncoloured, the box is built all the same (review round 29: before, a box needed none)
     appearance = None
     if predBoxParts.partsToDraw(hinge):

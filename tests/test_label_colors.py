@@ -70,7 +70,7 @@ def test_rgb():
 def test_base_appearance_rank_prefers_plastic_in_any_language():
     # the libraries are in the user's language, p31: there is no "Plastic" in a German Fusion
     assert colors.baseRank('Plastic - Matte (White)') < colors.baseRank('Paint - Enamel Glossy (White)')
-    # names as Joerg's German Fusion has them, 14.11.2026
+    # names as a German Fusion has them, 14.11.2026
     assert colors.baseRank('Kunststoff - matt (Weiß)') < colors.baseRank('Kunststoff - glänzend (Weiß)')
     assert colors.baseRank('Kunststoff - glänzend (Weiß)') < colors.baseRank('3D Esche - Halbglanz')
     assert colors.baseRank('Kunststoff - matt (Weiß)') < colors.baseRank('Kunststoff - durchscheinend matt (Weiß)')
@@ -79,7 +79,7 @@ def test_base_appearance_rank_prefers_plastic_in_any_language():
 
 
 def test_base_candidates_prefer_the_appearance_library():
-    # Joerg's favorites held "3D Esche", a wood that came first while the library's plastics were passed over (p86)
+    # a user's favorites held "3D Esche", a wood that came first while the library's plastics were passed over (p86)
     libraries = [('FAV', ['3D Esche - Halbglanz', 'ABS (red)']), (colors.APPEARANCE_LIBRARY_ID, ['Glas - klar', 'Kunststoff - glänzend (Rot)', 'Kunststoff - matt (Rot)'])]
     order = colors.baseCandidates(libraries)
     assert order[0] == (1, 2)

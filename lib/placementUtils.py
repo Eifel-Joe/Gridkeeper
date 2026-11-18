@@ -106,8 +106,8 @@ def frontPlacement(
     occupied: list[tuple[float, float, float, float]],
 ) -> tuple[float, float, int] | None:
     """
-    Where a part lying flat goes in front of a box (Jörg 17.11.2026 of a box label taken out of its holder: "Schild vor
-    die Front wäre besser. Sonst übersieht man es schnell."): front is the world XY direction the box's front faces,
+    Where a part lying flat goes in front of a box (decided 17.11.2026 for a box label taken out of its holder: in front of the
+    front is better, otherwise it is easily overlooked): front is the world XY direction the box's front faces,
     centre a world point on the box's middle (its Label joint origin), boxExtents the world XY extents of the box's
     parts (box, handle, ...), size the part's width and height lying unturned. It goes gap past the part of the box
     furthest out to the front, its middle on the box's middle, turned with the box: quarter turns about z from a box

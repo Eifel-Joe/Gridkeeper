@@ -2,8 +2,8 @@
 
 Punkt: p280 „Ältere Bins beim Neubau mit ihren alten Einstellungen füllen“ (Fehler).
 
-Jörgs Notiz (maßgeblich): „Ältere Bins werden erstellt, wie sie gespeichert wurden. Es werden keine Einstellungen
-aktiviert, welche die Config nicht her gibt. So bleiben die Bins identisch mit dem wie sie gespeichert wurden.“
+Vorgabe (maßgeblich): Ältere Bins werden erstellt, wie sie gespeichert wurden. Es werden keine Einstellungen
+aktiviert, welche die Config nicht hergibt, so bleiben die Bins identisch mit dem Gespeicherten.
 
 ## Problem
 
@@ -45,7 +45,7 @@ seit fbd3146 (vor dem ersten Config-Stand) unverändert. Nichts zu tun.
 2. Abgeleiteter Altwert: `OLDER_VALUES` darf statt eines Werts eine Funktion der Config tragen (für
    `plateEdgeClearance` = `xyClearance`). Fehlt der Config auch `xyClearance`, bleibt das Feld fehlend (Dialogwert,
    wie jedes andere fehlende Feld einer handgeschriebenen Teil-Config).
-3. Obergrenze des Plattenspalts (Hauptsitzung, 18.11.: „Jörg will identische Bauten“, erst prüfen, ob die Grenze einen
+3. Obergrenze des Plattenspalts (Hauptsitzung, 18.11.: Bauten sollen identisch sein, erst prüfen, ob die Grenze einen
    geometrischen Grund hat). Geprüft: keinen. Die 0,25 mm pro Kante sind Upstreams Halbierung der 0,5 mm Gesamtspalt
    aus 8cc5089 (3452e56, Le0Michine). Vor 8cc5089 nahm dieselbe Kante das xy-Spiel bis 0,5 mm, und die Außenkante
    einer Fill-Area nimmt es bis heute mit derselben Rechnung (`baseplateGenerator`, `outlineMin/Max ± edgeClearance`).
@@ -54,7 +54,7 @@ seit fbd3146 (vor dem ersten Config-Stand) unverändert. Nichts zu tun.
    ausnahmslos identisch, keine Begrenzung. Abweichung von Upstream in `commandCreateBaseplate/entry.py`, das keiner
    anderen Runde gehört.
 4. **Gegen p151 (Runde 18):** Dort galt „fehlt ein Feld, bleibt der Dialogwert stehen, belegt an der Label-Farbe“.
-   Jörgs p280-Notiz kehrt das für Felder um, die es beim Speichern noch nicht gab: eine alte Bin mit Label bekommt beim
+   p280-Notiz kehrt das für Felder um, die es beim Speichern noch nicht gab: eine alte Bin mit Label bekommt beim
    Laden keine Farbe, der Dialog springt auf „None“. Die zwei p151-Tests in `tests/test_config_json.py` werden darauf
    umgestellt. Für Felder, die jede Config seit 2fea2a1 hat, bleibt p151: fehlen sie einer handgeschriebenen
    Teil-Config (Handtest 10), Dialogwert mit Hinweis „Not in the file, kept the current value“. Die Felder der Tabelle
@@ -71,8 +71,8 @@ seit fbd3146 (vor dem ersten Config-Stand) unverändert. Nichts zu tun.
   Funktion entfernt. Eine Config damit wird wie bisher als „Not recognised, skipped“ gemeldet und baut **je Achse um
   fitTolerance (1 mm) größer**, der Spalt zur Schubladenwand sinkt von xy-Spiel + 0,5 mm auf das xy-Spiel.
   Nachbilden über die Flächenmaße wäre auch nicht deckungsgleich (Platte 0,5 mm versetzt). Hauptsitzung 18.11. nach
-  Jörgs Festlegung zu p302: Altlasten von vor 1.0.0 werden nicht angegangen („Zu diesem Zeitpunkt hatte außer uns
-  niemand das Plugin.“). Fund aus dem Opus-Review.
+  Festlegung zu p302: Altlasten von vor 1.0.0 werden nicht angegangen (zu diesem Zeitpunkt hatte außer dem Entwicklerteam
+  niemand das Plugin). Fund aus dem Opus-Review.
 - Ein eigener Hinweis im Dialog „mit altem Wert gefüllt“ (die Lippen-Felder melden es auch nicht).
 - Gespeicherte Dialog-Vorgaben („Save as default“) – das sind keine Configs einer Bin.
 - Versionsnummer (bleibt 1.1.0).

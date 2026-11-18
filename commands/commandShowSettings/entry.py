@@ -54,7 +54,7 @@ CLONE_COMMANDS = {
     tagUtils.TAG_LABEL: labelEntry,
     # storage boxes after Pred (round 27)
     tagUtils.TAG_BOX: boxEntry,
-    # the label of a box (1.1.0, Jörg: "Die Box-Labels haben die Punkte [...] nicht. Warum? Die Cullenect-Label haben es.")
+    # the label of a box (1.1.0: box labels lacked these entries that the Cullenect labels have)
     tagUtils.TAG_BOX_LABEL: boxLabelEntry,
 }
 # generators that rebuild a body in place, see binEntry.startRebuild, baseplateEntry.startRebuild, labelEntry.startRebuild,

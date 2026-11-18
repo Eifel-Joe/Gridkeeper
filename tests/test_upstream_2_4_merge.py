@@ -73,8 +73,8 @@ def test_cullenect_bin_with_color_and_dividers_round_trips():
 
 
 def test_config_saved_by_upstream_builds_without_our_settings():
-    # it kept the dialog's values for them until round 32; p280 (Joerg): "Es werden keine Einstellungen aktiviert,
-    # welche die Config nicht her gibt", so it gets the values bins had before them, see configJson.OLDER_VALUES
+    # it kept the dialog's values for them until round 32; p280: no setting is switched on
+    # that the config doesn't give, so it gets the values bins had before them, see configJson.OLDER_VALUES
     current = configJson.stateFromJson(BIN, binState.InputState, {
         **defaultSettings.BIN, "labelColor": "#2060D0", "hasDividersToTop": True, "cullenectSocketOffset": 0.5,
     })

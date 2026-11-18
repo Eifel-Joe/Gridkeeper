@@ -133,7 +133,7 @@ BOX = {
     'gridY': 4,
     'heightU': 6,
     'hasMagnets': False,
-    # 6x2 mm magnets (Joerg 16.11.2026: "Box nur 6x2"), Pred's diameter
+    # 6x2 mm magnets (decided 16.11.2026: 6x2 mm magnets only), Pred's diameter
     'magnetDepth': 2.4,
     'magnetDiameter': 6.5,
     'hasJointOrigins': True,

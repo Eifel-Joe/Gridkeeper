@@ -1,7 +1,7 @@
 # Runde 15 – Übergabe
 
 Stand 2026-11-15. Branch `runde-15` (von `runde-14-18`), nicht gepusht, nicht gemergt. Spec
-`dev-notes/specs/2026-11-15-runde-15-design.md` (von Jörg freigegeben), Plan `dev-notes/plans/2026-11-15-runde-15.md`
+`dev-notes/specs/2026-11-15-runde-15-design.md` (freigegeben), Plan `dev-notes/plans/2026-11-15-runde-15.md`
 (121d8eb, von der Hauptsitzung freigegeben).
 Punkte: p170 „Joint Origins an Bin-Füßen und Grundplatten-Aufnahmen folgen geänderten Rastermaßen nicht“, p60
 „Cullenect-Taschen folgen einer geänderten Rasterbreite nicht ganz, wenn Fächer neben dem Raster liegen“, p101
@@ -12,7 +12,7 @@ Wänden im Druck prüfen“.
 
 | Punkt | Stand | Beleg |
 |---|---|---|
-| p35 | umgesetzt (8918029): Cullenect erst ab 1,2 mm Wand, der Bin-Dialog sperrt OK und nennt den Grund in der Cullenect-Zeile der Maßtabelle; Konfiguration laden und Neubau per Rechtsklick öffnen denselben Dialog | pytest; E2E d ALL OK (1,2 / 2 / 3 mm bauen mit Tasche). Dialog nur von Hand prüfbar → Jörgs Testliste |
+| p35 | umgesetzt (8918029): Cullenect erst ab 1,2 mm Wand, der Bin-Dialog sperrt OK und nennt den Grund in der Cullenect-Zeile der Maßtabelle; Konfiguration laden und Neubau per Rechtsklick öffnen denselben Dialog | pytest; E2E d ALL OK (1,2 / 2 / 3 mm bauen mit Tasche). Dialog nur von Hand prüfbar → Testliste |
 | p170 | umgesetzt (a0d2189): jeder Joint Origin eine Skizze mit treibenden Maßen, eine Ebene je Höhe, Namen unverändert | E2E a vorher 6 FAILED (20,75/62,75 mm bei 50 mm, Skizzen unbestimmt), nachher ALL OK |
 | p60 | umgesetzt laut Spec (0351fc1): Spanne aus Lasche und Fach als `max()`/`min()`, auch Laschen-Hohlraum, seine Öffnungen und Label der geschalten Bin (Schwester-Pfade) | pytest; E2E b, c, e ALL OK; Symptom auf dem Ausgangsstand nicht nachstellbar (unten) |
 | p101 | umgesetzt (452a47e Versuch A, a73e76c Versuch B, c4ace6a Review-Korrekturen): bei 2 und 3 mm Wand jede Ecke in zwei Abschnitten gesweept, kein Fillet-Ausweg, keine Reststufe, eine aufgesetzte Bin stößt nirgends an | E2E f (2 mm) vorher 4 FAILED (nur Fillets, Stufenflächen 0,18–0,70 mm² bei z 15,5), nach B ALL OK; nach dem Review f und g (3 mm) ALL OK mit Stapelprüfung |
@@ -76,7 +76,7 @@ Kein kritischer Fund. Umgang:
 - **Klein, bleibt:** (8) Ebenennamen der Joint Origins geändert, nichts sucht sie; Joint-Origin-Namen gleich.
   (9) Die 1,2-mm-Prüfung sitzt laut Spec nur im Dialog; Skripte, die den Builder direkt rufen, bauen dünnere Wände.
 
-## Handtest für Jörg (Testtermin)
+## Handtest (Testtermin)
 
 1. Bin-Dialog, Label-Stil Cullenect, Wand 1,1 mm: OK gesperrt, Cullenect-Zeile nennt „at least 1.2 mm“; 1,2 mm: OK frei.
 2. Bin 4x2 und Grundplatte 3x3 mit Joint Origins, `gfBinN_baseWidth` bzw. die Grundplatten-Basisbreite auf 50 mm: die

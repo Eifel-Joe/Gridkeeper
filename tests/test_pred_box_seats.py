@@ -125,7 +125,7 @@ def test_each_seat_is_its_parts_first_seat_turned_about_z():
                      "Handle pin left": 0, "Handle pin right": 180, "Handle": 0}
 
 
-# Jörg 17.11.2026: "Der Griff bleibt bei Max. 113,5mm stehen. Breiter macht keinen Sinn." Pred's handle is the label
+# 17.11.2026: the handle stops at a maximum of 113.5 mm, wider makes no sense. Pred's handle is the label
 # width + 28.5 mm wide (pred_parts.json: 99 mm at 5 x 4 x 6, 113.5 mm at 7 x 5 x 10), the label width stops at 85 mm.
 @pytest.mark.parametrize("gridX, width", [(4, 57.0), (5, 99.0), (6, 113.5), (7, 113.5)])
 def test_the_handle_is_the_label_width_and_28_5_mm_wide(gridX, width):
@@ -152,8 +152,8 @@ def test_the_box_gets_a_joint_origin_at_every_seat():
         assert (x.value, y.value, z.value) == (by[seatName].x.value, by[seatName].y.value, by[seatName].z.value)
 
 
-# The hinges in their print position beside the box, jointed there (Jörg 17.11.2026 on "Scharniere in Druckposition neben
-# der Box festmachen (Vorschlag J), und Lage für alle drei so?": "Ja, beides"): each variant with the corner of its body
+# The hinges in their print position beside the box, jointed there (17.11.2026: hinges are fixed beside the box in print position,
+# the same for all three): each variant with the corner of its body
 # box where Hinge_M3x30's is (pred_parts.json: origin (-51.9986 | 40.5039 | -12.2095), bodies from (-61.2502 | 36.5039 |
 # -12.2095) mm), the second 5 mm beside it in y from its own depth. Part frames: fusion-auftraege/r28_extract.l5-l7.out
 M3X30_CORNER = (-61.2502, 36.5039, -12.2095)

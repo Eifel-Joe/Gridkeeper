@@ -359,7 +359,7 @@ def runChecks(checks: list) -> list[str]:
     return notes
 
 # A raised divider corner carries on from the compartment corner below without a ledge (p83): an upward face left
-# where they meet is a sickle Joerg found by hand, 0.36 mm2 where the fillet couldn't follow a short wall under the
+# where they meet is a sickle found by hand, 0.36 mm2 where the fillet couldn't follow a short wall under the
 # lip's chamfer. Tangent seams leave slivers of no area, which are no ledge, a corner's ledge is no wider than its
 # fillet
 LEDGE_MIN_AREA = 0.01
@@ -378,7 +378,7 @@ def raisedCornerLedges(faces: list[tuple[float, float, float]]) -> list[str]:
 # own, the letters of a line form one band in height. Assigning them first keeps a descender of the upper line over
 # the dots of an umlaut of the lower one from joining the lines (review of round 9). Dots are bodies of their own a
 # little above their letter, a gap of up to TEXT_BAND_GAP of the line's tallest letter stays in the band; a line
-# broken in two leaves a gap of half a capital and more (Joerg's "Welle 6mm": 2.7 mm at 5 mm)
+# broken in two leaves a gap of half a capital and more (the "Welle 6mm" label: 2.7 mm at 5 mm)
 TEXT_TOLERANCE = 0.01
 TEXT_BAND_GAP = 0.2
 

@@ -246,7 +246,7 @@ def test_choices_offer_only_what_fits_the_blocks_before():
 
 
 def test_choices_correct_a_selection_without_svg():
-    # Jörg's screenshot: head None with driver Hex and partial threads has no svg
+    # Found in testing: head None with driver Hex and partial threads has no svg
     (choices, selection) = catalog.screwChoices(COMBOS, _selection('none', 'machine', 'partial', 'hex', True, True))
     assert choices['driver'] == ['none']
     assert selection == _selection('none', 'machine', 'partial', 'none', False, False)

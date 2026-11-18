@@ -27,8 +27,8 @@ die volle Suite (`python -m pytest`). Commits auf Englisch, einer pro grünem Ta
 - [x] **T4 Plattendaten in der 3MF** – erst nach dem Ergebnis der Plattenprobe (`notizen/r29-export-probe`).
   - RED: `threeMf.write` schreibt die Platten nach dem Format, das die Probe belegt. Bei einer Platte bleibt die Datei
     wie heute.
-  - GREEN. Geht die Probe nicht auf: Jörg fragen, Ausweg wäre eine Datei je Platte.
-  - **Umgesetzt anders:** Die Probe ging nicht auf, Jörg hat „eine 3MF je Platte“ gewählt (siehe Spec). Das
+  - GREEN. Geht die Probe nicht auf: nachfragen, Ausweg wäre eine Datei je Platte.
+  - **Umgesetzt anders:** Die Probe ging nicht auf, Entscheidung: eine 3MF je Platte (siehe Spec). Das
     Bambu-Plattengitter aus T3 ist entfallen. Stattdessen wird der Inhalt jeder Platte zentriert, und
     `threeMf.write(..., isLaidOut=True)` schreibt eine Datei je Platte.
 - [x] **T5 Export-Befehl** (`commands/commandExport/entry.py`). Fusion-Teile werden mit Stub-Tests geprüft, soweit

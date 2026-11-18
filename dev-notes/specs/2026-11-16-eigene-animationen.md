@@ -1,6 +1,6 @@
 # Eigene Animationen für die Doku (Runde 26)
 
-Stand 16.11.2026, Jörgs Wunsch: „Können wir die bitte selber erstellen?“
+Stand 16.11.2026, Wunsch: die Animationen selbst erstellen.
 
 ## Problem
 
@@ -9,7 +9,7 @@ Animationen haben, die den eigenen Stand zeigen. Außerdem haben fünf Dialogbil
 rötlichen Rand rechts: Das ist der Leuchtrand, den die Claude-App während der Computer-Nutzung an den Bildschirmrand
 legt; der Dialog lag am rechten Bildschirmrand.
 
-## Entscheidungen (Jörg, 16.11.2026)
+## Entscheidungen (16.11.2026)
 
 - Aufbau wie im Original: Modell links, Ausschnitt aus dem Dialog rechts, Beschriftung unter dem Modell, Zustand für
   Zustand.
@@ -24,9 +24,9 @@ legt; der Dialog lag am rechten Bildschirmrand.
 1. **Modell:** Ein Fusion-Skript (Auftrag über gf-fusion) baut jeden Zustand in einem eigenen Testdokument, setzt eine
    feste isometrische Kamera und speichert das Viewport-Bild mit durchsichtigem Hintergrund
    (`saveAsImageFileWithOptions`, `isBackgroundTransparent`). Einheitliche blaue Darstellung über ein Erscheinungsbild im
-   Testdokument. Jörgs Dokumente bleiben unberührt.
+   Testdokument. Nutzerdokumente bleiben unberührt.
 2. **Dialog:** Per Computer-Nutzung wird im Testdokument der echte Dialog geöffnet und Zustand für Zustand eingestellt;
-   aufgenommen wird der betroffene Abschnitt. Der Leuchtrand der Computer-Nutzung bleibt laut Jörg, solange die
+   aufgenommen wird der betroffene Abschnitt. Der Leuchtrand der Computer-Nutzung bleibt laut Beobachtung, solange die
    Steuerung läuft; deshalb wird der Dialog vor den Aufnahmen mit mindestens 150 px Abstand zu jedem Bildschirmrand
    verschoben und danach auf Wunsch zurückgeschoben. `compose.py` misst jede Dialog-Aufnahme und bricht bei einem
    rötlichen Rand mit dem Dateinamen ab.
@@ -84,4 +84,4 @@ Neu aufgenommen ohne Rand: `dialog-baseplate.png`, `dialog-bin.png`, `dialog-bin
   r > g + 12).
 - Jede Animation zeigt die Zustände aus der Tabelle in dieser Reihenfolge; jedes GIF unter 2,5 MB.
 - `python -m mkdocs build --strict` ohne Fehler, pytest grün, Credits-Seite nennt die Animationen nicht mehr als fremd.
-- Jörg sieht sich die Seiten an und gibt sie frei.
+- Die Seiten werden gesichtet und freigegeben.

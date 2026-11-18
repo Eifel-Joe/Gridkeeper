@@ -219,7 +219,7 @@ def test_a_shared_text_takes_the_edited_parameter():
 
 
 
-# round 22, p13 (Joerg: "Wie das Original", upstream f1cb49b by Le0Michine): the label icon keeps its full size, as tall
+# round 22, p13 (as in the original, upstream f1cb49b by Le0Michine): the label icon keeps its full size, as tall
 # as the letters can be at most, only the text shrinks to the width left after it
 
 RATIO = const.BIN_LABEL_TEXT_HEIGHT_RATIO

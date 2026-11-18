@@ -1,7 +1,6 @@
 """
-The config of the box label (round 29, p262) for its settings, rebuild and clone (Hauptsitzung for 1.1.0, Jörg after his
-test: "Die Box-Labels haben die Punkte [Gridkeeper settings / rebuild / clone im Rechtsklick] nicht. Warum? Die
-Cullenect-Label haben es."), as labelConfig is the Cullenect insert's. Plain, no Fusion.
+The config of the box label (round 29, p262) for its settings, rebuild and clone (1.1.0: box labels lacked the
+settings / rebuild / clone right-click entries that the Cullenect labels have), as labelConfig is the Cullenect insert's. Plain, no Fusion.
 
 Settings are by field name as configJson.stateToJson has them, the symbols by their names in the dialog
 (predBoxLabelLayout.symbolChoices).
@@ -45,8 +44,8 @@ FIT_TOO_WIDE = 'tooWide'
 
 def labelFit(labelCells: int | None, boxCells: int | None) -> str:
     """
-    How a label built for labelCells fits the holder of a box boxCells wide. Jörg 17.11.2026: "Wenn die Box einen
-    Rebuild bekommt, der das Schild zu groß werden lässt, muss das Schild daneben gelegt werden." Too wide goes beside,
+    How a label built for labelCells fits the holder of a box boxCells wide. Decided 17.11.2026: when a box rebuild makes
+    the label too wide, the label is laid beside it. Too wide goes beside,
     narrower stays in; a width that isn't known leaves it as it is
     """
     if labelCells is None or boxCells is None or widthChoiceFor(labelCells) == widthChoiceFor(boxCells):

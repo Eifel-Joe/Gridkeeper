@@ -1,7 +1,7 @@
 # Runde 10 – Madenschrauben und eingefärbte Beschriftung
 
 Stand 2026-11-14. Ergänzt `2026-11-14-cullenect-labels-design.md`. Punkte p85 „Madenschrauben als Schrauben-Symbol“
-und p86 „Beschriftung wahlweise direkt einfärben (Einleger und Bin-Labels)“. Jörgs Entscheidungen in der Sitzung
+und p86 „Beschriftung wahlweise direkt einfärben (Einleger und Bin-Labels)“. Entscheidungen in der Sitzung
 (14.11.): Madenschraube Variante B (Stirnseite abgesetzt), Lizenz MIT, p86-Konzept „Ja, so bauen“.
 
 ## p85 Madenschrauben

@@ -44,7 +44,7 @@ def test_half_cells_rise_only_on_whole_lines():
 
 
 def test_merged_cells_have_no_divider_on_their_inner_line():
-    # Jörg's 4x2: one compartment over the whole front row, one over 2 cells and two single ones behind
+    # The 4x2 case: one compartment over the whole front row, one over 2 cells and two single ones behind
     pockets = layout.normalizePockets([
         layout.pocket(0, 0, 4, 1),
         layout.pocket(0, 1, 2, 1),

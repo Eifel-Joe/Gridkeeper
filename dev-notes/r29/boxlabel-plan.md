@@ -1,14 +1,13 @@
 # Runde 29, Box-Schild (p262): Spec-Ergänzung und Plan
 
-Auftrag: Schild für die Box nach Pred als **eigener Menübefehl** (Jörg: „Letzteres wäre mir gut recht, weil man es so
-besser auch mal austauschen könnte.“), kommt in Release 1.1.0 („Sonst ist die Box ja nicht komplett.“). Grundlagen:
+Auftrag: Schild für die Box nach Pred als **eigener Menübefehl** (Begründung: so lässt sich das Schild besser austauschen), kommt in Release 1.1.0 (sonst ist die Box nicht komplett). Grundlagen:
 Spec `dev-notes/specs/2026-11-16-pred-box-design.md` (Abschnitt Schild, Bauweise 3), Regeln `dev-notes/r29/README.md`.
-Pflicht: jede Skizze vollständig bestimmt (Jörg: „Denk nur dran, dass alle Zeichnungen vollständig bestimmt sein müssen.“).
+Pflicht: jede Skizze vollständig bestimmt (Vorgabe: Alle Zeichnungen müssen vollständig bestimmt sein.).
 
 Freigabe: Hauptsitzung 17.11.2026, alle Vorschläge 1–6.
 
 Markierung: **[V]** = Vorschlag dieser Untersitzung zu einer offenen Gestaltungsfrage, Freigabe durch die Hauptsitzung
-(oder auf Jörgs Testliste).
+(oder auf Testliste).
 
 ## 1. Befund Preds Schild (gelesen, 5 × 4 × 6)
 
@@ -68,10 +67,10 @@ Platte nach Preds Profil (Breite `labelWidth − 3 mm`, 24,5 mm hoch, 0,85 mm di
 - **Box:** Auswahl der Box (ein Körper der Box oder ihr *Label joint origin*). Mit Box: Breite aus deren Außenbreite
   (Vorbelegung der Auswahl), das Schild wird starr an den *Label joint origin* der Box gejointet. Ohne Box: Auswahl
   *Label width*, das Schild liegt frei neben den anderen Teilen (`placementUtils.findPlacement`).
-- **Schildbreite als Auswahl** (Nachtrag 17.11.2026, Jörg über die Hauptsitzung): „Die Schildbreite muss ich angeben
-  können, da sonst ein Nachdruck nur möglich ist, wenn es auch eine Box im Dokument gibt. Aber es kann natürlich auch eine
-  Breite übernommen werden, wenn man einen Joint auswählt zum positionieren.“ und „Da das Schild ja feste Breiten hat,
-  sollte es nur ein Auswahlmenü dafür geben. Nicht frei einstellbar.“ ⇒ Dropdown **Label width** mit Preds festen
+- **Schildbreite als Auswahl** (Nachtrag 17.11.2026, über die Hauptsitzung): Die Schildbreite muss angebbar sein,
+  da sonst ein Nachdruck nur mit einer Box im Dokument möglich ist; eine Breite kann aber auch übernommen werden, wenn ein
+  Joint zum Positionieren gewählt wird. Da das Schild feste Breiten hat, gibt es nur ein Auswahlmenü, nicht frei
+  einstellbar. ⇒ Dropdown **Label width** mit Preds festen
   Breiten: *Box 4 cells (28.5 mm)*, *Box 5 cells (70.5 mm)*, *Box 6+ cells (85 mm)* (Platte jeweils 3 mm schmaler),
   geht ohne Box im Dokument. Ein gewählter *Label joint origin* belegt den passenden Eintrag vor; passt die Auswahl
   danach nicht zur gewählten Box, sperrt der Dialog OK mit Hinweis. Ersetzt das Feld *Box width (cells)* unten.

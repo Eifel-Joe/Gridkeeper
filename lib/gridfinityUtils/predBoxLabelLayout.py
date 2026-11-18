@@ -66,8 +66,7 @@ def plateWidth(cells: int) -> float:
     return labelWidth(cells) - 2 * PLATE_INSET
 
 
-# Jörg 17.11.2026: "Da das Schild ja feste Breiten hat, sollte es nur ein Auswahlmenü dafür geben. Nicht frei
-# einstellbar." Pred's label width stops growing at 85 mm from 6 cells on, so there are three
+# Decided 17.11.2026: the label has fixed widths, so a choice menu, not a free setting. Pred's label width stops growing at 85 mm from 6 cells on, so there are three
 WIDTH_CHOICE_CELLS = [4, 5, 6]
 DEFAULT_CELLS = 5
 

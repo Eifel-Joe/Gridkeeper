@@ -1,6 +1,6 @@
 # Runde 16: Tests und Einstellungsanzeige
 
-Stand 15.11.2026, von Jörg in der Hauptsitzung freigegeben. Sammelbetrieb R14–R18, Branch von `runde-14-18`.
+Stand 15.11.2026, in der Hauptsitzung freigegeben. Sammelbetrieb R14–R18, Branch von `runde-14-18`.
 
 ## Punkte
 - p30 „Snapshot-Tests der Text-Labels passen auf diesem Rechner nicht“
