@@ -11,4 +11,4 @@ switch leaves the menu commands dead). New document, nothing saved.
 | 4 | Cullenect bin 1×1×3, insert into its pocket (Label dialog). Rebuild the insert (surface Debossed). | Insert in the pocket, its joint "… in pocket" without "(1)". |
 | 5 | Rebuild the bin of step 4 as 1×2. | Insert stays in the pocket of the new bin, timeline healthy, old bin gone. |
 | 6 | Box 5×4×6 with a bin jointed into floor cell 1-1, rebuild the box as 6×4×6. | Bin in cell 1-1 of the new box; the rebuild clearly faster than before (old set deleted in one go, see the add-in log: no "item by item"). |
-| 7 | Rename a joint by hand to "Mine (2)", rebuild a bin next to it. | "Mine (1)" keeps its name. |
+| 7 | Rename a joint by hand to "Mine (2)", rebuild a bin next to it. | "Mine (2)" keeps its name. |
