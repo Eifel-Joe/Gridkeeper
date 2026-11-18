@@ -814,7 +814,7 @@ LID_ROLE = 'Lid'
 
 def hasCellParts(des: adsk.fusion.Design) -> bool:
     """Whether the design has a baseplate or a box, the bin dialog offers a cell then (round 31, Nutzer 17.11.2026)"""
-    return any(des.findAttributes(tagUtils.TAG_GROUP, tagName).count > 0 for tagName in (tagUtils.TAG_BASEPLATE, tagUtils.TAG_BOX))
+    return any(len(des.findAttributes(tagUtils.TAG_GROUP, tagName)) > 0 for tagName in (tagUtils.TAG_BASEPLATE, tagUtils.TAG_BOX))
 
 def isCellJointOrigin(jointOrigin: adsk.fusion.JointOrigin | None) -> bool:
     """
