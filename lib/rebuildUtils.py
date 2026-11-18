@@ -533,6 +533,13 @@ def repointJointsByName(
                 notes.append(f'{joint.name}: the new part has no {jointOrigin.name}, the joint goes with the old one')
                 continue
             try:
+                # rolled to first: the marker may still stand before a joint moved earlier, the label's bodies after it
+                # rolled back, and its width check found no plate (review round 39)
+                group = item.parentGroup
+                if group is not None and group.isCollapsed:
+                    group.isCollapsed = False
+                    collapsedGroups.append(group)
+                item.rollTo(True)
                 if jointOrigin.name == predBoxSeats.LABEL_JOINT_ORIGIN:
                     # a box rebuilt with its label in the holder (it is nicer when the joint is kept on
                     # rebuild): the holder stays shown, a label of another width is said. One too
@@ -552,11 +559,6 @@ def repointJointsByName(
                     # a bin jointed into a cell of the baseplate or box (round 31): the cell stays shown, as the bin
                     # command keeps it (review)
                     shown.append(newJointOrigin)
-                group = item.parentGroup
-                if group is not None and group.isCollapsed:
-                    group.isCollapsed = False
-                    collapsedGroups.append(group)
-                item.rollTo(True)
                 setattr(joint, side, newJointOrigin)
                 moved += 1
             except Exception as err:

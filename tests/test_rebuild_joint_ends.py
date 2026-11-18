@@ -92,3 +92,15 @@ def test_the_repointing_loops_read_no_joint_side_themselves():
                       and n.attr in ("geometryOrOriginOne", "geometryOrOriginTwo", "occurrenceOne", "occurrenceTwo", "timelineObject")
                       and ast.unparse(n.value) == "joint"]
         assert attributes == [], (name, attributes)
+
+
+def test_a_joint_is_rolled_to_before_its_label_and_cell_checks():
+    """Review round 39: after an earlier joint was moved the marker stood before that one; the width check of a box
+    label jointed later read the label's bodies rolled back, found no plate and re-jointed a label too wide for the box.
+    The joint is rolled to first, everything before it is computed for the checks"""
+    function = _function("repointJointsByName")
+    tries = [n for n in ast.walk(function) if isinstance(n, ast.Try)]
+    body = [ast.unparse(statement) for statement in tries[0].body]
+    roll = next(i for (i, line) in enumerate(body) if line.startswith("item.rollTo(True)"))
+    label = next(i for (i, line) in enumerate(body) if "LABEL_JOINT_ORIGIN" in line)
+    assert roll < label
