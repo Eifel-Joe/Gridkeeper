@@ -107,7 +107,9 @@ per `Sketch.move` (reine Verschiebung, kein zweiter Import). Das Bin-Label nimmt
    Ausgabe je Datei: Punkte vorher, Linien/Bögen/Kreise/Splines nachher, größte Abweichung, Flächenänderung.
 2. **Prüfungen im Werkzeug und in pytest, automatisiert für alle Symboldateien:** Abstand der Kontur in beiden
    Richtungen (abgetastete neue Kontur zu den alten Segmenten, alte Punkte zur neuen Kontur) ≤ Toleranz; Fläche je
-   Zug auf 0,5 % bzw. 0,01 mm² gleich; jeder Zug geschlossen (Ende = Anfang), keine Selbstüberschneidung neu
+   Zug höchstens um Umfang × Toleranz anders (Änderung bei der Umsetzung: die zuerst geplanten 0,5 % lehnten die
+   groben Hardware-Polygone mit $fs = 0,2 ab, deren Bögen durch die Ecken bis 1,8 % mehr Fläche haben – sie treffen
+   die gemeinten Kreise besser; mehr als Umfang × Toleranz kann eine Kontur innerhalb der Toleranz nicht ändern); jeder Zug geschlossen (Ende = Anfang), keine Selbstüberschneidung neu
    entstanden; Zahl der Züge gleich. Das Werkzeug bricht bei einem Verstoß ab und schreibt die Datei nicht.
    Die Original-Polygone werden nicht als Ganzes eingecheckt. Das Werkzeug schreibt je Ordner eine kleine
    `symbol-check.json` (je Datei: Fläche je Zug und Umriss des Originals). pytest prüft für **alle** eingecheckten
