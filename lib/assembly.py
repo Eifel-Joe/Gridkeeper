@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Callable, TypeVar
 
 from . import tagUtils
-from .gridfinityUtils import commonUtils, designIntent
+from .gridfinityUtils import commonUtils, componentNames, designIntent
 
 # Where bins, baseplates and inserts go in the design (round 13, p90, 15.11.2026): the root holds a container per
 # kind, Grid, Bins and Label, each part is a component of its own in it, its colored text and symbol bodies are in a
@@ -81,7 +81,7 @@ def containerOccurrence(des: adsk.fusion.Design, kind: str) -> adsk.fusion.Occur
     if found is not None:
         return found
     occurrence = des.rootComponent.occurrences.addNewComponent(adsk.core.Matrix3D.create())
-    occurrence.component.name = tagUtils.CONTAINER_NAMES[kind]
+    componentNames.name(occurrence.component, tagUtils.CONTAINER_NAMES[kind])
     occurrence.component.attributes.add(tagUtils.TAG_GROUP, tagUtils.TAG_CONTAINER, kind)
     # A container only sorts, it never moves: a joint of a part in it, an insert into a pocket or a bin onto a
     # baseplate, would otherwise move the whole container with every part in it (Fusion 15.11.2026: the first insert
@@ -106,7 +106,7 @@ def addOccurrence(
     """
     owner = parent.component if parent is not None else des.rootComponent
     native = owner.occurrences.addNewComponent(transform or adsk.core.Matrix3D.create())
-    native.component.name = name
+    componentNames.name(native.component, name)
     occurrence = inContext(native, parent)
     if isMovable and parent is not None and occurrence.isGroundToParent:
         occurrence.isGroundToParent = False

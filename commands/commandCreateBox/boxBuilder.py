@@ -5,7 +5,7 @@ from ...lib import placementUtils
 from ...lib import assembly
 from ...lib import configJson
 from ...lib import rebuildUtils
-from ...lib.gridfinityUtils import commonUtils, designIntent, parameterUtils
+from ...lib.gridfinityUtils import commonUtils, componentNames, designIntent, parameterUtils
 from ...lib.gridfinityUtils import predBoxConfig, predBoxSeats, predBoxInsert
 from ...lib.gridfinityUtils.predBox import PredBoxDims
 from ...lib.gridfinityUtils.predBoxGenerator import createPredBox, PredBoxOptions
@@ -137,9 +137,9 @@ def _buildBox(
         # the lid split off the box like in Pred's file, each into its own component (Task 1, r27_spike: stays parametric)
         nativeSet = setOccurrence.nativeObject or setOccurrence
         boxNative = nativeSet.component.occurrences.addNewComponent(adsk.core.Matrix3D.create())
-        boxNative.component.name = BOX_COMPONENT_NAME
+        componentNames.name(boxNative.component, BOX_COMPONENT_NAME)
         lidNative = nativeSet.component.occurrences.addNewComponent(adsk.core.Matrix3D.create())
-        lidNative.component.name = LID_COMPONENT_NAME
+        componentNames.name(lidNative.component, LID_COMPONENT_NAME)
         # Fusion names a second set's components "Box (1)", the role tells them apart, see rebuildUtils
         boxNative.component.attributes.add(tagUtils.TAG_GROUP, tagUtils.TAG_PART_ROLE, BOX_COMPONENT_NAME)
         lidNative.component.attributes.add(tagUtils.TAG_GROUP, tagUtils.TAG_PART_ROLE, LID_COMPONENT_NAME)

@@ -28,3 +28,18 @@ jointNames = _load("jointNames")
 )
 def test_freed_name(name, taken, expected):
     assert jointNames.freedName(name, taken) == expected
+
+
+@pytest.mark.parametrize(
+    ("name", "expected"),
+    [
+        # round 44 (p570): the base of a name Fusion may have counted, to tell it from a name given with "(n)"
+        ("Gridfinity bin 1x1x3 (1)", "Gridfinity bin 1x1x3"),
+        ("Box (12)", "Box"),
+        ("Gridfinity bin 1x1x3", None),
+        ("Probe (x)", None),
+        ("(1)", None),
+    ],
+)
+def test_counted_base(name, expected):
+    assert jointNames.countedBase(name) == expected
