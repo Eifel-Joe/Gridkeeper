@@ -21,6 +21,13 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   aren't faster: most of their time is Fusion recomputing a design that grows with every box. The hinge looks up its
   chamfer edges from one list of the edges instead of walking them all again for each edge.
 
+### Label tab of a shelled bin under a lip (round 34)
+
+- **p281, checked: the tab sits on the back wall under either lip:** a shelled bin builds no scoop, so the front
+  placement of its label tab at the light lip's inner edge (inherited from GridfinityGenerator by Le0Michine) could never
+  run, and the tab never sat at the wrong edge under a full lip. The dead branch is removed; the tab is placed by
+  `shelledTabOriginY`. New snapshot case `bin_2x1x3_shelled_lip_full_scoop_tab`.
+
 ### Closed box lid (round 30)
 
 - **Lid top: Grid or Closed:** the box dialog has a group *Lid* with **Lid top**. *Closed* builds the lid flat and
@@ -78,6 +85,14 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 - **Developer commands in a git worktree:** the snapshot tests and the model images command show whenever the add-in
   runs from a git checkout, also from a git worktree, where `.git` is a file instead of a folder. They use the same
   check as the update lock (p320).
+
+### Trim sketches fully constrained (round 35)
+
+- **Shaped bins and baseplates:** the sketches *Outer clearance trim sketch* (bins with a shape, e.g. an L-shape or
+  a shape in half cells, p282) and *Plate outline trim sketch* / *Plate pieces cut sketch* (baseplates, p290) are
+  fully constrained now. The frame around the outline, whose region the cut takes, had no position or size; it is
+  dimensioned from the sketch origin like the other rectangles of the generator. The geometry stays the same. Both
+  sketches came from GridfinityGenerator by Le0Michine.
 
 ## 1.1.0 (2026-11-17)
 
