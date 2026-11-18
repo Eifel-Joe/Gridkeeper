@@ -13,6 +13,7 @@ from .gridfinityUtils import cullenect
 from .gridfinityUtils import boxLabelConfig, predBoxLabelLayout, predBoxParts, predBoxSeats
 from .gridfinityUtils import timelineRemoval
 from .gridfinityUtils import jointNames
+from .gridfinityUtils import componentNames
 from .gridfinityUtils import binCell
 
 # Rebuilding a generated body at its place in the timeline: the new one is built right after the old one's timeline
@@ -378,31 +379,31 @@ def dropJointCounters(design: adsk.fusion.Design, before: list[adsk.fusion.Joint
         except RuntimeError as err:
             commonUtils.fileLog(f'{LOG_PREFIX} a joint the rebuild made kept its name, {err}')
 
-def existingComponents(design: adsk.fusion.Design) -> tuple[list[adsk.fusion.Component], list[str]]:
-    """The components there are, as objects to tell those a build makes, and their names, see dropComponentCounters"""
-    components = list(design.allComponents)
-    return (components, [component.name for component in components])
-
-def dropComponentCounters(design: adsk.fusion.Design, before: list[adsk.fusion.Component], namesBefore: list[str]):
+def dropComponentCounters(design: adsk.fusion.Design, named: list[tuple[adsk.fusion.Component, str]]):
     """
-    A component the build made, not among before, named with Fusion's counter while the old part was still there
-    ("Gridfinity bin 1x1x3 (1)", round 44, p570) gets the lowest free name, see jointNames.freedName. Fusion counted
-    only when the base name was taken before the build: a name the generator gave with "(n)" of its own stays.
-    Components there were before, the user's own included, keep their names
+    A component the build named, see componentNames.recording, that got Fusion's counter on the name it asked for while
+    the old part was still there ("Gridfinity bin 1x1x3 (1)", round 44, p570) gets the lowest free name, see
+    jointNames.freedName. A name asked for with an "(n)" of its own stays (review round 44: the old part's own name
+    counted as taken, a label text "M3 (2)" would have lost its "(2)"). Components the build didn't name, the user's
+    own included, keep their names
     """
-    components = list(design.allComponents)
-    for component in components:
+    taken = None
+    for (component, requested) in named:
         try:
-            if any(component == old for old in before):
+            if not component.isValid:
                 continue
-            base = jointNames.countedBase(component.name)
-            if base is None or base not in namesBefore:
+            current = component.name
+            if current == requested or jointNames.countedBase(current) != requested:
                 continue
-            taken = [other.name for other in components if other != component]
-            name = jointNames.freedName(component.name, taken)
+            if taken is None:
+                taken = [other.name for other in design.allComponents]
+            others = list(taken)
+            others.remove(current)
+            name = jointNames.freedName(current, others)
             if name is not None:
-                commonUtils.debugLog(f'{LOG_PREFIX} {component.name} is now {name}')
+                commonUtils.debugLog(f'{LOG_PREFIX} {current} is now {name}')
                 component.name = name
+                taken = others + [name]
         except RuntimeError as err:
             commonUtils.fileLog(f'{LOG_PREFIX} a component the rebuild made kept its name, {err}')
 
@@ -954,9 +955,9 @@ def rebuild(
 
     oldNames = tagParameterNames(target.bodies[0])
     jointsBefore = existingJoints(design)
-    (componentsBefore, componentNamesBefore) = existingComponents(design)
     rollAfterGroup(target)
-    newBodies = build(target.placement, prefix, transform, target.oldPlace)
+    with componentNames.recording() as named:
+        newBodies = build(target.placement, prefix, transform, target.oldPlace)
     newOccurrence = None
     if len(newBodies) > 0 and newBodies[0].parentComponent != design.rootComponent:
         occurrences = design.rootComponent.allOccurrencesByComponent(newBodies[0].parentComponent)
@@ -969,7 +970,7 @@ def rebuild(
     # by what was noted, not the count: a joint moved whose note line failed after it wasn't counted (review round 43)
     keptOldItems = removeOldGroup(target, jointsMoved=len(target.movedFrom) > 0)
     dropJointCounters(design, jointsBefore)
-    dropComponentCounters(design, componentsBefore, componentNamesBefore)
+    dropComponentCounters(design, named)
     # shared units stay, the body's own ones it no longer has go, like the label of a tab turned off
     newNames = tagParameterNames(newBodies[0]) if len(newBodies) > 0 else []
     removeUnusedParameters(design, [name for name in oldNames if prefix is not None and prefixOf([name], baseName) == prefix and name not in newNames])

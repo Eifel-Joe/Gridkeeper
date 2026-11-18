@@ -14,7 +14,7 @@ Parts come in one by one as their generators are done (predBoxParts.DRAWN_ROLES)
 import adsk.core, adsk.fusion
 
 from .. import tagUtils
-from . import appearanceUtils, commonUtils, predBoxParts, predBoxSeats, predHandle, predHandlePin, predHinge, predLatch
+from . import appearanceUtils, commonUtils, componentNames, predBoxParts, predBoxSeats, predHandle, predHandlePin, predHinge, predLatch
 from .predBox import PredBoxDims
 
 
@@ -74,7 +74,7 @@ def insertParts(
     for part in predBoxParts.partsToDraw(hinge):
         first = setComponent.occurrences.addNewComponent(adsk.core.Matrix3D.create())
         component = first.component
-        component.name = part.role
+        componentNames.name(component, part.role)
         component.attributes.add(tagUtils.TAG_GROUP, tagUtils.TAG_PART_ROLE, part.role)
         drawPart(component, part, dims, hinge)
         # a part's only body after the part: snapshots and export go by body names

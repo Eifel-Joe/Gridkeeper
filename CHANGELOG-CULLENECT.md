@@ -13,8 +13,8 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   one still existed. Once the old part is gone, every component the rebuild made gets its name back without the
   counter, or the lowest free one if another part holds the name. This covers bin, insert (and its Text component),
   baseplate, box and box label rebuilds. Components that existed before the rebuild keep their names, the user's own
-  with an "(n)" included. A name the generator gives with an "(n)" of its own is kept too: the counter only goes when
-  its base name was taken before the rebuild (p570).
+  with an "(n)" included. A name the generator asks for with an "(n)" of its own, like an insert whose text ends in
+  "(2)", is kept too: only a counter Fusion added to the requested name goes (p570).
 
 ### Typed values in the dialogs (round 41)
 
