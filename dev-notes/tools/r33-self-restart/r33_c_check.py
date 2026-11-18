@@ -29,8 +29,19 @@ PREFIX = "EifelJoe_Gridkeeper_"
 COMMANDS = ["cmdUpdates", "cmdBin", "cmdBaseplate", "cmdLabel", "cmdBox"]
 
 
+def runningVersions():
+    """the runningVersion each loaded Gridkeeper package read at its start, by the folder of its Gridkeeper.py"""
+    import sys
+    for (name, module) in list(sys.modules.items()):
+        path = getattr(module, "__file__", "") or ""
+        if norm(path).endswith(norm("/Gridkeeper/Gridkeeper.py")):
+            updates = sys.modules.get(name + ".commands.commandUpdates.entry")
+            print("module", path, "id", id(module), "runningVersion", getattr(updates, "runningVersion", "no module"))
+
+
 def run(_context):
     probeLog()
+    runningVersions()
     show("git add-in", find(GIT))
     show("test copy", find(COPY))
     ui = adsk.core.Application.get().userInterface
