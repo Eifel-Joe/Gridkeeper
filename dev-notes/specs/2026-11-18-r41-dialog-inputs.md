@@ -80,7 +80,7 @@ setzen → **Anzeige „2.90 mm“**, kein weiteres `inputChanged`.
 | A | Beim OK alle Felder direkt lesen | wirkungslos: das Feld meldet selbst den alten Wert (3a/3b/3c/4) |
 | B–D | Spinner durch FloatSpinner/ValueInput/Slider ersetzen | wirkungslos: alle verlieren den Wert gleich (3c, 4a–4c) |
 | E | Auswahllisten statt Zahlenfelder (wie R37) | wirkt nur für Felder ohne Tippen; für Längenfelder unmöglich, für 1–100 unhandlich |
-| F | Keine Code-Änderung; Punkt als Fusion-Verhalten schließen, ggf. ein Satz in der Doku („nach dem Tippen Tab/Enter oder kurz warten“) | ehrlich, keine sichtbare Änderung |
+| F | Keine Code-Änderung; Punkt als Fusion-Verhalten schließen, ggf. ein Satz in der Doku („nach dem Tippen Tab oder kurz warten“; Enter nicht gemessen) | ehrlich, keine sichtbare Änderung |
 
 **Empfehlung: F.** Das Add-in kann einen Wert, den Fusion beim OK nicht herausgibt, nicht lesen; jeder Ersatz-Feldtyp
 verhält sich gleich. Die Grenze (~0,3 s) erreicht ein Mensch selten (Maus vom Feld zum OK-Knopf), automatische Klicks

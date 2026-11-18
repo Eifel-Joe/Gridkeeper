@@ -30,8 +30,8 @@ symbols take a few seconds.
 
 **A value I typed was ignored.**
 Fusion takes a value typed into an input only a moment after the last key. Clicked straight after typing, OK builds
-with the value the input had before; that goes for every input of every dialog. Press **Tab** or **Enter** after
-typing, or wait a moment, before clicking OK.
+with the value the input had before; that goes for every input of every dialog. Press **Tab** after typing, or wait
+a moment, before clicking OK.
 
 **OK is greyed out.**
 An input is out of range or a check failed; the dialog says which where it can. See
