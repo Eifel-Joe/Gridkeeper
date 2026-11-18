@@ -87,8 +87,8 @@ def test_with_joints_moved_the_noted_joint_origins_go_first_then_the_rest_as_a_w
     target = types.SimpleNamespace(group=group, groupItems=items, movedFrom=[pocket])
     calls = []
 
-    def deleteMovedFirst(groupItems, isMoved, timeline, log):
-        calls.append((groupItems, [item for item in groupItems if isMoved(item)], timeline))
+    def deleteMovedFirst(groupItems, isMoved, timeline, log, expectMoved=False):
+        calls.append((groupItems, [item for item in groupItems if isMoved(item)], timeline, expectMoved))
         return []
     removal = types.SimpleNamespace(deleteMovedFirst=deleteMovedFirst,
                                     deleteOneByOne=lambda *args: (_ for _ in ()).throw(AssertionError("item by item")))
@@ -96,7 +96,26 @@ def test_with_joints_moved_the_noted_joint_origins_go_first_then_the_rest_as_a_w
     assert removeOldGroup(target, jointsMoved=True) == []
     # the header goes, its items stay in the timeline for deleteMovedFirst
     assert group.calls == [False]
-    assert calls == [(items, [items[1]], "timeline")]
+    assert calls == [(items, [items[1]], "timeline", True)]
+
+
+def test_an_item_whose_entity_fusion_wont_give_isnt_taken_for_a_moved_one():
+    # review round 43: the header is gone already, an exception there would leave the old part ungrouped
+    class Broken:
+        isValid = True
+
+        @property
+        def entity(self):
+            raise RuntimeError("3 : Associated feature is invalid")
+    pocket = _JointOrigin("Pocket joint origin")
+    items = [Broken(), _Item(pocket)]
+    target = types.SimpleNamespace(group=_Group(items), groupItems=items, movedFrom=[pocket])
+    picked = []
+    removal = types.SimpleNamespace(deleteMovedFirst=lambda groupItems, isMoved, timeline, log, expectMoved=False: picked.extend(
+        [item for item in groupItems if isMoved(item)]) or [])
+    removeOldGroup = _load("removeOldGroup", adsk=_adsk(), commonUtils=_Log(), timelineRemoval=removal, LOG_PREFIX="test")
+    removeOldGroup(target, jointsMoved=True)
+    assert picked == [items[1]]
 
 
 def test_without_joints_moved_the_group_goes_as_a_whole_as_before():
@@ -112,7 +131,8 @@ def test_without_joints_moved_the_group_goes_as_a_whole_as_before():
 class _Joint:
     def __init__(self, name, token, component):
         self.name = name
-        self.entityToken = token
+        # a token string may differ between fetches (Fusion's docs): the joints are compared as objects
+        self.entityToken = token + "-fetched-anew"
         self.parentComponent = component
         component.joints.append(self)
 
@@ -131,7 +151,7 @@ def test_a_joint_the_build_made_drops_fusions_counter_once_the_old_one_is_gone()
     design = types.SimpleNamespace(rootComponent=types.SimpleNamespace(allJoints=root.joints))
     jointNames = types.SimpleNamespace(freedName=lambda name, taken: _freedName(name, taken))
     dropJointCounters = _load("dropJointCounters", jointNames=jointNames, commonUtils=_Log(), LOG_PREFIX="test")
-    dropJointCounters(design, {"a", "u"})
+    dropJointCounters(design, [old, user])
     # new joints only: the user's own keeps its name
     assert new.name == "B in cell"
     assert user.name == "Rigid (1)"
@@ -147,9 +167,11 @@ def _freedName(name, taken):
 
 def test_rebuild_drops_the_counters_after_the_old_group_is_gone_and_not_on_a_preview():
     body = [ast.unparse(statement) for statement in _function("rebuild").body]
-    before = next(i for (i, line) in enumerate(body) if "jointTokens(design)" in line)
+    before = next(i for (i, line) in enumerate(body) if "existingJoints(design)" in line)
     build = next(i for (i, line) in enumerate(body) if line.startswith("newBodies = build("))
     remove = next(i for (i, line) in enumerate(body) if "removeOldGroup(" in line)
+    # whether joints were moved from what was noted, not the count of the notes (review round 43)
+    assert "jointsMoved=len(target.movedFrom) > 0" in body[remove]
     drop = next(i for (i, line) in enumerate(body) if line.startswith("dropJointCounters(design,"))
     preview = next(i for (i, line) in enumerate(body) if line.startswith("if isPreview"))
     assert preview < before < build < remove < drop

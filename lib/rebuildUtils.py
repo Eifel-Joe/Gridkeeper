@@ -326,14 +326,23 @@ def removeOldGroup(target: RebuildTarget, jointsMoved: bool = False) -> list[str
     timeline = group.parentTimeline
     log = lambda message: commonUtils.fileLog(f'{LOG_PREFIX} {message} ({groupName})')
     if jointsMoved:
-        movedFrom = target.movedFrom
+        movedFrom = []
+        for jointOrigin in target.movedFrom:
+            # several joints may have used one
+            if not any(jointOrigin == seen for seen in movedFrom):
+                movedFrom.append(jointOrigin)
         commonUtils.fileLog(f'{LOG_PREFIX} deleting the timeline group {groupName}: the {len(movedFrom)} joint origins joints were moved away from first, then the rest as a whole')
         # items of a group can't be deleted on their own, the header goes and they stay in the timeline
         group.deleteMe(False)
         def isMoved(item) -> bool:
-            jointOrigin = adsk.fusion.JointOrigin.cast(item.entity)
+            # an item Fusion gives no entity of isn't one: the header is gone already, raising here would leave the
+            # old part ungrouped (review round 43)
+            try:
+                jointOrigin = adsk.fusion.JointOrigin.cast(item.entity)
+            except RuntimeError:
+                return False
             return jointOrigin is not None and any(jointOrigin == old for old in movedFrom)
-        return timelineRemoval.deleteMovedFirst(target.groupItems, isMoved, timeline, log)
+        return timelineRemoval.deleteMovedFirst(target.groupItems, isMoved, timeline, log, expectMoved=True)
     try:
         if group.deleteMe(True):
             return []
@@ -344,11 +353,14 @@ def removeOldGroup(target: RebuildTarget, jointsMoved: bool = False) -> list[str
         group.deleteMe(False)
     return timelineRemoval.deleteOneByOne(target.groupItems, timeline, log)
 
-def jointTokens(design: adsk.fusion.Design) -> set[str]:
-    """The joints there are, by entity token, to tell those a build makes, see dropJointCounters"""
-    return {joint.entityToken for joint in design.rootComponent.allJoints}
+def existingJoints(design: adsk.fusion.Design) -> list[adsk.fusion.Joint]:
+    """
+    The joints there are, to tell those a build makes, see dropJointCounters. As objects: an entity token string may
+    differ between fetches (Fusion's docs), a joint of the user would pass for a new one (review round 43)
+    """
+    return list(design.rootComponent.allJoints)
 
-def dropJointCounters(design: adsk.fusion.Design, before: set[str]):
+def dropJointCounters(design: adsk.fusion.Design, before: list[adsk.fusion.Joint]):
     """
     A joint the build made, not among before, named with Fusion's counter while the old part's joint was still there
     ("... in cell (1)", round 43, p430) gets the lowest free name among the joints of its component, see
@@ -356,7 +368,7 @@ def dropJointCounters(design: adsk.fusion.Design, before: set[str]):
     """
     for joint in list(design.rootComponent.allJoints):
         try:
-            if joint.entityToken in before:
+            if any(joint == old for old in before):
                 continue
             taken = [other.name for other in joint.parentComponent.joints if other != joint]
             name = jointNames.freedName(joint.name, taken)
@@ -913,7 +925,7 @@ def rebuild(
         return (build(target.placement, None, transform, target.oldPlace), [])
 
     oldNames = tagParameterNames(target.bodies[0])
-    jointsBefore = jointTokens(design)
+    jointsBefore = existingJoints(design)
     rollAfterGroup(target)
     newBodies = build(target.placement, prefix, transform, target.oldPlace)
     newOccurrence = None
@@ -922,10 +934,11 @@ def rebuild(
         newOccurrence = occurrences.item(0) if occurrences.count > 0 else None
     failed = replaceBodies(target, newBodies, newOccurrence)
     if jointsByName:
-        (movedJoints, jointNotes) = repointJointsByName(design, target, newBodies)
+        (_, jointNotes) = repointJointsByName(design, target, newBodies)
     else:
-        (movedJoints, jointNotes) = repointJoints(design, target, newOccurrence)
-    keptOldItems = removeOldGroup(target, jointsMoved=movedJoints > 0)
+        (_, jointNotes) = repointJoints(design, target, newOccurrence)
+    # by what was noted, not the count: a joint moved whose note line failed after it wasn't counted (review round 43)
+    keptOldItems = removeOldGroup(target, jointsMoved=len(target.movedFrom) > 0)
     dropJointCounters(design, jointsBefore)
     # shared units stay, the body's own ones it no longer has go, like the label of a tab turned off
     newNames = tagParameterNames(newBodies[0]) if len(newBodies) > 0 else []

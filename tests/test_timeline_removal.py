@@ -226,3 +226,15 @@ def test_a_whole_delete_that_fails_drops_the_new_group_and_goes_item_by_item(fai
     assert ("delete", "Sketch1") in timeline.calls and ("delete", "Occurrence") in timeline.calls
     assert timeline.calls[-1] == "moveToEnd"
     assert any("item by item" in message for message in logged)
+
+
+def test_joints_moved_but_none_of_their_joint_origins_found_goes_item_by_item():
+    # review round 43: the whole delete would take the moved joints along, the measured failure
+    timeline = GroupingTimeline()
+    old = indexed(timeline, "Occurrence", "Sketch1")
+    logged = []
+    kept = timelineRemoval.deleteMovedFirst(old, moved(), timeline, log=logged.append, expectMoved=True)
+    assert kept == []
+    assert not any(call[0] == "group" for call in timeline.calls if isinstance(call, tuple))
+    assert all(not item.isValid for item in old)
+    assert any("item by item" in message for message in logged)
