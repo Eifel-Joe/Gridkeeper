@@ -1,0 +1,14 @@
+{
+    "description": "2x1x3 shelled bin with a full lip, scoop and label tab switched on, the shell builds no scoop and the tab sits on the back wall",
+    "generator": "bin",
+    "settings": {
+        "binLength": 1,
+        "binHeight": 3,
+        "binType": "Shelled",
+        "isShellRounded": false,
+        "lipType": "Full",
+        "hasScoop": true,
+        "hasTab": true,
+        "labelText": "M3"
+    }
+}

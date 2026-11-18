@@ -77,6 +77,26 @@ def createRectangle(
             rectangleLines.item(1).endSketchPoint.geometry), length)
         return rectangleLines
 
+def addFrame(sketch: adsk.fusion.Sketch, minX: float, minY: float, maxX: float, maxY: float) -> adsk.fusion.SketchLineList:
+    """
+    Frame around an outline given in model coordinates, as far again past it on every side, for cuts that take the region
+    between frame and outline. It stays clear of the outline when parameters grow it up to twice its size.
+    Drawn as createRectangle with its corner dimensioned from the sketch origin, so the sketch stays fully constrained.
+    A bare addTwoPointRectangle only got horizontal and vertical from Fusion and left position and size free
+    (round 35, p282 and p290). Fixed lines were rejected, the rest of the generator binds sketches with dimensions
+    """
+    margin = max(maxX - minX, maxY - minY)
+    corner = sketch.modelToSketchSpace(adsk.core.Point3D.create(minX - margin, minY - margin, 0))
+    corner.z = 0
+    return createRectangle(
+        Dim.length(maxX - minX + 2 * margin),
+        Dim.length(maxY - minY + 2 * margin),
+        corner,
+        sketch,
+        Dim.length(corner.x),
+        Dim.length(corner.y),
+    )
+
 def createCenteredRectangle(
     width: Dim | float,
     length: Dim | float,

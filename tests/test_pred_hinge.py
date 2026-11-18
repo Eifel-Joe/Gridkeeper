@@ -414,3 +414,33 @@ def test_create_hinge_signature():
 def test_no_user_parameters():
     names = {node.attr for node in ast.walk(_tree()) if isinstance(node, ast.Attribute)}
     assert "userParameters" not in names
+
+
+class _CountingBody:
+    """A stand-in body whose edges count how often they are walked; each walk of Fusion's BRepEdges is a call per edge"""
+
+    def __init__(self, names):
+        self.names = names
+        self.walks = 0
+
+    @property
+    def edges(self):
+        self.walks += 1
+        return list(self.names)
+
+
+def test_the_hinge_edges_walk_each_body_once_per_call(monkeypatch):
+    """Round 36 (p296): _edges walked every body's edges once per listed edge, 127 items gave ~49 000 Fusion calls
+    (~22 s a build); the edges are taken once per call now"""
+    monkeypatch.setattr(hinge, "_edgeMatches", lambda edge, item: edge == item)
+    bodies = [_CountingBody(["a", "b", "c"]), _CountingBody(["d", "e"])]
+    assert hinge._edges(bodies, ["a", "e", "c", "d"], "test") == ["a", "e", "c", "d"]
+    assert [body.walks for body in bodies] == [1, 1]
+
+
+def test_the_hinge_edges_still_want_exactly_one_match(monkeypatch):
+    monkeypatch.setattr(hinge, "_edgeMatches", lambda edge, item: edge[0] == item)
+    with pytest.raises(ValueError):
+        hinge._edges([_CountingBody(["x1", "x2"])], ["x"], "test")
+    with pytest.raises(ValueError):
+        hinge._edges([_CountingBody(["y1"])], ["z"], "test")

@@ -80,3 +80,15 @@ def test_the_drawn_parts_so_far():
     """Round 29: the pin passed its Fusion check first (r29_pin_check, concept test passed with 2e16a78), then the
     handle (r29_handle_check), the latch (r29_latch_build)"""
     assert parts.DRAWN_ROLES == ["Latch", "Handle", "Handle pin", "Hinge"]
+
+
+def test_the_seat_of_a_seat_joint_origin_name():
+    """Round 36, p293: the box joint origin a part is jointed to names the part's seat"""
+    assert parts.seatOfJointOriginName('Latch front left joint origin') == 'Latch front left'
+    for seat in parts.SEAT_NAMES:
+        assert parts.seatOfJointOriginName(parts.seatJointOriginName(seat)) == seat
+
+
+def test_other_joint_origins_have_no_seat():
+    for name in ('Lid joint origin', 'Label joint origin', 'Latch joint origin', 'Stack top joint origin', ''):
+        assert parts.seatOfJointOriginName(name) is None

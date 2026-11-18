@@ -224,7 +224,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     addButtonRow(inputChangesGroup.children, CONFIG_BUTTONS_BROWSER)
 
     previewGroup = addGroup(inputs, PREVIEW_GROUP, 'Preview')
-    addBool(previewGroup.children, SHOW_PREVIEW_INPUT, 'Show preview (slow)')
+    addBool(previewGroup.children, SHOW_PREVIEW_INPUT, 'Show preview (slow)', 'The preview shows box and lid, the small parts (latches, handle, pins, hinges) come with OK')
     previewGroup.children.addTextBoxCommandInput(PREVIEW_TIME_INPUT, 'Last preview', 'None yet', 1, True)
 
     updateInputs(inputs)

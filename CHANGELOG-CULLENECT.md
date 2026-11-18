@@ -6,6 +6,39 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased
 
+### Each label color on a filament of its own (round 37)
+
+- **Label filaments in the export dialog:** the 3MF export painted all label text with one filament, red and blue
+  text alike. It now gives each label color a filament of its own: the parts print on filament 1, the first color on
+  2, the next on 3 and so on, label text without a color counting as one more color (p301). The dialog lists the colors
+  of the selected parts under **Label filaments**, such as *Red text* and *Blue text*, each with a list of filaments 1 to 18;
+  a number picked there is kept for the next export. The single **Label color index** is gone; the index an earlier export
+  saved stays the filament of label text without a color, so outline labels print as before.
+  Decided: automatic numbers that can be changed in the dialog and are remembered. The color is the one Gridkeeper
+  gave the text; text recolored by hand in Fusion counts as text without a color.
+
+### Box rebuild and preview (round 36)
+
+- **A joint on a small part stays on it:** a joint of yours on one of the four latches, a handle pin or a hinge of a
+  box went to the last latch (pin, hinge) when the box was rebuilt (p293). The four latches are one component; the
+  rebuild now tells them apart by the seat the set joints each of them to, *Latch front left* and so on. A part
+  that isn't jointed at its seat any more can't be told apart; its joint stays with the old set and the rebuild says so.
+- **Preview without the small parts:** the box dialog's preview builds box and lid only, the small parts come with
+  OK (p295); inserting them made every preview slow. The checkbox's tooltip says so. Box after
+  [Pred's storage box](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric)
+  (CC BY-NC, by Pred).
+- **Lighter box preview (p296):** the preview makes no joint origins either (cells, stack, seats, lid), OK makes
+  them all; in a Fusion measurement they had taken up to 75 s of a preview. The box build and rebuild themselves
+  aren't faster: most of their time is Fusion recomputing a design that grows with every box. The hinge looks up its
+  chamfer edges from one list of the edges instead of walking them all again for each edge.
+
+### Label tab of a shelled bin under a lip (round 34)
+
+- **p281, checked: the tab sits on the back wall under either lip:** a shelled bin builds no scoop, so the front
+  placement of its label tab at the light lip's inner edge (inherited from GridfinityGenerator by Le0Michine) could never
+  run, and the tab never sat at the wrong edge under a full lip. The dead branch is removed; the tab is placed by
+  `shelledTabOriginY`. New snapshot case `bin_2x1x3_shelled_lip_full_scoop_tab`.
+
 ### Closed box lid (round 30)
 
 - **Lid top: Grid or Closed:** the box dialog has a group *Lid* with **Lid top**. *Closed* builds the lid flat and
@@ -64,16 +97,13 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   runs from a git checkout, also from a git worktree, where `.git` is a file instead of a folder. They use the same
   check as the update lock (p320).
 
-### Each label color on a filament of its own (round 37)
+### Trim sketches fully constrained (round 35)
 
-- **Label filaments in the export dialog:** the 3MF export painted all label text with one filament, red and blue
-  text alike. It now gives each label color a filament of its own: the parts print on filament 1, the first color on
-  2, the next on 3 and so on, label text without a color counting as one more color (p301). The dialog lists the colors
-  of the selected parts under **Label filaments**, such as *Red text* and *Blue text*, each with its filament; a number
-  changed there is kept for the next export. The single **Label color index** is gone; the index an earlier export
-  saved stays the filament of label text without a color, so outline labels print as before.
-  Decided: automatic numbers that can be changed in the dialog and are remembered. The color is the one Gridkeeper
-  gave the text; text recolored by hand in Fusion counts as text without a color.
+- **Shaped bins and baseplates:** the sketches *Outer clearance trim sketch* (bins with a shape, e.g. an L-shape or
+  a shape in half cells, p282) and *Plate outline trim sketch* / *Plate pieces cut sketch* (baseplates, p290) are
+  fully constrained now. The frame around the outline, whose region the cut takes, had no position or size; it is
+  dimensioned from the sketch origin like the other rectangles of the generator. The geometry stays the same. Both
+  sketches came from GridfinityGenerator by Le0Michine.
 
 ## 1.1.0 (2026-11-17)
 
