@@ -142,7 +142,7 @@ def _tipEdge(body: adsk.fusion.BRepBody) -> adsk.fusion.BRepEdge:
 def createHandlePin(component: adsk.fusion.Component) -> list[adsk.fusion.BRepBody]:
     """Draws the pin into the given empty component (part frame as handlePin.f3d) with its joint origin, returns its
     body"""
-    from .baseGenerator import createPointJointOrigins
+    from .jointOriginLayout import createOffsetJointOrigins
 
     plane = _tipPlane(component)
     y, z = AXIS
@@ -181,5 +181,5 @@ def createHandlePin(component: adsk.fusion.Component) -> list[adsk.fusion.BRepBo
                  name=f'Cut {name}')
 
     jointName, (jx, jy, jz) = JOINT_ORIGIN
-    createPointJointOrigins([(jointName, _mm(jx), _mm(jy), _mm(jz))], component, name='Seat')
+    createOffsetJointOrigins([(jointName, _mm(jx), _mm(jy), _mm(jz))], component, name='Seat')
     return [body]

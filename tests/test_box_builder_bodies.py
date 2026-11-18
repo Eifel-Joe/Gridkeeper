@@ -30,7 +30,7 @@ def test_build_box_returns_the_native_bodies():
 def test_build_box_puts_joint_origins_at_the_small_parts_seats():
     """Round 28, plan task 5: the seats of latches, handle, pins and the chosen hinges become joint origins in the box"""
     source = ast.unparse(_function("_buildBox"))
-    assert "createPointJointOrigins(predBoxSeats.seatJointOriginPoints(dims, state.hinge), boxComponent" in source
+    assert "createOffsetJointOrigins(predBoxSeats.seatJointOriginPoints(dims, state.hinge), boxComponent" in source
 
 
 def test_build_box_inserts_the_small_parts_and_returns_their_bodies_after_box_and_lid():
@@ -178,7 +178,7 @@ def test_a_preview_makes_no_joint_origins_ok_makes_them_all():
     thrown away; nothing in the preview reads them (rebuildUtils.rebuild returns the preview's bodies as they are).
     OK (forOk, the default, also the snapshot tests') makes every one of them and the lid's joint"""
     function = _function("_buildBox")
-    (guarded, every) = _callsUnderForOk(function, "createPointJointOrigins")
+    (guarded, every) = _callsUnderForOk(function, "createOffsetJointOrigins")
     assert len(every) == 6 and len(guarded) == len(every)
     (guarded, every) = _callsUnderForOk(function, "joints.add")
     assert len(every) == 1 and len(guarded) == 1
