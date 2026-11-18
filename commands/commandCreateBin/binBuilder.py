@@ -809,6 +809,27 @@ def rebuildBin(
         assembly.keepShown(cell)
     return (bodies, rebuildNotes + notes)
 
+# the role of a box's lid component (boxBuilder.LID_COMPONENT_NAME): its stacking grid isn't offered (Nutzer 18.11.2026)
+LID_ROLE = 'Lid'
+
+def hasCellParts(des: adsk.fusion.Design) -> bool:
+    """Whether the design has a baseplate or a box, the bin dialog offers a cell then (round 31, Nutzer 17.11.2026)"""
+    return any(des.findAttributes(tagUtils.TAG_GROUP, tagName).count > 0 for tagName in (tagUtils.TAG_BASEPLATE, tagUtils.TAG_BOX))
+
+def isCellJointOrigin(jointOrigin: adsk.fusion.JointOrigin | None) -> bool:
+    """
+    Whether a new bin can be jointed into the joint origin (round 31, p312): a socket of a baseplate or a cell of the
+    floor of a box (Nutzer 18.11.2026: "die Bodenzellen im Inneren der Box", not the grid on its lid), by its name and
+    the tagged body of its component. Not a foot of a bin, a pocket or a seat
+    """
+    if jointOrigin is None or not jointOrigin.isValid or binCell.cellOf(jointOrigin.name) is None:
+        return False
+    component = (jointOrigin.nativeObject or jointOrigin).parentComponent
+    tagName = tagUtils.TAG_BASEPLATE if jointOrigin.name.startswith(binCell.SOCKET_PREFIX) else tagUtils.TAG_BOX
+    if tagName == tagUtils.TAG_BOX and rebuildUtils.partRole(component) == LID_ROLE:
+        return False
+    return any(body.attributes.itemByName(tagUtils.TAG_GROUP, tagName) is not None for body in component.bRepBodies)
+
 def binCellOf(des: adsk.fusion.Design, target: rebuildUtils.RebuildTarget) -> adsk.fusion.JointOrigin | None:
     """The cell the bin was jointed into by the bin command, as seen from the root, none when it wasn't: the other side
     of its joint "... in cell" on its Cell placement joint origin (round 31). A joint of the user's own isn't the
