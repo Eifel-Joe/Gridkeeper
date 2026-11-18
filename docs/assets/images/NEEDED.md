@@ -17,7 +17,7 @@ from GridfinityGenerator. The models in `docs/assets/models` are rendered by a F
 
 - Closed lid (round 30, p311): `box-lid-closed.png`, a box 5 × 4 × 6 with **Lid top** *Closed* in the view of
   `box-5x4x6.png`, so the flat top and the four stacking tabs show; and `dialog-box.png` again with the new group
-  *Lid*. For [Storage boxes](../../boxes.md#lid).
+  *Lid*. For [Storage boxes](../../boxes.md#lid), where the line for `box-lid-closed.png` waits in an HTML comment.
 
 ## Taken (click test 17.11.2026, main session)
 
