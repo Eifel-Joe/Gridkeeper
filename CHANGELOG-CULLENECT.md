@@ -6,6 +6,16 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased
 
+### Component names after a rebuild (round 44)
+
+- A rebuilt part's component was named with Fusion's counter, e.g. a bin rebuilt without a cell became
+  "Gridfinity bin 1x1x3 (1)", and "(2)" after the next rebuild. Fusion numbered the new component because the old
+  one still existed. Once the old part is gone, every component the rebuild made gets its name back without the
+  counter, or the lowest free one if another part holds the name. This covers bin, insert (and its Text component),
+  baseplate, box and box label rebuilds. Components that existed before the rebuild keep their names, the user's own
+  with an "(n)" included. A name the generator gives with an "(n)" of its own is kept too: the counter only goes when
+  its base name was taken before the rebuild (p570).
+
 ### Typed values in the dialogs (round 41)
 
 - A value typed into an input and OK clicked straight after (within about 0.3 s) was ignored: Fusion takes typed text

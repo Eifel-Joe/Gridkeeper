@@ -378,6 +378,34 @@ def dropJointCounters(design: adsk.fusion.Design, before: list[adsk.fusion.Joint
         except RuntimeError as err:
             commonUtils.fileLog(f'{LOG_PREFIX} a joint the rebuild made kept its name, {err}')
 
+def existingComponents(design: adsk.fusion.Design) -> tuple[list[adsk.fusion.Component], list[str]]:
+    """The components there are, as objects to tell those a build makes, and their names, see dropComponentCounters"""
+    components = list(design.allComponents)
+    return (components, [component.name for component in components])
+
+def dropComponentCounters(design: adsk.fusion.Design, before: list[adsk.fusion.Component], namesBefore: list[str]):
+    """
+    A component the build made, not among before, named with Fusion's counter while the old part was still there
+    ("Gridfinity bin 1x1x3 (1)", round 44, p570) gets the lowest free name, see jointNames.freedName. Fusion counted
+    only when the base name was taken before the build: a name the generator gave with "(n)" of its own stays.
+    Components there were before, the user's own included, keep their names
+    """
+    components = list(design.allComponents)
+    for component in components:
+        try:
+            if any(component == old for old in before):
+                continue
+            base = jointNames.countedBase(component.name)
+            if base is None or base not in namesBefore:
+                continue
+            taken = [other.name for other in components if other != component]
+            name = jointNames.freedName(component.name, taken)
+            if name is not None:
+                commonUtils.debugLog(f'{LOG_PREFIX} {component.name} is now {name}')
+                component.name = name
+        except RuntimeError as err:
+            commonUtils.fileLog(f'{LOG_PREFIX} a component the rebuild made kept its name, {err}')
+
 def readJointEnds(joints) -> list:
     """
     Each joint with its timeline item and what its sides hold, read in one go before anything is moved: moving a joint
@@ -926,6 +954,7 @@ def rebuild(
 
     oldNames = tagParameterNames(target.bodies[0])
     jointsBefore = existingJoints(design)
+    (componentsBefore, componentNamesBefore) = existingComponents(design)
     rollAfterGroup(target)
     newBodies = build(target.placement, prefix, transform, target.oldPlace)
     newOccurrence = None
@@ -940,6 +969,7 @@ def rebuild(
     # by what was noted, not the count: a joint moved whose note line failed after it wasn't counted (review round 43)
     keptOldItems = removeOldGroup(target, jointsMoved=len(target.movedFrom) > 0)
     dropJointCounters(design, jointsBefore)
+    dropComponentCounters(design, componentsBefore, componentNamesBefore)
     # shared units stay, the body's own ones it no longer has go, like the label of a tab turned off
     newNames = tagParameterNames(newBodies[0]) if len(newBodies) > 0 else []
     removeUnusedParameters(design, [name for name in oldNames if prefix is not None and prefixOf([name], baseName) == prefix and name not in newNames])
