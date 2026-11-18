@@ -238,6 +238,15 @@ def buildCase(case: testCases.TestCase) -> tuple[adsk.core.Document, list[adsk.f
     after, with its unhealthy timeline features
     """
     (document, design) = newCaseDocument(case.name, f'{DOCUMENT_PREFIX} {case.name}', case.designIntent)
+    try:
+        return _buildCaseIn(document, design, case)
+    except Exception:
+        # runCase gets no document from a build that breaks and couldn't close it: twelve half-built documents stayed
+        # open after one run (round 39, p531). Closed unsaved, the failure goes on to the report
+        document.close(False)
+        raise
+
+def _buildCaseIn(document: adsk.core.Document, design: adsk.fusion.Design, case: testCases.TestCase) -> tuple[adsk.core.Document, list[adsk.fusion.BRepBody], list[str]]:
     bodies = buildBodies(design, case, case.state)
     notes = activeComponentNotes(design)
     if case.parameters:
