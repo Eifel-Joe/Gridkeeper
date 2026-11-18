@@ -15,6 +15,7 @@ WORKTREE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.pa
 COPY = os.path.join(os.environ['APPDATA'], 'Autodesk', 'Autodesk Fusion 360', 'API', 'AddIns', 'Gridkeeper')
 RELEASE_FILES = ['Gridkeeper.manifest', 'Gridkeeper.py', 'config.py', 'LICENSE.md', 'lib', 'commands']
 VERSION = '9.9.1'
+# --version X.Y.Z sets another one, e.g. 1.0.0 for the click test of a real update (dev-notes/klicktest-r33.md part B)
 
 PROBE = r'''
 
@@ -83,7 +84,7 @@ def stop(context):
 '''
 
 
-def build(probe=True):
+def build(probe=True, version=VERSION):
     if os.path.exists(COPY):
         sys.exit(f'{COPY} exists, not touched')
     for entry in RELEASE_FILES:
@@ -97,7 +98,7 @@ def build(probe=True):
     manifestPath = os.path.join(COPY, 'Gridkeeper.manifest')
     with open(manifestPath, encoding='utf-8') as file:
         manifest = json.load(file)
-    manifest['version'] = VERSION
+    manifest['version'] = version
     # the git add-in has runOnStartup, the copy never starts by itself
     manifest['runOnStartup'] = False
     with open(manifestPath, 'w', encoding='utf-8') as file:
@@ -105,7 +106,7 @@ def build(probe=True):
     with open(os.path.join(COPY, 'Gridkeeper.py'), 'a', encoding='utf-8') as file:
         # without the probe a marker only, so --remove recognises the copy
         file.write(PROBE if probe else '\n# --- round 33 self-restart probe, TEST COPY ONLY: left out (--no-probe) ---\n')
-    print('built', COPY, VERSION, 'probe' if probe else 'no probe', 'has .git:', os.path.exists(os.path.join(COPY, '.git')))
+    print('built', COPY, version, 'probe' if probe else 'no probe', 'has .git:', os.path.exists(os.path.join(COPY, '.git')))
 
 
 def remove():
@@ -118,4 +119,5 @@ def remove():
 
 
 if __name__ == '__main__':
-    remove() if '--remove' in sys.argv else build(probe='--no-probe' not in sys.argv)
+    version = sys.argv[sys.argv.index('--version') + 1] if '--version' in sys.argv else VERSION
+    remove() if '--remove' in sys.argv else build(probe='--no-probe' not in sys.argv, version=version)
