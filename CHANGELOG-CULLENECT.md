@@ -6,6 +6,14 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased
 
+### Privacy note
+
+- `documentation/PRIVACY_POLICY.md` was GridfinityGenerator's generated policy for the Autodesk App Store (website,
+  cookies, accounts, Canadian law) and didn't describe Gridkeeper. It is replaced by a short note of what Gridkeeper
+  actually does: it collects no data; the daily update check asks GitHub for the releases and can be turned off;
+  updates, error reports and links go to GitHub or the site they name. The same note is in the documentation under
+  Reference › Privacy.
+
 ### Component names after a rebuild (round 44)
 
 - A rebuilt part's component was named with Fusion's counter, e.g. a bin rebuilt without a cell became
