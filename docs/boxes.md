@@ -2,7 +2,8 @@
 
 **Solid › Create › Gridkeeper box** builds a storage box with a lid after
 [Pred's parametric Gridfinity Storage Box v1.1](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric)
-(CC BY-NC). The box holds Gridfinity bins in its floor, carries a Gridfinity grid on its lid, and stacks and latches
+(CC BY-NC). The box holds Gridfinity bins in its floor, carries a Gridfinity grid on its lid (or a closed top, see
+[Lid](#lid)), and stacks and latches
 with boxes printed from Pred's own file: outer size, grooves, latch catches, hinge slots, handle and label holders
 and the stacking rim are Pred's to the millimetre.
 
@@ -17,7 +18,7 @@ box, see [Components and joints](working/components.md).
 
 ## Info
 
-![The Gridkeeper box dialog: Info, Size 5 × 4 × 6 with the outer size 230 × 188 × 65 mm, Magnet holes, Joint origins and Small parts with the Hinge choice](assets/images/dialog-box.png)
+![The Gridkeeper box dialog: Info, Size 5 × 4 × 6 with the outer size 230 × 188 × 65 mm, Magnet holes, Joint origins, Lid with the Lid top choice and Small parts with the Hinge choice](assets/images/dialog-box.png)
 
 A link to this page, the credit to Pred and the version of the add-in. When the dialog was opened by
 **Gridkeeper rebuild**, it says which box is rebuilt in place.
@@ -58,6 +59,23 @@ always there too:
 | *Label joint origin* | In the label holder at the front, the middle of the label's back; **Gridkeeper box label** joints the label there |
 
 *Lid on box* is part of the box: a rebuild makes it anew as a rigid joint, changes of yours to it are not kept.
+
+## Lid
+
+**Lid top** picks what the top of the lid is:
+
+| Lid top | What it is |
+|---|---|
+| **Grid** (default) | Pred's lid: a Gridfinity grid on top to stand bins on |
+| **Closed** | A flat, closed top from rim to rim, sturdier |
+
+Both lids are the same underneath, so they hold the bins in the box alike, and both keep the four stacking tabs in
+the corners of the top. The tabs reach into the grooves under the box above, so boxes of the same size stack on a
+closed lid as on a grid. A closed lid is printed as built, like the grid one: its top up.
+
+![A box 5 × 4 × 6 with a closed lid: a flat top with the four stacking tabs in its corners, and its set Box 5×4×6 in the browser](assets/images/box-lid-closed.png)
+
+Boxes saved before there was a choice rebuild with the grid.
 
 ## Small parts
 

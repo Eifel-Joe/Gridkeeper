@@ -125,7 +125,8 @@ def _buildBox(
         parameters.append(parameter)
         boxParameters.append([label, parameter.name])
     dims = PredBoxDims(*[Dim.parameter(parameter) for parameter in parameters])
-    options = PredBoxOptions(*predBoxConfig.boxOptions(state))
+    # by name: with the lid's top four options of the same kind, a field moved in one of them went unnoticed (review R30)
+    options = PredBoxOptions(**predBoxConfig.boxOptions(state)._asdict())
     bodies = createPredBox(setComponent, dims, options)
     base, lid = bodies.base, bodies.lid
 
