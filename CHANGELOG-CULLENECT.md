@@ -6,6 +6,21 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased
 
+### Box rebuild and preview (round 36)
+
+- **A joint on a small part stays on it:** a joint of yours on one of the four latches, a handle pin or a hinge of a
+  box went to the last latch (pin, hinge) when the box was rebuilt (p293). The four latches are one component; the
+  rebuild now tells them apart by the seat the set joints each of them to, *Latch front left* and so on. A part
+  that isn't jointed at its seat any more can't be told apart; its joint stays with the old set and the rebuild says so.
+- **Preview without the small parts:** the box dialog's preview builds box and lid only, the small parts come with
+  OK (p295); inserting them made every preview slow. The checkbox's tooltip says so. Box after
+  [Pred's storage box](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric)
+  (CC BY-NC, by Pred).
+- **Lighter box preview (p296):** the preview makes no joint origins either (cells, stack, seats, lid), OK makes
+  them all; in a Fusion measurement they had taken up to 75 s of a preview. The box build and rebuild themselves
+  aren't faster: most of their time is Fusion recomputing a design that grows with every box. The hinge looks up its
+  chamfer edges from one list of the edges instead of walking them all again for each edge.
+
 ### Label tab of a shelled bin under a lip (round 34)
 
 - **p281, checked: the tab sits on the back wall under either lip:** a shelled bin builds no scoop, so the front

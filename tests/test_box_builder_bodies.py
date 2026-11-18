@@ -153,3 +153,39 @@ def test_build_box_always_puts_joint_origins_into_the_floor_cells():
     source = ast.unparse(_function("_buildBox"))
     assert "cellJointOriginPoints(centers, CELL_JOINT_ORIGIN" in source
     assert "state.hasJointOrigins" not in source
+
+
+def test_a_preview_builds_box_and_lid_without_the_small_parts():
+    """Round 36, p295: inserting the small parts made every preview slow; the preview (a build that may not change
+    the document) shows box and lid, OK builds the whole set"""
+    build = ast.unparse(_function("buildBox"))
+    assert "_buildBox(des, state, settings, plan, parameterPrefix, occurrenceTransform, oldPlace, forOk=mayChangeDocument)" in build
+    source = ast.unparse(_function("_buildBox"))
+    assert "partBodies = predBoxInsert.insertParts(des, setOccurrence, boxOccurrence, dims, state.hinge, name, assembly.inContext) if boxOccurrence is not None and forOk else []" in source
+
+
+def _callsUnderForOk(function, name):
+    """(calls of name inside an `if forOk` block, all calls of name) in the function"""
+    def calls(node):
+        return [call for call in ast.walk(node) if isinstance(call, ast.Call) and ast.unparse(call.func).endswith(name)]
+    guarded = [call for node in ast.walk(function) if isinstance(node, ast.If) and ast.unparse(node.test) == "forOk"
+               for statement in node.body for call in calls(statement)]
+    return (guarded, calls(function))
+
+
+def test_a_preview_makes_no_joint_origins_ok_makes_them_all():
+    """Round 36, p296: the six joint origin calls (cells, stack, seats, lid) took 20-100 s, 75 s in a preview that is
+    thrown away; nothing in the preview reads them (rebuildUtils.rebuild returns the preview's bodies as they are).
+    OK (forOk, the default, also the snapshot tests') makes every one of them and the lid's joint"""
+    function = _function("_buildBox")
+    (guarded, every) = _callsUnderForOk(function, "createPointJointOrigins")
+    assert len(every) == 6 and len(guarded) == len(every)
+    (guarded, every) = _callsUnderForOk(function, "joints.add")
+    assert len(every) == 1 and len(guarded) == 1
+    assert "forOk: bool=True" in ast.unparse(function.args)
+
+
+def test_the_preview_checkbox_says_the_small_parts_come_with_ok():
+    entry = open(os.path.join(os.path.dirname(SOURCE), "entry.py"), encoding="utf-8").read()
+    line = next(line for line in entry.splitlines() if "SHOW_PREVIEW_INPUT, 'Show preview" in line)
+    assert "box and lid" in line and "OK" in line, line

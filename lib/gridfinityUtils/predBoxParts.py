@@ -52,6 +52,14 @@ def seatJointOriginName(seat: str) -> str:
     return f'{seat} joint origin'
 
 
+def seatOfJointOriginName(name: str) -> str | None:
+    """
+    The seat whose joint origin on the box has this name, None for any other joint origin. Round 36 (p293): the four
+    latches are one component, so a rebuild tells them apart by the seat the set joints each of them to
+    """
+    return next((seat for seat in SEAT_NAMES if seatJointOriginName(seat) == name), None)
+
+
 def partsToDraw(hinge: str, drawn: list[str] = None) -> list[Part]:
     """The parts with the chosen hinge that have a generator (DRAWN_ROLES), in the order of PARTS"""
     roles = DRAWN_ROLES if drawn is None else drawn

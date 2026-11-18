@@ -404,9 +404,12 @@ def _edgeMatches(edge, item) -> bool:
 
 
 def _edges(bodies, items, label):
+    # the bodies' edges once per call: walked again for every item, Fusion's BRepEdges cost ~49 000 calls (~22 s) a
+    # build with Pred's 127 chamfer edges (round 36, p296, test_the_hinge_edges_walk_each_body_once_per_call)
+    edges = [edge for body in bodies for edge in body.edges]
     found = []
     for item in items:
-        match = [edge for body in bodies for edge in body.edges if _edgeMatches(edge, item)]
+        match = [edge for edge in edges if _edgeMatches(edge, item)]
         if len(match) != 1:
             raise ValueError(f'hinge {label}: {len(match)} edges for {item}')
         found.append(match[0])
