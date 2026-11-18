@@ -397,8 +397,10 @@ def dropComponentCounters(design: adsk.fusion.Design, named: list[tuple[adsk.fus
                 continue
             if taken is None:
                 taken = [other.name for other in design.allComponents]
+            # a name Fusion doesn't list among the components isn't taken twice (review round 44)
             others = list(taken)
-            others.remove(current)
+            if current in others:
+                others.remove(current)
             name = jointNames.freedName(current, others)
             if name is not None:
                 commonUtils.debugLog(f'{LOG_PREFIX} {current} is now {name}')

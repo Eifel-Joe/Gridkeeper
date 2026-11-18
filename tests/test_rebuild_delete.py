@@ -260,3 +260,10 @@ def test_rebuild_records_the_names_while_building_and_drops_the_counters_after_t
     remove = next(i for (i, line) in enumerate(body) if "removeOldGroup(" in line)
     drop = next(i for (i, line) in enumerate(body) if line.startswith("dropComponentCounters(design, named)"))
     assert preview < build < remove < drop
+
+
+def test_a_name_fusion_doesnt_list_among_the_components_doesnt_stop_the_rebuild():
+    # review round 44: a component whose name isn't in allComponents' names raised ValueError past the RuntimeError
+    new = _NamedComponent("B (1)")
+    _dropComponentCounters([], [(new, "B")])
+    assert new.name == "B"
