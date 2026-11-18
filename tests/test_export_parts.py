@@ -367,7 +367,7 @@ def test_a_plate_near_an_excluded_area_is_named_painted_or_not():
 def test_the_purge_square_only_when_label_text_is_painted():
     # a box set has no text: with Color label text on nothing is painted and no tower is printed
     source = _entry_function("export3mf")
-    assert "if filament is not None and paintedCount > 0" in source
+    assert "if filaments is not None and paintedCount > 0" in source
 
 
 @pytest.mark.parametrize("role, tag, body, setName, kind", [
@@ -472,3 +472,28 @@ def test_the_saved_label_filaments_win_over_the_old_index():
     assert exportParts.labelFilamentChoices(section) == {"": 6, "#D02020": 2}
     section = _config_section("[Export]\ncolorIndex = 4\nlabelFilaments = D02020=2\n")
     assert exportParts.labelFilamentChoices(section) == {"#D02020": 2, "": 4}
+
+
+def test_the_export_paints_each_text_body_with_its_colors_filament():
+    # round 37 (p301): the color comes from the Text occurrence's appearance, else the body's
+    source = _entry_function("partMesh")
+    assert "filamentOf(marking.labelColor)" in source
+    assert "filamentOf('') if item.hasOutlineLabels" in source
+    entry = open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read()
+    assert "for holder in (self.occurrence, self.body):" in entry
+
+
+def test_the_dialog_saves_the_label_filaments_and_reads_the_old_index():
+    assert "exportParts.labelFilamentChoices(dict(section))" in _entry_function("readChoices")
+    source = _entry_function("saveChoices")
+    assert "'labelFilaments': exportParts.formatLabelFilaments(exportParts.mergeLabelFilaments(saved, filaments))" in source
+    assert "colorIndex" not in source
+
+
+def test_a_filament_changed_by_hand_is_kept_without_rebuilding_the_inputs():
+    # its input mustn't be deleted while its own change is handled
+    source = _entry_function("command_input_changed")
+    assert "dialogFilaments[color] = " in source
+    after_keeping = source.split("dialogFilaments[color] = ")[1].splitlines()
+    assert after_keeping[1].strip() == "return"
+    assert "!= [filamentInputId(color) for color in colors]" in _entry_function("updateFilamentInputs")
