@@ -1,4 +1,4 @@
-import os
+import ntpath
 from dataclasses import dataclass
 
 from . import updateCheck
@@ -20,9 +20,13 @@ def reloadOffered(running: tuple[int, int, int] | None, installed: tuple[int, in
     return running is not None and installed is not None and running != installed
 
 def sameFolder(first: str | None, second: str | None) -> bool:
+    """Fusion's folder of a Script against the add-in's own, ntpath's rules on every OS (CI 18.11.2026: os.path on the
+    Linux runner kept case and backslashes, the Windows spelling didn't match). On Windows Fusion gives / while __file__
+    has \\ and the case may differ; on macOS both are the same / paths and stay equal to themselves under ntpath, its
+    file system ignores case by default too. tests/test_self_reload.py"""
     if not first or not second:
         return False
-    return os.path.normcase(os.path.normpath(first)) == os.path.normcase(os.path.normpath(second))
+    return ntpath.normcase(ntpath.normpath(first)) == ntpath.normcase(ntpath.normpath(second))
 
 def ownScript(scripts, addinFolder: str):
     """The Script of the add-in in addinFolder, by its folder only: a clone and a worktree are both named Gridkeeper.
