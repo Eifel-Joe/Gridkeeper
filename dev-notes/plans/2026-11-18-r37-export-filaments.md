@@ -20,7 +20,7 @@ grünem Task.
   `paintNote` je Farbe. Quelltext-Tests wie bisher in `test_export_parts.py` (z. B. Turm nur bei Bemalung) anpassen.
   `test_modules_compile.py` grün.
 - [ ] **T6 Fusion-Prüfung.** Auftrag `fusion-auftraege/r37_filaments.py`: neues Dokument, zwei Bins mit rotem und
-  blauem Label über die Erzeuger, `export3mf` aus `wt-r37` in Temp-Ordner, 3MF lesen → zwei Codes, Körper unbemalt;
+  blauem Label über die Erzeuger, `export3mf` aus `wt-r37` in einen Ordner, 3MF lesen → zwei Codes, Körper unbemalt;
   `isFullyConstrained` der Skizzen; Dokument ohne Speichern schließen. Slot bei der Hauptsitzung.
 - [ ] **T7 Doku/CHANGELOG/Klicktest.** Export-Seite der Doku, `CHANGELOG-CULLENECT.md` unter `## Unreleased`,
   `dev-notes/klicktest-r37.md`; Bildwünsche an die Hauptsitzung.

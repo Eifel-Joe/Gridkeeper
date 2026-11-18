@@ -1,6 +1,6 @@
 # Klicktest Runde 37 – Label-Farben auf eigene Filamente (p301)
 
-Add-in aus `D:\Entwicklung\Gridfinity\wt-r37` laden. Spec: `dev-notes/specs/2026-11-18-r37-export-filaments.md`.
+Add-in aus dem Worktree `wt-r37` laden. Spec: `dev-notes/specs/2026-11-18-r37-export-filaments.md`.
 Vor dem Test die gemerkten Export-Einstellungen sichern: `wt-r37\commands\commandExport\commandConfig\config.ini` (falls da).
 
 ## A – Altes gemerktes colorIndex

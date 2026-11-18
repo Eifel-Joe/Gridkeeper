@@ -466,7 +466,7 @@ def _config_section(text):
 
 def test_an_old_config_keeps_its_label_color_index_for_text_without_a_color():
     # an export before round 37 saved one index for all label text: outline letters keep printing on it
-    section = _config_section("[Export]\nfolder = C:/x\nformat = 3MF\npaint = yes\ncolorIndex = 4\n")
+    section = _config_section("[Export]\nfolder = exports\nformat = 3MF\npaint = yes\ncolorIndex = 4\n")
     assert exportParts.labelFilamentChoices(section) == {"": 4}
 
 
