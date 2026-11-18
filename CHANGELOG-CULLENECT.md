@@ -11,7 +11,7 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 - **p281, checked: the tab sits on the back wall under either lip:** a shelled bin builds no scoop, so the front
   placement of its label tab at the light lip's inner edge (inherited from GridfinityGenerator by Le0Michine) could never
   run, and the tab never sat at the wrong edge under a full lip. The dead branch is removed; the tab is placed by
-  `shelledTabOriginY`. Decided: fixed in this fork only. New snapshot case `bin_2x1x3_shelled_lip_full_scoop_tab`.
+  `shelledTabOriginY`. New snapshot case `bin_2x1x3_shelled_lip_full_scoop_tab`.
 
 ### Closed box lid (round 30)
 
