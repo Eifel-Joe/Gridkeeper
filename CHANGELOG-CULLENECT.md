@@ -6,6 +6,16 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased
 
+### Box rebuild and preview (round 36)
+
+- **A joint on a small part stays on it:** a joint of yours on one of the four latches, a handle pin or a hinge of a
+  box went to the last latch (pin, hinge) when the box was rebuilt (p293). The four latches are one component; the
+  rebuild now tells them apart by the seat the set joints each of them to, *Latch front left* and so on.
+- **Preview without the small parts:** the box dialog's preview builds box and lid only, the small parts come with
+  OK (p295); inserting them made every preview slow. The checkbox's tooltip says so. Box after
+  [Pred's storage box](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric)
+  (CC BY-NC, by Pred).
+
 ### Closed box lid (round 30)
 
 - **Lid top: Grid or Closed:** the box dialog has a group *Lid* with **Lid top**. *Closed* builds the lid flat and

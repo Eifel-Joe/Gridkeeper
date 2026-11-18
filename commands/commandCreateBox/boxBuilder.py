@@ -74,7 +74,7 @@ def buildBox(
     if problem is not None:
         raise ValueError(problem)
     plan = designIntent.structurePlan(des.designIntent, mayChangeDocument, assembly.rebuildKind(oldPlace))
-    return assembly.buildWithStructure(des, plan, lambda: _buildBox(des, state, settings, plan, parameterPrefix, occurrenceTransform, oldPlace))
+    return assembly.buildWithStructure(des, plan, lambda: _buildBox(des, state, settings, plan, parameterPrefix, occurrenceTransform, oldPlace, withParts=mayChangeDocument))
 
 
 def _buildBox(
@@ -85,6 +85,7 @@ def _buildBox(
     parameterPrefix: str | None,
     occurrenceTransform: adsk.core.Matrix3D | None,
     oldPlace: assembly.OldPlace | None,
+    withParts: bool = True,
 ) -> list[adsk.fusion.BRepBody]:
     name = boxName(state)
     # the container comes before the box's timeline group, see assembly.partPlace
@@ -175,8 +176,10 @@ def _buildBox(
         joint.name = f'{name} {LID_JOINT_NAME}'
 
     # the small parts after Pred (round 28): latches, handle and pins jointed at their seats, hinges beside the box; a
-    # box of bodies in the root (a part design kept as it is) has no components to joint, it stays without them
-    partBodies = predBoxInsert.insertParts(des, setOccurrence, boxOccurrence, dims, state.hinge, name, assembly.inContext) if boxOccurrence is not None else []
+    # box of bodies in the root (a part design kept as it is) has no components to joint, it stays without them.
+    # A preview leaves them out (round 36, p295): inserting them made every preview slow, it shows box and lid and
+    # their seats, OK builds the whole set
+    partBodies = predBoxInsert.insertParts(des, setOccurrence, boxOccurrence, dims, state.hinge, name, assembly.inContext) if boxOccurrence is not None and withParts else []
 
     if des.designType == adsk.fusion.DesignTypes.ParametricDesignType:
         group = des.timeline.timelineGroups.add(originalTimelinePosition, des.timeline.markerPosition - 1)

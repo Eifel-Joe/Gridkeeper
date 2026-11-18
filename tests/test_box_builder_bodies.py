@@ -153,3 +153,26 @@ def test_build_box_always_puts_joint_origins_into_the_floor_cells():
     source = ast.unparse(_function("_buildBox"))
     assert "cellJointOriginPoints(centers, CELL_JOINT_ORIGIN" in source
     assert "state.hasJointOrigins" not in source
+
+
+def test_a_preview_builds_box_and_lid_without_the_small_parts():
+    """Round 36, p295: inserting the small parts made every preview slow; the preview (a build that may not change
+    the document) shows box and lid, OK builds the whole set"""
+    build = ast.unparse(_function("buildBox"))
+    assert "_buildBox(des, state, settings, plan, parameterPrefix, occurrenceTransform, oldPlace, withParts=mayChangeDocument)" in build
+    source = ast.unparse(_function("_buildBox"))
+    assert "partBodies = predBoxInsert.insertParts(des, setOccurrence, boxOccurrence, dims, state.hinge, name, assembly.inContext) if boxOccurrence is not None and withParts else []" in source
+
+
+def test_a_preview_keeps_the_seat_joint_origins():
+    """They cost little and the set is the same as after OK but for the parts"""
+    source = ast.unparse(_function("_buildBox"))
+    seat = source.index("predBoxSeats.seatJointOriginPoints(dims, state.hinge)")
+    guard = source.rfind("if ", 0, seat)
+    assert "withParts" not in source[guard:seat]
+
+
+def test_the_preview_checkbox_says_the_small_parts_come_with_ok():
+    entry = open(os.path.join(os.path.dirname(SOURCE), "entry.py"), encoding="utf-8").read()
+    line = next(line for line in entry.splitlines() if "SHOW_PREVIEW_INPUT, 'Show preview" in line)
+    assert "box and lid" in line and "OK" in line, line
