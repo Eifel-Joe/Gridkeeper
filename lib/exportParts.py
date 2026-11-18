@@ -249,9 +249,10 @@ def keepTypedFilaments(changed: dict[str, int], shown: dict[str, int], assigned:
     The filaments changed by hand in the dialog: those already known and each shown one that isn't the number it was
     assigned. Fusion fires a spinner's change event only for some ways of leaving the field (click test round 37: a
     typed number was lost when the selection changed), so the dialog reads its spinners before it rebuilds them.
-    Numbers left as assigned stay automatic and may change with the selection
+    Numbers left as assigned stay automatic and may change with the selection; for a color changed before, the number
+    shown wins, also when it's back at the assigned one (review round 37)
     """
-    typed = {color: filament for (color, filament) in shown.items() if assigned.get(color) != filament}
+    typed = {color: filament for (color, filament) in shown.items() if color in changed or assigned.get(color) != filament}
     return {**changed, **typed}
 
 

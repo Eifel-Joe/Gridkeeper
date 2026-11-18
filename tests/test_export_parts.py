@@ -566,3 +566,9 @@ def test_the_dialog_reads_typed_filaments_before_it_rebuilds_them():
     rebuild = source.index("deleteMe()")
     assert keep < rebuild
     assert "dialogAssigned" in source
+
+
+def test_a_filament_typed_back_to_its_assigned_number_beats_the_one_stored_before():
+    # review r37: blue typed 5 (event arrived, stored), then typed back to 3 without an event
+    changed = exportParts.keepTypedFilaments({BLUE: 5}, {BLUE: 3}, {BLUE: 3})
+    assert changed == {BLUE: 3}
