@@ -100,3 +100,25 @@ def test_reads_every_symbol_file():
             for (segment, following) in zip(loop, loop[1:]):
                 assert svgSymbol.segmentEnd(segment) == following[1], path
         assert symbol.bounds[2] > symbol.bounds[0] and symbol.bounds[3] > symbol.bounds[1], path
+
+
+def test_unsupported_commands_are_refused():
+    for d in ('M 0,0 H 4 V 2 z', 'm 0,0 l 4,0 l 0,2 z', 'M 0,0 Q 1,1 2,0 z'):
+        try:
+            svgSymbol.parsePath(d)
+        except ValueError:
+            continue
+        raise AssertionError(f'{d} was read')
+
+
+def test_other_drawing_elements_are_refused(tmp_path):
+    # a symbol dropped in by hand may draw with circles or transforms, its outline isn't in its paths alone
+    for body in ('<path d="M 0,0 L 4,0 L 0,2 z"/><circle cx="1" cy="1" r="3"/>',
+                 '<g transform="scale(2)"><path d="M 0,0 L 4,0 L 0,2 z"/></g>'):
+        path = tmp_path / 'hand.svg'
+        path.write_text(f'<svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">{body}</svg>')
+        try:
+            svgSymbol.readSymbol(str(path))
+        except ValueError:
+            continue
+        raise AssertionError(body)

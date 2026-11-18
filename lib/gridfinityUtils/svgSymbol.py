@@ -18,7 +18,7 @@ Point = tuple[float, float]
 # ('line', p0, p1), ('arc', p0, p1, rx, ry, rotation, largeArc, sweep) as the svg A command, ('cubic', p0, c1, c2, p1)
 Segment = tuple
 
-_TOKEN = re.compile(r'[MLACZmlacz]|-?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?')
+_TOKEN = re.compile(r'[A-DF-Za-df-z]|-?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?')
 _ARGUMENTS = {'M': 2, 'L': 2, 'A': 7, 'C': 6}
 
 
@@ -45,8 +45,8 @@ def parsePath(d: str) -> list[list[Segment]]:
     while index < len(tokens):
         token = tokens[index]
         if token.isalpha():
-            if token.islower() and token not in 'z':
-                raise ValueError(f'relative path command {token} is not supported')
+            if token not in 'MLACZz':
+                raise ValueError(f'path command {token} is not supported, only absolute M, L, A, C and Z')
             command = token.upper()
             index += 1
             if command == 'Z':
@@ -196,9 +196,17 @@ def pathData(svg: str) -> list[str]:
     return re.findall(r'\sd="([^"]*)"', svg, re.S)
 
 
+# what else an svg may draw with or move its paths by; the outline of such a file is not in its path data alone
+_OTHER_DRAWING = re.compile(r'<(?:circle|rect|ellipse|line|polyline|polygon|use|image|text)\b|\stransform\s*=')
+
+
 def readSymbol(path: str) -> Symbol:
+    """The symbol of an svg drawn by absolute paths only, as the symbol files are; ValueError for anything else,
+    which only Fusion's import can tell the outline of"""
     with open(path, encoding='utf-8') as file:
         svg = file.read()
+    if _OTHER_DRAWING.search(svg):
+        raise ValueError(f'{path}: drawn with more than paths')
     loops = [loop for d in pathData(svg) for loop in parsePath(d)]
     if len(loops) == 0:
         raise ValueError(f'{path}: no path')
