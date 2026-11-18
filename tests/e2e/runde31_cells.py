@@ -70,13 +70,10 @@ class Run:
         return native.createForAssemblyContext(occurrence) if native is not None and occurrence is not None else native
 
     def world(self, jointOrigin):
-        """The joint origin's point in the root, its native point through the full transform of its occurrence"""
-        native = jointOrigin.nativeObject or jointOrigin
-        point = native.geometry.origin.copy()
-        occurrence = jointOrigin.assemblyContext
-        if occurrence is not None:
-            point.transformBy(occurrence.transform2)
-        return point
+        """The joint origin's point in the root: a proxy's geometry is in the root already. Its native geometry came in the
+        root too and transformed by the occurrence again was off by the bin's move (r31 step 1, 18.11.2026: bin
+        104.75 mm, cell 62.75 mm, the bin's body at 42 mm where cell 2-2 starts)"""
+        return jointOrigin.geometry.origin
 
     def healthy(self, name):
         timeline = self.des.timeline
@@ -219,6 +216,9 @@ def run(_context):
     try:
         module = load()
         if step == 'plate':
+            # a document left by a failed first step goes, unsaved
+            for doc in [doc for doc in app.documents if doc.name.startswith(DOC_NAME)]:
+                doc.close(False)
             document = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
             document.name = DOC_NAME
             des = adsk.fusion.Design.cast(document.products.itemByProductType('DesignProductType'))
