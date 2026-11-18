@@ -309,7 +309,11 @@ def chain(points, curves, fixable=frozenset()):
         ends = _ends(curve)
         for m in ends[1:]:
             parent[find(m)] = find(ends[0])
-    state = _Chain(points, fixable)
+    # never an arc's end or centre: Fusion rejected the fixed-point plan of four concentric arcs (LidAlignmentFront) as
+    # over-constrained though it is exact by rank, at the second arc's end dimension; with the arcs' points
+    # dimensioned as before round 39 the same sketch is fully constrained (fusion-auftraege/r39_front.log)
+    onArcs = {curve[key] for curve in curves if curve['kind'] == 'arc' for key in ('center', 'start', 'end')}
+    state = _Chain(points, frozenset(fixable) - onArcs)
     roots = []
     for curve in curves:
         root = find(_ends(curve)[0])

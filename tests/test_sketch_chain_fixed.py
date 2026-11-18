@@ -58,15 +58,50 @@ def test_a_level_line_end_is_fixed_only_beside_a_fixable_neighbour():
     assert ("horizontal", 0) in constraints
 
 
-def test_an_arc_keeps_the_dimension_of_its_end_on_the_circle():
+def arcPoints(curves):
+    return {c[k] for c in curves if c["kind"] == "arc" for k in ("center", "start", "end")}
+
+
+def test_arc_ends_and_centres_are_never_fixed():
+    """Fusion rejected a fixed-point plan around four concentric arcs (LidAlignmentFront) as over-constrained, though
+    exact by rank (fusion-auftraege/r39_front.log: the second arc's end dimension); without fixed points on the arcs the
+    same sketch is fully constrained. Arc points keep their dimensions as before round 39"""
     cx = cy = 1.4
     points = [(cx, cy), (cx - 1.075, cy), (cx, cy - 1.075), (cx, cy - 0.825), (cx - 0.825, cy)]
     curves = [arc(0, 1, 2), line(2, 3), arc(0, 3, 4), line(4, 1)]
     constraints = plan.chain(points, curves, frozenset(range(5)))
     check(points, curves, constraints)
-    # each arc's second end lies on its circle by one dimension, fixing it too would bind the arc twice
-    assert len(fixed(constraints)) < 5
-    assert any(c[0] in ("hdim", "vdim") for c in constraints)
+    assert fixed(constraints) == []
+    assert constraints == plan.chain(points, curves)
+
+
+def test_the_lid_alignment_front_fixes_only_points_off_the_arcs():
+    """predBoxGenerator.lidAndHinge, LidAlignmentFront (mm): two rectangles, four arcs about (14, 14), the lines on
+    the arcs' ends"""
+    points, index, curves = [], {}, []
+
+    def p(x, y):
+        key = (round(x, 6), round(y, 6))
+        if key not in index:
+            index[key] = len(points)
+            points.append((x / 10, y / 10))
+        return index[key]
+
+    def poly(ps, closed):
+        for a, b in zip(ps, ps[1:] + (ps[:1] if closed else [])):
+            curves.append(line(p(*a), p(*b)))
+    poly([(46.5, 3.25), (52.5, 3.25), (52.5, 6.75), (46.5, 6.75)], True)
+    poly([(47, 3.75), (52, 3.75), (52, 6.25), (47, 6.25)], True)
+    for r in (8.75, 9.25, 10.75, 11.25):
+        curves.append(arc(p(14, 14), p(14 - r, 14), p(14, 14 - r)))
+    poly([(14, 2.75), (14, 3.25), (14, 4.75), (14, 5.25)], False)
+    poly([(2.75, 14), (3.25, 14), (4.75, 14), (5.25, 14)], False)
+    poly([(14, 5.25), (14.5, 5.25), (14.5, 2.75), (14, 2.75)], False)
+    poly([(5.25, 14), (5.25, 14.5), (2.75, 14.5), (2.75, 14)], False)
+    constraints = plan.chain(points, curves, frozenset(range(len(points))))
+    check(points, curves, constraints)
+    assert not set(fixed(constraints)) & arcPoints(curves)
+    assert len(fixed(constraints)) >= 8
 
 
 def test_a_centre_on_the_chord_of_two_known_ends_keeps_its_dimension():
@@ -76,7 +111,8 @@ def test_a_centre_on_the_chord_of_two_known_ends_keeps_its_dimension():
     curves = [line(0, 1), arc(2, 1, 0)]
     constraints = plan.chain(points, curves, frozenset({0, 1, 2}))
     check(points, curves, constraints)
-    assert fixed(constraints) == [0, 1]
+    # the line's ends are the arc's: none fixed, the chain as before
+    assert fixed(constraints) == []
 
 
 def test_a_circle_centre_is_fixed_and_keeps_its_diameter():
