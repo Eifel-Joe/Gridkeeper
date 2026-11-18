@@ -70,6 +70,8 @@ okAction: str | None = None
 # Reload Gridkeeper waiting for a Gridkeeper dialog to close, see reload_custom_event
 reloadTries = 0
 reloadTimer: threading.Timer | None = None
+# a reload was asked for and waits for Gridkeeper's dialogs to close; the updates dialog says so (second review N4, N5)
+reloadWaiting = False
 
 def start():
     global runningVersion, stopped, showRetries
@@ -180,8 +182,9 @@ def result_custom_event(args: adsk.core.CustomEventArgs):
 
 def requestReload():
     """Reloads Gridkeeper once Fusion is idle and no Gridkeeper dialog is open, see reload_custom_event"""
-    global reloadTries, reloadTimer
+    global reloadTries, reloadTimer, reloadWaiting
     reloadTries = 0
+    reloadWaiting = True
     # one reload at a time: a second request (Yes after Update now, then OK) replaces a waiting one (review finding 3)
     if reloadTimer is not None:
         reloadTimer.cancel()
@@ -194,17 +197,21 @@ def retryReload():
         app.fireCustomEvent(RELOAD_EVENT_ID, 'retry')
 
 def reload_custom_event(args: adsk.core.CustomEventArgs):
-    global reloadTries, reloadTimer
+    global reloadTries, reloadTimer, reloadWaiting
     try:
         step = selfReload.nextStep(ui.activeCommand, COMMAND_PREFIX, reloadTries, RELOAD_RETRIES, patientFor=CMD_ID)
         if step in ('wait', 'waitPatiently'):
             if step == 'wait':
                 reloadTries += 1
+            # one timer at a time: a retry and a new request arriving together mustn't leave two (second review N3)
+            if reloadTimer is not None:
+                reloadTimer.cancel()
             reloadTimer = threading.Timer(RELOAD_RETRY_SECONDS, retryReload)
             # Fusion never waits for it when it closes
             reloadTimer.daemon = True
             reloadTimer.start()
             return
+        reloadWaiting = False
         if step == 'giveUp':
             ui.messageBox(selfReload.GAVE_UP_TEXT, CMD_NAME)
             return
@@ -260,7 +267,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
         futil.add_handler(command.execute, command_execute, local_handlers=local_handlers)
     command.setDialogInitialSize(420, 300)
     inputs = command.commandInputs
-    info = inputs.addTextBoxCommandInput(INFO_INPUT, '', infoHtml(reloadDialog), 8, True)
+    info = inputs.addTextBoxCommandInput(INFO_INPUT, '', infoHtml(reloadDialog, reloadWaiting), 8, True)
     info.isFullWidth = True
     # in the dialog opened from the menu, after Check now found a release
     updateNow = inputs.addBoolValueInput(UPDATE_NOW_INPUT, 'Update now', False, '', False)
@@ -349,12 +356,12 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
                 futil.log(line)
             installed = updateCheck.manifestVersion(ADDIN_FOLDER) or runningVersion
             if releases is None:
-                info.formattedText = f'{updateCheck.versionLine(runningVersion, installed, okAction == "reload")}<br><br>GitHub couldn\'t be asked: {logs[-1] if logs else "no answer"}'
+                info.formattedText = f'{updateCheck.versionLine(runningVersion, installed, okAction == "reload", reloadWaiting)}<br><br>GitHub couldn\'t be asked: {logs[-1] if logs else "no answer"}'
             elif installed is None:
-                info.formattedText = f'{updateCheck.versionLine(runningVersion, installed, okAction == "reload")}<br><br>The installed version is unknown, it can\'t be compared.'
+                info.formattedText = f'{updateCheck.versionLine(runningVersion, installed, okAction == "reload", reloadWaiting)}<br><br>The installed version is unknown, it can\'t be compared.'
             else:
                 pendingRelease = updateCheck.newestRelease(releases, installed)
-                info.formattedText = infoHtml(okAction == "reload") if pendingRelease is not None else f'{updateCheck.versionLine(runningVersion, installed, okAction == "reload")}<br><br>You have the newest version.'
+                info.formattedText = infoHtml(okAction == "reload", reloadWaiting) if pendingRelease is not None else f'{updateCheck.versionLine(runningVersion, installed, okAction == "reload", reloadWaiting)}<br><br>You have the newest version.'
             inputs.itemById(UPDATE_NOW_INPUT).isVisible = canInstall()
             inputs.itemById(RELEASE_NOTES_INPUT).isVisible = pendingRelease is not None and bool(pendingRelease.pageUrl)
         elif changed.id == UPDATE_NOW_INPUT and canInstall():
@@ -363,7 +370,7 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
                 # the dialog may have been closed meanwhile, the update is in place anyway
                 try:
                     # Yes to reload: it waits for this dialog to close (p321, spec R2), the text says so (review finding 4)
-                    info.formattedText = infoHtml(okAction == 'reload', reloadPending=installed == 'reload')
+                    info.formattedText = infoHtml(okAction == 'reload', reloadWaiting)
                     inputs.itemById(UPDATE_NOW_INPUT).isVisible = False
                 except Exception as err:
                     futil.log(f'{CMD_NAME}: dialog not updated after the update, {err}')

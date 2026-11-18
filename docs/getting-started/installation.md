@@ -59,7 +59,9 @@ again in **Scripts and Add-Ins**. Your saved dialog defaults are kept, they are 
 ### From a git checkout
 
 When Gridkeeper runs from a git checkout (the add-in folder has a `.git`), it never replaces it. The window only
-tells you about the new version and links its release notes; update with git.
+tells you about the new version and links its release notes; update with git. Fusion doesn't load the new code by
+itself after a pull or a branch switch: when the version in `Gridkeeper.manifest` changed, **Gridkeeper updates**
+offers **Reload Gridkeeper**, otherwise stop and run Gridkeeper in **Scripts and Add-Ins**.
 
 ![Gridkeeper updates in a git checkout: the new version and its release notes, no Update now](../assets/images/updates-dialog-git.png)
 
