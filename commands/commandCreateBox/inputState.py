@@ -18,3 +18,6 @@ class InputState:
     # which of Pred's hinges the set gets, one of predBoxParts.HINGES (round 28, Jörg 17.11.2026: "alle drei zum
     # auswählen ist besser")
     hinge: str
+    # the lid's top, one of predBoxConfig.LID_TOPS: Pred's Gridfinity grid or a closed flat top (round 30, p311, Jörg
+    # 18.11.2026: "Standard bleibt Raster")
+    lidTop: str

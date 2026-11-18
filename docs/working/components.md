@@ -37,9 +37,10 @@ others are there for you to joint parts by hand.
 |---|---|---|---|
 | Baseplate | *Socket joint origin column-row* | Bottom center of every socket | **Add joint origins** |
 | Bin | *Foot joint origin column-row* | Bottom center of every foot | **Add joint origins** |
+| Bin put into a cell | *Cell placement joint origin* | Bottom center of the bin's front left cell, used by its joint *… in cell* | when a **Cell** was picked in the bin dialog |
 | Bin with Cullenect pockets | *Pocket joint origin*; with compartments *Compartment 1 pocket joint origin*, *Compartment 2 …* | Middle of every pocket floor, Z up, X along the pocket | always |
 | Cullenect insert | *Insert joint origin* | Middle of its bottom | always |
-| Storage box | *Cell joint origin column-row* | Floor of every cell | **Add joint origins** |
+| Storage box | *Cell joint origin column-row* | Floor of every cell | always |
 | Storage box | *Stack bottom joint origin*, *Stack top joint origin* | Middle of the box's underside, middle of the lid's top | always |
 | Storage box | *Label joint origin* | In the label holder at the front | always |
 | Storage box | *Lid joint origin*, *Latch front left joint origin* and the other seats | Where lid, latches, handle, pins and hinges sit | always, used by the box itself |
@@ -57,8 +58,18 @@ browser instead of the canvas.
 
 ### Picking a joint origin in a dialog
 
-Two Gridkeeper dialogs place their part by a joint origin you pick. Only the right kind of joint origin can be picked;
+Three Gridkeeper dialogs place their part by a joint origin you pick. Only the right kind of joint origin can be picked;
 others don't light up.
+
+**A new bin into a cell of a baseplate or a box**
+
+1. Build the baseplate with **Add joint origins**; a box has its cell joint origins anyway.
+2. Open **Gridkeeper bin**. The section **Placement** is there only when the design has a baseplate or a box, and only
+   for a new bin, not when rebuilding one. Click into **Cell**.
+3. Click a *Socket joint origin* of a baseplate or a *Cell joint origin* in the floor of a box, in the canvas or in the
+   browser. Feet, pockets and the box's other joint origins can't be picked; the lid has no cells.
+4. **OK**: the bin is jointed with its front left cell into the cell picked (joint *… in cell*). A bin larger than
+   1 × 1 reaches from there to the right and to the back. Whether it fits the baseplate or box isn't checked.
 
 **A Cullenect insert into a bin's pocket**
 
@@ -80,25 +91,26 @@ others don't light up.
    pick: if the box gets wider later, make a new label.
 4. **OK**: the label is jointed into the holder (joint *… in holder*).
 
-Without a pick, both dialogs build the part beside the others, unjointed, e.g. for a reprint.
+Without a pick, the dialogs build the part beside the others, unjointed, e.g. for a reprint.
 
 **What happens afterwards**
 
 - *Moving:* a jointed part moves with the part it is jointed to: move the bin, the insert comes along; stack or move
   the box, the label comes along.
 - *Rebuild:* inserts in the pockets of a rebuilt bin are jointed into the pockets of the same name again. A rebuilt
-  insert has its pocket picked again already. A rebuilt box moves joints on its joint origins over to the joint
-  origins of the same name, the label's among them. See [Settings, rebuild and clone](settings-rebuild-clone.md).
-- *Clone:* a clone is a new, unjointed part; pick a pocket or a box for it in the dialog.
+  insert has its pocket picked again already, a rebuilt bin goes into its cell again. A rebuilt box or baseplate
+  moves joints on its joint origins over to the joint origins of the same name, the label's and the bins' among
+  them. See [Settings, rebuild and clone](settings-rebuild-clone.md).
+- *Clone:* a clone is a new, unjointed part; pick a pocket, a box or a cell for it in the dialog.
 - *Undoing the joint:* in the browser, open *Relationships › Joints* at the top, right-click the joint (*… in pocket*,
-  *… in holder*) and **Delete**. The part stays in the design and can be moved or jointed anew.
+  *… in holder*, *… in cell*) and **Delete**. The part stays in the design and can be moved or jointed anew.
 
 ![The browser with Relationships › Joints open, a joint made by hand (Rigid 1) and an insert's joint … in pocket, its context menu with Delete](../assets/images/joints-delete.png)
 
 ### Jointing by hand
 
-Everything else is jointed with Fusion's **Assemble › Joint** (shortcut **J**). Turn on **Add joint origins** for the
-models first.
+Everything else is jointed with Fusion's **Assemble › Joint** (shortcut **J**). Turn on **Add joint origins** for bins and
+baseplates first; a box has its cell joint origins anyway.
 
 **A bin into a baseplate or a box cell**
 
@@ -111,7 +123,7 @@ models first.
 
 ![Fusion's Joint dialog: Component 1 the bin with Foot joint origin 1-1 picked in the browser, Component 2 a socket of the baseplate, the bin standing in the plate](../assets/images/joint-bin-into-baseplate.png)
 
-Picking the cell in the bin dialog itself comes later (p312).
+The bin dialog does this for a new bin, see above; by hand you pick the foot yourself.
 
 **A box onto another box**
 
@@ -120,15 +132,16 @@ Picking the cell in the bin dialog itself comes later (p312).
 3. *Component 2*: the *Stack top joint origin* on the lid of the box below.
 4. *Motion*: **Rigid**. **OK**. The upper box sits on the lower one's stacking rim.
 
-A rebuilt bin or baseplate gives only the pocket joints their new joint origins; a joint you made by hand on its foot
-or socket joint origins has to be made again. A rebuilt box moves them over by name.
+A rebuilt bin gives only the pocket joints and its own joint into a cell their new joint origins; a joint you made by
+hand on its foot joint origins has to be made again. A rebuilt baseplate or box moves joints on its joint origins
+over by name.
 
 ### When it doesn't work
 
 | What you see | Why, and what to do |
 |---|---|
-| No joint origins in the canvas | Their light bulb is off: open the component's *Joint Origins* folder in the browser and switch it on. For feet, sockets and cells, the model needs **Add joint origins** |
-| The joint origin can't be clicked in the dialog | It isn't the kind the dialog takes: **Pocket** takes pocket joint origins only, **Box** only a box's *Label joint origin* |
+| No joint origins in the canvas | Their light bulb is off: open the component's *Joint Origins* folder in the browser and switch it on. Feet of a bin and sockets of a baseplate need **Add joint origins**, the cells of a box are always there |
+| The joint origin can't be clicked in the dialog | It isn't the kind the dialog takes: **Pocket** takes pocket joint origins only, **Box** only a box's *Label joint origin*, **Cell** only sockets of a baseplate and cells of a box floor, of parts in components of their own (not bodies in the root of a part design) |
 | The browser shows no joint origins | The folder or the component is collapsed: open the component's arrow, then *Joint Origins* |
 | The part sits in the wrong place | Another joint origin was picked, a neighbouring pocket or cell. Hold the mouse over it to see its name; delete the joint (*Relationships › Joints*) and pick again |
 | The insert isn't built | It is wider or higher than the pocket, the size line in the dialog says so: pick a pocket that fits or make the insert smaller |

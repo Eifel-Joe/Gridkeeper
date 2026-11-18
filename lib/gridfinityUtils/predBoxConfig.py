@@ -22,10 +22,31 @@ MAGNET_DIAMETER_MAX = 0.85
 PRED_MAGNET_DIAMETER = 0.65
 
 
+# the lid's top (round 30, p311, Jörg 18.11.2026): Pred's Gridfinity grid, or closed and flat, sturdier, the stacking
+# tabs in its corners kept so boxes still stack ("Standard bleibt Raster")
+LID_TOP_GRID = 'Grid'
+LID_TOP_CLOSED = 'Closed'
+LID_TOPS = (LID_TOP_GRID, LID_TOP_CLOSED)
+DEFAULT_LID_TOP = LID_TOP_GRID
+
+
 class BoxOptions(NamedTuple):
     hasMagnets: bool
     magnetDepth: float
     magnetDiameter: float
+    lidTop: str
+
+
+class LidTopFeatures(NamedTuple):
+    """The steps of the cell grid that build the grid on top of the lid (predBoxGenerator.floorGrid)"""
+    # Sweep1 cuts the sockets into the top of the lid as well as into the floor of the box
+    socketsInTop: bool
+    # Sweep4 hollows out the bin seats under the lid, they open up into the sockets
+    hollowSeats: bool
+    # #17 Extrude5 lowers the area inside the rim to the top of the cell ridges
+    cellRidges: bool
+    # #85 Chamfer16 on the edge of that lowered area
+    ridgeChamfer: bool
 
 # user parameter names after the numbered prefix, stored in user documents, keep them literal
 PARAMETERS = ['baseWidth', 'baseLength', 'heightU']
@@ -50,6 +71,8 @@ def boxProblem(state) -> str | None:
     # a defaults file or test case may hold a hinge no longer known, it broke the build halfway (review R28)
     if state.hinge not in predBoxParts.HINGES:
         return f"Unknown hinge {state.hinge}, pick one of {', '.join(predBoxParts.HINGES)}"
+    if state.lidTop not in LID_TOPS:
+        return f"Unknown lid top {state.lidTop}, pick one of {', '.join(LID_TOPS)}"
     if state.hasMagnets:
         if state.magnetDepth <= _EPS:
             return 'The magnet holes need a depth'
@@ -68,7 +91,18 @@ def boxOptions(state) -> BoxOptions:
     the pads of a box without magnets other than Pred's (review R27)
     """
     diameter = state.magnetDiameter if state.hasMagnets else PRED_MAGNET_DIAMETER
-    return BoxOptions(state.hasMagnets, state.magnetDepth, diameter)
+    return BoxOptions(state.hasMagnets, state.magnetDepth, diameter, state.lidTop)
+
+
+def lidTopFeatures(lidTop: str) -> LidTopFeatures:
+    """
+    Which steps of the grid on top the lid gets (spec 2026-11-18-r30-lid-closed, way A). A closed lid leaves all four
+    out: its top stays one flat face on the body's top from rim to rim. Sweep2, the bin seats under the lid, stays for
+    both, so the lid holds the bins as before. Sweep4 goes with the sockets: without them above it would leave a void
+    closed on every side in each cell
+    """
+    grid = lidTop == LID_TOP_GRID
+    return LidTopFeatures(socketsInTop=grid, hollowSeats=grid, cellRidges=grid, ridgeChamfer=grid)
 
 
 
