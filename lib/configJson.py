@@ -45,6 +45,10 @@ OLDER_VALUES = {
         'placement': 'Snap to free spot',
         # tabs and dividers were 0.5 mm below the top before upstream's tab top offset c2e12c0 (round 38)
         'tabTopOffset': 0.5,
+        # the front wall had the only scoop before round 48
+        'hasScoopBack': False,
+        'hasScoopLeft': False,
+        'hasScoopRight': False,
     },
     GENERATOR_BASEPLATE: {'plateEdgeClearance': _xyClearanceAtPlateEdges},
     # boxes of round 27 had no hinge setting; every box got Pred's M3x30 once there were hinges (round 28). Before the
