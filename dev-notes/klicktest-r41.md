@@ -5,9 +5,9 @@ Tippweise: Feld anklicken, Inhalt markieren, tippen, dann **Tab** (nicht direkt 
 den Feldtext ablesen.
 
 ## A – Bin
-1. Bin-Dialog öffnen, **Bin wall thickness** auf `2.9` → Tab.
-   - Erwartet: Feld zeigt `2.90 mm`.
-2. Dasselbe Feld `2.9 mm` → Tab. Erwartet: `2.90 mm`.
+1. Bin-Dialog öffnen, **Bin wall thickness** auf `2.4` → Tab.
+   - Erwartet: Feld zeigt `2.40 mm`.
+2. Dasselbe Feld `2.4 mm` → Tab. Erwartet: `2.40 mm`.
 3. Dasselbe Feld `1 + 1.5` → Tab. Erwartet: bleibt `1 + 1.5` (Formel nicht umgeschrieben).
 4. Dasselbe Feld `0.1 in` → Tab. Erwartet: bleibt `0.1 in`.
 5. **Tab overhang angle** `40` → Tab. Erwartet: unverändert wie getippt (Winkel werden nicht umformatiert).
@@ -18,8 +18,8 @@ den Feldtext ablesen.
    - Erwartet: Feld zeigt am Ende `2.95 mm`. Während des Tippens springt der Text nicht um (kein `2.00 mm` mitten im
      Tippen, kein `2.00 mm95`, Cursor bleibt am Ende). Dasselbe mit `2`, Pause, `5` → am Ende `25.00 mm`.
    - Falls es doch umspringt: Befund mit genauem Feldtext melden, nicht weiter klicken.
-9. Wandstärke wieder `2.9` → Tab, dann OK.
-   - Erwartet: Bin entsteht ohne Fehler, Wand 2.9 mm (Messen oder Parameter). Kein Hängen, kein Flackern im Feld
+9. Wandstärke wieder `2.4` → Tab, dann OK.
+   - Erwartet: Bin entsteht ohne Fehler, Wand 2.4 mm (Messen oder Parameter). Kein Hängen, kein Flackern im Feld
      (keine Endlosschleife).
 
 ## B – Baseplate
@@ -38,4 +38,4 @@ den Feldtext ablesen.
    (bzw. bleibt, wenn der Wert zum Drucker passt). Cancel.
 
 ## F – Wiederöffnen
-1. Bin-Dialog erneut öffnen. Erwartet: Wandstärke zeigt den zuletzt benutzten Wert formatiert (`2.90 mm`).
+1. Bin-Dialog erneut öffnen. Erwartet: Wandstärke zeigt den zuletzt benutzten Wert formatiert (`2.40 mm`).
