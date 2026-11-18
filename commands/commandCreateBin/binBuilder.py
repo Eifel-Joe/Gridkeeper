@@ -282,8 +282,10 @@ def _buildBin(
     features: adsk.fusion.Features = gridfinityBinComponent.features
 
     # pick the spot before generating, so none of this bin's geometry can count as an obstacle. A bin going into a cell
-    # is moved there by its joint, it stays at the origin of its component (round 31)
-    binPlacement = placement or ((0, 0) if cell is not None and newCmpOcc is not None else placementUtils.findPlacement(
+    # is moved there by its joint, it stays at the origin of its component (round 31). Before upstream's Center on
+    # origin, the kept spot of a rebuild and a free one (round 38)
+    source = binCell.placementSource(state.placement == PLACEMENT_CENTER, cell is not None and newCmpOcc is not None, placement is not None)
+    binPlacement = (0, 0) if source == 'cell' else centeredPlacement(state) if source == 'center' else placement if source == 'kept' else placementUtils.findPlacement(
         des,
         tagUtils.TAG_BIN,
         BIN_LEGACY_NAME_PREFIX,
@@ -295,7 +297,7 @@ def _buildBin(
         ),
         state.baseWidth,
         state.baseLength,
-    ))
+    )
 
     reuseParameters = parameterPrefix is not None
     # the bin's id too, see tagUtils.tagBody

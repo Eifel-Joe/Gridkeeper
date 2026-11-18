@@ -871,17 +871,24 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     infoGroup.isExpanded = commandUIState.getState(INFO_GROUP)
     commandUIState.registerCommandInput(infoGroup)
 
-    # a new bin jointed into a cell of a baseplate or box (round 31, p312), only offered when there's one
-    # and not for a rebuilt bin, it keeps its joint. Neither remembered nor in the settings
+    # Where the bin goes (round 38): upstream's snap or center (d37c166) as Position, always, and a cell of a baseplate
+    # or box (round 31, p312), only offered when there's one and not for a rebuilt bin, it keeps its joint. The cell is
+    # neither remembered nor in the settings, a picked one wins, see binCell.placementSource
+    placementGroup = inputs.addGroupCommandInput(BIN_PLACEMENT_GROUP_ID, 'Placement')
+    placementGroup.isExpanded = True
     if binCell.offersCellPick(dialogWorkflow != WORKFLOW_REBUILD, binBuilder.hasCellParts(adsk.fusion.Design.cast(app.activeProduct))):
-        placementGroup = inputs.addGroupCommandInput(BIN_PLACEMENT_GROUP_ID, 'Placement')
-        placementGroup.isExpanded = True
         cellInput = placementGroup.children.addSelectionInput(BIN_CELL_INPUT_ID, 'Cell', 'A cell joint origin of a baseplate or of the floor of a box')
         cellInput.addSelectionFilter(adsk.core.SelectionCommandInput.JointOrigins)
         cellInput.setSelectionLimits(0, 1)
         cellInput.tooltip = ('Optional: pick a cell joint origin of a baseplate or of the floor of a box, the bin is jointed there '
             'with its front left cell. Without, it goes beside the other bins. Baseplates offer their cells with Add joint '
             'origins, a box without cell joint origins gets them when it is rebuilt.')
+    placementInput = placementGroup.children.addDropDownCommandInput(BIN_PLACEMENT_INPUT_ID, 'Position', adsk.core.DropDownStyles.TextListDropDownStyle)
+    placementInput.tooltip = ('Snaps the bin to the free grid spot closest to the origin, next to bins already there, or centers '
+        'it on the origin. A centered bin is centered again when rebuilt. A picked cell wins, this is greyed out then')
+    for option in binBuilder.PLACEMENT_OPTIONS:
+        placementInput.listItems.add(option, option == commandUIState.getState(BIN_PLACEMENT_INPUT_ID))
+    commandUIState.registerCommandInput(placementInput)
 
     basicSizesGroup = inputs.addGroupCommandInput(BIN_BASIC_SIZES_GROUP, 'Basic sizes')
     basicSizesGroup.isExpanded = commandUIState.getState(BIN_BASIC_SIZES_GROUP)
@@ -931,12 +938,6 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     shapeBrowser.isFullWidth = True
     shapeBrowser.isVisible = commandUIState.getState(BIN_SHAPE_CUSTOM_ID)
     commandUIState.registerCommandInput(shapeBrowser)
-    placementInput = binDimensionsGroup.children.addDropDownCommandInput(BIN_PLACEMENT_INPUT_ID, 'Placement', adsk.core.DropDownStyles.TextListDropDownStyle)
-    placementInput.tooltip = 'Snaps the bin to the free grid spot closest to the origin, next to bins already there, or centers it on the origin'
-    for option in binBuilder.PLACEMENT_OPTIONS:
-        placementInput.listItems.add(option, option == commandUIState.getState(BIN_PLACEMENT_INPUT_ID))
-    commandUIState.registerCommandInput(placementInput)
-
     render_actual_bin_dimensions_table(binDimensionsGroup.children)
 
     binFeaturesGroup = inputs.addGroupCommandInput(BIN_FEATURES_GROUP, 'Bin features')
@@ -1158,6 +1159,12 @@ def command_select(args: adsk.core.SelectionEventArgs):
         return
     args.isSelectable = binBuilder.isCellJointOrigin(adsk.fusion.JointOrigin.cast(args.selection.entity))
 
+def updatePositionInput(inputs: adsk.core.CommandInputs):
+    """Snap or center is greyed out while a cell is picked, the cell wins (round 38)"""
+    positionInput = inputs.itemById(BIN_PLACEMENT_INPUT_ID)
+    if positionInput is not None:
+        positionInput.isEnabled = binCell.positionEnabled(selectedCell(inputs) is not None)
+
 def selectedCell(inputs: adsk.core.CommandInputs) -> adsk.fusion.JointOrigin | None:
     """The cell picked for a new bin, none without the input (no baseplate or box, a rebuild) or a pick"""
     cellInput = adsk.core.SelectionCommandInput.cast(inputs.itemById(BIN_CELL_INPUT_ID))
@@ -1212,6 +1219,9 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
     # the preview time is only shown, nothing follows from it
     if changed_input.id == PREVIEW_TIME_INPUT:
         return
+    if changed_input.id == BIN_CELL_INPUT_ID:
+        # args.inputs only holds the siblings of the changed input, the dialog inputs are on the command
+        updatePositionInput(changed_input.parentCommand.commandInputs)
     commandUIState.onInputUpdate(changed_input)
     if changed_input.id == BIN_TYPE_DROPDOWN_ID:
         commandUIState.updateValue(BIN_TAB_HOLLOW_INPUT_ID, commandUIState.getState(BIN_TYPE_DROPDOWN_ID) == BIN_TYPE_SHELLED)
@@ -1444,9 +1454,10 @@ def saveUIInputsAsDefaults():
         futil.log(f'{CMD_NAME} UI state failed to save')
 
 def snapshotSettings(inputs: adsk.core.CommandInputs) -> list[dict]:
+    # the cell isn't kept with the settings, the position is (round 38)
     settings = settingsUtils.snapshotInputs(
         inputs,
-        [INFO_GROUP, USER_CHANGES_GROUP_ID, PREVIEW_GROUP_ID, BIN_REAL_DIMENSIONS_TABLE, BIN_PLACEMENT_GROUP_ID],
+        [INFO_GROUP, USER_CHANGES_GROUP_ID, PREVIEW_GROUP_ID, BIN_REAL_DIMENSIONS_TABLE, BIN_CELL_INPUT_ID],
         SETTINGS_TITLE,
     )
     # the drawing isn't an input with a value, it holds the grid size too

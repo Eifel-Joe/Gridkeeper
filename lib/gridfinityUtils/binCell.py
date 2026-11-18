@@ -33,6 +33,26 @@ def isCellJointName(name: str) -> bool:
     return _CELL_JOINT.search(name) is not None
 
 
+def placementSource(isCentered: bool, hasCell: bool, hasKeptPlacement: bool) -> str:
+    """
+    Where a bin goes (round 38, upstream's Placement d37c166 joined with the cell): 'cell' into a picked cell, also a
+    bin in a cell rebuilt; else 'center' on the origin, also on a rebuild, its size may have changed (upstream); else
+    'kept', the spot of a bin rebuilt in place; else 'snap' to the free spot beside the other bins
+    """
+    if hasCell:
+        return 'cell'
+    if isCentered:
+        return 'center'
+    if hasKeptPlacement:
+        return 'kept'
+    return 'snap'
+
+
+def positionEnabled(hasCell: bool) -> bool:
+    """Snap or center doesn't apply to a bin going into a cell, so the dialog greys it out while one is picked"""
+    return not hasCell
+
+
 def offersCellPick(isNewBin: bool, hasBaseplateOrBox: bool) -> bool:
     """The dialog offers the cell only for a new bin, a rebuilt one keeps its joint, and only with a
     baseplate or box in the design"""
