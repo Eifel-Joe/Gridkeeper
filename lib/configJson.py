@@ -25,7 +25,9 @@ GENERATOR_BOX_LABEL = 'boxLabel'
 # A value may be a function of the saved settings, giving none when they don't say
 def _xyClearanceAtPlateEdges(settings: dict):
     # before 8cc5089 the edges where baseplates meet took the bin xy clearance, a plate clearance of their own came after
-    return settings.get('xyClearance')
+    xyClearance = settings.get('xyClearance')
+    # one of the wrong type is refused by readConfig as itself, not again as this
+    return xyClearance if _isNumber(xyClearance) else None
 
 OLDER_VALUES = {
     GENERATOR_BIN: {
