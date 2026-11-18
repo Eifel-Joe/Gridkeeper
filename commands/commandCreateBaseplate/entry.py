@@ -349,9 +349,9 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     plateEdgeClearanceInput = basicSizesGroup.children.addValueInput(PLATE_EDGE_CLEARANCE_INPUT, 'Plate edge clearance (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(uiState.getState(PLATE_EDGE_CLEARANCE_INPUT)))
     plateEdgeClearanceInput.minimumValue = 0.0025
     plateEdgeClearanceInput.isMinimumInclusive = True
-    plateEdgeClearanceInput.maximumValue = 0.025
+    plateEdgeClearanceInput.maximumValue = const.BASEPLATE_PLATE_EDGE_CLEARANCE_MAX
     plateEdgeClearanceInput.isMaximumInclusive = True
-    plateEdgeClearanceInput.tooltip = "How far the edge of a plate stops short of the grid line where it meets another, fill pieces or grid units plates glued side by side leave twice it between them. Must be within range [0.025, 0.25]mm"
+    plateEdgeClearanceInput.tooltip = "How far the edge of a plate stops short of the grid line where it meets another, fill pieces or grid units plates glued side by side leave twice it between them. Must be within range [0.025, 0.5]mm"
     uiState.registerCommandInput(plateEdgeClearanceInput)
 
     mainDimensionsGroup = inputs.addGroupCommandInput(XY_DIMENSIONS_GROUP, 'Main dimensions')
@@ -638,7 +638,7 @@ def command_validate_input(args: adsk.core.ValidateInputsEventArgs):
         and inputsState.xyClearance >= 0.01 \
         and inputsState.xyClearance <= 0.05 \
         and inputsState.plateEdgeClearance >= 0.0025 \
-        and inputsState.plateEdgeClearance <= 0.025 \
+        and inputsState.plateEdgeClearance <= const.BASEPLATE_PLATE_EDGE_CLEARANCE_MAX \
         and inputsState.plateWidth > 0 \
         and inputsState.plateLength > 0 \
         and (not inputsState.hasMagnetSockets or (inputsState.magnetSocketSize <= 1 and inputsState.magnetSocketSize > 0 and inputsState.magnetSocketDepth > 0)) \

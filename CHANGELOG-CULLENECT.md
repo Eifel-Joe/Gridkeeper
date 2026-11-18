@@ -4,6 +4,26 @@ Changes of Gridkeeper (`Eifel-Joe/Gridkeeper`, until 16.11.2026 `Eifel-Joe/Fusio
 GridfinityGenerator by Le0Michine, merged up to 5627083 (17.11.2026; rounds 1 to 11 were built on v2.2.0.0, round 22 merged v2.4.2.0).
 Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`, the `vX.Y.Z.W` tags belong to GridfinityGenerator.
 
+## Unreleased
+
+### Older bins build as they were saved (round 32)
+
+- **No settings a config doesn't give:** a bin, baseplate or box saved before a setting existed takes the value that
+  built it on Load from file, rebuild and clone, not the one the dialog has (Jörg: „Ältere Bins werden erstellt, wie
+  sie gespeichert wurden. Es werden keine Einstellungen aktiviert, welche die Config nicht her gibt.“, p280). Bins:
+  sharp shell, no dividers up to the top, no label color, 0.3 mm play of a Cullenect insert, light lip trimmed flat as
+  before. Baseplates: the bin xy clearance at the edges where plates meet, as before they had a clearance of their
+  own. Configs of GridfinityGenerator by Le0Michine build the same way.
+- **Changes p151 (round 18):** an old bin with a label used to keep the label color chosen in the dialog, it now
+  comes without one and the dialog shows *None*. A file with only some settings gets these older values too; the
+  settings every config had since 13.11.2026 still keep the dialog's value when a file leaves them out.
+- **Plate edge clearance up to 0.5 mm:** the largest bin xy clearance, so baseplates saved before the plate edge
+  clearance build the same with any xy clearance (it stopped at 0.25 mm, half the whole gap of upstream's setting;
+  nothing in the geometry needs that).
+- **Not reproduced:** a fill area baseplate saved on 13 or 14.11.2026 with the fit tolerance GridfinityGenerator
+  removed since (3010f3f, Le0Michine) builds 1 mm larger along each axis (its default tolerance), the setting is
+  reported as not recognised. Older than 1.0.0, nobody else had the add-in then.
+
 ## 1.1.0 (2026-11-17)
 
 ### Export in print orientation (round r29-export)
