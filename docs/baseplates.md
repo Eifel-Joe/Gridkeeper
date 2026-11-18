@@ -99,6 +99,8 @@ around the grid, 0 or more. The paddings are user parameters of the plate, see [
 | **Add connection holes** | off | Skeletonized plates: holes between the plates for a screw or a glued-in pin. Greyed out for light and full plates. A side with padding or half cells gets none, it isn't an edge another plate meets; seams between the pieces of a filled area keep theirs |
 | **Connection hole diameter** | 3.2 mm | Up to 5 mm, greyed out without connection holes |
 
+![A skeletonized 2 × 2 baseplate seen from below, padded on the left and the front: connection holes only on the right and the back side](assets/models/baseplate-padding-connection-holes.png)
+
 <picture><source media="(prefers-color-scheme: dark)" srcset="../assets/gif/baseplate-connection-holes-dark.gif"><img src="../assets/gif/baseplate-connection-holes-light.gif" alt="Turning on connection holes and changing their diameter, with a skeletonized baseplate without, with 3.2 mm and with 5 mm connection holes"></picture>
 
 ## Inputs
