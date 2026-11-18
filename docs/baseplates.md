@@ -65,8 +65,10 @@ side of the bed. **Result** draws the area, the grid and how it is split into pi
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../assets/gif/baseplate-types-dark.gif"><img src="../assets/gif/baseplate-types-light.gif" alt="Picking each baseplate type, with light, skeletonized and full baseplates"></picture>
 
-**Add joint origins** puts a joint origin at the bottom center of every socket, to joint bins into the plate; how,
-step by step, in [Joint origins](working/components.md#jointing-by-hand).
+**Add joint origins** puts a joint origin at the bottom center of every socket, to joint bins into the plate: the bin
+dialog puts a new bin into one ([Picking a joint origin in a dialog](working/components.md#picking-a-joint-origin-in-a-dialog)),
+by hand see [Joint origins](working/components.md#jointing-by-hand). A rebuilt baseplate keeps the bins jointed into
+its sockets, as long as it still has those sockets and their joint origins.
 
 ### Magnet cutouts
 
