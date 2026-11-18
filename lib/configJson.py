@@ -19,17 +19,45 @@ GENERATOR_BOX_LABEL = 'boxLabel'
 
 # Settings added after configs were saved without them, with the value that built the model of such a config. A config
 # read over the dialog's state (Load, rebuild, clone, p151) would otherwise take the dialog's value and build an older
-# bin differently: before upstream's lip types every bin had the light lip trimmed flat (upstream round 17.11.2026, p13)
+# bin differently: before upstream's lip types every bin had the light lip trimmed flat (upstream round 17.11.2026, p13).
+# Every setting added since a generator's oldest config is here (round 32, p280, Joerg: "Es werden keine Einstellungen
+# aktiviert, welche die Config nicht her gibt"), tests/test_config_json.py checks it against the fields of that config.
+# A value may be a function of the saved settings, giving none when they don't say
+def _xyClearanceAtPlateEdges(settings: dict):
+    # before 8cc5089 the edges where baseplates meet took the bin xy clearance, a plate clearance of their own came after
+    xyClearance = settings.get('xyClearance')
+    # one of the wrong type is refused by readConfig as itself, not again as this
+    return xyClearance if _isNumber(xyClearance) else None
+
 OLDER_VALUES = {
-    GENERATOR_BIN: {'lipType': 'Light', 'isLipTopTrimmed': True},
+    GENERATOR_BIN: {
+        'lipType': 'Light',
+        'isLipTopTrimmed': True,
+        # upstream's sharp shell before 1b44398, its older test cases have false
+        'isShellRounded': False,
+        # dividers ended under the lip before 5558f87
+        'hasDividersToTop': False,
+        # labels had no color before cf30d39 (p86); p151 kept the dialog's here, p280 reverses that
+        'labelColor': '',
+        # no Cullenect label before 2e4cf3a, its play then was 0.3 mm
+        'cullenectSocketOffset': 0.3,
+    },
+    GENERATOR_BASEPLATE: {'plateEdgeClearance': _xyClearanceAtPlateEdges},
     # boxes of round 27 had no hinge setting; every box got Pred's M3x30 once there were hinges (round 28). Before the
     # choice of the lid's top every lid had Pred's grid on it (round 30, p311)
     GENERATOR_BOX: {'hinge': 'M3x30', 'lidTop': 'Grid'},
 }
 
 def withOlderValues(generator: str, settings: dict) -> dict:
-    """The settings with the values of OLDER_VALUES they don't have"""
-    return {**OLDER_VALUES.get(generator, {}), **settings}
+    """The settings with the values of OLDER_VALUES they don't have, a saved setting always wins"""
+    filled = dict(settings)
+    for (name, older) in OLDER_VALUES.get(generator, {}).items():
+        if name in filled:
+            continue
+        value = older(settings) if callable(older) else older
+        if value is not None:
+            filled[name] = value
+    return filled
 
 # the rest are counts, base or height units, flags and names, kept as they are
 MM_FIELDS = {

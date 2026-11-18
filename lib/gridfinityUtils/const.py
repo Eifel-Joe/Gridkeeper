@@ -53,6 +53,9 @@ BASEPLATE_BIN_Z_CLEARANCE = 0.05
 # how far a baseplate's edge stops short of the grid line, plates glued side by side leave twice it between them.
 # Closer than bins are to each other
 BASEPLATE_PLATE_EDGE_CLEARANCE = 0.005
+# the most it can be, the largest bin xy clearance: edges where plates meet took that before they had a clearance of
+# their own, nothing in the geometry limits it below (round 32, p280)
+BASEPLATE_PLATE_EDGE_CLEARANCE_MAX = 0.05
 
 DIMENSION_DEFAULT_WIDTH_UNIT = 4.2
 DIMENSION_DEFAULT_HEIGHT_UNIT = 0.7
