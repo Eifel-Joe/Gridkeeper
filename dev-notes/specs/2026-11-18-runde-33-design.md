@@ -56,3 +56,38 @@ Ein Slot, vier Jobs, Ablauf vorher der Hauptsitzung zeigen. Kein Dokument nötig
   Versuch ohne Rücksprache.
 
 **Nicht dabei:** Test-Release, Tag, Änderung am Update-Installer, Fusion-Neustart durch das Add-in, W4.
+
+## p321 Ergänzung nach der Messung: Knopf „Reload Gridkeeper“ (zur Freigabe)
+
+Messung (18.11., Update-Spec „Messung Selbst-Neustart“): Gridkeeper kann sich aus einem eigenen Custom-Event-Handler über
+`app.scripts` → eigenes `Script.stop()`/`run()` neu starten, danach läuft die neue Version mit allen Befehlen. Damit greift
+Update-Spec E13: „gibt es einen sicheren Weg ohne Neustart, bekommt die Erfolgsmeldung einen Knopf dafür“.
+
+**R1 Wo:**
+- Erfolgsmeldung nach dem Update: statt OK-Meldung eine Ja/Nein-Frage „Gridkeeper X is installed. Reload Gridkeeper now
+  to use it?“ (Ja = neu laden, Nein = Text wie heute mit den Handwegen).
+- Dialog „Gridkeeper updates“: ein Knopf „Reload Gridkeeper“ (BoolValue-Button wie „Check now“), sichtbar, solange
+  laufende und installierte Version verschieden sind (E13a). Die Versionszeile nennt den Knopf zuerst, dann die Handwege.
+**R2 Ablauf:** Der Klick feuert ein eigenes Custom Event `…_reload` und kehrt zurück (Gridkeeper beendet sich nie im
+  eigenen Befehls-Handler). Der Event-Handler wartet, bis kein Gridkeeper-Befehl mehr aktiv ist (`ui.activeCommand`;
+  sonst neuer Versuch über einen Timer wie beim Update-Dialog, höchstens 10×), sucht das eigene `Script` **über den
+  Ordner** (nie über den Namen; Klon und Worktree heißen beide „Gridkeeper“), ruft `stop()`, dann `run()`.
+**R3 Fehler:** kein oder mehr als ein eigenes Script, `stop()`/`run()` `False` oder Ausnahme → Meldung mit den Handwegen
+  (Fusion neu starten, Stop/Run in Scripts and Add-Ins). Nach einem gescheiterten `run()` läuft Gridkeeper nicht mehr, die
+  Meldung sagt das.
+**R4 Git-Checkout:** unverändert kein Update; der Knopf erscheint auch dort, sobald laufende und Manifest-Version
+  abweichen (z. B. nach `git pull` mit neuer Version), da der Weg derselbe ist.
+**R5 Fusion-frei testbar** (lib/updateCheck bzw. lib/updateInstall): Sichtbarkeit (laufend ≠ installiert), Auswahl des
+  eigenen Scripts aus (Ordner, Script)-Paaren mit Normalisierung von Groß-/Kleinschreibung und Schrägstrichen, Texte.
+
+**Nicht dabei:** Fusion-Neustart durch das Add-in, Neu-Laden von Modulen im Prozess (W4), automatisches Neu-Laden ohne
+Klick, Änderungen am Installer.
+
+**Ende-zu-Ende:**
+- pytest für R5.
+- Fusion (ein Slot): Testkopie wie bei der Messung, diesmal **ohne Sonde**, Manifest 9.9.1, dann 9.9.2 setzen, das
+  Produkt-Event `…_reload` feuern; danach `runningVersion (9, 9, 2)` im neuen Modul und fünf Befehle aktiv. Aufräumen wie
+  bei der Messung.
+- Klicktest der Hauptsitzung im echten Dialog: Updates-Dialog zeigt „Reload Gridkeeper“ nur bei abweichender Version
+  (dafür das Manifest der geladenen Kopie von Hand hochsetzen), Klick → Dialog schließt, Gridkeeper startet neu,
+  Dialog zeigt danach „Running … <neue Version>“.
