@@ -12,6 +12,7 @@ from .gridfinityUtils import commonUtils
 from .gridfinityUtils import cullenect
 from .gridfinityUtils import boxLabelConfig, predBoxLabelLayout, predBoxParts, predBoxSeats
 from .gridfinityUtils import timelineRemoval
+from .gridfinityUtils import jointNames
 from .gridfinityUtils import binCell
 
 # Rebuilding a generated body at its place in the timeline: the new one is built right after the old one's timeline
@@ -39,6 +40,8 @@ class RebuildTarget:
     groupItems: list[adsk.fusion.TimelineObject] = field(default_factory=list)
     # where the part is, the new one goes there too (round 13: old parts stay where they are)
     oldPlace: assembly.OldPlace | None = None
+    # the old joint origins (native) joints were moved away from to the new part, deleted first, see removeOldGroup
+    movedFrom: list[adsk.fusion.JointOrigin] = field(default_factory=list)
 
 def nativeBody(body: adsk.fusion.BRepBody) -> adsk.fusion.BRepBody:
     return body.nativeObject if body.assemblyContext is not None else body
@@ -304,13 +307,14 @@ def replaceFeatureBodies(item: adsk.fusion.TimelineObject, feature: adsk.fusion.
             setattr(typed, name, swapped)
         commonUtils.debugLog(f'{LOG_PREFIX} {item.name} {name} now uses the new bodies')
 
-def removeOldGroup(target: RebuildTarget, oneByOne: bool = False) -> list[str]:
+def removeOldGroup(target: RebuildTarget, jointsMoved: bool = False) -> list[str]:
     """
-    Once the later features have the new bodies, with the marker back at the end. Fusion may refuse to delete the
-    group as a whole, without saying why, then its items go one by one, the last first so none is still used by
-    what's left, and what it won't delete is suppressed. Returns the names of those. One by one from the start once a
-    joint was moved over to the new part: deleting the group as a whole took the joint along (Fusion 15.11.2026, the
-    insert dropped back to the origin), item by item it stays, see repointJoints
+    Once the later features have the new bodies, with the marker back at the end. Returns the names of the items
+    Fusion wouldn't delete, suppressed instead. With a joint moved over to the new part the old joint origins the
+    moved joints used go one by one first, then the rest as a whole, see timelineRemoval.deleteMovedFirst: the group
+    as a whole took a moved joint along (Fusion 15.11.2026, the insert dropped back to the origin; again round 43),
+    item by item took up to 274 s for a box (round 39). Without, the group goes as a whole; Fusion may refuse that,
+    without saying why, then its items go one by one, the last first so none is still used by what's left
     """
     group = target.group
     groupName = group.name
@@ -319,17 +323,48 @@ def removeOldGroup(target: RebuildTarget, oneByOne: bool = False) -> list[str]:
         commonUtils.fileLog(f'{LOG_PREFIX} the timeline group {groupName} has {group.count} items, {len(target.groupItems)} before the rebuild')
         raise RuntimeError(f'The timeline group {groupName} of the old bin changed while rebuilding, it was left as is')
     group.isCollapsed = True
+    timeline = group.parentTimeline
+    log = lambda message: commonUtils.fileLog(f'{LOG_PREFIX} {message} ({groupName})')
+    if jointsMoved:
+        movedFrom = target.movedFrom
+        commonUtils.fileLog(f'{LOG_PREFIX} deleting the timeline group {groupName}: the {len(movedFrom)} joint origins joints were moved away from first, then the rest as a whole')
+        # items of a group can't be deleted on their own, the header goes and they stay in the timeline
+        group.deleteMe(False)
+        def isMoved(item) -> bool:
+            jointOrigin = adsk.fusion.JointOrigin.cast(item.entity)
+            return jointOrigin is not None and any(jointOrigin == old for old in movedFrom)
+        return timelineRemoval.deleteMovedFirst(target.groupItems, isMoved, timeline, log)
     try:
-        if not oneByOne and group.deleteMe(True):
+        if group.deleteMe(True):
             return []
-        commonUtils.fileLog(f'{LOG_PREFIX} deleting the items of the timeline group {groupName} one by one, ' + ('a joint was moved over to the new part' if oneByOne else 'Fusion didn\'t delete the group'))
+        commonUtils.fileLog(f'{LOG_PREFIX} deleting the items of the timeline group {groupName} one by one, Fusion didn\'t delete the group')
     except RuntimeError as err:
         commonUtils.fileLog(f'{LOG_PREFIX} the timeline group {groupName} wasn\'t deleted, {err}, deleting its items one by one')
-    # items of a group can't be deleted on their own, the group goes and they stay in the timeline
-    timeline = group.parentTimeline
     if group.isValid:
         group.deleteMe(False)
-    return timelineRemoval.deleteOneByOne(target.groupItems, timeline, lambda message: commonUtils.fileLog(f'{LOG_PREFIX} {message} ({groupName})'))
+    return timelineRemoval.deleteOneByOne(target.groupItems, timeline, log)
+
+def jointTokens(design: adsk.fusion.Design) -> set[str]:
+    """The joints there are, by entity token, to tell those a build makes, see dropJointCounters"""
+    return {joint.entityToken for joint in design.rootComponent.allJoints}
+
+def dropJointCounters(design: adsk.fusion.Design, before: set[str]):
+    """
+    A joint the build made, not among before, named with Fusion's counter while the old part's joint was still there
+    ("... in cell (1)", round 43, p430) gets the lowest free name among the joints of its component, see
+    jointNames.freedName. Joints there were before, the user's own included, keep their names
+    """
+    for joint in list(design.rootComponent.allJoints):
+        try:
+            if joint.entityToken in before:
+                continue
+            taken = [other.name for other in joint.parentComponent.joints if other != joint]
+            name = jointNames.freedName(joint.name, taken)
+            if name is not None:
+                commonUtils.debugLog(f'{LOG_PREFIX} {joint.name} is now {name}')
+                joint.name = name
+        except RuntimeError as err:
+            commonUtils.fileLog(f'{LOG_PREFIX} a joint the rebuild made kept its name, {err}')
 
 def readJointEnds(joints) -> list:
     """
@@ -407,6 +442,7 @@ def repointJoints(
                 item.rollTo(True)
                 newPocket = newComponent.jointOrigins.itemByName(newName)
                 setattr(joint, side, newPocket.createForAssemblyContext(newOccurrence))
+                target.movedFrom.append(jointOrigin.nativeObject or jointOrigin)
                 # the insert's pocket stays shown, see assembly.keepShown
                 shown.append(newPocket.createForAssemblyContext(newOccurrence))
                 moved += 1
@@ -560,6 +596,7 @@ def repointJointsByName(
                     # command keeps it (review)
                     shown.append(newJointOrigin)
                 setattr(joint, side, newJointOrigin)
+                target.movedFrom.append(jointOrigin.nativeObject or jointOrigin)
                 moved += 1
             except Exception as err:
                 commonUtils.fileLog(f"{LOG_PREFIX} {joint.name} couldn't be moved over to {jointOrigin.name}, {err}")
@@ -876,6 +913,7 @@ def rebuild(
         return (build(target.placement, None, transform, target.oldPlace), [])
 
     oldNames = tagParameterNames(target.bodies[0])
+    jointsBefore = jointTokens(design)
     rollAfterGroup(target)
     newBodies = build(target.placement, prefix, transform, target.oldPlace)
     newOccurrence = None
@@ -887,7 +925,8 @@ def rebuild(
         (movedJoints, jointNotes) = repointJointsByName(design, target, newBodies)
     else:
         (movedJoints, jointNotes) = repointJoints(design, target, newOccurrence)
-    keptOldItems = removeOldGroup(target, oneByOne=movedJoints > 0)
+    keptOldItems = removeOldGroup(target, jointsMoved=movedJoints > 0)
+    dropJointCounters(design, jointsBefore)
     # shared units stay, the body's own ones it no longer has go, like the label of a tab turned off
     newNames = tagParameterNames(newBodies[0]) if len(newBodies) > 0 else []
     removeUnusedParameters(design, [name for name in oldNames if prefix is not None and prefixOf([name], baseName) == prefix and name not in newNames])
