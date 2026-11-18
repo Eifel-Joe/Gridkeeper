@@ -138,11 +138,22 @@ def rollAfterGroup(target: RebuildTarget):
     target.group.isCollapsed = True
     target.group.rollTo(False)
 
-def hideOldBody(target: RebuildTarget):
+# occurrences a preview hid by their light bulb, turned back on when the command ends, see restoreHiddenForPreview
+_hiddenForPreview = []
+
+def hideOldBody(target: RebuildTarget, byLightBulb: bool = False):
     """
-    For a preview, the old bodies stay where the new ones are shown otherwise. Turning their light bulbs off left them
-    shown, the group is suppressed instead, its items one by one when Fusion won't suppress the group
+    For a preview, the old bodies stay where the new ones are shown otherwise. Turning the bodies' light bulbs off left
+    them shown, the group is suppressed instead, its items one by one when Fusion won't suppress the group.
+    byLightBulb (the box, round 39, p481): the old set's occurrence's light bulb goes off instead. Fusion never
+    suppresses a box set's group ("Some group features are not suppression-configurable"), its 298 items went one by
+    one after that message in every preview; the light bulb hides all its bodies at once (fusion-auftraege/
+    r39_probe.log). A part of bodies in the root has no occurrence and goes the old way
     """
+    if byLightBulb and target.occurrence is not None:
+        target.occurrence.isLightBulbOn = False
+        _hiddenForPreview.append(target.occurrence)
+        return
     try:
         target.group.isSuppressed = True
         return
@@ -153,6 +164,20 @@ def hideOldBody(target: RebuildTarget):
             item.isSuppressed = True
         except RuntimeError as err:
             commonUtils.debugLog(f'{LOG_PREFIX} {item.name} wasn\'t suppressed for the preview, {err}')
+
+def restoreHiddenForPreview():
+    """
+    Turns the light bulbs hideOldBody turned off back on, once, when the command ends whichever way (cancel, OK,
+    failure). Fusion undoes a preview by itself; this holds should it not. A set gone with OK is no longer valid
+    """
+    hidden = list(_hiddenForPreview)
+    _hiddenForPreview.clear()
+    for occurrence in hidden:
+        try:
+            if occurrence.isValid and not occurrence.isLightBulbOn:
+                occurrence.isLightBulbOn = True
+        except RuntimeError as err:
+            commonUtils.fileLog(f'{LOG_PREFIX} an old part hidden for the preview stayed hidden, {err}')
 
 def bodyMap(target: RebuildTarget, newBodies: list[adsk.fusion.BRepBody]) -> list[tuple[adsk.fusion.BRepBody, adsk.fusion.BRepBody]]:
     """
@@ -817,6 +842,7 @@ def rebuild(
     build: Callable[[tuple[float, float], str | None, adsk.core.Matrix3D | None, assembly.OldPlace | None], list[adsk.fusion.BRepBody]],
     title: str,
     jointsByName: bool = False,
+    hideByLightBulb: bool = False,
 ) -> tuple[list[adsk.fusion.BRepBody], list[str]]:
     """
     Builds the replacement of the target in its place, keeping the features after it. build gets the placement, the
@@ -827,7 +853,7 @@ def rebuild(
     """
     transform = target.occurrence.transform2 if target.occurrence is not None else None
     if isPreview:
-        hideOldBody(target)
+        hideOldBody(target, byLightBulb=hideByLightBulb)
         return (build(target.placement, None, transform, target.oldPlace), [])
 
     oldNames = tagParameterNames(target.bodies[0])
