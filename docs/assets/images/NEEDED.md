@@ -15,6 +15,10 @@ from GridfinityGenerator. The models in `docs/assets/models` are rendered by a F
   shows a folder path with a user name, take it again with a neutral folder), and a 3MF of a bin with a colored label
   and an insert opened in Bambu Studio, for `docs/working/export.md`.
 
+- Closed lid (round 30, p311): `box-lid-closed.png`, a box 5 × 4 × 6 with **Lid top** *Closed* in the view of
+  `box-5x4x6.png`, so the flat top and the four stacking tabs show; and `dialog-box.png` again with the new group
+  *Lid*. For [Storage boxes](../../boxes.md#lid).
+
 ## Taken (click test 17.11.2026, main session)
 
 - `dialog-box.png` (with *Small parts* and **Hinge**), `box-5x4x6.png` (with the orange small parts and a label in its
