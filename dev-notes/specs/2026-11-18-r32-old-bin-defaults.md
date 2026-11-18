@@ -31,7 +31,7 @@ per Felder-Vergleich der `InputState`-Klassen über die Git-Historie (Skript im 
 | Bin | `hasDividersToTop` | 5558f87 | `False` | vorher enden Trennwände unter der Lippe |
 | Bin | `labelColor` | cf30d39 (p86) | `''` | vorher keine Farbe |
 | Bin | `cullenectSocketOffset` | 2e4cf3a | `0.3` mm | Vorgabe bei Einführung; ältere Configs können kein Cullenect-Label haben, der Wert baut nichts |
-| Baseplate | `plateEdgeClearance` (früher `plateClearance`) | 8cc5089 | **das `xyClearance` derselben Config**, begrenzt auf den Dialogbereich [0,025; 0,25] mm | vorher nahm jede Plattenkante, wo Platten sich treffen, das xy-Spiel (8cc5089: „Fill pieces and grid units plates used the bin xy clearance where they meet“). `plateClearance` aus 8cc5089–3452e56 wird wie bisher halbiert umbenannt und hat Vorrang |
+| Baseplate | `plateEdgeClearance` (früher `plateClearance`) | 8cc5089 | **das `xyClearance` derselben Config** (Entscheidung 3) | vorher nahm jede Plattenkante, wo Platten sich treffen, das xy-Spiel (8cc5089: „Fill pieces and grid units plates used the bin xy clearance where they meet“). `plateClearance` aus 8cc5089–3452e56 wird wie bisher halbiert umbenannt und hat Vorrang |
 | Box | `hinge` | 6c5350d | `M3x30` | schon da (Runde 28) |
 | Einleger | – | – | – | seit dem ersten Config-Stand kein Feld dazu |
 | Box-Schild | – | – | – | seit dem ersten Config-Stand kein Feld dazu |
@@ -45,15 +45,24 @@ seit fbd3146 (vor dem ersten Config-Stand) unverändert. Nichts zu tun.
 2. Abgeleiteter Altwert: `OLDER_VALUES` darf statt eines Werts eine Funktion der Config tragen (für
    `plateEdgeClearance` = `xyClearance`). Fehlt der Config auch `xyClearance`, bleibt das Feld fehlend (Dialogwert,
    wie jedes andere fehlende Feld einer handgeschriebenen Teil-Config).
-3. Begrenzung bei Baseplates: Ein altes `xyClearance` über 0,25 mm ergäbe einen Plattenspalt, den der heutige Dialog
-   nicht annimmt (OK gesperrt). Er wird auf 0,25 mm begrenzt – der einzige Fall, in dem der Neubau nicht identisch ist.
-   Mit der Vorgabe 0,25 mm (und jedem kleineren Wert) identisch.
+3. Obergrenze des Plattenspalts (Hauptsitzung, 18.11.: „Jörg will identische Bauten“, erst prüfen, ob die Grenze einen
+   geometrischen Grund hat). Geprüft: keinen. Die 0,25 mm pro Kante sind Upstreams Halbierung der 0,5 mm Gesamtspalt
+   aus 8cc5089 (3452e56, Le0Michine). Vor 8cc5089 nahm dieselbe Kante das xy-Spiel bis 0,5 mm, und die Außenkante
+   einer Fill-Area nimmt es bis heute mit derselben Rechnung (`baseplateGenerator`, `outlineMin/Max ± edgeClearance`).
+   Deshalb hebt der Baseplate-Dialog die Grenze auf den Höchstwert des xy-Spiels an (0,5 mm, Eingabe, Tooltip und
+   OK-Prüfung über eine Konstante `const.BASEPLATE_PLATE_EDGE_CLEARANCE_MAX`). Alte Baseplates bauen damit
+   ausnahmslos identisch, keine Begrenzung. Abweichung von Upstream in `commandCreateBaseplate/entry.py`, das keiner
+   anderen Runde gehört.
 4. **Gegen p151 (Runde 18):** Dort galt „fehlt ein Feld, bleibt der Dialogwert stehen, belegt an der Label-Farbe“.
    Jörgs p280-Notiz kehrt das für Felder um, die es beim Speichern noch nicht gab: eine alte Bin mit Label bekommt beim
    Laden keine Farbe, der Dialog springt auf „None“. Die zwei p151-Tests in `tests/test_config_json.py` werden darauf
    umgestellt. Für Felder, die eine Config **hätte haben können** (handgeschriebene Teil-Config wie Handtest 10), bleibt
    p151: Dialogwert, mit Hinweis „Not in the file, kept the current value“.
-5. Keine Änderung in `commands/commandCreateBin/` (Runde 31 arbeitet dort); alles in `lib/configJson.py`.
+5. Keine Änderung in `commands/commandCreateBin/` (Runde 31 arbeitet dort); alles in `lib/configJson.py`, dazu die
+   Grenze in `commandCreateBaseplate/entry.py` und `const.py`.
+6. Freigabe Hauptsitzung 18.11.: p151 ändert sich dadurch (alte Bin mit Label = keine Farbe), in CHANGELOG und PR-Text
+   ausdrücklich nennen. Ein Inventur-Test hält fest, dass jedes spätere Feld einen Altwert braucht (Runde 30 Box, Runde
+   31 Bin ergänzen `OLDER_VALUES`, wer nach dieser Runde gemergt wird).
 
 ## Nicht dabei
 
@@ -69,7 +78,7 @@ seit fbd3146 (vor dem ersten Config-Stand) unverändert. Nichts zu tun.
   Feldern auf dem Gegenteil (volle Lippe, ungetrimmt, gerundete Schale, Trennwände bis oben, Farbe Rot, Spiel 0,5 mm),
   ergibt `Light`, `True`, `False`, `False`, `''`, `0.3`. Ebenso über `rebuildUtils.configWithParameters`.
 - pytest: eine Baseplate-Config ohne Plattenspalt mit `xyClearance` 0,2 mm ergibt `plateEdgeClearance` 0,2 mm; 0,5 mm
-  ergibt 0,25 mm; mit `plateClearance` 0,6 mm bleibt es 0,3 mm.
+  ergibt 0,5 mm und liegt im Dialogbereich; mit `plateClearance` 0,6 mm bleibt es 0,3 mm.
 - Klicktest (`dev-notes/klicktest-r32.md`): im Bin-Dialog Gegenteil-Werte einstellen, alte Config-Datei laden, die
   sechs Eingaben stehen auf den Altwerten. Fusion-Lauf nicht nötig: die Builder ändern sich nicht, nur die gelesenen
   Werte, und die Altwerte sind die Vorgaben, mit denen die bestehenden Snapshots schon bauen.
