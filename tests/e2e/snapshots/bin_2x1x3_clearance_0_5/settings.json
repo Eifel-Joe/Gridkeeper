@@ -23,6 +23,8 @@
     "hasLip": true,
     "hasLipNotches": false,
     "hasDividersToTop": false,
+    "lipType": "Light",
+    "isLipTopTrimmed": true,
     "hasScoop": false,
     "scoopMaxRadius": 25.0,
     "hasTab": false,
