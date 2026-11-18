@@ -423,11 +423,20 @@ def newJointOriginKeys(newPart: adsk.fusion.Occurrence, seats: dict[str, str]) -
             keys[(place, seat, jointOrigin.name)] = jointOrigin.createForAssemblyContext(occurrence)
     return keys
 
-def oldJointOriginKey(jointOrigin: adsk.fusion.JointOrigin, oldNative: adsk.fusion.Occurrence, seats: dict[str, str]) -> tuple[str, str, str]:
-    """The key of newJointOriginKeys for a joint origin of the old part, seen through the occurrence it is of"""
+def oldJointOriginKey(
+    jointOrigin: adsk.fusion.JointOrigin,
+    oldNative: adsk.fusion.Occurrence,
+    seats: dict[str, str],
+    jointOccurrence: adsk.fusion.Occurrence = None,
+) -> tuple[str, str, str]:
+    """
+    The key of newJointOriginKeys for a joint origin of the old part, seen through the occurrence it is of. Fusion
+    gives a joint's joint origins native, without a context (Fusion run round 36): the part is then the joint's
+    occurrence of that side, jointOccurrence
+    """
     component = (jointOrigin.nativeObject or jointOrigin).parentComponent
     place = '' if component == oldNative.component else partRole(component)
-    occurrence = jointOrigin.assemblyContext
+    occurrence = jointOrigin.assemblyContext or jointOccurrence
     seat = seats.get(occurrence.fullPathName, '') if place and occurrence is not None else ''
     return (place, seat, jointOrigin.name)
 
@@ -475,7 +484,8 @@ def repointJointsByName(
             component = (jointOrigin.nativeObject or jointOrigin).parentComponent
             if not any(component == old for old in oldComponents):
                 continue
-            newJointOrigin = newJointOrigins.get(oldJointOriginKey(jointOrigin, oldNative, seats))
+            jointOccurrence = getattr(joint, 'occurrenceOne' if side == 'geometryOrOriginOne' else 'occurrenceTwo')
+            newJointOrigin = newJointOrigins.get(oldJointOriginKey(jointOrigin, oldNative, seats, jointOccurrence))
             if newJointOrigin is None:
                 notes.append(f'{joint.name}: the new part has no {jointOrigin.name}, the joint goes with the old one')
                 continue

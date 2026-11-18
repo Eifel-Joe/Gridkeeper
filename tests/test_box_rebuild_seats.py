@@ -174,6 +174,31 @@ def test_a_joint_on_a_seat_joint_origin_of_the_box_keeps_its_key():
     assert oldJointOriginKey(seat, oldSet, seatsByOccurrence(oldJoints)) == ("Box", "", "Latch front left joint origin")
 
 
+def test_a_joint_whose_joint_origin_comes_native_takes_the_part_from_the_joints_occurrence():
+    """
+    Fusion run round 36: a joint gives its joint origins native (no assemblyContext), the part is only in the joint's
+    occurrenceOne/Two. Keyed by the joint origin's context alone the old latch had no seat and the user's joint found
+    no new latch
+    """
+    (seatsByOccurrence, newJointOriginKeys, oldJointOriginKey) = _load("seatsByOccurrence", "newJointOriginKeys", "oldJointOriginKey")
+    (oldSet, oldLatches, oldJoints) = _set("Old")
+    (newSet, newLatches, newJoints) = _set("New")
+    native = [_joint(j.geometryOrOriginOne.nativeObject, j.geometryOrOriginTwo.nativeObject, j.occurrenceOne, j.occurrenceTwo) for j in oldJoints + newJoints]
+    seats = seatsByOccurrence(native)
+    newKeys = newJointOriginKeys(newSet, seats)
+    for (index, seat) in enumerate(LATCH_SEATS):
+        userSide = oldLatches[index].component.jointOrigins[0]
+        key = oldJointOriginKey(userSide, oldSet, seats, oldLatches[index])
+        assert key == ("Latch", seat, "Latch joint origin")
+        assert newKeys[key].assemblyContext is newLatches[index]
+
+
+def test_the_rebuild_passes_the_joints_occurrence_of_the_side():
+    source = ast.unparse(_function("repointJointsByName"))
+    assert "oldJointOriginKey(jointOrigin, oldNative, seats, " in source
+    assert "'occurrenceOne' if side == 'geometryOrOriginOne' else 'occurrenceTwo'" in source
+
+
 def test_a_part_of_an_old_set_without_its_seat_joint_finds_no_new_part():
     """Review round 36: a latch not jointed at a seat can't be told apart from the others, its joint isn't moved to
     some latch but stays with the old set, the rebuild says so (repointJointsByName's note)"""
