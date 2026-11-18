@@ -140,4 +140,4 @@ def test_a_refused_or_empty_lookup_is_nothing_found(monkeypatch):
 
 def test_the_floor_pad_blends_take_each_edge_once():
     floorGrid = _method(_source(*GENERATOR), "_Builder", "floorGrid")
-    assert "any(a == b for (i, a) in enumerate(edges) for b in edges[i + 1:])" in floorGrid
+    assert "any((a == b for i, a in enumerate(edges) for b in edges[i + 1:]))" in floorGrid
