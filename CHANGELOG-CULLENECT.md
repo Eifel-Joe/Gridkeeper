@@ -11,7 +11,8 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 - **Lid top: Grid or Closed:** the box dialog has a group *Lid* with **Lid top**. *Closed* builds the lid flat and
   closed on top instead of with a Gridfinity grid, sturdier; the stacking tabs in its corners stay, so boxes still
   stack (Jörg: „Box steht auf Deckel. Und der Deckel hat doch in den Ecken Rastnasen, die in den Boden der Box
-  greifen.“). The default stays the grid, and boxes saved before the choice rebuild with it (Jörg, 18.11.2026). Underneath both lids are the same and hold the bins alike. The box follows
+  greifen.“). The default stays the grid, and boxes saved before the choice rebuild with it (Jörg, 18.11.2026).
+  Underneath both lids are the same and hold the bins alike. The box follows
   [Pred's storage box](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric)
   (CC BY-NC, by Pred); the closed top is Gridkeeper's change to it.
 

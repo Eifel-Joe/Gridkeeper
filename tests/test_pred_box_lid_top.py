@@ -20,7 +20,9 @@ def _function(name, tree=None):
 
 
 def _guard(function, text):
-    """The test of the innermost if around the statement whose source holds text, None if it isn't in one"""
+    """The test of the innermost if around each top-level statement of the function, or of an if in it, whose source
+    holds text; None where there is no if. Loops, with and try are not entered, a statement in one counts as a whole
+    under the if around it (enough for floorGrid and createPredBox; it can only fail wrongly, never pass wrongly)"""
     found = []
 
     def visit(node, guard):
@@ -66,3 +68,14 @@ def test_the_hollow_seats_and_cell_ridges_only_for_the_grid():
 
 def test_the_ridge_chamfer_only_for_the_grid():
     assert _guard(_function("createPredBox"), "'#85 Chamfer16'") == ["predBoxConfig.lidTopFeatures(options.lidTop).ridgeChamfer"]
+
+
+def test_the_box_options_reach_the_generator_by_name():
+    """Review R30: boxBuilder unpacked predBoxConfig.BoxOptions into PredBoxOptions by position; a field moved in one of
+    them would hand a value to the wrong option, lidTop among them. By name, and with the same fields"""
+    builder = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "commands", "commandCreateBox", "boxBuilder.py")
+    assert "PredBoxOptions(**predBoxConfig.boxOptions(state)._asdict())" in open(builder, encoding="utf-8").read()
+    options = next(node for node in _tree().body if isinstance(node, ast.ClassDef) and node.name == "PredBoxOptions")
+    fields = [statement.target.id for statement in options.body if isinstance(statement, ast.AnnAssign)]
+    from tests.test_joint_origin_layout import _load
+    assert list(_load("predBoxConfig").BoxOptions._fields) == fields
