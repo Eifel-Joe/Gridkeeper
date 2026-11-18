@@ -5,8 +5,8 @@ Stand 18.11.2026. Branch `r31-bin-in-cell` von `master` (1d7ab99). Freigabe durc
 ## Punkt
 - p312 „Neuen Bin direkt in eine Zelle von Box oder Baseplate setzen“
 
-## Festlegungen (Nutzer)
-- 17.11.: „Das passt so.“ – Bei Bins größer 1×1 ist die gewählte Zelle die **vordere linke Ecke** des Bins. Gibt es im
+## Festlegungen
+- 17.11.: Bei Bins größer 1×1 ist die gewählte Zelle die **vordere linke Ecke** des Bins. Gibt es im
   Dokument weder Baseplate noch Box, erscheint die Auswahl nicht, der Bin wird wie bisher gebaut.
 - 18.11.: Angeboten werden die Zellen jeder Baseplate und die **Bodenzellen im Inneren der Box**, nicht das Raster oben
   auf dem Deckel. Nur für neue Bins; vorhandene Bins behalten beim Neubau ihr Gelenk. Fehlen der Box Zell-Joint-Origins,
@@ -55,7 +55,7 @@ vorderen linken **Raster**zelle, und bei geformten Bins fehlt er, wenn die Ecke 
   ihm die Zelle (Gegenseite, aus Root-Sicht wie `labelBuilder._inRoot`) und baut den neuen Bin wieder in diese Zelle.
 - Gibt es die Zelle nicht mehr oder liegt ihre Baseplate/Box in der Zeitleiste nach dem Bin: Neubau ohne Gelenk an der
   alten Lage (Transform), Hinweis in den Neubau-Notizen.
-- Der Dialog zeigt beim Neubau keine Zellauswahl (Nutzer: „Nur für neue Bins“).
+- Der Dialog zeigt beim Neubau keine Zellauswahl.
 
 ### 5. Box: Zell-Joint-Origins immer
 - Die Box legt ihre Boden-Zell-Joint-Origins **immer** an. Das Kästchen „Add joint origins“ im Box-Dialog entfällt;
@@ -71,7 +71,7 @@ vorderen linken **Raster**zelle, und bei geformten Bins fehlt er, wenn die Ecke 
   Neubau. Weil die Runde solche Gelenke jetzt selbst anlegt, hängt der Baseplate-Neubau Gelenke nach Namen um
   (`jointsByName=True`, wie die Box). Hat die neue Baseplate die Zelle nicht mehr (kleiner, Joint Origins aus), gibt es
   die vorhandene Notiz „the new part has no …“.
-- Baseplates **ohne** Joint Origins werden nicht nachgerüstet (des Nutzers Festlegung nennt nur die Box); sie bieten keine
+- Baseplates **ohne** Joint Origins werden nicht nachgerüstet (die Festlegung nennt nur die Box); sie bieten keine
   Zellen an. Der Tooltip sagt: „Baseplates offer their cells with Add joint origins.“
 
 ## Ausdrücklich nicht dazu

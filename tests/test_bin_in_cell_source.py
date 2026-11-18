@@ -1,7 +1,7 @@
 """
 A new bin jointed into a cell of a baseplate or box (round 31, p312), the Fusion side: binBuilder builds the bin's
 placement joint origin and the joint into the cell in the bin's timeline group, a rebuilt bin goes into its cell again
-(Nutzer 18.11.2026: "vorhandene Bins behalten beim Neubau ihr Gelenk"). binBuilder needs Fusion to load, so the tests
+(spec decision 4). binBuilder needs Fusion to load, so the tests
 read its source, the geometry is checked in Fusion (tests/e2e/runde31_cells.py).
 """
 

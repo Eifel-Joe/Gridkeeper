@@ -149,8 +149,7 @@ def test_a_missing_library_appearance_leaves_the_parts_uncoloured_but_builds_the
 
 
 def test_build_box_always_puts_joint_origins_into_the_floor_cells():
-    """Round 31, p312: a new bin can be jointed into a cell of the box floor, every box has them (Nutzer 18.11.2026:
-    "Fehlen der Box Zell-Joint-Origins, legt die Runde sie an"), whatever an older config says"""
+    """Round 31, p312: a new bin can be jointed into a cell of the box floor, every box has them, whatever an older config says"""
     source = ast.unparse(_function("_buildBox"))
     assert "cellJointOriginPoints(centers, CELL_JOINT_ORIGIN" in source
     assert "state.hasJointOrigins" not in source
