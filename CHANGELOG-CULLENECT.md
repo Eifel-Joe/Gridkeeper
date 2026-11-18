@@ -4,6 +4,17 @@ Changes of Gridkeeper (`Eifel-Joe/Gridkeeper`, until 16.11.2026 `Eifel-Joe/Fusio
 GridfinityGenerator by Le0Michine, merged up to 5627083 (17.11.2026; rounds 1 to 11 were built on v2.2.0.0, round 22 merged v2.4.2.0).
 Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`, the `vX.Y.Z.W` tags belong to GridfinityGenerator.
 
+## Unreleased
+
+### Closed box lid (round 30)
+
+- **Lid top: Grid or Closed:** the box dialog has a group *Lid* with **Lid top**. *Closed* builds the lid flat and
+  closed on top instead of with a Gridfinity grid, sturdier; the stacking tabs in its corners stay, so boxes still
+  stack (Jörg: „Box steht auf Deckel. Und der Deckel hat doch in den Ecken Rastnasen, die in den Boden der Box
+  greifen.“). The default stays the grid, and boxes saved before the choice rebuild with it (Jörg, 18.11.2026). Underneath both lids are the same and hold the bins alike. The box follows
+  [Pred's storage box](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric)
+  (CC BY-NC, by Pred); the closed top is Gridkeeper's change to it.
+
 ## 1.1.0 (2026-11-17)
 
 ### Export in print orientation (round r29-export)
