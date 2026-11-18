@@ -97,3 +97,28 @@ def test_failed_texts_end_with_the_ways_by_hand():
     assert selfReload.GAVE_UP_TEXT == (
         "Gridkeeper didn't reload, one of its dialogs stayed open. Close it and click Reload Gridkeeper in "
         f"Gridkeeper updates, or {WAYS}.")
+
+
+def test_next_step_waits_without_limit_for_the_updates_dialog():
+    # review finding 1: Yes to reload in the updates dialog, which says "Close this dialog to reload"; reading the
+    # release notes for minutes mustn't make it give up
+    prefix = 'EifelJoe_Gridkeeper_'
+    updates = 'EifelJoe_Gridkeeper_cmdUpdates'
+    assert selfReload.nextStep(updates, prefix, 0, 10, patientFor=updates) == 'waitPatiently'
+    assert selfReload.nextStep(updates, prefix, 10, 10, patientFor=updates) == 'waitPatiently'
+    assert selfReload.nextStep('EifelJoe_Gridkeeper_cmdBin', prefix, 10, 10, patientFor=updates) == 'giveUp'
+    assert selfReload.nextStep('SelectCommand', prefix, 10, 10, patientFor=updates) == 'reload'
+
+
+def test_ok_action_of_the_updates_dialog():
+    # opened by the check with a release to install: OK is Update now, never Reload (main session 18.11.)
+    assert selfReload.okAction(True, True, (1, 0, 0), (1, 1, 0)) == 'update'
+    assert selfReload.okAction(True, True, (1, 0, 0), (1, 0, 0)) == 'update'
+    # opened from the menu: Reload while the version on disk isn't the running one, else today's dialog
+    assert selfReload.okAction(False, True, (1, 0, 0), (1, 1, 0)) == 'reload'
+    assert selfReload.okAction(False, False, (1, 0, 0), (1, 1, 0)) == 'reload'
+    assert selfReload.okAction(False, True, (1, 0, 0), (1, 0, 0)) is None
+    assert selfReload.okAction(False, False, (1, 0, 0), None) is None
+    # opened by the check but nothing to install (a git checkout): like the menu's
+    assert selfReload.okAction(True, False, (1, 0, 0), (1, 1, 0)) == 'reload'
+    assert selfReload.okAction(True, False, (1, 0, 0), (1, 0, 0)) is None

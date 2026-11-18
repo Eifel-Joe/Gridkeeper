@@ -228,6 +228,9 @@ def test_version_line():
         "Running Gridkeeper 1.0.0, installed 1.1.0. Click Reload Gridkeeper, or restart Fusion, or stop and run "
         "Gridkeeper in Utilities › Add-Ins › Scripts and Add-Ins, to use 1.1.0.")
     assert updateCheck.versionLine((1, 1, 0), (1, 1, 0), reloadButton=True) == "Running Gridkeeper 1.1.0."
+    # review finding 4: Yes to reload in the open dialog, the reload waits for it to close
+    assert updateCheck.versionLine((1, 0, 0), (1, 1, 0), reloadPending=True) == (
+        "Running Gridkeeper 1.0.0, installed 1.1.0. Close this dialog to reload Gridkeeper and use 1.1.0.")
     assert updateCheck.versionLine(None, None) == "Running Gridkeeper, its version is unknown."
 
 
