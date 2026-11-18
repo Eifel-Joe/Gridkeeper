@@ -31,6 +31,7 @@ COMMANDS = ["cmdUpdates", "cmdBin", "cmdBaseplate", "cmdLabel", "cmdBox"]
 
 def run(_context):
     probeLog()
+    show("git add-in", find(GIT))
     show("test copy", find(COPY))
     ui = adsk.core.Application.get().userInterface
     for name in COMMANDS:
