@@ -128,7 +128,7 @@ class _Builder:
     def _lookup(self, step, items, body, entityType, everything, key):
         """The items where they are expected (round 45, p296, predBoxEdges.pickByPoint); when one isn't found there,
         today's walk over the whole body (everything), logged"""
-        found = predBoxEdges.pickByPoint(items, lambda item: self._near(predBoxEdges.probePoint(item), entityType, body), key)
+        found = predBoxEdges.pickByPoint(items, lambda point: self._near(point, entityType, body), key)
         if found is not None:
             return found
         from .commonUtils import debugLog
@@ -136,9 +136,13 @@ class _Builder:
         return predBoxEdges.matchItems(items, fusionLists.items(everything), key)
 
     def _near(self, point, entityType, body):
-        """The edges or faces of the body at the point (cm, the component's frame), r45_probe.log: exactly the edge"""
-        hits = self.component.findBRepUsingPoint(adsk.core.Point3D.create(*point), entityType, NEAR_TOLERANCE, False)
-        return [hit for hit in fusionLists.items(hits) if hit.body == body]
+        """The edges or faces of the body at the point (cm, the component's frame; r45_space.py: not the world's),
+        r45_probe.log: exactly the edge. Nothing when Fusion finds nothing or refuses, the caller walks the body then"""
+        try:
+            hits = self.component.findBRepUsingPoint(adsk.core.Point3D.create(*point), entityType, NEAR_TOLERANCE, False)
+            return [hit for hit in fusionLists.items(hits) if hit.body == body] if hits is not None else []
+        except RuntimeError:
+            return []
 
     def chamfer(self, step, name=None, body=None, mirrored=False):
         [edgeSet] = predBoxEdges.PRED_EDGES[step]
@@ -283,7 +287,8 @@ class _Builder:
         # looked up midway up each expected edge (round 45, p296), the walk over the base's edges only when that misses
         edges = [edge for (x, y) in blends for edge in self._near((x, y, -0.08), adsk.fusion.BRepEntityTypes.BRepEdgeEntityType, self.base)
                  if _isVerticalAt(edge, [(x, y)], -0.16, 0.0)]
-        if len(edges) != len(blends):
+        # each blend's own edge once, as the walk finds them (review round 45: two blends at one spot gave one edge twice)
+        if len(edges) != len(blends) or any(a == b for (i, a) in enumerate(edges) for b in edges[i + 1:]):
             edges = [edge for edge in fusionLists.items(self.base.edges) if _isVerticalAt(edge, blends, -0.16, 0.0)]
         if len(edges) != len(blends):
             raise ValueError(f'floor pads: {len(edges)} blend edges found, {len(blends)} expected')

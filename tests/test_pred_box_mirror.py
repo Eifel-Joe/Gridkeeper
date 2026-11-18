@@ -90,7 +90,7 @@ def test_the_right_holders_pick_the_mirrored_edges(monkeypatch):
     # round 45: looked up at each item's point (findBRepUsingPoint), Fusion gives what lies there
     def find(point, entityType, tolerance, visibleOnly):
         return Collection([edge for edge in builder.base.edges.entries
-                           if edges.probePoint(edge.item) == point or edge.item["start"] == point])
+                           if point in edges.probePoints(edge.item) or edge.item["start"] == point])
     builder.component = SimpleNamespace(findBRepUsingPoint=find)
     assert [e.item for e in builder._pick("#40 Chamfer29", values, mirrored=True)] == right
     assert [e.item for e in builder._pick("#40 Chamfer29", values)] == left
