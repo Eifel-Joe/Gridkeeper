@@ -1,0 +1,12 @@
+{
+  "description": "Box 5 x 4 x 6 with a closed lid, its parameters changed to 4 x 3 x 8",
+  "generator": "box",
+  "settings": {
+    "lidTop": "Closed"
+  },
+  "parameters": {
+    "gfBox1_baseWidth": 4,
+    "gfBox1_baseLength": 3,
+    "gfBox1_heightU": 8
+  }
+}

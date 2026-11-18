@@ -1,0 +1,7 @@
+{
+  "description": "Box 5 x 4 x 6 with a closed lid: flat on top, no grid, the stacking tabs in its corners kept (p311)",
+  "generator": "box",
+  "settings": {
+    "lidTop": "Closed"
+  }
+}
