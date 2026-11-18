@@ -126,3 +126,21 @@ def test_colored_outline_letters_are_bodies_of_their_own_and_not_painted():
 def test_no_painting_without_an_outline_label_or_without_a_body():
     assert not colors.paintsOutlineLetterFaces(True, False, '')
     assert not colors.paintsOutlineLetterFaces(False, True, '')
+
+
+# --- round 37 (p301): the export tells the label colors apart by their appearance ---
+
+def test_the_color_of_a_label_appearance_is_read_back_from_its_name():
+    for color in ('#D02020', '#2060D0', '#12AB9F'):
+        assert colors.colorOfAppearanceName(colors.appearanceName(color)) == color
+
+
+def test_other_appearances_have_no_label_color():
+    for name in ('Plastic - Matte (Red)', 'Gridfinity label', 'Gridfinity label XYZ123', 'Gridfinity label D02020 (1)', '', None):
+        assert colors.colorOfAppearanceName(name) == ''
+
+
+def test_text_names_for_the_export_dialog():
+    assert colors.textName('#D02020') == 'Red text'
+    assert colors.textName('#12ab9f') == '#12AB9F text'
+    assert colors.textName('') == 'Text without color'

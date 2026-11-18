@@ -35,7 +35,9 @@ ALL_INPUT_ID = 'export_all'
 SELECTION_INPUT_ID = 'export_bodies'
 FORMAT_INPUT_ID = 'export_format'
 PAINT_INPUT_ID = 'export_paint_labels'
-FILAMENT_INPUT_ID = 'export_filament'
+# round 37 (p301): a filament input for each label color of the parts, its id ends in the color or 'none'
+FILAMENTS_GROUP_ID = 'export_filaments_group'
+FILAMENT_INPUT_PREFIX = 'export_filament_'
 FOLDER_INPUT_ID = 'export_folder'
 BROWSE_INPUT_ID = 'export_browse'
 FILE_NAME_INPUT_ID = 'export_file_name'
@@ -65,13 +67,17 @@ PAINT_TOLERANCE = 1e-4
 # the dialog's last choices, kept for the next time Fusion runs
 CONFIG_FOLDER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'commandConfig')
 CONFIG_SECTION = 'Export'
-DEFAULT_FILAMENT = 2
 
 # the folder chosen in the dialog open now, and whether its file name was typed or still follows the bodies
 dialogFolder = ''
 isFileNameTyped = False
 # a preset setting the bed size, so the size inputs' change doesn't turn the dropdown to Custom
 isApplyingBedPreset = False
+# the filaments of the label colors, saved ones and those changed in the dialog open now, kept when the selection
+# changes; a color's input shows these or one assigned anew, see exportParts.assignFilaments (round 37, p301)
+dialogFilaments: dict[str, int] = {}
+# the filament each input was made with, to tell a number typed in from one assigned (round 37)
+dialogAssigned: dict[str, int] = {}
 
 local_handlers = []
 markingMenuHandler = None
@@ -99,6 +105,24 @@ class ExportItem:
         style = settings.get('labelStyle', labelGenerator.LABEL_STYLE_OUTLINE) if isinstance(settings, dict) else labelGenerator.LABEL_STYLE_OUTLINE
         color = settings.get('labelColor', '') if isinstance(settings, dict) else ''
         return labelColors.paintsOutlineLetterFaces(True, style == labelGenerator.LABEL_STYLE_OUTLINE, color)
+
+    @property
+    def labelColor(self) -> str:
+        """
+        A text or symbol body's color, by the appearance the generators give its Text occurrence, or the body in the
+        root (appearanceUtils.colorPart), '' for none, see labelColors.colorOfAppearanceName (round 37, p301)
+        """
+        for holder in (self.occurrence, self.body):
+            appearance = holder.appearance if holder is not None else None
+            color = labelColors.colorOfAppearanceName(appearance.name if appearance is not None else None)
+            if color:
+                return color
+        return ''
+
+def labelColorsOf(items: list[ExportItem]) -> list[str]:
+    """The label colors of the parts, each once in the order found, '' for outline letters and text without a color"""
+    return exportParts.distinctLabelColors(
+        [([''] if item.hasOutlineLabels else []) + [marking.labelColor for marking in item.markings] for item in items])
 
 def start():
     global markingMenuHandler
@@ -270,15 +294,12 @@ def readChoices() -> dict:
         downloads = os.path.join(os.path.expanduser('~'), 'Downloads')
         folder = downloads if os.path.isdir(downloads) else os.path.expanduser('~')
     format = section.get('format', FORMAT_3MF)
-    try:
-        filament = min(max(int(section.get('colorIndex', DEFAULT_FILAMENT)), 1), threeMf.MAX_FILAMENT)
-    except ValueError:
-        filament = DEFAULT_FILAMENT
     return {
         'folder': folder,
         'format': format if format in FORMATS else FORMAT_3MF,
         'paint': section.get('paint', 'yes') != 'no',
-        'filament': filament,
+        # the filaments of the label colors (round 37), an older export's one label filament for text without a color
+        'filaments': exportParts.labelFilamentChoices(dict(section)),
         # the bed, its size, spacing and purge square in mm (r29-export)
         'layout': exportParts.layoutChoices(dict(section), bedNames()),
     }
@@ -287,13 +308,15 @@ def bedNames() -> list[str]:
     """The bed dropdown's entries, the baseplate dialog's presets after Custom"""
     return [printBeds.PRINT_BED_CUSTOM] + list(printBeds.PRINT_BED_PRESETS.keys())
 
-def saveChoices(folder: str, format: str, paint: bool, filament: int, layout: dict):
+def saveChoices(folder: str, format: str, paint: bool, filaments: dict[str, int], layout: dict):
+    """The filaments of the label colors shown, with the saved ones of other colors (round 37)"""
     addinConfig = configUtils.readConfig(CONFIG_FOLDER_PATH)
+    saved = exportParts.labelFilamentChoices(dict(addinConfig[CONFIG_SECTION])) if addinConfig.has_section(CONFIG_SECTION) else {}
     addinConfig[CONFIG_SECTION] = {
         'folder': folder,
         'format': format,
         'paint': 'yes' if paint else 'no',
-        'colorIndex': str(filament),
+        'labelFilaments': exportParts.formatLabelFilaments(exportParts.mergeLabelFilaments(saved, filaments)),
         'bed': layout['bed'],
         'bedWidth': f'{layout["bedWidth"]:g}',
         'bedLength': f'{layout["bedLength"]:g}',
@@ -304,12 +327,14 @@ def saveChoices(folder: str, format: str, paint: bool, filament: int, layout: di
         futil.log(f'{CMD_NAME} choices not saved to {CONFIG_FOLDER_PATH}')
 
 def command_created(args: adsk.core.CommandCreatedEventArgs):
-    global dialogFolder, isFileNameTyped
+    global dialogFolder, isFileNameTyped, dialogFilaments, dialogAssigned
     command = args.command
     inputs = command.commandInputs
     choices = readChoices()
     dialogFolder = choices['folder']
     isFileNameTyped = False
+    dialogFilaments = dict(choices['filaments'])
+    dialogAssigned = {}
     design = adsk.fusion.Design.cast(app.activeProduct)
     # the whole design when its root was picked
     allInput = inputs.addBoolValueInput(ALL_INPUT_ID, 'All Gridkeeper parts', True, '', isRootSelected(design))
@@ -330,9 +355,10 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     fileNameInput = inputs.addStringValueInput(FILE_NAME_INPUT_ID, 'File name', '')
     fileNameInput.tooltip = 'The 3MF file\'s name, the body\'s name for one body'
     paintInput = inputs.addBoolValueInput(PAINT_INPUT_ID, 'Color label text', True, '', choices['paint'])
-    paintInput.tooltip = 'Assigns a color index to label text so the slicer paints it automatically: the letters of outline labels, and the colored text and symbols of bins and Cullenect inserts'
-    filamentInput = inputs.addIntegerSpinnerCommandInput(FILAMENT_INPUT_ID, 'Label color index', 1, threeMf.MAX_FILAMENT, 1, choices['filament'])
-    filamentInput.tooltip = 'The slicer\'s color the label text prints in, counting from 1 as the slicer lists them'
+    paintInput.tooltip = 'Assigns each label color a filament so the slicer paints it automatically: the letters of outline labels, and the colored text and symbols of bins, Cullenect inserts and box labels. The parts print on filament 1'
+    filamentsGroup = inputs.addGroupCommandInput(FILAMENTS_GROUP_ID, 'Label filaments')
+    filamentsGroup.isExpanded = True
+    filamentsGroup.tooltip = 'The slicer\'s filament of each label color of the parts, counting from 1 as the slicer lists them, 1 is the filament the parts print on. Each color starts on a filament of its own, a change is kept for the next export'
     addLayoutInputs(inputs, choices['layout'])
     inputs.addTextBoxCommandInput(SUMMARY_INPUT_ID, '', '', 2, True)
     # as wide as the bin dialog, the minimum widens one Fusion kept narrower from before
@@ -402,6 +428,14 @@ def bedInputChanged(inputs: adsk.core.CommandInputs, changed: adsk.core.CommandI
 
 def command_input_changed(args: adsk.core.InputChangedEventArgs):
     global dialogFolder, isFileNameTyped
+    # a filament set by hand stays when the selection changes, those assigned anew don't: they could take a number
+    # another color gets then (round 37)
+    color = colorOfFilamentInput(args.input.id)
+    if color is not None:
+        filament = selectedFilament(adsk.core.DropDownCommandInput.cast(args.input))
+        if filament is not None:
+            dialogFilaments[color] = filament
+        return
     # args.inputs only holds the siblings of the changed input, those of the Print bed group in it, the dialog's
     # inputs are on the command (as the baseplate dialog notes; review r29-export)
     inputs = args.input.parentCommand.commandInputs
@@ -461,13 +495,13 @@ def updateInputs(inputs: adsk.core.CommandInputs):
     format = selectedFormat(inputs)
     paintInput = adsk.core.BoolValueCommandInput.cast(inputs.itemById(PAINT_INPUT_ID))
     paintInput.isVisible = format == FORMAT_3MF
-    inputs.itemById(FILAMENT_INPUT_ID).isVisible = format == FORMAT_3MF and paintInput.value
     fileNameInput = adsk.core.StringValueCommandInput.cast(inputs.itemById(FILE_NAME_INPUT_ID))
     fileNameInput.isVisible = format == FORMAT_3MF
     inputs.itemById(BED_GROUP_ID).isVisible = format == FORMAT_3MF
     inputs.itemById(PURGE_INPUT_ID).isVisible = format == FORMAT_3MF and paintInput.value
     try:
         items = exportItems(inputs)
+        updateFilamentInputs(inputs, labelColorsOf(items), format == FORMAT_3MF and paintInput.value)
         if not isFileNameTyped:
             fileNameInput.value = defaultFileName(items)
         files = 'a 3MF file per plate' if format == FORMAT_3MF else 'a file each'
@@ -475,6 +509,54 @@ def updateInputs(inputs: adsk.core.CommandInputs):
     except Exception as err:
         summary = f'Bodies not found, {err}'
     adsk.core.TextBoxCommandInput.cast(inputs.itemById(SUMMARY_INPUT_ID)).text = summary
+
+def filamentInputId(color: str) -> str:
+    return FILAMENT_INPUT_PREFIX + (color.lstrip('#') or exportParts.NO_COLOR_KEY)
+
+def colorOfFilamentInput(inputId: str) -> str | None:
+    """The label color of a filament input by its id, none for another input, see filamentInputId"""
+    if not inputId.startswith(FILAMENT_INPUT_PREFIX):
+        return None
+    name = inputId[len(FILAMENT_INPUT_PREFIX):]
+    return '' if name == exportParts.NO_COLOR_KEY else f'#{name}'
+
+def filamentInputs(inputs: adsk.core.CommandInputs) -> list[adsk.core.DropDownCommandInput]:
+    """
+    A list of filaments per label color, not a spinner: Fusion drops a number typed into a spinner when OK is clicked
+    straight from the field, without a change event (click test round 37), a list item counts as soon as it's picked
+    """
+    group = adsk.core.GroupCommandInput.cast(inputs.itemById(FILAMENTS_GROUP_ID))
+    return [adsk.core.DropDownCommandInput.cast(group.children.item(index)) for index in range(group.children.count)]
+
+def selectedFilament(filamentInput: adsk.core.DropDownCommandInput) -> int | None:
+    item = filamentInput.selectedItem
+    return exportParts.filamentOfChoice(item.name if item is not None else None)
+
+def shownFilaments(inputs: adsk.core.CommandInputs) -> dict[str, int]:
+    """The filament of each label color in the dialog"""
+    shown = {colorOfFilamentInput(filamentInput.id): selectedFilament(filamentInput) for filamentInput in filamentInputs(inputs)}
+    return {color: filament for (color, filament) in shown.items() if filament is not None}
+
+def updateFilamentInputs(inputs: adsk.core.CommandInputs, colors: list[str], isShown: bool):
+    """
+    An input for each label color of the parts, made anew only when the colors change, so a filament input never goes
+    while its own change is handled. A color's filament is the one changed in the dialog or saved, else assigned anew
+    """
+    global dialogFilaments, dialogAssigned
+    group = adsk.core.GroupCommandInput.cast(inputs.itemById(FILAMENTS_GROUP_ID))
+    if [filamentInput.id for filamentInput in filamentInputs(inputs)] != [filamentInputId(color) for color in colors]:
+        # a number changed without its change event reaching us would go with its input (click test round 37)
+        dialogFilaments = exportParts.keepTypedFilaments(dialogFilaments, shownFilaments(inputs), dialogAssigned)
+        for filamentInput in filamentInputs(inputs):
+            filamentInput.deleteMe()
+        dialogAssigned = exportParts.assignFilaments(colors, dialogFilaments)
+        for (color, filament) in dialogAssigned.items():
+            name = labelColors.textName(color)
+            filamentInput = group.children.addDropDownCommandInput(filamentInputId(color), name, adsk.core.DropDownStyles.TextListDropDownStyle)
+            for choice in exportParts.filamentChoices():
+                filamentInput.listItems.add(choice, choice == str(filament))
+            filamentInput.tooltip = f'{name}: the slicer\'s filament it prints in, 1 is the filament of the parts'
+    group.isVisible = isShown and len(colors) > 0
 
 def selectedEntities(inputs: adsk.core.CommandInputs) -> list:
     selectionInput = adsk.core.SelectionCommandInput.cast(inputs.itemById(SELECTION_INPUT_ID))
@@ -519,15 +601,18 @@ def command_execute(args: adsk.core.CommandEventArgs):
     try:
         format = selectedFormat(inputs)
         paint = adsk.core.BoolValueCommandInput.cast(inputs.itemById(PAINT_INPUT_ID)).value
-        filament = adsk.core.IntegerSpinnerCommandInput.cast(inputs.itemById(FILAMENT_INPUT_ID)).value
+        shown = shownFilaments(inputs)
         folder = dialogFolder
         if not os.path.isdir(folder):
             folder = askFolder(folder)
             if folder is None:
                 return
         layout = layoutOf(inputs)
-        saveChoices(folder, format, paint, filament, layout)
         items = exportItems(inputs)
+        # the dialog shows every color of the parts, one missing is assigned anew; each is kept as it goes out (review
+        # round 37: a color only assigned here wasn't saved)
+        filaments = exportParts.assignFilaments(labelColorsOf(items), {**dialogFilaments, **shown})
+        saveChoices(folder, format, paint, {**shown, **filaments}, layout)
         if len(items) == 0:
             ui.messageBox('Nothing to export, select bodies or turn on All Gridkeeper parts.', CMD_NAME)
             return
@@ -535,12 +620,12 @@ def command_execute(args: adsk.core.CommandEventArgs):
         if format == FORMAT_3MF:
             fileName = safeFileName(adsk.core.StringValueCommandInput.cast(inputs.itemById(FILE_NAME_INPUT_ID)).value) or defaultFileName(items)
             fileName = fileName[:-4] if fileName.lower().endswith('.3mf') else fileName
-            result = export3mf(items, names, folder, fileName, filament if paint else None, layout)
+            result = export3mf(items, names, folder, fileName, filaments if paint else None, layout)
             if result is None:
                 return
             (painted, paths, tooLarge, noPurge, nearExcluded) = result
             where = paths[0] if len(paths) == 1 else f'{len(paths)} files, a file per plate, in {folder}'
-            ui.messageBox(f'Exported {len(items)} part{"" if len(items) == 1 else "s"} to {where}.{plateNote(tooLarge, noPurge, nearExcluded, paint)}{paintNote(paint, painted, filament)}', CMD_NAME)
+            ui.messageBox(f'Exported {len(items)} part{"" if len(items) == 1 else "s"} to {where}.{plateNote(tooLarge, noPurge, nearExcluded, paint)}{paintNote(paint, painted, filaments)}', CMD_NAME)
         else:
             if not mayReplace([os.path.join(folder, f'{name}.{FORMAT_EXTENSIONS[format]}') for name in names]):
                 return
@@ -554,14 +639,15 @@ def command_destroy(args: adsk.core.CommandEventArgs):
     # the context menu handler stays for the next menu
     local_handlers = [handler for handler in local_handlers if handler is markingMenuHandler]
 
-def paintNote(paint: bool, painted: int, filament: int) -> str:
-    """What of the labels was colored, after the export's message"""
+def paintNote(paint: bool, painted: int, filaments: dict[str, int] | None) -> str:
+    """What of the labels was colored, after the export's message: each color with its filament (round 37)"""
     if not paint:
         return ''
-    if painted == 0:
+    if painted == 0 or not filaments:
         return '\n\nNo label text to color.'
     bodies = 'the part' if painted == 1 else f'{painted} parts'
-    return f'\n\nLabel text of {bodies} is assigned color {filament}.'
+    colors = ', '.join(f'{labelColors.textName(color)} on filament {filament}' for (color, filament) in filaments.items())
+    return f'\n\nLabel text of {bodies}: {colors}.'
 
 def plateNote(tooLarge: list[str], noPurge: list[int], nearExcluded: list[int], paint: bool) -> str:
     """Which parts don't fit the bed, and which plates have no free corner for the purge tower"""
@@ -703,7 +789,7 @@ def toOrigin(box: adsk.core.BoundingBox3D) -> adsk.core.Matrix3D:
     )
     return move
 
-def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: str, filament: int | None, layout: dict) -> tuple[int, list[str], list[str], list[int], list[int]] | None:
+def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: str, filaments: dict[str, int] | None, layout: dict) -> tuple[int, list[str], list[str], list[int], list[int]] | None:
     """
     The bodies in print orientation laid out on the bed, a 3MF per plate (round r29-export; 17.11.2026: sorting
     only works properly with one 3MF per plate), the purge tower's square free when
@@ -719,7 +805,7 @@ def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: 
     try:
         for (index, (item, name)) in enumerate(zip(items, names)):
             rotation = printRotationOf(item)
-            meshObject = printMesh(item, name, filament, rotation)
+            meshObject = printMesh(item, name, filaments, rotation)
             paintedCount += 1 if meshObject.painted else 0
             objects.append(meshObject)
             occurrencePath = item.occurrence.fullPathName if item.occurrence is not None else None
@@ -735,7 +821,7 @@ def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: 
     # a purge tower only for painted text, where the printer's slicer puts it, the excluded areas of a Bambu Lab printer
     # chosen kept free (click test 17.11.2026: F2 the tower wasn't in the corner kept free, F1 Bambu warned of a box too
     # close to the X1's excluded area). A box set's box, lid and small parts on plates of their own (17.11.2026)
-    purge = layout['purge'] if filament is not None and paintedCount > 0 else 0.0
+    purge = layout['purge'] if filaments is not None and paintedCount > 0 else 0.0
     (laid, plates, tooLarge, noPurge, nearExcluded) = printLayout.layOutKinds(
         [[objects[index] for index in group] for group in groups], [kinds[group[0]] for group in groups], bed,
         layout['spacing'], purge, printBeds.purgeAnchor(layout['bed']), printBeds.excludedAreas(layout['bed']))
@@ -749,7 +835,7 @@ def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: 
         return None
     for (plate, (title, path)) in enumerate(zip(titles, paths)):
         onPlate = [meshObject for (index, meshObject) in laid if index == plate]
-        threeMf.write(path, onPlate, filament, title, tagUtils.getGeneratorVersion(), isLaidOut=True)
+        threeMf.write(path, onPlate, title, tagUtils.getGeneratorVersion(), isLaidOut=True)
     for path in stale:
         # one held open by a slicer stays, the export itself is done (review r29-export)
         try:
@@ -762,7 +848,7 @@ def printRotationOf(item: ExportItem) -> str:
     """How the part turns into its print orientation, by its role in a box set or its label surface, see printLayout"""
     return printLayout.printRotation(partRoleOf(item.body.parentComponent), item.body.name, exportParts.labelSurface(tagUtils.readExportTag(item.body)))
 
-def printMesh(item: ExportItem, name: str, filament: int | None, rotation: str | None = None) -> threeMf.MeshObject:
+def printMesh(item: ExportItem, name: str, filaments: dict[str, int] | None, rotation: str | None = None) -> threeMf.MeshObject:
     """
     The part's mesh in its own frame, its component's, turned into print orientation (round r29-export): the box set's
     joints and a box label's holder place a part upright, its own frame lies as Pred printed it, see
@@ -772,23 +858,25 @@ def printMesh(item: ExportItem, name: str, filament: int | None, rotation: str |
     if item.occurrence is not None:
         frame = item.occurrence.transform2.copy()
         frame.invert()
-    meshObject = partMesh(item, name, filament, frame)
+    meshObject = partMesh(item, name, filaments, frame)
     rotation = printRotationOf(item) if rotation is None else rotation
     return dataclasses.replace(meshObject, vertices=printLayout.rotated(meshObject.vertices, rotation))
 
-def partMesh(item: ExportItem, name: str, filament: int | None, frame: adsk.core.Matrix3D | None = None) -> threeMf.MeshObject:
+def partMesh(item: ExportItem, name: str, filaments: dict[str, int] | None, frame: adsk.core.Matrix3D | None = None) -> threeMf.MeshObject:
     """
-    The part's mesh with its text and symbol bodies (p300). With a filament the letters of its outline labels and all
-    of its text and symbol triangles are painted, see exportParts.withMarkings
+    The part's mesh with its text and symbol bodies (p300). With the filaments of the label colors the letters of its
+    outline labels get the one of text without a color, each text and symbol body the one of its color (round 37,
+    p301), see exportParts.withMarkings
     """
-    paint = filament is not None
-    meshObject = meshOf(item, name, paint and item.hasOutlineLabels, frame)
-    return exportParts.withMarkings(meshObject, [meshOf(marking, name, False, frame) for marking in item.markings], paint)
+    def filamentOf(color: str) -> int | None:
+        return filaments.get(color) if filaments is not None else None
+    meshObject = meshOf(item, name, filamentOf('') if item.hasOutlineLabels else None, frame)
+    return exportParts.withMarkings(meshObject, [(meshOf(marking, name, None, frame), filamentOf(marking.labelColor)) for marking in item.markings])
 
-def meshOf(item: ExportItem, name: str, paint: bool, frame: adsk.core.Matrix3D | None = None) -> threeMf.MeshObject:
+def meshOf(item: ExportItem, name: str, filament: int | None, frame: adsk.core.Matrix3D | None = None) -> threeMf.MeshObject:
     """
-    The body's triangles in mm where it's placed, the nodes Fusion repeats for each face joined into one. With paint, the
-    triangles on the letter faces of its outline labels are marked, see labelFaces
+    The body's triangles in mm where it's placed, the nodes Fusion repeats for each face joined into one. With a
+    filament, the triangles on the letter faces of its outline labels are painted with it, see labelFaces
     """
     calculator = item.body.meshManager.createMeshCalculator()
     calculator.setQuality(MESH_QUALITY)
@@ -817,14 +905,14 @@ def meshOf(item: ExportItem, name: str, paint: bool, frame: adsk.core.Matrix3D |
         nodeVertex.append(joined[key])
 
     triangles = []
-    painted = set()
-    letters = letterPlanes(item.body) if paint else []
+    painted: dict[int, int] = {}
+    letters = letterPlanes(item.body) if filament is not None else []
     for index in range(len(nodeIndices) // 3):
         triangle = tuple(nodeVertex[node] for node in nodeIndices[index * 3:index * 3 + 3])
         if len(set(triangle)) < 3:
             continue
         if letters and isOnLetter([nodes[vertex] for vertex in triangle], letters):
-            painted.add(len(triangles))
+            painted[len(triangles)] = filament
         triangles.append(triangle)
     return threeMf.MeshObject(name, vertices, triangles, painted)
 

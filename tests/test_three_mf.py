@@ -24,10 +24,11 @@ CORE = "{http://schemas.microsoft.com/3dmanufacturing/core/2015/02}"
 SLIC3R = "{http://schemas.slic3r.org/3mf/2017/06}"
 
 
-def cube(name, x=0.0, z=0.0, painted=()):
+def cube(name, x=0.0, z=0.0, painted=None):
+    """painted: triangle index -> filament"""
     vertices = [(x + dx, dy, z + dz) for dz in (0, 10) for dy in (0, 10) for dx in (0, 10)]
     triangles = [(0, 2, 1), (1, 2, 3), (4, 5, 6), (5, 7, 6), (0, 1, 4), (1, 5, 4), (2, 6, 3), (3, 6, 7), (0, 4, 2), (2, 4, 6), (1, 3, 5), (3, 7, 5)]
-    return threeMf.MeshObject(name, vertices, triangles, set(painted))
+    return threeMf.MeshObject(name, vertices, triangles, dict(painted or {}))
 
 
 # ---------------------------------------------------------------------------
@@ -88,16 +89,25 @@ def read_annotation(path):
 
 def test_painted_triangles_carry_both_slicers_codes(tmp_path):
     path = tmp_path / "bins.3mf"
-    threeMf.write(str(path), [cube("bin", painted={1, 4})], 2)
+    threeMf.write(str(path), [cube("bin", painted={1: 2, 4: 2})])
     triangles = read_model(path).findall(f".//{CORE}triangle")
     painted = [index for (index, triangle) in enumerate(triangles) if triangle.get("paint_color")]
     assert painted == [1, 4]
     assert all(triangles[index].get(f"{SLIC3R}mmu_segmentation") == "8" for index in painted)
 
 
-def test_without_a_filament_nothing_is_painted(tmp_path):
+def test_each_painted_triangle_carries_its_own_filament(tmp_path):
+    # round 37 (p301): red text on filament 2, blue on 3, in one object
     path = tmp_path / "bins.3mf"
-    threeMf.write(str(path), [cube("bin", painted={1})], None)
+    threeMf.write(str(path), [cube("bin", painted={1: 2, 4: 3})])
+    triangles = read_model(path).findall(f".//{CORE}triangle")
+    assert [(triangles[index].get("paint_color"), triangles[index].get(f"{SLIC3R}mmu_segmentation")) for index in (1, 4)] == [("8", "8"), ("0C", "0C")]
+    assert read_annotation(path)[0]["mmSegmentationFacets"] == [{"triangle": 1, "dividing": "8"}, {"triangle": 4, "dividing": "0C"}]
+
+
+def test_without_painted_triangles_nothing_is_painted(tmp_path):
+    path = tmp_path / "bins.3mf"
+    threeMf.write(str(path), [cube("bin")])
     model = read_model(path)
     assert not any(triangle.get("paint_color") for triangle in model.iter(f"{CORE}triangle"))
     assert not any(item.get("name") == "slic3rpe:MmPaintingVersion" for item in model.findall(f"{CORE}metadata"))
@@ -105,7 +115,7 @@ def test_without_a_filament_nothing_is_painted(tmp_path):
 
 def test_every_object_is_built_with_its_name(tmp_path):
     path = tmp_path / "bins.3mf"
-    threeMf.write(str(path), [cube('Bin "M3" & M4'), cube("Baseplate", x=20)], 2)
+    threeMf.write(str(path), [cube('Bin "M3" & M4'), cube("Baseplate", x=20)])
     model = read_model(path)
     assert [item.get("name") for item in model.findall(f".//{CORE}object")] == ['Bin "M3" & M4', "Baseplate"]
     assert [item.get("objectid") for item in model.findall(f".//{CORE}item")] == ["1", "2"]
@@ -113,7 +123,7 @@ def test_every_object_is_built_with_its_name(tmp_path):
 
 def test_prusaslicer_3_gets_the_painted_triangles_of_each_object(tmp_path):
     path = tmp_path / "bins.3mf"
-    threeMf.write(str(path), [cube("a", painted={4, 1}), cube("b", x=20), cube("c", x=40, painted={0})], 5)
+    threeMf.write(str(path), [cube("a", painted={4: 5, 1: 5}), cube("b", x=20, painted={}), cube("c", x=40, painted={0: 5})])
     assert read_annotation(path) == [
         {"mmSegmentationFacets": [{"triangle": 1, "dividing": "2C"}, {"triangle": 4, "dividing": "2C"}], "mmSegmentationFacetsVersion": 1, "id": 1},
         {"mmSegmentationFacets": [], "mmSegmentationFacetsVersion": 1, "id": 2},
@@ -123,7 +133,7 @@ def test_prusaslicer_3_gets_the_painted_triangles_of_each_object(tmp_path):
 
 def test_no_annotation_without_painting(tmp_path):
     path = tmp_path / "bins.3mf"
-    threeMf.write(str(path), [cube("a", painted={1})], None)
+    threeMf.write(str(path), [cube("a"), cube("b", x=20)])
     assert read_annotation(path) is None
 
 
@@ -133,7 +143,7 @@ def metadata(model):
 
 def test_the_file_names_the_generator_its_version_the_title_and_day(tmp_path):
     path = tmp_path / "bins.3mf"
-    threeMf.write(str(path), [cube("bin")], 2, 'M3 & M4 "bins"', "1.4.2")
+    threeMf.write(str(path), [cube("bin")], 'M3 & M4 "bins"', "1.4.2")
     found = metadata(read_model(path))
     assert found["Application"] == "Fusion Gridfinity Generator 1.4.2"
     assert found["Title"] == 'M3 & M4 "bins"'
@@ -142,7 +152,7 @@ def test_the_file_names_the_generator_its_version_the_title_and_day(tmp_path):
 
 def test_without_a_version_or_title_the_generator_is_named_alone(tmp_path):
     path = tmp_path / "bins.3mf"
-    threeMf.write(str(path), [cube("bin")], None)
+    threeMf.write(str(path), [cube("bin")])
     found = metadata(read_model(path))
     assert found["Application"] == "Fusion Gridfinity Generator"
     assert "Title" not in found
@@ -152,7 +162,7 @@ def test_objects_laid_out_on_plates_are_written_where_they_are(tmp_path):
     # round r29-export: printLayout placed them already, write keeps them
     path = tmp_path / "laid.3mf"
     objects = [cube("a", x=300, z=0), cube("b", x=5, z=0)]
-    threeMf.write(str(path), objects, None, isLaidOut=True)
+    threeMf.write(str(path), objects, isLaidOut=True)
     model = read_model(path)
     xs = sorted(float(vertex.get("x")) for vertex in model.iter(f"{CORE}vertex"))
     assert xs[0] == pytest.approx(5) and xs[-1] == pytest.approx(310)

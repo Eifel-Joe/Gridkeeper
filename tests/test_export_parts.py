@@ -83,30 +83,37 @@ def test_targets_are_told_apart_by_their_key():
 
 # --- the text bodies in the part's mesh ---
 
-def triangle_mesh(name, offset, painted=()):
-    return threeMf.MeshObject(name, [(offset, 0, 0), (offset + 1, 0, 0), (offset, 1, 0)], [(0, 1, 2)], set(painted))
+def triangle_mesh(name, offset, painted=None):
+    return threeMf.MeshObject(name, [(offset, 0, 0), (offset + 1, 0, 0), (offset, 1, 0)], [(0, 1, 2)], dict(painted or {}))
 
 
 def test_text_meshes_join_their_part_and_are_painted():
-    part = threeMf.MeshObject("Bin", [(0, 0, 0), (1, 0, 0), (0, 1, 0), (1, 1, 0)], [(0, 1, 2), (1, 3, 2)], {1})
-    merged = exportParts.withMarkings(part, [triangle_mesh("t1", 5), triangle_mesh("t2", 9)], True)
+    part = threeMf.MeshObject("Bin", [(0, 0, 0), (1, 0, 0), (0, 1, 0), (1, 1, 0)], [(0, 1, 2), (1, 3, 2)], {1: 4})
+    merged = exportParts.withMarkings(part, [(triangle_mesh("t1", 5), 2), (triangle_mesh("t2", 9), 2)])
     assert merged.name == "Bin"
     assert len(merged.vertices) == 10
     assert merged.triangles == [(0, 1, 2), (1, 3, 2), (4, 5, 6), (7, 8, 9)]
     # the part's own painted letters stay, every text triangle is painted
-    assert merged.painted == {1, 2, 3}
+    assert merged.painted == {1: 4, 2: 2, 3: 2}
+
+
+def test_each_text_mesh_is_painted_with_its_colors_filament():
+    # round 37 (p301): red text on 2, blue on 3
+    part = triangle_mesh("Bin", 0)
+    merged = exportParts.withMarkings(part, [(triangle_mesh("red", 5), 2), (triangle_mesh("blue", 9), 3)])
+    assert merged.painted == {1: 2, 2: 3}
 
 
 def test_unpainted_text_meshes_still_complete_the_part():
     part = triangle_mesh("Insert", 0)
-    merged = exportParts.withMarkings(part, [triangle_mesh("t", 5)], False)
+    merged = exportParts.withMarkings(part, [(triangle_mesh("t", 5), None)])
     assert merged.triangles == [(0, 1, 2), (3, 4, 5)]
-    assert merged.painted == set()
+    assert merged.painted == {}
 
 
 def test_a_part_without_text_stays_as_it_is():
-    part = triangle_mesh("Baseplate", 0, painted={0})
-    assert exportParts.withMarkings(part, [], True) == part
+    part = triangle_mesh("Baseplate", 0, painted={0: 2})
+    assert exportParts.withMarkings(part, []) == part
 
 
 # --- review round 17.11.: the parts under an occurrence, a Text occurrence once for its part, the root never Text ---
@@ -360,7 +367,7 @@ def test_a_plate_near_an_excluded_area_is_named_painted_or_not():
 def test_the_purge_square_only_when_label_text_is_painted():
     # a box set has no text: with Color label text on nothing is painted and no tower is printed
     source = _entry_function("export3mf")
-    assert "if filament is not None and paintedCount > 0" in source
+    assert "if filaments is not None and paintedCount > 0" in source
 
 
 @pytest.mark.parametrize("role, tag, body, setName, kind", [
@@ -399,3 +406,199 @@ def test_the_dialog_summary_tells_of_a_file_per_plate():
     source = open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read()
     assert "'one file' if format == FORMAT_3MF" not in source
     assert "a 3MF file per plate" in source
+
+
+# --- round 37 (p301): each label color on a filament of its own, bodies on 1 ---
+
+def test_label_colors_get_filaments_from_2_in_their_order():
+    assert exportParts.assignFilaments(["#D02020", "#2060D0", ""], {}) == {"#D02020": 2, "#2060D0": 3, "": 4}
+
+
+def test_a_saved_filament_wins_and_the_others_skip_it():
+    assert exportParts.assignFilaments(["#D02020", "#2060D0"], {"#2060D0": 2}) == {"#D02020": 3, "#2060D0": 2}
+
+
+def test_a_new_color_skips_the_saved_filaments_of_other_colors():
+    # review round 37: red exported alone got 2, blue alone 2 too, together they shared a filament unasked
+    assert exportParts.assignFilaments(["#D02020"], {"#2060D0": 2}) == {"#D02020": 3}
+    assigned = exportParts.assignFilaments(["#2060D0"], {"#D02020": 2})
+    assert exportParts.assignFilaments(["#D02020", "#2060D0"], {"#D02020": 2, **assigned}) == {"#D02020": 2, "#2060D0": 3}
+
+
+def test_when_every_filament_is_saved_a_new_color_takes_one_free_in_the_export():
+    saved = {f"#0000{index:02X}": index for index in range(2, 19)}
+    assert exportParts.assignFilaments(["#D02020", "#000005"], saved) == {"#D02020": 2, "#000005": 5}
+
+
+def test_two_colors_may_share_a_filament_when_saved_so():
+    assert exportParts.assignFilaments(["#D02020", "#2060D0"], {"#D02020": 2, "#2060D0": 2}) == {"#D02020": 2, "#2060D0": 2}
+
+
+def test_past_the_last_filament_the_colors_share_it():
+    keys = [f"#0000{index:02X}" for index in range(20)]
+    assigned = exportParts.assignFilaments(keys, {})
+    assert [assigned[key] for key in keys] == list(range(2, 19)) + [18, 18, 18]
+    assert exportParts.MAX_FILAMENT == threeMf.MAX_FILAMENT
+
+
+def test_the_label_filaments_are_saved_and_read_back():
+    mapping = {"#D02020": 2, "#2060D0": 3, "": 4}
+    text = exportParts.formatLabelFilaments(mapping)
+    assert text == "D02020=2,2060D0=3,none=4"
+    assert exportParts.parseLabelFilaments(text) == mapping
+
+
+@pytest.mark.parametrize("text", ["", "D02020", "D02020=x", "D02020=0", "D02020=19", "XYZ=2", "=2", ",,"])
+def test_broken_saved_entries_are_left_out(text):
+    assert exportParts.parseLabelFilaments(text + ",2060D0=3") == {"#2060D0": 3}
+
+
+def test_saving_keeps_the_colors_not_shown():
+    assert exportParts.mergeLabelFilaments({"#2060D0": 3, "#D02020": 2}, {"#D02020": 5}) == {"#2060D0": 3, "#D02020": 5}
+
+
+def _config_section(text):
+    import configparser
+    parser = configparser.ConfigParser()
+    parser.read_string(text)
+    return dict(parser["Export"])
+
+
+def test_an_old_config_keeps_its_label_color_index_for_text_without_a_color():
+    # an export before round 37 saved one index for all label text: outline letters keep printing on it
+    section = _config_section("[Export]\nfolder = exports\nformat = 3MF\npaint = yes\ncolorIndex = 4\n")
+    assert exportParts.labelFilamentChoices(section) == {"": 4}
+
+
+def test_an_old_config_with_a_broken_index_has_no_saved_filaments():
+    for index in ("x", "0", "19"):
+        assert exportParts.labelFilamentChoices(_config_section(f"[Export]\ncolorIndex = {index}\n")) == {}
+
+
+def test_the_saved_label_filaments_win_over_the_old_index():
+    section = _config_section("[Export]\ncolorIndex = 4\nlabelFilaments = none=6,D02020=2\n")
+    assert exportParts.labelFilamentChoices(section) == {"": 6, "#D02020": 2}
+    section = _config_section("[Export]\ncolorIndex = 4\nlabelFilaments = D02020=2\n")
+    assert exportParts.labelFilamentChoices(section) == {"#D02020": 2, "": 4}
+
+
+def test_the_export_paints_each_text_body_with_its_colors_filament():
+    # round 37 (p301): the color comes from the Text occurrence's appearance, else the body's
+    source = _entry_function("partMesh")
+    assert "filamentOf(marking.labelColor)" in source
+    assert "filamentOf('') if item.hasOutlineLabels" in source
+    entry = open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read()
+    assert "for holder in (self.occurrence, self.body):" in entry
+
+
+def test_the_dialog_saves_the_label_filaments_and_reads_the_old_index():
+    assert "exportParts.labelFilamentChoices(dict(section))" in _entry_function("readChoices")
+    source = _entry_function("saveChoices")
+    assert "'labelFilaments': exportParts.formatLabelFilaments(exportParts.mergeLabelFilaments(saved, filaments))" in source
+    assert "colorIndex" not in source
+
+
+def test_a_filament_changed_by_hand_is_kept_without_rebuilding_the_inputs():
+    # its input mustn't be deleted while its own change is handled
+    source = _entry_function("command_input_changed")
+    assert "dialogFilaments[color] = " in source
+    after_keeping = source.split("dialogFilaments[color] = ")[1].splitlines()
+    assert after_keeping[1].strip() == "return"
+    assert "!= [filamentInputId(color) for color in colors]" in _entry_function("updateFilamentInputs")
+
+
+def test_the_filaments_that_go_out_are_saved():
+    # review round 37: a color assigned only at export time wasn't saved
+    source = _entry_function("command_execute")
+    assert "saveChoices(folder, format, paint, {**shown, **filaments}, layout)" in source
+    assert source.index("filaments = exportParts.assignFilaments(") < source.index("saveChoices(")
+
+
+def test_label_colors_are_listed_once_even_when_a_part_repeats_them():
+    # Fusion run r37: one bin's letters are several marking bodies of the same color
+    perPart = [["", "#D02020", "#D02020", "#D02020"], ["#2060D0", "#2060D0", "#D02020", ""]]
+    assert exportParts.distinctLabelColors(perPart) == ["", "#D02020", "#2060D0"]
+
+
+def test_label_colors_of_the_dialog_use_the_distinct_list():
+    source = _entry_function("labelColorsOf")
+    assert "exportParts.distinctLabelColors(" in source
+
+
+# Click test r37 C: a filament typed into the dialog was lost when the selection changed. Fusion fires a spinner's
+# inputChanged only for some ways of leaving the field, so the rebuild reads the spinners' values itself.
+RED = "#D02020"
+BLUE = "#2060D0"
+
+
+def test_a_typed_filament_survives_a_selection_change_without_its_change_event():
+    assigned = exportParts.assignFilaments([RED, BLUE, ""], {"": 4})
+    assert assigned == {RED: 2, BLUE: 3, "": 4}
+    shown = {RED: 2, BLUE: 5, "": 4}  # blue typed as 5, no inputChanged arrived
+    changed = exportParts.keepTypedFilaments({"": 4}, shown, assigned)
+    assert exportParts.assignFilaments([BLUE], changed) == {BLUE: 5}
+    assert exportParts.assignFilaments([RED, BLUE, ""], changed) == {RED: 2, BLUE: 5, "": 4}
+
+
+def test_filaments_left_as_assigned_stay_automatic():
+    assigned = {RED: 2, BLUE: 3}
+    changed = exportParts.keepTypedFilaments({}, {RED: 2, BLUE: 3}, assigned)
+    assert changed == {}
+    # blue alone then takes the lowest free number again
+    assert exportParts.assignFilaments([BLUE], changed) == {BLUE: 2}
+
+
+def test_a_typed_filament_set_back_to_its_assigned_number_is_still_kept():
+    # the change event did arrive earlier and stored it; the spinner shows the same number
+    changed = exportParts.keepTypedFilaments({BLUE: 3}, {BLUE: 3}, {BLUE: 3})
+    assert changed == {BLUE: 3}
+
+
+def test_keeping_typed_filaments_leaves_its_input_alone():
+    changed = {"": 4}
+    exportParts.keepTypedFilaments(changed, {BLUE: 5}, {BLUE: 3})
+    assert changed == {"": 4}
+
+
+def test_the_dialog_reads_typed_filaments_before_it_rebuilds_them():
+    source = _entry_function("updateFilamentInputs")
+    keep = source.index("exportParts.keepTypedFilaments(")
+    rebuild = source.index("deleteMe()")
+    assert keep < rebuild
+    assert "dialogAssigned" in source
+
+
+def test_a_filament_typed_back_to_its_assigned_number_beats_the_one_stored_before():
+    # review r37: blue typed 5 (event arrived, stored), then typed back to 3 without an event
+    changed = exportParts.keepTypedFilaments({BLUE: 5}, {BLUE: 3}, {BLUE: 3})
+    assert changed == {BLUE: 3}
+
+
+# Click test r37 D: a number typed into a Fusion spinner and confirmed by clicking OK straight from the field never
+# reached the command (no inputChanged, value unchanged). Decided: a list 1 to 18 per color instead of a spinner.
+def test_filament_choices_are_the_numbers_1_to_18():
+    assert exportParts.filamentChoices() == [str(n) for n in range(1, 19)]
+
+
+def test_a_filament_choice_reads_back_as_its_number():
+    assert exportParts.filamentOfChoice("7") == 7
+    assert exportParts.filamentOfChoice("18") == 18
+
+
+def test_a_filament_choice_outside_the_list_reads_as_none():
+    for name in ("", "0", "19", "x", None):
+        assert exportParts.filamentOfChoice(name) is None
+
+
+def test_the_dialog_offers_each_color_a_list_of_filaments_not_a_spinner():
+    source = open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read()
+    assert "IntegerSpinnerCommandInput" not in source
+    update = _entry_function("updateFilamentInputs")
+    assert "addDropDownCommandInput(" in update
+    assert "exportParts.filamentChoices()" in update
+
+
+def test_the_dialog_reads_a_filament_from_the_selected_list_item():
+    assert "exportParts.filamentOfChoice(" in _entry_function("selectedFilament")
+    for name in ("shownFilaments", "command_input_changed"):
+        assert "selectedFilament(" in _entry_function(name), name

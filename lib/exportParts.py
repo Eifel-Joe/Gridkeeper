@@ -91,23 +91,24 @@ def exportTargets(bodies: list, partOf, key) -> list:
     return targets
 
 
-def withMarkings(part, markings: list, paint: bool):
+def withMarkings(part, markings: list):
     """
     The part's mesh (threeMf.MeshObject) with the meshes of its text and symbol bodies added, where they are, so the
-    slicer gets the part whole. With paint every text triangle is painted with the label filament, the part's own
-    painted letters (outline labels) stay painted either way
+    slicer gets the part whole. markings are (mesh, filament) pairs: every triangle of a marking with a filament is
+    painted with it, each color on its own (round 37, p301), none leaves it unpainted. The part's own painted letters
+    (outline labels) stay painted as they are
     """
     if len(markings) == 0:
         return part
     vertices = list(part.vertices)
     triangles = list(part.triangles)
-    painted = set(part.painted)
-    for marking in markings:
+    painted = dict(part.painted)
+    for (marking, filament) in markings:
         offset = len(vertices)
         vertices += marking.vertices
         for triangle in marking.triangles:
-            if paint:
-                painted.add(len(triangles))
+            if filament is not None:
+                painted[len(triangles)] = filament
             triangles.append(tuple(vertex + offset for vertex in triangle))
     return dataclasses.replace(part, vertices=vertices, triangles=triangles, painted=painted)
 
@@ -217,3 +218,120 @@ def plateKind(role: str | None, tagName: str | None, bodyName: str, setName: str
     if role == 'Box' or (role is None and tagName == 'box'):
         return (setName, 'box')
     return None
+
+
+# Round 37 (p301, spec dev-notes/specs/2026-11-18-r37-export-filaments.md): each label color on a filament of its own.
+# A color is '#RRGGBB' as labelColors has it, '' the label text without a color (outline letters, text left
+# uncolored). The bodies print on filament 1, the slicer's filament of the object
+
+# the most filaments a painted triangle can name, threeMf.MAX_FILAMENT
+MAX_FILAMENT = 18
+FIRST_LABEL_FILAMENT = 2
+# the saved name of the text without a color
+NO_COLOR_KEY = 'none'
+
+
+def distinctLabelColors(perPart: list[list[str]]) -> list[str]:
+    """
+    The label colors of the parts, each once in the order found. A part's letters are often several marking bodies of
+    one color, so a color repeats within a part as well as across parts. With repeats the export dialog's color list
+    never matched its spinners, and every input change rebuilt them, the one being changed included
+    """
+    colors = []
+    for color in (color for found in perPart for color in found):
+        if color not in colors:
+            colors.append(color)
+    return colors
+
+
+def filamentChoices() -> list[str]:
+    """
+    The items of a color's filament list in the export dialog, 1 to MAX_FILAMENT. A list, not a spinner: Fusion drops
+    a number typed into a spinner when OK is clicked straight from the field (click test round 37)
+    """
+    return [str(number) for number in range(1, MAX_FILAMENT + 1)]
+
+
+def filamentOfChoice(name: str | None) -> int | None:
+    """The filament of a list item, see filamentChoices, none for anything else"""
+    return int(name) if name in filamentChoices() else None
+
+
+def keepTypedFilaments(changed: dict[str, int], shown: dict[str, int], assigned: dict[str, int]) -> dict[str, int]:
+    """
+    The filaments changed by hand in the dialog: those already known and each shown one that isn't the number it was
+    assigned. The dialog reads its filament lists before it rebuilds them, so a number changed whose change event
+    didn't reach us still stays (the spinners used first lost typed numbers that way, click test round 37).
+    Numbers left as assigned stay automatic and may change with the selection; for a color changed before, the number
+    shown wins, also when it's back at the assigned one (review round 37)
+    """
+    typed = {color: filament for (color, filament) in shown.items() if color in changed or assigned.get(color) != filament}
+    return {**changed, **typed}
+
+
+def assignFilaments(colors: list[str], saved: dict[str, int]) -> dict[str, int]:
+    """
+    The filament of each label color of an export, in their order: the saved one, else the lowest from 2 no other color
+    has, of the export or saved. Saved ones count too: red exported alone got 2, blue alone 2 as well, together they
+    shared it unasked (review round 37). With every filament saved, the lowest no other color of the export has; past
+    the last filament the colors share it
+    """
+    assigned = {color: saved[color] for color in colors if color in saved}
+    numbers = range(FIRST_LABEL_FILAMENT, MAX_FILAMENT + 1)
+    for color in colors:
+        if color in assigned:
+            continue
+        taken = set(assigned.values())
+        everTaken = taken | set(saved.values())
+        assigned[color] = next((number for number in numbers if number not in everTaken), None) \
+            or next((number for number in numbers if number not in taken), MAX_FILAMENT)
+    return {color: assigned[color] for color in colors}
+
+
+def formatLabelFilaments(mapping: dict[str, int]) -> str:
+    """How the dialog saves them, 'D02020=2,none=4'"""
+    return ','.join(f'{color.lstrip("#") or NO_COLOR_KEY}={number}' for (color, number) in mapping.items())
+
+
+def parseLabelFilaments(text: str) -> dict[str, int]:
+    """The saved ones back, see formatLabelFilaments, a broken entry left out"""
+    mapping = {}
+    for entry in text.split(','):
+        (name, _, number) = entry.strip().partition('=')
+        name = name.strip().upper()
+        if name == NO_COLOR_KEY.upper():
+            color = ''
+        elif len(name) == 6 and all(digit in '0123456789ABCDEF' for digit in name):
+            color = f'#{name}'
+        else:
+            continue
+        try:
+            value = int(number)
+        except ValueError:
+            continue
+        if 1 <= value <= MAX_FILAMENT:
+            mapping[color] = value
+    return mapping
+
+
+def mergeLabelFilaments(saved: dict[str, int], shown: dict[str, int]) -> dict[str, int]:
+    """The saved ones with those of the dialog, a color not shown keeps its filament for the next export"""
+    return {**saved, **shown}
+
+
+def labelFilamentChoices(section: dict) -> dict[str, int]:
+    """
+    The saved filaments of the label colors. An export before round 37 saved one filament for all label text,
+    colorIndex: it stays the one of the text without a color, so outline letters print as before. configparser gives
+    its keys in lower case
+    """
+    section = {str(key).lower(): value for (key, value) in section.items()}
+    mapping = parseLabelFilaments(section.get('labelfilaments', ''))
+    if '' not in mapping:
+        try:
+            index = int(section.get('colorindex', ''))
+        except ValueError:
+            index = 0
+        if 1 <= index <= MAX_FILAMENT:
+            mapping[''] = index
+    return mapping

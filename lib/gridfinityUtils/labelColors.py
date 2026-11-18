@@ -67,6 +67,27 @@ def appearanceName(color: str) -> str:
     return f'Gridfinity label {color.lstrip("#").upper()}'
 
 
+_APPEARANCE_NAME = re.compile(r'^Gridfinity label ([0-9A-F]{6})$')
+
+
+def colorOfAppearanceName(name: str | None) -> str:
+    """
+    The color of a label appearance by its name, the way back of appearanceName, '' for any other appearance: the
+    export puts each label color on a filament of its own by it (round 37, p301). Text recolored by hand in Fusion
+    has another appearance and counts as text without a color
+    """
+    found = _APPEARANCE_NAME.match(name or '')
+    return f'#{found.group(1)}' if found else ''
+
+
+def textName(color: str) -> str:
+    """The export dialog's name of the label text of a color, by its choice in the dialogs, see choiceOf"""
+    if color == '':
+        return 'Text without color'
+    (choice, custom) = choiceOf(color)
+    return f'{custom or choice} text'
+
+
 def rgb(color: str) -> tuple[int, int, int]:
     return (int(color[1:3], 16), int(color[3:5], 16), int(color[5:7], 16))
 
