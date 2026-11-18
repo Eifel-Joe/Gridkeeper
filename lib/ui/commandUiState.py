@@ -1,5 +1,6 @@
 import adsk.core, adsk.fusion, traceback
 from ...lib import fusion360utils as futil
+from . import expressionFormat
 
 class SingleInputState:
     def __init__(self, inputId: str, inputValue: any, inputType: str):
@@ -57,6 +58,9 @@ class CommandUiState:
                 self.inputState[inputId] = SingleInputState(inputId, input.expression, input.objectType)
             else:
                 self.inputState[inputId] = SingleInputState(inputId, input.value, input.objectType)
+                if input.unitType:
+                    # "2.9" typed into a length input stays so in the field, it's shown as "2.90 mm" (p291)
+                    expressionFormat.request(input)
         elif isinstance(input, adsk.core.DropDownCommandInput):
             self.inputState[inputId] = SingleInputState(inputId, input.selectedItem.name, input.objectType)
         elif isinstance(input, adsk.core.GroupCommandInput):

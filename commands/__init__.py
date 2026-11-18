@@ -16,6 +16,7 @@ from .commandModelScreenshots import entry as commandModelScreenshots
 from .. import config
 from ..lib.ui import errorPalette
 from ..lib.ui import selection
+from ..lib.ui import expressionFormat
 
 # TODO add imported modules to this list.
 # Fusion will automatically call the start() and stop() functions.
@@ -40,6 +41,7 @@ if config.DEV_TOOLS:
 # The start function will be run when the add-in is started.
 def start():
     selection.start()
+    expressionFormat.start()
     for command in commands:
         command.start()
 
@@ -51,3 +53,4 @@ def stop():
         command.stop()
     errorPalette.stop()
     selection.stop()
+    expressionFormat.stop()
