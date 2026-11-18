@@ -1,10 +1,10 @@
 # Klicktest Runde 37 – Label-Farben auf eigene Filamente (p301)
 
 Add-in aus `D:\Entwicklung\Gridfinity\wt-r37` laden. Spec: `dev-notes/specs/2026-11-18-r37-export-filaments.md`.
-Vor dem Test die gemerkten Export-Einstellungen sichern: `wt-r37\commands\commandExport\commandConfig\*` (falls da).
+Vor dem Test die gemerkten Export-Einstellungen sichern: `wt-r37\commands\commandExport\commandConfig\config.ini` (falls da).
 
 ## A – Altes gemerktes colorIndex
-1. In `commandConfignfig.ini`, Abschnitt `[Export]`) `colorIndex = 4` eintragen, `labelFilaments`
+1. In `config.ini` (wie oben), Abschnitt `[Export]`, `colorIndex = 4` eintragen, `labelFilaments`
    entfernen (falls vorhanden). Ein Bin mit **Outline**-Label ohne Farbe bauen.
 2. Bin wählen, Rechtsklick › Export (bzw. Utilities › Export), Format 3MF, **Color label text** an.
    - Erwartet: Gruppe **Label filaments** mit genau einem Eintrag *Text without color* = **4**. Kein Feld
