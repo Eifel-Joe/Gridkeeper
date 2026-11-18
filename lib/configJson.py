@@ -22,8 +22,9 @@ GENERATOR_BOX_LABEL = 'boxLabel'
 # bin differently: before upstream's lip types every bin had the light lip trimmed flat (upstream round 17.11.2026, p13)
 OLDER_VALUES = {
     GENERATOR_BIN: {'lipType': 'Light', 'isLipTopTrimmed': True},
-    # boxes of round 27 had no hinge setting; every box got Pred's M3x30 once there were hinges (round 28)
-    GENERATOR_BOX: {'hinge': 'M3x30'},
+    # boxes of round 27 had no hinge setting; every box got Pred's M3x30 once there were hinges (round 28). Before the
+    # choice of the lid's top every lid had Pred's grid on it (round 30, p311)
+    GENERATOR_BOX: {'hinge': 'M3x30', 'lidTop': 'Grid'},
 }
 
 def withOlderValues(generator: str, settings: dict) -> dict:
