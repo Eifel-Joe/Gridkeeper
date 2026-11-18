@@ -29,3 +29,25 @@ def test_the_hinge_goes_into_the_state_and_back():
 def test_a_config_with_an_unknown_hinge_gets_the_default():
     source = _function("readConfig")
     assert "'hinge': configJson.Choice(list(predBoxParts.HINGES), predBoxParts.DEFAULT_HINGE)" in source
+
+
+# Round 30, p311 (Nutzer 18.11.2026: "Lid top: Grid / Closed", "Standard bleibt Raster")
+
+def test_the_dialog_has_a_lid_group_with_the_lid_tops():
+    source = _function("command_created")
+    assert "LID_TOP_DROPDOWN" in source and "predBoxConfig.LID_TOPS" in source
+    assert "addGroup(inputs, LID_GROUP, 'Lid')" in source
+    # between the joint origins and the small parts
+    assert source.index("JOINT_GROUP") < source.index("LID_GROUP") < source.index("PARTS_GROUP")
+    assert "LID_GROUP" in _function("initUiState")
+
+
+def test_the_lid_top_goes_into_the_state_and_back():
+    assert "lidTop=uiState.getState(LID_TOP_DROPDOWN)" in _function("getInputsState")
+    assert "uiState.setValue(LID_TOP_DROPDOWN, state.lidTop)" in _function("applyInputsState")
+    assert "uiState.initValue(LID_TOP_DROPDOWN, DEFAULT_STATE.lidTop" in _function("initUiState")
+
+
+def test_a_config_with_an_unknown_lid_top_gets_the_default():
+    source = _function("readConfig")
+    assert "'lidTop': configJson.Choice(list(predBoxConfig.LID_TOPS), predBoxConfig.DEFAULT_LID_TOP)" in source
