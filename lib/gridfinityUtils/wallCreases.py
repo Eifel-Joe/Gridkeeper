@@ -14,7 +14,7 @@ The panel edges stay in the wall, so the wall keeps its outline and only folds i
 
 import math
 
-from . import binShape
+from . import binShape, scoopSides as scoops
 
 # ridge height up the panel, the lower trapezoid takes the larger part
 RIDGE_HEIGHT_RATIO = 0.7
@@ -52,9 +52,14 @@ def wallSides(cells) -> list[WallSide]:
             sides.append(WallSide('y', x, 1 if nextY < y else -1, min(y, nextY), max(y, nextY)))
     return sides
 
-def isFrontSide(side: WallSide) -> bool:
-    """The front wall of a plain bin, where the scoop is"""
-    return side.axis == 'x' and side.line == 0 and side.inward == 1
+def scoopWall(side: WallSide) -> str:
+    """
+    Which wall of a plain bin the side is, see scoopSides. Only plain bins get scoops, a shaped outline has more sides
+    facing the same way
+    """
+    if side.axis == 'x':
+        return scoops.FRONT if side.inward == 1 else scoops.BACK
+    return scoops.LEFT if side.inward == 1 else scoops.RIGHT
 
 def straightLength(side: WallSide, unit: float, cornerRadius: float) -> float:
     """
@@ -69,14 +74,14 @@ def creaseLayout(
     unitLength: float,
     minLength: float,
     maxPanelLength: float,
-    skipFront: bool,
+    scoopSides: frozenset,
 ) -> list[tuple[WallSide, int]]:
     """
     Creased sides of a bin with their panel count, none when its longest wall is shorter than the min length.
     Lengths of the thresholds are in base units, like the feet, and count whole walls, corners included. Every wall
     is split into as few even panels as keep them under the max, which sets the panel length of the longest one.
-    Walls as long as that panel or longer get creases too, their panels stretched to fill them. The front is left
-    out for a scoop, which braces it already. Panels themselves only cover the flat part, see straightLength
+    Walls as long as that panel or longer get creases too, their panels stretched to fill them. Walls with a scoop
+    are left out, it braces them already. Panels themselves only cover the flat part, see straightLength
     """
     def length(side: WallSide) -> float:
         return (side.end - side.start) * (unitWidth if side.axis == 'x' else unitLength)
@@ -84,7 +89,7 @@ def creaseLayout(
     def count(side: WallSide) -> int:
         return math.ceil((side.end - side.start) / maxPanelLength)
 
-    sides = [side for side in wallSides(cells) if not (skipFront and isFrontSide(side))]
+    sides = [side for side in wallSides(cells) if scoopWall(side) not in scoopSides]
     if len(sides) == 0:
         return []
     reference = max(sides, key=length)

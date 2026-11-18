@@ -17,6 +17,7 @@ from ...lib.gridfinityUtils import commonUtils
 from ...lib.gridfinityUtils import const
 from ...lib.gridfinityUtils import labelGenerator
 from ...lib.gridfinityUtils import labelColors
+from ...lib.gridfinityUtils import scoopSides
 from ...lib.gridfinityUtils import textStyles
 from ...lib.gridfinityUtils import cullenect
 from ...lib.gridfinityUtils import binCell
@@ -160,7 +161,12 @@ BIN_MAGNET_DIAMETER_INPUT = 'magnet_diameter'
 BIN_MAGNET_HEIGHT_INPUT = 'magnet_height'
 # the magnet size choice before the depth (round 27, p263)
 BIN_MAGNET_SIZE_INPUT = 'magnet_size'
+# the front wall's, the only scoop before round 48, keeps its ID
 BIN_HAS_SCOOP_INPUT_ID = 'bin_has_scoop'
+BIN_HAS_SCOOP_BACK_INPUT_ID = 'bin_has_scoop_back'
+BIN_HAS_SCOOP_LEFT_INPUT_ID = 'bin_has_scoop_left'
+BIN_HAS_SCOOP_RIGHT_INPUT_ID = 'bin_has_scoop_right'
+BIN_SCOOP_WALL_INPUT_IDS = [BIN_HAS_SCOOP_INPUT_ID, BIN_HAS_SCOOP_BACK_INPUT_ID, BIN_HAS_SCOOP_LEFT_INPUT_ID, BIN_HAS_SCOOP_RIGHT_INPUT_ID]
 BIN_SCOOP_MAX_RADIUS_INPUT_ID = 'bin_scoop_max_radius'
 BIN_HAS_TAB_INPUT_ID = 'bin_has_tab'
 BIN_TAB_LENGTH_INPUT_ID = 'bin_tab_length'
@@ -237,6 +243,9 @@ STATE_INPUT_IDS = {
     'lipType': BIN_LIP_TYPE_INPUT_ID,
     'isLipTopTrimmed': BIN_LIP_TOP_TRIMMED_INPUT_ID,
     'hasScoop': BIN_HAS_SCOOP_INPUT_ID,
+    'hasScoopBack': BIN_HAS_SCOOP_BACK_INPUT_ID,
+    'hasScoopLeft': BIN_HAS_SCOOP_LEFT_INPUT_ID,
+    'hasScoopRight': BIN_HAS_SCOOP_RIGHT_INPUT_ID,
     'scoopMaxRadius': BIN_SCOOP_MAX_RADIUS_INPUT_ID,
     'hasTab': BIN_HAS_TAB_INPUT_ID,
     'tabLength': BIN_TAB_LENGTH_INPUT_ID,
@@ -340,6 +349,9 @@ def initDefaultUiState():
     commandUIState.initValue(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID, DEFAULT_STATE.compartmentsY, adsk.core.IntegerSpinnerCommandInput.classType())
 
     commandUIState.initValue(BIN_HAS_SCOOP_INPUT_ID, DEFAULT_STATE.hasScoop, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_HAS_SCOOP_BACK_INPUT_ID, DEFAULT_STATE.hasScoopBack, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_HAS_SCOOP_LEFT_INPUT_ID, DEFAULT_STATE.hasScoopLeft, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_HAS_SCOOP_RIGHT_INPUT_ID, DEFAULT_STATE.hasScoopRight, adsk.core.BoolValueCommandInput.classType())
     commandUIState.initValue(BIN_SCOOP_MAX_RADIUS_INPUT_ID, DEFAULT_STATE.scoopMaxRadius, adsk.core.ValueCommandInput.classType())
 
     commandUIState.initValue(BIN_HAS_TAB_INPUT_ID, DEFAULT_STATE.hasTab, adsk.core.BoolValueCommandInput.classType())
@@ -792,7 +804,6 @@ def is_all_input_valid(inputs: adsk.core.CommandInputs):
     bin_magnet_cutout_depth: adsk.core.ValueCommandInput = inputs.itemById(BIN_MAGNET_HEIGHT_INPUT)
     with_lip: adsk.core.BoolValueCommandInput = inputs.itemById(BIN_WITH_LIP_INPUT_ID)
     with_lip_notches: adsk.core.BoolValueCommandInput = inputs.itemById(BIN_WITH_LIP_NOTCHES_INPUT_ID)
-    has_scoop: adsk.core.BoolValueCommandInput = inputs.itemById(BIN_HAS_SCOOP_INPUT_ID)
     binScoopMaxRadius: adsk.core.ValueCommandInput = inputs.itemById(BIN_SCOOP_MAX_RADIUS_INPUT_ID)
     hasTabInput: adsk.core.BoolValueCommandInput = inputs.itemById(BIN_HAS_TAB_INPUT_ID)
     binTabLength: adsk.core.ValueCommandInput = inputs.itemById(BIN_TAB_LENGTH_INPUT_ID)
@@ -823,7 +834,7 @@ def is_all_input_valid(inputs: adsk.core.CommandInputs):
         result = result and inputs.itemById(BIN_CREASE_MAX_PANEL_LENGTH_INPUT_ID).value > 0
 
     if bin_generate_body.value and binTypeDropdownInput.selectedItem.name == BIN_TYPE_HOLLOW:
-        if has_scoop.value:
+        if anyScoopWall():
             result = result and binScoopMaxRadius.value > 0
         if hasTabInput.value:
             result = result and binTabLength.value > 0
@@ -1012,13 +1023,19 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     binScoopGroup = compartmentsGroup.children.addGroupCommandInput(BIN_SCOOP_GROUP_ID, 'Scoop')
     binScoopGroup.isExpanded = commandUIState.getState(BIN_SCOOP_GROUP_ID)
     commandUIState.registerCommandInput(binScoopGroup)
-    generateScoopCheckboxInput = binScoopGroup.children.addBoolValueInput(BIN_HAS_SCOOP_INPUT_ID, 'Add scoop (along bin width)', True, '', commandUIState.getState(BIN_HAS_SCOOP_INPUT_ID))
-    commandUIState.registerCommandInput(generateScoopCheckboxInput)
+    # one per wall (round 48, idea of upstream issue #140 by teateatea), every compartment gets a scoop at each
+    for (inputId, title, tooltip) in [
+        (BIN_HAS_SCOOP_INPUT_ID, 'Front (along bin width)', 'A scoop along the front wall of every compartment'),
+        (BIN_HAS_SCOOP_BACK_INPUT_ID, 'Back (along bin width)', 'A scoop along the back wall of every compartment. Locked while the label tab is on, the tab sits on the back wall'),
+        (BIN_HAS_SCOOP_LEFT_INPUT_ID, 'Left (along bin length)', 'A scoop along the left wall of every compartment'),
+        (BIN_HAS_SCOOP_RIGHT_INPUT_ID, 'Right (along bin length)', 'A scoop along the right wall of every compartment'),
+    ]:
+        scoopWallInput = binScoopGroup.children.addBoolValueInput(inputId, title, True, '', commandUIState.getState(inputId))
+        scoopWallInput.tooltip = tooltip
+        commandUIState.registerCommandInput(scoopWallInput)
     binScoopMaxRadiusInput = binScoopGroup.children.addValueInput(BIN_SCOOP_MAX_RADIUS_INPUT_ID, 'Scoop max radius (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_SCOOP_MAX_RADIUS_INPUT_ID)))
     commandUIState.registerCommandInput(binScoopMaxRadiusInput)
-    for input in binScoopGroup.children:
-        if not input.id == BIN_HAS_SCOOP_INPUT_ID:
-            input.isEnabled = commandUIState.getState(BIN_HAS_SCOOP_INPUT_ID)
+    binScoopMaxRadiusInput.isEnabled = anyScoopWall()
 
     binTabFeaturesGroup = compartmentsGroup.children.addGroupCommandInput(BIN_TAB_FEATURES_GROUP_ID, 'Label tab')
     binTabFeaturesGroup.isExpanded = commandUIState.getState(BIN_TAB_FEATURES_GROUP_ID)
@@ -1381,7 +1398,10 @@ def onChangeValidate():
     commandUIState.getInput(BIN_WITH_LIP_NOTCHES_INPUT_ID).isEnabled = generateBody
     commandUIState.getInput(BIN_LIP_TYPE_INPUT_ID).isEnabled = generateBody
     commandUIState.getInput(BIN_LIP_TOP_TRIMMED_INPUT_ID).isEnabled = generateBody
-    commandUIState.getInput(BIN_HAS_SCOOP_INPUT_ID).isEnabled = not shaped
+    for inputId in BIN_SCOOP_WALL_INPUT_IDS:
+        commandUIState.getInput(inputId).isEnabled = not shaped
+    # the label tab sits on the back wall, its scoop is locked while the tab is on, the value stays for later
+    commandUIState.getInput(BIN_HAS_SCOOP_BACK_INPUT_ID).isEnabled = not shaped and not commandUIState.getState(BIN_HAS_TAB_INPUT_ID)
     commandUIState.getInput(BIN_HAS_TAB_INPUT_ID).isEnabled = generateBody and not shaped
     generateTab: bool = commandUIState.getState(BIN_HAS_TAB_INPUT_ID)
     for input in commandUIState.getInput(BIN_TAB_FEATURES_GROUP_ID).children:
@@ -1422,8 +1442,8 @@ def onChangeValidate():
     for inputId in [BIN_CREASE_DEPTH_INPUT_ID, BIN_CREASE_MIN_LENGTH_INPUT_ID, BIN_CREASE_MAX_PANEL_LENGTH_INPUT_ID, BIN_CREASE_MIN_HEIGHT_INPUT_ID]:
         commandUIState.getInput(inputId).isEnabled = canCrease and commandUIState.getState(BIN_CREASES_INPUT_ID)
 
-    generateScoop: bool = commandUIState.getState(BIN_HAS_SCOOP_INPUT_ID)
-    commandUIState.getInput(BIN_SCOOP_MAX_RADIUS_INPUT_ID).isEnabled = generateScoop and not shaped
+    anyScoop = anyScoopWall()
+    commandUIState.getInput(BIN_SCOOP_MAX_RADIUS_INPUT_ID).isEnabled = anyScoop and not shaped
 
     generateTab: bool = commandUIState.getState(BIN_HAS_TAB_INPUT_ID)
     commandUIState.getInput(BIN_TAB_LENGTH_INPUT_ID).isEnabled = generateTab and not shaped
@@ -1504,6 +1524,13 @@ def rebuiltConfig() -> str | None:
     except Exception as err:
         futil.log(f'{CMD_NAME} config of the rebuilt bin not read, {err}')
         return None
+
+def anyScoopWall() -> bool:
+    """Whether a scoop wall is checked, the back one only counts without a label tab, see scoopSides"""
+    return len(scoopSides.scoopSides(
+        *[commandUIState.getState(inputId) for inputId in BIN_SCOOP_WALL_INPUT_IDS],
+        hasTab=commandUIState.getState(BIN_HAS_TAB_INPUT_ID),
+    )) > 0
 
 def getInputsState() -> InputState:
     def angle(inputId: str) -> float:

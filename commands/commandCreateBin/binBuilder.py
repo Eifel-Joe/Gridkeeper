@@ -30,6 +30,7 @@ from ...lib.gridfinityUtils import compartmentLayout
 from ...lib.gridfinityUtils import binShape
 from ...lib.gridfinityUtils import binGrid
 from ...lib.gridfinityUtils import wallCreases
+from ...lib.gridfinityUtils import scoopSides
 from ...lib.gridfinityUtils.wallCreaseGenerator import createCreaseFolds
 from ...lib.gridfinityUtils.binBodyGeneratorInput import BinBodyGeneratorInput, BinBodyCompartmentDefinition
 from ...lib.gridfinityUtils.binBodyLipGeneratorInput import LIP_TYPE_FULL, lipTopTrimHeight
@@ -158,8 +159,7 @@ def creaseLayout(state: InputState) -> list[tuple[wallCreases.WallSide, int]]:
         return []
     if state.binHeight < state.creaseMinHeight:
         return []
-    # the scoop braces the front wall already
-    hasScoop = state.hasScoop and state.binType == BIN_TYPE_HOLLOW and not isShaped(state)
+    # a scoop braces its wall already
     # in outline grid cells, the lengths in base units scale along
     divisions = gridDivisions(state)
     return wallCreases.creaseLayout(
@@ -168,8 +168,12 @@ def creaseLayout(state: InputState) -> list[tuple[wallCreases.WallSide, int]]:
         state.baseLength / divisions,
         state.creaseMinLength * divisions,
         state.creaseMaxPanelLength * divisions,
-        hasScoop,
+        binScoopSides(state),
     )
+
+def binScoopSides(state: InputState) -> frozenset:
+    """The walls with a scoop, only a plain hollow bin builds them (round 48, see scoopSides)"""
+    return scoopSides.stateScoopSides(state, buildsScoop=state.binType == BIN_TYPE_HOLLOW and not isShaped(state))
 
 def tagged(parameter: adsk.fusion.UserParameter, field: str, owner: str) -> adsk.fusion.UserParameter:
     """The parameter tagged with the config field it holds and the bin it's of, see tagUtils.tagParameterField"""
@@ -384,7 +388,7 @@ def _buildBin(
     binBodyInput.isSolid = isSolid or isShelled or shaped
     binBodyInput.hasLipBottomChamfer = not isSolid
     binBodyInput.wallThickness = state.wallThickness
-    binBodyInput.hasScoop = state.hasScoop and isHollow and not shaped
+    binBodyInput.scoopSides = binScoopSides(state)
     binBodyInput.scoopMaxRadius = state.scoopMaxRadius
     binBodyInput.hasTab = state.hasTab and isHollow and not shaped
     # in base units like the size, the body counts in feet
@@ -618,7 +622,7 @@ def _buildBin(
                 bodyLength - shellThickness * 2,
                 tabOriginZ,
                 shellInteriorCornerFilletRadius,
-                False,
+                frozenset(),
                 0,
                 False,
                 gridfinityBinComponent,

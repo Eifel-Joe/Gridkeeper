@@ -52,3 +52,78 @@ def test_order_puts_the_back_first_for_the_bottom_fillet():
     assert scoops.firstPlainSide(frozenset({FRONT})) == BACK
     assert scoops.firstPlainSide(frozenset({FRONT, BACK})) == LEFT
     assert scoops.firstPlainSide(frozenset({FRONT, BACK, LEFT, RIGHT})) is None
+
+
+def _state(**flags):
+    from types import SimpleNamespace
+    values = dict(hasScoop=False, hasScoopBack=False, hasScoopLeft=False, hasScoopRight=False, hasTab=False)
+    values.update(flags)
+    return SimpleNamespace(**values)
+
+
+def test_sides_of_a_dialog_state():
+    state = _state(hasScoop=True, hasScoopBack=True, hasScoopRight=True, hasTab=True)
+    assert scoops.stateScoopSides(state, buildsScoop=True) == frozenset({FRONT, RIGHT})
+
+
+def test_shelled_solid_or_shaped_bins_build_none():
+    state = _state(hasScoop=True, hasScoopLeft=True)
+    assert scoops.stateScoopSides(state, buildsScoop=False) == frozenset()
+
+
+def test_wall_insets_take_the_scoop_inset_on_scoop_walls():
+    # the scoop runs up into the lip, its wall reaches to the lip's inner edge (as the front did before round 48)
+    insets = scoops.wallInsets(frozenset({FRONT, LEFT}), 1.2, 2.6)
+    assert insets == {FRONT: 2.6, BACK: 1.2, LEFT: 2.6, RIGHT: 1.2}
+
+
+def test_wall_insets_without_scoops_are_the_wall():
+    assert set(scoops.wallInsets(frozenset(), 1.2, 2.6).values()) == {1.2}
+
+
+BOX_MIN, BOX_MAX = (0.0, 0.0), (10.0, 6.0)
+
+
+def touches(edgeMin, edgeMax, sides):
+    return scoops.touchesScoopWall(edgeMin, edgeMax, BOX_MIN, BOX_MAX, sides)
+
+
+def test_front_line_and_its_corner_arcs_touch_the_front_scoop():
+    sides = frozenset({FRONT})
+    assert touches((0.5, 0.0), (9.5, 0.0), sides)          # front line
+    assert touches((0.0, 0.0), (0.5, 0.5), sides)          # front left arc
+    assert touches((9.5, 0.0), (10.0, 0.5), sides)         # front right arc
+    assert not touches((0.0, 0.5), (0.0, 5.5), sides)     # left line
+    assert not touches((0.0, 5.5), (0.5, 6.0), sides)     # back left arc
+    assert not touches((0.5, 6.0), (9.5, 6.0), sides)     # back line
+
+
+def test_every_scoop_wall_is_touched():
+    sides = frozenset({BACK, LEFT, RIGHT})
+    assert touches((0.5, 6.0), (9.5, 6.0), sides)
+    assert touches((0.0, 0.5), (0.0, 5.5), sides)
+    assert touches((10.0, 0.5), (10.0, 5.5), sides)
+    assert touches((0.0, 0.0), (0.5, 0.5), sides)          # front left arc meets the left scoop
+    assert not touches((0.5, 0.0), (9.5, 0.0), sides)     # front line
+
+
+def test_generators_take_the_scoop_walls_not_a_single_flag():
+    # round 48: a single hasScoop read anywhere in the generators would build the front scoop only
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    folder = os.path.join(project_root, "lib", "gridfinityUtils")
+    readers = []
+    for name in sorted(os.listdir(folder)):
+        # scoopSides reads the dialog's flags into the walls
+        if name.endswith(".py") and name != "scoopSides.py":
+            with open(os.path.join(folder, name), encoding="utf-8") as file:
+                if "hasScoop" in file.read():
+                    readers.append(name)
+    assert readers == []
+
+
+def test_bin_builder_passes_the_scoop_walls():
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    with open(os.path.join(project_root, "commands", "commandCreateBin", "binBuilder.py"), encoding="utf-8") as file:
+        source = file.read()
+    assert "binBodyInput.scoopSides = binScoopSides(state)" in source
+    assert "binBodyInput.hasScoop" not in source
