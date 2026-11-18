@@ -10,7 +10,7 @@ from . import assembly
 from . import placementUtils
 from .gridfinityUtils import commonUtils
 from .gridfinityUtils import cullenect
-from .gridfinityUtils import boxLabelConfig, predBoxLabelLayout, predBoxSeats
+from .gridfinityUtils import boxLabelConfig, predBoxLabelLayout, predBoxParts, predBoxSeats
 from .gridfinityUtils import timelineRemoval
 from .gridfinityUtils import binCell
 
@@ -386,6 +386,49 @@ def partRole(component: adsk.fusion.Component) -> str:
     attribute = component.attributes.itemByName(tagUtils.TAG_GROUP, tagUtils.TAG_PART_ROLE)
     return attribute.value if attribute is not None else component.name
 
+def seatsByOccurrence(joints) -> dict[str, str]:
+    """
+    The seat of each small part of a box set, by its occurrence's full path: the set joints every part at a seat, a box
+    joint origin named after it (predBoxParts.seatJointOriginName), the occurrence on the other side of that joint is
+    the part. Round 36 (p293): the four latches, two handle pins and two hinges are each one component, only their seat
+    tells them apart. A joint's side may come without an occurrence (round 20, p220), the joint origin's context is
+    the part then
+    """
+    seats = {}
+    for joint in joints:
+        for (side, other, otherOccurrence) in (('geometryOrOriginOne', 'geometryOrOriginTwo', 'occurrenceTwo'), ('geometryOrOriginTwo', 'geometryOrOriginOne', 'occurrenceOne')):
+            jointOrigin = adsk.fusion.JointOrigin.cast(getattr(joint, side))
+            seat = predBoxParts.seatOfJointOriginName(jointOrigin.name) if jointOrigin is not None else None
+            if seat is None:
+                continue
+            otherJointOrigin = adsk.fusion.JointOrigin.cast(getattr(joint, other))
+            occurrence = getattr(joint, otherOccurrence) or (otherJointOrigin.assemblyContext if otherJointOrigin is not None else None)
+            if occurrence is not None:
+                seats[occurrence.fullPathName] = seat
+    return seats
+
+def newJointOriginKeys(newPart: adsk.fusion.Occurrence, seats: dict[str, str]) -> dict:
+    """
+    The joint origins of the rebuilt part, its own and those of the components inside it, by (place, seat, name): the
+    place is the component's role ('' for the part itself), the seat that of a small part (seatsByOccurrence), '' for
+    one occurrence like box and lid. Keyed by role and name alone the four latches overwrote each other and a joint
+    on any latch went to the last one (p293)
+    """
+    keys = {}
+    for (occurrence, place) in [(newPart, '')] + [(child, partRole(child.component)) for child in newPart.childOccurrences]:
+        seat = seats.get(occurrence.fullPathName, '') if place else ''
+        for jointOrigin in occurrence.component.jointOrigins:
+            keys[(place, seat, jointOrigin.name)] = jointOrigin.createForAssemblyContext(occurrence)
+    return keys
+
+def oldJointOriginKey(jointOrigin: adsk.fusion.JointOrigin, oldNative: adsk.fusion.Occurrence, seats: dict[str, str]) -> tuple[str, str, str]:
+    """The key of newJointOriginKeys for a joint origin of the old part, seen through the occurrence it is of"""
+    component = (jointOrigin.nativeObject or jointOrigin).parentComponent
+    place = '' if component == oldNative.component else partRole(component)
+    occurrence = jointOrigin.assemblyContext
+    seat = seats.get(occurrence.fullPathName, '') if place and occurrence is not None else ''
+    return (place, seat, jointOrigin.name)
+
 def repointJointsByName(
     design: adsk.fusion.Design,
     target: RebuildTarget,
@@ -408,10 +451,10 @@ def repointJointsByName(
     # a set with components inside (box and lid) was replaced by a set again: the body's component is one level down
     if oldNative.component.occurrences.count > 0 and newPart.assemblyContext is not None:
         newPart = newPart.assemblyContext
-    newJointOrigins = {}
-    for (occurrence, place) in [(newPart, '')] + [(child, partRole(child.component)) for child in newPart.childOccurrences]:
-        for jointOrigin in occurrence.component.jointOrigins:
-            newJointOrigins[(place, jointOrigin.name)] = jointOrigin.createForAssemblyContext(occurrence)
+    allJoints = list(design.rootComponent.allJoints)
+    # the small parts by their seat, the old set's and the new one's, both are there now (p293)
+    seats = seatsByOccurrence(allJoints)
+    newJointOrigins = newJointOriginKeys(newPart, seats)
     moved = 0
     notes = []
     shown = []
@@ -419,7 +462,7 @@ def repointJointsByName(
     # the rebuilt box's Label joint origin
     tooWide = []
     collapsedGroups = []
-    for joint in list(design.rootComponent.allJoints):
+    for joint in allJoints:
         item = joint.timelineObject
         if item is not None and isGroupItem(target.group, item):
             continue
@@ -430,8 +473,7 @@ def repointJointsByName(
             component = (jointOrigin.nativeObject or jointOrigin).parentComponent
             if not any(component == old for old in oldComponents):
                 continue
-            place = '' if component == oldNative.component else partRole(component)
-            newJointOrigin = newJointOrigins.get((place, jointOrigin.name))
+            newJointOrigin = newJointOrigins.get(oldJointOriginKey(jointOrigin, oldNative, seats))
             if newJointOrigin is None:
                 notes.append(f'{joint.name}: the new part has no {jointOrigin.name}, the joint goes with the old one')
                 continue
