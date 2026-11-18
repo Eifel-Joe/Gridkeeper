@@ -131,3 +131,40 @@ def test_an_unknown_hinge_is_a_problem_before_anything_is_built():
     assert boxConfig.boxProblem(state(hinge="Hinge_X")) == "Unknown hinge Hinge_X, pick one of M3x30, Pinned, Plain"
     for hinge in ("M3x30", "Pinned", "Plain"):
         assert boxConfig.boxProblem(state(hinge=hinge)) is None
+
+
+# Round 30, p311 (Jörg 18.11.2026): the lid's top is a Gridfinity grid or closed, the grid stays the default and a box
+# saved before the choice builds with it
+
+def test_the_lid_top_is_a_box_setting_grid_by_default():
+    assert boxConfig.LID_TOPS == ("Grid", "Closed")
+    assert boxConfig.DEFAULT_LID_TOP == "Grid"
+    assert state().lidTop == "Grid"
+    assert defaultSettings.SETTINGS["box"]["lidTop"] == boxConfig.DEFAULT_LID_TOP
+
+
+def test_a_box_saved_before_the_lid_choice_rebuilds_with_the_grid():
+    saved = {name: value for name, value in defaultSettings.SETTINGS["box"].items() if name != "lidTop"}
+    current = state(lidTop="Closed")
+    (loaded, _) = configJson.readConfig(configJson.configText("box", saved), "box", InputState, current)
+    assert loaded.lidTop == "Grid"
+
+
+def test_an_unknown_lid_top_is_a_problem_before_anything_is_built():
+    assert boxConfig.boxProblem(state(lidTop="Open")) == "Unknown lid top Open, pick one of Grid, Closed"
+    for lidTop in ("Grid", "Closed"):
+        assert boxConfig.boxProblem(state(lidTop=lidTop)) is None
+
+
+def test_the_generator_gets_the_lid_top():
+    assert boxConfig.boxOptions(state(lidTop="Closed")).lidTop == "Closed"
+    assert boxConfig.boxOptions(state()).lidTop == "Grid"
+
+
+def test_a_closed_lid_leaves_out_every_step_of_the_grid_on_top():
+    """Spec r30, way A: the sockets cut into the top (Sweep1 on the lid), their hollow seats (Sweep4), the lowered cell
+    ridges (#17 Extrude5) and their chamfer (#85) belong to the grid; Sweep2 under the lid stays for both"""
+    grid = boxConfig.lidTopFeatures("Grid")
+    assert (grid.socketsInTop, grid.hollowSeats, grid.cellRidges, grid.ridgeChamfer) == (True, True, True, True)
+    closed = boxConfig.lidTopFeatures("Closed")
+    assert (closed.socketsInTop, closed.hollowSeats, closed.cellRidges, closed.ridgeChamfer) == (False, False, False, False)

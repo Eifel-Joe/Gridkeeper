@@ -139,6 +139,8 @@ BOX = {
     'hasJointOrigins': True,
     # Pred's Hinge_M3x30, see predBoxParts.HINGES (round 28)
     'hinge': 'M3x30',
+    # Pred's grid on top of the lid, see predBoxConfig.LID_TOPS (round 30, p311)
+    'lidTop': 'Grid',
 }
 
 # by generator, see configJson.GENERATOR_BIN
