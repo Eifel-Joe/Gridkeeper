@@ -249,8 +249,10 @@ def main() -> int:
                 errors.append(error)
             if index % 50 == 0:
                 print(f'{index}/{len(jobs)} after {time.time() - started:.0f} s', flush=True)
-    # the polygons OpenSCAD writes as lines and arcs, as the add-in imports them quickly (round 40)
-    rebuildSymbols([os.path.join(args.out, folder) for folder in (catalog.SCREWS_FOLDER, catalog.HARDWARE_FOLDER)])
+    # the polygons OpenSCAD writes as lines and arcs, as the add-in imports them quickly (round 40); symbols rendered
+    # elsewhere, such as fine ones to --compare with, stay as OpenSCAD wrote them
+    if os.path.abspath(args.out) == os.path.abspath(ICONS_FOLDER):
+        rebuildSymbols([os.path.join(args.out, folder) for folder in (catalog.SCREWS_FOLDER, catalog.HARDWARE_FOLDER)])
     copied = copyHardwareToLabelIcons(args.out, LABEL_ICONS_FOLDER) if os.path.abspath(args.out) == os.path.abspath(ICONS_FOLDER) else []
     print(f'{len(copied)} hardware svgs copied to the label icons, run tools/labelIcons.py for their previews')
     print(f'done in {time.time() - started:.0f} s, {len(jobs) - len(errors)} rendered, {len(errors)} failed')

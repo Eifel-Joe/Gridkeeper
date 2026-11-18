@@ -19,7 +19,8 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   0.7 s instead of 1.8 to 3.7 s.
 - Two insert test cases build their symbol a few hundredths of a percent different in volume, round instead of
   faceted; their snapshots are updated. A hand-made svg in the symbol folders, drawn with other commands, circles or
-  transforms, still works: it is imported once and scaled into place.
+  transforms, still works in the add-in: it is imported once and scaled into place; the tool leaves such a file as it
+  is.
 
 ### GridfinityGenerator 2.5 merged (round 38)
 

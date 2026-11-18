@@ -199,3 +199,15 @@ def test_folder_keeps_a_file_that_fails_and_goes_on(monkeypatch, tmp_path):
         assert file.read() == before
     with open(good, encoding='utf-8') as file:
         assert ' A ' in file.read()
+
+
+def test_folder_skips_a_hand_made_svg_it_cannot_read(tmp_path):
+    good = _write(tmp_path, 'a.svg', circle(0, 0, 0.5, 64))
+    hand = tmp_path / 'hand.svg'
+    hand.write_text('<svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><path d="m 1,1 h 8 v 8 h -8 z"/></svg>')
+    before = hand.read_text()
+    reports = tool.convertFolder(str(tmp_path), TOLERANCE, write=True)
+    assert [(report.name, report.changed, bool(report.error)) for report in reports] == [('a.svg', True, False), ('hand.svg', False, True)]
+    assert hand.read_text() == before
+    with open(tmp_path / tool.CHECK_FILE, encoding='utf-8') as file:
+        assert sorted(json.load(file)) == ['a.svg']

@@ -163,8 +163,8 @@ def _importIcon(sketch: adsk.fusion.Sketch, path: str, minX: float, minY: float,
     in one import. Round 40 (p371): it took three probe imports into throwaway sketches to learn how importSVG maps svg
     units and position, and each measured its bounds curve by curve, about 1 ms a curve; a Torx symbol of 1700 lines
     took 28 s of a 41 s box label. The mapping is fixed (measured in Fusion, see svgSymbol.SVG_UNIT_CM) and the
-    outline is in the file, so svgSymbol works out scale and position. Should Fusion put it elsewhere all the same,
-    the curves are moved there, a move rather than another import. A file svgSymbol can't read (dropped in by hand,
+    outline is in the file, so svgSymbol works out scale and position. Should Fusion put it elsewhere or draw it
+    another size all the same, the curves are moved and scaled there, a move rather than another import. A file svgSymbol can't read (dropped in by hand,
     drawn with relative commands, circles or transforms) is imported as it is and scaled and moved there by one
     uniform scaling move
     """
@@ -177,7 +177,10 @@ def _importIcon(sketch: adsk.fusion.Sketch, path: str, minX: float, minY: float,
     placed = _iconCurvesBounds(sketch)
     if placed is None or placed[3] - placed[1] <= 0:
         return
-    factor = 1 if symbol is not None else height / (placed[3] - placed[1])
+    # a readable file is drawn at its height already; should Fusion draw it another size all the same, the move
+    # scales it there too
+    drawnHeight = placed[3] - placed[1]
+    factor = height / drawnHeight if symbol is None or abs(drawnHeight - height) > 1e-4 else 1
     (offsetX, offsetY) = (minX - placed[0] * factor, minY - placed[1] * factor)
     if factor != 1 or max(abs(offsetX), abs(offsetY)) > 1e-4:
         shift = adsk.core.Matrix3D.create()

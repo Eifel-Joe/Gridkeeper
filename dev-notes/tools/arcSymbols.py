@@ -599,8 +599,8 @@ def _checkEntry(path: str) -> dict:
 
 def convertFolder(folder: str, tolerance: float = DEFAULT_TOLERANCE, write: bool = True) -> list[Report]:
     """Every svg directly in the folder, and its symbol-check.json: the entry of a file is taken before the file is
-    rebuilt and kept for files a run leaves as they are. A file that fails a check is left as it is, its report says
-    why"""
+    rebuilt and kept for files a run leaves as they are. A file that fails a check or can't be read is left as it is
+    and gets no entry, its report says why"""
     checkPath = os.path.join(folder, CHECK_FILE)
     check = {}
     if os.path.isfile(checkPath):
@@ -610,12 +610,15 @@ def convertFolder(folder: str, tolerance: float = DEFAULT_TOLERANCE, write: bool
     names = sorted(name for name in os.listdir(folder) if name.lower().endswith('.svg'))
     for name in names:
         path = os.path.join(folder, name)
-        entry = _checkEntry(path)
         try:
+            entry = _checkEntry(path)
             report = convertFile(path, tolerance, write)
-        except SymbolCheckError as err:
-            # the file stays a polygon, the others go on
-            report = Report(name, 0, 0, 0, 0, 0.0, 0.0, False, str(err))
+        except (SymbolCheckError, ValueError) as err:
+            # the file stays as it is, the others go on: one that fails a check, or one dropped in by hand that the
+            # tool can't read (relative commands, other shapes, transforms), which the add-in imports all the same
+            reports.append(Report(name, 0, 0, 0, 0, 0.0, 0.0, False, str(err)))
+            check.pop(name, None)
+            continue
         if report.changed or name not in check:
             check[name] = entry
         reports.append(report)

@@ -123,6 +123,7 @@ class RecordingSketch:
     def move(self, entities, matrix):
         assert not any(curve.isFixed for curve in self.sketchCurves), 'fixed curves are not moved'
         assert not any(point.isFixed for point in self.sketchPoints), 'fixed points are not moved'
+        self.lastScale = matrix.cells.get((0, 0), 1)
         self.moves.append((list(entities), matrix.translation))
         return True
 
@@ -207,3 +208,18 @@ def test_hand_drawn_svg_measured_by_one_throwaway_import(tmp_path):
     assert len(throwaway.imports) == 1 and throwaway.deleted
     assert aspect == pytest.approx(2.0)
     assert points == 3
+
+
+def test_import_icon_rescales_when_fusion_draws_it_another_size():
+    # should importSVG ever map an svg's units otherwise, the symbol is brought to its height, not only moved
+    (namespace, _) = _functions('_importIcon', '_iconCurvesBounds')
+    sketch = RecordingSketch()
+    real = sketch.importSVG
+
+    def doubled(path, x, y, scale):
+        return real(path, x, y, scale * 2)
+    sketch.importSVG = doubled
+    namespace['_importIcon'](sketch, HEX_NUT, 2.0, 1.0, 0.8)
+    [(_, translation)] = sketch.moves
+    assert len(sketch.imports) == 1
+    assert sketch.lastScale == pytest.approx(0.5)
