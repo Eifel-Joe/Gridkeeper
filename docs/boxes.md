@@ -71,9 +71,7 @@ Both lids are the same underneath, so they hold the bins in the box alike, and b
 the corners of the top. The tabs reach into the grooves under the box above, so boxes of the same size stack on a
 closed lid as on a grid. A closed lid is printed as built, like the grid one: its top up.
 
-<!-- picture wanted (assets/images/NEEDED.md), shown once it is taken:
-![A box 5 × 4 × 6 with a closed lid: a flat top with the four stacking tabs in its corners](assets/images/box-lid-closed.png)
--->
+![A box 5 × 4 × 6 with a closed lid: a flat top with the four stacking tabs in its corners, and its set Box 5×4×6 in the browser](assets/images/box-lid-closed.png)
 
 Boxes saved before there was a choice rebuild with the grid.
 
