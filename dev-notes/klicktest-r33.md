@@ -23,4 +23,21 @@ Gridkeeper aus `wt-r33` läuft (wie oben). Vorher `Gridkeeper.manifest` im Ordne
 | Manifest zurücksetzen, Gridkeeper updates öffnen | „Running Gridkeeper 1.1.1, installed 1.1.0. Click Reload Gridkeeper…“ (auch ältere Version auf der Platte), mit Reload zurück auf 1.1.0 |
 | Gridkeeper updates mit gleicher Version | kein „Reload Gridkeeper“-Knopf |
 | Manifest wieder auf `1.1.1`, Gridkeeper updates öffnen, **Close** klicken | Dialog schließt, Gridkeeper lädt **nicht** neu (erneut öffnen: weiter „Running Gridkeeper 1.1.0, installed 1.1.1“) |
+| Siehe Teil B unten: Erfolgsfrage nach einem echten Update | |
 | Steht zugleich ein Update an (nur prüfbar, wenn GitHub ein neueres Release hat; sonst überspringen) | Dialog aus dem Menü: „Update now“ im Dialog und OK „Reload Gridkeeper“ getrennt; der von der Update-Prüfung geöffnete Dialog zeigt nur „Update now“/„Later“ |
+
+### Teil B: Erfolgsfrage nach einem Update, langes Warten (p321)
+
+Die Frage „Reload Gridkeeper now to use it?“ kommt nur nach einem echten Update, und ein Git-Checkout wird nie
+aktualisiert. Darum mit einer Kopie ohne `.git`:
+`python dev-notes/tools/r33-self-restart/build_copy.py --no-probe` baut sie im Fusion-AddIns-Ordner aus `wt-r33`; ihr
+Manifest von Hand auf `1.0.0` setzen (dann bietet GitHub 1.1.0 an). Git-Add-in stoppen, Kopie in Scripts and Add-Ins
+starten.
+
+| Schritt | Erwartet |
+|---|---|
+| Gridkeeper updates → Check now | „Gridkeeper 1.1.0 is available (you have 1.0.0)“, „Update now“ sichtbar |
+| Update now | Fortschritt, dann Frage „Gridkeeper 1.1.0 is installed. Reload Gridkeeper now to use it? …“ mit Ja/Nein |
+| **Ja**, Dialog **mindestens eine Minute offen lassen** (z. B. Release notes lesen) | Dialog sagt „… Close this dialog to reload Gridkeeper and use 1.1.0.“, **keine** Abbruchmeldung erscheint |
+| Close | Gridkeeper lädt neu; Gridkeeper updates zeigt danach „Running Gridkeeper 1.1.0.“ (ab hier läuft der Release-Code 1.1.0) |
+| Aufräumen | Kopie stoppen, `build_copy.py --remove`, Git-Add-in wieder starten |

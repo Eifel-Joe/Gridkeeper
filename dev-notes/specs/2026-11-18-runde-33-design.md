@@ -70,7 +70,10 @@ Update-Spec E13: „gibt es einen sicheren Weg ohne Neustart, bekommt die Erfolg
   laufende und installierte Version verschieden sind (E13a). Die Versionszeile nennt den Knopf zuerst, dann die Handwege.
 **R2 Ablauf:** Der Klick feuert ein eigenes Custom Event `…_reload` und kehrt zurück (Gridkeeper beendet sich nie im
   eigenen Befehls-Handler). Der Event-Handler wartet, bis kein Gridkeeper-Befehl mehr aktiv ist (`ui.activeCommand`;
-  sonst neuer Versuch über einen Timer wie beim Update-Dialog, höchstens 10×), sucht das eigene `Script` **über den
+  sonst neuer Versuch über einen Timer wie beim Update-Dialog, höchstens 10×; **ohne Grenze, solange der
+  Updates-Dialog selbst offen ist**, der nach „Ja“ sagt „Close this dialog to reload Gridkeeper“, damit das Neu-Laden
+  nie über dem offenen Dialog abbricht; Hauptsitzung 18.11.: Umsetzung von R2, keine Abweichung), sucht das eigene
+  `Script` **über den
   Ordner** (nie über den Namen; Klon und Worktree heißen beide „Gridkeeper“), ruft `stop()`, dann `run()`.
 **R3 Fehler:** kein oder mehr als ein eigenes Script, `stop()`/`run()` `False` oder Ausnahme → Meldung mit den Handwegen
   (Fusion neu starten, Stop/Run in Scripts and Add-Ins). Nach einem gescheiterten `run()` läuft Gridkeeper nicht mehr, die
