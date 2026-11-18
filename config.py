@@ -4,6 +4,8 @@
 
 import os
 
+from .lib import updateInstall
+
 # Flag that indicates to run in Debug mode or not. When running in Debug mode
 # more information is written to the Text Command window. Generally, it's useful
 # to set this to True while developing an add-in and set it to False when you
@@ -11,8 +13,10 @@ import os
 DEBUG = True
 
 # Commands for developing the add-in, such as the shape snapshot tests. Only when it runs from a git checkout,
-# releases ship without the .git folder, while DEBUG stays on for logging
-DEV_TOOLS = os.path.isdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), '.git'))
+# releases ship without .git, while DEBUG stays on for logging. p320: the same check as the update lock, .git is a
+# folder in a clone and a file in a git worktree (isdir missed the worktree, the dev commands were gone there).
+# tests/test_dev_tools.py
+DEV_TOOLS = updateInstall.isGitCheckout(os.path.dirname(os.path.abspath(__file__)))
 
 # Gets the name of the add-in from the name of the folder the py file is in.
 # This is used when defining unique internal names for various UI elements 

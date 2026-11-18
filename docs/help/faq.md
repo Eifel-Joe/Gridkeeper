@@ -10,8 +10,9 @@ Open **Utilities › Add-Ins › Scripts and Add-Ins**, check that Gridkeeper is
 the folder that holds the `.manifest` and `.py` files, not a folder above it.
 
 **After an update nothing changed.**
-Fusion loads the add-in once, when it starts. Restart Fusion, or **Stop** and **Run** the add-in in **Scripts and
-Add-Ins**.
+Fusion loads the add-in once, when it starts. Open **Utilities › Add-Ins › Gridkeeper updates** and click **Reload
+Gridkeeper** (shown when the version on disk isn't the one running), restart Fusion, or **Stop** and **Run** the add-in
+in **Scripts and Add-Ins**.
 
 **Can I keep the original GridfinityGenerator?**
 Yes, see [Beside the original](../getting-started/installation.md#beside-the-original).
