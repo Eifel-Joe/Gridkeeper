@@ -3,7 +3,7 @@ Round 45 (p480, p296): the box's joint origins without a sketch each. Today ever
 sketch, a point and two driving dimensions (846 ms, 8 model parameters); a joint origin on the component's origin point
 with its offsets X, Y, Z as the point's dims sits at the same place with the same axes, follows the parameters the same
 way (fusion-auftraege/r45_probe.log: gfBox1_baseWidth 5 -> 6 moved both 200 -> 242 mm) and costs 160 ms and 4.
-Bins, baseplates and labels keep the sketch way this round.
+Round 46 (p590): bins, baseplates and inserts make theirs the same way, the sketch way is gone.
 """
 
 import ast
@@ -103,10 +103,29 @@ def test_the_box_and_its_handle_pin_use_it():
         assert "createPointJointOrigins(" not in body, path
 
 
-def test_bins_baseplates_and_labels_keep_the_sketch_way():
-    for path in [("commands", "commandCreateBin", "binBuilder.py"), ("commands", "commandCreateBaseplate", "baseplateBuilder.py"),
-                 ("commands", "commandCreateLabel", "labelBuilder.py")]:
-        assert "createOffsetJointOrigins" not in _source(*path), path
+def test_bins_baseplates_and_inserts_use_it():
+    """Round 46 (p590): the bin's feet, pocket and cell placement joint origins, the baseplate's sockets and the
+    insert's joint origin are offset ones too"""
+    cells = ast.unparse(_function(_source("lib", "gridfinityUtils", "baseGenerator.py"), "createCellJointOrigins"))
+    assert "jointOriginLayout.createOffsetJointOrigins(" in cells
+    for (path, function) in [(("commands", "commandCreateBin", "binBuilder.py"), "_buildBin"),
+                             (("commands", "commandCreateLabel", "labelBuilder.py"), "_buildLabel")]:
+        body = ast.unparse(_function(_source(*path), function))
+        assert "createOffsetJointOrigins(" in body, path
+    assert "createCellJointOrigins(" in ast.unparse(_function(_source("commands", "commandCreateBin", "binBuilder.py"), "_buildBin"))
+    assert "createCellJointOrigins(" in _source("commands", "commandCreateBaseplate", "baseplateBuilder.py")
+
+
+def test_the_sketch_way_is_gone():
+    """createPointJointOrigins (a plane, a sketch, a point and two dimensions per joint origin) is neither defined nor
+    called any more, only the docstring of createOffsetJointOrigins names it"""
+    found = []
+    for folder in ("lib", "commands"):
+        for (directory, _, files) in os.walk(os.path.join(ROOT, folder)):
+            for file in files:
+                if file.endswith(".py") and "createPointJointOrigins(" in open(os.path.join(directory, file), encoding="utf-8").read():
+                    found.append(file)
+    assert found == []
 
 
 def test_the_place_of_a_joint_origin_counts_its_offsets(monkeypatch):

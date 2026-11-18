@@ -3,8 +3,9 @@ import adsk.core, adsk.fusion
 from .dim import Dim, valueInput
 
 # Joint origins at the cells of bin feet and baseplate sockets (round 15, p170). They used to share one sketch with
-# reference dimensions and stayed put when the grid parameters changed; now each is a point of its own built by
-# baseGenerator.createPointJointOrigins, which drives its dims. Names stay as they were, joints made on them keep them
+# reference dimensions and stayed put when the grid parameters changed; then each got a sketch point of its own with
+# driving dims, since round 46 (p590) an offset joint origin, see createOffsetJointOrigins. Names stay as they were,
+# joints made on them keep them
 
 
 def createOffsetJointOrigins(
@@ -14,13 +15,15 @@ def createOffsetJointOrigins(
     name: str,
 ) -> 'list[adsk.fusion.JointOrigin]':
     """
-    Joint origins named as given at x, y, z, Z up and X along X, as baseGenerator.createPointJointOrigins makes them,
-    without a sketch (round 45, p480): each on the component's origin point, its offsets X, Y, Z the point's dims, so it
-    follows the parameters they hold (an expression) or stays put (a number), signed. Same place and axes as the sketch
-    way, 160 ms and 4 model parameters against 846 ms and 8 with plane, sketch, point and two dimensions; a box makes
-    35 of them (fusion-auftraege/r45_probe.log). Sketches don't follow moves of bodies, neither do these: the caller
-    passes the spots after the placement. name is the family's name, kept for the caller's symmetry with
-    createPointJointOrigins (it named their planes and sketches). Tested in tests/test_offset_joint_origins.py
+    Joint origins named as given at x, y, z, Z up and X along X, without a sketch: each on the component's origin
+    point, its offsets X, Y, Z the point's dims, so it follows the parameters they hold (an expression) or stays put (a
+    number), signed. The box since round 45 (p480), bins, baseplates and inserts since round 46 (p590). They replace
+    baseGenerator.createPointJointOrigins, which made a construction plane, a sketch, a sketch point and two driving
+    distance dimensions per point (unsigned, so a point left of or below the origin needed its magnitude): same place
+    and axes, 160 ms and 4 model parameters against 846 ms and 8 (fusion-auftraege/r45_probe.log). Sketches didn't
+    follow moves of bodies, neither do these: the caller passes the spots after the placement. name is the family's
+    name, the sketch way named its planes and sketches after it; kept so the callers read alike.
+    Tested in tests/test_offset_joint_origins.py
     """
     jointOrigins = []
     for (pointName, x, y, z) in points:

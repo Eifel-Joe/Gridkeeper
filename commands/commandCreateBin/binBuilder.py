@@ -20,7 +20,8 @@ from ...lib.gridfinityUtils import raisedDividers
 from ...lib.gridfinityUtils import parameterUtils
 from ...lib.gridfinityUtils import designIntent
 from ...lib.gridfinityUtils.dim import Dim
-from ...lib.gridfinityUtils.baseGenerator import createFootGrid, cutBaseClearance, cutWallJunctionPockets, footCenters, cellCenters, createCellJointOrigins, createPointJointOrigins, keepBodiesInCells, cutOutsideShape, cutShapeWallJunctionPockets
+from ...lib.gridfinityUtils.jointOriginLayout import createOffsetJointOrigins
+from ...lib.gridfinityUtils.baseGenerator import createFootGrid, cutBaseClearance, cutWallJunctionPockets, footCenters, cellCenters, createCellJointOrigins, keepBodiesInCells, cutOutsideShape, cutShapeWallJunctionPockets
 from ...lib.gridfinityUtils.baseGeneratorInput import BaseGeneratorInput
 from ...lib.gridfinityUtils.binBodyGenerator import createGridfinityBinBody, createShapeCavity, createBinLipSupport, binBodyTopHeight, createCompartmentCutout, compartmentCutoutFilletRadius, tabTopClearance, createTabLabel, hollowTabWallThickness
 from ...lib.gridfinityUtils import labelGenerator
@@ -720,7 +721,7 @@ def _buildBin(
         generatedBodies = movedBodies
 
     if state.generateBase and state.hasJointOrigins:
-        # last, after the placement, joint origins sit on sketches which don't follow body moves
+        # last, after the placement, joint origin offsets don't follow body moves
         centers = footCenters(
             gridWidth,
             gridLength,
@@ -741,7 +742,7 @@ def _buildBin(
         # feet's, with the size of the pocket in mm, an insert and a bin have base units of their own
         offsetX = Dim.length(binPlacement[0])
         offsetY = Dim.length(binPlacement[1])
-        jointOrigins = createPointJointOrigins(
+        jointOrigins = createOffsetJointOrigins(
             [(cullenect.pocketJointOriginName(index, count), pocket.centerX + offsetX, pocket.centerY + offsetY, pocket.floorZ) for (index, count, pocket) in pockets],
             gridfinityBinComponent,
             name='Pocket joint origin',
@@ -764,7 +765,7 @@ def _buildBin(
             Dim.length(binPlacement[0]) if binPlacement[0] != 0 else None,
             Dim.length(binPlacement[1]) if binPlacement[1] != 0 else None,
         )
-        (placementOrigin,) = createPointJointOrigins(
+        (placementOrigin,) = createOffsetJointOrigins(
             [(binCell.PLACEMENT_JOINT_ORIGIN, x, y, Dim.length(-const.BIN_BASE_HEIGHT))],
             gridfinityBinComponent,
             name=binCell.PLACEMENT_JOINT_ORIGIN,

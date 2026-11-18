@@ -83,7 +83,7 @@ def seats(d: PredBoxDims, hinge: str = DEFAULT_HINGE) -> list[Seat]:
 def turnAboutZ(reference: Seat, seat: Seat) -> int:
     """
     Degrees about z that turn the reference seat's axes into the seat's, a multiple of 90. The box's joint origins stand
-    upright with X along X (baseGenerator.createPointJointOrigins), a part's joint takes this angle from the pose of its
+    upright with X along X (jointOriginLayout.createOffsetJointOrigins), a part's joint takes this angle from the pose of its
     first seat, the one Pred's file shows (round 28)
     """
     for angle in (0, 90, 180, -90):
@@ -126,7 +126,7 @@ def labelSeat(d: PredBoxDims) -> Seat:
 
 def seatJointOriginPoints(d: PredBoxDims, hinge: str = DEFAULT_HINGE) -> list[tuple[str, Dim, Dim, Dim]]:
     """
-    The box's joint origins at the seats, for baseGenerator.createPointJointOrigins: upright, X along X; a part's
+    The box's joint origins at the seats, for jointOriginLayout.createOffsetJointOrigins: upright, X along X; a part's
     joint takes its turn about z (turnAboutZ). Round 28, plan task 5. The label's seat last (round 29)
     """
     return [(seatJointOriginName(seat.name), seat.x, seat.y, seat.z) for seat in seats(d, hinge) + [labelSeat(d)]]
