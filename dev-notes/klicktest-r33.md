@@ -40,4 +40,4 @@ starten.
 | Update now | Fortschritt, dann Frage „Gridkeeper 1.1.0 is installed. Reload Gridkeeper now to use it? …“ mit Ja/Nein |
 | **Ja**, Dialog **mindestens eine Minute offen lassen** (z. B. Release notes lesen) | Dialog sagt „… Close this dialog to reload Gridkeeper and use 1.1.0.“, **keine** Abbruchmeldung erscheint |
 | Close | Gridkeeper lädt neu; Gridkeeper updates zeigt danach „Running Gridkeeper 1.1.0.“ (ab hier läuft der Release-Code 1.1.0) |
-| Aufräumen | Kopie stoppen, `build_copy.py --remove`, Git-Add-in wieder starten |
+| Aufräumen | Kopie stoppen; nach dem Update ist der Ordner der Release-Stand ohne Markierung, `--remove` verweigert ihn darum: `rm -rf "$APPDATA/Autodesk/Autodesk Fusion 360/API/AddIns/Gridkeeper"` (vorher prüfen, dass dort kein `.git` liegt); Git-Add-in wieder starten (oder `fusion-auftraege/reload_gridkeeper.py`) |
