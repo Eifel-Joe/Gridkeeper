@@ -24,6 +24,13 @@ fillet). Around it:
 - A bin with today's front scoop only is built exactly as before (same snapshot fingerprints), and saved settings
   without the new fields load as before (no new scoop).
 
+## Decided
+
+- Scoops are chosen per wall, four checkboxes (front, back, left, right). The wall carrying the label tab (the back
+  wall) is locked while the tab is on, so at most three with a tab.
+- Compartments: scoops follow the same rule as today's single scoop, only on more walls.
+- Today's bin with one front scoop stays the same in geometry and in its saved settings.
+
 ## Options
 
 1. **One checkbox per wall** (chosen). The existing `hasScoop` stays the front scoop (same input ID, same config field);
