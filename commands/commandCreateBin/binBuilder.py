@@ -1,6 +1,7 @@
 import adsk.core, adsk.fusion
 import copy
 import math
+from dataclasses import dataclass
 
 from ...lib import tagUtils
 from ...lib import configJson
@@ -788,11 +789,15 @@ def rebuildBin(
     # a bin jointed into a cell keeps it (round 31, Nutzer 18.11.2026: "vorhandene Bins behalten beim Neubau ihr
     # Gelenk"): its joint is in the old group and goes with it, the new bin is jointed into the same cell. A cell of a
     # part after the bin in the timeline isn't there where the new one is built, it keeps its place without a joint
-    cell = binCellOf(des, target)
+    found = binCellOf(des, target)
+    cell = found.cell
     notes = []
     if cell is not None and rebuildUtils.comesAfter(target, cell):
         notes.append(f'{target.group.name}: the part of {cell.name} comes after the bin in the timeline, the new bin stays where it was without a joint into the cell')
         cell = None
+    elif cell is None and found.wasInCell:
+        # its cell was deleted, or a rebuilt baseplate or box no longer has it (spec decision 4, review)
+        notes.append(f'{target.group.name}: the cell it was jointed into is gone, the new bin stays where it was without a joint')
     (bodies, rebuildNotes) = rebuildUtils.rebuild(
         des,
         target,
@@ -825,29 +830,48 @@ def isCellJointOrigin(jointOrigin: adsk.fusion.JointOrigin | None) -> bool:
     if jointOrigin is None or not jointOrigin.isValid or binCell.cellOf(jointOrigin.name) is None:
         return False
     component = (jointOrigin.nativeObject or jointOrigin).parentComponent
+    # a baseplate or box of bodies in the root (a part design, or built before round 13) has no component a rebuild
+    # could move the joint to by name, the bin would lose its cell then (review): not offered
+    if component == component.parentDesign.rootComponent:
+        return False
     tagName = tagUtils.TAG_BASEPLATE if jointOrigin.name.startswith(binCell.SOCKET_PREFIX) else tagUtils.TAG_BOX
     if tagName == tagUtils.TAG_BOX and rebuildUtils.partRole(component) == LID_ROLE:
         return False
     return any(body.attributes.itemByName(tagUtils.TAG_GROUP, tagName) is not None for body in component.bRepBodies)
 
-def binCellOf(des: adsk.fusion.Design, target: rebuildUtils.RebuildTarget) -> adsk.fusion.JointOrigin | None:
-    """The cell the bin was jointed into by the bin command, as seen from the root, none when it wasn't: the other side
-    of its joint "... in cell" on its Cell placement joint origin (round 31). A joint of the user's own isn't the
-    command's, it stays a later feature (as labelBuilder.insertPocket)"""
+@dataclass
+class CellOfBin:
+    """The cell a bin was jointed into, as seen from the root, and whether it had a joint into one at all: a joint whose
+    cell is gone has no cell but was in one"""
+    cell: adsk.fusion.JointOrigin | None
+    wasInCell: bool
+
+def binCellOf(des: adsk.fusion.Design, target: rebuildUtils.RebuildTarget) -> CellOfBin:
+    """The cell the bin was jointed into by the bin command: the other side of its joint "... in cell" on its Cell
+    placement joint origin (round 31), as labelBuilder.insertPocket. A joint of the user's own isn't the command's, it
+    stays a later feature. A joint whose cell was deleted may refuse to be read, Fusion raises for a deleted object; it
+    counts as one without a cell, the rebuild goes on (review)"""
     if target.occurrence is None:
-        return None
+        return CellOfBin(None, False)
     component = (target.occurrence.nativeObject or target.occurrence).component
+    wasInCell = False
     for joint in des.rootComponent.allJoints:
-        if not binCell.isCellJointName(joint.name):
-            continue
-        sides = [
-            (adsk.fusion.JointOrigin.cast(joint.geometryOrOriginOne), joint.occurrenceOne),
-            (adsk.fusion.JointOrigin.cast(joint.geometryOrOriginTwo), joint.occurrenceTwo),
-        ]
-        for ((side, _), (other, otherOccurrence)) in (sides, sides[::-1]):
-            if side is not None and other is not None and side.name == binCell.PLACEMENT_JOINT_ORIGIN                     and (side.nativeObject or side).parentComponent == component and binCell.cellOf(other.name) is not None:
-                return assembly.jointOriginInRoot(des, other, otherOccurrence)
-    return None
+        try:
+            if not binCell.isCellJointName(joint.name):
+                continue
+            sides = [
+                (adsk.fusion.JointOrigin.cast(joint.geometryOrOriginOne), joint.occurrenceOne),
+                (adsk.fusion.JointOrigin.cast(joint.geometryOrOriginTwo), joint.occurrenceTwo),
+            ]
+            for ((side, _), (other, otherOccurrence)) in (sides, sides[::-1]):
+                if side is None or side.name != binCell.PLACEMENT_JOINT_ORIGIN or (side.nativeObject or side).parentComponent != component:
+                    continue
+                wasInCell = True
+                if other is not None and binCell.cellOf(other.name) is not None:
+                    return CellOfBin(assembly.jointOriginInRoot(des, other, otherOccurrence), True)
+        except RuntimeError as err:
+            commonUtils.fileLog(f'{LOG_PREFIX} a joint into a cell couldn\'t be read, {err}')
+    return CellOfBin(None, wasInCell)
 
 def isSameSetting(old, new) -> bool:
     if isinstance(old, (int, float)) and isinstance(new, (int, float)) and not isinstance(old, bool) and not isinstance(new, bool):

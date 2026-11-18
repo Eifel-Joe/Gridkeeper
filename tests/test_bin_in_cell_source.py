@@ -62,7 +62,7 @@ def test_the_placement_joint_origin_follows_the_bins_base_unit():
 
 def test_a_rebuilt_bin_goes_into_its_cell_again():
     source = _source(BIN_BUILDER, "rebuildBin")
-    assert "cell = binCellOf(des, target)" in source
+    assert "found = binCellOf(des, target)" in source and "cell = found.cell" in source
     assert "cell=cell" in source
     # the joint places it, its old transform would be taken twice
     assert "None if cell is not None else transform" in source
@@ -133,3 +133,17 @@ def test_a_rebuilt_baseplate_keeps_the_bins_jointed_into_its_cells():
     """Round 31, spec decision 6: joints onto the old baseplate's socket joint origins move to the new one by name"""
     source = _source(os.path.join(ROOT, "commands", "commandCreateBaseplate", "baseplateBuilder.py"), "rebuildBaseplate")
     assert "jointsByName=True" in source
+
+
+def test_parts_of_bodies_in_the_root_offer_no_cells():
+    """Review round 31: a baseplate or box of bodies in the root is rebuilt without a component to move the joint to"""
+    source = _source(BIN_BUILDER, "isCellJointOrigin")
+    assert "component == component.parentDesign.rootComponent" in source
+
+
+def test_a_rebuilt_baseplate_or_box_keeps_the_cells_of_moved_joints_shown():
+    """Review round 31: Fusion turns off a joint origin a joint uses, the bin command keeps the cell shown, so does the
+    rebuild moving the joint over"""
+    source = _source(REBUILD_UTILS, "repointJointsByName")
+    assert "binCell.cellOf(jointOrigin.name) is not None" in source
+    assert source.index("binCell.cellOf(jointOrigin.name)") < source.index("setattr(joint, side, newJointOrigin)")
