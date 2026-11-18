@@ -1,6 +1,6 @@
 """
-Tests for the magnet size choice before the free "Magnet cutout depth" field (round 27, p263; Nutzer 16.11.2026:
-"Magnetlöcher einstellbar. 2,4mm für 2mm Magnete und 3,4mm für 3mm Magnete."). Only the depth is saved, the choice is
+Tests for the magnet size choice before the free "Magnet cutout depth" field (round 27, p263; 16.11.2026:
+magnet holes are adjustable, 2.4 mm for 2 mm magnets and 3.4 mm for 3 mm magnets). Only the depth is saved, the choice is
 read back from it, so settings files with other depths still load.
 """
 
@@ -27,7 +27,7 @@ def test_custom_has_no_depth():
 
 
 def test_box_offers_only_6x2():
-    # Nutzer 16.11.2026: "Box nur 6×2", a 3.4 mm hole would break through Pred's 2.8 mm floor pad
+    # 16.11.2026: box only 6x2, a 3.4 mm hole would break through Pred's 2.8 mm floor pad
     assert sizes.BOX_CHOICES == [sizes.SIZE_6X2, sizes.CUSTOM]
     assert sizes.choiceForDepth(0.34, sizes.BOX_CHOICES) == sizes.CUSTOM
 

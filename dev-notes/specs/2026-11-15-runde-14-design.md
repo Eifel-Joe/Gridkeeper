@@ -1,8 +1,8 @@
 # Runde 14: Beschriftung nach Textänderung
 
-Stand 15.11.2026, mit Nutzer in der Hauptsitzung abgestimmt. Teil des Sammelbetriebs R14–R18 (siehe CLAUDE.md im
+Stand 15.11.2026, in der Hauptsitzung abgestimmt. Teil des Sammelbetriebs R14–R18 (siehe CLAUDE.md im
 Ordner `D:\Entwicklung\Gridfinity`, „Ergänzung Sammelbetrieb“): Branch von `runde-14-18`, Merge zurück nach
-`runde-14-18`, kein Handtest durch Nutzer vor dem Merge.
+`runde-14-18`, kein Handtest vor dem Merge.
 
 ## Punkte
 
@@ -39,9 +39,9 @@ Stelle, keine Verschiebung). Seit Runde 13 liegen eigenfarbige Körper in der Un
    das ist dann im Übergabeprotokoll zu nennen.
 3. **p71 – Erkennung über die Komponente.** „Gridfinity settings“ und „Gridfinity rebuild“ per Rechtsklick finden das
    Teil auch von einem Körper in „Text“ aus, der keine eigene Kennung trägt (über die Text-Komponente bzw. deren
-   Eltern-Teil). Neue Buchstaben behalten Fusions Namen („Körper7“) – Nutzer 15.11.2026: „Körper7 ist in Ordnung“.
+   Eltern-Teil). Neue Buchstaben behalten Fusions Namen („Körper7“) – Entscheidung 15.11.2026: Körper7 ist in Ordnung.
 4. **p53 – durch Runde 13 erledigt**, sofern der Export „Text“ als ein Teil zeigt. Die Runde prüft das im 3MF-Export
-   (Teil „Text“ je Bin/Einleger mit allen Buchstaben und Symbolen). Ob es im Slicer reicht, zeigt des Nutzers Probedruck.
+   (Teil „Text“ je Bin/Einleger mit allen Buchstaben und Symbolen). Ob es im Slicer reicht, zeigt Probedruck.
 5. **Bestand:** Bins und Einleger, die vor dieser Runde gebaut wurden, werden nicht umgebaut. Erst ein Neubau per
    Rechtsklick baut sie nach dem neuen Weg.
 

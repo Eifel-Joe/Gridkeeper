@@ -96,12 +96,12 @@ CULLENECT_RIB_HEIGHT = 0.04
 CULLENECT_RIB_BOTTOM = 0.02
 CULLENECT_CORNER_RADIUS = 0.05
 # text and icons are two 0.2 mm layers, raised above or set into the insert: one layer printed incomplete with a
-# 0.4 mm nozzle (Nutzer 15.11.2026, p130)
+# 0.4 mm nozzle (15.11.2026, p130)
 CULLENECT_MARKING_DEPTH = 0.04
 # least material left around the socket on the tab top
 CULLENECT_POCKET_MARGIN = 0.1
 CULLENECT_MIN_TAB_WIDTH = 1.4
-# the thinnest bin wall a Cullenect socket goes into, Nutzer 15.11.2026 (p35): "Standard fuer Cullenect ist 1,2mm. Dicker
+# the thinnest bin wall a Cullenect socket goes into, 15.11.2026 (p35): "Standard fuer Cullenect ist 1,2mm. Dicker
 # geht, duenner nicht."
 CULLENECT_MIN_WALL_THICKNESS = 0.12
 # sockets come in standard label widths, in steps of half a unit

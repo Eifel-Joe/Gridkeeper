@@ -228,7 +228,7 @@ def test_pocket_fit_note_only_when_the_insert_no_longer_fits():
     assert "Insert in pocket" in note and "Pocket joint origin" in note and "doesn't fit" in note
 
 
-# p35, Nutzer 15.11.2026: "Standard fuer Cullenect ist 1,2mm. Dicker geht, duenner nicht."
+# p35, 15.11.2026: the Cullenect standard is 1.2 mm, thicker is fine, thinner not
 
 def test_walls_from_1_2_mm_take_a_socket():
     for wall in (0.12, 0.2, 0.3):

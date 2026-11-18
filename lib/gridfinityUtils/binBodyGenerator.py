@@ -533,7 +533,7 @@ def roundRaisedDividerCorners(
     up along the edges of its corner without turning, so it follows the wall in and out and meets the corner below
     without a step. Rejected, all shown in Fusion: fill pieces extruded up and cut by the lip's inner face (sharp
     corner in the lip) or by the feet of a stacked bin (undercuts at the top); a rolling ball fillet up the edges (a
-    sickle of 0.36 mm2 left on the corner below, found by Nutzer: the ball can't follow the 0.5 mm of wall under the
+    sickle of 0.36 mm2 left on the corner below, found by hand: the ball can't follow the 0.5 mm of wall under the
     chamfer, it runs into the chamfer).
     The sweeps are cut by the feet of a bin stacked on top, so it still stacks. A wall thicker than the lip leaves a level
     ledge under it, the corner's edges fall in runs there, each swept on its own and only the top one cut by the feet

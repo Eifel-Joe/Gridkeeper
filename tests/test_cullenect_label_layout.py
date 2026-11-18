@@ -141,7 +141,7 @@ class TestFittedLineHeight:
         assert layout.fittedLineHeight(0.5, 3.4, 3.4) * 3.4 / 0.5 <= 3.4 * (1 - layout.TEXT_WIDTH_RESERVE) + 1e-9
 
     def test_welle_6mm_fits_with_the_reserve(self):
-        # p84: the user's 1U insert, "Welle 6mm" measured 34.27 mm wide at 5 mm, 34 mm of room, fitted to 4.96 mm and
+        # p84: a 1U insert, "Welle 6mm" measured 34.27 mm wide at 5 mm, 34 mm of room, fitted to 4.96 mm and
         # broken in two by Fusion. Fitted now it leaves the reserve free
         height = layout.fittedLineHeight(0.5, 3.427, 3.4)
         assert 3.427 * height / 0.5 <= 3.4 * (1 - layout.TEXT_WIDTH_RESERVE) + 1e-9
@@ -292,7 +292,7 @@ class TestMovedLayout:
 
 
 def test_marking_is_two_layers():
-    # text and symbol of an insert are two 0.2 mm layers thick (Nutzer 15.11.2026, p130)
+    # text and symbol of an insert are two 0.2 mm layers thick (15.11.2026, p130)
     const = sys.modules["cullenectLabelLayoutTestPackage.const"]
     assert const.CULLENECT_MARKING_DEPTH == approx(0.04)
     assert not hasattr(const, "CULLENECT_LAYER")
@@ -400,7 +400,7 @@ class TestDebossedRim:
 
     def test_debossed_text_keeps_its_height(self):
         # the spec limits the symbol only. The descenders keeping the rim too was taken back (Hauptsitzung
-        # 15.11.2026): two debossed lines would need 3.27 mm letters, below Regular's 3.5 and Bold's floor, Nutzer decides
+        # 15.11.2026): two debossed lines would need 3.27 mm letters, below Regular's 3.5 and Bold's floor, to be decided
         result = layout.labelLayout(3.6, 1.1, None, False, 2, 'Regular', rim=RIM)
         assert result.lineHeights == approx([0.35, 0.35])
         assert layout.layoutProblem(result) is None
@@ -419,7 +419,7 @@ class TestTextFitWidth:
         assert layout.textFitWidth(result) == approx(result.textMaxX - result.textMinX - 0.1)
 
     def test_without_symbol_the_text_keeps_1mm_too(self):
-        # round 21, p233 (Nutzer, test day question 3): without a symbol the right edge comes closer the same way
+        # round 21, p233 (test day question 3): without a symbol the right edge comes closer the same way
         for lines in (1, 2):
             result = layout.labelLayout(3.6, 1.1, None, False, lines)
             assert layout.textFitWidth(result) == approx(result.textMaxX - result.textMinX - 0.1)

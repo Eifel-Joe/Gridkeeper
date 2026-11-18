@@ -34,7 +34,7 @@ Alle drei Varianten haben dieselbe Grundform; Achse des Gelenks entlang z bei (c
   - **Stand nach den Fusion-Läufen (l1–l4, `r29_hinge_diag`):** keine Bögen in Skizzen (der Freiraum-Sektor aus zwei
     Bögen war überbestimmt), jede Skizze eine Form mit genau einem ganz vom Ursprung bestimmten Punkt (Teile über
     Konstruktionslinien verbunden; die acht einzeln verankerten Brücken-Sehnen lehnte Fusion ab).
-  - **Brücken (Weg A, Nutzer: „A: Brücken anders“):** je Lage zwei Kreisabschnitte jenseits paralleler 45°-Sehnen, jeder
+  - **Brücken (Weg A, Entscheidung: Brücken anders):** je Lage zwei Kreisabschnitte jenseits paralleler 45°-Sehnen, jeder
     als eigenes Rechteck in eigener Skizze, das über den Senkungsrand ins volle Auge ragt (Spec-Nachtrag).
 - Längen: Preds „bis Fläche“-Grenzen werden feste Abstände (es gibt keine Benutzerparameter).
 - **Keine Feature-Spiegelung.** Preds Mirror2/3/4 als Gegenstücke direkt gebaut:

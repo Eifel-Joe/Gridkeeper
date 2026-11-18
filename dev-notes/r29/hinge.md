@@ -6,7 +6,7 @@ laufen oder M3x30 zuerst und Pinned/Plain danach; das entscheidet die Hauptsitzu
 
 ## Pflicht: jede Skizze vollständig bestimmt
 
-Nutzer 17.11.2026: „Denk nur dran, dass alle Zeichnungen vollständig bestimmt sein müssen.“
+Vorgabe 17.11.2026: Alle Zeichnungen müssen vollständig bestimmt sein.
 - Jede Skizze dieses Teils ist `isFullyConstrained`. Das gilt auch dort, wo Preds Vorlage es nicht ist. Die JSON aus
   `r29_parts_walk` nennt je Skizze `fullyConstrained`, `freeCurves` und `freePoints`.
 - Der pytest prüft den Plan (`sketchChain`/`predSketch`): jede Kurve und jeder Punkt bestimmt, keine losen Punkte.

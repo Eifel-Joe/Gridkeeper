@@ -1,6 +1,5 @@
 """
-The joint origin a label goes into stays shown (Nutzer 17.11.2026 after his test: "Allerdings darf er nicht ausgeblendet
-werden."): Fusion turns off the light bulb of a joint origin a joint uses and doesn't turn it on again when the joint
+The joint origin a label goes into stays shown (17.11.2026, found in testing: it must not be hidden): Fusion turns off the light bulb of a joint origin a joint uses and doesn't turn it on again when the joint
 goes. After a rebuild without the box the box's Label joint origin was hidden, picking it again meant finding it in
 the browser. The same for an insert and its pocket. The builders turn it on again after the joint, a rebuild also the
 one the old joint used. Fusion code, so its source is read; the helper itself runs on stand-ins.
@@ -93,8 +92,8 @@ def test_an_insert_rebuild_shows_the_pocket_it_leaves():
     assert source.index("oldPocket = insertPocket(des, body)") < source.index("rebuildUtils.rebuild(")
 
 
-# -- a box or bin rebuilt with a label or insert in it (Nutzer: "Noch schöner wäre natürlich, wenn bei Rebuild der Joint
-# erhalten bliebe."): rebuildUtils moves the joint over to the new holder or pocket, that one stays shown too, and a
+# -- a box or bin rebuilt with a label or insert in it (nicer if a rebuild keeps the joint):
+# rebuildUtils moves the joint over to the new holder or pocket, that one stays shown too, and a
 # label that no longer fits the new box's width is said in the note after the rebuild
 
 REBUILD_UTILS = os.path.join(ROOT, "lib", "rebuildUtils.py")
@@ -159,8 +158,7 @@ def test_an_invalid_joint_origin_whose_native_object_raises_doesnt_fail_the_buil
     assert len(logged) >= 1
 
 
-# -- Nutzer 17.11.2026: "Wenn die Box einen Rebuild bekommt, der das Schild zu groß werden lässt, muss das Schild daneben
-# gelegt werden." Fusion puts a part whose joint goes back where it was built (p391, a jointed label: the origin) and
+# -- 17.11.2026: when a rebuild makes the label too big for the box, the label is laid beside it. Fusion puts a part whose joint goes back where it was built (p391, a jointed label: the origin) and
 # keeps a new place only with its position captured right after it is set (p392: transform2, then snapshots.add)
 
 def test_a_label_too_wide_for_the_rebuilt_box_isnt_moved_over():
@@ -196,7 +194,7 @@ def test_a_label_taken_out_but_not_placed_is_said_as_it_is():
     assert "LAID_FREE" in tail and "LAID_BESIDE" in tail
 
 
-# -- Nutzer 17.11.2026 after laying beside: "Schild vor die Front wäre besser. Sonst übersieht man es schnell." The label
+# -- 17.11.2026 after laying beside: in front of the front the label is easy to see. The label
 # goes in front of the box first, the free spot search only when the front is taken
 
 def test_a_label_laid_beside_tries_the_front_of_the_box_first():

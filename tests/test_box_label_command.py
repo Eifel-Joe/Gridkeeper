@@ -1,6 +1,5 @@
 """
-The box label command (round 29, p262, dev-notes/r29/boxlabel-plan.md): a menu command of its own (Nutzer 17.11.2026:
-"Letzteres wäre mir gut recht, weil man es so besser auch mal austauschen könnte."), the label jointed into the holder
+The box label command (round 29, p262, dev-notes/r29/boxlabel-plan.md): a menu command of its own (17.11.2026: so a label can be swapped), the label jointed into the holder
 of a chosen box, or beside the parts there are without one. entry.py and boxLabelBuilder.py need Fusion to load, so
 their source is read; the plain parts are loaded.
 """
@@ -65,8 +64,8 @@ def test_only_a_box_label_joint_origin_can_be_picked():
 
 
 def test_the_width_is_a_choice_of_preds_fixed_widths():
-    """Nutzer 17.11.2026: "Da das Schild ja feste Breiten hat, sollte es nur ein Auswahlmenü dafür geben. Nicht frei
-    einstellbar." It works without a box in the document (a reprint)"""
+    """17.11.2026: the label has fixed widths, so the width is a choice menu, not a free setting.
+    It works without a box in the document (a reprint)"""
     source = _function(ENTRY, "command_created")
     assert "widthDropdown = addDropdown(boxGroup.children, WIDTH_DROPDOWN, 'Label width', [name for name, _ in predBoxLabelLayout.widthChoices()])" in source
     assert "addIntegerSpinnerCommandInput" not in open(ENTRY, encoding="utf-8").read()
@@ -74,7 +73,7 @@ def test_the_width_is_a_choice_of_preds_fixed_widths():
 
 
 def test_a_picked_box_preselects_its_width():
-    """Nutzer: "Aber es kann natürlich auch eine Breite übernommen werden, wenn man einen Joint auswählt zum positionieren." """
+    """A width can also be taken over when a joint is picked to position the label"""
     source = _function(ENTRY, "command_input_changed")
     assert "if changed_input.id == BOX_INPUT:" in source
     assert "predBoxLabelLayout.widthChoiceFor(cells)" in source

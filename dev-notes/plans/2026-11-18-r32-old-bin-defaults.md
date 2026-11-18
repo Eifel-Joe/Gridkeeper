@@ -18,7 +18,7 @@ Spec: `dev-notes/specs/2026-11-18-r32-old-bin-defaults.md`. Tests: `python -m py
 - [ ] **Task 4 – Rebuild-Weg.** Bestehender Quelltest `test_rebuild_fills_the_older_values_into_a_tagged_config` deckt
   `configWithParameters`; ergänzen um `configChanges` (Rebuild-Log), falls es `withOlderValues` noch nicht nutzt
   (prüfen, sonst nachziehen – Schwester-Pfad).
-- [ ] **Task 5 – CHANGELOG** unter `## Unreleased` / `### Round 32`, des Nutzers Satz zitiert. Klicktest-Checkliste
+- [ ] **Task 5 – CHANGELOG** unter `## Unreleased` / `### Round 32`, Satz zitiert. Klicktest-Checkliste
   `dev-notes/klicktest-r32.md` mit alter Testdatei `dev-notes/specs/testdateien/r32-alte-bin.json`.
 - [ ] **Task 6 – Review** per Opus-Subagent, Funde erledigen, volle Suite.
 - [ ] **Task 7 – PR-Text** an die Hauptsitzung, Klicktest melden, nach Grün push + PR, CI.

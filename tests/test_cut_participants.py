@@ -1,7 +1,7 @@
 """
 Every cut of the storage box generators names the bodies it cuts (p400). Fusion's cut without participantBodies cuts
 every body in its way, also bodies of other components: a bin standing where a hinge was being drawn got the hinge's
-clearance rings and screw hole cut into it (the user's test for 1.1.0, fusion-auftraege/p400_cut_participants.log).
+clearance rings and screw hole cut into it (found in testing for 1.1.0, fusion-auftraege/p400_cut_participants.log).
 
 Checked in the source (ast), as the generators need Fusion:
 - every call of a module's extrude helper with a cut operation passes the bodies to cut;

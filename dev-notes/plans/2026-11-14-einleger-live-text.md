@@ -3,7 +3,7 @@
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Der Text des Cullenect-Einlegers (Befehl „Gridfinity label“) bleibt echter `SketchText`, je Zeile an einen
-Text-User-Parameter gebunden und so nachträglich änderbar. des Nutzers Entscheidung vom 14.11.2026: „Live-Text“.
+Text-User-Parameter gebunden und so nachträglich änderbar. Entscheidung vom 14.11.2026: Live-Text.
 
 **Architecture:** Der Label-Builder legt je Textzeile einen Text-Parameter an (`gfLabelN_text1`/`_text2`, wie
 `binBuilder.createLabelDefinition`), der Generator bindet jeden `SketchText` per `textParameter.expression` daran,

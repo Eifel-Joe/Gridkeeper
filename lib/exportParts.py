@@ -116,13 +116,13 @@ def withMarkings(part, markings: list, paint: bool):
 # and the dialog's bed, spacing and purge choices
 
 # the baseplate dialog's preset (commandCreateBaseplate/printBeds.py) the export starts on, Bambu Lab's 256 mm bed of
-# the P1 and X1 (Nutzer prints on an X1C)
+# the P1 and X1 (the X1C is a common printer)
 DEFAULT_BED = 'Bambu Lab P1P, P1S, X1, X1C, X1E (256 x 256 mm)'
 DEFAULT_BED_SIZE = 256.0
 CUSTOM_BED = 'Custom'
 # saved names of beds gone from the list, by the one they are now
 OLD_BED_NAMES = {'Bambu Lab A1, P1, X1 (256 x 256 mm)': DEFAULT_BED}
-# mm, Nutzer 17.11.2026 (D2), see printLayout
+# mm, 17.11.2026 (D2), see printLayout
 DEFAULT_SPACING = 5.0
 DEFAULT_PURGE = 50.0
 
@@ -176,7 +176,7 @@ def layoutChoices(section: dict, bedNames: list[str]) -> dict:
         return value if value >= minimum and value == value else default
 
     bed = section.get('bed', DEFAULT_BED)
-    # the shared entry before the Bambu Lab printers were apart (click test 17.11.2026), Nutzer prints on an X1C
+    # the shared entry before the Bambu Lab printers were apart (click test 17.11.2026)
     bed = OLD_BED_NAMES.get(bed, bed)
     return {
         'bed': bed if bed in bedNames else CUSTOM_BED,
@@ -206,8 +206,8 @@ def replaceQuestion(replaced: list[str], removed: list[str], folder: str, listed
 def plateKind(role: str | None, tagName: str | None, bodyName: str, setName: str | None) -> tuple | None:
     """
     Which plates a part may share, see printLayout.layOutKinds: a box set's box, its lid and its small parts each
-    plates of their own, per set (Nutzer 17.11.2026: „Das Zubehör der Box sollte auf eine separate Platte. Eine Box
-    müsste je nach Größe 3 Platten gesamt ergeben.“). A box built as bodies in the root has no set, its Base and Lid
+    plates of their own, per set (17.11.2026: the box accessories go on a separate plate, a box
+    gives 3 plates in all depending on its size). A box built as bodies in the root has no set, its Base and Lid
     are told by name. None for every other part, they share plates
     """
     if role in SMALL_PART_ROLES:

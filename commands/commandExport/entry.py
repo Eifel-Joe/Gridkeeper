@@ -650,7 +650,7 @@ def exportEach(items: list[ExportItem], names: list[str], folder: str, format: s
             path = os.path.join(folder, f'{name}.{FORMAT_EXTENSIONS[format]}')
             if format == FORMAT_STL:
                 # the mesh the 3MF takes, Fusion's STL export writes a body where it is
-                # in print orientation (Nutzer 17.11.2026, D4)
+                # in print orientation (17.11.2026, D4)
                 meshObject = printMesh(item, name, None)
                 stlFile.write(path, name, stlFile.atOrigin(meshObject.vertices), meshObject.triangles)
             else:
@@ -705,8 +705,8 @@ def toOrigin(box: adsk.core.BoundingBox3D) -> adsk.core.Matrix3D:
 
 def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: str, filament: int | None, layout: dict) -> tuple[int, list[str], list[str], list[int], list[int]] | None:
     """
-    The bodies in print orientation laid out on the bed, a 3MF per plate (round r29-export; Nutzer 17.11.2026: "Eine
-    Sortierung kann ja nur bei eine 3MF je Platte anständig durchgeführt werden."), the purge tower's square free when
+    The bodies in print orientation laid out on the bed, a 3MF per plate (round r29-export; 17.11.2026: sorting
+    only works properly with one 3MF per plate), the purge tower's square free when
     the text is painted, a chosen Bambu Lab printer's excluded area free. Returns how many have painted letters, the
     files, the names of the parts too large for the bed, the plates without a free purge square and the plates near an
     excluded area; none when the files there may not be replaced
@@ -734,7 +734,7 @@ def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: 
     bed = (layout['bedWidth'], layout['bedLength'])
     # a purge tower only for painted text, where the printer's slicer puts it, the excluded areas of a Bambu Lab printer
     # chosen kept free (click test 17.11.2026: F2 the tower wasn't in the corner kept free, F1 Bambu warned of a box too
-    # close to the X1's excluded area). A box set's box, lid and small parts on plates of their own (Nutzer 17.11.2026)
+    # close to the X1's excluded area). A box set's box, lid and small parts on plates of their own (17.11.2026)
     purge = layout['purge'] if filament is not None and paintedCount > 0 else 0.0
     (laid, plates, tooLarge, noPurge, nearExcluded) = printLayout.layOutKinds(
         [[objects[index] for index in group] for group in groups], [kinds[group[0]] for group in groups], bed,

@@ -2,7 +2,7 @@
 # can break when its parameters change. Sketches of the Cullenect code and of label cases have to be, those of the
 # older generator code are only reported. Kept free of Fusion imports so it can be unit tested
 
-# boxes after Pred are built fully constrained from the start (round 27, Nutzer: every sketch fully constrained)
+# boxes after Pred are built fully constrained from the start (round 27: every sketch fully constrained)
 STRICT_GENERATORS = {'label', 'box'}
 STRICT_CASE_MARKER = 'cullenect'
 
@@ -11,7 +11,7 @@ def _isBound(entity) -> bool:
 
 def _isBoundButForLiveText(sketch) -> bool:
     """Fusion never reports a sketch with live text as fully constrained, however its box is dimensioned or fixed
-    (spike in the Cullenect label spec). Nutzer chose live text for the insert on 14.11.2026 (p50), so such a sketch
+    (spike in the Cullenect label spec). Live text was chosen for the insert on 14.11.2026 (p50), so such a sketch
     counts as constrained when every curve and point in it, the text box or baseline included, is bound and only the
     text isn't"""
     if not any(True for _ in sketch.sketchTexts):

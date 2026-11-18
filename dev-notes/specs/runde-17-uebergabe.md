@@ -86,7 +86,7 @@ Vorschaubilder gab es für die fünf Fälle keine, und die Test-Palette war zu. 
   - g: Der Crimp-Ring bleibt an seiner Stelle.
 - Bauzeiten nachher: Nylonmutter 2,93 s (vorher 23,69 s), Crimp-Ring 3,04 s (vorher 33,39 s).
 
-## Fragen an Nutzer (Testtermin)
+## Fragen (Testtermin)
 
 1. **Zweizeilig vertieft:** verbieten oder die Kerbe durch die Unterlängen hinnehmen?
    - Die Hauptsitzung hatte für die Unterlängen denselben Randabstand freigegeben und die Freigabe wieder
@@ -129,7 +129,7 @@ Kein kritischer Fund. Umgang:
   - (5) Bin-Labels vergrößern Symbole mitunter, dann kann die Abweichung über 0,05 mm liegen.
   - (7) E2E f/g vergleicht die Lage des Symbols über Feature-Flächen.
 
-## Handtest für Nutzer (Testtermin)
+## Handtest (Testtermin)
 
 1. Einleger 1U, zwei Zeilen „gjpy“/„Agjp“, Heavy, Höhenkorrektur −1 mm: Die Unterlängen bleiben im Einleger.
 2. Dasselbe in Regular: Der Dialog meldet „Two lines don't fit this height …“ und sperrt OK.

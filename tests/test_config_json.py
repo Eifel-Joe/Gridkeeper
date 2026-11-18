@@ -335,8 +335,7 @@ def test_rebuild_log_compares_under_the_new_names():
 
 
 # --- round 32, p280: a config saved before a setting existed builds as it was saved, not with the dialog's value.
-# Nutzer: "Aeltere Bins werden erstellt, wie sie gespeichert wurden. Es werden keine Einstellungen aktiviert, welche die
-# Config nicht her gibt." See dev-notes/specs/2026-11-18-r32-old-bin-defaults.md
+# Decided: older bins are built as they were saved, no setting is switched on that the config doesn't give. See dev-notes/specs/2026-11-18-r32-old-bin-defaults.md
 
 # the fields of each generator's oldest config, read from git (bin and baseplate 2fea2a1, label 8a5ce68, box c5a24e8,
 # box label bd75733). A field added since needs the value that built the older models in configJson.OLDER_VALUES

@@ -1,20 +1,20 @@
 # Runde 13 – Baugruppe aus Komponenten, Einleger per Joint in die Tasche
 
-Stand 2026-11-15, von Nutzer freigegeben am 15.11. Ergänzt `2026-11-14-cullenect-labels-design.md` und `2026-11-15-upstream-2-4-merge.md`.
+Stand 2026-11-15, freigegeben am 15.11. Ergänzt `2026-11-14-cullenect-labels-design.md` und `2026-11-15-upstream-2-4-merge.md`.
 Punkte: p90 „Bin und Baseplate in einer Baugruppe als Komponente anlegen“, p160 „Einleger per Joint in seine
 Cullenect-Tasche setzen“, p100 „Label-Befehl legt den Einleger am Nullpunkt mitten in die Bin“.
-des Nutzers Entscheidungen in der Sitzung (15.11.): siehe „Entscheidungen“.
+Entscheidungen in der Sitzung (15.11.): siehe „Entscheidungen“.
 
 ## Warum
 
-Nutzer baut mehrteilige Grids mit vielen Bins und Einlegern in einem Dokument. Heute liegen Bins und Baseplates in einem
+Der Anwendungsfall sind mehrteilige Grids mit vielen Bins und Einlegern in einem Dokument. Heute liegen Bins und Baseplates in einem
 Bauteil-Dokument als Körper in der Wurzel. Will er ein Teil neu bauen oder zum Drucken exportieren, sucht er es
-in einem Haufen Körper. Seine Notiz zu p90, wörtlich: „Eine Oberkomponente Grid für die Grid-Teile, eine Bins für die
-Bins und eine Label für die Labels. Und Beschriftungen, egal ob im Bin oder im Label bekommen auch eine eigene
-Bauteilkomonente Text innerhalb der Komponente. So lässt es sich am einfachsten exportieren um es zu drucken.“
+in einem Haufen Körper. Die Anforderung zu p90: eine Oberkomponente Grid für die Grid-Teile, eine Bins für die
+Bins und eine Label für die Labels; Beschriftungen, egal ob im Bin oder im Label, bekommen eine eigene
+Bauteilkomponente Text innerhalb der Komponente. So lässt sich am einfachsten exportieren, um zu drucken
 
 Einleger legt der Label-Befehl heute in den Nullpunkt. Die Platzsuche (`placementUtils.findPlacement`) umgeht nur andere
-Einleger. So steckt der neue Einleger in der ersten Bin. Ob ein Einleger in seine Tasche passt, prüft Nutzer von Hand.
+Einleger. So steckt der neue Einleger in der ersten Bin. Ob ein Einleger in seine Tasche passt, wird von Hand geprüft.
 
 ## Ziel
 
@@ -40,7 +40,7 @@ Wurzel
 
 Der Druck ändert sich nicht: Geometrie und Maße aller Körper bleiben gleich.
 
-## Entscheidungen (Nutzer, 15.11.)
+## Entscheidungen (15.11.)
 
 | Frage | Antwort |
 |---|---|
@@ -108,7 +108,7 @@ Der Druck ändert sich nicht: Geometrie und Maße aller Körper bleiben gleich.
 |---|---|---|---|
 | **A: gleich in „Text“ bauen** (gewählt) | Skizzen und Extrusionen der Beschriftung entstehen in der Text-Komponente. Schnitte in Bin bzw. Einleger mit vollen Proxys. | Live-Text bleibt richtig: Buchstaben, die ein geänderter Text-Parameter hinzufügt, entstehen ebenfalls in „Text“. Kein Zusatzeintrag in der Timeline. | Generatoren bekommen eine zweite Zielkomponente und die Occurrence-Pfade mitgegeben. |
 | B: am Ende verschieben | Wie heute bauen, dann `moveToComponent` in „Text“. | Kaum Änderungen an den Generatoren. | Buchstaben, die ein späterer Live-Text hinzufügt, bleiben in der falschen Komponente. Das widerspricht dem Live-Text des Einlegers (Runde 9). |
-| C: nur Sammelkomponenten, kein „Text“ | | Am einfachsten. | Erfüllt des Nutzers Notiz nicht. |
+| C: nur Sammelkomponenten, kein „Text“ | | Am einfachsten. | Erfüllt Notiz nicht. |
 
 ## Anforderungen
 
@@ -116,7 +116,7 @@ Der Druck ändert sich nicht: Geometrie und Maße aller Körper bleiben gleich.
 
 1. **Sammelkomponenten** „Grid“, „Bins“, „Label“ direkt in der Wurzel. Sie werden beim ersten Teil ihrer Art angelegt und
    danach wiederverwendet. Erkannt werden sie an einem Attribut (`tagUtils.TAG_GROUP`, eigener Tag-Name je Art) an der
-   Komponente, nicht am Namen, damit Nutzer sie umbenennen kann. Die Occurrence der Sammelkomponente liegt in der
+   Komponente, nicht am Namen, damit der Nutzer sie umbenennen kann. Die Occurrence der Sammelkomponente liegt in der
    Timeline **vor** der Gruppe des Teils, nie darin, sonst würde ein Rebuild sie mit der alten Gruppe löschen.
 2. **Teil-Komponente:** Jede neue Bin, Baseplate und jeder neue Einleger bekommt eine eigene Komponente in seiner
    Sammelkomponente, benannt wie heute (`binDisplayName`, `baseplateName`, `labelName`). Eine Fill-Baseplate bleibt
@@ -171,8 +171,8 @@ Der Druck ändert sich nicht: Geometrie und Maße aller Körper bleiben gleich.
     auf Taschen-Origin. Der Einleger bewegt sich, die Bin nicht. Der Joint gehört zur Timeline-Gruppe des Einlegers.
 12. Passt der Einleger nicht in die Tasche (breiter oder höher als die Tasche, in mm), baut der Befehl nichts. Der
     Dialog zeigt den Hinweis, dass diese Tasche nicht passt und eine passende gewählt werden soll, so wie andere
-    Eingabeprobleme heute (`labelProblem`). Entscheidung Nutzer, 15.11.: „Gar nichts. Hinweis, dass diese Tasche nicht
-    passt und eine passende gewählt werden soll.“
+    Eingabeprobleme heute (`labelProblem`). Entscheidung 15.11.: Nichts bauen, nur Hinweis, dass diese Tasche nicht
+    passt und eine passende gewählt werden soll.
 13. **Ohne Auswahl** sucht die Platzsuche einen freien Platz neben allen getaggten Bins, Baseplates und Einlegern, auch
     denen in Komponenten, nicht nur neben anderen Einlegern. Bisherige Einleger-Raster (`PLACEMENT_CELL_LENGTH`)
     bleiben.
@@ -181,7 +181,7 @@ Der Druck ändert sich nicht: Geometrie und Maße aller Körper bleiben gleich.
 
 - Umzug alter Teile in die neue Struktur (Entscheidung „bleiben, wo sie sind“).
 - Ein Rebuild-Befehl für Einleger (gibt es heute nicht).
-- Joints für Bins auf Baseplates (die Joint Origins dafür gibt es seit Upstream v2.4, setzen tut Nutzer sie selbst).
+- Joints für Bins auf Baseplates (die Joint Origins dafür gibt es seit Upstream v2.4, setzt der Nutzer sie selbst).
 - Änderungen an Geometrie, Maßen oder Druckbild.
 
 ## Ende-zu-Ende-Kriterium

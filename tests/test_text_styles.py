@@ -76,7 +76,7 @@ def test_note_threshold_is_the_print_limit(style):
 
 
 def test_heavy_is_noted_below_3_05_mm():
-    # Nutzer, test day question 2: the hint from the print limit on, Heavy was hinted only below 2.79 mm
+    # Test day question 2: the hint from the print limit on, Heavy was hinted only below 2.79 mm
     styles.noteText('a', 'Heavy', 0.30)
     styles.noteText('b', 'Heavy', 0.31)
     assert [text for (text, _, _) in styles.notes()] == ['a']

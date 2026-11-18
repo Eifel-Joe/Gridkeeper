@@ -752,7 +752,7 @@ def stateLabelColor(state: InputState) -> str:
     """The label color of a bin state built without one, '' where there is no label to color, a custom text that is no
     color as it is (see labelColors.dialogColor). Hollow and shelled bins both have labels on their tab (review round
     10: a shelled bin let an invalid color through). It takes the state rather than asking isShaped(): that builds the
-    state again, which asked for this color, endless recursion that kept the bin dialog from opening (Nutzer 15.11.2026,
+    state again, which asked for this color, endless recursion that kept the bin dialog from opening (15.11.2026,
     see tests/test_dialog_state_calls.py)"""
     # whether there is a label comes from the state, only the color choice is the dialog's (review round 12: a state
     # of a config or rebuild differing from the inputs got the inputs' answer)

@@ -44,9 +44,9 @@ def labelAppearance(design: adsk.fusion.Design, color: str) -> adsk.core.Appeara
     """The appearance of the color in the design, made once and found again by its name"""
     return namedAppearance(design, labelColors.appearanceName(color), color)
 
-# The small parts of the storage box in a color of their own (Nutzer 17.11.2026: "Im Übrigen brauchen Latches, Hinge,
-# Handle und Pin eine andere Farbe als die Box und der Deckel."): orange like the latch in Pred's file, the main
-# session's choice, Nutzer may change it
+# The small parts of the storage box in a color of their own (17.11.2026: latches, hinge,
+# handle and pin need another color than the box and the lid): orange like the latch in Pred's file, the main
+# session's choice, may be changed
 BOX_PARTS_APPEARANCE = 'Gridkeeper box parts'
 BOX_PARTS_COLOR = '#F07800'
 

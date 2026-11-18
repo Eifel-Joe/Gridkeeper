@@ -36,8 +36,8 @@ class StructurePlan:
 def structurePlan(designIntent: int, mayChangeDocument: bool, rebuild: str = REBUILD_NONE) -> StructurePlan:
     """
     Where a bin, baseplate or insert goes (round 13, p90): a new one into its container, a part design switched to
-    hybrid for it. A rebuilt one stays where the old one was, also when it was built before the containers, Nutzer
-    15.11.2026: "Bleiben, wo sie sind". A preview doesn't change a part design, it builds bodies into the root then
+    hybrid for it. A rebuilt one stays where the old one was, also when it was built before the containers, decided
+    15.11.2026: they stay where they are. A preview doesn't change a part design, it builds bodies into the root then
     """
     if rebuild == REBUILD_OLD_BODIES:
         return StructurePlan(switchToHybrid=False, place=PLACE_ROOT_BODIES)

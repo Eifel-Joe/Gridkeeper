@@ -1,7 +1,7 @@
 """
 The dialogs' getInputsState must not reach itself through the module's own helpers. Round 10 had the bin dialog's
 label color ask isShaped(), which asks getInputsState() again: endless recursion, the bin dialog never opened and its
-label inputs stayed greyed out (Nutzer 15.11.2026). entry.py needs Fusion to load, so the calls are read from the source.
+label inputs stayed greyed out (15.11.2026). entry.py needs Fusion to load, so the calls are read from the source.
 """
 
 import ast

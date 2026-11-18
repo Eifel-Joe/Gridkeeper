@@ -20,8 +20,8 @@ GENERATOR_BOX_LABEL = 'boxLabel'
 # Settings added after configs were saved without them, with the value that built the model of such a config. A config
 # read over the dialog's state (Load, rebuild, clone, p151) would otherwise take the dialog's value and build an older
 # bin differently: before upstream's lip types every bin had the light lip trimmed flat (upstream round 17.11.2026, p13).
-# Every setting added since a generator's oldest config is here (round 32, p280, Nutzer: "Es werden keine Einstellungen
-# aktiviert, welche die Config nicht her gibt"), tests/test_config_json.py checks it against the fields of that config.
+# Every setting added since a generator's oldest config is here (round 32, p280: no setting may be
+# switched on that the config does not provide), tests/test_config_json.py checks it against the fields of that config.
 # A value may be a function of the saved settings, giving none when they don't say
 def _xyClearanceAtPlateEdges(settings: dict):
     # before 8cc5089 the edges where baseplates meet took the bin xy clearance, a plate clearance of their own came after

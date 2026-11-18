@@ -1,5 +1,5 @@
 {
-  "description": "Smallest box, 4 x 3 cells, height 6 (the minimum, Nutzer 16.11.2026: \"Mindesthöhe 6. vorerst.\")",
+  "description": "Smallest box, 4 x 3 cells, height 6 (the minimum, 16.11.2026: minimum height 6 for now)",
   "generator": "box",
   "settings": {
     "gridX": 4,

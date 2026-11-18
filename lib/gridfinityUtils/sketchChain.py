@@ -1,6 +1,6 @@
 """
 Which conditions and dimensions bind a sketch completely, in the way of sketchUtils.createRectangle (round 27, task 3b,
-Nutzer: "Ja, Formen-Weg").
+the shapes way, as decided).
 
 A rank picking plan with tangencies was rejected by Fusion (fusion-auftraege/r27_sketches2/3.out). The chain fixes the
 points of each shape one after another: the shape's first point from the origin, every further point with dimensions to

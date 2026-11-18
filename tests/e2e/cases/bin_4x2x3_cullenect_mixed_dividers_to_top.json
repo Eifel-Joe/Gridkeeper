@@ -1,5 +1,5 @@
 {
-    "description": "the user's 4x2x3 bin with dividers up to the top on grid lines: a compartment over 4 cells in front, one over 2 cells and two single ones behind, every divider on a grid line, 4U, 2U and 1U Cullenect sockets",
+    "description": "A 4x2x3 bin with dividers up to the top on grid lines: a compartment over 4 cells in front, one over 2 cells and two single ones behind, every divider on a grid line, 4U, 2U and 1U Cullenect sockets",
     "generator": "bin",
     "settings": {
         "binWidth": 4,

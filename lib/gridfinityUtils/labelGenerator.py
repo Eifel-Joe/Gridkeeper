@@ -286,7 +286,7 @@ def _baselineTexts(
     The text standing on a line parallel to the back edge, its ends driven by the label's x, as one text or as twins
     driven by the same parameter, see cullenectLabelGenerator._texts. Text along a line never breaks into lines, a box
     did for a text made longer (p84). Before the text the sketch is fully constrained, with it Fusion doesn't say so,
-    the exception Nutzer allowed (p50)
+    the exception allowed (p50)
     """
     (edgeLine, front) = _projectedEdge(sketch, edge)
     start = _faceSketchPoint(sketch, placement, placement.baselineStartX.value, placement.baselineFromBack)
@@ -539,7 +539,7 @@ def createLabel(
     if iconPath is not None:
         (iconAspect, iconPoints) = _iconMeasure(sketch, iconPath) or (1, 0)
     # the icon keeps its full size, as tall as the letters can be at most, only the text shrinks to the width left after
-    # it, not below the least height that prints (round 22, p13, Nutzer: "Wie das Original", upstream f1cb49b by
+    # it, not below the least height that prints (round 22, p13, as the original, upstream f1cb49b by
     # Le0Michine; round 19, p181), see binLabelLayout.fitBinLabel
     iconSize = contentHeight * const.BIN_LABEL_TEXT_HEIGHT_RATIO
     textHeight = contentHeight

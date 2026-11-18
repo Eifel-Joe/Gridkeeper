@@ -1,7 +1,7 @@
 # Runde 13 – Übergabe
 
 Stand 2026-11-15. Branch `runde-13` (von `master` b4577a1), nicht gepusht. Spec
-`dev-notes/specs/2026-11-15-runde-13-design.md` (von Nutzer freigegeben), Plan `dev-notes/plans/2026-11-15-runde-13.md`.
+`dev-notes/specs/2026-11-15-runde-13-design.md` (freigegeben), Plan `dev-notes/plans/2026-11-15-runde-13.md`.
 Punkte: p90 „Bin und Baseplate in einer Baugruppe als Komponente anlegen“, p160 „Einleger per Joint in seine
 Cullenect-Tasche setzen“, p100 „Label-Befehl legt den Einleger am Nullpunkt mitten in die Bin“.
 
@@ -18,14 +18,14 @@ Cullenect-Tasche setzen“, p100 „Label-Befehl legt den Einleger am Nullpunkt 
 
 ## Offen
 
-- Dialoge: Nutzer hat Fusion am 15.11. neu gestartet und gemeldet: „Ja, alle drei öffnen“ (Bin, Baseplate, Label).
-- Handtest: Nutzer am 15.11.: „Einleger wandert mit, Handtest ok“.
+- Dialoge: Nach dem Fusion-Neustart am 15.11. öffnen alle drei (Bin, Baseplate, Label).
+- Handtest 15.11.: Einleger wandert mit, Handtest ok.
 - Neuer Punkt in der Liste: p170 „Joint Origins an Bin-Füßen und Grundplatten-Aufnahmen folgen geänderten Rastermaßen
   nicht“ (Upstream-Fehler, Referenzmaße statt steuernder Maße).
 
 ## Zurückgestellte Review-Minors
 
-- Rebuild liest `target.occurrence.transform2`, nicht das der nativen Occurrence. Das zählt nur, wenn Nutzer eine
+- Rebuild liest `target.occurrence.transform2`, nicht das der nativen Occurrence. Das zählt nur, wenn eine
   Sammelkomponente löst und verschiebt.
 - Gelöschte Tasche oder Joint Origin ohne Taschen-Markierung im Feld „Pocket“: Die Meldung lautet trotzdem
   „too small“.
@@ -49,9 +49,9 @@ Cullenect-Tasche setzen“, p100 „Label-Befehl legt den Einleger am Nullpunkt 
 
 ## Nächste Schritte (Hauptsitzung)
 
-- Nutzer: Fusion neu starten (lädt den Fork-Ordner, Branch `runde-13`), Handtest wie unten, dann Merge nach `master`.
+- Fusion neu starten (lädt den Fork-Ordner, Branch `runde-13`), Handtest wie unten, dann Merge nach `master`.
 
-## Handtest für Nutzer (nach Fusion-Neustart)
+## Handtest (nach Fusion-Neustart)
 
 1. Neues Dokument. Baseplate 3x2, Bin 2x1x6 mit Cullenect und 2 Fächern, Bin 1x1 mit farbiger Beschriftung. Im Browser
    prüfen: Grid, Bins, Label, die farbige Bin mit Unterkomponente „Text“. Dass das Dokument hybrid wird, meldet

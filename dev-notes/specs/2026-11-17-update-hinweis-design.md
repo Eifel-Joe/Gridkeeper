@@ -3,19 +3,19 @@
 Stand 17.11.2026, Entwurf zur Freigabe durch die Hauptsitzung. Branch `claude/update-hinweis-6b49ec` von `master`
 (0b0550a). Kommt ins Release 1.1.0; die Manifest-Version ändert diese Runde nicht.
 
-Markierung: **[Nutzer]** = des Nutzers Vorgabe wörtlich oder aus dem Auftrag, **[Vorschlag]** = meine Festlegung, die die
+Markierung: **[Vorgabe]** = Vorgabe wörtlich oder aus dem Auftrag, **[Vorschlag]** = meine Festlegung, die die
 Hauptsitzung freigeben oder ändern soll.
 
 ## Punkt und Wortlaut
 
 p310 „Add-in prüft selbst auf neue Gridkeeper-Versionen“.
-Nutzer: „Für Updates Variante 2.“ und „Beim Update-Hinweis auch einen Link zu den Versionshinweisen einbauen. Man soll
-ja wissen was man bekommt.“
+Vorgabe: Für Updates Variante 2; beim Update-Hinweis auch einen Link zu den Versionshinweisen einbauen, damit
+man weiß, was man bekommt.
 
 ## Warum
 
 Gridkeeper kommt nicht über den App Store; wer die Release-ZIP installiert hat, erfährt von neuen Versionen nur, wenn
-er auf GitHub nachsieht. Das Update von Hand (ZIP über den Ordner entpacken) ist fehleranfällig. Nutzer selbst arbeitet
+er auf GitHub nachsieht. Das Update von Hand (ZIP über den Ordner entpacken) ist fehleranfällig. Ein Entwickler arbeitet
 aus einem Git-Checkout, der darf nie angefasst werden.
 
 ## Was es heute gibt (Befund)
@@ -28,7 +28,7 @@ aus einem Git-Checkout, der darf nie angefasst werden.
 - Es gibt keinen globalen Einstellungsdialog; „Gridkeeper settings“ zeigt nur die Einstellungen eines Körpers.
 - `config.DEV_TOOLS` erkennt den Git-Checkout per `os.path.isdir('.git')`; in einem Git-Worktree ist `.git` eine Datei.
 
-## Anforderungen (Variante 2) [Nutzer]
+## Anforderungen (Variante 2) [Vorgabe]
 
 1. Beim Fusion-Start, höchstens einmal am Tag, fragt Gridkeeper GitHub nach dem neuesten Release von
    `Eifel-Joe/Gridkeeper`. Nur Tags `gridkeeper-vX.Y.Z`; Original-Tags `vX.Y.Z.W` nie berücksichtigen. Vergleich mit
@@ -53,10 +53,10 @@ aus einem Git-Checkout, der darf nie angefasst werden.
 3. **[Vorschlag] Einmal am Tag:** nach Kalendertag (lokal). Gespeichert wird der Tag des letzten *Versuchs*, auch
    eines gescheiterten, damit ein Rechner ohne Netz nicht bei jedem Start wartet. „Später“ heißt: am nächsten Tag
    wieder melden. Kein „Diese Version überspringen“ (nicht verlangt).
-4. **[Nutzer/Vorschlag] Nie blockieren:** die Abfrage läuft in einem Hintergrund-Thread (Zeitlimit 10 s je Anfrage),
+4. **[Vorgabe/Vorschlag] Nie blockieren:** die Abfrage läuft in einem Hintergrund-Thread (Zeitlimit 10 s je Anfrage),
    das Ergebnis kommt über ein Fusion-Custom-Event in den Haupt-Thread. Fehler (kein Netz, Zeitlimit, HTTP-Fehler,
    kaputtes JSON) landen nur in `futil.log`, keine Meldung.
-5. **[Nutzer/Vorschlag] Datenschutz:** gesendet wird nur die Anfrage selbst mit `User-Agent: Gridkeeper-update-check`
+5. **[Vorgabe/Vorschlag] Datenschutz:** gesendet wird nur die Anfrage selbst mit `User-Agent: Gridkeeper-update-check`
    und `Accept: application/vnd.github+json`; keine Version, keine Kennung, kein Cookie. GitHub sieht wie bei jedem
    Seitenaufruf die IP-Adresse; das steht in der Doku.
 
@@ -72,7 +72,7 @@ aus einem Git-Checkout, der darf nie angefasst werden.
    das nicht, ersetzt ein Knopf „Release notes“ (`webbrowser.open`) den Link.
 9. **[Vorschlag] Zeitpunkt:** der Dialog erscheint nur, wenn gerade kein anderer Befehl läuft; sonst wird alle 30 s
    erneut versucht (höchstens 10-mal, danach am nächsten Tag).
-10. **[Nutzer] Git-Checkout:** derselbe Dialog ohne „Update now“, Text „This add-in runs from a git checkout, update it
+10. **[Vorgabe] Git-Checkout:** derselbe Dialog ohne „Update now“, Text „This add-in runs from a git checkout, update it
     with git.“ plus Link.
 
 ### Aktualisieren
@@ -95,11 +95,11 @@ aus einem Git-Checkout, der darf nie angefasst werden.
     7. Erfolg: Meldung „Gridkeeper X.Y.Z is installed. Restart Fusion to load it.“ Fehler: Meldung mit Grund, der alte
        Stand bleibt bzw. ist wiederhergestellt.
     8. Aufräumen: `new/` und die ZIP sofort; Sicherungen beim nächsten Start bis auf die jüngste löschen.
-12. **[Nutzer] Git-Checkout-Sperre doppelt:** der Installer selbst verweigert, wenn im Ziel `.git` existiert (Datei
+12. **[Vorgabe] Git-Checkout-Sperre doppelt:** der Installer selbst verweigert, wenn im Ziel `.git` existiert (Datei
     oder Ordner), unabhängig vom Dialog.
-13. **[Nutzer] Neu laden nach dem Update — messen, nicht annehmen.** Nutzer: „Dran denken, das nach einem Update
-    zumindest das Plugin neu geladen werden muss oder Fusion neu gestartet werden muss. Das sollten wir testen, was
-    da notwendig ist und was funktioniert.“ und „Am 14.11. könnte aber auch ein anderer Fehler gewesen sein.“
+13. **[Vorgabe] Neu laden nach dem Update — messen, nicht annehmen.** Vorgabe: Nach einem Update muss
+    zumindest das Plugin neu geladen oder Fusion neu gestartet werden; zu testen ist, was
+    notwendig ist und was funktioniert. Der Fehler vom 14.11. könnte auch eine andere Ursache gehabt haben.
     Bis zum Neu-Laden läuft die alte Version weiter (Module sind geladen). Zu prüfende Wege, jeder unvoreingenommen:
     - **W1 Fusion-Neustart.**
     - **W2 Skripte und Add-ins:** Gridkeeper stoppen, dann ausführen (von Hand).
@@ -156,10 +156,10 @@ aus einem Git-Checkout, der darf nie angefasst werden.
   Testordner unter dem Scratch-Verzeichnis, `commandConfig` ist mitgenommen.
 - Neu-Laden-Matrix (E13): je Weg W1–W4 ein Durchgang auf einer Test-Installation (aus dem Worktree gebaut,
   Version 9.9.8 → per Installer 9.9.9 mit sichtbarer Markierung); Ergebnis je Weg: laufende Version, jeder der
-  acht Befehle öffnet/öffnet nicht, Fehler im Textbefehlsfenster. des Nutzers Git-Checkout-Add-in muss währenddessen
-  gestoppt sein (gleiche Befehls-IDs) und wird danach wieder gestartet; das braucht die Hauptsitzung bzw. Nutzer.
+  acht Befehle öffnet/öffnet nicht, Fehler im Textbefehlsfenster. Git-Checkout-Add-in muss währenddessen
+  gestoppt sein (gleiche Befehls-IDs) und wird danach wieder gestartet; das braucht die Hauptsitzung bzw. den Nutzer.
   Das Ergebnis kommt als Tabelle in die Spec und bestimmt die Erfolgsmeldung.
-- Handtest (Hauptsitzung/Nutzer): Dialog sehen, Link öffnet die Release-Seite, „Update now“ auf einer Test-Installation
+- Handtest (Hauptsitzung): Dialog sehen, Link öffnet die Release-Seite, „Update now“ auf einer Test-Installation
   (aus diesem Branch gebaut mit Version 0.9.0, `dev-notes/tools/update-fusion-jobs/build_test_install.py`; die
   1.0.0-ZIP selbst hat den Update-Code nicht) ersetzt sie durch das echte 1.0.0, nach Neustart zeigt Fusion 1.0.0. Damit ist kein
   Test-Release auf GitHub nötig; der Weg über ein echtes neues Release läuft erst mit 1.1.0.

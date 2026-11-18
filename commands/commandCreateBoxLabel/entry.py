@@ -30,7 +30,7 @@ from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeExcept
 # Dialog of the box label command (round 29, p262, dev-notes/r29/boxlabel-plan.md): the label of the storage box after
 # Pred's parametric Gridfinity Storage Box v1.1 (https://www.printables.com/model/543553, CC BY-NC, by Pred), Gridkeeper
 # text and Cullenect symbols (https://github.com/CullenJWebb/Cullenect-Labels, MIT, by CullenJWebb). A command of its
-# own (Nutzer 17.11.2026: "Letzteres wäre mir gut recht, weil man es so besser auch mal austauschen könnte.")
+# own (decided 17.11.2026: so it can be swapped out more easily)
 
 app = adsk.core.Application.get()
 ui = app.userInterface
@@ -93,9 +93,8 @@ INFO_TEXT = ("<b>Help:</b> every input is explained "
 
 INPUTS_VALID = True
 
-# Settings, rebuild and clone in the right-click menu like the Cullenect insert's (1.1.0, Nutzer after his test: "Die
-# Box-Labels haben die Punkte [Gridkeeper settings / rebuild / clone im Rechtsklick] nicht. Warum? Die Cullenect-Label
-# haben es."), see commandCreateLabel.entry. The config the dialog opens with next, see startWithConfig
+# Settings, rebuild and clone in the right-click menu like the Cullenect insert's (1.1.0, after a test: box labels lacked
+# these right-click entries that the Cullenect labels have), see commandCreateLabel.entry. The config the dialog opens with next, see startWithConfig
 pendingConfig: dict | None = None
 # the label the dialog opens to rebuild next and the box it is jointed into, see startRebuild; the entity token of the
 # one the open dialog rebuilds, every preview is undone, the token finds the body again. None for a new label
@@ -225,8 +224,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     boxInput.setSelectionLimits(0, 1)
     boxInput.tooltip = (f'Optional: pick the {predBoxSeats.LABEL_JOINT_ORIGIN} at the front of a box, the label takes '
                         "the box's width and goes into the holder. Without, it lies beside the parts there are")
-    # Nutzer 17.11.2026: "Da das Schild ja feste Breiten hat, sollte es nur ein Auswahlmenü dafür geben. Nicht frei
-    # einstellbar." Works without a box in the document, for a reprint
+    # Decided 17.11.2026: the label has fixed widths, so a choice menu, not a free setting. Works without a box in the document, for a reprint
     # a rebuilt label goes into its box's holder again unless it's picked off, as the insert into its pocket. Fusion may
     # refuse the box (round 20, p220): the input stays empty and the dialog says so
     note = selectionPrefill.prefillSelection(boxInput, rebuildBox)
@@ -366,7 +364,7 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
         note = changed_input.parentCommand.commandInputs.itemById(BOX_NOTE)
         if note is not None:
             note.isVisible = adsk.core.SelectionCommandInput.cast(changed_input).selectionCount == 0
-        # Nutzer: "Aber es kann natürlich auch eine Breite übernommen werden, wenn man einen Joint auswählt zum positionieren."
+        # a width can also be taken over by picking a joint to position it
         box = selectedBox(changed_input.parentCommand.commandInputs)
         cells = boxCells(box) if box is not None else None
         if cells is not None:
