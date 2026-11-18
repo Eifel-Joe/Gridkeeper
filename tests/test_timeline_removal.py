@@ -233,8 +233,19 @@ def test_joints_moved_but_none_of_their_joint_origins_found_goes_item_by_item():
     timeline = GroupingTimeline()
     old = indexed(timeline, "Occurrence", "Sketch1")
     logged = []
-    kept = timelineRemoval.deleteMovedFirst(old, moved(), timeline, log=logged.append, expectMoved=True)
+    kept = timelineRemoval.deleteMovedFirst(old, moved(), timeline, log=logged.append, expectedMoved=1)
     assert kept == []
     assert not any(call[0] == "group" for call in timeline.calls if isinstance(call, tuple))
     assert all(not item.isValid for item in old)
     assert any("item by item" in message for message in logged)
+
+
+def test_joints_moved_from_two_joint_origins_but_one_found_goes_item_by_item():
+    # second review round 43: the whole delete would take the joint of the one not found along
+    timeline = GroupingTimeline()
+    old = indexed(timeline, "Occurrence", "Latch joint origin", "Sketch1")
+    logged = []
+    timelineRemoval.deleteMovedFirst(old, moved("Latch joint origin"), timeline, log=logged.append, expectedMoved=2)
+    assert not any(call[0] == "group" for call in timeline.calls if isinstance(call, tuple))
+    assert all(not item.isValid for item in old)
+    assert any("item by item" in message and "1 of the 2" in message for message in logged)

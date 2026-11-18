@@ -37,7 +37,7 @@ def deleteOneByOne(items: list, timeline, log: Callable[[str], None]) -> list[st
     return kept
 
 
-def deleteMovedFirst(items: list, isMoved: Callable[[object], bool], timeline, log: Callable[[str], None], expectMoved: bool = False) -> list[str]:
+def deleteMovedFirst(items: list, isMoved: Callable[[object], bool], timeline, log: Callable[[str], None], expectedMoved: int = 0) -> list[str]:
     """
     Deletes the items of an old part whose group header is gone already, for a rebuild with joints moved over to the
     new part (round 43, p533). The items isMoved picks, the old joint origins the moved joints used, go one by one
@@ -49,7 +49,7 @@ def deleteMovedFirst(items: list, isMoved: Callable[[object], bool], timeline, l
     their own first, the whole delete keeps the joint (fusion-auftraege/r43_probe.py, 18.11.2026: baseplate with a
     bin in a cell 2.7 -> 0.7 s, bin with an insert 5.4 -> 0.9 s, joint kept, timeline healthy).
     Falls back to item by item for the rest, said in the log, when a moved one is kept (the whole delete would take its
-    joint), joints were moved (expectMoved) but isMoved picked none of their joint origins, the rest has a gap in the timeline (a group spans a range) or the whole delete fails or leaves items.
+    joint), isMoved picked fewer items than the expectedMoved joint origins joints were moved away from, the rest has a gap in the timeline (a group spans a range) or the whole delete fails or leaves items.
     Rejected: deleting the group with the marker right after it, deleting the old occurrence (both took the joint);
     Design.deleteEntities (round 39: said true, removed 4 of 54 items)
     """
@@ -58,10 +58,10 @@ def deleteMovedFirst(items: list, isMoved: Callable[[object], bool], timeline, l
     rest = [item for item in items if item.isValid and not any(item is one for one in moved)]
     if not rest:
         return kept
-    if expectMoved and not moved:
-        # the whole delete would take the moved joints along (review round 43)
-        log('deleting the rest item by item: joints were moved, but none of the joint origins they used was found')
-        return deleteOneByOne(rest, timeline, log)
+    if len(moved) < expectedMoved:
+        # the whole delete would take the joints of those not found along (review round 43)
+        log(f'deleting the rest item by item: {len(moved)} of the {expectedMoved} joint origins joints were moved away from found among the old items')
+        return kept + deleteOneByOne(rest, timeline, log)
     if kept:
         log(f'deleting the rest item by item: {", ".join(kept)} wasn\'t deleted, the whole delete would take its joint along')
         return kept + deleteOneByOne(rest, timeline, log)

@@ -342,7 +342,7 @@ def removeOldGroup(target: RebuildTarget, jointsMoved: bool = False) -> list[str
             except RuntimeError:
                 return False
             return jointOrigin is not None and any(jointOrigin == old for old in movedFrom)
-        return timelineRemoval.deleteMovedFirst(target.groupItems, isMoved, timeline, log, expectMoved=True)
+        return timelineRemoval.deleteMovedFirst(target.groupItems, isMoved, timeline, log, expectedMoved=len(movedFrom))
     try:
         if group.deleteMe(True):
             return []

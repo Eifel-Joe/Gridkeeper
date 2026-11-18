@@ -84,11 +84,12 @@ def test_with_joints_moved_the_noted_joint_origins_go_first_then_the_rest_as_a_w
     other = _JointOrigin("Pocket joint origin 2")
     items = [_Item("Occurrence"), _Item(pocket), _Item(other), _Item("Extrude1")]
     group = _Group(items)
-    target = types.SimpleNamespace(group=group, groupItems=items, movedFrom=[pocket])
+    # two joints moved away from the same joint origin: it counts once
+    target = types.SimpleNamespace(group=group, groupItems=items, movedFrom=[pocket, pocket])
     calls = []
 
-    def deleteMovedFirst(groupItems, isMoved, timeline, log, expectMoved=False):
-        calls.append((groupItems, [item for item in groupItems if isMoved(item)], timeline, expectMoved))
+    def deleteMovedFirst(groupItems, isMoved, timeline, log, expectedMoved=0):
+        calls.append((groupItems, [item for item in groupItems if isMoved(item)], timeline, expectedMoved))
         return []
     removal = types.SimpleNamespace(deleteMovedFirst=deleteMovedFirst,
                                     deleteOneByOne=lambda *args: (_ for _ in ()).throw(AssertionError("item by item")))
@@ -96,7 +97,7 @@ def test_with_joints_moved_the_noted_joint_origins_go_first_then_the_rest_as_a_w
     assert removeOldGroup(target, jointsMoved=True) == []
     # the header goes, its items stay in the timeline for deleteMovedFirst
     assert group.calls == [False]
-    assert calls == [(items, [items[1]], "timeline", True)]
+    assert calls == [(items, [items[1]], "timeline", 1)]
 
 
 def test_an_item_whose_entity_fusion_wont_give_isnt_taken_for_a_moved_one():
@@ -111,7 +112,7 @@ def test_an_item_whose_entity_fusion_wont_give_isnt_taken_for_a_moved_one():
     items = [Broken(), _Item(pocket)]
     target = types.SimpleNamespace(group=_Group(items), groupItems=items, movedFrom=[pocket])
     picked = []
-    removal = types.SimpleNamespace(deleteMovedFirst=lambda groupItems, isMoved, timeline, log, expectMoved=False: picked.extend(
+    removal = types.SimpleNamespace(deleteMovedFirst=lambda groupItems, isMoved, timeline, log, expectedMoved=0: picked.extend(
         [item for item in groupItems if isMoved(item)]) or [])
     removeOldGroup = _load("removeOldGroup", adsk=_adsk(), commonUtils=_Log(), timelineRemoval=removal, LOG_PREFIX="test")
     removeOldGroup(target, jointsMoved=True)
