@@ -27,9 +27,11 @@ what you get before you install it.
 
 ![The Gridkeeper updates window offering a new version with its short info, Release notes, Update now and Later](../assets/images/update-dialog-available.png)
 
-- **Update now** downloads the release ZIP from GitHub, checks it and replaces the `Gridkeeper` folder. To load the
-  new version, restart Fusion, or stop and run Gridkeeper in **Utilities › Add-Ins › Scripts and Add-Ins**. Until
-  then the old one keeps running; finish your work with it or load the new one first.
+- **Update now** downloads the release ZIP from GitHub, checks it and replaces the `Gridkeeper` folder. Then it asks
+  **Reload Gridkeeper now to use it?** With **Yes** Gridkeeper stops and starts again with the new version as soon as
+  its windows are closed. With **No** the old one keeps running; finish your work with it and load the new one later:
+  **Gridkeeper updates** then offers **Reload Gridkeeper**, or restart Fusion, or stop and run Gridkeeper in
+  **Utilities › Add-Ins › Scripts and Add-Ins**.
 
   ![Gridkeeper updates after an update: the old version still running, the new one installed](../assets/images/updates-dialog-installed.png)
 
@@ -50,8 +52,9 @@ The newest backup is kept, so you can go back to the version before the last upd
 
 ### Update by hand
 
-Download the ZIP of the new release and unpack it over the old `Gridkeeper` folder, replacing its files. Restart Fusion, or stop
-and run the add-in again in **Scripts and Add-Ins**. Your saved dialog defaults are kept, they are stored in the add-in folder and not part of the ZIP.
+Download the ZIP of the new release and unpack it over the old `Gridkeeper` folder, replacing its files. Click
+**Reload Gridkeeper** in **Utilities › Add-Ins › Gridkeeper updates**, restart Fusion, or stop and run the add-in
+again in **Scripts and Add-Ins**. Your saved dialog defaults are kept, they are stored in the add-in folder and not part of the ZIP.
 
 ### From a git checkout
 

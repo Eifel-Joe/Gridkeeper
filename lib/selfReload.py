@@ -30,16 +30,31 @@ def ownScript(scripts, addinFolder: str):
     found = [script for script in scripts if sameFolder(script.folder, addinFolder)]
     return found[0] if len(found) == 1 else None
 
-def nextStep(activeCommand: str | None, commandPrefix: str, tries: int, maxTries: int) -> str:
+def okAction(openedByCheck: bool, canInstall: bool, running: tuple[int, int, int] | None,
+             installed: tuple[int, int, int] | None) -> str | None:
+    """What OK of the Gridkeeper updates dialog does: 'update' in the one the check opened with a release to install
+    (OK is Update now, never a reload), 'reload' while the version on disk isn't the running one (spec R1), else None,
+    the dialog as before (main session 18.11.2026). Cancel never reloads"""
+    if openedByCheck and canInstall:
+        return 'update'
+    return 'reload' if reloadOffered(running, installed) else None
+
+def nextStep(activeCommand: str | None, commandPrefix: str, tries: int, maxTries: int,
+             patientFor: str | None = None) -> str:
     """'reload' once no Gridkeeper command is open, stopping the add-in would delete it under the user's hands;
-    'wait' while one is and tries are left, 'giveUp' after"""
+    'wait' while one is and tries are left, 'giveUp' after. 'waitPatiently', without a limit, while patientFor is
+    open: the updates dialog says "Close this dialog to reload" (review finding 1)"""
+    if patientFor and activeCommand == patientFor:
+        return 'waitPatiently'
     if activeCommand and activeCommand.startswith(commandPrefix):
         return 'wait' if tries < maxTries else 'giveUp'
     return 'reload'
 
 def reloadScript(script) -> ReloadFailed | None:
     """Stops and runs script, None when both worked. Called from the add-in's own event handler: stop() unloads the
-    add-in, this code still runs to the end (measured), run() loads the code on disk again"""
+    add-in, this code still runs to the end (measured), run() loads the code on disk again. A start that fails inside
+    the new version isn't seen here: Gridkeeper.py's run catches it and logs it, run() still answers True, as with any
+    failed start (review finding 5)"""
     try:
         if not script.stop():
             return ReloadFailed('Fusion didn\'t stop it', True)

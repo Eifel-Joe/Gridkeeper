@@ -35,9 +35,10 @@ SHOW_RETRY_SECONDS = 30
 SHOW_RETRIES = 10
 # Reload Gridkeeper (p321, lib/selfReload.py): the add-in stops and runs itself from this custom event, never in a
 # handler of its own command. It waits for Gridkeeper's dialogs to close, tried this often this many seconds apart
+# (spec R2: at most 10 times); for the updates dialog itself without a limit, it says "Close this dialog to reload"
 RELOAD_EVENT_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_reload'
-RELOAD_RETRY_SECONDS = 2
-RELOAD_RETRIES = 30
+RELOAD_RETRY_SECONDS = 3
+RELOAD_RETRIES = 10
 # the ids of every Gridkeeper command start with it
 COMMAND_PREFIX = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_'
 
@@ -179,8 +180,12 @@ def result_custom_event(args: adsk.core.CustomEventArgs):
 
 def requestReload():
     """Reloads Gridkeeper once Fusion is idle and no Gridkeeper dialog is open, see reload_custom_event"""
-    global reloadTries
+    global reloadTries, reloadTimer
     reloadTries = 0
+    # one reload at a time: a second request (Yes after Update now, then OK) replaces a waiting one (review finding 3)
+    if reloadTimer is not None:
+        reloadTimer.cancel()
+        reloadTimer = None
     # Fusion 2706 answered False when a script fired an add-in's event, the handler ran anyway (p321 measurement)
     app.fireCustomEvent(RELOAD_EVENT_ID, 'reload')
 
@@ -191,9 +196,10 @@ def retryReload():
 def reload_custom_event(args: adsk.core.CustomEventArgs):
     global reloadTries, reloadTimer
     try:
-        step = selfReload.nextStep(ui.activeCommand, COMMAND_PREFIX, reloadTries, RELOAD_RETRIES)
-        if step == 'wait':
-            reloadTries += 1
+        step = selfReload.nextStep(ui.activeCommand, COMMAND_PREFIX, reloadTries, RELOAD_RETRIES, patientFor=CMD_ID)
+        if step in ('wait', 'waitPatiently'):
+            if step == 'wait':
+                reloadTries += 1
             reloadTimer = threading.Timer(RELOAD_RETRY_SECONDS, retryReload)
             # Fusion never waits for it when it closes
             reloadTimer.daemon = True
@@ -219,9 +225,9 @@ def reload_custom_event(args: adsk.core.CustomEventArgs):
 
 # the dialog
 
-def infoHtml(reloadButton: bool = False) -> str:
+def infoHtml(reloadButton: bool = False, reloadPending: bool = False) -> str:
     installed = updateCheck.manifestVersion(ADDIN_FOLDER)
-    lines = [updateCheck.versionLine(runningVersion, installed, reloadButton)]
+    lines = [updateCheck.versionLine(runningVersion, installed, reloadButton, reloadPending)]
     if pendingRelease is not None and (installed is None or pendingRelease.version > installed):
         lines.append(updateCheck.dialogHtml(pendingRelease, installed or runningVersion or (0, 0, 0), updateInstall.isGitCheckout(ADDIN_FOLDER)))
     return '<br><br>'.join(lines)
@@ -235,13 +241,13 @@ def canInstall() -> bool:
 def command_created(args: adsk.core.CommandCreatedEventArgs):
     global openedByCheck, okAction
     command = args.command
-    # opened by the check with a release to install: OK is Update now, Cancel is Later (spec E6)
-    updateDialog = openedByCheck and canInstall()
-    openedByCheck = False
-    # from the menu while another version than the running one is on disk: OK is Reload Gridkeeper (p321, spec R1).
+    # opened by the check with a release to install: OK is Update now, Cancel is Later (spec E6). Else, while another
+    # version than the running one is on disk: OK is Reload Gridkeeper (p321, spec R1), see selfReload.okAction.
     # OK and not a button input: a command can't end itself in its own events, OK closes the dialog, then it reloads
-    reloadDialog = not updateDialog and selfReload.reloadOffered(runningVersion, updateCheck.manifestVersion(ADDIN_FOLDER))
-    okAction = 'update' if updateDialog else 'reload' if reloadDialog else None
+    okAction = selfReload.okAction(openedByCheck, canInstall(), runningVersion, updateCheck.manifestVersion(ADDIN_FOLDER))
+    openedByCheck = False
+    updateDialog = okAction == 'update'
+    reloadDialog = okAction == 'reload'
     command.isOKButtonVisible = okAction is not None
     if updateDialog:
         command.okButtonText = 'Update now'
@@ -356,9 +362,8 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
             if installed is not None:
                 # the dialog may have been closed meanwhile, the update is in place anyway
                 try:
-                    # Yes to reload: it waits for this dialog to close (p321, spec R2)
-                    info.formattedText = infoHtml(okAction == 'reload') + ('<br><br><b>Close this dialog to reload Gridkeeper.</b>'
-                                                       if installed == 'reload' else '')
+                    # Yes to reload: it waits for this dialog to close (p321, spec R2), the text says so (review finding 4)
+                    info.formattedText = infoHtml(okAction == 'reload', reloadPending=installed == 'reload')
                     inputs.itemById(UPDATE_NOW_INPUT).isVisible = False
                 except Exception as err:
                     futil.log(f'{CMD_NAME}: dialog not updated after the update, {err}')

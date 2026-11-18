@@ -129,13 +129,17 @@ def dialogHtml(release: Release, current: tuple[int, int, int], gitCheckout: boo
     return '<br><br>'.join(lines)
 
 def versionLine(running: tuple[int, int, int] | None, installed: tuple[int, int, int] | None,
-                reloadButton: bool = False) -> str:
+                reloadButton: bool = False, reloadPending: bool = False) -> str:
     """The version running, read when the add-in started, and the one on disk an update put there. reloadButton:
-    the dialog shows Reload Gridkeeper, named first (p321)"""
+    the dialog shows Reload Gridkeeper, named first (p321). reloadPending: the user said Yes to reload in the open
+    dialog, the reload waits for it to close (review finding 4)"""
     if running is None:
         return 'Running Gridkeeper, its version is unknown.'
     if installed is None or installed == running:
         return f'Running Gridkeeper {versionText(running)}.'
+    if reloadPending:
+        return (f'Running Gridkeeper {versionText(running)}, installed {versionText(installed)}. '
+                f'Close this dialog to reload Gridkeeper and use {versionText(installed)}.')
     ways = f'Click Reload Gridkeeper, or {RELOAD_WAYS}' if reloadButton else f'{RELOAD_WAYS[0].upper()}{RELOAD_WAYS[1:]}'
     return f'Running Gridkeeper {versionText(running)}, installed {versionText(installed)}. {ways}, to use {versionText(installed)}.'
 
