@@ -151,8 +151,12 @@ def hideOldBody(target: RebuildTarget, byLightBulb: bool = False):
     r39_probe.log). A part of bodies in the root has no occurrence and goes the old way
     """
     if byLightBulb and target.occurrence is not None:
-        target.occurrence.isLightBulbOn = False
-        _hiddenForPreview.append(target.occurrence)
+        # only one that is on: a set the user hid stays hidden after the command (review round 39), and a preview
+        # recomputed after Fusion's undo of the last one records the set once
+        if target.occurrence.isLightBulbOn:
+            target.occurrence.isLightBulbOn = False
+            if not any(hidden == target.occurrence for hidden in _hiddenForPreview):
+                _hiddenForPreview.append(target.occurrence)
         return
     try:
         target.group.isSuppressed = True

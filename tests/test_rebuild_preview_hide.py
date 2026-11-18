@@ -138,3 +138,23 @@ def test_the_box_rebuild_hides_by_light_bulb():
     assert "hideByLightBulb=True" in rebuild
     utilsRebuild = _functionSource(REBUILD_UTILS, "rebuild")
     assert "hideOldBody(target, byLightBulb=hideByLightBulb)" in utilsRebuild
+
+
+def test_a_set_the_user_had_hidden_stays_hidden():
+    """Review round 39: the restore turned on a set whose light bulb the user had turned off before the rebuild"""
+    namespace, _ = _load("hideOldBody", "restoreHiddenForPreview")
+    occurrence = _Occurrence()
+    occurrence.isLightBulbOn = False
+    namespace["hideOldBody"](_target(occurrence), byLightBulb=True)
+    namespace["restoreHiddenForPreview"]()
+    assert occurrence.isLightBulbOn is False
+
+
+def test_previews_one_after_another_record_the_set_once():
+    namespace, _ = _load("hideOldBody", "restoreHiddenForPreview")
+    occurrence = _Occurrence()
+    for _ in range(3):
+        # Fusion undoes the previous preview before the next one, the light bulb is on again
+        occurrence.isLightBulbOn = True
+        namespace["hideOldBody"](_target(occurrence), byLightBulb=True)
+    assert len(namespace["_hiddenForPreview"]) == 1
