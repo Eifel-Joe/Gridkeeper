@@ -512,3 +512,14 @@ def test_the_filaments_that_go_out_are_saved():
     source = _entry_function("command_execute")
     assert "saveChoices(folder, format, paint, {**shown, **filaments}, layout)" in source
     assert source.index("filaments = exportParts.assignFilaments(") < source.index("saveChoices(")
+
+
+def test_label_colors_are_listed_once_even_when_a_part_repeats_them():
+    # Fusion run r37: one bin's letters are several marking bodies of the same color
+    perPart = [["", "#D02020", "#D02020", "#D02020"], ["#2060D0", "#2060D0", "#D02020", ""]]
+    assert exportParts.distinctLabelColors(perPart) == ["", "#D02020", "#2060D0"]
+
+
+def test_label_colors_of_the_dialog_use_the_distinct_list():
+    source = _entry_function("labelColorsOf")
+    assert "exportParts.distinctLabelColors(" in source

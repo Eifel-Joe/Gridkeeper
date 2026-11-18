@@ -119,11 +119,8 @@ class ExportItem:
 
 def labelColorsOf(items: list[ExportItem]) -> list[str]:
     """The label colors of the parts, each once in the order found, '' for outline letters and text without a color"""
-    colors = []
-    for item in items:
-        found = ([''] if item.hasOutlineLabels else []) + [marking.labelColor for marking in item.markings]
-        colors += [color for color in found if color not in colors]
-    return colors
+    return exportParts.distinctLabelColors(
+        [([''] if item.hasOutlineLabels else []) + [marking.labelColor for marking in item.markings] for item in items])
 
 def start():
     global markingMenuHandler

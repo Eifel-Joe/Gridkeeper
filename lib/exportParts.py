@@ -231,6 +231,19 @@ FIRST_LABEL_FILAMENT = 2
 NO_COLOR_KEY = 'none'
 
 
+def distinctLabelColors(perPart: list[list[str]]) -> list[str]:
+    """
+    The label colors of the parts, each once in the order found. A part's letters are often several marking bodies of
+    one color, so a color repeats within a part as well as across parts. With repeats the export dialog's color list
+    never matched its spinners, and every input change rebuilt them, the one being changed included
+    """
+    colors = []
+    for color in (color for found in perPart for color in found):
+        if color not in colors:
+            colors.append(color)
+    return colors
+
+
 def assignFilaments(colors: list[str], saved: dict[str, int]) -> dict[str, int]:
     """
     The filament of each label color of an export, in their order: the saved one, else the lowest from 2 no other color
