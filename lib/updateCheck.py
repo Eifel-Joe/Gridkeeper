@@ -109,11 +109,10 @@ def manifestVersion(addinFolder: str) -> tuple[int, int, int] | None:
 GIT_CHECKOUT_TEXT = 'This add-in runs from a git checkout, update it with git.'
 # How the new version gets loaded, measured in Fusion 2706 (spec E13, 17.11.2026): a restart of Fusion, Stop and Run
 # in Scripts and Add-Ins, or Script.stop/run of the API from a script all load it with every command working.
-# Reloading the add-in's modules in place leaves every command dead, without an error, so it's not offered; the
-# add-in restarting itself through the API wasn't measured and would unload the code that has to run it again
+# Reloading the add-in's modules in place leaves every command dead, without an error, so it's not offered. The
+# add-in restarting itself through the API works too (measured 18.11.2026, p321): the Reload Gridkeeper button, see
+# lib/selfReload.py. These are the ways by hand, named with the button and when it fails
 RELOAD_WAYS = 'restart Fusion, or stop and run Gridkeeper in Utilities › Add-Ins › Scripts and Add-Ins'
-# spec E11.7; until then the old code runs with the new files on disk, so it says so (review finding 5)
-SUCCESS_RESTART_TEXT = f'To load it, {RELOAD_WAYS}. Until then the old version runs.'
 
 def dialogHtml(release: Release, current: tuple[int, int, int], gitCheckout: bool) -> str:
     """The text of the update dialog: the new version, its short info and the link to its release notes"""
@@ -129,17 +128,22 @@ def dialogHtml(release: Release, current: tuple[int, int, int], gitCheckout: boo
         lines.append('The release has no ZIP file to install, download it from the release page.')
     return '<br><br>'.join(lines)
 
-def versionLine(running: tuple[int, int, int] | None, installed: tuple[int, int, int] | None) -> str:
-    """The version running, read when the add-in started, and the one on disk an update put there"""
+def versionLine(running: tuple[int, int, int] | None, installed: tuple[int, int, int] | None,
+                reloadButton: bool = False) -> str:
+    """The version running, read when the add-in started, and the one on disk an update put there. reloadButton:
+    the dialog shows Reload Gridkeeper, named first (p321)"""
     if running is None:
         return 'Running Gridkeeper, its version is unknown.'
     if installed is None or installed == running:
         return f'Running Gridkeeper {versionText(running)}.'
-    return (f'Running Gridkeeper {versionText(running)}, installed {versionText(installed)}. '
-            f'{RELOAD_WAYS[0].upper()}{RELOAD_WAYS[1:]}, to use {versionText(installed)}.')
+    ways = f'Click Reload Gridkeeper, or {RELOAD_WAYS}' if reloadButton else f'{RELOAD_WAYS[0].upper()}{RELOAD_WAYS[1:]}'
+    return f'Running Gridkeeper {versionText(running)}, installed {versionText(installed)}. {ways}, to use {versionText(installed)}.'
 
-def successText(release: Release) -> str:
-    return f'Gridkeeper {release.versionText} is installed. {SUCCESS_RESTART_TEXT}'
+def successQuestion(release: Release) -> str:
+    """Asked right after the update (p321). With No the old code runs with the new files on disk until it's loaded by
+    hand, so it says so (spec E11.7, review finding 5)"""
+    return (f'Gridkeeper {release.versionText} is installed. Reload Gridkeeper now to use it?\n\n'
+            f'With No the old version runs until you {RELOAD_WAYS}.')
 
 # settings
 
