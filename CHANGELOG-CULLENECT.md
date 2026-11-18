@@ -16,9 +16,10 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   OK (p295); inserting them made every preview slow. The checkbox's tooltip says so. Box after
   [Pred's storage box](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric)
   (CC BY-NC, by Pred).
-- **Faster box build (p296):** measured in Fusion first. The preview makes no joint origins either (cells, stack,
-  seats, lid), they took 20–100 s of it; OK makes them all. The hinge's chamfer edges are looked up from one list of
-  the edges instead of walking all of them again for each of Pred's 127 edges (~49 000 Fusion calls, ~22 s a build).
+- **Lighter box preview (p296):** the preview makes no joint origins either (cells, stack, seats, lid), OK makes
+  them all; in a Fusion measurement they had taken up to 75 s of a preview. The box build and rebuild themselves
+  aren't faster: most of their time is Fusion recomputing a design that grows with every box. The hinge looks up its
+  chamfer edges from one list of the edges instead of walking them all again for each edge.
 
 ### Closed box lid (round 30)
 
