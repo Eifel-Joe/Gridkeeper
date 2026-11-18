@@ -80,6 +80,11 @@ PARAMETER_FIELDS = {
 BIN_PLACEMENT_FEATURE = 'Bin placement'
 # the same move of the colored labels in the bin's Text component (round 13)
 
+# where a bin goes, stored in configs, keep these literal
+PLACEMENT_AUTO = 'Snap to free spot'
+PLACEMENT_CENTER = 'Center on origin'
+PLACEMENT_OPTIONS = [PLACEMENT_AUTO, PLACEMENT_CENTER]
+
 def binDisplayName(state: InputState) -> str:
     return 'Gridfinity bin {}x{}x{}{}'.format(
         binGrid.formatSize(state.binLength),
@@ -127,6 +132,13 @@ def shelledTabOriginY(baseLength: float, binLength: float, xyClearance: float) -
 def isShaped(state: InputState) -> bool:
     """A custom shape leaving cells out, a full one builds a plain bin"""
     return state.hasCustomShape and not binShape.isRectangle(shapeCells(state), *feetGridSize(state))
+
+def centeredPlacement(state: InputState) -> tuple[float, float]:
+    """XY offset moving the bin, built from the origin into +X and +Y, so its footprint is centered on the origin"""
+    return (
+        -(state.binWidth * state.baseWidth - state.xyClearance * 2) / 2,
+        -(state.binLength * state.baseLength - state.xyClearance * 2) / 2,
+    )
 
 def shapeError(state: InputState) -> str | None:
     """Why the shaped bin can't be built, none when it can or the bin is a plain rectangle"""
@@ -208,8 +220,9 @@ def buildBin(
     settingsUtils.snapshotInputs. A new bin is a component of its own in the container Bins, a part design is switched
     to hybrid for it unless the document may not change (a preview). A bin rebuilt in place keeps the placement, the
     parameters by their prefix, the transform of its component and the place the old one had, see rebuildUtils and
-    assembly.OldPlace, a new one goes to a free spot. With a cell, a joint origin of a baseplate's socket or of a box's
-    floor (round 31, p312), the bin is jointed into it with its front left cell instead
+    assembly.OldPlace, a new one goes to a free spot. A bin centered on the origin is centered again, its size may have
+    changed. With a cell, a joint origin of a baseplate's socket or of a box's floor (round 31, p312), the bin is
+    jointed into it with its front left cell instead, see binCell.placementSource
     """
     if des.designType == adsk.fusion.DesignTypes.DirectDesignType:
         raise UnsupportedDesignTypeException('Timeline must be enabled for the generator to work, projects with disabled design history currently are not supported')
@@ -377,6 +390,7 @@ def _buildBin(
     binBodyInput.isTabHollow = state.isTabHollow and len(creases) == 0
     binBodyInput.isTabOpenThroughSides = state.isTabOpenThroughSides
     binBodyInput.tabTopAngle = state.tabTopAngle
+    binBodyInput.tabTopOffset = state.tabTopOffset
     binBodyInput.labelStyle = state.labelStyle
     binBodyInput.isLabelBold = state.isLabelBold
     binBodyInput.labelColor = state.labelColor
@@ -581,7 +595,7 @@ def _buildBin(
             compartmentTabInput.width = binBodyInput.tabWidth
             compartmentTabInput.overhangAngle = binBodyInput.tabOverhangAngle
             compartmentTabInput.labelAngle = binBodyInput.tabTopAngle
-            compartmentTabInput.topClearance = tabTopClearance(binBodyInput.labelStyle)
+            compartmentTabInput.topClearance = tabTopClearance(binBodyInput.labelStyle, binBodyInput.tabTopOffset)
             tabBody = createGridfinityBinBodyTab(compartmentTabInput, gridfinityBinComponent, name='Label tab')
 
             # trim the tab to the shell interior, its ends would otherwise poke out past the rounded outer corners,
@@ -670,6 +684,7 @@ def _buildBin(
                     binBody,
                     gridfinityBinComponent,
                     binBodyInput.tabTopAngle,
+                    binBodyInput.tabTopOffset,
                     binBodyInput.labelColor,
                     name='Label',
                     textOccurrence=binBodyInput.textOccurrence,

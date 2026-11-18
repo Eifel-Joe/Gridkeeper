@@ -151,6 +151,7 @@ BIN_SHELL_ROUNDED_INPUT_ID = 'bin_shell_rounded'
 BIN_GENERATE_BASE_INPUT_ID = 'bin_generate_base'
 BIN_GENERATE_BODY_INPUT_ID = 'bin_generate_body'
 BIN_JOINT_ORIGINS_INPUT_ID = 'bin_joint_origins'
+BIN_PLACEMENT_INPUT_ID = 'bin_placement'
 BIN_SCREW_HOLES_INPUT_ID = 'bin_screw_holes'
 BIN_MAGNET_CUTOUTS_INPUT_ID = 'bin_magnet_cutouts'
 BIN_MAGNET_CUTOUTS_TABS_INPUT_ID = 'bin_magnet_cutouts_tabs'
@@ -169,6 +170,7 @@ BIN_TAB_ANGLE_INPUT_ID = 'bin_tab_angle'
 BIN_TAB_HOLLOW_INPUT_ID = 'bin_tab_hollow'
 BIN_TAB_HOLLOW_SIDES_INPUT_ID = 'bin_tab_hollow_sides'
 BIN_TAB_TOP_ANGLE_INPUT_ID = 'bin_tab_top_angle'
+BIN_TAB_TOP_OFFSET_INPUT_ID = 'bin_tab_top_offset'
 BIN_TAB_LABEL_TEXT_INPUT_ID = 'bin_tab_label_text'
 BIN_TAB_LABEL_ICON_INPUT_ID = 'bin_tab_label_icon'
 BIN_TAB_LABEL_STYLE_INPUT_ID = 'bin_tab_label_style'
@@ -222,6 +224,7 @@ STATE_INPUT_IDS = {
     'generateBase': BIN_GENERATE_BASE_INPUT_ID,
     'generateBody': BIN_GENERATE_BODY_INPUT_ID,
     'hasJointOrigins': BIN_JOINT_ORIGINS_INPUT_ID,
+    'placement': BIN_PLACEMENT_INPUT_ID,
     'hasScrewHoles': BIN_SCREW_HOLES_INPUT_ID,
     'screwHoleDiameter': BIN_SCREW_DIAMETER_INPUT,
     'hasMagnetCutouts': BIN_MAGNET_CUTOUTS_INPUT_ID,
@@ -239,6 +242,7 @@ STATE_INPUT_IDS = {
     'tabLength': BIN_TAB_LENGTH_INPUT_ID,
     'tabWidth': BIN_TAB_WIDTH_INPUT_ID,
     'tabPosition': BIN_TAB_POSITION_INPUT_ID,
+    'tabTopOffset': BIN_TAB_TOP_OFFSET_INPUT_ID,
     'isTabHollow': BIN_TAB_HOLLOW_INPUT_ID,
     'isTabOpenThroughSides': BIN_TAB_HOLLOW_SIDES_INPUT_ID,
     'labelText': BIN_TAB_LABEL_TEXT_INPUT_ID,
@@ -314,6 +318,7 @@ def initDefaultUiState():
     commandUIState.initValue(BIN_LENGTH_INPUT_ID, DEFAULT_STATE.binLength, adsk.core.FloatSpinnerCommandInput.classType())
     commandUIState.initValue(BIN_HALF_GRID_INPUT_ID, DEFAULT_STATE.isHalfGrid, adsk.core.BoolValueCommandInput.classType())
     commandUIState.initValue(BIN_SHAPE_CUSTOM_ID, DEFAULT_STATE.hasCustomShape, adsk.core.BoolValueCommandInput.classType())
+    commandUIState.initValue(BIN_PLACEMENT_INPUT_ID, DEFAULT_STATE.placement, adsk.core.DropDownCommandInput.classType())
     commandUIState.initValue(BIN_HEIGHT_INPUT_ID, DEFAULT_STATE.binHeight, adsk.core.ValueCommandInput.classType())
 
     commandUIState.initValue(BIN_GENERATE_BODY_INPUT_ID, DEFAULT_STATE.generateBody, adsk.core.BoolValueCommandInput.classType())
@@ -345,6 +350,7 @@ def initDefaultUiState():
     commandUIState.initValue(BIN_TAB_HOLLOW_INPUT_ID, DEFAULT_STATE.isTabHollow, adsk.core.BoolValueCommandInput.classType())
     commandUIState.initValue(BIN_TAB_HOLLOW_SIDES_INPUT_ID, DEFAULT_STATE.isTabOpenThroughSides, adsk.core.BoolValueCommandInput.classType())
     commandUIState.initValue(BIN_TAB_TOP_ANGLE_INPUT_ID, angleExpression(DEFAULT_STATE.tabTopAngle), adsk.core.ValueCommandInput.classType())
+    commandUIState.initValue(BIN_TAB_TOP_OFFSET_INPUT_ID, DEFAULT_STATE.tabTopOffset, adsk.core.ValueCommandInput.classType())
     commandUIState.initValue(BIN_TAB_LABEL_TEXT_INPUT_ID, DEFAULT_STATE.labelText, adsk.core.StringValueCommandInput.classType())
     commandUIState.initValue(BIN_TAB_LABEL_ICON_INPUT_ID, DEFAULT_STATE.labelIcon, adsk.core.DropDownCommandInput.classType())
     commandUIState.initValue(BIN_TAB_LABEL_STYLE_INPUT_ID, DEFAULT_STATE.labelStyle, adsk.core.DropDownCommandInput.classType())
@@ -925,6 +931,11 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     shapeBrowser.isFullWidth = True
     shapeBrowser.isVisible = commandUIState.getState(BIN_SHAPE_CUSTOM_ID)
     commandUIState.registerCommandInput(shapeBrowser)
+    placementInput = binDimensionsGroup.children.addDropDownCommandInput(BIN_PLACEMENT_INPUT_ID, 'Placement', adsk.core.DropDownStyles.TextListDropDownStyle)
+    placementInput.tooltip = 'Snaps the bin to the free grid spot closest to the origin, next to bins already there, or centers it on the origin'
+    for option in binBuilder.PLACEMENT_OPTIONS:
+        placementInput.listItems.add(option, option == commandUIState.getState(BIN_PLACEMENT_INPUT_ID))
+    commandUIState.registerCommandInput(placementInput)
 
     render_actual_bin_dimensions_table(binDimensionsGroup.children)
 
@@ -1032,6 +1043,13 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     tabTopAngleInput.maximumValue = math.radians(45)
     tabTopAngleInput.isMaximumInclusive = True
     commandUIState.registerCommandInput(tabTopAngleInput)
+    tabTopOffsetInput = binTabFeaturesGroup.children.addValueInput(BIN_TAB_TOP_OFFSET_INPUT_ID, 'Tab top offset (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_TAB_TOP_OFFSET_INPUT_ID)))
+    tabTopOffsetInput.tooltip = 'How far the tab is below the top of the bin, up to 2mm, the label goes down with it. Dividers between compartments are lowered as much'
+    tabTopOffsetInput.minimumValue = 0
+    tabTopOffsetInput.isMinimumInclusive = True
+    tabTopOffsetInput.maximumValue = 0.2
+    tabTopOffsetInput.isMaximumInclusive = True
+    commandUIState.registerCommandInput(tabTopOffsetInput)
     tabHollowInput = binTabFeaturesGroup.children.addBoolValueInput(BIN_TAB_HOLLOW_INPUT_ID, 'Hollow tab', True, '', commandUIState.getState(BIN_TAB_HOLLOW_INPUT_ID))
     tabHollowInput.tooltip = 'Shells the tab with the wall thickness. With a single compartment it is opened through the back wall of the bin, with more compartments it is left closed. On by default for shelled bins'
     commandUIState.registerCommandInput(tabHollowInput)
@@ -1553,6 +1571,7 @@ def configChoices() -> dict[str, configJson.Choice]:
         'labelIcon': configJson.Choice(iconNames, DEFAULT_STATE.labelIcon),
         'labelStyle': configJson.Choice(labelGenerator.LABEL_STYLES, DEFAULT_STATE.labelStyle),
         'lipType': configJson.Choice(LIP_TYPES, DEFAULT_STATE.lipType),
+        'placement': configJson.Choice(binBuilder.PLACEMENT_OPTIONS, DEFAULT_STATE.placement),
     }
 
 def readConfig(text: str, source: str) -> InputState | None:

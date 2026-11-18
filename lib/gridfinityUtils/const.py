@@ -12,6 +12,8 @@ BIN_BASE_MID_SECTION_HEIGH = 0.18
 BIN_BASE_BOTTOM_SECTION_HEIGH = 0.08
 BIN_BASE_HEIGHT = BIN_BASE_TOP_SECTION_HEIGH + BIN_BASE_MID_SECTION_HEIGH + BIN_BASE_BOTTOM_SECTION_HEIGH
 BIN_MAGNET_HOLE_GROOVE_DEPTH = 0.06
+# widens the mouth of magnet sockets of bins and baseplates, so magnets go in easier and the first layer doesn't squish into the hole
+BIN_MAGNET_SOCKET_CHAMFER = 0.05
 
 BIN_LIP_EXTRA_HEIGHT = 0.44
 BIN_LIP_WALL_THICKNESS = BIN_BASE_TOP_SECTION_HEIGH - BIN_XY_CLEARANCE
@@ -29,6 +31,7 @@ BIN_TAB_WIDTH = 1.3
 BIN_TAB_OVERHANG_ANGLE = 45
 BIN_TAB_LABEL_ANGLE = 0
 BIN_TAB_EDGE_FILLET_RADIUS = 0.06
+# default of how far tabs and dividers are below the top of the bin body
 BIN_TAB_TOP_CLEARANCE = 0.05
 BIN_LABEL_DEPTH = 0.05
 # what an engraved label leaves of a hollow tab's top
