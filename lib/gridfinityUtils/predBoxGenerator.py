@@ -32,6 +32,8 @@ class PredBoxOptions:
     hasMagnets: bool = False
     magnetDepth: float = 0.24
     magnetDiameter: float = 0.65
+    # predBoxConfig.LID_TOPS, Pred's grid on top unless closed (round 30, p311)
+    lidTop: str = 'Grid'
 
 
 @dataclass
