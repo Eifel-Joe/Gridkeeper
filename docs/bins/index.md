@@ -9,6 +9,7 @@ The dialog is long, its sections are described on these pages:
 
 | Section | Page |
 |---|---|
+| **Placement** (only with a baseplate or box in the design, for a new bin) | [Picking a joint origin in a dialog](../working/components.md#picking-a-joint-origin-in-a-dialog) |
 | **Info**, **Basic sizes**, **Main dimensions** with the **Actual dimensions** table | [Size and shape](size.md) |
 | **Bin features**: body, type, walls, lip, creases | [Body, walls and lip](body.md) |
 | **Bin compartments**: layout, dividers, **Scoop** | [Compartments and scoop](compartments.md) |
