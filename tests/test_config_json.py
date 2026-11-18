@@ -3,6 +3,7 @@ Tests for bin and baseplate config files: writing them and reading them back int
 """
 
 import os
+import re
 import json
 import math
 import dataclasses
@@ -126,7 +127,11 @@ def test_test_case_files_load_as_configs(current):
     assert notes.unknown == [] and notes.replaced == []
     assert "hasScoop" not in [name for (name, _) in notes.missing]
     assert "wallThickness" in [name for (name, _) in notes.missing]
-    assert state == current
+    # settings added after the oldest configs get the value of the older bins instead (round 32, p280)
+    with open(os.path.join(CASES_FOLDER, "bin_2x3x5_features.json")) as file:
+        saved = json.load(file)["settings"]
+    older = {name: value for (name, value) in OLDER_BIN.items() if name not in saved}
+    assert configJson.stateToJson(BIN, state) == {**configJson.stateToJson(BIN, current), **older}
 
 
 @pytest.mark.parametrize("settings, name", [
@@ -231,33 +236,10 @@ def test_no_notes_without_changes(current):
     assert configJson.notesText(BIN, configJson.ConfigNotes()) == ""
 
 
-# --- round 18, p151: an old bin config without a label color keeps the dialog's color choice
+# --- round 18, p151: an old bin config without a label color kept the dialog's color choice. Round 32 (p280) reverses it
+# for settings a config couldn't have had, see test_old_bin_with_a_label_gets_no_color_even_with_one_in_the_dialog
 
 labelColors = _load("labelColorsForConfig", "lib", "gridfinityUtils", "labelColors.py")
-
-
-def _old_config_without_color(current):
-    settings = configJson.stateToJson(BIN, dataclasses.replace(current, hasTab=True, labelText="Bolts"))
-    del settings["labelColor"]
-    return configJson.configText(BIN, settings)
-
-
-def _dialog_choice_after_loading(current, currentColor):
-    # the bin dialog has no tab, its state keeps '' for the color (stateLabelColor), the choice in the dialog is Red
-    (state, notes) = read(_old_config_without_color(current), dataclasses.replace(current, hasTab=False, labelColor=currentColor))
-    assert ("labelColor", currentColor) in notes.missing
-    assert labelColors.restoresColor(state.labelColor, True, False)
-    return labelColors.choiceOf(state.labelColor)
-
-
-def test_old_bin_config_keeps_the_dialog_color(current):
-    color = labelColors.configCurrentColor("Red", "")
-    assert _dialog_choice_after_loading(current, color) == ("Red", "")
-
-
-def test_derived_empty_color_would_reset_it(current):
-    # what the dialog passed before: the color of a state without a tab, '', which turned the choice to None
-    assert _dialog_choice_after_loading(current, "") == (labelColors.NO_COLOR_CHOICE, "")
 
 
 # --- round 20, p221: the note after "Load from file" named the wall thickness ten times too large (12 mm for 1.2 mm)
@@ -287,8 +269,9 @@ def _lip_changed(current):
 
 
 def test_older_bin_settings_get_the_lip_they_were_built_with():
-    assert configJson.withOlderValues(BIN, {"binWidth": 4}) == {"lipType": "Light", "isLipTopTrimmed": True, "binWidth": 4}
-    assert configJson.withOlderValues(BIN, {"lipType": "Full", "isLipTopTrimmed": False}) == {"lipType": "Full", "isLipTopTrimmed": False}
+    assert configJson.withOlderValues(BIN, {"binWidth": 4}) == {**OLDER_BIN, "binWidth": 4}
+    filled = configJson.withOlderValues(BIN, {"lipType": "Full", "isLipTopTrimmed": False})
+    assert (filled["lipType"], filled["isLipTopTrimmed"]) == ("Full", False)
     assert configJson.withOlderValues(configJson.GENERATOR_BASEPLATE, {"baseWidth": 42}) == {"baseWidth": 42}
 
 
@@ -349,3 +332,142 @@ def test_rebuild_log_compares_under_the_new_names():
     body = source[source.index("def configChanges("):]
     body = body[:body.index("\ndef ", 1)] if "\ndef " in body[1:] else body
     assert "configJson.renamedSettings(generator, " in body
+
+
+# --- round 32, p280: a config saved before a setting existed builds as it was saved, not with the dialog's value.
+# Nutzer: "Aeltere Bins werden erstellt, wie sie gespeichert wurden. Es werden keine Einstellungen aktiviert, welche die
+# Config nicht her gibt." See dev-notes/specs/2026-11-18-r32-old-bin-defaults.md
+
+# the fields of each generator's oldest config, read from git (bin and baseplate 2fea2a1, label 8a5ce68, box c5a24e8,
+# box label bd75733). A field added since needs the value that built the older models in configJson.OLDER_VALUES
+FIRST_CONFIG_FIELDS = {
+    BIN: [
+        "baseWidth", "baseLength", "heightUnit", "xyClearance", "binWidth", "binLength", "binHeight", "isHalfGrid",
+        "wallThickness", "binType", "generateBase", "generateBody", "hasJointOrigins", "hasScrewHoles",
+        "screwHoleDiameter", "hasMagnetCutouts", "hasMagnetCutoutsTabs", "magnetCutoutDiameter", "magnetCutoutDepth",
+        "hasLip", "hasLipNotches", "hasScoop", "scoopMaxRadius", "hasTab", "tabLength", "tabWidth", "tabPosition",
+        "tabOverhangAngle", "isTabHollow", "isTabOpenThroughSides", "tabTopAngle", "labelText", "labelIcon",
+        "labelStyle", "isLabelBold", "compartmentsX", "compartmentsY", "showCompartmentsLayout", "compartmentPockets",
+        "hasCustomShape", "shapeCells", "hasCreases", "creaseDepth", "creaseMinLength", "creaseMaxPanelLength",
+        "creaseMinHeight",
+    ],
+    BASEPLATE: [
+        "baseWidth", "baseLength", "xyClearance", "plateWidth", "plateLength", "plateType", "hasMagnetSockets",
+        "magnetSocketSize", "magnetSocketDepth", "hasScrewHoles", "screwHoleSize", "screwHeadSize", "hasPadding",
+        "paddingLeft", "paddingTop", "paddingRight", "paddingBottom", "extraBottomThickness", "verticalClearance",
+        "hasConnectionHoles", "connectionHoleSize", "sizingMode", "areaWidth", "areaLength", "fitTolerance", "bedWidth",
+        "bedLength", "bedMargin", "alignmentX", "alignmentY", "useHalfCells", "hasJointOrigins",
+    ],
+    configJson.GENERATOR_LABEL: [
+        "baseWidth", "useUnits", "widthUnits", "freeWidth", "offsetX", "offsetY", "line1", "line2", "textStyle",
+        "showScrew", "head", "shaft", "threads", "driver", "flange", "security", "hardware", "surface", "textColor",
+    ],
+    configJson.GENERATOR_BOX: ["gridX", "gridY", "heightU", "hasMagnets", "magnetDepth", "magnetDiameter", "hasJointOrigins"],
+    configJson.GENERATOR_BOX_LABEL: ["cells", "bigText", "line1", "line2", "symbols", "textStyle", "surface", "textColor"],
+}
+STATE_FOLDERS = {
+    BIN: "commandCreateBin", BASEPLATE: "commandCreateBaseplate", configJson.GENERATOR_LABEL: "commandCreateLabel",
+    configJson.GENERATOR_BOX: "commandCreateBox", configJson.GENERATOR_BOX_LABEL: "commandCreateBoxLabel",
+}
+
+
+def _state_fields(generator):
+    # read from the source like the inventory was, the box states import from their package
+    path = os.path.join(PROJECT_ROOT, "commands", STATE_FOLDERS[generator], "inputState.py")
+    with open(path, encoding="utf-8") as file:
+        return re.findall(r"^    (\w+)\s*:", file.read(), re.M)
+
+
+@pytest.mark.parametrize("generator", list(FIRST_CONFIG_FIELDS))
+def test_every_setting_added_since_the_oldest_config_has_its_older_value(generator):
+    added = [name for name in _state_fields(generator) if name not in FIRST_CONFIG_FIELDS[generator]]
+    assert [name for name in added if name not in configJson.OLDER_VALUES.get(generator, {})] == []
+
+
+def _opposite(current):
+    # the dialog with each later setting the other way round from the older bins
+    return dataclasses.replace(
+        current, lipType="Full", isLipTopTrimmed=False, isShellRounded=True, hasDividersToTop=True,
+        labelColor="#FF0000", cullenectSocketOffset=0.05,
+    )
+
+
+def _oldest_bin_config(current):
+    settings = configJson.stateToJson(BIN, dataclasses.replace(current, hasTab=True, labelText="Bolts"))
+    return {name: value for (name, value) in settings.items() if name in FIRST_CONFIG_FIELDS[BIN]}
+
+
+OLDER_BIN = {
+    "lipType": "Light", "isLipTopTrimmed": True, "isShellRounded": False, "hasDividersToTop": False,
+    "labelColor": "", "cullenectSocketOffset": 0.3,
+}
+
+
+def test_oldest_bin_config_reads_as_it_was_built_whatever_the_dialog_has(current):
+    text = configJson.configText(BIN, _oldest_bin_config(current))
+    (state, notes) = read(text, _opposite(current))
+    built = configJson.stateToJson(BIN, state)
+    assert {name: built[name] for name in OLDER_BIN} == OLDER_BIN
+    assert [name for (name, _) in notes.missing if name in OLDER_BIN] == []
+
+
+def test_older_values_never_replace_a_saved_setting(current):
+    saved = configJson.stateToJson(BIN, _opposite(current))
+    filled = configJson.withOlderValues(BIN, saved)
+    assert {name: filled[name] for name in OLDER_BIN} == {name: saved[name] for name in OLDER_BIN}
+
+
+def test_old_bin_with_a_label_gets_no_color_even_with_one_in_the_dialog(current):
+    # p151 (round 18) kept the dialog's color here; p280 reverses it for settings the config couldn't have had
+    text = configJson.configText(BIN, _oldest_bin_config(current))
+    (state, _) = read(text, dataclasses.replace(current, labelColor=labelColors.configCurrentColor("Red", "")))
+    assert state.labelColor == ""
+    assert labelColors.restoresColor(state.labelColor, True, False)
+    assert labelColors.choiceOf(state.labelColor) == (labelColors.NO_COLOR_CHOICE, "")
+
+
+# a baseplate saved before plates had a clearance of their own (8cc5089) took the bin xy clearance at every edge
+# where plates meet
+
+def test_old_baseplate_gets_its_xy_clearance_at_the_plate_edges():
+    assert configJson.withOlderValues(BASEPLATE, {"xyClearance": 0.2})["plateEdgeClearance"] == 0.2
+    assert configJson.withOlderValues(BASEPLATE, {"xyClearance": 0.5})["plateEdgeClearance"] == 0.5
+
+
+def test_partial_baseplate_config_without_xy_clearance_keeps_the_dialogs_edge_clearance():
+    assert "plateEdgeClearance" not in configJson.withOlderValues(BASEPLATE, {"baseWidth": 42})
+
+
+def test_saved_plate_clearance_wins_over_the_xy_clearance():
+    settings = configJson.withOlderValues(BASEPLATE, configJson.renamedSettings(BASEPLATE, {"plateClearance": 0.6, "xyClearance": 0.25}))
+    assert settings["plateEdgeClearance"] == 0.3
+
+
+def test_old_baseplate_config_reads_its_edge_clearance_over_the_dialog():
+    current = case_state("baseplate_3x2_full.json", BASEPLATE, baseplateState.InputState)
+    settings = configJson.stateToJson(BASEPLATE, dataclasses.replace(current, xyClearance=0.04))
+    old = {name: value for (name, value) in settings.items() if name in FIRST_CONFIG_FIELDS[BASEPLATE] and name != "fitTolerance"}
+    (state, _) = read(json.dumps({"generator": BASEPLATE, "settings": old}), current, BASEPLATE, baseplateState.InputState)
+    assert state.plateEdgeClearance == pytest.approx(0.04)
+
+
+def test_baseplate_dialog_takes_the_edge_clearance_up_to_the_largest_xy_clearance():
+    # nothing in the geometry limits it to 0.25 mm, that was half upstream's 0.5 mm whole gap; the edges took the xy
+    # clearance up to 0.5 mm before 8cc5089, and the outer edges of a fill area still do
+    const = _load("constForConfig", "lib", "gridfinityUtils", "const.py")
+    assert const.BASEPLATE_PLATE_EDGE_CLEARANCE_MAX == 0.05
+    with open(os.path.join(PROJECT_ROOT, "commands", "commandCreateBaseplate", "entry.py"), encoding="utf-8") as file:
+        source = file.read()
+    assert "plateEdgeClearanceInput.maximumValue = const.BASEPLATE_PLATE_EDGE_CLEARANCE_MAX" in source
+    assert "inputsState.plateEdgeClearance <= const.BASEPLATE_PLATE_EDGE_CLEARANCE_MAX" in source
+    assert "0.025, 0.5]mm" in source
+
+
+def test_rebuild_log_compares_with_the_older_values():
+    # an old bin's rebuild logged lipType None -> 'Light' and the like for settings it never had
+    path = os.path.join(PROJECT_ROOT, "lib", "rebuildUtils.py")
+    with open(path, encoding="utf-8") as file:
+        source = file.read()
+    body = source[source.index("def configChanges("):]
+    body = body[:body.index("\ndef ", 1)] if "\ndef " in body[1:] else body
+    assert "configJson.withOlderValues(generator, configJson.renamedSettings(generator, " in body
