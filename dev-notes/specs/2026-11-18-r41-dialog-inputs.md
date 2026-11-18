@@ -1,6 +1,6 @@
 # R41 – Dialog-Eingaben: Zahl ohne Einheit formatieren (p291), getippter Spinnerwert beim OK (p490)
 
-Status: Entwurf zur Freigabe; Messung abgeschlossen.
+Status: freigegeben; p490 entschieden (F mit Doku-Satz).
 
 ## Problem
 
@@ -83,7 +83,10 @@ setzen → **Anzeige „2.90 mm“**, kein weiteres `inputChanged`.
 
 **Empfehlung: F.** Das Add-in kann einen Wert, den Fusion beim OK nicht herausgibt, nicht lesen; jeder Ersatz-Feldtyp
 verhält sich gleich. Die Grenze (~0,3 s) erreicht ein Mensch selten (Maus vom Feld zum OK-Knopf), automatische Klicks
-immer. Entscheidung über F (inkl. Doku-Satz ja/nein) und ob die R37-Liste so bleibt: Hauptsitzung/User.
+immer.
+
+**Entscheidung: F mit Doku-Satz.** Keine Code-Änderung für p490; Satz in der FAQ (`docs/help/faq.md`, Abschnitt
+Building, gilt für alle Dialoge) und eine Zeile im CHANGELOG. Die Auswahlliste aus R37 bleibt.
 
 ## Optionen p291
 
