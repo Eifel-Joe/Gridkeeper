@@ -1,7 +1,7 @@
 # Runde 33: Entwicklerbefehle im Worktree (p320), Selbst-Neustart messen (p321)
 
 Stand 18.11.2026. Grundlage: Punkte p320/p321 der Liste, Spec `2026-11-17-update-hinweis-design.md` (E13, Messung
-Neu-Laden), Jörgs Festlegung vom 18.11. zu p321 („Zuerst messen“ auf einer Testkopie, kein Test-Release, kein Tag).
+Neu-Laden), Festlegung vom 18.11. zu p321: zuerst messen, auf einer Testkopie, kein Test-Release, kein Tag.
 
 ## p320 „Testbefehle fehlen, wenn Gridkeeper aus einem Git-Worktree läuft“
 
@@ -26,7 +26,7 @@ Add-Ins stehen „Gridkeeper tests: run“ und der Modellbilder-Befehl.
 so dass danach die neue Version mit allen lebenden Befehlen läuft? Aus einem fremden Skript ist das belegt (E13, W3).
 Aus dem Add-in selbst nicht: der Code, der `stop()` aufruft, gehört zu dem Add-in, das gerade entladen wird.
 
-**Messaufbau (Testkopie, Jörgs Vorgabe):**
+**Messaufbau (Testkopie, nach der Festlegung):**
 1. Testkopie: die Release-Dateien von `wt-r33` (wie `release.yml`) nach
    `%APPDATA%\Autodesk\Autodesk Fusion 360\API\AddIns\Gridkeeper-r33test\`, Manifest-Version 9.9.1. Zusätzlich nur in
    der Kopie eine Messsonde `selfRestartProbe.py`, die `run()` der Kopie einbindet (nicht im Repo-Code):
@@ -44,7 +44,7 @@ Aus dem Add-in selbst nicht: der Code, der `stop()` aufruft, gehört zu dem Add-
    dieser Befehl ist, danach `terminateActiveCommand` (W4 zeigte: Befehle tot, Dialog öffnet nicht).
 5. Aufräumen (Job D, ~10 s): Testkopie `stop()`, `unlink()`; Git-Add-in `run()`; per Bash Kopie-Ordner löschen.
    Prüfen: `Gridkeeper` aus `D:\Entwicklung\Gridfinity\Gridkeeper` läuft, „Beim Start“ unverändert an.
-Ein Slot, vier Jobs, Ablauf vorher der Hauptsitzung zeigen. Kein Dokument nötig (kein Bau), Jörgs Dokumente bleiben.
+Ein Slot, vier Jobs, Ablauf vorher der Hauptsitzung zeigen. Kein Dokument nötig (kein Bau), offene Dokumente bleiben unberührt.
 
 **Auswertung:**
 - **Geht** (Start 2 mit 9.9.2, alle fünf Befehle aktiv): Knopf „Reload Gridkeeper“ im Updates-Dialog bauen (eigene
