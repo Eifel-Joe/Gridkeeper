@@ -127,3 +127,40 @@ def test_bin_builder_passes_the_scoop_walls():
         source = file.read()
     assert "binBodyInput.scoopSides = binScoopSides(state)" in source
     assert "binBodyInput.hasScoop" not in source
+
+
+# --- addendum: scoops per compartment and the radius limit
+
+def test_a_compartment_without_own_scoops_takes_the_bins():
+    assert scoops.compartmentScoopSides(None, frozenset({FRONT, LEFT}), hasTab=False) == frozenset({FRONT, LEFT})
+
+
+def test_own_scoops_replace_the_bins():
+    assert scoops.compartmentScoopSides(["right"], frozenset({FRONT}), hasTab=False) == frozenset({RIGHT})
+    assert scoops.compartmentScoopSides([], frozenset({FRONT}), hasTab=False) == frozenset()
+
+
+def test_the_tab_locks_the_back_of_every_compartment():
+    # every compartment carries its own tab on its back wall
+    assert scoops.compartmentScoopSides(["back", "front"], frozenset(), hasTab=True) == frozenset({FRONT})
+    assert scoops.compartmentScoopSides(["back"], frozenset(), hasTab=False) == frozenset({BACK})
+
+
+def test_outer_walls_where_any_compartment_scoops():
+    # 3 columns, 2 rows: (x, y, width, length, sides)
+    compartments = [
+        (0, 0, 1, 1, frozenset({FRONT, LEFT})),
+        (1, 0, 1, 2, frozenset({BACK})),
+        (2, 0, 1, 1, frozenset({LEFT})),         # a divider, not the bin's left wall
+        (0, 1, 1, 1, frozenset()),
+        (2, 1, 1, 1, frozenset({RIGHT})),
+    ]
+    assert scoops.outerScoopWalls(compartments, 3, 2) == frozenset({FRONT, LEFT, BACK, RIGHT})
+    assert scoops.outerScoopWalls(compartments[2:3], 3, 2) == frozenset()
+
+
+def test_radius_is_limited_only_between_two_scoops_on_an_axis():
+    assert scoops.scoopRadiusSpanLimits(frozenset({FRONT}), 30.0, 20.0, 0.5) == []
+    assert scoops.scoopRadiusSpanLimits(frozenset({FRONT, LEFT}), 30.0, 20.0, 0.5) == []
+    assert scoops.scoopRadiusSpanLimits(frozenset({FRONT, BACK}), 30.0, 20.0, 0.5) == [9.5]
+    assert scoops.scoopRadiusSpanLimits(frozenset({FRONT, BACK, LEFT, RIGHT}), 30.0, 20.0, 0.5) == [9.5, 14.5]

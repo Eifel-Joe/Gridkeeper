@@ -52,3 +52,44 @@ def touchesScoopWall(edgeMin, edgeMax, boxMin, boxMax, sides: frozenset, toleran
         LEFT in sides and edgeMin[0] <= boxMin[0] + tolerance,
         RIGHT in sides and edgeMax[0] >= boxMax[0] - tolerance,
     ])
+
+def compartmentScoopSides(own, binSides: frozenset, *, hasTab: bool) -> frozenset:
+    """
+    The walls with a scoop of one compartment: its own walls from the layout editor, the bin's without a choice of its
+    own (compartmentLayout.pocket). Every compartment carries its own tab on its back wall, so the tab locks the back
+    of each
+    """
+    if own is None:
+        return binSides
+    return scoopSides(FRONT in own, BACK in own, LEFT in own, RIGHT in own, hasTab=hasTab)
+
+def outerScoopWalls(compartments, columns: int, rows: int) -> frozenset:
+    """
+    The bin walls where any compartment along them has a scoop on that wall, compartments as (x, y, width, length,
+    walls) in grid cells. There the cavities start at the inside of the lip and the lip bottom chamfer leaves the wall
+    out, for all compartments along it so the grid stays even
+    """
+    walls = set()
+    for (x, y, width, length, sides) in compartments:
+        if FRONT in sides and y == 0:
+            walls.add(FRONT)
+        if BACK in sides and y + length == rows:
+            walls.add(BACK)
+        if LEFT in sides and x == 0:
+            walls.add(LEFT)
+        if RIGHT in sides and x + width == columns:
+            walls.add(RIGHT)
+    return frozenset(walls)
+
+def scoopRadiusSpanLimits(sides: frozenset, width, length, floorMargin) -> list:
+    """
+    Limits of a compartment's scoop radius from its size: on an axis with scoops on both walls at most half the span
+    less the floor margin, so a strip of flat floor stays between them. An axis with one scoop keeps the limits it had
+    before round 48. Works on numbers and Dims alike
+    """
+    limits = []
+    if FRONT in sides and BACK in sides:
+        limits.append(length / 2 - floorMargin)
+    if LEFT in sides and RIGHT in sides:
+        limits.append(width / 2 - floorMargin)
+    return limits
