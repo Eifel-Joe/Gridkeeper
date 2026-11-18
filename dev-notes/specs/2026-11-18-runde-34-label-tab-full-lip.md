@@ -36,5 +36,5 @@ shelled bin is independent of `hasScoop` and the lip type.
 ## Plan
 1. Fusion job (slot): build the new case with the current code, check tab position and that no scoop exists. (Evidence.)
 2. RED: pytest that pins the shelled tab origin (extract the placement into a small pure function
-   `shelledTabOriginY(binLength, baseLength, xyClearance)` in `binBuilder.py`); GREEN: use it, delete the branch.
+   `shelledTabOriginY(baseLength, binLength, xyClearance)` in `binBuilder.py`); GREEN: use it, delete the branch.
 3. New snapshot case file, CHANGELOG entry under `## Unreleased`, Opus review, PR.
