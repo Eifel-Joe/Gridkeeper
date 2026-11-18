@@ -17,6 +17,7 @@ from .dim import Dim, valueInput
 from .predBox import PredBoxDims
 from .predSketch import WorldSketch, collection
 from . import predBoxEdges
+from . import predBoxConfig
 
 ROOT2 = math.sqrt(2)
 # Pred's sweep profile: centre of the 0.5 mm arc in the lid's socket lip, mm under the top (2.057107 mm)
@@ -202,6 +203,8 @@ class _Builder:
     def floorGrid(self):
         d = self.dims
         y = mm(31)
+        # Pred's grid on top of the lid, or a closed top (round 30, p311): see predBoxConfig.lidTopFeatures
+        lidTop = predBoxConfig.lidTopFeatures(self.options.lidTop)
 
         def xz(points):
             return [(mm(x), y, z if isinstance(z, Dim) else mm(z)) for x, z in points]
@@ -234,8 +237,10 @@ class _Builder:
         cellPath = self.features.createPath(pathSketch.sketchCurves.item(0), True)
 
         # the grid comes after the lid is split off (createPredBox): sockets in the floor, bin seats under the lid
+        # the profile's lower part cuts the sockets in the floor of the box, its upper part those in the top of the lid;
+        # a closed lid isn't in its way, it keeps its top
         sweep1 = self.sweep(cut1.sketch, cellPath, adsk.fusion.FeatureOperations.CutFeatureOperation, 'Sweep1',
-                            [self.base, self.lid])
+                            [self.base, self.lid] if lidTop.socketsInTop else [self.base])
         self.step('#10 Sweep1')
         join = WorldSketch(self.component, self.sweepPlane, 'SweepJoin')
         join.polyline(xz([(31, self.top(10)), (48.8, self.top(10)), (49.6, self.top(9.2)), (49.6, self.top(7.4)),
@@ -243,11 +248,15 @@ class _Builder:
         join.close()
         sweep2 = self.sweep(join.sketch, cellPath, adsk.fusion.FeatureOperations.JoinFeatureOperation, 'Sweep2', [self.lid])
         self.step('#11 Sweep2')
-        cut2 = WorldSketch(self.component, self.sweepPlane, 'SweepCut2')
-        cut2.polyline(xz([(31, self.top(8.8)), (48.3, self.top(8.8)), (48.8, self.top(8.3)), (48.8, self.top(5.6)),
-                          (49.15, self.top(5.25)), (31, self.top(5.25))]))
-        cut2.close()
-        sweep4 = self.sweep(cut2.sketch, cellPath, adsk.fusion.FeatureOperations.CutFeatureOperation, 'Sweep4', [self.lid])
+        # the seats' hollow opens up into the socket above; under a closed top it would be a void shut on every side
+        # (spec r30, option A), so a closed lid keeps them solid, the same shape seen from below
+        sweep4 = None
+        if lidTop.hollowSeats:
+            cut2 = WorldSketch(self.component, self.sweepPlane, 'SweepCut2')
+            cut2.polyline(xz([(31, self.top(8.8)), (48.3, self.top(8.8)), (48.8, self.top(8.3)), (48.8, self.top(5.6)),
+                              (49.15, self.top(5.25)), (31, self.top(5.25))]))
+            cut2.close()
+            sweep4 = self.sweep(cut2.sketch, cellPath, adsk.fusion.FeatureOperations.CutFeatureOperation, 'Sweep4', [self.lid])
         self.step('#12 Sweep4')
 
         floor, magnets, blends = self.floorPads()
@@ -264,7 +273,7 @@ class _Builder:
         blend = fillets.add(filletInput)
         blend.name = 'Floor pad blends'
         self.step('#14 Extrude56')
-        patterned = [sweep1, sweep2, sweep4, floorCut, blend]
+        patterned = [feature for feature in (sweep1, sweep2, sweep4, floorCut, blend) if feature is not None]
         if self.options.hasMagnets:
             magnetCut = self.extrude(magnets, adsk.fusion.FeatureOperations.CutFeatureOperation,
                                      Dim.length(-self.options.magnetDepth), bodies=[self.base], name='Magnets')
@@ -282,9 +291,11 @@ class _Builder:
         pattern.name = 'Cells'
         self.step('#16 R-Pattern1')
         # Pred's Extrude5: from the top down to the plane of the socket lip (0.5 mm over the arc centre)
-        innerProfile = self.footprint.profiles([((1, 1, 0), (d.outerWidth - mm(10), d.outerLength - mm(10), 0))])
-        self.extrude(innerProfile, adsk.fusion.FeatureOperations.CutFeatureOperation, mm(-(ARC_CENTER_BELOW_TOP - 0.5)),
-                     start=d.bodyTop, bodies=[self.lid], name='Cell ridges')
+        # a closed lid stays flat on the body's top from rim to rim
+        if lidTop.cellRidges:
+            innerProfile = self.footprint.profiles([((1, 1, 0), (d.outerWidth - mm(10), d.outerLength - mm(10), 0))])
+            self.extrude(innerProfile, adsk.fusion.FeatureOperations.CutFeatureOperation, mm(-(ARC_CENTER_BELOW_TOP - 0.5)),
+                         start=d.bodyTop, bodies=[self.lid], name='Cell ridges')
         self.step('#17 Extrude5')
 
     # -- Pred #18 to #43: wall recesses, opening tab, handle and label holders ----------------------------------
@@ -742,5 +753,7 @@ def createPredBox(component: adsk.fusion.Component, dims: PredBoxDims, options: 
     builder.catches()
     builder.lidAndHinge()
     builder.floorGrid()
-    builder.chamfer('#85 Chamfer16', body=builder.lid)
+    # the chamfer of the cell ridges' edge, a closed lid has no such edge
+    if predBoxConfig.lidTopFeatures(options.lidTop).ridgeChamfer:
+        builder.chamfer('#85 Chamfer16', body=builder.lid)
     return PredBoxBodies(builder.base, builder.lid)
