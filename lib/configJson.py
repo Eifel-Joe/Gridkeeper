@@ -41,8 +41,7 @@ OLDER_VALUES = {
         'labelColor': '',
         # no Cullenect label before 2e4cf3a, its play then was 0.3 mm
         'cullenectSocketOffset': 0.3,
-        # every bin went to a free spot before upstream's placement option d37c166, upstream's own configs take the
-        # dialog's value instead (round 38)
+        # every bin went to a free spot before upstream's placement option d37c166 (round 38)
         'placement': 'Snap to free spot',
         # tabs and dividers were 0.5 mm below the top before upstream's tab top offset c2e12c0 (round 38)
         'tabTopOffset': 0.5,

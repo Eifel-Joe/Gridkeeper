@@ -84,3 +84,24 @@ def test_where_a_bin_goes(isCentered, hasCell, hasKeptPlacement, source):
 @pytest.mark.parametrize("hasCell, enabled", [(False, True), (True, False)])
 def test_the_position_is_greyed_out_while_a_cell_is_picked(hasCell, enabled):
     assert binCell.positionEnabled(hasCell) is enabled
+
+
+@pytest.mark.parametrize("isCentered, changed, keeps", [
+    (False, ["baseWidth"], True),
+    (True, ["binHeight", "labelText"], True),
+    # the base unit changes the size, the placement move centering it must be made anew (review round 38)
+    (True, ["baseWidth"], False),
+    (True, ["binHeight", "baseLength"], False),
+])
+def test_a_centered_bin_is_rebuilt_when_its_size_changes_by_a_parameter(isCentered, changed, keeps):
+    assert binCell.parameterEditKeepsPlacement(isCentered, changed) is keeps
+
+
+@pytest.mark.parametrize("position, hasCell, stored", [
+    ("Center on origin", False, "Center on origin"),
+    ("Snap to free spot", False, "Snap to free spot"),
+    # a bin in a cell keeps no centering: should its cell go, it stays where it was instead of jumping (review round 38)
+    ("Center on origin", True, "Snap to free spot"),
+])
+def test_a_bin_in_a_cell_is_stored_as_snapped(position, hasCell, stored):
+    assert binCell.storedPosition(position, hasCell, "Snap to free spot") == stored

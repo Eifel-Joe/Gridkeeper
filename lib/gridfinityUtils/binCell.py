@@ -48,6 +48,23 @@ def placementSource(isCentered: bool, hasCell: bool, hasKeptPlacement: bool) -> 
     return 'snap'
 
 
+def storedPosition(position: str, hasCell: bool, snap: str) -> str:
+    """
+    The position a bin is built and tagged with: a bin jointed into a cell keeps no centering (review round 38). The
+    dialog only greys the position out, so it could still say Center on origin, and a rebuilt bin whose cell was lost
+    would jump to the origin instead of staying where it was
+    """
+    return snap if hasCell else position
+
+
+def parameterEditKeepsPlacement(isCentered: bool, changed: list[str]) -> bool:
+    """
+    Whether setting the bin's parameters leaves it where a rebuild would put it: a centered bin's placement move holds
+    the offset of its old size, a base unit changing the size makes it be rebuilt and centered again (review round 38)
+    """
+    return not (isCentered and any(name in ('baseWidth', 'baseLength') for name in changed))
+
+
 def positionEnabled(hasCell: bool) -> bool:
     """Snap or center doesn't apply to a bin going into a cell, so the dialog greys it out while one is picked"""
     return not hasCell

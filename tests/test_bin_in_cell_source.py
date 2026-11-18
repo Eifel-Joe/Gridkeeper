@@ -153,3 +153,15 @@ def test_a_rebuilt_baseplate_or_box_keeps_the_cells_of_moved_joints_shown():
     source = _source(REBUILD_UTILS, "repointJointsByName")
     assert "binCell.cellOf(jointOrigin.name) is not None" in source
     assert source.index("binCell.cellOf(jointOrigin.name)") < source.index("setattr(joint, side, newJointOrigin)")
+
+
+def test_a_bin_in_a_cell_is_built_and_tagged_without_centering():
+    """Review round 38: a bin jointed into a cell is stored as snapped, so losing its cell keeps it in place"""
+    source = _source(BIN_BUILDER, "buildBin")
+    assert "binCell.storedPosition(state.placement, cell is not None, PLACEMENT_AUTO)" in source
+    assert source.index("storedPosition") < source.index("buildWithStructure")
+
+
+def test_a_centered_bin_isnt_resized_by_its_parameters_alone():
+    source = _source(BIN_BUILDER, "parameterEdits")
+    assert "binCell.parameterEditKeepsPlacement(state.placement == PLACEMENT_CENTER, changed)" in source

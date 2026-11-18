@@ -1,5 +1,6 @@
 import adsk.core, adsk.fusion
 import copy
+import dataclasses
 import math
 from dataclasses import dataclass
 
@@ -226,6 +227,8 @@ def buildBin(
     """
     if des.designType == adsk.fusion.DesignTypes.DirectDesignType:
         raise UnsupportedDesignTypeException('Timeline must be enabled for the generator to work, projects with disabled design history currently are not supported')
+    # a bin in a cell is built and tagged as snapped, see binCell.storedPosition
+    state = dataclasses.replace(state, placement=binCell.storedPosition(state.placement, cell is not None, PLACEMENT_AUTO))
     plan = designIntent.structurePlan(des.designIntent, mayChangeDocument, assembly.rebuildKind(oldPlace))
     # the root is active afterwards, also after a failed build, see assembly.buildWithStructure. A rebuild in place
     # builds through here as well, see rebuildBin
@@ -940,6 +943,8 @@ def parameterEdits(
     except configJson.ConfigError:
         return None
     if creaseLayout(oldState) != creaseLayout(state):
+        return None
+    if not binCell.parameterEditKeepsPlacement(state.placement == PLACEMENT_CENTER, changed):
         return None
     if not cullenect.parameterEditKeepsSockets(state.labelStyle == labelGenerator.LABEL_STYLE_CULLENECT, state.hasTab, changed):
         return None
