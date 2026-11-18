@@ -70,7 +70,7 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   a shape in half cells, p282) and *Plate outline trim sketch* / *Plate pieces cut sketch* (baseplates, p290) are
   fully constrained now. The frame around the outline, whose region the cut takes, had no position or size; it is
   dimensioned from the sketch origin like the other rectangles of the generator. The geometry stays the same. Both
-  sketches came from GridfinityGenerator by Le0Michine. Decided: fixed in Gridkeeper only.
+  sketches came from GridfinityGenerator by Le0Michine.
 
 ## 1.1.0 (2026-11-17)
 
