@@ -101,5 +101,6 @@ nav:
   - Reference:
     - Known deviations from the Gridfinity specification: reference/deviations.md
     - Credits and license: reference/credits.md
+    - Privacy: reference/privacy.md
   - Developers:
     - Snapshot tests: developers/snapshot-tests.md
