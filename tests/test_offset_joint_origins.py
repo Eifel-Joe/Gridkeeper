@@ -162,3 +162,29 @@ def test_no_code_reads_a_joint_origin_place_by_its_geometry():
                     if "geometry.origin" in line and "plane.geometry.origin" not in line:
                         found.append(f"{file}:{number}: {line.strip()}")
     assert found == []
+
+
+def test_cell_joint_origins_are_offset_ones(fusion):
+    """createCellJointOrigins (feet of bins, sockets of baseplates) runs on the real jointOriginLayout: one offset
+    joint origin per cell, named by the cell, the center as offsets (an expression for a parameter-bound width), z the
+    base bottom; no sketch or plane (the stand-in has none). baseGenerator itself doesn't load under the stubs, so its
+    function is run from its source with the names it uses"""
+    source = _source("lib", "gridfinityUtils", "baseGenerator.py")
+    function = _function(source, "createCellJointOrigins")
+    for argument in function.args.args + function.args.kwonlyargs:
+        argument.annotation = None  # Fusion types the stubs don't have
+    function.returns = None
+    namespace = {"adsk": sys.modules["adsk"], "Dim": Dim, "jointOriginLayout": layout,
+                 "const": types.SimpleNamespace(BIN_BASE_HEIGHT=0.5)}
+    exec(compile(ast.Module(body=[function], type_ignores=[]), "baseGenerator.py", "exec"), namespace)
+    width = Dim.parameter(types.SimpleNamespace(name="gfBaseplate1_baseWidth", value=4.2))
+    centers = [(0, 0, Dim.length(2.1), Dim.length(2.1)), (1, 0, width * 1.5, Dim.length(2.1))]
+    component = _Component()
+    made = namespace["createCellJointOrigins"](centers, component, name="Socket joint origin")
+    assert [jo.name for jo in made] == ["Socket joint origin 1-1", "Socket joint origin 2-1"]
+    first, second = (jo.input for jo in made)
+    assert first.geometry == ("byPoint", component.originConstructionPoint)
+    assert (first.offsetX.real, first.offsetY.real, first.offsetZ.real) == (2.1, 2.1, -0.5)
+    assert second.offsetX.string == (width * 1.5).expression
+    assert "gfBaseplate1_baseWidth" in second.offsetX.string
+    assert second.offsetZ.real == -0.5

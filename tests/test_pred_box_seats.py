@@ -114,7 +114,7 @@ def test_the_seats_follow_the_box_parameters():
 
 
 def test_each_seat_is_its_parts_first_seat_turned_about_z():
-    """The box's joint origins stand upright, X along X (createPointJointOrigins); each part's joint turns it about z
+    """The box's joint origins stand upright, X along X (createOffsetJointOrigins); each part's joint turns it about z
     from the pose of its first seat, the one Pred's file shows"""
     by = _byName((5, 4, 6))
     turns = {name: seats.turnAboutZ(by[first], by[name]) for first, names in (
@@ -143,7 +143,7 @@ def test_the_handle_width_is_preds(size):
 
 
 def test_the_box_gets_a_joint_origin_at_every_seat():
-    """Task 5: the points for baseGenerator.createPointJointOrigins, named after predBoxParts.seatJointOriginName"""
+    """Task 5: the points for jointOriginLayout.createOffsetJointOrigins, named after predBoxParts.seatJointOriginName"""
     d = _dims(5, 4, 6)
     points = seats.seatJointOriginPoints(d)[:len(parts.SEAT_NAMES)]
     assert [name for (name, *_rest) in points] == [parts.seatJointOriginName(name) for name in parts.SEAT_NAMES]

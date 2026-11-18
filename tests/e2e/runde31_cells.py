@@ -98,8 +98,8 @@ class Run:
         joints = [joint for joint in self.des.rootComponent.allJoints if self.binCell.isCellJointName(joint.name)
                   and (isOwnSide(joint.geometryOrOriginOne) or isOwnSide(joint.geometryOrOriginTwo))]
         self.check(f'{name}: one joint in cell', len(joints) == 1, str([joint.name for joint in joints]))
-        loose = [sketch.name for sketch in component.sketches if sketch.name.startswith(self.binCell.PLACEMENT_JOINT_ORIGIN) and not sketch.isFullyConstrained]
-        self.check(f'{name}: placement sketch fully constrained', len(loose) == 0, str(loose))
+        left = [item.name for item in list(component.sketches) + list(component.constructionPlanes) if item.name.startswith(self.binCell.PLACEMENT_JOINT_ORIGIN)]
+        self.check(f'{name}: no placement sketch or plane (round 46)', len(left) == 0, str(left))
         self.check(f'{name}: the cell stays shown', (cell.nativeObject or cell).isLightBulbOn)
 
     def plateCells(self):
