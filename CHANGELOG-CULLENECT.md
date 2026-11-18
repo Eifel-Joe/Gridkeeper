@@ -1,10 +1,29 @@
 # Changelog — Cullenect labels
 
 Changes of Gridkeeper (`Eifel-Joe/Gridkeeper`, until 16.11.2026 `Eifel-Joe/FusionGridfinityGenerator`) on top of
-GridfinityGenerator by Le0Michine, merged up to 5627083 (17.11.2026; rounds 1 to 11 were built on v2.2.0.0, round 22 merged v2.4.2.0).
+GridfinityGenerator by Le0Michine, merged up to ee027a9 (v2.5.0.0, 17.11.2026; rounds 1 to 11 were built on v2.2.0.0, round 22 merged v2.4.2.0, round 38 v2.5.0.0).
 Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`, the `vX.Y.Z.W` tags belong to GridfinityGenerator.
 
 ## Unreleased
+
+### GridfinityGenerator 2.5 merged (round 38)
+
+Merged from GridfinityGenerator v2.5.0.0 by Le0Michine (Lev Mishin), up to ee027a9 (p13):
+- **Magnet socket chamfer:** bin and baseplate magnet sockets get a 0.5 mm chamfer around their opening, so magnets
+  go in easier and the first layer doesn't squish into the hole (by Le0Michine).
+- **Connection holes:** only skeletonized baseplates get them, the dialog greys the inputs out for light and full
+  plates; a padded side gets none, like a side with half cells (by Le0Michine).
+- **Position of a new bin:** *Snap to free spot* or *Center on origin*; a centered bin is centered again when rebuilt
+  (by Le0Michine). Decided: it joins the fork's cell placement in one **Placement** group, always shown, the dropdown
+  called **Position**. A picked cell wins and greys the position out, then Center on origin, then the spot a rebuilt
+  bin had, then the free spot.
+- **Tab top offset:** how far the label tab is below the top of the bin, 0 to 2 mm, 0.5 mm by default; the dividers
+  between compartments are lowered as much (by Le0Michine). The fork's dividers up to the top and Cullenect pockets
+  follow the offset, so they still meet the lowered dividers and tab.
+- Settings files and bins of older versions without the new settings build as before: *Snap to free spot*, offset
+  0.5 mm (round 32 rule).
+- Decided: the original's `FUNDING.yml` (donation button) is not taken. Its wiki pages and pictures stay out of the
+  fork, the documentation is under `docs/`.
 
 ### Each label color on a filament of its own (round 37)
 

@@ -64,8 +64,8 @@ others don't light up.
 **A new bin into a cell of a baseplate or a box**
 
 1. Build the baseplate with **Add joint origins**; a box has its cell joint origins anyway.
-2. Open **Gridkeeper bin**. The section **Placement** is there only when the design has a baseplate or a box, and only
-   for a new bin, not when rebuilding one. Click into **Cell**.
+2. Open **Gridkeeper bin**. The section **Placement** has **Cell** only when the design has a baseplate or a box, and
+   only for a new bin, not when rebuilding one. Click into **Cell**; **Position** is greyed out while a cell is picked.
 3. Click a *Socket joint origin* of a baseplate or a *Cell joint origin* in the floor of a box, in the canvas or in the
    browser. Feet, pockets and the box's other joint origins can't be picked; the lid has no cells.
 4. **OK**: the bin is jointed with its front left cell into the cell picked (joint *… in cell*). A bin larger than

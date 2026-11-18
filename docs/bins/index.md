@@ -9,7 +9,7 @@ The dialog is long, its sections are described on these pages:
 
 | Section | Page |
 |---|---|
-| **Placement** (only with a baseplate or box in the design, for a new bin) | [Picking a joint origin in a dialog](../working/components.md#picking-a-joint-origin-in-a-dialog) |
+| **Placement**: **Position**, and **Cell** (only with a baseplate or box in the design, for a new bin) | [Placement](#placement) below, [Picking a joint origin in a dialog](../working/components.md#picking-a-joint-origin-in-a-dialog) |
 | **Info**, **Basic sizes**, **Main dimensions** with the **Actual dimensions** table | [Size and shape](size.md) |
 | **Bin features**: body, type, walls, lip, creases | [Body, walls and lip](body.md) |
 | **Bin compartments**: layout, dividers, **Scoop** | [Compartments and scoop](compartments.md) |
@@ -19,6 +19,17 @@ The dialog is long, its sections are described on these pages:
 | **Preview** | below |
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../assets/gif/bin-features-dark.gif"><img src="../assets/gif/bin-features-light.gif" alt="Changing the size, type and wall thickness of a bin, with the bin at each change"></picture>
+
+## Placement
+
+| Input | Default | What it does |
+|---|---|---|
+| **Position** | Snap to free spot | *Snap to free spot* puts a new bin on the free grid spot closest to the origin, beside the bins already there. *Center on origin* centers the bin on the origin; a centered bin is centered again when it is rebuilt, also with a new size, and its joint origins go with it |
+| **Cell** | none | A cell of a baseplate or box to joint the new bin into, see [Picking a joint origin in a dialog](../working/components.md#picking-a-joint-origin-in-a-dialog). A picked cell wins: **Position** is greyed out then |
+
+A bin rebuilt in place stays where it was, unless it is centered. Settings files and bins of older versions without
+the setting load as *Snap to free spot*, as they were built. The position option is from GridfinityGenerator 2.5 by
+Le0Michine.
 
 ## Preview
 
