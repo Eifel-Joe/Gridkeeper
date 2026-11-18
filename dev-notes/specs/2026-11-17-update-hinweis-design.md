@@ -212,3 +212,7 @@ Eigenheiten: `fireCustomEvent` aus einem Skript gab `False` zurück, der Handler
 `Script.version` zeigen direkt nach `run()` noch den alten Stand. `unlink()` geht für Add-ins im Standard-AddIns-Ordner
 nicht („script is not linked“). **Folge:** Der Selbst-Neustart aus dem Add-in geht; ein Knopf „Reload Gridkeeper“ ist
 machbar (Spec-Ergänzung `2026-11-18-runde-33-design.md`).
+
+**Produkt-Test Reload Gridkeeper (Runde 33, 18.11.2026):** Testkopie ohne Sonde (9.9.1), Manifest auf 9.9.2, Gridkeepers
+eigenes Event `EifelJoe_Gridkeeper_reload` gefeuert: danach läuft das Paket der Kopie mit `runningVersion (9, 9, 2)`,
+Updates, Bin, Baseplate, Label und Box öffnen sich. Git-Add-in danach wieder gestartet (1.1.0), Kopie entfernt.
