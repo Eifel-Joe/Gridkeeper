@@ -76,6 +76,8 @@ isApplyingBedPreset = False
 # the filaments of the label colors, saved ones and those changed in the dialog open now, kept when the selection
 # changes; a color's input shows these or one assigned anew, see exportParts.assignFilaments (round 37, p301)
 dialogFilaments: dict[str, int] = {}
+# the filament each input was made with, to tell a number typed in from one assigned (round 37)
+dialogAssigned: dict[str, int] = {}
 
 local_handlers = []
 markingMenuHandler = None
@@ -325,13 +327,14 @@ def saveChoices(folder: str, format: str, paint: bool, filaments: dict[str, int]
         futil.log(f'{CMD_NAME} choices not saved to {CONFIG_FOLDER_PATH}')
 
 def command_created(args: adsk.core.CommandCreatedEventArgs):
-    global dialogFolder, isFileNameTyped, dialogFilaments
+    global dialogFolder, isFileNameTyped, dialogFilaments, dialogAssigned
     command = args.command
     inputs = command.commandInputs
     choices = readChoices()
     dialogFolder = choices['folder']
     isFileNameTyped = False
     dialogFilaments = dict(choices['filaments'])
+    dialogAssigned = {}
     design = adsk.fusion.Design.cast(app.activeProduct)
     # the whole design when its root was picked
     allInput = inputs.addBoolValueInput(ALL_INPUT_ID, 'All Gridkeeper parts', True, '', isRootSelected(design))
@@ -528,11 +531,15 @@ def updateFilamentInputs(inputs: adsk.core.CommandInputs, colors: list[str], isS
     An input for each label color of the parts, made anew only when the colors change, so a filament input never goes
     while its own change is handled. A color's filament is the one changed in the dialog or saved, else assigned anew
     """
+    global dialogFilaments, dialogAssigned
     group = adsk.core.GroupCommandInput.cast(inputs.itemById(FILAMENTS_GROUP_ID))
     if [spinner.id for spinner in filamentInputs(inputs)] != [filamentInputId(color) for color in colors]:
+        # a typed number whose change event Fusion didn't fire would go with its input (click test round 37)
+        dialogFilaments = exportParts.keepTypedFilaments(dialogFilaments, shownFilaments(inputs), dialogAssigned)
         for spinner in filamentInputs(inputs):
             spinner.deleteMe()
-        for (color, filament) in exportParts.assignFilaments(colors, dialogFilaments).items():
+        dialogAssigned = exportParts.assignFilaments(colors, dialogFilaments)
+        for (color, filament) in dialogAssigned.items():
             name = labelColors.textName(color)
             spinner = group.children.addIntegerSpinnerCommandInput(filamentInputId(color), name, 1, threeMf.MAX_FILAMENT, 1, filament)
             spinner.tooltip = f'{name}: the slicer\'s filament it prints in, 1 is the filament of the parts'

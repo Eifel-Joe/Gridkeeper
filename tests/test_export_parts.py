@@ -523,3 +523,46 @@ def test_label_colors_are_listed_once_even_when_a_part_repeats_them():
 def test_label_colors_of_the_dialog_use_the_distinct_list():
     source = _entry_function("labelColorsOf")
     assert "exportParts.distinctLabelColors(" in source
+
+
+# Click test r37 C: a filament typed into the dialog was lost when the selection changed. Fusion fires a spinner's
+# inputChanged only for some ways of leaving the field, so the rebuild reads the spinners' values itself.
+RED = "#D02020"
+BLUE = "#2060D0"
+
+
+def test_a_typed_filament_survives_a_selection_change_without_its_change_event():
+    assigned = exportParts.assignFilaments([RED, BLUE, ""], {"": 4})
+    assert assigned == {RED: 2, BLUE: 3, "": 4}
+    shown = {RED: 2, BLUE: 5, "": 4}  # blue typed as 5, no inputChanged arrived
+    changed = exportParts.keepTypedFilaments({"": 4}, shown, assigned)
+    assert exportParts.assignFilaments([BLUE], changed) == {BLUE: 5}
+    assert exportParts.assignFilaments([RED, BLUE, ""], changed) == {RED: 2, BLUE: 5, "": 4}
+
+
+def test_filaments_left_as_assigned_stay_automatic():
+    assigned = {RED: 2, BLUE: 3}
+    changed = exportParts.keepTypedFilaments({}, {RED: 2, BLUE: 3}, assigned)
+    assert changed == {}
+    # blue alone then takes the lowest free number again
+    assert exportParts.assignFilaments([BLUE], changed) == {BLUE: 2}
+
+
+def test_a_typed_filament_set_back_to_its_assigned_number_is_still_kept():
+    # the change event did arrive earlier and stored it; the spinner shows the same number
+    changed = exportParts.keepTypedFilaments({BLUE: 3}, {BLUE: 3}, {BLUE: 3})
+    assert changed == {BLUE: 3}
+
+
+def test_keeping_typed_filaments_leaves_its_input_alone():
+    changed = {"": 4}
+    exportParts.keepTypedFilaments(changed, {BLUE: 5}, {BLUE: 3})
+    assert changed == {"": 4}
+
+
+def test_the_dialog_reads_typed_filaments_before_it_rebuilds_them():
+    source = _entry_function("updateFilamentInputs")
+    keep = source.index("exportParts.keepTypedFilaments(")
+    rebuild = source.index("deleteMe()")
+    assert keep < rebuild
+    assert "dialogAssigned" in source

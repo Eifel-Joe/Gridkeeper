@@ -244,6 +244,17 @@ def distinctLabelColors(perPart: list[list[str]]) -> list[str]:
     return colors
 
 
+def keepTypedFilaments(changed: dict[str, int], shown: dict[str, int], assigned: dict[str, int]) -> dict[str, int]:
+    """
+    The filaments changed by hand in the dialog: those already known and each shown one that isn't the number it was
+    assigned. Fusion fires a spinner's change event only for some ways of leaving the field (click test round 37: a
+    typed number was lost when the selection changed), so the dialog reads its spinners before it rebuilds them.
+    Numbers left as assigned stay automatic and may change with the selection
+    """
+    typed = {color: filament for (color, filament) in shown.items() if assigned.get(color) != filament}
+    return {**changed, **typed}
+
+
 def assignFilaments(colors: list[str], saved: dict[str, int]) -> dict[str, int]:
     """
     The filament of each label color of an export, in their order: the saved one, else the lowest from 2 no other color
