@@ -101,6 +101,7 @@ def _binCellOf(joints):
         "LOG_PREFIX": "Gridfinity bin",
     }
     exec("from dataclasses import dataclass", namespace)
+    _load(BIN_BUILDER, "_readSide", namespace)
     tree = ast.parse(open(BIN_BUILDER, encoding="utf-8").read())
     classNode = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "CellOfBin")
     exec(compile(ast.Module(body=[classNode], type_ignores=[]), BIN_BUILDER, "exec"), namespace)
@@ -147,3 +148,16 @@ def test_a_joint_failing_to_read_is_skipped():
         occurrenceOne = occurrenceTwo = None
     found = _binCellOf(lambda own: [Broken(), _Joint("Bin in cell", _Side(binCell.PLACEMENT_JOINT_ORIGIN, own), _Side("Socket joint origin 3-1", _Component()))])
     assert found.cell == ("root", "Socket joint origin 3-1")
+
+
+def test_a_cell_side_failing_to_read_still_counts_as_in_a_cell():
+    """Re-review: Fusion may raise reading the side of a deleted cell, the bin was in a cell all the same"""
+    class Joint(_Joint):
+        @property
+        def geometryOrOriginTwo(self):
+            raise RuntimeError("deleted")
+        @geometryOrOriginTwo.setter
+        def geometryOrOriginTwo(self, value):
+            pass
+    found = _binCellOf(lambda own: [Joint("Bin in cell", _Side(binCell.PLACEMENT_JOINT_ORIGIN, own), None)])
+    assert found.cell is None and found.wasInCell

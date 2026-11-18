@@ -839,6 +839,13 @@ def isCellJointOrigin(jointOrigin: adsk.fusion.JointOrigin | None) -> bool:
         return False
     return any(body.attributes.itemByName(tagUtils.TAG_GROUP, tagName) is not None for body in component.bRepBodies)
 
+def _readSide(read):
+    """A side of a joint, none when Fusion refuses to read it (a deleted joint origin)"""
+    try:
+        return read()
+    except RuntimeError:
+        return None
+
 @dataclass
 class CellOfBin:
     """The cell a bin was jointed into, as seen from the root, and whether it had a joint into one at all: a joint whose
@@ -859,9 +866,10 @@ def binCellOf(des: adsk.fusion.Design, target: rebuildUtils.RebuildTarget) -> Ce
         try:
             if not binCell.isCellJointName(joint.name):
                 continue
+            # each side on its own: the side of a deleted cell may raise, the bin's own side still says it was in one
             sides = [
-                (adsk.fusion.JointOrigin.cast(joint.geometryOrOriginOne), joint.occurrenceOne),
-                (adsk.fusion.JointOrigin.cast(joint.geometryOrOriginTwo), joint.occurrenceTwo),
+                (_readSide(lambda: adsk.fusion.JointOrigin.cast(joint.geometryOrOriginOne)), _readSide(lambda: joint.occurrenceOne)),
+                (_readSide(lambda: adsk.fusion.JointOrigin.cast(joint.geometryOrOriginTwo)), _readSide(lambda: joint.occurrenceTwo)),
             ]
             for ((side, _), (other, otherOccurrence)) in (sides, sides[::-1]):
                 if side is None or side.name != binCell.PLACEMENT_JOINT_ORIGIN or (side.nativeObject or side).parentComponent != component:
