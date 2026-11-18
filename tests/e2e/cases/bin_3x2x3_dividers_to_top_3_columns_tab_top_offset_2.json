@@ -1,0 +1,16 @@
+{
+    "description": "3x2x3 bin with dividers up to the top and a Cullenect socket in each of its 3 compartments, tab top offset 2 mm: the raised dividers start at the divider top lowered by 2 mm, the sockets are cut into the lowered tabs",
+    "generator": "bin",
+    "settings": {
+        "binWidth": 3,
+        "binLength": 2,
+        "binHeight": 3,
+        "hasDividersToTop": true,
+        "tabLength": 4,
+        "labelStyle": "Cullenect",
+        "compartmentsX": 3,
+        "hasCreases": false,
+        "tabTopOffset": 2.0,
+        "hasTab": true
+    }
+}

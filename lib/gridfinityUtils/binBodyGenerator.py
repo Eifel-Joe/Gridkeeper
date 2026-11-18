@@ -213,7 +213,7 @@ def createGridfinityBinBody(
             compartmentTabInput.width = input.tabWidth
             compartmentTabInput.overhangAngle = input.tabOverhangAngle
             compartmentTabInput.labelAngle = input.tabTopAngle
-            compartmentTabInput.topClearance = tabTopClearance(input.labelStyle)
+            compartmentTabInput.topClearance = tabTopClearance(input.labelStyle, input.tabTopOffset)
             # a hollow tab of a single compartment is opened through the outer walls of the bin, with more compartments
             # the hollows are left closed
             tabOpenings = None
@@ -275,7 +275,8 @@ def createGridfinityBinBody(
             tabHollowCuts.extend(compartmentHollowCuts.all())
             bodiesToMerge.extend(compartmentMerges)
 
-        if len(input.compartments) > 1:
+        # dividers are lowered as far as the tabs
+        if len(input.compartments) > 1 and input.tabTopOffset > 0:
             compartmentsTopClearance = createCompartmentCutout(
                 input.wallThickness,
                 compartmentsMinX,
@@ -283,7 +284,7 @@ def createGridfinityBinBody(
                 binBodyTotalHeight,
                 bodyWidth - wall * 2,
                 bodyLength - wall - compartmentsMinY,
-                const.BIN_TAB_TOP_CLEARANCE,
+                input.tabTopOffset,
                 input.binCornerFilletRadius - input.wallThickness,
                 False,
                 0,
@@ -302,7 +303,8 @@ def createGridfinityBinBody(
                 (input.compartmentsByX, input.compartmentsByY),
                 wall,
             )
-            raisedCornersBottomZ = binBodyTotalHeight - Dim.length(const.BIN_TAB_TOP_CLEARANCE)
+            # the raised dividers stand on the dividers lowered by the tab top offset (round 38)
+            raisedCornersBottomZ = binBodyTotalHeight - Dim.length(input.tabTopOffset)
             bodiesToMerge.extend(createRaisedDividers(
                 input.raisedDividers,
                 (compartmentsMinX, compartmentsMinY),
@@ -310,6 +312,7 @@ def createGridfinityBinBody(
                 (input.compartmentsByX, input.compartmentsByY),
                 wall,
                 binBodyTotalHeight,
+                input.tabTopOffset,
                 lipInput,
                 targetComponent,
             ))
@@ -372,7 +375,7 @@ def createGridfinityBinBody(
                     labelMaxX,
                     tabOriginY,
                     input.tabWidth,
-                    binBodyTotalHeight - Dim.length(tabTopClearance(input.labelStyle)),
+                    binBodyTotalHeight - Dim.length(tabTopClearance(input.labelStyle, input.tabTopOffset)),
                     input.cullenectUnitWidth,
                     input.cullenectSocketOffset,
                     input.tabOverhangAngle,
@@ -395,6 +398,7 @@ def createGridfinityBinBody(
                 binBody,
                 targetComponent,
                 input.tabTopAngle,
+                input.tabTopOffset,
                 input.labelColor,
                 name=labelName,
                 textOccurrence=input.textOccurrence,
@@ -411,6 +415,7 @@ def createRaisedDividers(
     counts: tuple[int, int],
     wall: Dim,
     binBodyTotalHeight: Dim,
+    topOffset: float,
     lipInput: BinBodyLipGeneratorInput,
     targetComponent: adsk.fusion.Component,
 ) -> list[adsk.fusion.BRepBody]:
@@ -421,9 +426,10 @@ def createRaisedDividers(
     crossing divider, and half a wall into the outer walls, which keeps every box corner off the sketch axes
     """
     boxes: list[adsk.fusion.BRepBody] = []
-    bottomZ = binBodyTotalHeight - Dim.length(const.BIN_TAB_TOP_CLEARANCE)
+    # from the divider top, lowered by the tab top offset (upstream c2e12c0, round 38)
+    bottomZ = binBodyTotalHeight - Dim.length(topOffset)
     # up to the lip top, trimmed or not (upstream round 17.11.2026, p13)
-    height = const.BIN_TAB_TOP_CLEARANCE + const.BIN_LIP_EXTRA_HEIGHT - lipInput.topTrimHeight
+    height = topOffset + const.BIN_LIP_EXTRA_HEIGHT - lipInput.topTrimHeight
     for (index, segment) in enumerate(segments):
         # across is the axis the wall stands on, along the one it runs on
         (across, along) = (0, 1) if segment.axis == 'x' else (1, 0)
@@ -781,9 +787,9 @@ def createBinLipSupport(
         grid = baseGenerator.shapeGridInput(input.baseWidth * input.binWidth, input.baseLength * input.binLength, input.xyClearance)
     return createLipSupport(cells, grid, input.lipType, input.wallThickness, binBodyTopHeight(input), floorZ, targetComponent)
 
-def tabTopClearance(labelStyle: str) -> float:
-    """Embossed labels stand on a tab lowered by their depth, so they keep the tab's clearance"""
-    return const.BIN_TAB_TOP_CLEARANCE + (const.BIN_LABEL_DEPTH if labelStyle == LABEL_STYLE_EMBOSSED else 0)
+def tabTopClearance(labelStyle: str, topOffset: float) -> float:
+    """How far the tab top is below the top of the bin body. Embossed labels stand on a tab lowered by their depth, so they keep the tab's offset"""
+    return topOffset + (const.BIN_LABEL_DEPTH if labelStyle == LABEL_STYLE_EMBOSSED else 0)
 
 def hollowTabWallThickness(wallThickness: float, labelStyle: str) -> float:
     """Hollow tabs take the wall thickness, thick enough for an engraved label or a socket not to cut through"""
@@ -805,6 +811,7 @@ def createTabLabel(
         targetBody: adsk.fusion.BRepBody,
         targetComponent: adsk.fusion.Component,
         tabTopAngle: float = 0,
+        tabTopOffset: float = const.BIN_TAB_TOP_CLEARANCE,
         color: str = '',
         *,
         name: str,
@@ -822,7 +829,7 @@ def createTabLabel(
     labelInput.definition = definition
     labelInput.originX = minX
     labelInput.originY = tabOriginY - Dim.length(labelLength)
-    labelInput.originZ = tabOriginZ - Dim.length(tabTopClearance(style))
+    labelInput.originZ = tabOriginZ - Dim.length(tabTopClearance(style, tabTopOffset))
     labelInput.width = maxX - minX
     labelInput.length = labelLength
     labelInput.tiltAngle = tabTopAngle

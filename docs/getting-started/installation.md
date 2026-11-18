@@ -33,7 +33,7 @@ what you get before you install it.
   **Gridkeeper updates** then offers **Reload Gridkeeper**, or restart Fusion, or stop and run Gridkeeper in
   **Utilities › Add-Ins › Scripts and Add-Ins**.
 
-  ![Gridkeeper updates after an update: the old version still running, the new one installed](../assets/images/updates-dialog-installed.png)
+  ![Gridkeeper updates after an update: Gridkeeper 1.1.0 still running, 1.2.0 installed, with Reload Gridkeeper and Close](../assets/images/updates-dialog-installed.png)
 
 - **Later** leaves everything as it is; the window comes again the next day.
 

@@ -35,9 +35,14 @@ def test_build_bin_takes_the_cell_and_hands_it_on():
 
 
 def test_a_bin_into_a_cell_is_built_where_it_is_jointed_from():
-    """No spot beside the other bins: the joint moves the bin, a move feature for nothing is left out"""
+    """No spot beside the other bins: the joint moves the bin, a move feature for nothing is left out. Round 38: the
+    source comes from binCell.placementSource, a cell before Center on origin, a kept spot and a free one"""
     source = _source(BIN_BUILDER, "_buildBin")
-    assert "binPlacement = placement or ((0, 0) if cell is not None and newCmpOcc is not None else placementUtils.findPlacement(" in source
+    assert "binCell.placementSource(state.placement == PLACEMENT_CENTER, cell is not None and newCmpOcc is not None, placement is not None)" in source
+    assert "(0, 0) if source == 'cell'" in source
+    assert "centeredPlacement(state) if source == 'center'" in source
+    assert "placement if source == 'kept'" in source
+    assert "placementUtils.findPlacement(" in source
 
 
 def test_the_bin_gets_its_placement_joint_origin_and_is_jointed_rigidly_into_the_cell():
@@ -122,8 +127,9 @@ def test_the_new_bin_is_built_into_the_cell_picked():
 
 
 def test_the_cell_isnt_part_of_the_settings():
-    """Round 32 asks every config field for its value in older models, the cell isn't one: it only places a new bin"""
-    assert "BIN_PLACEMENT_GROUP_ID" in _source(BIN_ENTRY, "snapshotSettings")
+    """Round 32 asks every config field for its value in older models, the cell isn't one: it only places a new bin.
+    Since round 38 the Placement group also holds the position, which is a setting, so the cell alone is left out"""
+    assert "BIN_CELL_INPUT_ID" in _source(BIN_ENTRY, "snapshotSettings")
     tree = ast.parse(open(os.path.join(ROOT, "commands", "commandCreateBin", "inputState.py"), encoding="utf-8").read())
     fields = [node.target.id for node in ast.walk(tree) if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name)]
     assert [field for field in fields if "cell" in field.lower()] == ["shapeCells"]
@@ -147,3 +153,15 @@ def test_a_rebuilt_baseplate_or_box_keeps_the_cells_of_moved_joints_shown():
     source = _source(REBUILD_UTILS, "repointJointsByName")
     assert "binCell.cellOf(jointOrigin.name) is not None" in source
     assert source.index("binCell.cellOf(jointOrigin.name)") < source.index("setattr(joint, side, newJointOrigin)")
+
+
+def test_a_bin_in_a_cell_is_built_and_tagged_without_centering():
+    """Review round 38: a bin jointed into a cell is stored as snapped, so losing its cell keeps it in place"""
+    source = _source(BIN_BUILDER, "buildBin")
+    assert "binCell.storedPosition(state.placement, cell is not None, PLACEMENT_AUTO)" in source
+    assert source.index("storedPosition") < source.index("buildWithStructure")
+
+
+def test_a_centered_bin_isnt_resized_by_its_parameters_alone():
+    source = _source(BIN_BUILDER, "parameterEdits")
+    assert "binCell.parameterEditKeepsPlacement(state.placement == PLACEMENT_CENTER, changed)" in source

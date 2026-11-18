@@ -20,6 +20,10 @@ With magnet sockets and screw holes together, a groove bridges each magnet socke
 printability; it is left out where the sockets are too deep for it. Half size feet have no magnet or screw holes: on the **Half grid** the hole inputs are locked, as they are without
 **Generate base**.
 
+Every magnet socket has a 0.5 mm chamfer around its opening on the bottom of the bin, so magnets go in easier and the
+first layer doesn't squish into the hole. It is always there, there is no input for it (from GridfinityGenerator 2.5
+by Le0Michine).
+
 Magnet sockets | Magnet sockets opened to the side | Magnets and screws with a groove
 :-------------------------:|:-------------------------:|:-------------------------:
 ![Bin with magnet sockets](../assets/models/bin-magnet-cutouts.png) | ![Bin with magnet sockets opened to the side](../assets/models/bin-magnet-cutouts-with-tabs.png) | ![Bin with magnet sockets and screw holes joined by a groove](../assets/models/bin-magnet-cutouts-and-screw-holes-with-groove.png)

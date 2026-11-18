@@ -398,7 +398,7 @@ def _oldest_bin_config(current):
 
 OLDER_BIN = {
     "lipType": "Light", "isLipTopTrimmed": True, "isShellRounded": False, "hasDividersToTop": False,
-    "labelColor": "", "cullenectSocketOffset": 0.3,
+    "labelColor": "", "cullenectSocketOffset": 0.3, "placement": "Snap to free spot", "tabTopOffset": 0.5,
 }
 
 

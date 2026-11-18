@@ -33,6 +33,43 @@ def isCellJointName(name: str) -> bool:
     return _CELL_JOINT.search(name) is not None
 
 
+def placementSource(isCentered: bool, hasCell: bool, hasKeptPlacement: bool) -> str:
+    """
+    Where a bin goes (round 38, upstream's Placement d37c166 joined with the cell): 'cell' into a picked cell, also a
+    bin in a cell rebuilt; else 'center' on the origin, also on a rebuild, its size may have changed (upstream); else
+    'kept', the spot of a bin rebuilt in place; else 'snap' to the free spot beside the other bins
+    """
+    if hasCell:
+        return 'cell'
+    if isCentered:
+        return 'center'
+    if hasKeptPlacement:
+        return 'kept'
+    return 'snap'
+
+
+def storedPosition(position: str, hasCell: bool, snap: str) -> str:
+    """
+    The position a bin is built and tagged with: a bin jointed into a cell keeps no centering (review round 38). The
+    dialog only greys the position out, so it could still say Center on origin, and a rebuilt bin whose cell was lost
+    would jump to the origin instead of staying where it was
+    """
+    return snap if hasCell else position
+
+
+def parameterEditKeepsPlacement(isCentered: bool, changed: list[str]) -> bool:
+    """
+    Whether setting the bin's parameters leaves it where a rebuild would put it: a centered bin's placement move holds
+    the offset of its old size, a base unit changing the size makes it be rebuilt and centered again (review round 38)
+    """
+    return not (isCentered and any(name in ('baseWidth', 'baseLength') for name in changed))
+
+
+def positionEnabled(hasCell: bool) -> bool:
+    """Snap or center doesn't apply to a bin going into a cell, so the dialog greys it out while one is picked"""
+    return not hasCell
+
+
 def offersCellPick(isNewBin: bool, hasBaseplateOrBox: bool) -> bool:
     """The dialog offers the cell only for a new bin, a rebuilt one keeps its joint, and only with a
     baseplate or box in the design"""

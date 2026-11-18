@@ -760,10 +760,6 @@ def sketchConstraintNotes(case: testCases.TestCase, document: adsk.core.Document
         log(f'{case.name}: {len(names)} of {len(sketches)} sketches not fully constrained, reported only: {", ".join(names)}')
     return []
 
-# the raised dividers' corners go up from under the lip's height and the tab's top clearance, the check looks a little
-# further down, 5 mm under the top of the bin
-RAISED_DIVIDERS_REACH = 0.5
-
 def raisedCornerLedgeNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BRepBody]) -> list[str]:
     """
     Why a bin with dividers up to the top fails for a ledge where a raised divider's corner meets the compartment
@@ -772,6 +768,9 @@ def raisedCornerLedgeNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BR
     """
     if case.generator != testCases.GENERATOR_BIN or not getattr(case.state, 'hasDividersToTop', False):
         return []
+    # the raised dividers' corners go up from under the lip's height and the tab top offset, the check looks a little
+    # further down
+    reach = testCases.raisedDividersReach(getattr(case.state, 'tabTopOffset', 0.05))
     faces = []
     for body in bodies:
         top = body.boundingBox.maxPoint.z
@@ -780,7 +779,7 @@ def raisedCornerLedgeNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BR
                 continue
             (ok, normal) = face.evaluator.getNormalAtPoint(face.pointOnFace)
             box = face.boundingBox
-            if not ok or normal.z < 0.999 or box.minPoint.z < top - RAISED_DIVIDERS_REACH or box.maxPoint.z > top - 1e-4:
+            if not ok or normal.z < 0.999 or box.minPoint.z < top - reach or box.maxPoint.z > top - 1e-4:
                 continue
             faces.append((face.area * 100, (box.maxPoint.x - box.minPoint.x) * 10, (box.maxPoint.y - box.minPoint.y) * 10))
     return testCases.raisedCornerLedges(faces)

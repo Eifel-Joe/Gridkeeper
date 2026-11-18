@@ -79,6 +79,7 @@ class BinBodyGeneratorInput():
         self.isTabHollow = False
         self.isTabOpenThroughSides = False
         self.tabTopAngle = const.BIN_TAB_LABEL_ANGLE
+        self.tabTopOffset = const.BIN_TAB_TOP_CLEARANCE
         self.labelStyle = LABEL_STYLE_OUTLINE
         self.isLabelBold = True
         # '#RRGGBB' or empty, the labels in this color as bodies of their own, see labelGenerator.createLabel
@@ -274,6 +275,15 @@ class BinBodyGeneratorInput():
     @tabTopAngle.setter
     def tabTopAngle(self, value: float):
         self._tabTopAngle = value
+
+    @property
+    def tabTopOffset(self) -> float:
+        """How far the tab top is lowered from the top of the bin body, the dividers between compartments too"""
+        return self._tabTopOffset
+
+    @tabTopOffset.setter
+    def tabTopOffset(self, value: float):
+        self._tabTopOffset = value
 
     @property
     def isTabHollow(self) -> bool:

@@ -41,6 +41,10 @@ OLDER_VALUES = {
         'labelColor': '',
         # no Cullenect label before 2e4cf3a, its play then was 0.3 mm
         'cullenectSocketOffset': 0.3,
+        # every bin went to a free spot before upstream's placement option d37c166 (round 38)
+        'placement': 'Snap to free spot',
+        # tabs and dividers were 0.5 mm below the top before upstream's tab top offset c2e12c0 (round 38)
+        'tabTopOffset': 0.5,
     },
     GENERATOR_BASEPLATE: {'plateEdgeClearance': _xyClearanceAtPlateEdges},
     # boxes of round 27 had no hinge setting; every box got Pred's M3x30 once there were hinges (round 28). Before the
@@ -63,7 +67,7 @@ def withOlderValues(generator: str, settings: dict) -> dict:
 MM_FIELDS = {
     GENERATOR_BIN: {
         'baseWidth', 'baseLength', 'heightUnit', 'xyClearance', 'wallThickness', 'screwHoleDiameter',
-        'magnetCutoutDiameter', 'magnetCutoutDepth', 'scoopMaxRadius', 'tabWidth', 'creaseDepth',
+        'magnetCutoutDiameter', 'magnetCutoutDepth', 'scoopMaxRadius', 'tabWidth', 'tabTopOffset', 'creaseDepth',
         # play of a Cullenect insert in its socket
         'cullenectSocketOffset',
     },

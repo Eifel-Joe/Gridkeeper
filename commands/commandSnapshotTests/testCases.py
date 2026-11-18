@@ -365,6 +365,15 @@ def runChecks(checks: list) -> list[str]:
 LEDGE_MIN_AREA = 0.01
 LEDGE_MAX_SIZE = 3.0
 
+# lip height above the bin body and how far under the reach of the raised dividers the ledge check still looks, cm
+RAISED_DIVIDERS_LIP_HEIGHT = 0.44
+RAISED_DIVIDERS_MARGIN = 0.01
+
+def raisedDividersReach(tabTopOffset: float) -> float:
+    """How far under the top of a bin with raised dividers the ledge check looks, cm: the raised dividers start at the
+    divider top, lowered by the tab top offset (round 38), at least 5 mm as before the offset"""
+    return max(0.5, RAISED_DIVIDERS_LIP_HEIGHT + tabTopOffset + RAISED_DIVIDERS_MARGIN)
+
 def raisedCornerLedges(faces: list[tuple[float, float, float]]) -> list[str]:
     """Notes on the ledges among the upward faces of a bin with raised dividers, each as area mm2, width and length mm"""
     return [

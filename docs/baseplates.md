@@ -75,6 +75,10 @@ its sockets, as long as it still has those sockets and their joint origins.
 Full and skeletonized plates only. **Add magnet cutouts** (on), **Magnet cutout diameter** (6.5 mm, up to 10 mm),
 **Magnet size** (6×2 mm magnets need 2.4 mm, 6×3 mm ones 3.4 mm, or *Custom*) and **Magnet cutout depth** (2.4 mm,
 more than 0, typed with *Custom*). Only the depth is saved; settings files with other depths load as *Custom*.
+Every magnet socket has a 0.5 mm chamfer around its opening, so magnets go in easier; it is always there (from
+GridfinityGenerator 2.5 by Le0Michine).
+
+![A full 1 × 1 baseplate cut through a magnet socket: the chamfer around the socket's opening](assets/models/baseplate-magnet-socket-chamfer.png)
 
 ![The magnet settings of the baseplate dialog: Magnet size 6×3 mm sets the cutout depth to 3.4 mm](assets/images/dialog-baseplate-magnet-size.png)
 
@@ -94,8 +98,12 @@ around the grid, 0 or more. The paddings are user parameters of the plate, see [
 |---|---|---|
 | **Bottom padding (mm)** | 6.4 mm | Solid layer under the sockets of full and skeletonized plates, where the magnet sockets and screw holes go |
 | **Top trim (mm)** | 0.5 mm | Cut off the top of the plate, so a bin sits on its feet in the sockets rather than on the ridges between them. 0 to 3 mm |
-| **Add connection holes** | off | Skeletonized plates: holes between the plates for a screw or a glued-in pin |
-| **Connection hole diameter** | 3.2 mm | Up to 5 mm |
+| **Add connection holes** | off | Skeletonized plates: holes between the plates for a screw or a glued-in pin. Greyed out for light and full plates. A side with padding or half cells gets none, it isn't an edge another plate meets; seams between the pieces of a filled area keep theirs |
+| **Connection hole diameter** | 3.2 mm | Up to 5 mm, greyed out without connection holes |
+
+![The Features of the baseplate dialog for a full plate: Add connection holes and Connection hole diameter greyed out](assets/images/dialog-baseplate-connection-holes.png)
+
+![A skeletonized 2 × 2 baseplate seen from below, padded on the left and the front: connection holes only on the right and the back side](assets/models/baseplate-padding-connection-holes.png)
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../assets/gif/baseplate-connection-holes-dark.gif"><img src="../assets/gif/baseplate-connection-holes-light.gif" alt="Turning on connection holes and changing their diameter, with a skeletonized baseplate without, with 3.2 mm and with 5 mm connection holes"></picture>
 

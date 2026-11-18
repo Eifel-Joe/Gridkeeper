@@ -15,9 +15,6 @@ from GridfinityGenerator. The models in `docs/assets/models` are rendered by a F
   shows a folder path with a user name, take it again with a neutral folder), and a 3MF of a bin with a colored label
   and an insert opened in Bambu Studio, for `docs/working/export.md`.
 
-- Closed lid (round 30, p311): `dialog-box.png` again with the new group *Lid* (after round 31, which changes the
-  dialog too). For [Storage boxes](../../boxes.md).
-
 ## Taken (click test 17.11.2026, main session)
 
 - `dialog-box.png` (with *Small parts* and **Hinge**), `box-5x4x6.png` (with the orange small parts and a label in its
@@ -33,6 +30,24 @@ from GridfinityGenerator. The models in `docs/assets/models` are rendered by a F
 
 - `box-lid-closed.png`: a box 5 × 4 × 6 with **Lid top** *Closed*, in the view of `box-5x4x6.png`:
   [Storage boxes › Lid](../../boxes.md#lid).
+
+## Taken (round 38, GridfinityGenerator 2.5 merged, click test, main session)
+
+Dialog screenshots in Fusion's dark theme:
+- `dialog-bin-placement.png`: the bin dialog's **Placement** group with **Position** *Center on origin* and **Cell**
+  empty; `dialog-bin-placement-cell.png`: the same with a cell picked, **Position** greyed out. For
+  [Bins › Placement](../../bins/index.md#placement).
+- `dialog-bin-tab-top-offset.png`: the **Label tab** group with **Tab top offset** 2 mm. For [Label tab and labels](../../bins/labels.md).
+- `dialog-baseplate-connection-holes.png`: a full baseplate, the connection hole inputs greyed out. For [Baseplates](../../baseplates.md).
+- `dialog-box.png` again with the group *Lid* (p431), `updates-dialog-installed.png` again after an update, with
+  **Reload Gridkeeper** (p450).
+
+## Taken (round 38, rendered by `fusion-auftraege/r38_render.py`)
+
+- `docs/assets/models/bin-magnet-cutouts.png`, `-with-tabs.png`, `-and-screw-holes-with-groove.png` again, with the
+  chamfered magnet sockets; `bin-tab-top-offset.png`, `baseplate-padding-connection-holes.png`, `baseplate-magnet-socket-chamfer.png` (cut
+  through a socket) new. View, color and
+  crop as the pictures of round 26 (orthographic, `#4A82C8`, content plus 20 px).
 
 ## Taken (joint origins guide)
 

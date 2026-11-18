@@ -63,3 +63,45 @@ def test_cell_joint_names(name, isCell):
 ])
 def test_the_pick_is_offered_for_new_bins_with_a_baseplate_or_box(isNewBin, hasParts, offered):
     assert binCell.offersCellPick(isNewBin, hasParts) is offered
+
+
+# --- round 38: upstream's Placement (snap or center, d37c166) joined with the cell in one group ---
+
+@pytest.mark.parametrize("isCentered, hasCell, hasKeptPlacement, source", [
+    (False, True, False, "cell"),
+    # a picked cell wins over Center on origin, also when a bin in a cell is rebuilt with it
+    (True, True, True, "cell"),
+    # a centered bin is centered again when rebuilt, its size may have changed (upstream)
+    (True, False, True, "center"),
+    (True, False, False, "center"),
+    (False, False, True, "kept"),
+    (False, False, False, "snap"),
+])
+def test_where_a_bin_goes(isCentered, hasCell, hasKeptPlacement, source):
+    assert binCell.placementSource(isCentered, hasCell, hasKeptPlacement) == source
+
+
+@pytest.mark.parametrize("hasCell, enabled", [(False, True), (True, False)])
+def test_the_position_is_greyed_out_while_a_cell_is_picked(hasCell, enabled):
+    assert binCell.positionEnabled(hasCell) is enabled
+
+
+@pytest.mark.parametrize("isCentered, changed, keeps", [
+    (False, ["baseWidth"], True),
+    (True, ["binHeight", "labelText"], True),
+    # the base unit changes the size, the placement move centering it must be made anew (review round 38)
+    (True, ["baseWidth"], False),
+    (True, ["binHeight", "baseLength"], False),
+])
+def test_a_centered_bin_is_rebuilt_when_its_size_changes_by_a_parameter(isCentered, changed, keeps):
+    assert binCell.parameterEditKeepsPlacement(isCentered, changed) is keeps
+
+
+@pytest.mark.parametrize("position, hasCell, stored", [
+    ("Center on origin", False, "Center on origin"),
+    ("Snap to free spot", False, "Snap to free spot"),
+    # a bin in a cell keeps no centering: should its cell go, it stays where it was instead of jumping (review round 38)
+    ("Center on origin", True, "Snap to free spot"),
+])
+def test_a_bin_in_a_cell_is_stored_as_snapped(position, hasCell, stored):
+    assert binCell.storedPosition(position, hasCell, "Snap to free spot") == stored
