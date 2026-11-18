@@ -471,3 +471,11 @@ def test_rebuild_log_compares_with_the_older_values():
     body = source[source.index("def configChanges("):]
     body = body[:body.index("\ndef ", 1)] if "\ndef " in body[1:] else body
     assert "configJson.withOlderValues(generator, configJson.renamedSettings(generator, " in body
+
+
+def test_xy_clearance_of_the_wrong_type_is_refused_once():
+    # review round 32: a text xyClearance in a file was named a second time as plateEdgeClearance
+    current = case_state("baseplate_3x2_full.json", BASEPLATE, baseplateState.InputState)
+    with pytest.raises(configJson.ConfigError) as err:
+        read(json.dumps({"generator": BASEPLATE, "settings": {"xyClearance": "0.4"}}), current, BASEPLATE, baseplateState.InputState)
+    assert "xyClearance" in str(err.value) and "plateEdgeClearance" not in str(err.value)

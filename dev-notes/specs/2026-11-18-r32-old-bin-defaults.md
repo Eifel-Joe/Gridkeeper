@@ -56,8 +56,9 @@ seit fbd3146 (vor dem ersten Config-Stand) unverändert. Nichts zu tun.
 4. **Gegen p151 (Runde 18):** Dort galt „fehlt ein Feld, bleibt der Dialogwert stehen, belegt an der Label-Farbe“.
    des Nutzers p280-Notiz kehrt das für Felder um, die es beim Speichern noch nicht gab: eine alte Bin mit Label bekommt beim
    Laden keine Farbe, der Dialog springt auf „None“. Die zwei p151-Tests in `tests/test_config_json.py` werden darauf
-   umgestellt. Für Felder, die eine Config **hätte haben können** (handgeschriebene Teil-Config wie Handtest 10), bleibt
-   p151: Dialogwert, mit Hinweis „Not in the file, kept the current value“.
+   umgestellt. Für Felder, die jede Config seit 2fea2a1 hat, bleibt p151: fehlen sie einer handgeschriebenen
+   Teil-Config (Handtest 10), Dialogwert mit Hinweis „Not in the file, kept the current value“. Die Felder der Tabelle
+   bekommen auch in einer Teil-Config den Altwert (alt und unvollständig sind nicht zu unterscheiden; Review).
 5. Keine Änderung in `commands/commandCreateBin/` (Runde 31 arbeitet dort); alles in `lib/configJson.py`, dazu die
    Grenze in `commandCreateBaseplate/entry.py` und `const.py`.
 6. Freigabe Hauptsitzung 18.11.: p151 ändert sich dadurch (alte Bin mit Label = keine Farbe), in CHANGELOG und PR-Text

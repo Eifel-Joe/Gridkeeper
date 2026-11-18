@@ -15,8 +15,8 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   before. Baseplates: the bin xy clearance at the edges where plates meet, as before they had a clearance of their
   own. Configs of GridfinityGenerator by Le0Michine build the same way.
 - **Changes p151 (round 18):** an old bin with a label used to keep the label color chosen in the dialog, it now
-  comes without one and the dialog shows *None*. Settings a config could have had and doesn't (a file with only some
-  settings) still keep the dialog's value.
+  comes without one and the dialog shows *None*. A file with only some settings gets these older values too; the
+  settings every config had since 13.11.2026 still keep the dialog's value when a file leaves them out.
 - **Plate edge clearance up to 0.5 mm:** the largest bin xy clearance, so baseplates saved before the plate edge
   clearance build the same with any xy clearance (it stopped at 0.25 mm, half the whole gap of upstream's setting;
   nothing in the geometry needs that).
