@@ -4,10 +4,12 @@ Writes the built in label icons and renders dropdown previews for every label ic
     python3 tools/labelIcons.py
 
 Icons are svg files in lib/gridfinityUtils/labelIcons/<type>/, filled shapes drawn with paths of
-absolute M, L, A and Z commands, holes as inner loops. Next to each svg a folder of the same name holds
+absolute M, L, A, C and Z commands, holes as inner loops. After writing them, polygons in every icon are rebuilt as
+lines and arcs by dev-notes/tools/arcSymbols.py (round 40), then the previews are rendered. Next to each svg a folder of the same name holds
 its dropdown previews. An svg dropped in by hand gets previews too, as long as it sticks to those commands.
 """
 
+import importlib.util
 import math
 import os
 import re
@@ -161,8 +163,17 @@ def arcPoints(start, rx, ry, rotation, largeArc, sweep, end, segments=32):
         points.append((cosPhi * px - sinPhi * py + cx, sinPhi * px + cosPhi * py + cy))
     return points
 
+def cubicPoints(start, c1, c2, end, segments=16):
+    """Points along a cubic spline, its end included"""
+    points = []
+    for i in range(1, segments + 1):
+        t = i / segments
+        u = 1 - t
+        points.append(tuple(u * u * u * a + 3 * u * u * t * b + 3 * u * t * t * c + t * t * t * e for (a, b, c, e) in zip(start, c1, c2, end)))
+    return points
+
 def pathLoops(d: str) -> list[list[tuple[float, float]]]:
-    tokens = re.findall(r'[MLAZ]|-?\d*\.?\d+(?:e-?\d+)?', d)
+    tokens = re.findall(r'[MLACZz]|-?\d*\.?\d+(?:e-?\d+)?', d)
     loops, current, i = [], [], 0
     while i < len(tokens):
         command = tokens[i]
@@ -179,7 +190,11 @@ def pathLoops(d: str) -> list[list[tuple[float, float]]]:
             rx, ry, rotation, largeArc, sweep, x, y = [float(v) for v in tokens[i:i + 7]]
             current += arcPoints(current[-1], rx, ry, rotation, int(largeArc), int(sweep), (x, y))
             i += 7
-        elif command == 'Z':
+        elif command == 'C':
+            (c1x, c1y, c2x, c2y, x, y) = [float(v) for v in tokens[i:i + 6]]
+            current += cubicPoints(current[-1], (c1x, c1y), (c2x, c2y), (x, y))
+            i += 6
+        elif command in ('Z', 'z'):
             loops.append(current)
             current = []
         else:
@@ -228,12 +243,25 @@ def writePreviews(svgPath: str):
             with open(os.path.join(folder, f'{size}x{size}@2x{suffix}.png'), 'wb') as file:
                 file.write(render(loops, viewBox, size * 2, color))
 
+def _arcSymbols():
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'dev-notes', 'tools', 'arcSymbols.py')
+    spec = importlib.util.spec_from_file_location('arcSymbols', path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
 def main():
     for category, icons in ICONS.items():
         os.makedirs(os.path.join(ICONS_FOLDER, category), exist_ok=True)
         for name, d in icons.items():
             with open(os.path.join(ICONS_FOLDER, category, f'{name}.svg'), 'w') as file:
                 file.write(svg(d))
+    arcSymbols = _arcSymbols()
+    for root, _, files in os.walk(ICONS_FOLDER):
+        if any(fileName.lower().endswith('.svg') for fileName in files):
+            for report in arcSymbols.convertFolder(root):
+                if report.error:
+                    print(f'{report.name}: left as a polygon, {report.error}')
     for root, _, files in os.walk(ICONS_FOLDER):
         for fileName in sorted(files):
             if fileName.lower().endswith('.svg'):

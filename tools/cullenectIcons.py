@@ -197,6 +197,25 @@ def renderScad(exe: str, scad: str, svgPath: str, workFolder: str, libraryFolder
     return None
 
 
+def _loadArcSymbols():
+    path = os.path.join(PROJECT_ROOT, 'dev-notes', 'tools', 'arcSymbols.py')
+    spec = importlib.util.spec_from_file_location('arcSymbols', path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def rebuildSymbols(folders: list[str]):
+    """Rebuilds the polygons of the rendered svgs in the folders as lines, arcs and splines, see
+    dev-notes/tools/arcSymbols.py; a file that fails its check stays a polygon and is named"""
+    arcSymbols = _loadArcSymbols()
+    for folder in folders:
+        if os.path.isdir(folder):
+            for report in arcSymbols.convertFolder(folder):
+                if report.error:
+                    print(f'{report.name}: left as a polygon, {report.error}')
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split('\n')[1])
     parser.add_argument('--openscad', help='path of openscad.exe, needed to render')
@@ -230,6 +249,10 @@ def main() -> int:
                 errors.append(error)
             if index % 50 == 0:
                 print(f'{index}/{len(jobs)} after {time.time() - started:.0f} s', flush=True)
+    # the polygons OpenSCAD writes as lines and arcs, as the add-in imports them quickly (round 40); symbols rendered
+    # elsewhere, such as fine ones to --compare with, stay as OpenSCAD wrote them
+    if os.path.abspath(args.out) == os.path.abspath(ICONS_FOLDER):
+        rebuildSymbols([os.path.join(args.out, folder) for folder in (catalog.SCREWS_FOLDER, catalog.HARDWARE_FOLDER)])
     copied = copyHardwareToLabelIcons(args.out, LABEL_ICONS_FOLDER) if os.path.abspath(args.out) == os.path.abspath(ICONS_FOLDER) else []
     print(f'{len(copied)} hardware svgs copied to the label icons, run tools/labelIcons.py for their previews')
     print(f'done in {time.time() - started:.0f} s, {len(jobs) - len(errors)} rendered, {len(errors)} failed')
