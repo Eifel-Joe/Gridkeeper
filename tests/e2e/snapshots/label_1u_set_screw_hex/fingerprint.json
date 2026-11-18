@@ -103,15 +103,15 @@
         {
             "name": "Gridfinity label 1U M4x6 symbol 1",
             "file": "body6.smt",
-            "volume": 19.51997,
-            "area": 111.25951,
+            "volume": 19.519969,
+            "area": 111.259504,
             "bboxMin": [
                 20.44,
                 2.29291,
                 1.2
             ],
             "bboxMax": [
-                29.000021,
+                29.00002,
                 8.70709,
                 1.6
             ],
@@ -123,22 +123,22 @@
         {
             "name": "Gridfinity label 1U M4x6 symbol 2",
             "file": "body7.smt",
-            "volume": 8.121899,
-            "area": 52.348418,
+            "volume": 8.127051,
+            "area": 52.375034,
             "bboxMin": [
-                30.000001,
-                2.5,
+                30.000009,
+                2.500009,
                 1.2
             ],
             "bboxMax": [
-                36.000001,
-                8.5,
+                35.999991,
+                8.499991,
                 1.6
             ],
             "lumps": 1,
-            "faces": 128,
-            "edges": 378,
-            "vertices": 252
+            "faces": 9,
+            "edges": 20,
+            "vertices": 14
         }
     ]
 }
