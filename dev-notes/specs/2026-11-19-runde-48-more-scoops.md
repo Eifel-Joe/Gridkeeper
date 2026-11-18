@@ -30,6 +30,12 @@ fillet). Around it:
   wall) is locked while the tab is on, so at most three with a tab.
 - Compartments: scoops follow the same rule as today's single scoop, only on more walls.
 - Today's bin with one front scoop stays the same in geometry and in its saved settings.
+- (addendum) The back wall is locked only while a label tab is chosen; without a tab up to four scoops, also per
+  compartment.
+- (addendum) Per compartment: the compartment layout editor can choose the scoop walls of each compartment; a
+  compartment without a choice of its own takes the bin's four checkboxes. Old configs load unchanged.
+- (addendum) The scoop radius may be limited where needed (several scoops, small compartments), automatically from
+  the compartment's size; `Scoop max radius` stays the upper bound.
 
 ## Options
 
@@ -59,6 +65,33 @@ fillet). Around it:
 - Cullenect sockets and hollow tabs stay on the back wall; a left or right scoop runs under the tab's ends, the tab is
   joined over it as today. No back scoop with a tab, so the socket never meets a scoop.
 
+## Scoops per compartment (addendum)
+
+- Data: a compartment pocket (`compartmentLayout.pocket`) gets `scoops`: `None` = like the bin (default, also for
+  every pocket of an old config), or a list of walls (`[]` = none). `_sanitized` keeps only known wall names,
+  anything else becomes `None`. `isCustomized` counts a pocket with its own scoops; `isUniform` is false then (the
+  pattern copies one cavity, it can't vary), `describe` names them.
+- Walls of a compartment are its own four walls (its front is the bin's front wall or a divider). Decided by the
+  addendum: the tab wall is locked for every compartment while a tab is chosen, since every compartment carries its
+  own tab on its back wall. `scoopSides.compartmentScoopSides(pocketScoops, binSides, hasTab)`.
+- Generator: `BinBodyCompartmentDefinition.scoopSides` per compartment, the cutter takes the compartment's. The outer
+  bounds (lip inner edge) and the lip bottom chamfer follow the bin walls where **any** compartment along that wall
+  has a scoop on it (`scoopSides.outerScoopWalls`), so the compartment grid stays even; creases skip those walls.
+- Editor (`html/compartments.html`): the selected compartment's panel gets a row **Scoops** with a choice
+  `Like the bin` / `Own` and four toggles Front, Back, Left, Right (Back disabled while a tab is chosen); merge keeps
+  the source pocket's choice, split gives every cell the pocket's choice. A compartment with own scoops shows a small
+  mark in the drawing. The data sent to the page gets `binScoops` (the bin's walls) for `Like the bin`.
+- Saved with the pockets in the config and the recorded defaults, so Load, rebuild and clone carry them as they carry
+  depth and label today.
+
+## Radius limit (addendum)
+
+The scoop radius of a compartment is `min(Scoop max radius, depth - top margin)` at least the corner fillet, as
+today, and additionally, on an axis with scoops on **both** walls, at most half the compartment's span on that axis
+less `BIN_SCOOP_FLOOR_MARGIN` (new, 0.5 mm), so a flat strip of floor stays between them. An axis with one scoop
+keeps today's limit, so today's bins with one scoop are unchanged. One radius for all scoops of a compartment (one
+fillet feature).
+
 ## Dialog
 
 Group **Scoop**: `Front (along bin width)` (the old `Add scoop (along bin width)` input), `Back (along bin width)`,
@@ -69,7 +102,8 @@ Group **Scoop**: `Front (along bin width)` (the old `Add scoop (along bin width)
 
 - Scoops for shelled, solid or shaped bins.
 - A label tab on another wall than the back.
-- Per-side radii.
+- Per-side radii (one radius per compartment, limited automatically).
+- Scoops in other places than walls of a compartment (e.g. only part of a wall).
 
 ## Done when (end to end)
 
@@ -78,4 +112,7 @@ Group **Scoop**: `Front (along bin width)` (the old `Add scoop (along bin width)
   lip), `bin_2x2x4_scoops_4_lip_full_compartments` (4, full lip, 2x2 compartments). Unchanged fingerprints of the
   existing scoop cases (`bin_2x2x4_scoop_radius_10`, `bin_2x2x4_lip_full_scoop_tab`, `bin_2x1x3_wall_3_scoop_compartments`,
   `bin_3x2x3_dividers_to_top_3_columns_tab_scoop_part`, `bin_2x3x5_features`). Every sketch fully constrained.
-- Click test in the dialog (`dev-notes/klicktest-r48.md`), docs page `docs/bins/compartments.md` with new pictures.
+- Snapshot case for per-compartment scoops and the radius limit: `bin_3x1x3_scoops_per_compartment` (3 compartments
+  along X: left one Front+Left, middle `[]`, right Like the bin with Front+Back+Right and no tab, radius limited on Y).
+- Click test in the dialog (`dev-notes/klicktest-r48.md`) including the editor, docs page
+  `docs/bins/compartments.md` with new pictures (bin with 2/3/4 scoops, editor with per-compartment scoops).
