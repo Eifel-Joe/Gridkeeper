@@ -2,7 +2,8 @@
 
 **Solid › Create › Gridkeeper box** builds a storage box with a lid after
 [Pred's parametric Gridfinity Storage Box v1.1](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric)
-(CC BY-NC). The box holds Gridfinity bins in its floor, carries a Gridfinity grid on its lid, and stacks and latches
+(CC BY-NC). The box holds Gridfinity bins in its floor, carries a Gridfinity grid on its lid (or a closed top, see
+[Lid](#lid)), and stacks and latches
 with boxes printed from Pred's own file: outer size, grooves, latch catches, hinge slots, handle and label holders
 and the stacking rim are Pred's to the millimetre.
 
@@ -17,7 +18,7 @@ box, see [Components and joints](working/components.md).
 
 ## Info
 
-![The Gridkeeper box dialog: Info, Size 5 × 4 × 6 with the outer size 230 × 188 × 65 mm, Magnet holes, Joint origins and Small parts with the Hinge choice](assets/images/dialog-box.png)
+![The Gridkeeper box dialog: Info, Size 5 × 4 × 6 with the outer size 230 × 188 × 65 mm, Magnet holes, Joint origins, Lid with the Lid top choice and Small parts with the Hinge choice](assets/images/dialog-box.png)
 
 A link to this page, the credit to Pred and the version of the add-in. When the dialog was opened by
 **Gridkeeper rebuild**, it says which box is rebuilt in place.
@@ -44,9 +45,11 @@ The line below shows the outer size: width and length are the cells plus a 10 mm
 
 ## Joint origins
 
-**Add joint origins** puts a joint origin in every cell of the floor, *Cell joint origin column-row*, to joint bins
-into the box like onto a baseplate; how to joint a bin into a cell or a box onto another, step by step, is in
-[Joint origins](working/components.md#jointing-by-hand). These are always there:
+Every cell of the floor has a joint origin, *Cell joint origin column-row*, to joint bins into the box like onto a
+baseplate: the bin dialog puts a new bin into one ([Picking a joint origin in a dialog](working/components.md#picking-a-joint-origin-in-a-dialog)),
+by hand see [Joint origins](working/components.md#jointing-by-hand). There used to be a checkbox **Add joint
+origins** for them; a box built without them gets them when it is rebuilt, nothing else of it changes. These are
+always there too:
 
 | Joint origin | Where |
 |---|---|
@@ -56,6 +59,23 @@ into the box like onto a baseplate; how to joint a bin into a cell or a box onto
 | *Label joint origin* | In the label holder at the front, the middle of the label's back; **Gridkeeper box label** joints the label there |
 
 *Lid on box* is part of the box: a rebuild makes it anew as a rigid joint, changes of yours to it are not kept.
+
+## Lid
+
+**Lid top** picks what the top of the lid is:
+
+| Lid top | What it is |
+|---|---|
+| **Grid** (default) | Pred's lid: a Gridfinity grid on top to stand bins on |
+| **Closed** | A flat, closed top from rim to rim, sturdier |
+
+Both lids are the same underneath, so they hold the bins in the box alike, and both keep the four stacking tabs in
+the corners of the top. The tabs reach into the grooves under the box above, so boxes of the same size stack on a
+closed lid as on a grid. A closed lid is printed as built, like the grid one: its top up.
+
+![A box 5 × 4 × 6 with a closed lid: a flat top with the four stacking tabs in its corners, and its set Box 5×4×6 in the browser](assets/images/box-lid-closed.png)
+
+Boxes saved before there was a choice rebuild with the grid.
 
 ## Small parts
 

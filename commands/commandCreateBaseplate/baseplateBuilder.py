@@ -306,7 +306,8 @@ def rebuildBaseplate(
 ) -> tuple[list[adsk.fusion.BRepBody], list[str]]:
     """
     Builds the baseplate in place of the one the body is of, keeping the features after it, see rebuildUtils.rebuild.
-    Returns the new bodies and what of the later features needs a look
+    Joints on its joint origins move over to those of the same name. Returns the new bodies and what of the later
+    features needs a look
     """
     target = rebuildUtils.findTarget(des, body, tagUtils.TAG_BASEPLATE, BASEPLATE_PLACEMENT_FEATURE)
     prefix = rebuildUtils.bodyId(target.bodies[0], BASEPLATE_PARAMETER_BASE_NAME)
@@ -321,6 +322,9 @@ def rebuildBaseplate(
         isPreview,
         lambda placement, parameterPrefix, transform, oldPlace: buildBaseplate(des, inputsState, settings, isPreview, placement, parameterPrefix, transform, oldPlace),
         'baseplate',
+        # bins jointed into its cells by the bin command (round 31, p312) or by the user stay in them: the joints get
+        # the socket joint origin of the same name of the new baseplate. Baseplates have no Cullenect pockets
+        jointsByName=True,
     )
 
 def configWithParameters(config: dict, parameters: list, findParameter) -> dict:

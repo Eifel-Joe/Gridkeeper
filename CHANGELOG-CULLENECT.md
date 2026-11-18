@@ -6,6 +6,52 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased
 
+### Closed box lid (round 30)
+
+- **Lid top: Grid or Closed:** the box dialog has a group *Lid* with **Lid top**. *Closed* builds the lid flat and
+  closed on top instead of with a Gridfinity grid, sturdier; the stacking tabs in its corners stay, so boxes still
+  stack (Nutzer: „Box steht auf Deckel. Und der Deckel hat doch in den Ecken Rastnasen, die in den Boden der Box
+  greifen.“). The default stays the grid, and boxes saved before the choice rebuild with it (Nutzer, 18.11.2026).
+  Underneath both lids are the same and hold the bins alike. The box follows
+  [Pred's storage box](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric)
+  (CC BY-NC, by Pred); the closed top is Gridkeeper's change to it.
+
+### Older bins build as they were saved (round 32)
+
+- **No settings a config doesn't give:** a bin, baseplate or box saved before a setting existed takes the value that
+  built it on Load from file, rebuild and clone, not the one the dialog has (Nutzer: „Ältere Bins werden erstellt, wie
+  sie gespeichert wurden. Es werden keine Einstellungen aktiviert, welche die Config nicht her gibt.“, p280). Bins:
+  sharp shell, no dividers up to the top, no label color, 0.3 mm play of a Cullenect insert, light lip trimmed flat as
+  before. Baseplates: the bin xy clearance at the edges where plates meet, as before they had a clearance of their
+  own. Configs of GridfinityGenerator by Le0Michine build the same way.
+- **Changes p151 (round 18):** an old bin with a label used to keep the label color chosen in the dialog, it now
+  comes without one and the dialog shows *None*. A file with only some settings gets these older values too; the
+  settings every config had since 13.11.2026 still keep the dialog's value when a file leaves them out.
+- **Plate edge clearance up to 0.5 mm:** the largest bin xy clearance, so baseplates saved before the plate edge
+  clearance build the same with any xy clearance (it stopped at 0.25 mm, half the whole gap of upstream's setting;
+  nothing in the geometry needs that).
+- **Not reproduced:** a fill area baseplate saved on 13 or 14.11.2026 with the fit tolerance GridfinityGenerator
+  removed since (3010f3f, Le0Michine) builds 1 mm larger along each axis (its default tolerance), the setting is
+  reported as not recognised. Older than 1.0.0, nobody else had the add-in then.
+
+### A new bin into a cell (round 31, p312)
+
+- **Cell in the bin dialog:** a new section **Placement** picks a cell joint origin of a baseplate or of the floor of
+  a box, the new bin is jointed into it (joint *… in cell*), as inserts are into their pockets. A bin larger than
+  1 × 1 goes there with its front left cell. Without a baseplate or box in the design the
+  section isn't there and the bin is built beside the others as before. Offered are the cells of every baseplate
+  and the floor cells inside a box, not the grid on its lid; only for new bins.
+- **Rebuilt bins keep their cell:** a rebuilt bin is jointed into its cell again, a bin whose parameters are only
+  set keeps its joint anyway. The bin has a joint origin of
+  its own for it, *Cell placement joint origin* at its front left cell, also in a half grid.
+- **Boxes always have their cell joint origins:** the box dialog's **Add joint origins** is gone, every box gets a
+  joint origin in each floor cell. A box built without them gets them when it is rebuilt; only joint origins are
+  added, its geometry stays the same. The box is after
+  [Pred's storage box](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric)
+  (CC BY-NC, by Pred).
+- **Rebuilt baseplates keep their bins:** a baseplate rebuild moves the joints on its socket joint origins over to
+  those of the same name, as the box rebuild does; before, a bin jointed into a socket lost its joint.
+
 ### Reload Gridkeeper, developer commands in git worktrees (round 33)
 
 - **Reload Gridkeeper:** after an update Gridkeeper asks „Reload Gridkeeper now to use it?“, and the Gridkeeper updates

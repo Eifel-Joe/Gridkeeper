@@ -230,7 +230,7 @@ def labelHolder(des: adsk.fusion.Design, body: adsk.fusion.BRepBody) -> adsk.fus
 
 
 def _inRoot(des: adsk.fusion.Design, jointOrigin: adsk.fusion.JointOrigin, occurrence: adsk.fusion.Occurrence | None) -> adsk.fusion.JointOrigin:
-    """The joint origin as seen from the root, through the occurrence of its component, as labelBuilder._inRoot: the
+    """The joint origin as seen from the root, through the occurrence of its component, as assembly.jointOriginInRoot: the
     sides of a joint may come without one, a selection input refuses those (round 20, p220)"""
     if jointOrigin.assemblyContext is not None:
         return jointOrigin
@@ -243,7 +243,7 @@ def _inRoot(des: adsk.fusion.Design, jointOrigin: adsk.fusion.JointOrigin, occur
 
 def _isAfter(target: rebuildUtils.RebuildTarget, box: adsk.fusion.JointOrigin | None) -> bool:
     """Whether the box comes after the label in the timeline: the rebuild builds right after the old group, where that
-    box isn't there yet (as labelBuilder._isAfter). The box's component sits in its set, either may be the later one"""
+    box isn't there yet (as rebuildUtils.comesAfter). The box's component sits in its set, either may be the later one"""
     occurrence = box.assemblyContext if box is not None else None
     while occurrence is not None:
         item = (occurrence.nativeObject or occurrence).timelineObject

@@ -297,23 +297,8 @@ def insertPocket(des: adsk.fusion.Design, body: adsk.fusion.BRepBody) -> adsk.fu
         ]
         for ((side, _), (other, otherOccurrence)) in (sides, sides[::-1]):
             if side is not None and other is not None and side.name == INSERT_JOINT_ORIGIN                     and (side.nativeObject or side).parentComponent == component and pocketSizeMm(other) is not None:
-                return _inRoot(des, other, otherOccurrence)
+                return assembly.jointOriginInRoot(des, other, otherOccurrence)
     return None
-
-def _inRoot(des: adsk.fusion.Design, jointOrigin: adsk.fusion.JointOrigin, occurrence: adsk.fusion.Occurrence | None = None) -> adsk.fusion.JointOrigin:
-    """The joint origin as seen from the root, through the occurrence of its component. The sides of a joint came
-    without one (assemblyContext None), a selection input refused them: "3 : invalid argument selection", the label
-    dialog stopped half built (round 20, p220, r20_pocket_probe: the proxy through the bin's occurrence selects)"""
-    if jointOrigin.assemblyContext is not None:
-        return jointOrigin
-    native = jointOrigin.nativeObject or jointOrigin
-    # the joint's own occurrence of that side: a bin copied in Fusion has a second occurrence of its component, the
-    # first one would put the insert into the other bin (review round 20)
-    if occurrence is not None and occurrence.component == native.parentComponent and (occurrence.assemblyContext is not None or occurrence.nativeObject is None):
-        return native.createForAssemblyContext(occurrence)
-    occurrences = des.rootComponent.allOccurrencesByComponent(native.parentComponent)
-    # a bin's component is in the design once, see assembly.addOccurrence; one in the root has no occurrence
-    return native.createForAssemblyContext(occurrences.item(0)) if occurrences.count > 0 else native
 
 def _insertBody(target: rebuildUtils.RebuildTarget) -> adsk.fusion.BRepBody:
     """The insert itself among the tagged bodies of its group, not a letter or the symbol: the order the design finds
@@ -323,15 +308,6 @@ def _insertBody(target: rebuildUtils.RebuildTarget) -> adsk.fusion.BRepBody:
         box = body.boundingBox
         return (box.maxPoint.x - box.minPoint.x) * (box.maxPoint.y - box.minPoint.y)
     return max(own or target.bodies, key=area)
-
-def _isAfter(target: rebuildUtils.RebuildTarget, pocket: adsk.fusion.JointOrigin | None) -> bool:
-    """Whether the pocket's bin comes after the insert in the timeline: the rebuild builds right after the old group,
-    where that pocket isn't there yet (review)"""
-    occurrence = pocket.assemblyContext if pocket is not None else None
-    if occurrence is None:
-        return False
-    item = (occurrence.nativeObject or occurrence).timelineObject
-    return item is not None and any(later == item for later in target.laterItems)
 
 def rebuildLabel(
     des: adsk.fusion.Design,
@@ -353,7 +329,7 @@ def rebuildLabel(
         raise ValueError(problem)
     # inserts aren't moved into place but drawn there, no move of this name: the placement is (0, 0)
     target = rebuildUtils.findTarget(des, body, tagUtils.TAG_LABEL, LABEL_PLACEMENT_FEATURE)
-    if _isAfter(target, pocket):
+    if rebuildUtils.comesAfter(target, pocket):
         raise ValueError("The bin of this pocket comes after the insert in the timeline, the insert can't be rebuilt into it in place")
     old = _insertBody(target)
     # the pocket the old insert leaves, Fusion turned it off for the old joint, see assembly.keepShown

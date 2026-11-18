@@ -1,6 +1,7 @@
 import adsk.core, adsk.fusion
 import copy
 import math
+from dataclasses import dataclass
 
 from ...lib import tagUtils
 from ...lib import configJson
@@ -18,7 +19,7 @@ from ...lib.gridfinityUtils import raisedDividers
 from ...lib.gridfinityUtils import parameterUtils
 from ...lib.gridfinityUtils import designIntent
 from ...lib.gridfinityUtils.dim import Dim
-from ...lib.gridfinityUtils.baseGenerator import createFootGrid, cutBaseClearance, cutWallJunctionPockets, footCenters, createCellJointOrigins, createPointJointOrigins, keepBodiesInCells, cutOutsideShape, cutShapeWallJunctionPockets
+from ...lib.gridfinityUtils.baseGenerator import createFootGrid, cutBaseClearance, cutWallJunctionPockets, footCenters, cellCenters, createCellJointOrigins, createPointJointOrigins, keepBodiesInCells, cutOutsideShape, cutShapeWallJunctionPockets
 from ...lib.gridfinityUtils.baseGeneratorInput import BaseGeneratorInput
 from ...lib.gridfinityUtils.binBodyGenerator import createGridfinityBinBody, createShapeCavity, createBinLipSupport, binBodyTopHeight, createCompartmentCutout, compartmentCutoutFilletRadius, tabTopClearance, createTabLabel, hollowTabWallThickness
 from ...lib.gridfinityUtils import labelGenerator
@@ -35,6 +36,7 @@ from ...lib.gridfinityUtils.binBodyTabGeneratorInput import BinBodyTabGeneratorI
 from ...lib.gridfinityUtils.binBodyTabGenerator import createGridfinityBinBodyTab, createTabHollowCuts, TabCavity, TabWallOpenings, tabFilletAllowance
 from ...lib.gridfinityUtils.cullenectSocketGenerator import createCullenectSocket
 from ...lib.gridfinityUtils import cullenect
+from ...lib.gridfinityUtils import binCell
 from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
 from .inputState import InputState
 
@@ -191,20 +193,22 @@ def buildBin(
     occurrenceTransform: adsk.core.Matrix3D | None = None,
     oldPlace: assembly.OldPlace | None = None,
     mayChangeDocument: bool = True,
+    cell: adsk.fusion.JointOrigin | None = None,
 ) -> list[adsk.fusion.BRepBody]:
     """
     Builds the bin into the design at the timeline marker, tagged with the settings to show later, see
     settingsUtils.snapshotInputs. A new bin is a component of its own in the container Bins, a part design is switched
     to hybrid for it unless the document may not change (a preview). A bin rebuilt in place keeps the placement, the
     parameters by their prefix, the transform of its component and the place the old one had, see rebuildUtils and
-    assembly.OldPlace, a new one goes to a free spot
+    assembly.OldPlace, a new one goes to a free spot. With a cell, a joint origin of a baseplate's socket or of a box's
+    floor (round 31, p312), the bin is jointed into it with its front left cell instead
     """
     if des.designType == adsk.fusion.DesignTypes.DirectDesignType:
         raise UnsupportedDesignTypeException('Timeline must be enabled for the generator to work, projects with disabled design history currently are not supported')
     plan = designIntent.structurePlan(des.designIntent, mayChangeDocument, assembly.rebuildKind(oldPlace))
     # the root is active afterwards, also after a failed build, see assembly.buildWithStructure. A rebuild in place
     # builds through here as well, see rebuildBin
-    return assembly.buildWithStructure(des, plan, lambda: _buildBin(des, state, settings, placement, parameterPrefix, occurrenceTransform, plan, oldPlace))
+    return assembly.buildWithStructure(des, plan, lambda: _buildBin(des, state, settings, placement, parameterPrefix, occurrenceTransform, plan, oldPlace, cell))
 
 def _buildBin(
     des: adsk.fusion.Design,
@@ -215,6 +219,7 @@ def _buildBin(
     occurrenceTransform: adsk.core.Matrix3D | None = None,
     plan: designIntent.StructurePlan | None = None,
     oldPlace: assembly.OldPlace | None = None,
+    cell: adsk.fusion.JointOrigin | None = None,
 ) -> list[adsk.fusion.BRepBody]:
     # creased bins have a single compartment and a solid tab, see creaseLayout
     creases = creaseLayout(state)
@@ -255,8 +260,9 @@ def _buildBin(
         gridfinityBinComponent: adsk.fusion.Component = des.rootComponent
     features: adsk.fusion.Features = gridfinityBinComponent.features
 
-    # pick the spot before generating, so none of this bin's geometry can count as an obstacle
-    binPlacement = placement or placementUtils.findPlacement(
+    # pick the spot before generating, so none of this bin's geometry can count as an obstacle. A bin going into a cell
+    # is moved there by its joint, it stays at the origin of its component (round 31)
+    binPlacement = placement or ((0, 0) if cell is not None and newCmpOcc is not None else placementUtils.findPlacement(
         des,
         tagUtils.TAG_BIN,
         BIN_LEGACY_NAME_PREFIX,
@@ -268,7 +274,7 @@ def _buildBin(
         ),
         state.baseWidth,
         state.baseLength,
-    )
+    ))
 
     reuseParameters = parameterPrefix is not None
     # the bin's id too, see tagUtils.tagBody
@@ -719,6 +725,33 @@ def _buildBin(
         for (jointOrigin, (_, _, pocket)) in zip(jointOrigins, pockets):
             jointOrigin.attributes.add(tagUtils.TAG_GROUP, tagUtils.TAG_POCKET, cullenect.pocketTagValue(*cullenect.pocketSizeMm(pocket.units, baseWidth.value, state.cullenectSocketOffset)))
 
+    if cell is not None and newCmpOcc is not None:
+        # into the cell picked, with the center of the bin's front left cell (round 31, p312: the cell
+        # is the front left corner of a bin larger than 1x1). A joint origin of its own: the foot ones sit in half feet
+        # in a half grid and a shaped bin may leave the corner out. After the placement like the feet's, in the bin's
+        # timeline group like an insert's joint into its pocket, a rebuild joints the new bin again, see rebuildBin. A
+        # preview in a part design builds bodies into the root, which a joint can't move, it shows the bin beside
+        [(_, _, x, y)] = cellCenters(
+            baseWidth,
+            baseLength,
+            xyClearance,
+            range(1),
+            range(1),
+            Dim.length(binPlacement[0]) if binPlacement[0] != 0 else None,
+            Dim.length(binPlacement[1]) if binPlacement[1] != 0 else None,
+        )
+        (placementOrigin,) = createPointJointOrigins(
+            [(binCell.PLACEMENT_JOINT_ORIGIN, x, y, Dim.length(-const.BIN_BASE_HEIGHT))],
+            gridfinityBinComponent,
+            name=binCell.PLACEMENT_JOINT_ORIGIN,
+        )
+        jointInput = root.joints.createInput(assembly.inContext(placementOrigin, newCmpOcc), cell)
+        jointInput.setAsRigidJointMotion()
+        joint = root.joints.add(jointInput)
+        joint.name = binCell.cellJointName(binName)
+        # Fusion turns off a joint origin a joint uses, the cell stays shown for the next bin (as an insert's pocket)
+        assembly.keepShown(cell)
+
     # group features in timeline
     binGroup = des.timeline.timelineGroups.add(originalTimelinePosition, des.timeline.markerPosition - 1)
     binGroup.name = binName
@@ -733,7 +766,8 @@ def rebuildBin(
 ) -> tuple[list[adsk.fusion.BRepBody], list[str]]:
     """
     Builds the bin in place of the one the body is of, keeping the features after it, see rebuildUtils.rebuild, or
-    sets its parameters when they hold all that changed. Returns the bodies and what of the later features needs a look
+    sets its parameters when they hold all that changed. A bin the bin command jointed into a cell goes into it again
+    (round 31). Returns the bodies and what of the later features needs a look
     """
     target = rebuildUtils.findTarget(des, body, tagUtils.TAG_BIN, BIN_PLACEMENT_FEATURE)
     newConfig = configJson.stateToJson(configJson.GENERATOR_BIN, state)
@@ -752,16 +786,99 @@ def rebuildBin(
     prefix = rebuildUtils.bodyId(target.bodies[0], BIN_PARAMETER_BASE_NAME)
     if not isPreview:
         commonUtils.fileLog(f'{LOG_PREFIX} rebuilding {target.group.name} at {target.placement}, {rebuildUtils.configChanges(configJson.GENERATOR_BIN, target.bodies[0], newConfig)}')
-    return rebuildUtils.rebuild(
+    # a bin jointed into a cell keeps it (round 31, spec decision 4): its joint is in the old group and goes with it, the new bin is jointed into the same cell. A cell of a
+    # part after the bin in the timeline isn't there where the new one is built, it keeps its place without a joint
+    found = binCellOf(des, target)
+    cell = found.cell
+    notes = []
+    if cell is not None and rebuildUtils.comesAfter(target, cell):
+        notes.append(f'{target.group.name}: the part of {cell.name} comes after the bin in the timeline, the new bin stays where it was without a joint into the cell')
+        cell = None
+    elif cell is None and found.wasInCell:
+        # its cell was deleted, or a rebuilt baseplate or box no longer has it (spec decision 4, review)
+        notes.append(f'{target.group.name}: the cell it was jointed into is gone, the new bin stays where it was without a joint')
+    (bodies, rebuildNotes) = rebuildUtils.rebuild(
         des,
         target,
         prefix,
         BIN_PARAMETER_BASE_NAME,
         isPreview,
-        # colored labels are bodies of their own beside the bin, only the bin bodies take the place of the old ones
-        lambda placement, parameterPrefix, transform, oldPlace: tagUtils.taggedBodies(buildBin(des, state, settings, placement, parameterPrefix, transform, oldPlace, not isPreview), tagUtils.TAG_BIN),
+        # colored labels are bodies of their own beside the bin, only the bin bodies take the place of the old ones.
+        # A jointed bin is placed by its joint, a free one keeps the transform of its old component
+        lambda placement, parameterPrefix, transform, oldPlace: tagUtils.taggedBodies(buildBin(des, state, settings, placement, parameterPrefix, None if cell is not None else transform, oldPlace, not isPreview, cell=cell), tagUtils.TAG_BIN),
         'bin',
     )
+    if not isPreview and cell is not None:
+        # with the timeline at its end again, Fusion turned it off for the old joint too (as rebuildLabel)
+        assembly.keepShown(cell)
+    return (bodies, rebuildNotes + notes)
+
+# the role of a box's lid component (boxBuilder.LID_COMPONENT_NAME): its stacking grid isn't offered (round 31)
+LID_ROLE = 'Lid'
+
+def hasCellParts(des: adsk.fusion.Design) -> bool:
+    """Whether the design has a baseplate or a box, the bin dialog offers a cell then (round 31)"""
+    return any(len(des.findAttributes(tagUtils.TAG_GROUP, tagName)) > 0 for tagName in (tagUtils.TAG_BASEPLATE, tagUtils.TAG_BOX))
+
+def isCellJointOrigin(jointOrigin: adsk.fusion.JointOrigin | None) -> bool:
+    """
+    Whether a new bin can be jointed into the joint origin (round 31, p312): a socket of a baseplate or a cell of the
+    floor of a box (round 31, not the grid on its lid), by its name and
+    the tagged body of its component. Not a foot of a bin, a pocket or a seat
+    """
+    if jointOrigin is None or not jointOrigin.isValid or binCell.cellOf(jointOrigin.name) is None:
+        return False
+    component = (jointOrigin.nativeObject or jointOrigin).parentComponent
+    # a baseplate or box of bodies in the root (a part design, or built before round 13) has no component a rebuild
+    # could move the joint to by name, the bin would lose its cell then (review): not offered
+    if component == component.parentDesign.rootComponent:
+        return False
+    tagName = tagUtils.TAG_BASEPLATE if jointOrigin.name.startswith(binCell.SOCKET_PREFIX) else tagUtils.TAG_BOX
+    if tagName == tagUtils.TAG_BOX and rebuildUtils.partRole(component) == LID_ROLE:
+        return False
+    return any(body.attributes.itemByName(tagUtils.TAG_GROUP, tagName) is not None for body in component.bRepBodies)
+
+def _readSide(read):
+    """A side of a joint, none when Fusion refuses to read it (a deleted joint origin)"""
+    try:
+        return read()
+    except RuntimeError:
+        return None
+
+@dataclass
+class CellOfBin:
+    """The cell a bin was jointed into, as seen from the root, and whether it had a joint into one at all: a joint whose
+    cell is gone has no cell but was in one"""
+    cell: adsk.fusion.JointOrigin | None
+    wasInCell: bool
+
+def binCellOf(des: adsk.fusion.Design, target: rebuildUtils.RebuildTarget) -> CellOfBin:
+    """The cell the bin was jointed into by the bin command: the other side of its joint "... in cell" on its Cell
+    placement joint origin (round 31), as labelBuilder.insertPocket. A joint of the user's own isn't the command's, it
+    stays a later feature. A joint whose cell was deleted may refuse to be read, Fusion raises for a deleted object; it
+    counts as one without a cell, the rebuild goes on (review)"""
+    if target.occurrence is None:
+        return CellOfBin(None, False)
+    component = (target.occurrence.nativeObject or target.occurrence).component
+    wasInCell = False
+    for joint in des.rootComponent.allJoints:
+        try:
+            if not binCell.isCellJointName(joint.name):
+                continue
+            # each side on its own: the side of a deleted cell may raise, the bin's own side still says it was in one
+            sides = [
+                (_readSide(lambda: adsk.fusion.JointOrigin.cast(joint.geometryOrOriginOne)), _readSide(lambda: joint.occurrenceOne)),
+                (_readSide(lambda: adsk.fusion.JointOrigin.cast(joint.geometryOrOriginTwo)), _readSide(lambda: joint.occurrenceTwo)),
+            ]
+            for ((side, _), (other, otherOccurrence)) in (sides, sides[::-1]):
+                if side is None or side.name != binCell.PLACEMENT_JOINT_ORIGIN or (side.nativeObject or side).parentComponent != component:
+                    continue
+                wasInCell = True
+                if other is not None and binCell.cellOf(other.name) is not None:
+                    return CellOfBin(assembly.jointOriginInRoot(des, other, otherOccurrence), True)
+        except RuntimeError as err:
+            commonUtils.fileLog(f'{LOG_PREFIX} a joint into a cell couldn\'t be read, {err}')
+    return CellOfBin(None, wasInCell)
 
 def isSameSetting(old, new) -> bool:
     if isinstance(old, (int, float)) and isinstance(new, (int, float)) and not isinstance(old, bool) and not isinstance(new, bool):
