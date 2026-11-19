@@ -1,0 +1,19 @@
+{
+    "description": "3x1x6 bin with 3 compartments along X and their own scoops: the left one front and left, the middle none, the right one the bin's front, back and right with no tab, its radius limited between front and back (25 mm over half its 41 mm length), round 48",
+    "generator": "bin",
+    "settings": {
+        "binWidth": 3,
+        "binLength": 1,
+        "binHeight": 6,
+        "hasScoop": true,
+        "hasScoopBack": true,
+        "hasScoopRight": true,
+        "compartmentsX": 3,
+        "showCompartmentsLayout": true,
+        "compartmentPockets": [
+            {"x": 0, "y": 0, "width": 1, "length": 1, "depth": null, "label": "", "icon": "Default", "scoops": ["front", "left"]},
+            {"x": 1, "y": 0, "width": 1, "length": 1, "depth": null, "label": "", "icon": "Default", "scoops": []},
+            {"x": 2, "y": 0, "width": 1, "length": 1, "depth": null, "label": "", "icon": "Default"}
+        ]
+    }
+}
