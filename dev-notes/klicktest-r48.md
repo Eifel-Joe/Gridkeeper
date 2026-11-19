@@ -41,4 +41,6 @@ Add-in loaded from `wt-r48` (branch `r48-more-scoops`), a new document. Each ste
 ## Geometry by eye
 
 17. 1x1x6 bin, Front and Back: a strip of flat floor stays between the two scoops (radius limited).
+17a. Same bin: the floor meets the left and right walls at a sharp edge (no bottom fillet with more than one scoop);
+    with Front alone the floor edges are rounded as before.
 18. 2x1x4 bin, full lip, Left, hollow tab open through the sides: the side opening goes through the left wall.
