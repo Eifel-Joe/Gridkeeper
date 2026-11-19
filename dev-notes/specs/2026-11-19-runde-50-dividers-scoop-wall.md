@@ -227,8 +227,28 @@ corners unchanged, cavities without a scoop unchanged. Check: new shape case 2×
 
 Cause: where two walls with a scoop meet (front and left), the cavity starts at the lip's inner edge on both, but its
 corner fillet keeps the compartment radius (2.55 mm) while the lip's inner corner there is concentric with the bin's
-(4.0 mm less the inset: 1.4 mm under a full lip, 2.1 mm under a light one); the top of the fillet is left as a level
+(the body's corner radius 3.75 mm less the inset: 1.15 mm under a full lip, 1.85 mm under a light one); the top of the fillet is left as a level
 face of 1.11 mm² at the body top, with or without raised dividers. Target: a cavity corner between two scoop walls is
 concentric with the lip's inner corner, radius bin corner radius less the scoop inset. Shape cases with two adjacent
 scoop walls from round 48 change and are stored anew after a look. Check: new shape case with front and left scoops
 and dividers up to the top.
+
+## After the review (Opus, 2026-11-19)
+
+- A label tab in front of a ridge: its label and Cullenect pocket start at the ridge's tip as decided, its body still
+  reaches back to the divider; from the tip it left an open slot behind it and a hollow tab without its back wall.
+- The ridge's straight face under its tip reaches at least 0.2 mm below where the compartments top clearance cuts
+  the cavities: a light lip's chamfer, starting at the body top, left a shelf as deep as the tab top offset above a
+  scoop on the ridge, a full ridge a level face with an offset deeper than its support wall, and an edge exactly on
+  the cut top made Fusion's combines fail (`ASM_EDGECOIN_PROBLEM`). So a light ridge's chamfer ends a little below
+  the body top, not 0.7 mm above it as first described in the target contour.
+- A corner between two tip faces (an outer scoop wall or a scoop on a ridge) follows the rounded corner the feet leave
+  above it, as between two scoop walls (p653), instead of coming out sharp; beside a ridge it gets a fill from the cut
+  top up to the lip's top, cut by the feet with the ridges, since neither the straight ridge nor the lip reaches into
+  that corner above the body top (0.29 mm² ledges shown in Fusion at the cut top and at the body top before).
+- Compartments are patterned only while none has corners of its own (p653 corners differ between compartments).
+- A compartment with corners of its own and a floor fillet has all four corners at the tightest radius, as beside a
+  ridge.
+- Numbers corrected: the lip's inner corner at the bin's corners is the body's corner radius 3.75 mm less the inset,
+  1.15 mm under a full lip, 1.85 mm under a light one.
+

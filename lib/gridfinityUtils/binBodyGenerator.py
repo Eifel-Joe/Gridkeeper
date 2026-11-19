@@ -16,7 +16,7 @@ from . import cullenect, binLabelLayout
 from .cullenectSocketGenerator import createCullenectSocket, SocketPlacement
 from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput, LIP_TYPE_FULL
 from .binBodyLipGenerator import createGridfinityBinBodyLip, createStackedFootCutters, createLipSupport, lipInnerInset
-from .raisedDividers import DividerSegment, ridgeBox, raisedSides, coveredCornerRadius
+from .raisedDividers import DividerSegment, ridgeBox, raisedSides, cornerRadiusBetween, ridgeTipDepth, TIP, tipCornersBesideRidge
 from .dim import Dim, valueInput
 from ... import config
 
@@ -263,16 +263,20 @@ def createGridfinityBinBody(
             if side in ridgeSides(compartment):
                 if side in compartment.scoopSides:
                     # the cavity starts at the ridge's tip
-                    return 0
+                    return TIP
                 (cellX, cellY, cellWidth, cellLength) = compartmentCell(compartment)
                 face = {scoopSides.LEFT: cellX, scoopSides.RIGHT: cellX + cellWidth,
                         scoopSides.FRONT: cellY, scoopSides.BACK: cellY + cellLength}[side]
                 overhang = ridgeTip.value - abs((gridLineAt(*line) - face).value)
-                return overhang - (clearanceDepth if input.lipType != LIP_TYPE_FULL else 0)
+                # its straight face under the tip reaches down to the cut top, see raisedDividers.ridgeTipDepth
+                return overhang
             isOuter = line[1] == 0 or line[1] == (input.compartmentsByX if line[0] == 'x' else input.compartmentsByY)
             if not isOuter:
                 return None
-            if side in outerScoopWalls or lipSupport is None or clearanceDepth > const.BIN_LIP_SUPPORT_WALL_HEIGHT:
+            if side in outerScoopWalls:
+                # the cavity starts at the lip's tip
+                return TIP
+            if lipSupport is None or clearanceDepth > const.BIN_LIP_SUPPORT_WALL_HEIGHT:
                 return 0
             # a full lip's support, straight down from its tip
             return (scoopInset - wall).value
@@ -287,7 +291,13 @@ def createGridfinityBinBody(
                 outerScoopWalls, (compartment.positionX, compartment.positionY),
                 (compartment.width, compartment.length), (input.compartmentsByX, input.compartmentsByY)):
                 radii[corner] = min(radii.get(corner, cavityCornerRadius), scoopCorner)
-            return radii if len(radii) > 0 else None
+            if len(radii) == 0:
+                return None
+            if len(scoopSides.bottomFilletSides(compartment.scoopSides)) > 0:
+                # a floor fillet runs round the corners, all alike at the tightest, see ridgeCornerRadii
+                tightest = min(radii.values())
+                return {(sideX, sideY): tightest for sideX in (scoopSides.LEFT, scoopSides.RIGHT) for sideY in (scoopSides.FRONT, scoopSides.BACK)}
+            return radii
 
         def ridgeCornerRadii(compartment: BinBodyCompartmentDefinition) -> dict | None:
             """
@@ -307,11 +317,38 @@ def createGridfinityBinBody(
                     if None in covers:
                         # a lowered divider beside: its top takes the fillet's
                         continue
-                    radii[(sideX, sideY)] = coveredCornerRadius(cavityCornerRadius, covers[0], covers[1])
+                    radii[(sideX, sideY)] = cornerRadiusBetween(cavityCornerRadius, covers[0], covers[1], tipCorner=scoopCorner)
             if len(radii) == 0:
                 return None
             tightest = min(radii.values())
             return {(sideX, sideY): tightest for sideX in (scoopSides.LEFT, scoopSides.RIGHT) for sideY in (scoopSides.FRONT, scoopSides.BACK)}
+
+        def tipCornerFills(compartment: BinBodyCompartmentDefinition, cavity: adsk.fusion.BRepBody, cell: tuple, name: str) -> list[adsk.fusion.BRepBody]:
+            """
+            Fills of the rounded corners between two tip faces beside a ridge, from the cut cavity top up to the top of
+            the lip: the compartments top clearance cut them flat, and above the body top neither the ridge, a box, nor
+            the lip reaches past its tip into the corner, a level face was left there (review round 50, 0.29 mm2 ledges
+            shown in Fusion at both heights). Each a box in the corner less the compartment's cavity, cut by the feet of
+            a stacked bin with the ridges, which round it above the body top as they round the lip at the bin's corners
+            """
+            sides = (scoopSides.LEFT, scoopSides.RIGHT, scoopSides.FRONT, scoopSides.BACK)
+            covers = {side: sideCover(compartment, side) for side in sides}
+            radii = cornerRadii(compartment) or {}
+            (x, y, width, length) = cell
+            fills = []
+            for (sideX, sideY) in tipCornersBesideRidge(covers, ridgeSides(compartment)):
+                radius = Dim.length(radii.get((sideX, sideY), cavityCornerRadius))
+                originX = x if sideX == scoopSides.LEFT else x + width - radius
+                originY = y if sideY == scoopSides.FRONT else y + length - radius
+                bottomZ = binBodyTotalHeight - Dim.length(clearanceDepth)
+                box = extrudeUtils.createBoxAtPoint(
+                    radius, radius, clearanceDepth + const.BIN_LIP_EXTRA_HEIGHT - input.lipTopTrimHeight, targetComponent,
+                    adsk.core.Point3D.create(originX.value, originY.value, bottomZ.value), bottomZ,
+                    originX=originX, originY=originY, name=f'{name} corner fill {sideX} {sideY}',
+                ).bodies.item(0)
+                combineUtils.cutBody(box, commonUtils.objectCollectionFromList([cavity]), targetComponent, isKeepToolBodies=True, name=f'{name} corner fill {sideX} {sideY} shape')
+                fills.append(box)
+            return fills
 
         def tabPlacement(compartment: BinBodyCompartmentDefinition, compartmentX: Dim, compartmentY: Dim, compartmentLength: Dim) -> tuple[Dim, Dim, Dim]:
             """X and y of the tab's back top corner, along the compartment's back wall or, on a raised divider, at its
@@ -329,8 +366,12 @@ def createGridfinityBinBody(
         # trimmed compartments are patterned only while all are trimmed alike, compartments beside a ridge differ in
         # their tabs and scoops (round 50)
         useCompartmentPattern = (input.isUniformCompartments and len(input.compartments) > 1 and not hasRidges
+            # a corner between two scoop walls of one compartment only (p653, review round 50)
+            and all(cornerRadii(compartment) is None for compartment in input.compartments)
             and scoopSides.trimsKeepAlike(gridTrims, (input.compartmentsByX, input.compartmentsByY)))
         compartmentsToBuild = input.compartments[:1] if useCompartmentPattern else input.compartments
+        # corner fills beside ridges, cut by the stacked feet with the ridges
+        cornerFills: list[adsk.fusion.BRepBody] = []
         for compartmentIndex, compartment in enumerate(compartmentsToBuild):
             compartmentName = 'Compartment' if len(compartmentsToBuild) == 1 else f'Compartment {compartmentIndex + 1}'
             (compartmentX, compartmentY, compartmentWidth, compartmentLength) = compartmentPlacement(compartment)
@@ -346,6 +387,14 @@ def createGridfinityBinBody(
             compartmentTabInput.originZ = binBodyTotalHeight
             compartmentTabInput.length = tabLength
             compartmentTabInput.width = input.tabWidth
+            # in front of a ridge the label and its pocket start at the ridge's tip, the tab's body still reaches back
+            # to the divider: from the tip it left an open slot behind it, and a hollow tab lost its back wall
+            # (review round 50)
+            behindTab = compartmentY + compartmentLength - tabOriginY
+            if behindTab.value > const.DEFAULT_FILTER_TOLERANCE:
+                compartmentTabInput.origin = adsk.core.Point3D.create(tabOriginX.value, (tabOriginY + behindTab).value, binBodyTotalHeight.value)
+                compartmentTabInput.originY = tabOriginY + behindTab
+                compartmentTabInput.width = input.tabWidth + behindTab.value
             compartmentTabInput.overhangAngle = input.tabOverhangAngle
             compartmentTabInput.labelAngle = input.tabTopAngle
             compartmentTabInput.topClearance = tabTopClearance(input.labelStyle, input.tabTopOffset)
@@ -380,6 +429,7 @@ def createGridfinityBinBody(
                 name=compartmentName,
                 cornerRadii=cornerRadii(compartment),
             )
+            cornerFills.extend(tipCornerFills(compartment, compartmentCuts[0], (compartmentX, compartmentY, compartmentWidth, compartmentLength), compartmentName))
             if useCompartmentPattern:
                 # These cavities are identical and disjoint, so copy their cut faces instead
                 # of creating every cutter body and asking Combine to intersect them all.
@@ -453,8 +503,9 @@ def createGridfinityBinBody(
                 gridTrims,
                 gridLineAt,
                 ridgeTip,
-                -const.BIN_LIP_SUPPORT_WALL_HEIGHT if input.lipType == LIP_TYPE_FULL else 0,
+                -ridgeTipDepth(isFullLip=input.lipType == LIP_TYPE_FULL, clearanceDepth=clearanceDepth, supportWall=const.BIN_LIP_SUPPORT_WALL_HEIGHT),
                 binBodyTotalHeight.value - const.BIN_COMPARTMENT_BOTTOM_THICKNESS,
+                cornerFills,
             ))
 
     if len(bodiesToSubtract) > 0:
@@ -551,6 +602,7 @@ def createRaisedDividers(
     ridgeTip: Dim,
     tipLift: float,
     floorDepth: float,
+    cornerFills: list[adsk.fusion.BRepBody],
 ) -> list[adsk.fusion.BRepBody]:
     """
     Ridges on the dividers on grid lines, up to the top of the lip, cut by the feet of a bin stacked on top like a
@@ -619,6 +671,8 @@ def createRaisedDividers(
             if chamfer > const.DEFAULT_FILTER_TOLERANCE:
                 filletUtils.createChamfer(commonUtils.objectCollectionFromList([edge]), chamfer, targetComponent, name=f'{name} {side} support')
         boxes.append(body)
+    # the corner fills beside the ridges are cut with them, see tipCornerFills
+    boxes.extend(cornerFills)
     # Each box is cut on its own and every body is returned, the bin joins them all. Root cause of p82: the boxes were
     # joined into one body first, but Fusion's join leaves bodies that don't touch apart, so parallel walls came back
     # as one body, the others stayed loose in the design (two boxes 3 cm apart, joined: two bodies, shown in Fusion).

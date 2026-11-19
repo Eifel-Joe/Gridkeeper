@@ -87,12 +87,6 @@ def trimmedCavity(x, y, width, length, position: tuple[int, int], size: tuple[in
 def _isTrimmed(trim) -> bool:
     return (trim.value if hasattr(trim, 'value') else trim) > 0
 
-def cornerTrim(column: int, row: int, sideX: int, sideY: int, counts: tuple[int, int], trims: dict) -> tuple:
-    """How far in a cell's cavity corner lies from its grid corner along x and y, None where untrimmed: the corner on
-    sideX -1 or 1 of the cell, the low or high x, and on sideY of it. See trimmedCavity"""
-    trimX = trims[LEFT] if sideX == -1 and column == 0 else trims[RIGHT] if sideX == 1 and column == counts[0] - 1 else 0
-    trimY = trims[FRONT] if sideY == -1 and row == 0 else trims[BACK] if sideY == 1 and row == counts[1] - 1 else 0
-    return (trimX if _isTrimmed(trimX) else None, trimY if _isTrimmed(trimY) else None)
 
 def runTrims(axis: str, start: int, end: int, counts: tuple[int, int], trims: dict) -> tuple:
     """The trims at the start and end of a run of raised divider wall, None where untrimmed: a wall across x runs

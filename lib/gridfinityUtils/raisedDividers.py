@@ -73,11 +73,6 @@ def gridLineSegments(pockets: list[dict], columns: int, rows: int, binWidth: flo
     return segments
 
 
-def _isRaised(segments: list[DividerSegment], axis: str, line: int, cell: int) -> bool:
-    """Whether a raised divider on this line of the axis covers the cell"""
-    return any(s.axis == axis and s.line == line and s.start <= cell < s.end for s in segments)
-
-
 def segmentsForBin(
     isEnabled: bool,
     hasLip: bool,
@@ -165,3 +160,47 @@ def coveredCornerRadius(radius: float, coverA: float, coverB: float) -> float:
     """
     (a, b) = (max(0.0, coverA), max(0.0, coverB))
     return min(radius, a + b + (2 * a * b) ** 0.5)
+
+
+# how far the ridge's straight face reaches below the cut cavity top: ending on it, its edge lay on the cavities' and
+# Fusion's combines failed there (ASM_EDGECOIN_PROBLEM) or left faces 0.01 mm wide (review round 50, shown in Fusion)
+RIDGE_TIP_MARGIN = 0.02
+
+
+def ridgeTipDepth(*, isFullLip: bool, clearanceDepth: float, supportWall: float) -> float:
+    """
+    How far the ridge's straight face under its tip reaches below the body top, cm: a full lip's support wall, and at
+    least down to where the compartments top clearance cuts the cavities (review round 50: above a scoop on the ridge a
+    light lip's chamfer, starting at the body top, left a shelf as deep as the tab top offset, and a full ridge a level
+    face with an offset deeper than its support wall)
+    """
+    cut = clearanceDepth + RIDGE_TIP_MARGIN if clearanceDepth > 0 else 0.0
+    return max(supportWall if isFullLip else 0.0, cut)
+
+
+# a side of a compartment at the lip's or a ridge's tip, an outer scoop wall or a scoop on a ridge, see cornerRadiusBetween
+TIP = 'tip'
+
+
+def cornerRadiusBetween(radius: float, coverA, coverB, *, tipCorner: float) -> float:
+    """
+    The fillet of a compartment corner beside a ridge, its sides each covered from above by a strip that wide, see
+    coveredCornerRadius, or at a tip (TIP). Between two tip faces it follows the rounded corner the feet of a stacked
+    bin leave above it, tipCorner, as a corner between two scoop walls does (p653, review round 50: covered by nothing,
+    it came out sharp and the whole compartment with it)
+    """
+    if coverA == TIP and coverB == TIP:
+        return min(radius, tipCorner)
+    return coveredCornerRadius(radius, 0 if coverA == TIP else coverA, 0 if coverB == TIP else coverB)
+
+
+def tipCornersBesideRidge(covers: dict, ridges: frozenset) -> list[tuple[str, str]]:
+    """
+    The corners of a compartment, (left or right, front or back), between two tip faces of which one is a ridge's:
+    their rounding is filled up to the body top where the compartments top clearance cut it (review round 50). Covers
+    by side as for cornerRadiusBetween
+    """
+    return [
+        (sideX, sideY) for sideX in ('left', 'right') for sideY in ('front', 'back')
+        if covers[sideX] == TIP and covers[sideY] == TIP and (sideX in ridges or sideY in ridges)
+    ]

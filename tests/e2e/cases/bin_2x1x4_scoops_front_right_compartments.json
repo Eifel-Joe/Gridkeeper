@@ -1,0 +1,11 @@
+{
+    "description": "2x1x4 bin with 2 compartments along X and the bin's front and right scoops, no raised dividers: only the right compartment has the corner between the two scoop walls concentric with the lip, so the compartments are not patterned (round 50, p653, review)",
+    "generator": "bin",
+    "settings": {
+        "binLength": 1,
+        "binHeight": 4,
+        "compartmentsX": 2,
+        "hasScoop": true,
+        "hasScoopRight": true
+    }
+}

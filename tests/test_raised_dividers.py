@@ -169,3 +169,32 @@ def test_a_corner_fillet_is_limited_to_what_its_two_strips_cover():
 def test_a_corner_with_one_strip_only_gets_that_strip():
     assert raised.coveredCornerRadius(0.255, 0.077, 0) == pytest.approx(0.077)
     assert raised.coveredCornerRadius(0.255, 0, 0) == 0
+
+
+# Review round 50: the ridge's straight face under its tip reaches down at least to where the cavities' top is cut,
+# else the compartments top clearance left a shelf at a scoop on the ridge (light lip, 0.5 mm) or a level face
+def test_the_ridge_tip_reaches_down_to_the_cut_cavity_top():
+    assert raised.ridgeTipDepth(isFullLip=True, clearanceDepth=0.05, supportWall=0.12) == pytest.approx(0.12)
+    # a little below the cut top, an edge on it made Fusion's combines fail (ASM_EDGECOIN_PROBLEM, shown in Fusion)
+    assert raised.ridgeTipDepth(isFullLip=True, clearanceDepth=0.2, supportWall=0.12) == pytest.approx(0.2 + raised.RIDGE_TIP_MARGIN)
+    assert raised.ridgeTipDepth(isFullLip=False, clearanceDepth=0.05, supportWall=0.12) == pytest.approx(0.05 + raised.RIDGE_TIP_MARGIN)
+    assert raised.ridgeTipDepth(isFullLip=False, clearanceDepth=0, supportWall=0.12) == 0
+    assert raised.RIDGE_TIP_MARGIN > 0
+
+
+# Review round 50: a corner between two faces at the lip's or ridge's tip, an outer scoop wall or a scoop on a ridge,
+# follows the rounded corner the feet leave above it, like p653
+def test_a_corner_between_two_tip_faces_follows_the_lip():
+    assert raised.cornerRadiusBetween(0.255, raised.TIP, raised.TIP, tipCorner=0.14) == pytest.approx(0.14)
+    # one tip face and a covering strip: the strip alone
+    assert raised.cornerRadiusBetween(0.255, raised.TIP, 0.197, tipCorner=0.14) == pytest.approx(0.197)
+    assert raised.cornerRadiusBetween(0.255, 0.197, 0.14, tipCorner=0.14) == pytest.approx(raised.coveredCornerRadius(0.255, 0.197, 0.14))
+
+
+# Review round 50: a corner between two tip faces beside a ridge is filled up from the cut cavity top to the body top,
+# else the compartments top clearance cut its rounding flat (0.29 mm2 ledges, shown in Fusion)
+def test_the_corners_between_two_tip_faces_beside_a_ridge_are_filled():
+    covers = {'left': raised.TIP, 'right': 0.2, 'front': raised.TIP, 'back': raised.TIP}
+    assert raised.tipCornersBesideRidge(covers, frozenset({'front', 'back'})) == [('left', 'front'), ('left', 'back')]
+    # two outer scoop walls, no ridge: the top clearance's own corner takes it (p653)
+    assert raised.tipCornersBesideRidge(covers, frozenset()) == []

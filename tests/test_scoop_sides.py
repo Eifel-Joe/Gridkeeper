@@ -263,17 +263,6 @@ def test_the_grid_trims_work_on_dims():
     assert not scoops.trimsKeepAlike(trims, (2, 3))
 
 
-def test_a_corner_of_a_cell_along_a_trimmed_wall_moves_in_by_the_trim():
-    trims = {FRONT: 0.14, BACK: 0, LEFT: 0, RIGHT: 0.07}
-    # the front corners of the front row
-    assert scoops.cornerTrim(0, 0, -1, -1, (2, 3), trims) == (None, 0.14)
-    # a back corner of the front row lies on a divider, untrimmed
-    assert scoops.cornerTrim(0, 0, -1, 1, (2, 3), trims) == (None, None)
-    # the right column's right corner, its front one too
-    assert scoops.cornerTrim(1, 1, 1, 1, (2, 3), trims) == (0.07, None)
-    assert scoops.cornerTrim(1, 0, 1, -1, (2, 3), trims) == (0.07, 0.14)
-
-
 def test_a_raised_divider_starts_at_the_trimmed_cavity_of_a_scoop_wall():
     """Its box starts half a wall short of the cavity as before round 50: at a scoop wall that is the trimmed cavity's
     edge, not the grid's, so it doesn't reach out under the lip (near coincident faces with the lip, shown in Fusion)"""
