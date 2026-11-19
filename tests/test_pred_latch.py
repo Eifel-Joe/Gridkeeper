@@ -340,3 +340,14 @@ def test_the_joint_origin_is_the_one_of_latch_f3d():
 
 def test_every_sketch_is_checked_fully_constrained():
     assert "isFullyConstrained" in _source()
+
+
+def test_the_joint_origin_is_made_apart_from_the_drawing():
+    """Round 47 (p591): a copied latch gets the same joint origin as a drawn one, by the same function"""
+    tree = ast.parse(_source())
+    function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "addJointOrigin")
+    assert [a.arg for a in function.args.args] == ["component"]
+    body = ast.unparse(function)
+    assert "zAxisEntity = component.yConstructionAxis" in body and "'180 deg'" in body and "'Latch joint origin'" in body
+    create = ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "createLatch"))
+    assert "addJointOrigin(component)" in create

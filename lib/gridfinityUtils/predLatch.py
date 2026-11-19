@@ -529,18 +529,6 @@ class _Builder:
             self.alongX(top, adsk.fusion.FeatureOperations.JoinFeatureOperation, side * 2.0,
                         'Extrude4' if side < 0 else 'Extrude4 right')
 
-    def jointOrigin(self):
-        """As the former resources/predBox/latch.f3d (fusion-auftraege/r28_extract.py): at the part's origin, Z along the part's
-        +y, X along its -x; jointed to the box's upright seat it gives the place of Pred's Latch:1"""
-        component = self.component
-        originInput = component.jointOrigins.createInput(adsk.fusion.JointGeometry.createByPoint(component.originConstructionPoint))
-        originInput.zAxisEntity = component.yConstructionAxis
-        originInput.xAxisEntity = component.xConstructionAxis
-        originInput.angle = adsk.core.ValueInput.createByString('180 deg')
-        jointOrigin = component.jointOrigins.add(originInput)
-        jointOrigin.name = 'Latch joint origin'
-        return jointOrigin
-
     def checkSketches(self):
         loose = [sketch.name for sketch in self.component.sketches if not sketch.isFullyConstrained]
         if loose:
@@ -557,6 +545,21 @@ def createLatch(component: adsk.fusion.Component) -> list[adsk.fusion.BRepBody]:
     builder.nose()
     for step in ('Chamfer6', 'Fillet4', 'Chamfer2', 'Chamfer3'):
         builder.edges(step)
-    builder.jointOrigin()
+    addJointOrigin(component)
     builder.checkSketches()
     return [builder.body]
+
+
+def addJointOrigin(component: adsk.fusion.Component) -> adsk.fusion.JointOrigin:
+    """
+    As the former resources/predBox/latch.f3d (fusion-auftraege/r28_extract.py): at the part's origin, Z along the part's
+    +y, X along its -x; jointed to the box's upright seat it gives the place of Pred's Latch:1. Apart from the drawing
+    since round 47 (p591): a latch copied into a box set (predBoxInsert) gets it the same way
+    """
+    originInput = component.jointOrigins.createInput(adsk.fusion.JointGeometry.createByPoint(component.originConstructionPoint))
+    originInput.zAxisEntity = component.yConstructionAxis
+    originInput.xAxisEntity = component.xConstructionAxis
+    originInput.angle = adsk.core.ValueInput.createByString('180 deg')
+    jointOrigin = component.jointOrigins.add(originInput)
+    jointOrigin.name = 'Latch joint origin'
+    return jointOrigin

@@ -176,7 +176,8 @@ def test_no_mirror_and_no_user_parameters():
 
 
 def test_joint_origin_by_the_shared_helper():
-    assert "createOffsetJointOrigins" in ast.unparse(_function("createHandlePin"))
+    # in addJointOrigin since round 47 (p591), which createHandlePin calls
+    assert "createOffsetJointOrigins" in ast.unparse(_function("addJointOrigin"))
 
 
 def test_the_extrudes_use_the_planned_profiles_and_ranges():
@@ -195,3 +196,11 @@ def test_the_extrudes_use_the_planned_profiles_and_ranges():
     assert "[shaft, tipRing, headRing] = profile.profilesByArea([_ringArea(0, SHAFT_DIAMETER), _ringArea(SHAFT_DIAMETER, TIP_DIAMETER), _ringArea(TIP_DIAMETER, HEAD_DIAMETER)])" in source
     assert "for (name, x0, x1), cutProfile in zip(cutRanges(), found)" in source
     assert "cuts.profiles([tuple((tuple((_mm(v) for v in corner)) for corner in boxes[name])) for name in names])" in source
+
+
+def test_the_joint_origin_is_made_apart_from_the_drawing():
+    """Round 47 (p591): a copied pin gets the same joint origin as a drawn one, by the same function"""
+    function = _function("addJointOrigin")
+    assert [a.arg for a in function.args.args] == ["component"]
+    assert "createOffsetJointOrigins([(jointName, _mm(jx), _mm(jy), _mm(jz))], component, name='Seat')" in ast.unparse(function)
+    assert "addJointOrigin(component)" in ast.unparse(_function("createHandlePin"))

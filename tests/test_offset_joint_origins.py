@@ -97,7 +97,7 @@ def _function(source, name):
 
 def test_the_box_and_its_handle_pin_use_it():
     for (path, function) in [(("commands", "commandCreateBox", "boxBuilder.py"), "_buildBox"),
-                             (("lib", "gridfinityUtils", "predHandlePin.py"), "createHandlePin")]:
+                             (("lib", "gridfinityUtils", "predHandlePin.py"), "addJointOrigin")]:
         body = ast.unparse(_function(_source(*path), function))
         assert "createOffsetJointOrigins(" in body, path
         assert "createPointJointOrigins(" not in body, path
