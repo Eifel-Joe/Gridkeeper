@@ -310,15 +310,16 @@ def createGridfinityBinBody(
 
         # dividers are lowered as far as the tabs
         if len(input.compartments) > 1 and input.tabTopOffset > 0:
-            # over the cavities, from the scoop insets also where the grid keeps to the grid lines (round 50)
-            (clearanceMinX, clearanceMinY) = (compartmentInsets[scoopSides.LEFT], compartmentInsets[scoopSides.FRONT])
+            # over the cavities, also where the grid keeps to the grid lines (round 50)
+            clearanceInsets = scoopSides.cavityInsets(gridInsets, gridTrims)
+            (clearanceMinX, clearanceMinY) = (clearanceInsets[scoopSides.LEFT], clearanceInsets[scoopSides.FRONT])
             compartmentsTopClearance = createCompartmentCutout(
                 input.wallThickness,
                 clearanceMinX,
                 clearanceMinY,
                 binBodyTotalHeight,
-                bodyWidth - compartmentInsets[scoopSides.RIGHT] - clearanceMinX,
-                bodyLength - compartmentInsets[scoopSides.BACK] - clearanceMinY,
+                bodyWidth - clearanceInsets[scoopSides.RIGHT] - clearanceMinX,
+                bodyLength - clearanceInsets[scoopSides.BACK] - clearanceMinY,
                 input.tabTopOffset,
                 input.binCornerFilletRadius - input.wallThickness,
                 frozenset(),

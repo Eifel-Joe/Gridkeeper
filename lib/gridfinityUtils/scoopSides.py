@@ -102,6 +102,11 @@ def runTrims(axis: str, start: int, end: int, counts: tuple[int, int], trims: di
     endTrim = trims[high] if end == count and _isTrimmed(trims[high]) else None
     return (startTrim, endTrim)
 
+def cavityInsets(gridInsets: dict, trims: dict) -> dict:
+    """Where the cavities start in from each wall, see gridTrims and trimmedCavity: the grid, in by the trim where
+    trimmed. A wall thicker than the scoop inset has no trim, its cavities start at the wall (review round 50)"""
+    return {side: gridInsets[side] + trims[side] if _isTrimmed(trims[side]) else gridInsets[side] for side in SIDES_ORDER}
+
 def trimsKeepAlike(trims: dict, counts: tuple[int, int]) -> bool:
     """Whether every compartment of the grid is trimmed alike, so they can be patterned: a trimmed wall is shared by all
     of them, one column for the left and right, one row for the front and back"""

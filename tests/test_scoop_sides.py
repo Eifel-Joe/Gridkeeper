@@ -283,3 +283,17 @@ def test_a_raised_divider_starts_at_the_trimmed_cavity_of_a_scoop_wall():
     assert scoops.runTrims('x', 1, 2, (2, 3), trims) == (None, None)
     # a wall across y runs along x, from the left to the right
     assert scoops.runTrims('y', 0, 2, (2, 3), trims) == (None, 0.14)
+
+
+def test_the_cavities_start_at_the_trimmed_grid_and_never_inside_a_thicker_wall():
+    """The compartments top clearance spans the cavities: from the scoop inset where trimmed, from the wall where the
+    wall is thicker than the inset (review round 50: a 3 mm wall under a light lip, 1.9 mm inset, got a step cut 1.1 mm
+    into the front wall)"""
+    (gridInsets, trims) = scoops.gridTrims(frozenset({FRONT}), 0.12, FULL_INSET, keepGrid=True)
+    assert scoops.cavityInsets(gridInsets, trims)[FRONT] == pytest.approx(FULL_INSET)
+    assert scoops.cavityInsets(gridInsets, trims)[BACK] == pytest.approx(0.12)
+    (gridInsets, trims) = scoops.gridTrims(frozenset({FRONT}), 0.3, 0.19, keepGrid=True)
+    assert scoops.cavityInsets(gridInsets, trims)[FRONT] == pytest.approx(0.3)
+    # without keeping the grid as round 48: the scoop inset, also inside a thicker wall
+    (gridInsets, trims) = scoops.gridTrims(frozenset({FRONT}), 0.3, 0.19, keepGrid=False)
+    assert scoops.cavityInsets(gridInsets, trims)[FRONT] == pytest.approx(0.19)
