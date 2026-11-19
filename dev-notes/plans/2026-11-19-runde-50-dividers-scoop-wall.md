@@ -28,3 +28,19 @@ rested on a wrong finding and is replaced by this one.
    `dev-notes/klicktest-r50.md`; docs page of the compartments if it describes scoop walls and the grid.
 6. **Review** by an Opus subagent, findings fixed; merge master (8373140), pytest; PR text to the main session, push,
    PR, CI.
+
+# Plan of the extension: lip profile on raised dividers
+
+Spec section "Extension". Built after the open questions are decided; Option 1 above stays its own commit.
+
+7. **Tests first (pytest), pure:** ridge half widths per lip type and trim from the lip constants (2.85/2.15 mm,
+   crest 0.85 mm trimmed), support depth and reach into the compartment (3.45/2.25 mm Full, 0.85/1.55 mm Light with a
+   1.2 mm wall), a wall thicker than the ridge needs no support; the tab and socket offset in front of a ridge and the
+   scoop trim at a divider face as decided in Q1/Q2; the 1U rule of Q3.
+8. **Code:** `createRaisedDividers` makes boxes as wide as the ridge base, cut by the stacked foot cutters as today;
+   supports (Full) or chamfers (Light) per compartment along its cavity outline next to raised dividers, like
+   `createLipSupport`; p83 corner rounding limited or dropped as measured; tabs, sockets and scoops per Q1/Q2.
+9. **Fusion:** stacking script on the new contour (no overlap, ridge 0.25 mm from the feet), pictures of junctions
+   and crossings, ledge check; all raised divider snapshot cases stored anew after a look (Q5), the scoop and tab
+   cases re-checked; before and after pictures for the click test.
+10. **Docs, CHANGELOG, click test, review, PR** as steps 5 and 6.
