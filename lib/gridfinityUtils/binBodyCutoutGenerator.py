@@ -115,6 +115,8 @@ def createGridfinityBinBodyCutout(
     # scoops, see scoopSides.bottomFilletSides
     plainSides = scoopSides.bottomFilletSides(input.scoopSides)
     floorRadius = scoopSides.floorFilletRadius(input.filletRadius, input.cornerRadii)
+    # beside a scoop no deeper than the cavity (p652)
+    floorRadius = scoopSides.scoopFloorRadius(floorRadius, Dim.asLength(input.height).value, input.scoopSides, margin=const.BIN_SCOOP_TOP_MARGIN)
     if input.hasBottomFillet and len(plainSides) > 0 and floorRadius > const.DEFAULT_FILTER_TOLERANCE * 10:
         # recalculate faces after fillet
         wallFaces = getInnerCutoutWallFaces(innerCutoutBody)

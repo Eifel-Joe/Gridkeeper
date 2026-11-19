@@ -1,0 +1,8 @@
+{
+    "description": "2x3x1 bin with the front scoop, one height unit: the floor fillet beside the scoop fits the 1 mm cavity (round 50, p652)",
+    "generator": "bin",
+    "settings": {
+        "binHeight": 1,
+        "hasScoop": true
+    }
+}

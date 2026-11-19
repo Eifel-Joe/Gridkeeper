@@ -277,7 +277,19 @@ def createGridfinityBinBody(
             # a full lip's support, straight down from its tip
             return (scoopInset - wall).value
 
+        # a cavity corner between two scoop walls follows the lip's inner corner (p653, round 50)
+        scoopCorner = scoopSides.scoopCornerRadius(cavityCornerRadius, input.binCornerFilletRadius, scoopInset.value)
+
         def cornerRadii(compartment: BinBodyCompartmentDefinition) -> dict | None:
+            """The compartment's own corner radii: beside a ridge, see ridgeCornerRadii, and between two scoop walls"""
+            radii = ridgeCornerRadii(compartment) or {}
+            for corner in scoopSides.scoopWallCorners(
+                outerScoopWalls, (compartment.positionX, compartment.positionY),
+                (compartment.width, compartment.length), (input.compartmentsByX, input.compartmentsByY)):
+                radii[corner] = min(radii.get(corner, cavityCornerRadius), scoopCorner)
+            return radii if len(radii) > 0 else None
+
+        def ridgeCornerRadii(compartment: BinBodyCompartmentDefinition) -> dict | None:
             """
             The corners of a compartment beside a ridge, rounded as far as covered (round 50, decided option a), all four
             alike with the tightest: corners of different radii broke the floor's outline beside a scoop into edges
@@ -405,6 +417,9 @@ def createGridfinityBinBody(
             # over the cavities, also where the grid keeps to the grid lines (round 50)
             clearanceInsets = scoopSides.cavityInsets(gridInsets, gridTrims)
             (clearanceMinX, clearanceMinY) = (clearanceInsets[scoopSides.LEFT], clearanceInsets[scoopSides.FRONT])
+            # its corners between two scoop walls as the cavities' there (p653)
+            clearanceCorners = {corner: scoopCorner for corner in scoopSides.scoopWallCorners(
+                outerScoopWalls, (0, 0), (input.compartmentsByX, input.compartmentsByY), (input.compartmentsByX, input.compartmentsByY))}
             compartmentsTopClearance = createCompartmentCutout(
                 input.wallThickness,
                 clearanceMinX,
@@ -419,6 +434,7 @@ def createGridfinityBinBody(
                 False,
                 targetComponent,
                 name='Compartments top clearance',
+                cornerRadii=clearanceCorners or None,
             )
             bodiesToSubtract.append(compartmentsTopClearance)
 

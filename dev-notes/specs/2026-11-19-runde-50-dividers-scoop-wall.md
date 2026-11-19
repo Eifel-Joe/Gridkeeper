@@ -201,6 +201,9 @@ floor fillet. Corners of different radii broke the floor's outline beside a scoo
 for (`FILLET_NO_EDGE_FOUND`, also with the floor fillet at the tightest radius); with one radius per compartment, as
 before, every cavity builds. The reported bin: 2.25 mm beside a ridge, 1.40 mm where a compartment scoop starts the
 cavity at the ridge's tip, no ledge left.
+This goes beyond the decision, which concerned the corners beside a ridge only: it follows from that limit of Fusion
+(two attempts with a radius per corner failed), so a compartment beside a ridge has all its corners and its floor
+fillet at the tightest radius.
 
 # Points p651–p653 (taken into round 50, 2026-11-19)
 

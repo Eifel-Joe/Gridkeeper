@@ -112,6 +112,37 @@ def floorFilletRadius(radius: float, cornerRadii: dict | None) -> float:
     found no edge in Fusion (round 50); 0 with a sharp corner"""
     return min([radius] + list((cornerRadii or {}).values()))
 
+def scoopFloorRadius(radius, depth, sides: frozenset, *, margin):
+    """
+    The floor fillet of a cavity with a scoop, at most its depth less the scoop's top margin (p652, round 50): in a bin
+    one height unit high the cavity is 1.0 mm deep, the floor fillet of 2.55 mm beside a scoop failed in Fusion
+    (ASM_BL_CAP_COMPLEX), at 0.9 mm it builds. Limiting the scoop instead made the corner fillets fail. A cavity
+    without a scoop keeps its radius, its floor fillet builds. Works on numbers
+    """
+    if len(sides) == 0 or depth - margin >= radius:
+        return radius
+    return depth - margin
+
+def scoopCornerRadius(radius, binCornerRadius, scoopInset):
+    """
+    A cavity corner between two scoop walls, concentric with the lip's inner corner there (p653, round 50): both walls
+    start the cavity at the lip's inner edge, the corner of the compartment radius left a level face of 1.11 mm2 at the
+    body top inside the lip's corner. Never rounder than the compartment's corners
+    """
+    return min(radius, binCornerRadius - scoopInset)
+
+def scoopWallCorners(walls: frozenset, position: tuple[int, int], size: tuple[int, int], counts: tuple[int, int]) -> set:
+    """The corners of a compartment, (left or right, front or back), lying between two scoop walls of the bin"""
+    (column, row) = position
+    (columns, rows) = size
+    touched = {
+        LEFT: column == 0 and LEFT in walls,
+        RIGHT: column + columns == counts[0] and RIGHT in walls,
+        FRONT: row == 0 and FRONT in walls,
+        BACK: row + rows == counts[1] and BACK in walls,
+    }
+    return {(sideX, sideY) for sideX in (LEFT, RIGHT) for sideY in (FRONT, BACK) if touched[sideX] and touched[sideY]}
+
 def trimsKeepAlike(trims: dict, counts: tuple[int, int]) -> bool:
     """Whether every compartment of the grid is trimmed alike, so they can be patterned: a trimmed wall is shared by all
     of them, one column for the left and right, one row for the front and back"""

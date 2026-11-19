@@ -305,3 +305,33 @@ def test_the_floor_fillet_is_no_rounder_than_the_tightest_corner():
     assert scoops.floorFilletRadius(0.255, {('right', 'front'): 0.2246, ('left', 'back'): 0.255}) == pytest.approx(0.2246)
     # sharp corners, a sharp floor
     assert scoops.floorFilletRadius(0.255, {('right', 'front'): 0, ('left', 'back'): 0.2}) == 0
+
+
+# p652 (round 50): a cavity with a scoop shallower than its corner radius, 1 mm in a bin one unit high
+def test_the_floor_fillet_beside_a_scoop_fits_the_cavity_depth():
+    # 2.55 mm failed in Fusion at 1.0 mm depth (ASM_BL_CAP_COMPLEX), 0.9 mm built
+    assert scoops.scoopFloorRadius(0.255, 0.1, frozenset({FRONT}), margin=0.01) == pytest.approx(0.1 - 0.01)
+    # deep enough, or without a scoop, the radius stays
+    assert scoops.scoopFloorRadius(0.255, 2.9, frozenset({FRONT}), margin=0.01) == pytest.approx(0.255)
+    assert scoops.scoopFloorRadius(0.255, 0.1, frozenset(), margin=0.01) == pytest.approx(0.255)
+
+
+# p653 (round 50): a cavity corner between two scoop walls follows the lip's inner corner there
+def test_a_corner_between_two_scoop_walls_is_concentric_with_the_lip():
+    # bin corner 4 mm, full lip inset 2.6 mm: 1.4 mm instead of 2.55 mm
+    assert scoops.scoopCornerRadius(0.255, 0.4, 0.26) == pytest.approx(0.14)
+    # a light lip's 1.9 mm inset leaves 2.1 mm
+    assert scoops.scoopCornerRadius(0.255, 0.4, 0.19) == pytest.approx(0.21)
+    # never rounder than the compartment's corners
+    assert scoops.scoopCornerRadius(0.255, 0.4, 0.1) == pytest.approx(0.255)
+
+
+def test_only_corners_between_two_trimmed_scoop_walls_follow_the_lip():
+    walls = frozenset({FRONT, LEFT})
+    assert scoops.scoopWallCorners(walls, (0, 0), (1, 1), (2, 3)) == {(LEFT, FRONT)}
+    # a compartment along one of them only, or a bin with one scoop wall
+    assert scoops.scoopWallCorners(walls, (1, 0), (1, 1), (2, 3)) == set()
+    assert scoops.scoopWallCorners(frozenset({FRONT}), (0, 0), (2, 3), (2, 3)) == set()
+    # a compartment over the whole grid has all four corners on the walls
+    assert scoops.scoopWallCorners(frozenset({FRONT, BACK, LEFT, RIGHT}), (0, 0), (2, 3), (2, 3)) == {
+        (LEFT, FRONT), (LEFT, BACK), (RIGHT, FRONT), (RIGHT, BACK)}
