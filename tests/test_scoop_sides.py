@@ -263,17 +263,6 @@ def test_the_grid_trims_work_on_dims():
     assert not scoops.trimsKeepAlike(trims, (2, 3))
 
 
-def test_a_raised_divider_starts_at_the_trimmed_cavity_of_a_scoop_wall():
-    """Its box starts half a wall short of the cavity as before round 50: at a scoop wall that is the trimmed cavity's
-    edge, not the grid's, so it doesn't reach out under the lip (near coincident faces with the lip, shown in Fusion)"""
-    trims = {FRONT: 0.07, BACK: 0, LEFT: 0, RIGHT: 0.14}
-    # a wall across x runs along y, from the front to the back
-    assert scoops.runTrims('x', 0, 3, (2, 3), trims) == (0.07, None)
-    assert scoops.runTrims('x', 1, 2, (2, 3), trims) == (None, None)
-    # a wall across y runs along x, from the left to the right
-    assert scoops.runTrims('y', 0, 2, (2, 3), trims) == (None, 0.14)
-
-
 def test_the_cavities_start_at_the_trimmed_grid_and_never_inside_a_thicker_wall():
     """The compartments top clearance spans the cavities: from the scoop inset where trimmed, from the wall where the
     wall is thicker than the inset (review round 50: a 3 mm wall under a light lip, 1.9 mm inset, got a step cut 1.1 mm

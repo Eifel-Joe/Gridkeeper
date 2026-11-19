@@ -50,3 +50,11 @@ def test_the_default_offset_is_the_old_clearance():
     """Bins of the default settings keep their shape"""
     assert re.search(r"^BIN_TAB_TOP_CLEARANCE = 0\.05$", _text(CONST), re.MULTILINE)
     assert defaultSettings.BIN["tabTopOffset"] == 0.5
+
+
+def test_ridges_reach_the_outer_walls_up_to_a_hair_under_their_outer_face():
+    """Round 50: a ridge ending half a wall short of a scoop wall's cavity, or at a wall's middle, left a gap to the
+    thinner top of the lip (shown by the divider gap check); it ends RIDGE_WALL_MARGIN in from the outer face"""
+    body = ast.unparse(_function(BIN_BODY_GENERATOR, "createRaisedDividers"))
+    assert "RIDGE_WALL_MARGIN" in body
+    assert "runTrims" not in body

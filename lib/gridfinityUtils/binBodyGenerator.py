@@ -16,7 +16,7 @@ from . import cullenect, binLabelLayout
 from .cullenectSocketGenerator import createCullenectSocket, SocketPlacement
 from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput, LIP_TYPE_FULL
 from .binBodyLipGenerator import createGridfinityBinBodyLip, createStackedFootCutters, createLipSupport, lipInnerInset
-from .raisedDividers import DividerSegment, ridgeBox, raisedSides, cornerRadiusBetween, ridgeTipDepth, TIP, tipCornersBesideRidge, tabTopRise
+from .raisedDividers import DividerSegment, ridgeBox, raisedSides, cornerRadiusBetween, ridgeTipDepth, TIP, tipCornersBesideRidge, tabTopRise, RIDGE_WALL_MARGIN
 from .dim import Dim, valueInput
 from ... import config
 
@@ -505,7 +505,6 @@ def createGridfinityBinBody(
                 input.tabTopOffset,
                 lipInput,
                 targetComponent,
-                gridTrims,
                 gridLineAt,
                 ridgeTip,
                 -ridgeTipDepth(isFullLip=input.lipType == LIP_TYPE_FULL, clearanceDepth=clearanceDepth, supportWall=const.BIN_LIP_SUPPORT_WALL_HEIGHT),
@@ -602,7 +601,6 @@ def createRaisedDividers(
     topOffset: float,
     lipInput: BinBodyLipGeneratorInput,
     targetComponent: adsk.fusion.Component,
-    trims: dict,
     gridLineAt,
     ridgeTip: Dim,
     tipLift: float,
@@ -615,26 +613,23 @@ def createRaisedDividers(
     as thick as the divider, round 8, p61). Each is a box centred on its grid line, as wide as the lip's tips either
     side, from under the divider top down to where its bottom edges, chamfered at 45 degrees in to the divider's faces,
     keep it from overhanging the compartments, see raisedDividers.ridgeBox. Segments reach a wall further where they
-    meet a crossing divider, and half a wall into the outer walls, which keeps every box corner off the sketch axes
+    meet a crossing divider, and to RIDGE_WALL_MARGIN under the outer faces of the outer walls, which keeps every box
+    corner off the sketch axes
     """
     boxes: list[adsk.fusion.BRepBody] = []
     for (index, segment) in enumerate(segments):
         # across is the axis the wall stands on, along the one it runs on
         (across, along) = (0, 1) if segment.axis == 'x' else (1, 0)
         wallStart = compartmentsMin[across] + pitch[across] * segment.line - wall
-        startReach = wall / 2 if segment.start == 0 else wall
-        endReach = wall / 2 if segment.end == counts[along] else wall
+        # Up to a hair under the outer face at an outer wall, where the grid starts a wall in (round 50), the feet of a
+        # stacked bin shape its end there like the lip: ended half a wall into the wall, or half a wall short of a scoop
+        # wall's cavity, it left a gap to the thinner top of the lip, up to 1.1 mm (found by the divider gap check)
+        outerReach = wall - Dim.length(RIDGE_WALL_MARGIN)
+        startReach = outerReach if segment.start == 0 else wall
+        endReach = outerReach if segment.end == counts[along] else wall
         # the first cavity starts at the min, the last one ends a wall short of the next pitch
         runStart = compartmentsMin[along] + pitch[along] * segment.start - startReach
         runLength = pitch[along] * (segment.end - segment.start) - wall + startReach + endReach
-        # at a trimmed scoop wall from its trimmed cavity, as before the grid kept to the grid lines (round 50): from
-        # the grid's start it reached out under the lip, faces nearly coincident with the lip's (shown in Fusion)
-        (startTrim, endTrim) = scoopSides.runTrims(segment.axis, segment.start, segment.end, counts, trims)
-        if startTrim is not None:
-            runStart = runStart + startTrim
-            runLength = runLength - startTrim
-        if endTrim is not None:
-            runLength = runLength - endTrim
         grid = gridLineAt(segment.axis, segment.line)
         (depth, lowChamfer, highChamfer) = ridgeBox(
             ridgeTip.value,

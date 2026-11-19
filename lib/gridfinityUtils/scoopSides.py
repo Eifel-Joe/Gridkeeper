@@ -88,14 +88,6 @@ def _isTrimmed(trim) -> bool:
     return (trim.value if hasattr(trim, 'value') else trim) > 0
 
 
-def runTrims(axis: str, start: int, end: int, counts: tuple[int, int], trims: dict) -> tuple:
-    """The trims at the start and end of a run of raised divider wall, None where untrimmed: a wall across x runs
-    along y from the front, one across y along x from the left, see raisedDividers.DividerSegment"""
-    (low, high, count) = (FRONT, BACK, counts[1]) if axis == 'x' else (LEFT, RIGHT, counts[0])
-    startTrim = trims[low] if start == 0 and _isTrimmed(trims[low]) else None
-    endTrim = trims[high] if end == count and _isTrimmed(trims[high]) else None
-    return (startTrim, endTrim)
-
 def cavityInsets(gridInsets: dict, trims: dict) -> dict:
     """Where the cavities start in from each wall, see gridTrims and trimmedCavity: the grid, in by the trim where
     trimmed. A wall thicker than the scoop inset has no trim, its cavities start at the wall (review round 50)"""

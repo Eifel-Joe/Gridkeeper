@@ -163,6 +163,10 @@ def coveredCornerRadius(radius: float, coverA: float, coverB: float) -> float:
     return min(radius, a + b + (2 * a * b) ** 0.5)
 
 
+# how far under the outer face of an outer wall a ridge ends, cm: a hair, so the outer faces stay the wall's alone
+RIDGE_WALL_MARGIN = 0.01
+
+
 # how far the ridge's straight face reaches below the cut cavity top: ending on it, its edge lay on the cavities' and
 # Fusion's combines failed there (ASM_EDGECOIN_PROBLEM) or left faces 0.01 mm wide (review round 50, shown in Fusion)
 RIDGE_TIP_MARGIN = 0.02
