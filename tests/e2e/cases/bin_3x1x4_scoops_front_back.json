@@ -1,0 +1,11 @@
+{
+    "description": "3x1x4 bin with scoops on the front and back walls for long parts, light lip, round 48 (idea of upstream issue #140)",
+    "generator": "bin",
+    "settings": {
+        "binWidth": 3,
+        "binLength": 1,
+        "binHeight": 4,
+        "hasScoop": true,
+        "hasScoopBack": true
+    }
+}

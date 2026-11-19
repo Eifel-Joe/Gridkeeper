@@ -31,7 +31,11 @@ BIN = {
     'hasDividersToTop': False,
     'lipType': 'Light',
     'isLipTopTrimmed': True,
+    # front, back, left and right wall, see scoopSides
     'hasScoop': False,
+    'hasScoopBack': False,
+    'hasScoopLeft': False,
+    'hasScoopRight': False,
     'scoopMaxRadius': 25.0,
     'hasTab': False,
     'tabLength': 1,

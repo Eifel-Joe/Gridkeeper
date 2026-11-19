@@ -388,6 +388,7 @@ def _opposite(current):
     return dataclasses.replace(
         current, lipType="Full", isLipTopTrimmed=False, isShellRounded=True, hasDividersToTop=True,
         labelColor="#FF0000", cullenectSocketOffset=0.05,
+        hasScoopBack=True, hasScoopLeft=True, hasScoopRight=True,
     )
 
 
@@ -399,6 +400,8 @@ def _oldest_bin_config(current):
 OLDER_BIN = {
     "lipType": "Light", "isLipTopTrimmed": True, "isShellRounded": False, "hasDividersToTop": False,
     "labelColor": "", "cullenectSocketOffset": 0.3, "placement": "Snap to free spot", "tabTopOffset": 0.5,
+    # round 48: a scoop on more walls than the front
+    "hasScoopBack": False, "hasScoopLeft": False, "hasScoopRight": False,
 }
 
 
@@ -478,3 +481,16 @@ def test_xy_clearance_of_the_wrong_type_is_refused_once():
     with pytest.raises(configJson.ConfigError) as err:
         read(json.dumps({"generator": BASEPLATE, "settings": {"xyClearance": "0.4"}}), current, BASEPLATE, baseplateState.InputState)
     assert "xyClearance" in str(err.value) and "plateEdgeClearance" not in str(err.value)
+
+
+# --- round 48: scoops on every wall, the front one is the scoop of older bins
+
+@pytest.mark.parametrize("name", ["hasScoopBack", "hasScoopLeft", "hasScoopRight"])
+def test_new_bins_start_without_scoops_on_the_other_walls(name):
+    assert defaultSettings.BIN[name] is False
+
+
+def test_old_scoop_bin_keeps_its_single_front_scoop(current):
+    saved = {**_oldest_bin_config(current), "hasScoop": True}
+    (state, _) = read(configJson.configText(BIN, saved), _opposite(current))
+    assert (state.hasScoop, state.hasScoopBack, state.hasScoopLeft, state.hasScoopRight) == (True, False, False, False)

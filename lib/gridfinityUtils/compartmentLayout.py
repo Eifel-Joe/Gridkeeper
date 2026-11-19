@@ -5,10 +5,25 @@ Pockets are plain dicts, so they go to the dialog drawing and the saved defaults
 
 # a pocket's label icon taken from the label tab section
 DEFAULT_ICON = 'Default'
+# the walls a pocket can have a scoop on, in this order, the names of scoopSides (round 48)
+SCOOP_WALLS = ('front', 'back', 'left', 'right')
 
-def pocket(x: int, y: int, width: int = 1, length: int = 1, depth: float | None = None, label: str = '', icon: str = DEFAULT_ICON) -> dict:
-    """Depth in mm from the bin top, none for the full depth. An empty label takes the label tab section text"""
-    return {'x': x, 'y': y, 'width': width, 'length': length, 'depth': depth, 'label': label, 'icon': icon}
+def pocket(x: int, y: int, width: int = 1, length: int = 1, depth: float | None = None, label: str = '', icon: str = DEFAULT_ICON, scoops: list[str] | None = None) -> dict:
+    """
+    Depth in mm from the bin top, none for the full depth. An empty label takes the label tab section text. Scoops are
+    the walls of its own with a scoop, none takes the bin's scoop walls, an empty list has none (round 48)
+    """
+    item = {'x': x, 'y': y, 'width': width, 'length': length, 'depth': depth, 'label': label, 'icon': icon}
+    # left out without a choice of its own, so pockets and their settings stay as saved before round 48
+    if scoops is not None:
+        item['scoops'] = scoops
+    return item
+
+def _sanitizedScoops(scoops) -> list[str] | None:
+    """Known walls in wall order, none (the bin's) for anything that isn't a list, e.g. a pocket saved before round 48"""
+    if not isinstance(scoops, list):
+        return None
+    return [wall for wall in SCOOP_WALLS if wall in scoops]
 
 def _cells(item: dict) -> list[tuple[int, int]]:
     return [(x, y) for x in range(item['x'], item['x'] + item['width']) for y in range(item['y'], item['y'] + item['length'])]
@@ -28,7 +43,7 @@ def _sanitized(item) -> dict | None:
         depth = None
     label = item.get('label')
     icon = item.get('icon')
-    return pocket(x, y, width, length, depth, label if isinstance(label, str) else '', icon if isinstance(icon, str) and icon else DEFAULT_ICON)
+    return pocket(x, y, width, length, depth, label if isinstance(label, str) else '', icon if isinstance(icon, str) and icon else DEFAULT_ICON, _sanitizedScoops(item.get('scoops')))
 
 def normalizePockets(pockets: list, columns: int, rows: int) -> list[dict]:
     """
@@ -56,11 +71,14 @@ def normalizePockets(pockets: list, columns: int, rows: int) -> list[dict]:
     return result
 
 def isUniform(pockets: list[dict]) -> bool:
-    """Every pocket a single cell of full depth, so one can be built and patterned. Labels don't matter, they come after"""
-    return all(item['width'] == 1 and item['length'] == 1 and item['depth'] is None for item in pockets)
+    """
+    Every pocket a single cell of full depth with the bin's scoops, so one can be built and patterned. Labels don't
+    matter, they come after
+    """
+    return all(item['width'] == 1 and item['length'] == 1 and item['depth'] is None and item.get('scoops') is None for item in pockets)
 
 def isCustomized(pockets: list[dict]) -> bool:
-    return any(item['width'] != 1 or item['length'] != 1 or item['depth'] is not None or item['label'] or item['icon'] != DEFAULT_ICON for item in pockets)
+    return any(item['width'] != 1 or item['length'] != 1 or item['depth'] is not None or item['label'] or item['icon'] != DEFAULT_ICON or item.get('scoops') is not None for item in pockets)
 
 def fromTableRows(rows: list, fullDepth: float | None = None) -> list[dict]:
     """
@@ -103,4 +121,7 @@ def describe(item: dict) -> str:
         parts.append(f'label {item["label"]}')
     if item['icon'] != DEFAULT_ICON:
         parts.append(f'icon {item["icon"]}')
+    scoops = item.get('scoops')
+    if scoops is not None:
+        parts.append(f'scoops {" and ".join(scoops)}' if scoops else 'no scoops')
     return ', '.join(parts)
