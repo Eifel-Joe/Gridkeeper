@@ -6,6 +6,21 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased
 
+### Faster joint origins for bins, baseplates and inserts (round 46)
+
+- **Bins, baseplates and inserts build and rebuild faster:** their joint origins (the sockets of a baseplate, the
+  feet, the pocket and the cell placement of a bin, the joint origin of an insert) sit on the component's origin with
+  offsets that follow the parameters, as the box's since round 45, instead of each having a construction plane, a
+  sketch, a point and two dimensions of its own (p590). Measured in Fusion with the same steps in a new document
+  (baseplate 6×6, a 2×1×3 Cullenect bin in socket 2-2, an insert in its pocket, each rebuilt, then the baseplate's
+  base width 42 → 50 mm): baseplate 5.6 s instead of 9.7 s, its rebuild 12.0 s instead of 27.7 s; bin 7.4 s instead
+  of 9.5 s, its rebuild 8.3 s instead of 11.4 s; insert 2.9 s instead of 3.5 s, its rebuild 2.3 s instead of 3.5 s.
+  The baseplate brings 220 model parameters instead of 294, so every later item in the document gains too.
+  - Same place, same axes, same behaviour on a parameter change: the bin stays in its socket and the insert in its
+    pocket through every rebuild and the width change.
+  - Items already in a document keep their sketch joint origins until they are rebuilt; a rebuild makes the new
+    kind and moves the joints over by name as before (checked with items built by 1.1.0 code and rebuilt).
+
 ### Box build speed (round 45)
 
 - **Box build and rebuild faster:** measured in Fusion with the same document steps back to back (box 5×4×6 with

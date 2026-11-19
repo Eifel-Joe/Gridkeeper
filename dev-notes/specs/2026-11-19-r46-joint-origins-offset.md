@@ -57,6 +57,24 @@ rebuild, 144 fewer parameters and 36 sketches + 1 plane fewer; a 2×1 bin with o
 insert 1 (≈ 0.7 s). Every later feature in the document gets cheaper by the fewer parameters (round 39). Measured, not
 promised.
 
+## Measured (Fusion, 19.11.2026, `fusion-auftraege/r46_mess.py`, log `r46_mess.log`)
+
+Each run in a new hybrid document; base = master fa10e31, branch = this round; "migrate": base builds, branch rebuilds.
+
+| Step | base | branch | migrate (rebuild by branch) |
+|---|---|---|---|
+| Baseplate 6×6 build | 9.7 s, +294 parameters, 36 sketches, 1 plane | 5.6 s, +220, none | – |
+| Bin 2×1×3 Cullenect in socket 2-2 | 9.5 s, +178, 4 sketches, 3 planes | 7.4 s, +164, none | – |
+| Insert in the pocket | 3.5 s, +56 | 2.9 s, +52 | – |
+| Baseplate rebuild (Light) | 27.7 s | 12.0 s | 13.3 s, old sketches gone |
+| Bin rebuild (height 4, no lip) | 11.4 s | 8.3 s | 9.1 s |
+| Insert rebuild | 3.5 s | 2.3 s | 2.8 s |
+| `gfPlate1_baseWidth` 42 → 50 mm | socket 2-2 +12 mm, bin follows | same | same |
+
+Every step: bin in socket 2-2, insert mid floor of its pocket, timeline and joints healthy, every sketch fully
+constrained. Snapshot cases (`r46_snap.log`): baseplate_2x2_light_params_base_40x50, bin_2x1x3_cullenect_params_base_40,
+bin_1x1x3_cullenect_params_length_50_height_10, label_1u_screw_text: pass.
+
 ## Not part of this round
 - Other sketch uses in bins/baseplates (feet, sockets, magnets): their shape needs them.
 - Box label (`predBoxLabel`), box insert, handle, latch joint origins: their own ways (a point on geometry), untouched.
