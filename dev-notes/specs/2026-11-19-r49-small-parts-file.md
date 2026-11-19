@@ -31,17 +31,20 @@ session since round 47 (`predPartCache`, `predPartCopies`, spec `2026-11-19-r47-
    `<code>` the first 12 hex digits of a SHA-256 over every `.py` and `.json` file in `lib/gridfinityUtils` (relative
    path and content, sorted by path). So a code change without a version step, as in a git checkout, reads no stale
    file. The whole folder rather than the three generators' imports: it cannot miss a module the drawing uses (dim,
-   predSketch, sketchUtils, predBoxEdges, …); the price is one redraw after any change there. Computed once per
-   loaded add-in (the module is loaded with the generators).
+   predSketch, sketchUtils, predBoxEdges, …); the price is one redraw after any change there. Taken when
+   `predPartCache` is loaded, together with the generators, so code checked out while Fusion runs is not keyed with
+   the code that is loaded (review). Line endings are made LF before hashing (CRLF checkout vs. LF zip).
 3. **Order of looking.** Memory of the session (as round 47) → file → drawing. A part drawn is written to the file
    right after it was drawn; a part read from the file is kept in memory as if drawn.
 4. **Never fails the box.** A missing, unreadable or broken file (no json, json not a list of names, smt missing or not
    readable, a body count other than the names) is read as missing: the part is drawn and the file written anew. A
    failed write or clean-up is only logged (`commonUtils.fileLog`); the box is built either way. Writing goes to a
    temporary name and is renamed into place, the json last, so a half-written pair is never read as whole.
-5. **Clean-up.** After a pair is written, every file in `partCache` whose name does not start with the current
-   `<version>-<code>-` is deleted (only files of the add-in's own kinds .smt, .json, .tmp; other files stay). Failures
-   only logged.
+5. **Clean-up.** After a pair is written, every file right in `partCache` whose name does not start with the current
+   `<version>-<code>-` is deleted (only files of the add-in's own kinds .smt, .json, .tmp; other files, subfolders and
+   anything outside `partCache` stay). Temporaries of the current key stay: a second Fusion on the same add-in folder
+   may be writing them. Two Fusions with different versions on one add-in folder delete each other's pairs; that only
+   costs a redraw. Failures only logged.
 6. **Same geometry.** A box from read parts gives the same snapshots as from drawn ones: the box snapshot cases pass
    both ways (see Checks).
 7. Unchanged: everything round 47 keeps unchanged (components, base feature, names, joint origins, joints, rebuild,

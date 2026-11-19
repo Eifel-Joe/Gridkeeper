@@ -206,7 +206,8 @@ def test_insert_parts_gets_each_parts_bodies_the_copy_way():
 def test_latch_hinge_and_pin_come_as_copies_of_the_session_cache():
     partBodies = _insertFunction("partBodies")
     assert "part.role not in predPartCache.COPIED_ROLES" in partBodies
-    assert "predPartCache.SESSION.bodies(predPartCache.cacheKey(part.role, hinge)" in partBodies
+    assert "key = predPartCache.cacheKey(part.role, hinge)" in partBodies
+    assert "predPartCache.SESSION.bodies(key, " in partBodies
     assert "predPartCopies.keepDrawn(setComponent, lambda scratch: drawPart(scratch, part, dims, hinge))" in partBodies
     assert "predPartCopies.addCopies(component, kept)" in partBodies
 
@@ -223,6 +224,14 @@ def test_a_failed_copy_draws_the_part_in_place_and_logs_why():
     assert "except Exception as err" in partBodies
     handler = partBodies[partBodies.index("except Exception as err"):]
     assert "commonUtils.fileLog(" in handler and "drawPart(component, part, dims, hinge)" in handler
+
+
+def test_a_failed_copy_forgets_the_kept_part():
+    """Review round 49: kept bodies that cannot be copied (a broken part file) are drawn and written anew next time"""
+    partBodies = _insertFunction("partBodies")
+    handler = partBodies[partBodies.index("except Exception as err"):]
+    assert "predPartCache.SESSION.forget(key)" in handler
+    assert handler.index("predPartCache.SESSION.forget(key)") < handler.index("drawPart(component, part, dims, hinge)")
 
 
 def test_a_copied_part_gets_its_joint_origin_by_the_generators_function():

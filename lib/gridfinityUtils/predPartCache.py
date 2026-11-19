@@ -68,13 +68,38 @@ class PartCache:
             self._log(f'part file not {what}: {err}')
             return None
 
+    def forget(self, key: tuple):
+        """
+        Drops the part from memory and its file: its bodies could not be copied (a broken part file), the next box
+        draws and writes it anew (review round 49). Never fails, a store error is only logged
+        """
+        self._kept.pop(key, None)
+        store = self._openStore()
+        if store:
+            self._tryStore(lambda: store.discard(key), 'deleted')
+
     def clear(self):
         self._kept.clear()
 
 
+def _takeSessionKey():
+    """The key of the code being loaded, or why there is none (then the parts are kept in memory only)"""
+    try:
+        from . import predPartFile
+        return predPartFile.sessionKey()
+    except Exception as err:
+        return err
+
+
+# taken when the module loads, with the generators: the files are keyed by the code that draws (review round 49)
+_SESSION_KEY = _takeSessionKey()
+
+
 def _sessionStore():
+    if isinstance(_SESSION_KEY, Exception):
+        raise _SESSION_KEY
     from . import predPartFile
-    return predPartFile.sessionStore()
+    return predPartFile.sessionStore(_SESSION_KEY)
 
 
 def _sessionLog(message: str):

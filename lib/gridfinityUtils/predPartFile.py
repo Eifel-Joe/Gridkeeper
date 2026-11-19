@@ -19,6 +19,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 
 FOLDER_NAME = 'partCache'
 # the kinds of file the store writes; clean-up deletes nothing else
@@ -126,10 +127,16 @@ class PartFile:
             return
         for name in names:
             path = os.path.join(self.folder, name)
-            ours = name.endswith(OWN_SUFFIXES)
-            stale = not name.startswith(prefix) or '.tmp' in name
-            if ours and stale and os.path.isfile(path):
+            # the current key's files stay, its temporaries too: another Fusion on the same add-in folder may be
+            # writing them (review round 49); a left-over one is overwritten by the next write of its key
+            if name.endswith(OWN_SUFFIXES) and not name.startswith(prefix) and os.path.isfile(path):
                 self._remove(path)
+
+    def discard(self, key: tuple):
+        """Deletes the key's pair, the names first: its bodies could not be used, the part is drawn and written anew"""
+        (smt, names) = self._paths(key)
+        self._remove(names)
+        self._remove(smt)
 
     def _remove(self, path: str):
         try:
@@ -158,13 +165,24 @@ class FusionIo:
         return list(adsk.fusion.TemporaryBRepManager.get().createFromFile(path))
 
 
-def sessionStore() -> PartFile:
-    """The store of the running add-in: partCache of its folder, its manifest version, the hash of its drawing code"""
-    from .. import updateCheck
-    from . import commonUtils
+def sessionKey() -> tuple[str, str]:
+    """
+    (manifest version, code stamp) of the add-in as it is on disk now. predPartCache takes it when it is loaded, so the
+    key belongs to the code that draws (review round 49: code checked out while Fusion runs must not be keyed with the
+    code that is loaded). The manifest is read here, not by updateCheck, to keep this module free of the lib package
+    """
     folder = addinFolder()
-    version = updateCheck.manifestVersion(folder)
-    if version is None:
-        raise RuntimeError('no manifest version')
-    stamp = codeStamp(os.path.dirname(os.path.abspath(__file__)))
-    return PartFile(os.path.join(folder, FOLDER_NAME), '.'.join(str(n) for n in version), stamp, FusionIo(), commonUtils.fileLog)
+    with open(os.path.join(folder, 'Gridkeeper.manifest'), encoding='utf-8') as file:
+        version = json.load(file).get('version')
+    if not (isinstance(version, str) and re.fullmatch(r'\d+(\.\d+)*', version)):
+        raise ValueError(f'no manifest version: {version!r}')
+    return (version, codeStamp(os.path.dirname(os.path.abspath(__file__))))
+
+
+def sessionStore(key: tuple[str, str], log=None) -> PartFile:
+    """The store of the running add-in for its key of sessionKey: partCache in its folder"""
+    if log is None:
+        from . import commonUtils
+        log = commonUtils.fileLog
+    (version, stamp) = key
+    return PartFile(os.path.join(addinFolder(), FOLDER_NAME), version, stamp, FusionIo(), log)

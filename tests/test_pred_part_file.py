@@ -189,7 +189,8 @@ def test_a_rewrite_replaces_the_old_pair(tmp_path):
 def test_clean_up_deletes_old_keys_of_the_own_kinds_only(tmp_path):
     folder = tmp_path / "partCache"
     folder.mkdir()
-    for name in ("1.0.0-abc123def456-Latch.smt", "1.1.0-000000000000-Latch.json", "1.1.0-000000000000-Latch.smt.tmp", "1.1.0-abc123def456-Hinge-Plain.tmp.smt",
+    for name in ("1.0.0-abc123def456-Latch.smt", "1.1.0-000000000000-Latch.json", "1.1.0-000000000000-Latch.smt.tmp", "1.1.0-000000000000-Hinge-Plain.tmp.smt",
+                 "1.1.0-abc123def456-Hinge-Plain.tmp.smt",
                  "readme.txt", "1.1.0-abc123def456-Hinge-Pinned.smt"):
         (folder / name).write_text("x", encoding="utf-8")
     (folder / "sub").mkdir()
@@ -197,7 +198,8 @@ def test_clean_up_deletes_old_keys_of_the_own_kinds_only(tmp_path):
     store = _store(tmp_path)
     store.save(LATCH, [("Latch", "body")])
     left = sorted(os.listdir(folder))
-    assert left == ["1.1.0-abc123def456-Hinge-Pinned.smt", "1.1.0-abc123def456-Latch.json",
+    # a temporary of the current key may be another Fusion's write in flight (review round 49): it stays
+    assert left == ["1.1.0-abc123def456-Hinge-Pinned.smt", "1.1.0-abc123def456-Hinge-Plain.tmp.smt", "1.1.0-abc123def456-Latch.json",
                     "1.1.0-abc123def456-Latch.smt", "readme.txt", "sub"]
     assert (folder / "sub" / "1.0.0-abc-Latch.smt").exists()
 
@@ -226,6 +228,28 @@ def test_a_failed_clean_up_is_only_logged(tmp_path, monkeypatch):
 
 
 # the add-in's store
+
+def test_discard_deletes_the_pair_of_the_key_only(tmp_path):
+    store = _store(tmp_path)
+    store.save(LATCH, [("Latch", "body")])
+    store.save(HINGE, [("Hinge top", "body")])
+    store.discard(LATCH)
+    assert store.load(LATCH) is None
+    assert sorted(os.listdir(tmp_path / "partCache")) == ["1.1.0-abc123def456-Hinge-Pinned.json", "1.1.0-abc123def456-Hinge-Pinned.smt"]
+
+
+def test_session_key_is_the_manifest_version_and_the_code_stamp():
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    with open(os.path.join(root, "Gridkeeper.manifest"), encoding="utf-8") as file:
+        version = json.load(file)["version"]
+    assert partFile.sessionKey() == (version, partFile.codeStamp(os.path.join(root, "lib", "gridfinityUtils")))
+
+
+def test_session_store_uses_the_key_it_is_given(tmp_path):
+    store = partFile.sessionStore(("9.9.9", "000000000000"), log=lambda message: None)
+    assert (store.version, store.stamp) == ("9.9.9", "000000000000")
+    assert os.path.normcase(store.folder) == os.path.normcase(os.path.join(partFile.addinFolder(), "partCache"))
+
 
 def test_the_folder_is_partcache_in_the_add_in_folder():
     assert partFile.FOLDER_NAME == "partCache"

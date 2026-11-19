@@ -4,6 +4,9 @@ bodies (spec dev-notes/specs/2026-11-19-r47-box-small-parts.md, requirement 1); 
 and is drawn in each set.
 """
 
+import sys
+import types
+
 import pytest
 
 from tests.test_joint_origin_layout import _load
@@ -88,6 +91,10 @@ class FakeStore:
             raise OSError("unreadable")
         return self.files.get(key)
 
+    def discard(self, key):
+        self.discarded = getattr(self, "discarded", []) + [key]
+        self.files.pop(key, None)
+
     def save(self, key, kept):
         if self.failSave:
             raise OSError("disk full")
@@ -141,3 +148,43 @@ def test_an_empty_read_is_drawn():
 
 def test_the_session_cache_keeps_parts_on_disk():
     assert cache.SESSION._store is not None
+
+
+def test_forget_drops_the_part_from_memory_and_disk():
+    """Review round 49: a file that reads but cannot be copied must be drawn and written anew, not kept for good"""
+    store = FakeStore({cache.cacheKey("Latch", "M3x30"): [("Latch", "unusable")]})
+    parts = cache.PartCache(store=lambda: store)
+    key = cache.cacheKey("Latch", "M3x30")
+    assert parts.bodies(key, lambda: [("Latch", "drawn")]) == [("Latch", "unusable")]
+    parts.forget(key)
+    assert store.discarded == [key]
+    assert parts.bodies(key, lambda: [("Latch", "drawn")]) == [("Latch", "drawn")]
+    assert store.files[key] == [("Latch", "drawn")]
+
+
+def test_forget_never_fails():
+    logged = []
+
+    class Refuses(FakeStore):
+        def discard(self, key):
+            raise OSError("in use")
+
+    parts = cache.PartCache(store=lambda: Refuses(), log=logged.append)
+    parts.forget(cache.cacheKey("Latch", "M3x30"))
+    assert any("in use" in line for line in logged)
+
+
+def test_the_session_key_is_taken_when_the_module_loads(monkeypatch):
+    """Review round 49: code checked out while Fusion runs must not be keyed with the code that is loaded"""
+    package = cache.__name__.rsplit(".", 1)[0]
+    partFile = sys.modules[package + ".predPartFile"]
+    # commonUtils needs the add-in's config, not in this test package: its log only
+    monkeypatch.setitem(sys.modules, package + ".commonUtils", types.SimpleNamespace(fileLog=print))
+    loaded = cache._SESSION_KEY
+    assert loaded == partFile.sessionKey()
+    original = partFile.codeStamp
+    partFile.codeStamp = lambda folder: "checked0out0"
+    try:
+        assert (cache._sessionStore().version, cache._sessionStore().stamp) == loaded
+    finally:
+        partFile.codeStamp = original
