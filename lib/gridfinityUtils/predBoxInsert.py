@@ -14,6 +14,9 @@ Round 47 (p591): latch, hinge and handle pin need no parameters and no history (
 per Fusion session and every set gets copies of their bodies (partBodies, predPartCache, predPartCopies). Drawn in a
 document with boxes they cost 27-45 s per box, a copy about 1 s (fusion-auftraege/r47_mess.log). The handle follows
 the box width and is drawn in each set.
+
+Round 49 (p610): predPartCache keeps them on disk as well (predPartFile, the add-in's partCache folder), so the first
+box after Fusion starts reads them instead of drawing them; partBodies is unchanged.
 """
 
 import adsk.core, adsk.fusion
@@ -122,14 +125,16 @@ def partBodies(
     """
     if part.role not in predPartCache.COPIED_ROLES:
         return drawPart(component, part, dims, hinge)
+    key = predPartCache.cacheKey(part.role, hinge)
     try:
-        kept = predPartCache.SESSION.bodies(predPartCache.cacheKey(part.role, hinge),
-                                            lambda: predPartCopies.keepDrawn(setComponent, lambda scratch: drawPart(scratch, part, dims, hinge)))
+        kept = predPartCache.SESSION.bodies(key, lambda: predPartCopies.keepDrawn(setComponent, lambda scratch: drawPart(scratch, part, dims, hinge)))
         bodies = predPartCopies.addCopies(component, kept)
     except predPartCopies.LeftBehind:
         # a part drawn on top of a copy Fusion did not remove would double it (review round 47)
         raise
     except Exception as err:
+        # kept bodies that cannot be copied (a broken part file) are drawn and written anew next time (review round 49)
+        predPartCache.SESSION.forget(key)
         # the copy way leaves nothing in the component when it fails (predPartCopies), so the drawing starts empty
         commonUtils.fileLog(f'{part.role} drawn in place, its copy failed: {err}')
         return drawPart(component, part, dims, hinge)

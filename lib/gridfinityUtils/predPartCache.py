@@ -8,6 +8,10 @@ box), copied into a component as a base feature about 1 s each. Their measures h
 19.11.2026: they need no parameters and no history); the handle follows the box width and is drawn in each set.
 A dict in the add-in's memory, as long as this module is loaded: it is loaded and dropped together with the
 generators, so what it keeps was always drawn by the generators that are loaded.
+
+Round 49 (p610): behind the memory a store on disk (predPartFile), so the first box after Fusion starts reads the parts
+instead of drawing them. Memory → file → drawing; a drawn part is written right away. The store never fails a box: a
+part it cannot give is drawn, a failed write is only logged.
 """
 
 # the roles kept and copied, in the order of predBoxParts.PARTS; the handle is drawn with its width expression
@@ -20,24 +24,88 @@ def cacheKey(role: str, hinge: str) -> tuple:
 
 
 class PartCache:
-    def __init__(self):
+    def __init__(self, store=None, log=print):
+        """store: a function giving the store on disk (load(key), save(key, kept)), called once when first needed"""
         self._kept = {}
+        self._store = store
+        self._log = log
+        self._opened = None
 
     def bodies(self, key: tuple, draw) -> list:
         """
-        The kept [(name, temporary body)] of the part; on the first call for the key draw() gives them. A drawing that
-        fails or gives no bodies keeps nothing, the next box tries again
+        The kept [(name, temporary body)] of the part; on the first call for the key the store or else draw() gives
+        them. A drawing that fails or gives no bodies keeps nothing, the next box tries again
         """
         if key not in self._kept:
-            drawn = list(draw())
-            if not drawn:
-                raise ValueError(f'{key}: drawn without bodies')
-            self._kept[key] = drawn
+            store = self._openStore()
+            read = self._tryStore(lambda: store.load(key), 'read') if store else None
+            if read:
+                self._kept[key] = list(read)
+            else:
+                drawn = list(draw())
+                if not drawn:
+                    raise ValueError(f'{key}: drawn without bodies')
+                self._kept[key] = drawn
+                if store:
+                    self._tryStore(lambda: store.save(key, drawn), 'written')
         return self._kept[key]
+
+    def _openStore(self):
+        """The store, set up on first need; one that cannot be set up is logged once and left out for the session"""
+        if self._opened is None:
+            self._opened = False
+            if self._store is not None:
+                try:
+                    self._opened = self._store()
+                except Exception as err:
+                    self._log(f'small parts kept in memory only, no part files: {err}')
+        return self._opened or None
+
+    def _tryStore(self, action, what: str):
+        try:
+            return action()
+        except Exception as err:
+            self._log(f'part file not {what}: {err}')
+            return None
+
+    def forget(self, key: tuple):
+        """
+        Drops the part from memory and its file: its bodies could not be copied (a broken part file), the next box
+        draws and writes it anew (review round 49). Never fails, a store error is only logged
+        """
+        self._kept.pop(key, None)
+        store = self._openStore()
+        if store:
+            self._tryStore(lambda: store.discard(key), 'deleted')
 
     def clear(self):
         self._kept.clear()
 
 
-# the one cache of the running add-in
-SESSION = PartCache()
+def _takeSessionKey():
+    """The key of the code being loaded, or why there is none (then the parts are kept in memory only)"""
+    try:
+        from . import predPartFile
+        return predPartFile.sessionKey()
+    except Exception as err:
+        return err
+
+
+# taken when the module loads, with the generators: the files are keyed by the code that draws (review round 49)
+_SESSION_KEY = _takeSessionKey()
+
+
+def _sessionStore():
+    if isinstance(_SESSION_KEY, Exception):
+        raise _SESSION_KEY
+    from . import predPartFile
+    return predPartFile.sessionStore(_SESSION_KEY)
+
+
+def _sessionLog(message: str):
+    from . import commonUtils
+    commonUtils.fileLog(message)
+
+
+# the one cache of the running add-in, with the add-in's partCache folder behind it
+SESSION = PartCache(store=_sessionStore, log=_sessionLog)

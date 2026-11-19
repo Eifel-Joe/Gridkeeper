@@ -571,3 +571,10 @@ def test_install_end_to_end_by_copy(tmp_path):
 
 def test_cleanup_without_work_folder(tmp_path):
     updateInstall.cleanupBackups(makeTree(tmp_path / "Gridkeeper", OLD))
+
+
+def test_carry_over_leaves_the_part_cache_behind(tmp_path):
+    """Round 49 (p610): partCache holds the box's small parts as drawn by the old code, no setting of the user"""
+    old = makeTree(tmp_path / "old", {"partCache/1.1.0-abc-Latch.smt": b"x", "updateConfig/update.json": b"{}"})
+    new = makeTree(tmp_path / "new", {"Gridkeeper.py": b"# new"})
+    assert updateInstall.carryOver(old, new) == ["updateConfig/update.json"]

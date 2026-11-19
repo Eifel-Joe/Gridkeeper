@@ -21,6 +21,22 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 - **Shape test cases:** three new bins with raised dividers beside a scoop wall (compartment scoops and the bin scoop
   under a full lip, compartment scoops under a light lip).
 
+### Box small parts kept on disk (round 49)
+
+- **The first box after Fusion starts is fast too:** latch, hinge and handle pin, once drawn, are also kept as .smt
+  files (with their body names in a .json) in the folder `partCache` of the add-in folder, beside `updateConfig`.
+  The first box of a Fusion session reads them instead of drawing them. Measured in Fusion: the three parts 1.3–1.4 s
+  instead of 27–30 s, box 5×4×6 built in 50 s instead of 78 s; further boxes in a session unchanged (about 1 s).
+  - The parts are still drawn in code; the files are only a store the add-in writes and reads itself, no part file
+    ships with it (decided: build it, the rule "parts drawn in code, never imported from a part file" holds).
+  - Keyed by the add-in version and a hash of the drawing code (`lib/gridfinityUtils`), so a code change without a
+    version step reads no stale file; files of other keys are deleted when new ones are written.
+  - A missing, unreadable or broken file is drawn anew and written again; a failed write is only logged, the box is
+    built either way. An update does not carry the folder over, git ignores it.
+  - Same geometry: box snapshot cases pass with parts drawn and with parts read (p610).
+
+Box and small parts after Pred's parametric Gridfinity Storage Box (Printables 543553, CC BY-NC).
+
 ### Box small parts (round 47)
 
 - **Small parts of the box from the session, not drawn anew in every box:** latch, hinge and handle pin are drawn
