@@ -36,14 +36,14 @@ def test_every_tab_top_clearance_takes_the_offset():
 
 
 def test_raised_dividers_start_at_the_lowered_divider_top():
-    """At least: a ridge reaches further down where its support needs it (round 50), see raisedDividers.ridgeBox"""
+    """The raised dividers stand on the dividers lowered by the offset (round 38) and end at the lip's top, trimmed or
+    not, see createRaisedDividers"""
     arguments = [argument.arg for argument in _function(BIN_BODY_GENERATOR, "createRaisedDividers").args.args]
     assert "topOffset" in arguments
     body = ast.unparse(_function(BIN_BODY_GENERATOR, "createRaisedDividers"))
     assert "BIN_TAB_TOP_CLEARANCE" not in body
-    assert "minDepth=topOffset" in body
-    assert "bottomZ = binBodyTotalHeight - Dim.length(depth)" in body
-    assert "height = depth + const.BIN_LIP_EXTRA_HEIGHT - lipInput.topTrimHeight" in body
+    assert "binBodyTotalHeight - Dim.length(topOffset)" in body
+    assert "topZ = binBodyTotalHeight + Dim.length(const.BIN_LIP_EXTRA_HEIGHT - lipInput.topTrimHeight)" in body
 
 
 def test_the_default_offset_is_the_old_clearance():
@@ -58,3 +58,12 @@ def test_ridges_reach_the_outer_walls_up_to_a_hair_under_their_outer_face():
     body = ast.unparse(_function(BIN_BODY_GENERATOR, "createRaisedDividers"))
     assert "RIDGE_WALL_MARGIN" in body
     assert "runTrims" not in body
+
+
+def test_labels_sit_at_the_back_wall_also_in_front_of_a_raised_divider():
+    """Round 50, decided: nothing overhangs a compartment from a raised divider, its tab and label sit at the
+    compartment's back as at a wall"""
+    body = ast.unparse(_function(BIN_BODY_GENERATOR, "createGridfinityBinBody"))
+    assert "compartmentY + compartmentLength," in body
+    assert "behindTab" not in body
+    assert "ridgeSides" not in body
