@@ -19,7 +19,7 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   - Same place, same axes, same behaviour on a parameter change: the bin stays in its socket and the insert in its
     pocket through every rebuild and the width change.
   - Items already in a document keep their sketch joint origins until they are rebuilt; a rebuild makes the new
-    kind and moves the joints over by name as before (checked with items built by 1.1.0 code and rebuilt).
+    kind and moves the joints over by name as before (checked with items built by the code before this round and rebuilt with this one).
 
 ### Box build speed (round 45)
 
