@@ -53,7 +53,7 @@ fillet). Around it:
 - Cavity cutter: the bottom edges of all scoop side faces, picked before any fillet, are filleted in **one** fillet
   feature (rolling-ball corners blend two adjacent scoops), then the vertical corner fillets as today. The bottom fillet
   starts at the bottom edge of the first wall without a scoop in the order back, left, right, front (today's back edge
-  for a front scoop); a wall whose edge is not in that tangent chain gets its edge added. Four scoops: no bottom fillet.
+  for a front scoop). With more than one scoop no bottom fillet, see "Bottom fillet with several scoops".
 - Compartment bounds: every scoop side starts at the lip's inner edge (light and full lip) like the front today,
   `compartmentsMinX/MaxX/MinY/MaxY`. The compartments top clearance and the raised dividers use those bounds.
 - Lip bottom chamfer box: inset to the lip's inner edge on every scoop side; the chamfer leaves out the top-face edges
