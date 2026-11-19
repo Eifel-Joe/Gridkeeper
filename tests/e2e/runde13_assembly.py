@@ -68,7 +68,7 @@ def run(_context: str):
 
     # 2. jointed into its pocket, the other beside everything
     insertBox = world(jointed[0])
-    floor = pocket.geometry.origin
+    floor = pocket.transform.translation  # offset joint origins since round 46, see jointOriginPlace
     offsets = ((insertBox.minPoint.x + insertBox.maxPoint.x) / 2 - floor.x, (insertBox.minPoint.y + insertBox.maxPoint.y) / 2 - floor.y, insertBox.minPoint.z - floor.z)
     check('2 the insert sits mid floor of its pocket', all(abs(value) * 10 < TOLERANCE_MM for value in offsets), str([round(value * 10, 4) for value in offsets]))
     check('2 its joint is healthy', all(joint.healthState == adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState for joint in root.allJoints) and len(root.allJoints) == 1)
@@ -87,7 +87,7 @@ def run(_context: str):
     newOccurrence = occurrenceOf(rebuilt[0])
     check('3 the rebuilt bin is in Bins', newOccurrence.assemblyContext is not None and newOccurrence.assemblyContext.component.name == 'Bins')
     check('3 the root is active afterwards', des.activeComponent == root)
-    newFloor = newOccurrence.component.jointOrigins.itemByName('Compartment 2 pocket joint origin').createForAssemblyContext(newOccurrence).geometry.origin
+    newFloor = newOccurrence.component.jointOrigins.itemByName('Compartment 2 pocket joint origin').createForAssemblyContext(newOccurrence).transform.translation
     insertBox = world(jointed[0])
     check('7 the insert sits on the floor of the new pocket', abs(insertBox.minPoint.z - newFloor.z) * 10 < TOLERANCE_MM and abs(newFloor.z - floor.z) > 0.1, f'{round(floor.z * 10, 2)} -> {round(newFloor.z * 10, 2)} mm')
     check('7 its joint is healthy', all(joint.healthState == adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState for joint in root.allJoints) and len(root.allJoints) == 1)
@@ -101,8 +101,9 @@ def run(_context: str):
     check('4 the letters of a longer text are in Text', textComponent.bRepBodies.count > before and free[0].parentComponent.bRepBodies.count == 1, f'{before} -> {textComponent.bRepBodies.count}')
 
     # 5. sketches and timeline
-    loose = [sketch.name for component in des.allComponents for sketch in component.sketches if 'joint origin' in sketch.name.lower() and not sketch.isFullyConstrained]
-    check('5 the joint origin sketches are fully constrained', len(loose) == 0, str(loose))
+    # joint origins without a sketch since round 46 (p590)
+    left = [item.name for component in des.allComponents for item in list(component.sketches) + list(component.constructionPlanes) if 'joint origin' in item.name.lower()]
+    check('5 no joint origin sketch or plane', len(left) == 0, str(left))
     unhealthy = [des.timeline.item(index).name for index in range(des.timeline.count) if des.timeline.item(index).healthState not in (0, 5)]
     check('5 nothing in the timeline is unhealthy', len(unhealthy) == 0, str(unhealthy))
     passed = all(results)

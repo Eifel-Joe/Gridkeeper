@@ -72,8 +72,10 @@ class Run:
     def world(self, jointOrigin):
         """The joint origin's point in the root: a proxy's geometry is in the root already. Its native geometry came in the
         root too and transformed by the occurrence again was off by the bin's move (r31 step 1, 18.11.2026: bin
-        104.75 mm, cell 62.75 mm, the bin's body at 42 mm where cell 2-2 starts)"""
-        return jointOrigin.geometry.origin
+        104.75 mm, cell 62.75 mm, the bin's body at 42 mm where cell 2-2 starts). Read from its transform: the geometry of
+        an offset joint origin (round 46) is the component's origin point, see jointOriginLayout.jointOriginPlace"""
+        translation = jointOrigin.transform.translation
+        return adsk.core.Point3D.create(translation.x, translation.y, translation.z)
 
     def healthy(self, name):
         timeline = self.des.timeline
@@ -96,8 +98,8 @@ class Run:
         joints = [joint for joint in self.des.rootComponent.allJoints if self.binCell.isCellJointName(joint.name)
                   and (isOwnSide(joint.geometryOrOriginOne) or isOwnSide(joint.geometryOrOriginTwo))]
         self.check(f'{name}: one joint in cell', len(joints) == 1, str([joint.name for joint in joints]))
-        loose = [sketch.name for sketch in component.sketches if sketch.name.startswith(self.binCell.PLACEMENT_JOINT_ORIGIN) and not sketch.isFullyConstrained]
-        self.check(f'{name}: placement sketch fully constrained', len(loose) == 0, str(loose))
+        left = [item.name for item in list(component.sketches) + list(component.constructionPlanes) if item.name.startswith(self.binCell.PLACEMENT_JOINT_ORIGIN)]
+        self.check(f'{name}: no placement sketch or plane (round 46)', len(left) == 0, str(left))
         self.check(f'{name}: the cell stays shown', (cell.nativeObject or cell).isLightBulbOn)
 
     def plateCells(self):
