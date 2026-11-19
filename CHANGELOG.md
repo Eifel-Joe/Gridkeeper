@@ -1,7 +1,8 @@
-# Changelog — Cullenect labels
+# Changelog — Gridkeeper
 
 Changes of Gridkeeper (`Eifel-Joe/Gridkeeper`, until 16.11.2026 `Eifel-Joe/FusionGridfinityGenerator`) on top of
 GridfinityGenerator by Le0Michine, merged up to ee027a9 (v2.5.0.0, 17.11.2026; rounds 1 to 11 were built on v2.2.0.0, round 22 merged v2.4.2.0, round 38 v2.5.0.0).
+Until 1.2.0 this file was named `CHANGELOG-CULLENECT.md`.
 Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`, the `vX.Y.Z.W` tags belong to GridfinityGenerator.
 
 ## 1.2.0 (2026-11-19)

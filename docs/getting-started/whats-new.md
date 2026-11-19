@@ -5,7 +5,7 @@ types) and keeps all of it: baseplates that fill an area and split it for the pr
 compartments, scoops and label tabs, creased walls, rebuilding and cloning from the right-click menu, settings saved
 to JSON files. On top of that it adds the following.
 The full list of changes, round by round, is in
-[CHANGELOG-CULLENECT.md](https://github.com/Eifel-Joe/Gridkeeper/blob/master/CHANGELOG-CULLENECT.md).
+[CHANGELOG.md](https://github.com/Eifel-Joe/Gridkeeper/blob/master/CHANGELOG.md).
 
 ## Storage boxes
 
