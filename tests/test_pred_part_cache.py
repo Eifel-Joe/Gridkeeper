@@ -72,3 +72,72 @@ def test_clear_forgets_every_part():
 
 def test_the_session_has_one_cache():
     assert isinstance(cache.SESSION, cache.PartCache)
+
+
+# round 49 (p610): a store on disk behind the session's memory
+
+class FakeStore:
+    def __init__(self, files=None, failLoad=False, failSave=False):
+        self.files = dict(files or {})
+        self.saved = []
+        self.failLoad = failLoad
+        self.failSave = failSave
+
+    def load(self, key):
+        if self.failLoad:
+            raise OSError("unreadable")
+        return self.files.get(key)
+
+    def save(self, key, kept):
+        if self.failSave:
+            raise OSError("disk full")
+        self.saved.append(key)
+        self.files[key] = list(kept)
+
+
+def test_a_part_on_disk_is_read_not_drawn():
+    store = FakeStore({cache.cacheKey("Latch", "M3x30"): [("Latch", "from file")]})
+    parts = cache.PartCache(store=lambda: store)
+    drawn = []
+    assert parts.bodies(cache.cacheKey("Latch", "M3x30"), lambda: drawn.append(1) or [("Latch", "drawn")]) == [("Latch", "from file")]
+    assert drawn == [] and store.saved == []
+
+
+def test_a_drawn_part_is_written_and_kept_in_memory():
+    store = FakeStore()
+    parts = cache.PartCache(store=lambda: store)
+    key = cache.cacheKey("Hinge", "Pinned")
+    parts.bodies(key, lambda: [("Hinge top", "drawn")])
+    store.files.clear()
+    assert parts.bodies(key, lambda: [("Hinge top", "again")]) == [("Hinge top", "drawn")]
+    assert store.saved == [key]
+
+
+def test_store_failures_draw_and_build_anyway():
+    logged = []
+    for store in (FakeStore(failLoad=True), FakeStore(failSave=True)):
+        parts = cache.PartCache(store=lambda store=store: store, log=logged.append)
+        assert parts.bodies(cache.cacheKey("Latch", "M3x30"), lambda: [("Latch", "drawn")]) == [("Latch", "drawn")]
+    assert any("unreadable" in line for line in logged) and any("disk full" in line for line in logged)
+
+
+def test_a_store_that_cannot_be_set_up_leaves_the_session_cache():
+    logged = []
+
+    def noStore():
+        raise RuntimeError("no manifest")
+
+    parts = cache.PartCache(store=noStore, log=logged.append)
+    assert parts.bodies(cache.cacheKey("Latch", "M3x30"), lambda: [("Latch", "drawn")]) == [("Latch", "drawn")]
+    assert parts.bodies(cache.cacheKey("Handle pin", "M3x30"), lambda: [("Handle pin", "drawn")]) == [("Handle pin", "drawn")]
+    assert len([line for line in logged if "no manifest" in line]) == 1
+
+
+def test_an_empty_read_is_drawn():
+    store = FakeStore({cache.cacheKey("Latch", "M3x30"): []})
+    parts = cache.PartCache(store=lambda: store)
+    assert parts.bodies(cache.cacheKey("Latch", "M3x30"), lambda: [("Latch", "drawn")]) == [("Latch", "drawn")]
+
+
+def test_the_session_cache_keeps_parts_on_disk():
+    assert cache.SESSION._store is not None
