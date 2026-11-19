@@ -88,6 +88,10 @@ Bins without raised dividers keep the even grid of round 48 unchanged.
 
 # Extension: the lip's profile on both sides of a raised divider
 
+> Replaced by "The top of a raised divider" at the end of this spec: the ridge with the whole lip profile, its
+> support, the corner rule beside it, the shorter compartments at a scoop on a ridge, the corner fills and the label
+> start at the ridge's tip are no longer built. Kept below as the record of how the round got there.
+
 ## Decision (2026-11-19)
 
 Decided: the top of every raised divider gets the lip's profile on both sides, mirrored towards both compartments,
@@ -268,3 +272,70 @@ and dividers up to the top.
   full, a full untrimmed and a light untrimmed lip; outer sizes and top heights unchanged; two stacked bins don't
   overlap at a scoop wall or a plain wall.
 
+
+# The top of a raised divider (decided 2026-11-19, replaces the ridge)
+
+## How it got here
+
+Two shapes were built, looked at in Fusion and dropped:
+
+- The ridge with the lip's whole profile on both sides (above): it put a stacking lip into the compartments, a
+  support 2.25 mm into each, tighter corners, shorter compartments at a scoop on a divider.
+- The lip's top contour only, 2.15 mm either side of the grid line at its widest and run in at 45° underneath: seen in
+  a section across the dividers it is a diamond on top of each divider, again wider than the divider.
+
+What was meant all along: the divider goes straight up as thick as it is, and only its top takes the lip's shape, a
+point instead of a flat top with two right angles.
+
+## Decision
+
+- The raised divider keeps its thickness (1.2 mm by default) all the way up: no widening, no ridge, no support.
+- **Lip top untrimmed:** its top is a roof with the lip's 45° slopes on both sides, the ridge in the divider's middle
+  at the lip's top.
+- **Lip top trimmed:** the lip's top isn't pointed either, so no ridge: a flat top at the trimmed lip's top,
+  chamfered at 45° on both sides by 0.3 mm. A 1.2 mm divider keeps 0.6 mm flat, as wide as the trimmed lip's crown at
+  the outer wall. A thin divider is chamfered by at most a quarter of its thickness (0.4 mm: 0.1 mm, 0.2 mm flat).
+- Full and Light alike. Lip off: no raised dividers, unchanged.
+- Label tab and its Cullenect pocket: as on master, along the compartment's back, at the divider's face; nothing
+  overhangs a compartment.
+- The corners where a divider meets a wall or another divider are rounded up to the top, as in round 8 (p83).
+
+## Room for the feet of a stacked bin, measured in Fusion
+
+Section through two stacked bins, body top T, grid line at 41.75 mm: the upper bin's foot is 2.4 mm from the grid line
+up to T + 2.6, then 45° in, reaching the grid line at T + 5.0. With the lip's 0.25 mm clearance that leaves
+h ≤ T + 4.75 − d (d: distance from the grid line); the lip's own upper slope runs at h = T + 4.65 − d. A 45° roof is
+parallel to the foot's face, so only its ridge limits it: a 1.2 mm divider lies up to 0.28 mm off its grid line (its
+faces 0.32 and 0.88 mm from it), its ridge may reach T + 4.47.
+
+- Untrimmed, the ridge at the lip's top T + 4.4: fits. Where the divider lies 0.28 mm off its grid line the feet,
+  which cut the raised dividers as they cut the lip, take up to 0.03 mm off the ridge's far side (measured: ridge at
+  T + 4.38); 0.36 mm of air to the foot there.
+- Trimmed, the flat top at T + 3.8: at least 0.62 mm of air to the foot; the feet don't touch the divider.
+- Two stacked bins, Full and Light, trimmed and not: no overlap.
+
+## Corners where a divider meets a wall or another divider
+
+The rounding of p83 runs from the compartment's corner fillet up over the wall, the lip and the divider's top:
+
+- As in round 8 the corner's section, the square of the radius less its circle, is swept up along the edges of the
+  corner without turning; the lip runs out of the wall's face into the cell and the divider's top back to its middle,
+  so the path runs in 3D. A corner's edges stay on its side of an outer wall's grid line and of a raised divider's
+  middle.
+- Edges meeting at a vertex share its point exactly: the lip's top face lies 4 µm off the stacked feet's, which
+  leaves an edge of 7 µm. Joined within 10 µm as before, the path was ambiguous and every corner at an outer wall fell
+  back to a fillet Fusion couldn't make.
+- Under a full lip a corner's edges start at the support's face, 1.4 mm in from the wall's face. The rounding starts
+  lower, where the support leaves the wall, and runs up the support's corner (45° out, then straight up); otherwise
+  the compartment's corner fill in front of the support left a level face of 1.29 mm². With it the support's kinks
+  beside the divider (63° and 53°, there before) are gone.
+- Measured on the reported bin: no face looking down flatter than 45°, the only kinks left the lip profile's own
+  bends (35° and 19.5°).
+
+## Shape and code
+
+- `raisedDividers.dividerTop`: the top's points from the divider's thickness, its top and the trim (pure, tested);
+  `binBodyGenerator.raisedDividerWall`: the divider's section sketched across its run, fully constrained, extruded
+  over the run, then cut by the feet of a stacked bin.
+- `filletCorners`, `isCornerEdge`, `chainPath`, `chainRuns`, `runOffset`, `supportCornerPath` (pure, tested) and the
+  sweeps in `roundRaisedDividerCorners`.

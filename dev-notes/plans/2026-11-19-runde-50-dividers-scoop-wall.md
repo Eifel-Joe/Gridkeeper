@@ -44,3 +44,20 @@ Spec section "Extension". Built after the open questions are decided; Option 1 a
    and crossings, ledge check; all raised divider snapshot cases stored anew after a look (Q5), the scoop and tab
    cases re-checked; before and after pictures for the click test.
 10. **Docs, CHANGELOG, click test, review, PR** as steps 5 and 6.
+
+# Plan of the change to the divider's top (2026-11-19)
+
+Replaces the ridge with the lip's whole profile, see the spec's last part.
+
+1. `raisedDividers.dividerTop` (pure, tested): roof under an untrimmed lip, chamfered flat top under a trimmed one;
+   `ridgeBox`, `ridgeTipDepth`, `coveredCornerRadius`, `cornerRadiusBetween`, `tipCornersBesideRidge`, `raisedSides`,
+   `tabTopRise` and their tests go.
+2. `createRaisedDividers`: per segment the divider's section sketched across its run (`raisedDividerWall`), extruded
+   over it, cut by the stacked feet. The compartments are plain again: no ridge corner radii, no corner fills, no
+   shorter compartment at a scoop on a divider; tab and label as on master.
+3. p83 back: `FilletCorner`, `filletCorners`, the 3D chain (`isCornerEdge`, `chainPath`, `chainRuns`, `runOffset`
+   in 3D with exact joins), `supportCornerPath` for the corner beside a full lip's support, all tested pure; the sweep
+   in `roundRaisedDividerCorners`, section at the start of the chain, support path sketched in the divider face's
+   plane from the grid's dims.
+4. Fusion: snapshots of all cases with raised dividers stored anew after a look, the gap check over all 30 bin cases
+   with compartments, stacked bins Full and Light, trimmed and not.
