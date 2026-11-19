@@ -252,3 +252,19 @@ and dividers up to the top.
 - Numbers corrected: the lip's inner corner at the bin's corners is the body's corner radius 3.75 mm less the inset,
   1.15 mm under a full lip, 1.85 mm under a light one.
 
+## Gaps between dividers and walls (found 2026-11-19, a new problem)
+
+- A check in the shape tests (`dividerGapNotes`): dividers found on level sections under the label tabs; sections in
+  the plane of each divider, a little in from both faces and 0.5 and 1.0 mm beside them; at every 0.2 mm of height a
+  line going in from a wall's outer face must not leave the material and enter it again within 8 mm. Gaps under
+  0.2 mm don't count (a stacked foot's rounded corner leaves such a sliver of its room). A bin of several compartments
+  with no divider found fails.
+- Found on the bin cases with compartments and the reported bin, the same on master: at a scoop wall the raised
+  divider ended half a wall short of the cavity at the lip's inner edge, 2.0 mm (full lip) or 1.3 mm (light) in from
+  the outer face, while the lip's top is 0.6 mm wide: gaps up to 1.1 mm (full) and 0.4 mm (light) at the top of the
+  lip; under an untrimmed lip a 0.3 mm notch at every wall, the ridge starting at the wall's middle.
+- Fixed: the ridges reach every outer wall up to 0.1 mm under its outer face, the feet of a stacked bin shape their end
+  like the lip. Checked after: the gap check clean on all 27 bin cases with compartments and the reported bin with a
+  full, a full untrimmed and a light untrimmed lip; outer sizes and top heights unchanged; two stacked bins don't
+  overlap at a scoop wall or a plain wall.
+

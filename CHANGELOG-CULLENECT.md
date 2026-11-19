@@ -32,6 +32,12 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
     corners of different radii).
   - The rounding of the divider corners of round 8 (p83) is no longer built; a bin with raised dividers builds in
     about half the time.
+- **No gap between a raised divider and its wall:** at a scoop wall the raised divider ended half a wall short of the
+  cavity at the lip's inner edge, and under an untrimmed lip at the wall's middle; near the top of the lip, which is
+  thinner there, a gap of up to 1.1 mm was left (already so before round 50). The ridges now reach the outer walls up
+  to 0.1 mm under their outer face, shaped there by the feet of a stacked bin like the lip.
+- **Shape tests check for gaps:** every bin case with compartments is cut in the plane of each divider and beside it;
+  a gap of 0.2 mm or more between a divider and its wall at any height fails the case.
 - **No ledges where raised dividers cross (p651):** the crossing ridges cover the compartment corners there.
 - **A bin one unit high with a scoop builds (p652):** the floor fillet beside a scoop is at most the cavity's depth
   less 0.1 mm; at 1 mm depth the full 2.55 mm failed in Fusion.
