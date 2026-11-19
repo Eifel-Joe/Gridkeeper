@@ -6,6 +6,25 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased
 
+### Box small parts (round 47)
+
+- **Small parts of the box from the session, not drawn anew in every box:** latch, hinge and handle pin are drawn
+  once per Fusion session and every box set gets copies of their bodies, as one base feature in each part's
+  component (decided: they need no parameters and no history). Measured in Fusion with the same document steps:
+  the second box 84 s instead of 139 s; in a rebuild and in every further box the three parts take about 1 s each
+  instead of 8–20 s; a box brings 761 model parameters instead of 877. The first box of a session draws them once,
+  as fast as before (p591).
+  - The handle is still drawn in each set and follows the box width through its parameter.
+  - Same names, places and joint origins as before: the parts sit on their seats, joints of the user on a latch or a
+    handle pin move to the rebuilt set, export and colour are unchanged.
+  - The parts are drawn by their generators into a scratch component of the set that is deleted again (a hidden
+    helper document is not available in Fusion's API); if copying fails, the part is drawn in its component as
+    before and the reason logged.
+- **Box snapshot cases:** six cases stored the latch's area from before the latch was drawn in code (3085.727768
+  instead of 3085.723822 mm², same volume); their latch is stored anew, so they pass again (p592).
+
+Box and small parts after Pred's parametric Gridfinity Storage Box (Printables 543553, CC BY-NC).
+
 ### Faster joint origins for bins, baseplates and inserts (round 46)
 
 - **Bins, baseplates and inserts build and rebuild faster:** their joint origins (the sockets of a baseplate, the
