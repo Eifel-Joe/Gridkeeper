@@ -15,6 +15,8 @@ class BinBodyCompartmentDefinition():
         self.depth = depth
         # text and icon on the compartment label tab, none leaves the tab blank
         self.label = None
+        # the walls of this compartment with a scoop, see scoopSides.compartmentScoopSides (round 48)
+        self.scoopSides = frozenset()
 
     @property
     def positionX(self) -> float:
@@ -70,7 +72,9 @@ class BinBodyGeneratorInput():
         # the inside of the lip bottom widened at 45 degrees, so it doesn't overhang a cavity under it. A solid bin
         # has none, there it would only leave an undercut. A full lip has a support under it instead
         self.hasLipBottomChamfer = True
-        self.hasScoop = False
+        # the bin walls where a compartment has a scoop, the cavities start at the inside of the lip there, see
+        # scoopSides.outerScoopWalls; each compartment's own are on its definition
+        self.scoopSides = frozenset()
         self.scoopMaxRadius = const.BIN_SCOOP_MAX_RADIUS
         self.tabOverhangAngle = const.BIN_TAB_OVERHANG_ANGLE
         self.tabPosition = 0
@@ -208,13 +212,6 @@ class BinBodyGeneratorInput():
     def hasLipBottomChamfer(self, value: bool):
         self._hasLipBottomChamfer = value
 
-    @property
-    def hasScoop(self) -> bool:
-        return self._hasScoop
-
-    @hasScoop.setter
-    def hasScoop(self, value: bool):
-        self._hasScoop = value
 
     @property
     def scoopMaxRadius(self) -> float:

@@ -83,3 +83,44 @@ def test_old_table_rows_become_pockets():
 def test_describe_lists_what_is_set():
     assert layout.describe(layout.pocket(0, 1, 2, 1)) == "cell 1, 2, 2 x 1 cells, full depth"
     assert layout.describe(layout.pocket(1, 0, depth=12.5, label="M3", icon="hex-nut")) == "cell 2, 1, 1 x 1 cells, depth 12.5 mm, label M3, icon hex-nut"
+
+
+# --- round 48: the scoop walls of a compartment, none of its own takes the bin's
+
+def test_pockets_take_the_bins_scoops_by_default():
+    # without a choice of its own a pocket has no scoops key, its settings stay as saved before round 48
+    assert "scoops" not in layout.pocket(0, 0)
+    assert all("scoops" not in p for p in layout.normalizePockets([], 2, 2))
+
+
+def test_old_pockets_without_scoops_take_the_bins():
+    pockets = layout.normalizePockets([{"x": 0, "y": 0, "width": 2, "length": 1, "depth": None, "label": "M3", "icon": "Default"}], 2, 1)
+    assert "scoops" not in pockets[0]
+
+
+def test_own_scoops_are_cleaned_up_in_wall_order():
+    pockets = layout.normalizePockets([
+        {"x": 0, "y": 0, "width": 1, "length": 1, "scoops": ["right", "front", "front", "top", 3]},
+        {"x": 1, "y": 0, "width": 1, "length": 1, "scoops": []},
+        {"x": 2, "y": 0, "width": 1, "length": 1, "scoops": "front"},
+    ], 3, 1)
+    assert [p.get("scoops") for p in pockets] == [["front", "right"], [], None]
+
+
+def test_scoop_walls_match_the_generators():
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    spec = importlib.util.spec_from_file_location("scoopSidesForLayout", os.path.join(project_root, "lib", "gridfinityUtils", "scoopSides.py"))
+    scoopSides = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(scoopSides)
+    assert set(layout.SCOOP_WALLS) == set(scoopSides.SIDES_ORDER)
+
+
+def test_own_scoops_customize_and_stop_the_pattern():
+    pockets = layout.normalizePockets([layout.pocket(0, 0, scoops=["left"])], 2, 1)
+    assert layout.isCustomized(pockets)
+    assert not layout.isUniform(pockets)
+
+
+def test_describe_names_own_scoops():
+    assert layout.describe(layout.pocket(0, 0, scoops=["front", "left"])) == "cell 1, 1, 1 x 1 cells, full depth, scoops front and left"
+    assert layout.describe(layout.pocket(0, 0, scoops=[])) == "cell 1, 1, 1 x 1 cells, full depth, no scoops"

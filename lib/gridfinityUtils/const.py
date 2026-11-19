@@ -50,6 +50,9 @@ BIN_SCOOP_MAX_RADIUS = 2.5
 # depth. A scoop as deep as the compartment would take them, the corner fillets would lose their edges once a height
 # change takes the scoop past the depth or back
 BIN_SCOOP_TOP_MARGIN = 0.01
+# two scoops facing each other leave at least twice this much flat floor between them, their radius is limited to fit
+# (round 48, see scoopSides.scoopRadiusSpanLimits)
+BIN_SCOOP_FLOOR_MARGIN = 0.05
 
 BASEPLATE_EXTRA_HEIGHT = 0.64
 BASEPLATE_BIN_Z_CLEARANCE = 0.05
