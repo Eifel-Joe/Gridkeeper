@@ -179,3 +179,48 @@ from a box as wide as the groove instead of the divider. So:
   section; a 2×3 bin with 2×3 compartments about 5 cm³), more print time; no question if accepted.
 - **Q5 Existing bins:** every saved bin with dividers up to the top rebuilds with the ridge; all snapshot cases with
   raised dividers change and are stored anew after a look.
+
+## Corners beside a ridge (decided 2026-11-19, option a)
+
+Measured on the reported bin with the ridge: where a raised divider meets the outer wall a level face of 0.10 mm²
+(0.27 × 1.15 mm) is left 0.5 mm under the body top. The compartment's vertical corner fillet (2.55 mm with a 1.2 mm
+wall) reaches past what covers it from above, the ridge's tip on one side (only 1.97 mm from the divider face, the
+divider lying 0.28 mm off the grid line), and the compartments top clearance cuts it flat. The rounding of p83
+covered it before; it doesn't fit the ridge. Rejected: accepting the faces (a weaker ledge check), supports built
+along every compartment's outline (much more work and risk).
+
+Decided: a compartment corner next to a ridge gets a smaller fillet, so that it lies wholly under what covers it.
+Each side of the corner covers a strip from its face, measured at the height where the cavity's top is cut (the tab
+top offset, or the body top without one): a ridge its overhang there (Full: tip − face distance; Light: tip − face
+distance − that depth), an outer wall under a full lip its support (lip inner inset − wall), anything else nothing.
+Two strips a and b cover a corner fillet of radius r when r ≤ min(a, b) or (r − a)² + (r − b)² ≤ r², so
+r = min(corner radius, a + b + √(2ab)). Corners away from ridges keep their radius. A corner with nothing to cover it
+stays sharp.
+
+# Points p651–p653 (taken into round 50, 2026-11-19)
+
+## p651 Tiny ledges where raised dividers cross
+
+Cause: at a crossing the compartment corners were not rounded up by p83 (no chain of edges there), the compartments
+top clearance cut their corner fillets flat, 0.05 mm² each. Target: with the ridges both sides of such a corner are
+ridges, their overhang (at least 1.97 mm) covers the fillet; the corner rule above keeps it so. Check: the reported
+bin (2×3 compartments) has no ledge at its crossings; a new shape case with crossing ridges.
+
+## p652 A bin one height unit high with a scoop doesn't build
+
+Cause, shown in Fusion with a 2×3×1 bin with a front scoop and no dividers: the cavity is 1.0 mm deep, its scoop and
+corner fillets are built (2.55 mm), then the bottom fillet of 2.55 mm along the other walls fails
+(`ASM_BL_CAP_COMPLEX`). Without the scoop the same bottom fillet builds. Limiting the scoop to the depth instead makes
+the corner fillets fail (`ASM_BL_CANNOT_REORDER`); limiting the bottom fillet to the depth less 0.1 mm builds.
+Target: the bottom fillet of a cavity with a scoop is at most its depth less the scoop's top margin (0.1 mm); scoop and
+corners unchanged, cavities without a scoop unchanged. Check: new shape case 2×3×1 with a front scoop.
+
+## p653 Ledge in the corner between two scoop walls
+
+Cause: where two walls with a scoop meet (front and left), the cavity starts at the lip's inner edge on both, but its
+corner fillet keeps the compartment radius (2.55 mm) while the lip's inner corner there is concentric with the bin's
+(4.0 mm less the inset: 1.4 mm under a full lip, 2.1 mm under a light one); the top of the fillet is left as a level
+face of 1.11 mm² at the body top, with or without raised dividers. Target: a cavity corner between two scoop walls is
+concentric with the lip's inner corner, radius bin corner radius less the scoop inset. Shape cases with two adjacent
+scoop walls from round 48 change and are stored anew after a look. Check: new shape case with front and left scoops
+and dividers up to the top.
