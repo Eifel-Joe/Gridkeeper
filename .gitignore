@@ -4,6 +4,8 @@ __pycache__
 commandConfig
 # the update settings, see lib/updateCheck.settingsPath
 updateConfig
+# the box's small parts kept on disk, see lib/gridfinityUtils/predPartFile.py
+partCache
 *.msi
 *.wixpdb
 /dist

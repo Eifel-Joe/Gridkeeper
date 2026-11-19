@@ -104,8 +104,9 @@ def extract(zipPath: str, targetParent: str) -> str:
 # next to the add-in folder, so renaming stays on one drive. Fusion loads add-ins only from folders named like their
 # manifest, the copies in here (new/Gridkeeper, backup-<time>/Gridkeeper) are one level too deep to be picked up
 WORK_FOLDER_NAME = '.gridkeeper-update'
-# never carried over from the old version: its code, the caches of that code and the manifest
-CARRY_OVER_SKIPPED_FOLDERS = ('__pycache__', '.git')
+# never carried over from the old version: its code, the caches of that code (partCache: the box's small parts as its
+# code drew them, round 49) and the manifest
+CARRY_OVER_SKIPPED_FOLDERS = ('__pycache__', '.git', 'partCache')
 CARRY_OVER_SKIPPED_SUFFIXES = ('.py', '.pyc', '.manifest')
 
 # one install at a time, and no cleanup meanwhile: the cleanup thread at startup and a click on Update now must not
