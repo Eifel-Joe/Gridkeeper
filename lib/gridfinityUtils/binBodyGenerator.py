@@ -795,13 +795,14 @@ def roundRaisedDividerCorners(
             toFillet.append((index, corner, at, grids))
             continue
         sweeps.append((index, corner, at, grids, bodies, made))
+    # the corners whose sweeps stay in the design, on the shared sections; after a failed join their pieces go but the
+    # sweeps stay (review round 50)
+    joined: list[tuple[int, FilletCorner, tuple[float, float], tuple[float, float]]] = []
     if len(sweeps) > 0:
         # The corners stay sharp at worst, never the bin: a cut or join Fusion fails on leaves their corners to the
         # fillets. The cutters are kept until the last cut, see createRaisedDividers
         cutters = createStackedFootCutters(lipInput, targetComponent, name='Raised divider corners foot cutout')
         rounded: list[adsk.fusion.BRepBody] = []
-        # the corners whose pieces are in rounded
-        joined: list[tuple[int, FilletCorner, tuple[float, float], tuple[float, float]]] = []
         for (position, (index, corner, at, grids, bodies, made)) in enumerate(sweeps):
             # only the top run is cut, the pieces below it stay where the feet can't reach
             try:
@@ -835,8 +836,8 @@ def roundRaisedDividerCorners(
                 for piece in rounded:
                     targetComponent.features.removeFeatures.add(piece)
                 toFillet.extend(joined)
-    if sketch is not None and len(toFillet) == len(corners):
-        # no corner swept with the shared sections, they go with their plane (review round 50)
+    if sketch is not None and len(joined) == 0:
+        # no sweep left on the shared sections, they go with their plane (review round 50)
         deleteMade([sketch])
     for (index, corner, at, grids) in toFillet:
         filletRaisedDividerCorner(binBody, index, corner, at, grids, rounding.reach, bottomZ.value, rounding.radius, targetComponent)
