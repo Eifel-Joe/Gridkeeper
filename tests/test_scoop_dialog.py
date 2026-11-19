@@ -83,4 +83,4 @@ def test_merge_and_split_keep_the_compartments_scoops():
 
 
 def test_page_gets_the_bins_scoop_walls():
-    assert "'binScoops': sorted(binBuilder.binScoopSides(getInputsState()))," in _source(ENTRY)
+    assert "'binScoops': sorted(binBuilder.binScoopSides(dataclasses.replace(getInputsState(), hasTab=False)))," in _source(ENTRY)

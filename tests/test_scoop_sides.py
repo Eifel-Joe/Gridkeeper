@@ -179,3 +179,15 @@ def test_generator_scoops_each_compartment_with_its_own_walls():
     assert "binBodyInput.scoopSides = scoopSides.outerScoopWalls(" in builder
     cutout = source("lib", "gridfinityUtils", "binBodyCutoutGenerator.py")
     assert "scoopSides.scoopRadiusSpanLimits(" in cutout
+
+
+def test_tab_openings_reach_through_a_wall_thickened_for_a_scoop():
+    # review round 48: a side scoop puts the cavity at the lip's inner edge, the opening must still reach the outside
+    assert scoops.tabOpeningDepth({FRONT: 2.6, BACK: 1.2, LEFT: 2.6, RIGHT: 1.2}, 1.2) == 3.8
+    # without a scoop on the opened walls as before round 48, twice the wall
+    assert scoops.tabOpeningDepth({FRONT: 2.6, BACK: 1.2, LEFT: 1.2, RIGHT: 1.2}, 1.2) == 2.4
+
+
+def test_chamfer_box_bounds_come_from_its_placement():
+    # review round 48: the box's own placement, not a face bounding box Fusion may draw loose
+    assert scoops.boxBounds((1.0, 2.0), 10.0, 6.0) == ((1.0, 2.0), (11.0, 8.0))

@@ -357,6 +357,7 @@
         return pocket && Array.isArray(pocket.scoops) ? pocket.scoops.slice() : undefined;
     }
 
+    // the bin's walls come without the tab's lock, so a compartment's own copy keeps the back for when the tab goes off
     function effectiveScoops(pocket) {
         const walls = Array.isArray(pocket.scoops) ? pocket.scoops : (data.binScoops || []);
         // the label tab sits on the back wall of every compartment

@@ -93,3 +93,15 @@ def scoopRadiusSpanLimits(sides: frozenset, width, length, floorMargin) -> list:
     if LEFT in sides and RIGHT in sides:
         limits.append(width / 2 - floorMargin)
     return limits
+
+def tabOpeningDepth(insets: dict, wallThickness: float) -> float:
+    """
+    How deep a hollow tab is opened through the back and side walls from the cavity: through the thickest of them and
+    a wall more, twice the wall without a scoop there as before round 48. A scoop wall starts the cavity at the
+    lip's inner edge, deeper than the wall (review round 48). Insets as from wallInsets, in cm
+    """
+    return max(insets[BACK], insets[LEFT], insets[RIGHT]) + wallThickness
+
+def boxBounds(origin, width: float, length: float):
+    """XY bounds of a box from its corner and size, for touchesScoopWall"""
+    return ((origin[0], origin[1]), (origin[0] + width, origin[1] + length))

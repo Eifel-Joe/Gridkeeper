@@ -155,14 +155,19 @@ def createGridfinityBinBody(
             lipBottomChamferExtrudeTopFace = faceUtils.getTopFace(lipBottomChamferExtrude.bodies.item(0))
             # round 48: the edges along the scoop walls and their corner arcs are left out, picked by where they lie;
             # before, a single front scoop dropped the first three edges of the top's tangent chain
-            topBounds = lipBottomChamferExtrudeTopFace.boundingBox
+            # the box's bounds from its placement, a face's bounding box may be drawn loose (review round 48)
+            (boxMin, boxMax) = scoopSides.boxBounds(
+                (chamferInsetValues[scoopSides.LEFT], chamferInsetValues[scoopSides.FRONT]),
+                (bodyWidth - chamferInsets[scoopSides.LEFT] - chamferInsets[scoopSides.RIGHT]).value,
+                (bodyLength - chamferInsets[scoopSides.FRONT] - chamferInsets[scoopSides.BACK]).value,
+            )
             edgesToChamfer = [
                 edge for edge in lipBottomChamferExtrudeTopFace.edges
                 if not scoopSides.touchesScoopWall(
                     (edge.boundingBox.minPoint.x, edge.boundingBox.minPoint.y),
                     (edge.boundingBox.maxPoint.x, edge.boundingBox.maxPoint.y),
-                    (topBounds.minPoint.x, topBounds.minPoint.y),
-                    (topBounds.maxPoint.x, topBounds.maxPoint.y),
+                    boxMin,
+                    boxMax,
                     input.scoopSides,
                 )
             ]
@@ -235,7 +240,8 @@ def createGridfinityBinBody(
             tabOpenings = None
             if input.isTabHollow and len(input.compartments) == 1:
                 tabOpenings = TabWallOpenings(
-                    input.wallThickness * 2,
+                    # through the wall a side scoop thickens up to the lip's inner edge (review round 48)
+                    scoopSides.tabOpeningDepth({side: inset.value for (side, inset) in compartmentInsets.items()}, input.wallThickness),
                     back=True,
                     minXSide=input.isTabOpenThroughSides,
                     maxXSide=input.isTabOpenThroughSides,

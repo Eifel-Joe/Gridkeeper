@@ -159,7 +159,8 @@ def creaseLayout(state: InputState) -> list[tuple[wallCreases.WallSide, int]]:
         return []
     if state.binHeight < state.creaseMinHeight:
         return []
-    # a scoop braces its wall already
+    # a scoop braces its wall already. A creased bin has a single compartment without a layout, so its scoop walls are
+    # the bin's, the outer walls of binBodyInput.scoopSides alike
     # in outline grid cells, the lengths in base units scale along
     divisions = gridDivisions(state)
     return wallCreases.creaseLayout(

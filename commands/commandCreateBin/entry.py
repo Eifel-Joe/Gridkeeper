@@ -693,8 +693,9 @@ def compartmentsDrawingData(browserId: str) -> dict:
         'maxCells': GRID_CELLS_MAX,
         'fullDepth': fullCompartmentDepth(),
         'pockets': compartmentPockets,
-        # the walls a compartment without its own scoops takes (round 48)
-        'binScoops': sorted(binBuilder.binScoopSides(getInputsState())),
+        # the walls a compartment without its own scoops takes (round 48), without the tab's lock: the page locks
+        # the back itself, a compartment's own copy keeps it for when the tab goes off (review round 48)
+        'binScoops': sorted(binBuilder.binScoopSides(dataclasses.replace(getInputsState(), hasTab=False))),
         'hasTab': hasTab,
         'defaultLabel': commandUIState.getState(BIN_TAB_LABEL_TEXT_INPUT_ID),
         'defaultIcon': commandUIState.getState(BIN_TAB_LABEL_ICON_INPUT_ID),
