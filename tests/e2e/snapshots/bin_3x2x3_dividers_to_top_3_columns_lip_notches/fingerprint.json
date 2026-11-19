@@ -3,8 +3,8 @@
         {
             "name": "Gridfinity bin 2x3x3",
             "file": "body1.smt",
-            "volume": 68917.186161,
-            "area": 44630.65232,
+            "volume": 70056.077807,
+            "area": 45638.917107,
             "bboxMin": [
                 -0.0,
                 0.0,
@@ -16,9 +16,9 @@
                 19.8
             ],
             "lumps": 1,
-            "faces": 286,
-            "edges": 653,
-            "vertices": 372
+            "faces": 292,
+            "edges": 695,
+            "vertices": 406
         }
     ]
 }
