@@ -57,3 +57,30 @@ def test_back_scoop_is_locked_by_the_label_tab():
 def test_radius_follows_any_scoop_wall():
     source = _source(ENTRY)
     assert "commandUIState.getInput(BIN_SCOOP_MAX_RADIUS_INPUT_ID).isEnabled = anyScoop and not shaped" in source
+
+
+# --- addendum: the scoops of a compartment in the layout editor, the page needs a browser, so its source is read
+
+PAGE = os.path.join(PROJECT_ROOT, "commands", "commandCreateBin", "html", "compartments.html")
+
+
+def test_editor_has_a_scoops_row_for_the_selected_compartment():
+    page = _source(PAGE)
+    assert "htmlElement('label', {}, 'Scoops')" in page
+    for wall in ["front", "back", "left", "right"]:
+        assert f"'{wall}'" in page
+
+
+def test_editor_locks_the_back_scoop_while_the_tab_is_on():
+    assert "wall === 'back' && data.hasTab" in _source(PAGE)
+
+
+def test_merge_and_split_keep_the_compartments_scoops():
+    page = _source(PAGE)
+    assert "scoopsOf(source)" in page
+    assert "singleCell(x, y, pocket.depth, pocket.scoops)" in page
+    assert "singleCell(x, y, p.depth, p.scoops)" in page
+
+
+def test_page_gets_the_bins_scoop_walls():
+    assert "'binScoops': sorted(binBuilder.binScoopSides(getInputsState()))," in _source(ENTRY)

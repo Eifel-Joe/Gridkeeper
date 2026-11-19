@@ -693,6 +693,8 @@ def compartmentsDrawingData(browserId: str) -> dict:
         'maxCells': GRID_CELLS_MAX,
         'fullDepth': fullCompartmentDepth(),
         'pockets': compartmentPockets,
+        # the walls a compartment without its own scoops takes (round 48)
+        'binScoops': sorted(binBuilder.binScoopSides(getInputsState())),
         'hasTab': hasTab,
         'defaultLabel': commandUIState.getState(BIN_TAB_LABEL_TEXT_INPUT_ID),
         'defaultIcon': commandUIState.getState(BIN_TAB_LABEL_ICON_INPUT_ID),
