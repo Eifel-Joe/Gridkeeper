@@ -185,12 +185,17 @@ def createGridfinityBinBody(
 
     if not input.isSolid:
         # a scoop wall runs up into the inside of the lip, on every wall with a scoop (round 48)
-        compartmentInsets = scoopSides.wallInsets(
-            input.scoopSides if input.hasLip else frozenset(), wall, lipInnerInset(input.lipType, input.xyClearance))
-        compartmentsMinX = compartmentInsets[scoopSides.LEFT]
-        compartmentsMaxX = bodyWidth - compartmentInsets[scoopSides.RIGHT]
-        compartmentsMinY = compartmentInsets[scoopSides.FRONT]
-        compartmentsMaxY = bodyLength - compartmentInsets[scoopSides.BACK]
+        outerScoopWalls = input.scoopSides if input.hasLip else frozenset()
+        scoopInset = lipInnerInset(input.lipType, input.xyClearance)
+        compartmentInsets = scoopSides.wallInsets(outerScoopWalls, wall, scoopInset)
+        # dividers raised into the lip keep to the grid lines, the compartments along a scoop wall take its inset
+        # instead of the whole grid moving off them (round 50, p650), see scoopSides.gridTrims
+        (gridInsets, gridTrims) = scoopSides.gridTrims(
+            outerScoopWalls, wall, scoopInset, keepGrid=input.hasLip and len(input.raisedDividers) > 0)
+        compartmentsMinX = gridInsets[scoopSides.LEFT]
+        compartmentsMaxX = bodyWidth - gridInsets[scoopSides.RIGHT]
+        compartmentsMinY = gridInsets[scoopSides.FRONT]
+        compartmentsMaxY = bodyLength - gridInsets[scoopSides.BACK]
 
         totalCompartmentsWidth = compartmentsMaxX - compartmentsMinX
         totalCompartmentsLength = compartmentsMaxY - compartmentsMinY
@@ -199,12 +204,16 @@ def createGridfinityBinBody(
         compartmentLengthUnit = (totalCompartmentsLength - wall * (input.compartmentsByY - 1)) / input.compartmentsByY
 
         def compartmentPlacement(compartment: BinBodyCompartmentDefinition) -> tuple[Dim, Dim, Dim, Dim]:
-            """X, y, width and length of the compartment cavity"""
-            return (
+            """X, y, width and length of the compartment cavity, shortened along a trimmed scoop wall (round 50)"""
+            return scoopSides.trimmedCavity(
                 compartmentsMinX + (compartmentWidthUnit + wall) * compartment.positionX,
                 compartmentsMinY + (compartmentLengthUnit + wall) * compartment.positionY,
                 compartmentWidthUnit * compartment.width + wall * (compartment.width - 1),
                 compartmentLengthUnit * compartment.length + wall * (compartment.length - 1),
+                (compartment.positionX, compartment.positionY),
+                (compartment.width, compartment.length),
+                (input.compartmentsByX, input.compartmentsByY),
+                gridTrims,
             )
 
         def tabPlacement(compartmentX: Dim, compartmentY: Dim, compartmentLength: Dim) -> tuple[Dim, Dim, Dim]:
@@ -215,7 +224,9 @@ def createGridfinityBinBody(
                 input.baseWidth * max(0, min(input.tabLength, input.binWidth)),
             )
 
-        useCompartmentPattern = input.isUniformCompartments and len(input.compartments) > 1
+        # trimmed compartments are patterned only while all are trimmed alike (round 50)
+        useCompartmentPattern = (input.isUniformCompartments and len(input.compartments) > 1
+            and scoopSides.trimsKeepAlike(gridTrims, (input.compartmentsByX, input.compartmentsByY)))
         compartmentsToBuild = input.compartments[:1] if useCompartmentPattern else input.compartments
         for compartmentIndex, compartment in enumerate(compartmentsToBuild):
             compartmentName = 'Compartment' if len(compartmentsToBuild) == 1 else f'Compartment {compartmentIndex + 1}'
@@ -299,13 +310,15 @@ def createGridfinityBinBody(
 
         # dividers are lowered as far as the tabs
         if len(input.compartments) > 1 and input.tabTopOffset > 0:
+            # over the cavities, from the scoop insets also where the grid keeps to the grid lines (round 50)
+            (clearanceMinX, clearanceMinY) = (compartmentInsets[scoopSides.LEFT], compartmentInsets[scoopSides.FRONT])
             compartmentsTopClearance = createCompartmentCutout(
                 input.wallThickness,
-                compartmentsMinX,
-                compartmentsMinY,
+                clearanceMinX,
+                clearanceMinY,
                 binBodyTotalHeight,
-                compartmentsMaxX - compartmentsMinX,
-                compartmentsMaxY - compartmentsMinY,
+                bodyWidth - compartmentInsets[scoopSides.RIGHT] - clearanceMinX,
+                bodyLength - compartmentInsets[scoopSides.BACK] - clearanceMinY,
                 input.tabTopOffset,
                 input.binCornerFilletRadius - input.wallThickness,
                 frozenset(),
@@ -324,6 +337,7 @@ def createGridfinityBinBody(
                 (compartmentWidthUnit + wall, compartmentLengthUnit + wall),
                 (input.compartmentsByX, input.compartmentsByY),
                 wall,
+                gridTrims,
             )
             # the raised dividers stand on the dividers lowered by the tab top offset (round 38)
             raisedCornersBottomZ = binBodyTotalHeight - Dim.length(input.tabTopOffset)
@@ -337,6 +351,7 @@ def createGridfinityBinBody(
                 input.tabTopOffset,
                 lipInput,
                 targetComponent,
+                gridTrims,
             ))
 
     if len(bodiesToSubtract) > 0:
@@ -440,6 +455,7 @@ def createRaisedDividers(
     topOffset: float,
     lipInput: BinBodyLipGeneratorInput,
     targetComponent: adsk.fusion.Component,
+    trims: dict,
 ) -> list[adsk.fusion.BRepBody]:
     """
     Divider walls on grid lines from below the compartments top clearance up to the top of the lip, cut by the feet of
@@ -461,6 +477,14 @@ def createRaisedDividers(
         # the first cavity starts at the min, the last one ends a wall short of the next pitch
         runStart = compartmentsMin[along] + pitch[along] * segment.start - startReach
         runLength = pitch[along] * (segment.end - segment.start) - wall + startReach + endReach
+        # at a trimmed scoop wall from its trimmed cavity, as before the grid kept to the grid lines (round 50): from
+        # the grid's start it reached out under the lip, faces nearly coincident with the lip's (shown in Fusion)
+        (startTrim, endTrim) = scoopSides.runTrims(segment.axis, segment.start, segment.end, counts, trims)
+        if startTrim is not None:
+            runStart = runStart + startTrim
+            runLength = runLength - startTrim
+        if endTrim is not None:
+            runLength = runLength - endTrim
         (originX, originY, width, length) = (wallStart, runStart, wall, runLength) if segment.axis == 'x' else (runStart, wallStart, runLength, wall)
         box = extrudeUtils.createBoxAtPoint(
             width,
@@ -506,16 +530,26 @@ def raisedDividerCorners(
     pitch: tuple[Dim, Dim],
     counts: tuple[int, int],
     wall: Dim,
+    trims: dict,
 ) -> list[tuple[FilletCorner, tuple[Dim, Dim]]]:
     """
     The cell corners the raised dividers make, each with where the corner of the cavity is: on the low side of a cell
-    at its start, on the high side a wall short of the next one
+    at its start, on the high side a wall short of the next one, moved in by the trim of a scoop wall the cell touches
+    (round 50), see scoopSides.trimmedCavity
     """
     corners = []
     for corner in filletCorners(segments, counts[0], counts[1]):
         x = compartmentsMin[0] + pitch[0] * (corner.column if corner.sideX == -1 else corner.column + 1)
         y = compartmentsMin[1] + pitch[1] * (corner.row if corner.sideY == -1 else corner.row + 1)
-        corners.append((corner, (x - wall if corner.sideX == 1 else x, y - wall if corner.sideY == 1 else y)))
+        x = x - wall if corner.sideX == 1 else x
+        y = y - wall if corner.sideY == 1 else y
+        # a cell along a trimmed scoop wall has its cavity corner in by the trim, see scoopSides.trimmedCavity
+        (inX, inY) = scoopSides.cornerTrim(corner.column, corner.row, corner.sideX, corner.sideY, counts, trims)
+        if inX is not None:
+            x = x + inX if corner.sideX == -1 else x - inX
+        if inY is not None:
+            y = y + inY if corner.sideY == -1 else y - inY
+        corners.append((corner, (x, y)))
     return corners
 
 def raisedCornerChain(

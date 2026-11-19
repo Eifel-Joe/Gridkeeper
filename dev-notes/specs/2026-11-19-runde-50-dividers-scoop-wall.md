@@ -57,13 +57,31 @@ Bins without raised dividers keep the even grid of round 48 unchanged.
 
 ## Tests
 
-- pytest (pure, numbers): the trims per side from the scoop walls and insets; the cavity placement of a compartment
-  in a 2×3 grid with a front scoop wall, full and light lip; no trims without raised dividers; when compartments
-  stay alike for the pattern.
-- New shape cases: `bin_2x3x5_dividers_to_top_lip_full_compartment_scoops` (the reported bin),
-  `bin_2x3x5_dividers_to_top_lip_full_scoop` (bin front scoop), `bin_2x3x5_dividers_to_top_compartment_scoops`
-  (light lip). Bins one height unit high with a full lip, dividers up to the top and a scoop: checked in Fusion, a
-  case of their own if they build, else a new point.
-- Existing cases re-checked in Fusion: `bin_3x2x3_dividers_to_top_3_columns_tab_scoop_part` (front scoop, column
-  dividers: expected unchanged, the trim is on a side every compartment touches), the raised divider cases without
-  scoops (unchanged), the round 48 scoop cases without raised dividers (unchanged).
+- pytest (pure, numbers and Dims), `tests/test_scoop_sides.py`: the grid insets and trims per side
+  (`gridTrims`), the cavity of a compartment from its cell (`trimmedCavity`), the corners of cells along a trimmed
+  wall (`cornerTrim`), the start and end of a raised divider run at a trimmed wall (`runTrims`), when compartments
+  stay alike for the pattern (`trimsKeepAlike`).
+- New shape cases, compartments 1×3 so no dividers cross (see below):
+  `bin_2x3x5_dividers_to_top_lip_full_compartment_scoops` (front scoop in every compartment as reported),
+  `bin_2x3x5_dividers_to_top_lip_full_scoop` (the bin's front scoop), `bin_2x3x5_dividers_to_top_compartment_scoops`
+  (light lip, right scoops: the trim across x). All pass, sketches fully constrained, no ledge.
+- Unchanged in Fusion: `bin_3x2x3_dividers_to_top_3_columns_tab_scoop_part`, `bin_3x2x3_dividers_to_top_3_columns`,
+  `bin_3x2x3_dividers_to_top_3_columns_lip_full`, `bin_4x2x3_cullenect_mixed_dividers_to_top`,
+  `bin_3x1x6_scoops_per_compartment`, `bin_2x2x4_scoops_4_lip_full_compartments`.
+- The reported bin rebuilt: the dividers lie at y 41.43–42.63 mm as without scoops, the junctions are clean.
+
+## Found on the way, not changed (points p651–p653)
+
+- Where raised dividers cross (2×3 compartments), four corners get no rounding and leave level faces of 0.05 mm²,
+  with or without scoops, on master too. The ledge check of the shape tests reports them, so the new cases have
+  no crossings.
+- A bin one height unit high with a scoop fails at its compartments' bottom fillet, on master too; without a scoop
+  the same bin with a full lip and dividers up to the top builds clean.
+- In the bin corner between two scoop walls (front and left) a level face of 1.11 mm² is left at the top with
+  dividers up to the top, on master too.
+
+## Implementation notes
+
+- A raised divider at a trimmed scoop wall starts half a wall short of the trimmed cavity, as before: started from
+  the grid it reached out under the lip, with faces nearly coincident with the lip's, an extra ledge and a changed
+  `…_tab_scoop_part` case (shown in Fusion, dropped).

@@ -4,6 +4,7 @@ the label tab and is locked while the tab is on.
 """
 
 import os
+import pytest
 import importlib.util
 
 
@@ -204,3 +205,81 @@ def test_bottom_fillet_only_beside_a_single_scoop():
     assert scoops.bottomFilletSides(frozenset({FRONT, LEFT, RIGHT})) == []
     assert scoops.bottomFilletSides(frozenset({FRONT, LEFT})) == []
     assert scoops.bottomFilletSides(frozenset({FRONT, BACK, LEFT, RIGHT})) == []
+
+# Round 50, p650: with dividers up to the top the compartment grid keeps to the grid lines beside a scoop wall, the
+# outer row or column takes the scoop wall's inset. In cm: 1.2 mm wall, full lip inner inset 2.6 mm
+WALL = 0.12
+FULL_INSET = 0.26
+
+
+def test_without_keeping_the_grid_a_scoop_wall_moves_the_grid_as_in_round_48():
+    (gridInsets, trims) = scoops.gridTrims(frozenset({FRONT}), WALL, FULL_INSET, keepGrid=False)
+    assert gridInsets == {BACK: WALL, LEFT: WALL, RIGHT: WALL, FRONT: FULL_INSET}
+    assert trims == {BACK: 0, LEFT: 0, RIGHT: 0, FRONT: 0}
+
+
+def test_keeping_the_grid_lays_it_out_from_the_walls_and_trims_the_scoop_wall():
+    (gridInsets, trims) = scoops.gridTrims(frozenset({FRONT, RIGHT}), WALL, FULL_INSET, keepGrid=True)
+    assert gridInsets == {BACK: WALL, LEFT: WALL, RIGHT: WALL, FRONT: WALL}
+    assert trims[FRONT] == pytest.approx(0.14)
+    assert trims[RIGHT] == pytest.approx(0.14)
+    assert trims[BACK] == 0 and trims[LEFT] == 0
+
+
+def test_only_the_outer_row_along_a_scoop_wall_is_trimmed():
+    trims = {FRONT: 0.14, BACK: 0, LEFT: 0, RIGHT: 0}
+    # a 2x3 grid, cells 4 cm by 4 cm, compartment at column 1, row 0 and one at row 1
+    (x, y, width, length) = scoops.trimmedCavity(4.2, 0.12, 4.0, 4.0, (1, 0), (1, 1), (2, 3), trims)
+    assert (x, y, width, length) == pytest.approx((4.2, 0.26, 4.0, 3.86))
+    assert scoops.trimmedCavity(4.2, 4.24, 4.0, 4.0, (1, 1), (1, 1), (2, 3), trims) == pytest.approx((4.2, 4.24, 4.0, 4.0))
+
+
+def test_a_compartment_over_all_rows_is_trimmed_at_both_ends():
+    trims = {FRONT: 0.14, BACK: 0.07, LEFT: 0.1, RIGHT: 0.2}
+    (x, y, width, length) = scoops.trimmedCavity(0.12, 0.12, 8.0, 12.0, (0, 0), (2, 3), (2, 3), trims)
+    assert (x, y, width, length) == pytest.approx((0.22, 0.26, 7.7, 11.79))
+
+
+def test_compartments_stay_alike_for_the_pattern_only_when_every_one_touches_the_trimmed_walls():
+    none = {FRONT: 0, BACK: 0, LEFT: 0, RIGHT: 0}
+    front = {**none, FRONT: 0.14}
+    left = {**none, LEFT: 0.14}
+    assert scoops.trimsKeepAlike(none, (2, 3))
+    # a single row: every compartment touches the front wall
+    assert scoops.trimsKeepAlike(front, (3, 1))
+    assert not scoops.trimsKeepAlike(front, (2, 3))
+    assert scoops.trimsKeepAlike(left, (1, 3))
+    assert not scoops.trimsKeepAlike(left, (2, 1))
+
+
+def test_the_grid_trims_work_on_dims():
+    """The generator places cavities with Dims, which take no bare 0 in a sum"""
+    from tests.test_dim import Dim
+    wall = Dim.length(WALL)
+    (gridInsets, trims) = scoops.gridTrims(frozenset({FRONT}), wall, Dim.length(FULL_INSET), keepGrid=True)
+    assert gridInsets[FRONT].value == pytest.approx(WALL)
+    (x, y, width, length) = scoops.trimmedCavity(wall, wall, Dim.length(4.0), Dim.length(4.0), (0, 0), (1, 1), (2, 3), trims)
+    assert (x.value, y.value, width.value, length.value) == pytest.approx((WALL, FULL_INSET, 4.0, 3.86))
+    assert not scoops.trimsKeepAlike(trims, (2, 3))
+
+
+def test_a_corner_of_a_cell_along_a_trimmed_wall_moves_in_by_the_trim():
+    trims = {FRONT: 0.14, BACK: 0, LEFT: 0, RIGHT: 0.07}
+    # the front corners of the front row
+    assert scoops.cornerTrim(0, 0, -1, -1, (2, 3), trims) == (None, 0.14)
+    # a back corner of the front row lies on a divider, untrimmed
+    assert scoops.cornerTrim(0, 0, -1, 1, (2, 3), trims) == (None, None)
+    # the right column's right corner, its front one too
+    assert scoops.cornerTrim(1, 1, 1, 1, (2, 3), trims) == (0.07, None)
+    assert scoops.cornerTrim(1, 0, 1, -1, (2, 3), trims) == (0.07, 0.14)
+
+
+def test_a_raised_divider_starts_at_the_trimmed_cavity_of_a_scoop_wall():
+    """Its box starts half a wall short of the cavity as before round 50: at a scoop wall that is the trimmed cavity's
+    edge, not the grid's, so it doesn't reach out under the lip (near coincident faces with the lip, shown in Fusion)"""
+    trims = {FRONT: 0.07, BACK: 0, LEFT: 0, RIGHT: 0.14}
+    # a wall across x runs along y, from the front to the back
+    assert scoops.runTrims('x', 0, 3, (2, 3), trims) == (0.07, None)
+    assert scoops.runTrims('x', 1, 2, (2, 3), trims) == (None, None)
+    # a wall across y runs along x, from the left to the right
+    assert scoops.runTrims('y', 0, 2, (2, 3), trims) == (None, 0.14)

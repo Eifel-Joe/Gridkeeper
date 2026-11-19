@@ -40,6 +40,78 @@ def wallInsets(sides: frozenset, wall, scoopInset) -> dict:
     """
     return {side: scoopInset if side in sides else wall for side in SIDES_ORDER}
 
+def gridTrims(sides: frozenset, wall, scoopInset, *, keepGrid: bool) -> tuple[dict, dict]:
+    """
+    Where the compartment grid starts in from each wall, and how much shorter the cavities along each wall are, see
+    trimmedCavity. As in round 48 the grid starts at the scoop inset on a scoop wall, so every compartment stays alike.
+    Round 50, p650: with dividers up to the top that shifted the grid off the grid lines, up to 1.2 mm under a full lip,
+    and the feet of a bin stacked on top cut the raised dividers away on one side. Decided: keepGrid lays the grid out
+    from the walls, as without a scoop, and the compartments along a scoop wall take its inset. Rejected: a scoop that
+    stops at the wall (a step at its top), raised parts set on the grid line over shifted dividers (an offset in the
+    divider). Works on numbers and Dims alike
+    """
+    if not keepGrid:
+        return (wallInsets(sides, wall, scoopInset), {side: 0 for side in SIDES_ORDER})
+    return (
+        {side: wall for side in SIDES_ORDER},
+        {side: (scoopInset - wall if side in sides else 0) for side in SIDES_ORDER},
+    )
+
+def trimmedCavity(x, y, width, length, position: tuple[int, int], size: tuple[int, int], counts: tuple[int, int], trims: dict) -> tuple:
+    """
+    The cavity of a compartment from its cell in the grid, x, y, width and length: shortened on each side it shares
+    with a trimmed wall, see gridTrims. position and size in grid cells, counts the cells of the grid
+    """
+    (column, row) = position
+    (columns, rows) = size
+    # untrimmed sides add nothing, a Dim takes no bare 0 in a sum
+    touched = {
+        LEFT: column == 0,
+        RIGHT: column + columns == counts[0],
+        FRONT: row == 0,
+        BACK: row + rows == counts[1],
+    }
+    cut = {side: trims[side] for side in SIDES_ORDER if touched[side] and _isTrimmed(trims[side])}
+    if LEFT in cut:
+        x = x + cut[LEFT]
+        width = width - cut[LEFT]
+    if RIGHT in cut:
+        width = width - cut[RIGHT]
+    if FRONT in cut:
+        y = y + cut[FRONT]
+        length = length - cut[FRONT]
+    if BACK in cut:
+        length = length - cut[BACK]
+    return (x, y, width, length)
+
+def _isTrimmed(trim) -> bool:
+    return (trim.value if hasattr(trim, 'value') else trim) > 0
+
+def cornerTrim(column: int, row: int, sideX: int, sideY: int, counts: tuple[int, int], trims: dict) -> tuple:
+    """How far in a cell's cavity corner lies from its grid corner along x and y, None where untrimmed: the corner on
+    sideX -1 or 1 of the cell, the low or high x, and on sideY of it. See trimmedCavity"""
+    trimX = trims[LEFT] if sideX == -1 and column == 0 else trims[RIGHT] if sideX == 1 and column == counts[0] - 1 else 0
+    trimY = trims[FRONT] if sideY == -1 and row == 0 else trims[BACK] if sideY == 1 and row == counts[1] - 1 else 0
+    return (trimX if _isTrimmed(trimX) else None, trimY if _isTrimmed(trimY) else None)
+
+def runTrims(axis: str, start: int, end: int, counts: tuple[int, int], trims: dict) -> tuple:
+    """The trims at the start and end of a run of raised divider wall, None where untrimmed: a wall across x runs
+    along y from the front, one across y along x from the left, see raisedDividers.DividerSegment"""
+    (low, high, count) = (FRONT, BACK, counts[1]) if axis == 'x' else (LEFT, RIGHT, counts[0])
+    startTrim = trims[low] if start == 0 and _isTrimmed(trims[low]) else None
+    endTrim = trims[high] if end == count and _isTrimmed(trims[high]) else None
+    return (startTrim, endTrim)
+
+def trimsKeepAlike(trims: dict, counts: tuple[int, int]) -> bool:
+    """Whether every compartment of the grid is trimmed alike, so they can be patterned: a trimmed wall is shared by all
+    of them, one column for the left and right, one row for the front and back"""
+    (columns, rows) = counts
+    if columns > 1 and (_isTrimmed(trims[LEFT]) or _isTrimmed(trims[RIGHT])):
+        return False
+    if rows > 1 and (_isTrimmed(trims[FRONT]) or _isTrimmed(trims[BACK])):
+        return False
+    return True
+
 def touchesScoopWall(edgeMin, edgeMax, boxMin, boxMax, sides: frozenset, tolerance: float = 0.001) -> bool:
     """
     Whether an edge on the top of a box, its XY bounds given, lies on or ends at a wall with a scoop: the wall's line

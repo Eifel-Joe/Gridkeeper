@@ -6,6 +6,21 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased
 
+### Raised dividers beside a scoop wall (round 50)
+
+- **Dividers up to the top stay on their grid lines beside a scoop wall:** a wall with a scoop starts the
+  compartments along it at the lip's inner edge. Until now the whole compartment grid moved with it, the dividers
+  lay up to 1.2 mm off their grid lines under a full lip (0.75 mm under a light one), and the feet of a bin stacked
+  on top cut their raised part away on one side: narrow ridges, steps and gaps in the lip at every divider (p650).
+  This already happened with the bin's front scoop and became easy to reach with the scoops per compartment of
+  round 48.
+  - Decided: with dividers up to the top the grid is laid out from the walls as without a scoop, and only the
+    compartments along a scoop wall are shorter by its inset (1.4 mm under a full lip, 0.7 mm under a light lip with a
+    1.2 mm wall). Tabs, labels, Cullenect sockets and the rounded divider corners follow the shorter compartments.
+  - Bins without raised dividers keep the evenly spaced compartments of round 48.
+- **Shape test cases:** three new bins with raised dividers beside a scoop wall (compartment scoops and the bin scoop
+  under a full lip, compartment scoops under a light lip).
+
 ### Box small parts (round 47)
 
 - **Small parts of the box from the session, not drawn anew in every box:** latch, hinge and handle pin are drawn
