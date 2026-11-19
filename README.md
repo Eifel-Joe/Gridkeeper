@@ -70,7 +70,7 @@ Gridkeeper counts its own versions, starting with 1.0.0. Releases are tagged `gr
   [Snapshot tests](https://eifel-joe.github.io/Gridkeeper/developers/snapshot-tests/)
 - Documentation: `docs/`, built with [MkDocs Material](https://squidfunk.github.io/mkdocs-material/), preview with
   `pip install mkdocs-material` and then `python -m mkdocs serve`
-- Changes of this project: [CHANGELOG-CULLENECT.md](CHANGELOG-CULLENECT.md)
+- Changes of this project: [CHANGELOG.md](CHANGELOG.md)
 
 ## Credits
 
