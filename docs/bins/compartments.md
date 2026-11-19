@@ -41,8 +41,17 @@ Uniform compartments | Custom compartments A | Custom compartments B
 ## Dividers up to the top on grid lines
 
 **Dividers up to the top on grid lines** (off): compartment dividers lying on a grid line go up to the top of the lip
-and run out in its profile. The feet of a bin stacked on top have a groove there, so a bin of any size still stacks
-on it. Dividers between grid lines stay below the lip. Hollow bins with a lip and more than one compartment only.
+as a ridge with the lip's profile on both sides. The feet of a bin stacked on top have a groove there and sit in it
+the way they sit in the lip at the outer wall, so a bin of any size still stacks on it. Under the ridge a support
+(full lip) or a chamfer (light lip) runs at 45 degrees into the divider, so nothing overhangs the compartments.
+Dividers between grid lines stay below the lip. Hollow bins with a lip and more than one compartment only.
+
+- The dividers stay on their grid lines also beside a wall with a scoop; the compartments along that wall are shorter
+  by the scoop's inset instead.
+- A label tab, and its Cullenect pocket, in front of a ridge starts at the ridge's tip; a compartment with a scoop on
+  a ridge starts at the tip on that side, so the scoop runs up into it without a step.
+- Compartments beside a ridge have slightly tighter corners (about 2.3 mm instead of 2.6 mm under a full lip), so the
+  ridge covers them at the top.
 
 ![A 3x2 bin with three compartments, the dividers rising to the top of the lip](../assets/images/bin-dividers-to-top.png)
 

@@ -4,7 +4,7 @@ import math
 import copy
 
 from ...lib import fusion360utils as futil
-from . import const, combineUtils, faceUtils, commonUtils, sketchUtils, extrudeUtils, baseGenerator, edgeUtils, filletUtils, geometryUtils, patternUtils, binShape, scoopSides
+from . import const, combineUtils, faceUtils, commonUtils, extrudeUtils, baseGenerator, edgeUtils, filletUtils, geometryUtils, patternUtils, binShape, scoopSides
 from .binBodyCutoutGenerator import createGridfinityBinBodyCutout
 from .binBodyCutoutGeneratorInput import BinBodyCutoutGeneratorInput
 from .baseGeneratorInput import BaseGeneratorInput
@@ -16,8 +16,8 @@ from . import cullenect, binLabelLayout
 from .cullenectSocketGenerator import createCullenectSocket, SocketPlacement
 from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput, LIP_TYPE_FULL
 from .binBodyLipGenerator import createGridfinityBinBodyLip, createStackedFootCutters, createLipSupport, lipInnerInset
-from .raisedDividers import DividerSegment, FilletCorner, filletCorners, isCornerChainEdge, chainRuns, runOffset, cornerPlaneAxes, ridgeBox, raisedSides, coveredCornerRadius
-from .dim import Dim, valueInput, applyTo
+from .raisedDividers import DividerSegment, ridgeBox, raisedSides, coveredCornerRadius
+from .dim import Dim, valueInput
 from ... import config
 
 app = adsk.core.Application.get()
@@ -80,8 +80,6 @@ def createGridfinityBinBody(
 
     bodiesToMerge: list[adsk.fusion.BRepBody] = []
     bodiesToSubtract: list[adsk.fusion.BRepBody] = []
-    raisedCorners: list[tuple[FilletCorner, tuple[Dim, Dim]]] = []
-    raisedCornersBottomZ = None
     # the support under a full lip, it covers compartment corners from above (round 50)
     lipSupport = None
     # hollow tabs are cut once joined, the walls behind them close the hollows
@@ -425,7 +423,7 @@ def createGridfinityBinBody(
             bodiesToSubtract.append(compartmentsTopClearance)
 
         if hasRidges:
-            # Round 50: the ridges' feet and supports shape the corners, the rounding of p83 is not built for them
+            # Round 50: the ridges' feet and supports shape the corners, the rounding of p83 is no longer built
             bodiesToMerge.extend(createRaisedDividers(
                 input.raisedDividers,
                 (compartmentsMinX, compartmentsMinY),
@@ -463,18 +461,6 @@ def createGridfinityBinBody(
             commonUtils.objectCollectionFromList(tabHollowCuts),
             targetComponent,
             name='Label tab hollows cut',
-        )
-
-    if len(raisedCorners) > 0:
-        roundRaisedDividerCorners(
-            binBody,
-            raisedCorners,
-            (input.compartmentsByX, input.compartmentsByY),
-            input.wallThickness,
-            raisedCornersBottomZ,
-            compartmentCutoutFilletRadius(input.binCornerFilletRadius - input.wallThickness),
-            lipInput,
-            targetComponent,
         )
 
     labelBodies: list[adsk.fusion.BRepBody] = []
@@ -637,316 +623,6 @@ def createRaisedDividers(
         dividers.extend(body for body in cut.bodies if all(body != cutter for cutter in cutters))
     return dividers
 
-# Parts of the corner fillet radius tried in turn where a corner can't be swept and Fusion can't close a fillet of the
-# full one (ASM_BL_CAP_COMPLEX, shown in Fusion): walls of 2 and 3 mm stick out past the grid line and are cut by the
-# feet of a stacked bin at the top, a 0.4 mm wall leaves too little divider for a 3.3 mm fillet. 80 % rounds those of
-# 0.4 and 2 mm, 40 % 3 mm walls
-RAISED_CORNER_FILLET_FALLBACKS = (1.0, 0.8, 0.6, 0.4)
-
-def raisedDividerCorners(
-    segments: list[DividerSegment],
-    compartmentsMin: tuple[Dim, Dim],
-    pitch: tuple[Dim, Dim],
-    counts: tuple[int, int],
-    wall: Dim,
-    trims: dict,
-) -> list[tuple[FilletCorner, tuple[Dim, Dim]]]:
-    """
-    The cell corners the raised dividers make, each with where the corner of the cavity is: on the low side of a cell
-    at its start, on the high side a wall short of the next one, moved in by the trim of a scoop wall the cell touches
-    (round 50), see scoopSides.trimmedCavity
-    """
-    corners = []
-    for corner in filletCorners(segments, counts[0], counts[1]):
-        x = compartmentsMin[0] + pitch[0] * (corner.column if corner.sideX == -1 else corner.column + 1)
-        y = compartmentsMin[1] + pitch[1] * (corner.row if corner.sideY == -1 else corner.row + 1)
-        x = x - wall if corner.sideX == 1 else x
-        y = y - wall if corner.sideY == 1 else y
-        # a cell along a trimmed scoop wall has its cavity corner in by the trim, see scoopSides.trimmedCavity
-        (inX, inY) = scoopSides.cornerTrim(corner.column, corner.row, corner.sideX, corner.sideY, counts, trims)
-        if inX is not None:
-            x = x + inX if corner.sideX == -1 else x - inX
-        if inY is not None:
-            y = y + inY if corner.sideY == -1 else y - inY
-        corners.append((corner, (x, y)))
-    return corners
-
-def raisedCornerChain(
-    binBody: adsk.fusion.BRepBody,
-    corner: FilletCorner,
-    cornerAt: tuple[float, float],
-    counts: tuple[int, int],
-    wallThickness: float,
-    bottomZ: float,
-) -> list[adsk.fusion.BRepEdge]:
-    """The edges of the body a corner goes up along, see isCornerChainEdge"""
-    edges = []
-    for edge in binBody.edges:
-        if not isinstance(edge.geometry, adsk.core.Line3D):
-            continue
-        start = edge.startVertex.geometry
-        end = edge.endVertex.geometry
-        if isCornerChainEdge(
-            corner, cornerAt, counts[0], counts[1],
-            # the lip reaches into the compartment by less than its top section
-            wall=wallThickness, lipOverhang=const.BIN_BASE_TOP_SECTION_HEIGH, bottomZ=bottomZ,
-            start=(start.x, start.y, start.z), end=(end.x, end.y, end.z),
-        ):
-            edges.append(edge)
-    return edges
-
-def roundRaisedDividerCorners(
-    binBody: adsk.fusion.BRepBody,
-    corners: list[tuple[FilletCorner, tuple[Dim, Dim]]],
-    counts: tuple[int, int],
-    wallThickness: float,
-    bottomZ: Dim,
-    cornerFilletRadius: float,
-    lipInput: BinBodyLipGeneratorInput,
-    targetComponent: adsk.fusion.Component,
-):
-    """
-    p83: rounds every corner of a raised divider from the top of the compartment's corner fillet up to the top, over
-    the outer wall, the chamfer under the lip and the lip, cast in one piece with the corner below, the chamfer running
-    on round it. Root cause of the sharp corner: the raised divider is a box joined on above the compartment cuts,
-    which alone carry the corner fillets, so they stopped at the old top of the dividers.
-    Each corner's section, the square of the radius less its circle, the very section of the corner below, is swept
-    up along the edges of its corner without turning, so it follows the wall in and out and meets the corner below
-    without a step. Rejected, all shown in Fusion: fill pieces extruded up and cut by the lip's inner face (sharp
-    corner in the lip) or by the feet of a stacked bin (undercuts at the top); a rolling ball fillet up the edges (a
-    sickle of 0.36 mm2 left on the corner below, found by hand: the ball can't follow the 0.5 mm of wall under the
-    chamfer, it runs into the chamfer).
-    The sweeps are cut by the feet of a bin stacked on top, so it still stacks. A wall thicker than the lip leaves a level
-    ledge under it, the corner's edges fall in runs there, each swept on its own and only the top one cut by the feet
-    (round 15, p101). A corner whose edges make no path or no runs over a ledge, or that Fusion can't sweep, is filleted
-    instead, see filletRaisedDividerCorner
-    """
-    sketch = raisedCornerSectionsSketch(corners, bottomZ, Dim.length(cornerFilletRadius), targetComponent)
-    sweeps: list[tuple[int, FilletCorner, tuple[float, float], list[adsk.fusion.BRepBody]]] = []
-    toFillet: list[tuple[int, FilletCorner, tuple[float, float]]] = []
-    for (index, (corner, cornerAt)) in enumerate(corners):
-        at = (cornerAt[0].value, cornerAt[1].value)
-        name = f'Raised divider corner {index + 1}'
-        edges = raisedCornerChain(binBody, corner, at, counts, wallThickness, bottomZ.value)
-        # the edges lie in the face of the raised divider, the path runs across its other axis
-        (_, otherAxis) = cornerPlaneAxes(corner, counts[0])
-        inPlane = [
-            (
-                (edge.startVertex.geometry.asArray()[otherAxis], edge.startVertex.geometry.z),
-                (edge.endVertex.geometry.asArray()[otherAxis], edge.endVertex.geometry.z),
-            )
-            for edge in edges
-        ]
-        runs = chainRuns(inPlane)
-        profile = sectionProfile(sketch, at)
-        if runs is None or profile is None:
-            toFillet.append((index, corner, at))
-            continue
-        # A wall thicker than the lip leaves a level ledge under the lip, the chain falls in two runs (round 15, p101).
-        # Each is swept on its own with the corner's section at its lowest point, the one above the ledge moved over by
-        # the ledge and up to it, both by constant offsets: they follow the grid and height parameters like the first
-        bodies = []
-        # sweeps and run section sketches made for the corner, they go again when it is filleted after all
-        made = []
-        for (runIndex, run) in enumerate(runs):
-            runProfile = profile
-            if runIndex > 0:
-                (aside, rise) = runOffset(inPlane, runs, runIndex)
-                shift = Dim.length(aside)
-                runAt = (cornerAt[0] + shift, cornerAt[1]) if otherAxis == 0 else (cornerAt[0], cornerAt[1] + shift)
-                runSketch = raisedCornerSectionsSketch([(corner, runAt)], bottomZ + Dim.length(rise), Dim.length(cornerFilletRadius), targetComponent, name=f'{name} run {runIndex + 1}')
-                made.append(runSketch)
-                runProfile = sectionProfile(runSketch, (runAt[0].value, runAt[1].value))
-                if runProfile is None:
-                    break
-            try:
-                path = targetComponent.features.createPath(commonUtils.objectCollectionFromList([edges[i] for i in run]), False)
-                sweepInput = targetComponent.features.sweepFeatures.createInput(runProfile, path, adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
-                sweepInput.orientation = adsk.fusion.SweepOrientationTypes.ParallelOrientationType
-                sweep = targetComponent.features.sweepFeatures.add(sweepInput)
-            except RuntimeError as error:
-                commonUtils.debugLog(f'{name}: sweep of run {runIndex + 1} failed, {error}')
-                break
-            sweep.name = f'{name} sweep' if len(runs) == 1 else f'{name} sweep {runIndex + 1}'
-            made.append(sweep)
-            if sweep.bodies.count != 1:
-                # one section along one path is one body, anything else isn't the corner
-                commonUtils.debugLog(f'{name}: sweep of run {runIndex + 1} made {sweep.bodies.count} bodies')
-                sweep.deleteMe()
-                break
-            bodies.append(sweep.bodies.item(0))
-        if len(bodies) != len(runs):
-            # the runs swept so far go with their sketches and planes, the corner is filleted as a whole
-            for item in reversed(made):
-                plane = item.referencePlane if isinstance(item, adsk.fusion.Sketch) else None
-                if item.isValid:
-                    item.deleteMe()
-                if plane is not None and plane.isValid:
-                    plane.deleteMe()
-            toFillet.append((index, corner, at))
-            continue
-        sweeps.append((index, corner, at, bodies))
-    if len(sweeps) > 0:
-        # The corners stay sharp at worst, never the bin: a cut or join Fusion fails on leaves their corners to the
-        # fillets. The cutters are kept until the last cut, see createRaisedDividers
-        cutters = createStackedFootCutters(lipInput, targetComponent, name='Raised divider corners foot cutout')
-        rounded: list[adsk.fusion.BRepBody] = []
-        # the corners whose pieces are in rounded
-        joined: list[tuple[int, FilletCorner, tuple[float, float]]] = []
-        # Below a ledge the run stays as it is: the feet of a bin stacked on top can't reach there past the thick wall,
-        # whose corner fillet goes up to the ledge uncut, and cut it ended 0.104 mm under the ledge, a level face of
-        # 0.6 mm2 at every corner of a 3 mm wall (round 15, p101, try B)
-        for (position, (index, corner, at, bodies)) in enumerate(sweeps):
-            # only the top run is cut, a corner goes in only with it, else it's filleted as a whole
-            try:
-                cut = combineUtils.cutBody(
-                    bodies[-1],
-                    commonUtils.objectCollectionFromList(cutters),
-                    targetComponent,
-                    isKeepToolBodies=position < len(sweeps) - 1,
-                    name=f'Raised divider corner {index + 1} foot cut',
-                )
-            except RuntimeError as error:
-                commonUtils.debugLog(f'Raised divider corner {index + 1}: foot cut failed, {error}')
-                for body in bodies:
-                    # no loose pieces of a corner that is filleted
-                    targetComponent.features.removeFeatures.add(body)
-                if position == len(sweeps) - 1:
-                    # the last cut was to use up the cutters, they mustn't stay in the bin (review round 15)
-                    for cutter in cutters:
-                        targetComponent.features.removeFeatures.add(cutter)
-                toFillet.append((index, corner, at))
-                continue
-            # a cut keeping its tools lists them among its bodies too
-            rounded.extend(bodies[:-1])
-            rounded.extend(piece for piece in cut.bodies if all(piece != cutter for cutter in cutters))
-            joined.append((index, corner, at))
-        if len(rounded) > 0:
-            try:
-                combineUtils.joinBodies(
-                    binBody,
-                    commonUtils.objectCollectionFromList(rounded),
-                    targetComponent,
-                    name='Raised divider corners join',
-                )
-            except RuntimeError as error:
-                commonUtils.debugLog(f'Raised divider corners: join failed, {error}')
-                # their pieces go, those corners are filleted, the ones already to be filleted once (review round 15)
-                for piece in rounded:
-                    targetComponent.features.removeFeatures.add(piece)
-                toFillet.extend(joined)
-    for (index, corner, at) in toFillet:
-        filletRaisedDividerCorner(binBody, index, corner, at, counts, wallThickness, bottomZ.value, cornerFilletRadius, targetComponent)
-
-def raisedCornerSectionsSketch(
-    corners: list[tuple[FilletCorner, tuple[Dim, Dim]]],
-    bottomZ: Dim,
-    radius: Dim,
-    targetComponent: adsk.fusion.Component,
-    name: str = 'Raised divider corners',
-) -> adsk.fusion.Sketch:
-    """
-    The section of every corner where the corner fillet below it ends: the square of the radius in the corner less the
-    circle around its inner corner. All in one sketch, each corner placed by dims from the compartment grid, so they
-    follow the grid parameters
-    """
-    planeInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    planeInput.setByOffset(targetComponent.xYConstructionPlane, valueInput(bottomZ))
-    plane = targetComponent.constructionPlanes.add(planeInput)
-    plane.name = f'{name} plane'
-    sketch: adsk.fusion.Sketch = targetComponent.sketches.add(plane)
-    sketch.name = f'{name} sketch'
-    constraints: adsk.fusion.GeometricConstraints = sketch.geometricConstraints
-    dimensions: adsk.fusion.SketchDimensions = sketch.sketchDimensions
-    r = radius.value
-    with sketchUtils.deferSketchCompute(sketch):
-        for (corner, (cornerX, cornerY)) in corners:
-            # into the cell, worked out in the model and turned into the sketch, whose axes may run the other way
-            (dirX, dirY) = (-corner.sideX, -corner.sideY)
-            (x, y, z) = (cornerX.value, cornerY.value, bottomZ.value)
-            def onSketch(pointX, pointY):
-                point = sketch.modelToSketchSpace(adsk.core.Point3D.create(pointX, pointY, z))
-                point.z = 0
-                return point
-            cornerPoint = onSketch(x, y)
-            alongX = onSketch(x + dirX * r, y)
-            alongY = onSketch(x, y + dirY * r)
-            center = onSketch(x + dirX * r, y + dirY * r)
-            # a quarter counterclockwise on the sketch, from the end along x where that turns the right way, else from
-            # the end along y: a negative sweep doesn't go clockwise, it gave arcs on the far side (shown in Fusion)
-            turn = (alongX.x - center.x) * (alongY.y - center.y) - (alongX.y - center.y) * (alongY.x - center.x)
-            arc = sketch.sketchCurves.sketchArcs.addByCenterStartSweep(center, alongX if turn > 0 else alongY, math.pi / 2)
-            (endAlongX, endAlongY) = (arc.startSketchPoint, arc.endSketchPoint) if turn > 0 else (arc.endSketchPoint, arc.startSketchPoint)
-            lineX = sketch.sketchCurves.sketchLines.addByTwoPoints(cornerPoint, endAlongX)
-            lineY = sketch.sketchCurves.sketchLines.addByTwoPoints(lineX.startSketchPoint, endAlongY)
-            constraints.addHorizontal(lineX)
-            constraints.addVertical(lineY)
-            constraints.addTangent(arc, lineX)
-            # the corner and the arc's center both placed from the origin, a center square across from the corner, so
-            # the section can't flip to the other side of the wall or the divider: with the lengths and two tangents
-            # alone that is a solution too, and Fusion took it for some corners (shown in Fusion). The tangent at the
-            # end along x settles the radius, the end along y follows. Sketch distance dimensions are unsigned
-            centerX = cornerX + radius * dirX
-            centerY = cornerY + radius * dirY
-            for (point, value, orientation, textAt) in (
-                (lineX.startSketchPoint, cornerX, adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation, onSketch(x, y - dirY * r)),
-                (lineX.startSketchPoint, cornerY, adsk.fusion.DimensionOrientations.VerticalDimensionOrientation, onSketch(x - dirX * r, y)),
-                (arc.centerSketchPoint, centerX, adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation, onSketch(x + dirX * r, y + dirY * 2 * r)),
-                (arc.centerSketchPoint, centerY, adsk.fusion.DimensionOrientations.VerticalDimensionOrientation, onSketch(x + dirX * 2 * r, y + dirY * r)),
-            ):
-                applyTo(dimensions.addDistanceDimension(sketch.originPoint, point, orientation, textAt, True).parameter, value.abs())
-    return sketch
-
-def sectionProfile(sketch: adsk.fusion.Sketch, cornerAt: tuple[float, float]) -> adsk.fusion.Profile | None:
-    """The section of the corner at cornerAt among the sketch's profiles, the one whose box has it on a corner"""
-    point = sketch.modelToSketchSpace(adsk.core.Point3D.create(cornerAt[0], cornerAt[1], sketch.origin.z))
-    cornerAt = (point.x, point.y)
-    for index in range(sketch.profiles.count):
-        profile = sketch.profiles.item(index)
-        box = profile.boundingBox
-        boxCorners = [(box.minPoint.x, box.minPoint.y), (box.minPoint.x, box.maxPoint.y), (box.maxPoint.x, box.minPoint.y), (box.maxPoint.x, box.maxPoint.y)]
-        if any(abs(x - cornerAt[0]) < 1e-4 and abs(y - cornerAt[1]) < 1e-4 for (x, y) in boxCorners):
-            return profile
-    return None
-
-def filletRaisedDividerCorner(
-    binBody: adsk.fusion.BRepBody,
-    index: int,
-    corner: FilletCorner,
-    cornerAt: tuple[float, float],
-    counts: tuple[int, int],
-    wallThickness: float,
-    bottomZ: float,
-    cornerFilletRadius: float,
-    targetComponent: adsk.fusion.Component,
-):
-    """
-    A corner that can't be swept, rounded by a rolling ball fillet up its edges instead, a hair under the corner
-    fillet's radius: of the same radius both lie on one cylinder and Fusion fails on one side (ASM_INCONS_FACE, shown
-    in Fusion). One Fusion can't close gets a smaller radius, see RAISED_CORNER_FILLET_FALLBACKS, one it can't round
-    at all stays sharp, the bin is still good to print and stack
-    """
-    name = f'Raised divider corner {index + 1} fillet'
-    edges = raisedCornerChain(binBody, corner, cornerAt, counts, wallThickness, bottomZ)
-    if len(edges) == 0:
-        commonUtils.debugLog(f'{name}: no edges found')
-        return
-    radius = cornerFilletRadius - 0.005
-    for factor in RAISED_CORNER_FILLET_FALLBACKS:
-        filletInput = targetComponent.features.filletFeatures.createInput()
-        filletInput.isRollingBallCorner = True
-        filletInput.addConstantRadiusEdgeSet(
-            commonUtils.objectCollectionFromList(edges),
-            adsk.core.ValueInput.createByReal(radius * factor),
-            False,
-        )
-        try:
-            fillet = targetComponent.features.filletFeatures.add(filletInput)
-        except RuntimeError as error:
-            commonUtils.debugLog(f'{name}: fillet of {radius * factor * 10:.2f} mm failed, {error}')
-            continue
-        fillet.name = name
-        return
 
 def createBinLipSupport(
     input: BinBodyGeneratorInput,
