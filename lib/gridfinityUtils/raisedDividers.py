@@ -303,3 +303,16 @@ def raisedSides(pocket: tuple[int, int, int, int], segments: list[DividerSegment
             if segment.line == x + width:
                 sides.add('right')
     return frozenset(sides)
+
+
+def coveredCornerRadius(radius: float, coverA: float, coverB: float) -> float:
+    """
+    The largest fillet, at most radius, of a compartment corner that lies wholly under two strips covering it from
+    above, coverA and coverB wide from the corner's two faces (round 50, decided option a): a fillet of radius r is
+    the square of r less the circle around its centre, covered when r <= min(a, b) or when its point farthest from both
+    faces, inside both strips' reach, keeps (r - a)^2 + (r - b)^2 <= r^2, so r <= a + b + sqrt(2ab). Beside a ridge the
+    compartment's corner fillet reached past the ridge's tip, the compartments top clearance cut it flat: level faces
+    of 0.10 mm2 at every divider meeting the wall (shown in Fusion)
+    """
+    (a, b) = (max(0.0, coverA), max(0.0, coverB))
+    return min(radius, a + b + (2 * a * b) ** 0.5)

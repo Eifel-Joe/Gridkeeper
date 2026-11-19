@@ -22,6 +22,24 @@ def getInnerCutoutWallFaces(
     (left, right) = faceUtils.getNormalFaceExtremes(innerCutout.faces, 'x')
     return {scoopSides.FRONT: front, scoopSides.BACK: back, scoopSides.LEFT: left, scoopSides.RIGHT: right}
 
+def cornerFilletGroups(body: adsk.fusion.BRepBody, edges: list, radius: float, cornerRadii: dict | None) -> list[tuple[float, list]]:
+    """
+    The vertical edges of a cavity cutter by the radius of their corner: (left or right, front or back) as the keys of
+    cornerRadii, radius for corners not in it; edges of a corner of radius 0 are left out (round 50)
+    """
+    if not cornerRadii:
+        return [(radius, edges)]
+    box = body.boundingBox
+    (midX, midY) = ((box.minPoint.x + box.maxPoint.x) / 2, (box.minPoint.y + box.maxPoint.y) / 2)
+    groups: dict[float, list] = {}
+    for edge in edges:
+        point = edge.startVertex.geometry
+        corner = (scoopSides.LEFT if point.x < midX else scoopSides.RIGHT, scoopSides.FRONT if point.y < midY else scoopSides.BACK)
+        edgeRadius = round(cornerRadii.get(corner, radius), 6)
+        if edgeRadius > const.DEFAULT_FILTER_TOLERANCE * 10:
+            groups.setdefault(edgeRadius, []).append(edge)
+    return sorted(groups.items(), key=lambda item: -item[0])
+
 def createGridfinityBinBodyCutout(
     input: BinBodyCutoutGeneratorInput,
     targetComponent: adsk.fusion.Component,
@@ -82,20 +100,22 @@ def createGridfinityBinBodyCutout(
             targetComponent,
             name=f'{name} scoop',
         )
-    # fillet inner cutout
+    # fillet inner cutout, corners of their own radius each in a fillet of their own (round 50), none where it's 0
     innerCutoutVerticalFaces = faceUtils.getVerticalEdges(innerCutoutBody.faces)
-    filletUtils.createFillet(
-        innerCutoutVerticalFaces,
-        input.filletRadius,
-        True,
-        targetComponent,
-        name=f'{name} corner fillets',
-    )
+    for (radius, edges) in cornerFilletGroups(innerCutoutBody, innerCutoutVerticalFaces, input.filletRadius, input.cornerRadii):
+        filletUtils.createFillet(
+            edges,
+            radius,
+            True,
+            targetComponent,
+            name=f'{name} corner fillets' if radius == input.filletRadius else f'{name} corner fillets {radius * 10:.2f} mm',
+        )
     # the bottom fillet runs along the floor from the first wall without a scoop, the back as before round 48, through
     # the corners. With more than one scoop the floor edges stay sharp, Fusion can't fillet a chain running into two
     # scoops, see scoopSides.bottomFilletSides
     plainSides = scoopSides.bottomFilletSides(input.scoopSides)
-    if input.hasBottomFillet and len(plainSides) > 0:
+    floorRadius = scoopSides.floorFilletRadius(input.filletRadius, input.cornerRadii)
+    if input.hasBottomFillet and len(plainSides) > 0 and floorRadius > const.DEFAULT_FILTER_TOLERANCE * 10:
         # recalculate faces after fillet
         wallFaces = getInnerCutoutWallFaces(innerCutoutBody)
         bottomEdges = []
@@ -109,7 +129,7 @@ def createGridfinityBinBodyCutout(
 
         filletUtils.createFillet(
             bottomEdges,
-            input.filletRadius,
+            floorRadius,
             True,
             targetComponent,
             name=f'{name} bottom fillet',

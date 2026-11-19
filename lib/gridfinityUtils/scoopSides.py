@@ -107,6 +107,11 @@ def cavityInsets(gridInsets: dict, trims: dict) -> dict:
     trimmed. A wall thicker than the scoop inset has no trim, its cavities start at the wall (review round 50)"""
     return {side: gridInsets[side] + trims[side] if _isTrimmed(trims[side]) else gridInsets[side] for side in SIDES_ORDER}
 
+def floorFilletRadius(radius: float, cornerRadii: dict | None) -> float:
+    """The bottom fillet of a cavity, no rounder than its tightest corner: one running into a corner of a smaller radius
+    found no edge in Fusion (round 50); 0 with a sharp corner"""
+    return min([radius] + list((cornerRadii or {}).values()))
+
 def trimsKeepAlike(trims: dict, counts: tuple[int, int]) -> bool:
     """Whether every compartment of the grid is trimmed alike, so they can be patterned: a trimmed wall is shared by all
     of them, one column for the left and right, one row for the front and back"""

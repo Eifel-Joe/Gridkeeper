@@ -196,6 +196,11 @@ distance − that depth), an outer wall under a full lip its support (lip inner 
 Two strips a and b cover a corner fillet of radius r when r ≤ min(a, b) or (r − a)² + (r − b)² ≤ r², so
 r = min(corner radius, a + b + √(2ab)). Corners away from ridges keep their radius. A corner with nothing to cover it
 stays sharp.
+Settled in Fusion: a compartment beside a ridge takes the tightest of these radii at all four corners and for its
+floor fillet. Corners of different radii broke the floor's outline beside a scoop into edges Fusion found no fillet
+for (`FILLET_NO_EDGE_FOUND`, also with the floor fillet at the tightest radius); with one radius per compartment, as
+before, every cavity builds. The reported bin: 2.25 mm beside a ridge, 1.40 mm where a compartment scoop starts the
+cavity at the ridge's tip, no ledge left.
 
 # Points p651–p653 (taken into round 50, 2026-11-19)
 

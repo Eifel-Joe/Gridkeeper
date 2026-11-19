@@ -13,6 +13,8 @@ class BinBodyCutoutGeneratorInput():
         self.tabLength = 1
         self.tabWidth = const.BIN_TAB_WIDTH
         self.hasBottomFillet = True
+        # radii of single corners, (left or right, front or back), the fillet radius for the others (round 50)
+        self.cornerRadii = None
         self.originX = None
         self.originY = None
         self.originZ = None

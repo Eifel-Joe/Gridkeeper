@@ -297,3 +297,11 @@ def test_the_cavities_start_at_the_trimmed_grid_and_never_inside_a_thicker_wall(
     # without keeping the grid as round 48: the scoop inset, also inside a thicker wall
     (gridInsets, trims) = scoops.gridTrims(frozenset({FRONT}), 0.3, 0.19, keepGrid=False)
     assert scoops.cavityInsets(gridInsets, trims)[FRONT] == pytest.approx(0.19)
+
+
+def test_the_floor_fillet_is_no_rounder_than_the_tightest_corner():
+    """Round 50: a bottom fillet of 2.55 mm running into a corner of 2.25 mm failed in Fusion (FILLET_NO_EDGE_FOUND)"""
+    assert scoops.floorFilletRadius(0.255, None) == pytest.approx(0.255)
+    assert scoops.floorFilletRadius(0.255, {('right', 'front'): 0.2246, ('left', 'back'): 0.255}) == pytest.approx(0.2246)
+    # sharp corners, a sharp floor
+    assert scoops.floorFilletRadius(0.255, {('right', 'front'): 0, ('left', 'back'): 0.2}) == 0

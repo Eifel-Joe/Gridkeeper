@@ -344,3 +344,21 @@ def test_a_ridge_cut_off_a_little_keeps_shorter_chamfers():
     (depth, chamferLow, chamferHigh) = raised.ridgeBox(FULL_TIP, 0.032, 0.088, tipLift=-0.12, minDepth=0.05, maxDepth=0.3)
     cut = 0.12 + FULL_TIP - 0.032 - 0.3
     assert (depth, chamferLow, chamferHigh) == pytest.approx((0.3, FULL_TIP - 0.032 - cut, FULL_TIP - 0.088 - cut))
+
+
+# Round 50, decided option a: a compartment corner beside a ridge is rounded only as far as what covers it from above
+def test_a_corner_fillet_within_both_cover_strips_keeps_its_radius():
+    assert raised.coveredCornerRadius(0.255, 0.28, 0.3) == pytest.approx(0.255)
+
+
+def test_a_corner_fillet_is_limited_to_what_its_two_strips_cover():
+    # a ridge's 1.97 mm on one side, a full lip's support 1.4 mm on the other
+    radius = raised.coveredCornerRadius(1.0, 0.197, 0.14)
+    assert radius == pytest.approx(0.197 + 0.14 + (2 * 0.197 * 0.14) ** 0.5)
+    # the fillet's farthest point from both faces then lies on the corner of the strips
+    assert (radius - 0.197) ** 2 + (radius - 0.14) ** 2 == pytest.approx(radius ** 2)
+
+
+def test_a_corner_with_one_strip_only_gets_that_strip():
+    assert raised.coveredCornerRadius(0.255, 0.077, 0) == pytest.approx(0.077)
+    assert raised.coveredCornerRadius(0.255, 0, 0) == 0

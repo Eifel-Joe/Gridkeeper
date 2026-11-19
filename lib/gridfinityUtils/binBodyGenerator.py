@@ -16,7 +16,7 @@ from . import cullenect, binLabelLayout
 from .cullenectSocketGenerator import createCullenectSocket, SocketPlacement
 from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput, LIP_TYPE_FULL
 from .binBodyLipGenerator import createGridfinityBinBodyLip, createStackedFootCutters, createLipSupport, lipInnerInset
-from .raisedDividers import DividerSegment, FilletCorner, filletCorners, isCornerChainEdge, chainRuns, runOffset, cornerPlaneAxes, ridgeBox, raisedSides
+from .raisedDividers import DividerSegment, FilletCorner, filletCorners, isCornerChainEdge, chainRuns, runOffset, cornerPlaneAxes, ridgeBox, raisedSides, coveredCornerRadius
 from .dim import Dim, valueInput, applyTo
 from ... import config
 
@@ -82,6 +82,8 @@ def createGridfinityBinBody(
     bodiesToSubtract: list[adsk.fusion.BRepBody] = []
     raisedCorners: list[tuple[FilletCorner, tuple[Dim, Dim]]] = []
     raisedCornersBottomZ = None
+    # the support under a full lip, it covers compartment corners from above (round 50)
+    lipSupport = None
     # hollow tabs are cut once joined, the walls behind them close the hollows
     tabHollowCuts: list[adsk.fusion.BRepBody] = []
 
@@ -250,6 +252,57 @@ def createGridfinityBinBody(
                 gridTrims,
             )
 
+        # how deep under the body top the cavities' top is cut: the compartments top clearance, see below
+        clearanceDepth = input.tabTopOffset if len(input.compartments) > 1 and input.tabTopOffset > 0 else 0
+        cavityCornerRadius = compartmentCutoutFilletRadius(input.binCornerFilletRadius - input.wallThickness)
+
+        def sideCover(compartment: BinBodyCompartmentDefinition, side: str) -> float | None:
+            """How wide a strip from the compartment's side covers its corners from above where the cavity's top is
+            cut, None for a side that limits nothing (round 50, decided option a, see raisedDividers.coveredCornerRadius)"""
+            (column, row, columns, rows) = (compartment.positionX, compartment.positionY, compartment.width, compartment.length)
+            line = {scoopSides.LEFT: ('x', column), scoopSides.RIGHT: ('x', column + columns),
+                    scoopSides.FRONT: ('y', row), scoopSides.BACK: ('y', row + rows)}[side]
+            if side in ridgeSides(compartment):
+                if side in compartment.scoopSides:
+                    # the cavity starts at the ridge's tip
+                    return 0
+                (cellX, cellY, cellWidth, cellLength) = compartmentCell(compartment)
+                face = {scoopSides.LEFT: cellX, scoopSides.RIGHT: cellX + cellWidth,
+                        scoopSides.FRONT: cellY, scoopSides.BACK: cellY + cellLength}[side]
+                overhang = ridgeTip.value - abs((gridLineAt(*line) - face).value)
+                return overhang - (clearanceDepth if input.lipType != LIP_TYPE_FULL else 0)
+            isOuter = line[1] == 0 or line[1] == (input.compartmentsByX if line[0] == 'x' else input.compartmentsByY)
+            if not isOuter:
+                return None
+            if side in outerScoopWalls or lipSupport is None or clearanceDepth > const.BIN_LIP_SUPPORT_WALL_HEIGHT:
+                return 0
+            # a full lip's support, straight down from its tip
+            return (scoopInset - wall).value
+
+        def cornerRadii(compartment: BinBodyCompartmentDefinition) -> dict | None:
+            """
+            The corners of a compartment beside a ridge, rounded as far as covered (round 50, decided option a), all four
+            alike with the tightest: corners of different radii broke the floor's outline beside a scoop into edges
+            Fusion found no fillet for (shown in Fusion, the floor fillet at the tightest radius too)
+            """
+            ridges = ridgeSides(compartment)
+            if len(ridges) == 0:
+                return None
+            radii = {}
+            for sideX in (scoopSides.LEFT, scoopSides.RIGHT):
+                for sideY in (scoopSides.FRONT, scoopSides.BACK):
+                    if sideX not in ridges and sideY not in ridges:
+                        continue
+                    covers = [sideCover(compartment, side) for side in (sideX, sideY)]
+                    if None in covers:
+                        # a lowered divider beside: its top takes the fillet's
+                        continue
+                    radii[(sideX, sideY)] = coveredCornerRadius(cavityCornerRadius, covers[0], covers[1])
+            if len(radii) == 0:
+                return None
+            tightest = min(radii.values())
+            return {(sideX, sideY): tightest for sideX in (scoopSides.LEFT, scoopSides.RIGHT) for sideY in (scoopSides.FRONT, scoopSides.BACK)}
+
         def tabPlacement(compartment: BinBodyCompartmentDefinition, compartmentX: Dim, compartmentY: Dim, compartmentLength: Dim) -> tuple[Dim, Dim, Dim]:
             """X and y of the tab's back top corner, along the compartment's back wall or, on a raised divider, at its
             ridge's tip (round 50, decided: the ridge would cover a Cullenect socket's back), and its length"""
@@ -315,6 +368,7 @@ def createGridfinityBinBody(
                 tabOpenings,
                 targetComponent,
                 name=compartmentName,
+                cornerRadii=cornerRadii(compartment),
             )
             if useCompartmentPattern:
                 # These cavities are identical and disjoint, so copy their cut faces instead
@@ -1059,6 +1113,7 @@ def createCompartmentCutout(
         targetComponent: adsk.fusion.Component,
         *,
         name: str,
+        cornerRadii: dict | None = None,
     ) -> adsk.fusion.BRepBody:
 
     innerCutoutFilletRadius = compartmentCutoutFilletRadius(cornerFilletRadius)
@@ -1074,6 +1129,7 @@ def createCompartmentCutout(
     innerCutoutInput.scoopMaxRadius = scoopMaxRadius
     innerCutoutInput.filletRadius = innerCutoutFilletRadius
     innerCutoutInput.hasBottomFillet = hasBottomFillet
+    innerCutoutInput.cornerRadii = cornerRadii
 
     return createGridfinityBinBodyCutout(innerCutoutInput, targetComponent, name=name)
 
@@ -1095,6 +1151,7 @@ def createCompartment(
         targetComponent: adsk.fusion.Component,
         *,
         name: str,
+        cornerRadii: dict | None = None,
     ) -> tuple[list[adsk.fusion.BRepBody], list[adsk.fusion.BRepBody], TabHollowCuts]:
     """Bodies to join, bodies to cut, then with a hollow wall thickness, bodies hollowing out the tab once joined
     and opening it through the walls given"""
@@ -1117,6 +1174,7 @@ def createCompartment(
         True,
         targetComponent,
         name=f'{name} cavity',
+        cornerRadii=cornerRadii,
     )
     bodiesToSubtract.append(innerCutoutBody)
 
