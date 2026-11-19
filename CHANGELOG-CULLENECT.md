@@ -6,6 +6,43 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased
 
+### Raised dividers with a pointed top, and fixes around scoops (round 50)
+
+- **Dividers up to the top stay on their grid lines beside a scoop wall:** a wall with a scoop starts the
+  compartments along it at the lip's inner edge. Until now the whole compartment grid moved with it, the dividers
+  lay up to 1.2 mm off their grid lines under a full lip (0.75 mm under a light one), and the feet of a bin stacked
+  on top cut their raised part away on one side: narrow ridges, steps and gaps in the lip at every divider (p650).
+  This already happened with the bin's front scoop and became easy to reach with the scoops per compartment of
+  round 48.
+  - Decided: with dividers up to the top the grid is laid out from the walls as without a scoop, and only the
+    compartments along a scoop wall are shorter by its inset (1.4 mm under a full lip, 0.7 mm under a light lip with a
+    1.2 mm wall). Bins without raised dividers keep the evenly spaced compartments of round 48.
+- **Raised dividers end in the lip's top shape:** decided, a divider on a grid line goes straight up to the lip's top
+  as thick as it is and no longer ends flat with two right angles (round 8). Under an untrimmed lip its top is a roof
+  with the lip's 45 degree slopes, its ridge at the lip's top; under a trimmed lip a flat top at the trimmed top,
+  chamfered at 45 degrees on both sides by 0.3 mm (0.6 mm flat on a 1.2 mm divider, as wide as the lip's crown).
+  The feet of a bin stacked on top keep their air. Saved bins rebuild with it.
+  - The corners where a raised divider meets a wall or another divider are rounded from the compartment's corner up
+    over the wall and the lip to the top, as in round 8 (p83). Under a full lip the rounding starts where the lip's
+    support leaves the wall, which also takes away the support's kinks beside the divider.
+  - Two other shapes were built and dropped: the lip's whole profile and the lip's top contour on both sides of a
+    divider, both wider than the divider.
+- **No gap between a raised divider and its wall:** at a scoop wall the raised divider ended half a wall short of the
+  cavity at the lip's inner edge, and under an untrimmed lip at the wall's middle; near the top of the lip, which is
+  thinner there, a gap of up to 1.1 mm was left (already so before round 50). The raised dividers now reach the outer
+  walls up to 0.1 mm under their outer face, shaped there by the feet of a stacked bin like the lip.
+- **Shape tests check for gaps:** every bin case with compartments is cut in the plane of each divider and beside it;
+  a gap of 0.2 mm or more between a divider and its wall at any height fails the case.
+- **No ledges where raised dividers cross (p651):** the compartment corners there are rounded up to the top like
+  those at the walls.
+- **A bin one unit high with a scoop builds (p652):** the floor fillet beside a scoop is at most the cavity's depth
+  less 0.1 mm; at 1 mm depth the full 2.55 mm failed in Fusion.
+- **No ledge between two scoop walls (p653):** a cavity corner where two scoop walls meet is concentric with the lip's
+  inner corner (1.15 mm under a full lip, 1.85 mm under a light one, with the default 1.2 mm wall) instead of leaving a level face of 1.1 mm².
+- **Shape test cases:** seven new bins (raised dividers beside scoop walls under a full and a light lip, crossing
+  raised dividers, a bin one unit high with a scoop, two scoop walls with raised dividers); all sixteen cases with
+  raised dividers and four round 48 cases with two scoop walls stored anew.
+
 ### Box small parts kept on disk (round 49)
 
 - **The first box after Fusion starts is fast too:** latch, hinge and handle pin, once drawn, are also kept as .smt

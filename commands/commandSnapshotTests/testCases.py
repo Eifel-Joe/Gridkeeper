@@ -453,3 +453,48 @@ def colorProblems(appearanceName: str, base: tuple[str, str | None], parts: list
         problems.append(f'{base[0]} has the label color')
     problems += [f'{name} is {appearance}, not {appearanceName}' for (name, appearance) in parts if appearance != appearanceName]
     return problems
+
+# Round 50: a divider reaches its wall without a gap. Checked on sections of the built bin, closed loops of points;
+# a line at a level crosses them where it goes in and out of the material
+def lineCrossings(loops: list[list[tuple[float, float]]], lineAxis: int, value: float) -> list[float]:
+    """Where a line, coordinate lineAxis of a point at value, crosses the loops, along the other coordinate, sorted.
+    A segment counts from its lower end on, not at its upper one, so a corner on the line counts once or not at all"""
+    along = 1 - lineAxis
+    crossings = []
+    for loop in loops:
+        for (p, q) in zip(loop, loop[1:]):
+            (low, high) = (p, q) if p[lineAxis] <= q[lineAxis] else (q, p)
+            if low[lineAxis] <= value < high[lineAxis]:
+                share = (value - low[lineAxis]) / (high[lineAxis] - low[lineAxis])
+                crossings.append(low[along] + (high[along] - low[along]) * share)
+    return sorted(crossings)
+
+def materialIntervals(crossings: list[float]) -> list[tuple[float, float]]:
+    """The stretches of material between the crossings of a line coming from outside"""
+    return [(crossings[index], crossings[index + 1]) for index in range(0, len(crossings) - 1, 2)]
+
+# how close to the wall's face a stretch of material counts as the wall, in the sections' unit (cm in Fusion: 0.1 mm)
+WALL_FACE_TOLERANCE = 0.01
+
+def wallGaps(loops: list[list[tuple[float, float]]], wallFace: float, reach: float, levels: list[float], minWidth: float = 0) -> list[tuple[float, float]]:
+    """
+    The levels of a section, (along, up), at which the material going in from a wall's outer face at wallFace stops and
+    starts again within reach: a gap between the wall and a divider in the section's plane, with its width. Inward is
+    towards the rest of the section. A gap narrower than minWidth isn't one: a print can't show it, and the rounded
+    corner of a stacked foot leaves such a sliver of its room between the lip and a ridge just over the body top
+    """
+    gaps = []
+    points = [point[0] for loop in loops for point in loop]
+    inward = 1 if wallFace <= sorted(points)[len(points) // 2] else -1
+    for level in levels:
+        stretches = sorted(
+            tuple(sorted(((start - wallFace) * inward, (end - wallFace) * inward)))
+            for (start, end) in materialIntervals(lineCrossings(loops, 1, level))
+        )
+        wall = next((stretch for stretch in stretches if stretch[0] <= WALL_FACE_TOLERANCE and stretch[1] >= 0), None)
+        if wall is None:
+            continue
+        following = [stretch for stretch in stretches if stretch[0] > wall[1] + max(WALL_FACE_TOLERANCE, minWidth) and stretch[0] <= reach]
+        if following:
+            gaps.append((level, following[0][0] - wall[1]))
+    return gaps

@@ -1,0 +1,10 @@
+{
+    "description": "2x3x5 bin under a full lip with dividers up to the top, 3 compartments along Y and the bin's front scoop: the dividers stay on the grid lines, the front compartment takes the scoop wall's inset (round 50, p650)",
+    "generator": "bin",
+    "settings": {
+        "hasDividersToTop": true,
+        "compartmentsY": 3,
+        "lipType": "Full",
+        "hasScoop": true
+    }
+}

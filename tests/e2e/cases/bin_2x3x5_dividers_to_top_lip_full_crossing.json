@@ -1,0 +1,10 @@
+{
+    "description": "2x3x5 bin under a full lip with dividers up to the top and 2x3 compartments, the ridges crossing: no level face where they cross (round 50, p651)",
+    "generator": "bin",
+    "settings": {
+        "hasDividersToTop": true,
+        "lipType": "Full",
+        "compartmentsX": 2,
+        "compartmentsY": 3
+    }
+}

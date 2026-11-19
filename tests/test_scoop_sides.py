@@ -4,6 +4,7 @@ the label tab and is locked while the tab is on.
 """
 
 import os
+import pytest
 import importlib.util
 
 
@@ -204,3 +205,111 @@ def test_bottom_fillet_only_beside_a_single_scoop():
     assert scoops.bottomFilletSides(frozenset({FRONT, LEFT, RIGHT})) == []
     assert scoops.bottomFilletSides(frozenset({FRONT, LEFT})) == []
     assert scoops.bottomFilletSides(frozenset({FRONT, BACK, LEFT, RIGHT})) == []
+
+# Round 50, p650: with dividers up to the top the compartment grid keeps to the grid lines beside a scoop wall, the
+# outer row or column takes the scoop wall's inset. In cm: 1.2 mm wall, full lip inner inset 2.6 mm
+WALL = 0.12
+FULL_INSET = 0.26
+
+
+def test_without_keeping_the_grid_a_scoop_wall_moves_the_grid_as_in_round_48():
+    (gridInsets, trims) = scoops.gridTrims(frozenset({FRONT}), WALL, FULL_INSET, keepGrid=False)
+    assert gridInsets == {BACK: WALL, LEFT: WALL, RIGHT: WALL, FRONT: FULL_INSET}
+    assert trims == {BACK: 0, LEFT: 0, RIGHT: 0, FRONT: 0}
+
+
+def test_keeping_the_grid_lays_it_out_from_the_walls_and_trims_the_scoop_wall():
+    (gridInsets, trims) = scoops.gridTrims(frozenset({FRONT, RIGHT}), WALL, FULL_INSET, keepGrid=True)
+    assert gridInsets == {BACK: WALL, LEFT: WALL, RIGHT: WALL, FRONT: WALL}
+    assert trims[FRONT] == pytest.approx(0.14)
+    assert trims[RIGHT] == pytest.approx(0.14)
+    assert trims[BACK] == 0 and trims[LEFT] == 0
+
+
+def test_only_the_outer_row_along_a_scoop_wall_is_trimmed():
+    trims = {FRONT: 0.14, BACK: 0, LEFT: 0, RIGHT: 0}
+    # a 2x3 grid, cells 4 cm by 4 cm, compartment at column 1, row 0 and one at row 1
+    (x, y, width, length) = scoops.trimmedCavity(4.2, 0.12, 4.0, 4.0, (1, 0), (1, 1), (2, 3), trims)
+    assert (x, y, width, length) == pytest.approx((4.2, 0.26, 4.0, 3.86))
+    assert scoops.trimmedCavity(4.2, 4.24, 4.0, 4.0, (1, 1), (1, 1), (2, 3), trims) == pytest.approx((4.2, 4.24, 4.0, 4.0))
+
+
+def test_a_compartment_over_all_rows_is_trimmed_at_both_ends():
+    trims = {FRONT: 0.14, BACK: 0.07, LEFT: 0.1, RIGHT: 0.2}
+    (x, y, width, length) = scoops.trimmedCavity(0.12, 0.12, 8.0, 12.0, (0, 0), (2, 3), (2, 3), trims)
+    assert (x, y, width, length) == pytest.approx((0.22, 0.26, 7.7, 11.79))
+
+
+def test_compartments_stay_alike_for_the_pattern_only_when_every_one_touches_the_trimmed_walls():
+    none = {FRONT: 0, BACK: 0, LEFT: 0, RIGHT: 0}
+    front = {**none, FRONT: 0.14}
+    left = {**none, LEFT: 0.14}
+    assert scoops.trimsKeepAlike(none, (2, 3))
+    # a single row: every compartment touches the front wall
+    assert scoops.trimsKeepAlike(front, (3, 1))
+    assert not scoops.trimsKeepAlike(front, (2, 3))
+    assert scoops.trimsKeepAlike(left, (1, 3))
+    assert not scoops.trimsKeepAlike(left, (2, 1))
+
+
+def test_the_grid_trims_work_on_dims():
+    """The generator places cavities with Dims, which take no bare 0 in a sum"""
+    from tests.test_dim import Dim
+    wall = Dim.length(WALL)
+    (gridInsets, trims) = scoops.gridTrims(frozenset({FRONT}), wall, Dim.length(FULL_INSET), keepGrid=True)
+    assert gridInsets[FRONT].value == pytest.approx(WALL)
+    (x, y, width, length) = scoops.trimmedCavity(wall, wall, Dim.length(4.0), Dim.length(4.0), (0, 0), (1, 1), (2, 3), trims)
+    assert (x.value, y.value, width.value, length.value) == pytest.approx((WALL, FULL_INSET, 4.0, 3.86))
+    assert not scoops.trimsKeepAlike(trims, (2, 3))
+
+
+def test_the_cavities_start_at_the_trimmed_grid_and_never_inside_a_thicker_wall():
+    """The compartments top clearance spans the cavities: from the scoop inset where trimmed, from the wall where the
+    wall is thicker than the inset (review round 50: a 3 mm wall under a light lip, 1.9 mm inset, got a step cut 1.1 mm
+    into the front wall)"""
+    (gridInsets, trims) = scoops.gridTrims(frozenset({FRONT}), 0.12, FULL_INSET, keepGrid=True)
+    assert scoops.cavityInsets(gridInsets, trims)[FRONT] == pytest.approx(FULL_INSET)
+    assert scoops.cavityInsets(gridInsets, trims)[BACK] == pytest.approx(0.12)
+    (gridInsets, trims) = scoops.gridTrims(frozenset({FRONT}), 0.3, 0.19, keepGrid=True)
+    assert scoops.cavityInsets(gridInsets, trims)[FRONT] == pytest.approx(0.3)
+    # without keeping the grid as round 48: the scoop inset, also inside a thicker wall
+    (gridInsets, trims) = scoops.gridTrims(frozenset({FRONT}), 0.3, 0.19, keepGrid=False)
+    assert scoops.cavityInsets(gridInsets, trims)[FRONT] == pytest.approx(0.19)
+
+
+def test_the_floor_fillet_is_no_rounder_than_the_tightest_corner():
+    """Round 50: a bottom fillet of 2.55 mm running into a corner of 2.25 mm failed in Fusion (FILLET_NO_EDGE_FOUND)"""
+    assert scoops.floorFilletRadius(0.255, None) == pytest.approx(0.255)
+    assert scoops.floorFilletRadius(0.255, {('right', 'front'): 0.2246, ('left', 'back'): 0.255}) == pytest.approx(0.2246)
+    # sharp corners, a sharp floor
+    assert scoops.floorFilletRadius(0.255, {('right', 'front'): 0, ('left', 'back'): 0.2}) == 0
+
+
+# p652 (round 50): a cavity with a scoop shallower than its corner radius, 1 mm in a bin one unit high
+def test_the_floor_fillet_beside_a_scoop_fits_the_cavity_depth():
+    # 2.55 mm failed in Fusion at 1.0 mm depth (ASM_BL_CAP_COMPLEX), 0.9 mm built
+    assert scoops.scoopFloorRadius(0.255, 0.1, frozenset({FRONT}), margin=0.01) == pytest.approx(0.1 - 0.01)
+    # deep enough, or without a scoop, the radius stays
+    assert scoops.scoopFloorRadius(0.255, 2.9, frozenset({FRONT}), margin=0.01) == pytest.approx(0.255)
+    assert scoops.scoopFloorRadius(0.255, 0.1, frozenset(), margin=0.01) == pytest.approx(0.255)
+
+
+# p653 (round 50): a cavity corner between two scoop walls follows the lip's inner corner there
+def test_a_corner_between_two_scoop_walls_is_concentric_with_the_lip():
+    # bin corner 4 mm, full lip inset 2.6 mm: 1.4 mm instead of 2.55 mm
+    assert scoops.scoopCornerRadius(0.255, 0.4, 0.26) == pytest.approx(0.14)
+    # a light lip's 1.9 mm inset leaves 2.1 mm
+    assert scoops.scoopCornerRadius(0.255, 0.4, 0.19) == pytest.approx(0.21)
+    # never rounder than the compartment's corners
+    assert scoops.scoopCornerRadius(0.255, 0.4, 0.1) == pytest.approx(0.255)
+
+
+def test_only_corners_between_two_trimmed_scoop_walls_follow_the_lip():
+    walls = frozenset({FRONT, LEFT})
+    assert scoops.scoopWallCorners(walls, (0, 0), (1, 1), (2, 3)) == {(LEFT, FRONT)}
+    # a compartment along one of them only, or a bin with one scoop wall
+    assert scoops.scoopWallCorners(walls, (1, 0), (1, 1), (2, 3)) == set()
+    assert scoops.scoopWallCorners(frozenset({FRONT}), (0, 0), (2, 3), (2, 3)) == set()
+    # a compartment over the whole grid has all four corners on the walls
+    assert scoops.scoopWallCorners(frozenset({FRONT, BACK, LEFT, RIGHT}), (0, 0), (2, 3), (2, 3)) == {
+        (LEFT, FRONT), (LEFT, BACK), (RIGHT, FRONT), (RIGHT, BACK)}

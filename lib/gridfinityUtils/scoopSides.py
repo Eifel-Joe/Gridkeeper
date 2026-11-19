@@ -40,6 +40,105 @@ def wallInsets(sides: frozenset, wall, scoopInset) -> dict:
     """
     return {side: scoopInset if side in sides else wall for side in SIDES_ORDER}
 
+def gridTrims(sides: frozenset, wall, scoopInset, *, keepGrid: bool) -> tuple[dict, dict]:
+    """
+    Where the compartment grid starts in from each wall, and how much shorter the cavities along each wall are, see
+    trimmedCavity. As in round 48 the grid starts at the scoop inset on a scoop wall, so every compartment stays alike.
+    Round 50, p650: with dividers up to the top that shifted the grid off the grid lines, up to 1.2 mm under a full lip,
+    and the feet of a bin stacked on top cut the raised dividers away on one side. Decided: keepGrid lays the grid out
+    from the walls, as without a scoop, and the compartments along a scoop wall take its inset. Rejected: a scoop that
+    stops at the wall (a step at its top), raised parts set on the grid line over shifted dividers (an offset in the
+    divider). Works on numbers and Dims alike
+    """
+    if not keepGrid:
+        return (wallInsets(sides, wall, scoopInset), {side: 0 for side in SIDES_ORDER})
+    return (
+        {side: wall for side in SIDES_ORDER},
+        {side: (scoopInset - wall if side in sides else 0) for side in SIDES_ORDER},
+    )
+
+def trimmedCavity(x, y, width, length, position: tuple[int, int], size: tuple[int, int], counts: tuple[int, int], trims: dict) -> tuple:
+    """
+    The cavity of a compartment from its cell in the grid, x, y, width and length: shortened on each side it shares
+    with a trimmed wall, see gridTrims. position and size in grid cells, counts the cells of the grid
+    """
+    (column, row) = position
+    (columns, rows) = size
+    # untrimmed sides add nothing, a Dim takes no bare 0 in a sum
+    touched = {
+        LEFT: column == 0,
+        RIGHT: column + columns == counts[0],
+        FRONT: row == 0,
+        BACK: row + rows == counts[1],
+    }
+    cut = {side: trims[side] for side in SIDES_ORDER if touched[side] and _isTrimmed(trims[side])}
+    if LEFT in cut:
+        x = x + cut[LEFT]
+        width = width - cut[LEFT]
+    if RIGHT in cut:
+        width = width - cut[RIGHT]
+    if FRONT in cut:
+        y = y + cut[FRONT]
+        length = length - cut[FRONT]
+    if BACK in cut:
+        length = length - cut[BACK]
+    return (x, y, width, length)
+
+def _isTrimmed(trim) -> bool:
+    return (trim.value if hasattr(trim, 'value') else trim) > 0
+
+
+def cavityInsets(gridInsets: dict, trims: dict) -> dict:
+    """Where the cavities start in from each wall, see gridTrims and trimmedCavity: the grid, in by the trim where
+    trimmed. A wall thicker than the scoop inset has no trim, its cavities start at the wall (review round 50)"""
+    return {side: gridInsets[side] + trims[side] if _isTrimmed(trims[side]) else gridInsets[side] for side in SIDES_ORDER}
+
+def floorFilletRadius(radius: float, cornerRadii: dict | None) -> float:
+    """The bottom fillet of a cavity, no rounder than its tightest corner: one running into a corner of a smaller radius
+    found no edge in Fusion (round 50); 0 with a sharp corner"""
+    return min([radius] + list((cornerRadii or {}).values()))
+
+def scoopFloorRadius(radius, depth, sides: frozenset, *, margin):
+    """
+    The floor fillet of a cavity with a scoop, at most its depth less the scoop's top margin (p652, round 50): in a bin
+    one height unit high the cavity is 1.0 mm deep, the floor fillet of 2.55 mm beside a scoop failed in Fusion
+    (ASM_BL_CAP_COMPLEX), at 0.9 mm it builds. Limiting the scoop instead made the corner fillets fail. A cavity
+    without a scoop keeps its radius, its floor fillet builds. Works on numbers
+    """
+    if len(sides) == 0 or depth - margin >= radius:
+        return radius
+    return depth - margin
+
+def scoopCornerRadius(radius, binCornerRadius, scoopInset):
+    """
+    A cavity corner between two scoop walls, concentric with the lip's inner corner there (p653, round 50): both walls
+    start the cavity at the lip's inner edge, the corner of the compartment radius left a level face of 1.11 mm2 at the
+    body top inside the lip's corner. Never rounder than the compartment's corners
+    """
+    return min(radius, binCornerRadius - scoopInset)
+
+def scoopWallCorners(walls: frozenset, position: tuple[int, int], size: tuple[int, int], counts: tuple[int, int]) -> set:
+    """The corners of a compartment, (left or right, front or back), lying between two scoop walls of the bin"""
+    (column, row) = position
+    (columns, rows) = size
+    touched = {
+        LEFT: column == 0 and LEFT in walls,
+        RIGHT: column + columns == counts[0] and RIGHT in walls,
+        FRONT: row == 0 and FRONT in walls,
+        BACK: row + rows == counts[1] and BACK in walls,
+    }
+    return {(sideX, sideY) for sideX in (LEFT, RIGHT) for sideY in (FRONT, BACK) if touched[sideX] and touched[sideY]}
+
+def trimsKeepAlike(trims: dict, counts: tuple[int, int]) -> bool:
+    """Whether every compartment of the grid is trimmed alike, so they can be patterned: a trimmed wall is shared by all
+    of them, one column for the left and right, one row for the front and back"""
+    (columns, rows) = counts
+    if columns > 1 and (_isTrimmed(trims[LEFT]) or _isTrimmed(trims[RIGHT])):
+        return False
+    if rows > 1 and (_isTrimmed(trims[FRONT]) or _isTrimmed(trims[BACK])):
+        return False
+    return True
+
 def touchesScoopWall(edgeMin, edgeMax, boxMin, boxMax, sides: frozenset, tolerance: float = 0.001) -> bool:
     """
     Whether an edge on the top of a box, its XY bounds given, lies on or ends at a wall with a scoop: the wall's line
