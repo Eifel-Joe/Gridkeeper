@@ -36,7 +36,7 @@ Done before the addendum (bb98659): tasks 1–7. Task 0 dropped, the snapshot ru
   `tests/test_compartment_layout.py`/page source tests for the row and the data key. GREEN.
 - [ ] **7e. Opus review** of the whole change before any Fusion run.
 - [ ] **8. Snapshot cases**: three new cases from the spec, README via `write_readme.py`. Fusion job (slot): record the
-  four new ones (with `bin_3x1x3_scoops_per_compartment`), run the five existing scoop cases unchanged, sketches fully constrained.
+  four new ones (with `bin_3x1x6_scoops_per_compartment`), run the five existing scoop cases unchanged, sketches fully constrained.
 - [ ] **9. Docs and CHANGELOG**: `docs/bins/compartments.md` (sides, tab rule), picture wishes to the main session;
   `CHANGELOG-CULLENECT.md` `## Unreleased` / `### More scoops` with the idea credited to teateatea (#140).
 - [ ] **10. Review** (Opus subagent, diff + spec), fix findings, `dev-notes/klicktest-r48.md`, report "Klicktest 48

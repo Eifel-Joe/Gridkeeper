@@ -112,7 +112,7 @@ Group **Scoop**: `Front (along bin width)` (the old `Add scoop (along bin width)
   lip), `bin_2x2x4_scoops_4_lip_full_compartments` (4, full lip, 2x2 compartments). Unchanged fingerprints of the
   existing scoop cases (`bin_2x2x4_scoop_radius_10`, `bin_2x2x4_lip_full_scoop_tab`, `bin_2x1x3_wall_3_scoop_compartments`,
   `bin_3x2x3_dividers_to_top_3_columns_tab_scoop_part`, `bin_2x3x5_features`). Every sketch fully constrained.
-- Snapshot case for per-compartment scoops and the radius limit: `bin_3x1x3_scoops_per_compartment` (3 compartments
+- Snapshot case for per-compartment scoops and the radius limit: `bin_3x1x6_scoops_per_compartment` (3 compartments
   along X: left one Front+Left, middle `[]`, right Like the bin with Front+Back+Right and no tab, radius limited on Y).
 - Click test in the dialog (`dev-notes/klicktest-r48.md`) including the editor, docs page
   `docs/bins/compartments.md` with new pictures (bin with 2/3/4 scoops, editor with per-compartment scoops).
