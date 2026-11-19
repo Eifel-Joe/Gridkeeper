@@ -1,0 +1,18 @@
+{
+    "description": "Docs bin scoops: a 2x2x4 bin with scoops on all four walls, no label tab (round 48)",
+    "extends": "_bin.json",
+    "view": {
+        "eye": [-150, 250, 300],
+        "target": [0, 0, 0],
+        "up": [0, 0, 1]
+    },
+    "settings": {
+        "binWidth": 2,
+        "binLength": 2,
+        "binHeight": 4,
+        "hasScoop": true,
+        "hasScoopBack": true,
+        "hasScoopLeft": true,
+        "hasScoopRight": true
+    }
+}

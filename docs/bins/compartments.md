@@ -21,6 +21,8 @@ Tick **Edit compartment layout** for a drawing of the grid:
   started on, splitting gives it to every cell.
 - **Reset all** goes back to single cells, without labels, depths or scoops of their own.
 
+![The compartment layout with three compartments: the left one selected, its Scoops row with Own and Left ticked, the drawing marks its left wall and the front wall of the other two](../assets/images/dialog-bin-compartment-scoops.png)
+
 Unticking **Edit compartment layout** resets the compartments to the uniform grid. Bins with a
 [custom shape](size.md#custom-shape) or [creased walls](body.md#creased-walls) have a single compartment: the grid and
 the layout are hidden and keep their values for later. Cells under the size the
@@ -45,6 +47,8 @@ on it. Dividers between grid lines stay below the lip. Hollow bins with a lip an
 ![A 3x2 bin with three compartments, the dividers rising to the top of the lip](../assets/images/bin-dividers-to-top.png)
 
 ## Scoop
+
+![The Scoop group of the bin dialog: Front, Back, Left and Right, Front ticked](../assets/images/dialog-bin-scoop-walls.png)
 
 A scoop rounds the floor up into a wall, so parts slide out instead of getting caught in the corner. Each wall has
 its own checkbox: **Front (along bin width)**, **Back (along bin width)**, **Left (along bin length)** and **Right
@@ -71,3 +75,7 @@ the front wall, as before.
 Scoop enabled | Scoop disabled
 :-------------------------:|:-------------------------:
 ![Bin with a scoop](../assets/models/bin-scoop-on.png) | ![Bin without a scoop](../assets/models/bin-scoop-off.png)
+
+Four scoops, no label tab | Front, left and right, with a label tab
+:-------------------------:|:-------------------------:
+![A 2x2x4 bin with scoops on all four walls, blended at the corners](../assets/models/bin-scoops-4.png) | ![A 2x2x4 bin with scoops on the front, left and right walls and a label tab on the back](../assets/models/bin-scoops-3-tab.png)
