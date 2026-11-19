@@ -4,7 +4,7 @@ Changes of Gridkeeper (`Eifel-Joe/Gridkeeper`, until 16.11.2026 `Eifel-Joe/Fusio
 GridfinityGenerator by Le0Michine, merged up to ee027a9 (v2.5.0.0, 17.11.2026; rounds 1 to 11 were built on v2.2.0.0, round 22 merged v2.4.2.0, round 38 v2.5.0.0).
 Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`, the `vX.Y.Z.W` tags belong to GridfinityGenerator.
 
-## Unreleased
+## 1.2.0 (2026-11-19)
 
 ### Raised dividers with a pointed top, and fixes around scoops (round 50)
 

@@ -6,7 +6,7 @@
 	"description":	{
 		"":	"Gridkeeper: Gridfinity bins, baseplates and Cullenect label inserts for Fusion. Based on FusionGridfinityGenerator by Le0Michine (CC BY-NC-SA 4.0)."
 	},
-	"version":	"1.1.0",
+	"version":	"1.2.0",
 	"runOnStartup":	true,
 	"supportedOS":	"windows|mac",
 	"editEnabled":	true
