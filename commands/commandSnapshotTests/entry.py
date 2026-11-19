@@ -12,7 +12,7 @@ from ...lib.ui import viewportPictures
 from ...lib.gridfinityUtils import parameterUtils, cullenectLabelLayout, labelColors
 from ...lib.gridfinityUtils import const as gridfinityConst
 from ...lib.gridfinityUtils.binBodyLipGenerator import lipInnerInset
-from ...lib.gridfinityUtils.binBodyLipGeneratorInput import LIP_TYPE_FULL
+from ...lib.gridfinityUtils.binBodyLipGeneratorInput import LIP_TYPE_FULL, lipTopTrimHeight
 from ...lib import tagUtils, assembly
 from ... import config
 from ..commandCreateBin import binBuilder
@@ -796,7 +796,7 @@ DIVIDER_GAP_MIN_WIDTH = 0.02
 # heights of the level sections the dividers are looked for in, shares of the height over the base, and the widest
 # stretch of material that counts as a divider, cm
 DIVIDER_PROBE_SHARES = (0.12, 0.25, 0.4, 0.55, 0.7)
-DIVIDER_MAX_WIDTH = 0.5
+DIVIDER_MAX_WIDTH = 0.62
 
 def dividerGapNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BRepBody]) -> list[str]:
     """
@@ -812,10 +812,18 @@ def dividerGapNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BRepBody]
     (x0, y0, z0, x1, y1, z1) = (box.minPoint.x, box.minPoint.y, box.minPoint.z, box.maxPoint.x, box.maxPoint.y, box.maxPoint.z)
     # level sections above the base and the floor, low enough to be under the label tabs, which a divider carries on
     # one side and would make look wider than a divider
-    levelSections = [sectionLoops(body, adsk.core.Point3D.create(0, 0, z0 + 0.6 + (z1 - z0 - 0.6) * share), adsk.core.Vector3D.create(0, 0, 1), (0, 1))
-              for share in DIVIDER_PROBE_SHARES]
+    probes = [z0 + 0.6 + (z1 - z0 - 0.6) * share for share in DIVIDER_PROBE_SHARES]
+    raised = getattr(case.state, 'hasDividersToTop', False) and getattr(case.state, 'hasLip', False)
+    if raised:
+        # just under the body top, over the label tabs a raised divider may carry on its side, under the lip: a ridge
+        # and its support there are at most DIVIDER_MAX_WIDTH wide
+        lipHeight = gridfinityConst.BIN_LIP_EXTRA_HEIGHT - lipTopTrimHeight(getattr(case.state, 'isLipTopTrimmed', True))
+        probes.append(z1 - lipHeight - 0.025)
+    levelSections = [sectionLoops(body, adsk.core.Point3D.create(0, 0, z), adsk.core.Vector3D.create(0, 0, 1), (0, 1)) for z in probes]
     notes = []
     found = 0
+    # dividers found by the lines at x (across y) and at y (across x)
+    foundAcross = [0, 0]
     # lines at x find the dividers across y, which meet the walls at x0 and x1, and the other way round
     for (lineAxis, start, end, span, walls) in ((0, x0, x1, (y0, y1), (x0, x1)), (1, y0, y1, (x0, x1), (y0, y1))):
         # lines along the other axis at eighths of this one find the dividers across them
@@ -827,6 +835,7 @@ def dividerGapNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BRepBody]
                     if low > span[0] + 0.3 and high < span[1] - 0.3 and high - low <= DIVIDER_MAX_WIDTH:
                         dividers.add((round((low + high) / 2, 2), round((high - low) / 2, 3)))
         found += len(dividers)
+        foundAcross[lineAxis] = len(dividers)
         for (middle, half) in sorted(dividers):
             # in the divider, and beside it where a ridge's support reaches the wall
             for offset in (0, half - 0.015, -(half - 0.015), half + 0.05, -(half + 0.05), half + 0.10, -(half + 0.10)):
@@ -846,10 +855,16 @@ def dividerGapNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BRepBody]
                             f'gap of up to {widest * 10:.2f} mm between the divider at {"y" if lineAxis == 0 else "x"} '
                             f'{at * 10:.2f} mm and the wall at {wallFace * 10:.2f} mm, from {(min(heights) - z0) * 10:.1f} '
                             f'to {(max(heights) - z0) * 10:.1f} mm over the bottom')
-    compartments = getattr(case.state, 'compartmentsX', 1) * getattr(case.state, 'compartmentsY', 1)
-    if compartments > 1 and found == 0:
+    (columns, rows) = (getattr(case.state, 'compartmentsX', 1), getattr(case.state, 'compartmentsY', 1))
+    if columns * rows > 1 and found == 0:
         # a check that saw no divider proves nothing
-        notes.append(f'no divider found to check for gaps in a bin of {compartments} compartments')
+        notes.append(f'no divider found to check for gaps in a bin of {columns * rows} compartments')
+    elif raised and not getattr(case.state, 'showCompartmentsLayout', False):
+        # an even grid of raised dividers has them both ways it has more than one compartment (a layout may have merged
+        # them away); lowered dividers are cut from the body with the walls, no gap can open between them
+        for (count, seen, direction) in ((rows, foundAcross[0], 'y'), (columns, foundAcross[1], 'x')):
+            if count > 1 and seen == 0:
+                notes.append(f'no divider across {direction} found to check for gaps in a bin of {count} compartments that way')
     return notes
 
 def raisedCornerLedgeNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BRepBody]) -> list[str]:

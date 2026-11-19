@@ -473,7 +473,7 @@ def materialIntervals(crossings: list[float]) -> list[tuple[float, float]]:
     """The stretches of material between the crossings of a line coming from outside"""
     return [(crossings[index], crossings[index + 1]) for index in range(0, len(crossings) - 1, 2)]
 
-# how close to the wall's face a stretch of material counts as the wall, mm
+# how close to the wall's face a stretch of material counts as the wall, in the sections' unit (cm in Fusion: 0.1 mm)
 WALL_FACE_TOLERANCE = 0.01
 
 def wallGaps(loops: list[list[tuple[float, float]]], wallFace: float, reach: float, levels: list[float], minWidth: float = 0) -> list[tuple[float, float]]:

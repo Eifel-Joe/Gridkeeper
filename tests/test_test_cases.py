@@ -692,3 +692,17 @@ def test_a_sliver_narrower_than_a_print_can_show_is_no_gap():
     assert cases.wallGaps(sliver, wallFace=0, reach=8, levels=[15], minWidth=0.2) == []
     gap = [[(0, 0), (20, 0), (20, 30), (1.5, 30), (1.5, 10), (1.2, 10), (1.2, 30), (0, 30), (0, 0)]]
     assert [level for (level, _) in cases.wallGaps(gap, wallFace=0, reach=8, levels=[15], minWidth=0.2)] == [15]
+
+
+def test_a_corner_dipping_to_the_line_counts_twice_and_a_level_edge_on_it_once():
+    # a V whose lowest point touches the line: in and out there, both or neither
+    vee = [[(0, 5), (5, 0), (10, 5), (10, 10), (0, 10), (0, 5)]]
+    assert len(cases.lineCrossings(vee, 1, 0)) % 2 == 0
+    # a step with its level edge on the line: the material on one side only, one crossing on each side of the step
+    step = [[(0, 0), (10, 0), (10, 5), (5, 5), (5, 10), (0, 10), (0, 0)]]
+    assert cases.lineCrossings(step, 1, 5) == pytest.approx([0, 5])
+
+
+def test_a_stretch_beyond_reach_is_no_gap():
+    loops = [[(0, 0), (1.2, 0), (1.2, 30), (0, 30), (0, 0)], [(10, 0), (11.2, 0), (11.2, 30), (10, 30), (10, 0)]]
+    assert cases.wallGaps(loops, wallFace=0, reach=8, levels=[15]) == []
