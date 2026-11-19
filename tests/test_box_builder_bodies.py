@@ -189,3 +189,45 @@ def test_the_preview_checkbox_says_the_small_parts_come_with_ok():
     entry = open(os.path.join(os.path.dirname(SOURCE), "entry.py"), encoding="utf-8").read()
     line = next(line for line in entry.splitlines() if "SHOW_PREVIEW_INPUT, 'Show preview" in line)
     assert "box and lid" in line and "OK" in line, line
+
+
+def _insertFunction(name):
+    tree = ast.parse(open(INSERT, encoding="utf-8").read())
+    return ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == name))
+
+
+def test_insert_parts_gets_each_parts_bodies_the_copy_way():
+    """Round 47 (p591): insertParts asks partBodies, which copies latch, hinge and pin and draws the handle"""
+    insertParts = _insertFunction("insertParts")
+    assert "partBodies(setComponent, component, part, dims, hinge)" in insertParts
+    assert "drawPart(" not in insertParts
+
+
+def test_latch_hinge_and_pin_come_as_copies_of_the_session_cache():
+    partBodies = _insertFunction("partBodies")
+    assert "part.role not in predPartCache.COPIED_ROLES" in partBodies
+    assert "predPartCache.SESSION.bodies(predPartCache.cacheKey(part.role, hinge)" in partBodies
+    assert "predPartCopies.keepDrawn(setComponent, lambda scratch: drawPart(scratch, part, dims, hinge))" in partBodies
+    assert "predPartCopies.addCopies(component, kept)" in partBodies
+
+
+def test_the_handle_is_drawn_in_its_component_as_before():
+    partBodies = _insertFunction("partBodies")
+    first = partBodies.index("part.role not in predPartCache.COPIED_ROLES")
+    assert partBodies.index("return drawPart(component, part, dims, hinge)", first) > first
+
+
+def test_a_failed_copy_draws_the_part_in_place_and_logs_why():
+    """Spec requirement 4: the box is built either way"""
+    partBodies = _insertFunction("partBodies")
+    assert "except Exception as err" in partBodies
+    handler = partBodies[partBodies.index("except Exception as err"):]
+    assert "commonUtils.fileLog(" in handler and "drawPart(component, part, dims, hinge)" in handler
+
+
+def test_a_copied_part_gets_its_joint_origin_by_the_generators_function():
+    """Same names and places as a drawn part: joints, seats and the rebuild's moving of user joints (p293) by name"""
+    jointOrigin = _insertFunction("addPartJointOrigin")
+    assert "predLatch.addJointOrigin(component)" in jointOrigin
+    assert "predHandlePin.addJointOrigin(component)" in jointOrigin
+    assert "addPartJointOrigin(component, part.role)" in _insertFunction("partBodies")

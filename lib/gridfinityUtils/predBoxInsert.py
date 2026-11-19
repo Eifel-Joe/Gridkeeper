@@ -9,12 +9,18 @@ files failed in a command with a dialog (fusion-auftraege/r28_cmdvariants.log). 
 the same component again. Every part is jointed rigidly, its joint origin on the box's at its seat, turned about z
 (predBoxSeats.turnAboutZ); the hinges of the chosen variant at two seats beside the box in their print position.
 Parts come in one by one as their generators are done (predBoxParts.DRAWN_ROLES), the others stay out meanwhile.
+
+Round 47 (p591): latch, hinge and handle pin need no parameters and no history (decided 19.11.2026); they are drawn once
+per Fusion session and every set gets copies of their bodies (partBodies, predPartCache, predPartCopies). Drawn in a
+document with boxes they cost 27-45 s per box, a copy about 1 s (fusion-auftraege/r47_mess.log). The handle follows
+the box width and is drawn in each set.
 """
 
 import adsk.core, adsk.fusion
 
 from .. import tagUtils
 from . import appearanceUtils, commonUtils, componentNames, predBoxParts, predBoxSeats, predHandle, predHandlePin, predHinge, predLatch
+from . import predPartCache, predPartCopies
 from .predBox import PredBoxDims
 
 
@@ -76,7 +82,7 @@ def insertParts(
         component = first.component
         componentNames.name(component, part.role)
         component.attributes.add(tagUtils.TAG_GROUP, tagUtils.TAG_PART_ROLE, part.role)
-        drawPart(component, part, dims, hinge)
+        partBodies(setComponent, component, part, dims, hinge)
         # a part's only body after the part: snapshots and export go by body names
         if component.bRepBodies.count == 1:
             component.bRepBodies.item(0).name = part.role
@@ -103,6 +109,37 @@ def insertParts(
             joint.name = f'{setName} {seatName}'
         bodies += list(component.bRepBodies)
     return bodies
+
+
+def partBodies(
+    setComponent: adsk.fusion.Component, component: adsk.fusion.Component, part: predBoxParts.Part, dims: PredBoxDims, hinge: str
+) -> list[adsk.fusion.BRepBody]:
+    """
+    The part's bodies in its empty component with its joint origin (the hinge's comes from insertParts): the handle
+    drawn with the box's width, the others copied from the session cache, drawn into a scratch component of the set
+    the first time. A failed copy draws the part in place as before and logs why, the box is built either way (spec
+    round 47, requirement 4)
+    """
+    if part.role not in predPartCache.COPIED_ROLES:
+        return drawPart(component, part, dims, hinge)
+    try:
+        kept = predPartCache.SESSION.bodies(predPartCache.cacheKey(part.role, hinge),
+                                            lambda: predPartCopies.keepDrawn(setComponent, lambda scratch: drawPart(scratch, part, dims, hinge)))
+        bodies = predPartCopies.addCopies(component, kept)
+    except Exception as err:
+        # the copy way leaves nothing in the component when it fails (predPartCopies), so the drawing starts empty
+        commonUtils.fileLog(f'{part.role} drawn in place, its copy failed: {err}')
+        return drawPart(component, part, dims, hinge)
+    addPartJointOrigin(component, part.role)
+    return bodies
+
+
+def addPartJointOrigin(component: adsk.fusion.Component, role: str):
+    """A copied part's joint origin, by the function its generator draws it with: same name and place"""
+    if role == 'Latch':
+        predLatch.addJointOrigin(component)
+    elif role == 'Handle pin':
+        predHandlePin.addJointOrigin(component)
 
 
 def addOriginJointOrigin(component: adsk.fusion.Component, name: str) -> adsk.fusion.JointOrigin:
