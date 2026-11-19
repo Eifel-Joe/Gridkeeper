@@ -126,6 +126,9 @@ def partBodies(
         kept = predPartCache.SESSION.bodies(predPartCache.cacheKey(part.role, hinge),
                                             lambda: predPartCopies.keepDrawn(setComponent, lambda scratch: drawPart(scratch, part, dims, hinge)))
         bodies = predPartCopies.addCopies(component, kept)
+    except predPartCopies.LeftBehind:
+        # a part drawn on top of a copy Fusion did not remove would double it (review round 47)
+        raise
     except Exception as err:
         # the copy way leaves nothing in the component when it fails (predPartCopies), so the drawing starts empty
         commonUtils.fileLog(f'{part.role} drawn in place, its copy failed: {err}')

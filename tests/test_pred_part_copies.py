@@ -32,29 +32,45 @@ def tbm(monkeypatch):
 
 
 class Body:
-    def __init__(self, name, source=None):
-        self.name = name
+    def __init__(self, name, source=None, renameFails=False):
+        self._name = name
         self.source = source
+        self.renameFails = renameFails
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        if self.renameFails:
+            raise RuntimeError("rename refused")
+        self._name = value
 
 
 class Bodies(list):
-    def __init__(self, failAt=None):
+    def __init__(self, failAt=None, renameFails=False):
         super().__init__()
         self.failAt = failAt
+        self.renameFails = renameFails
 
     def add(self, body, base):
         if self.failAt is not None and len(self) == self.failAt:
             raise RuntimeError("add refused")
         base.log.append("add")
-        added = Body(f"Body{len(self) + 1}", body)
+        added = Body(f"Body{len(self) + 1}", body, self.renameFails)
+        base.bodies.append(added)
         self.append(added)
         return added
 
 
 class Base:
-    def __init__(self):
+    def __init__(self, component, deletes=True):
         self.log = []
         self.deleted = False
+        self.bodies = []
+        self.component = component
+        self.deletes = deletes
 
     def startEdit(self):
         self.log.append("start")
@@ -63,18 +79,23 @@ class Base:
         self.log.append("finish")
 
     def deleteMe(self):
+        if not self.deletes:
+            return False
         self.deleted = True
+        for body in self.bodies:
+            self.component.bRepBodies.remove(body)
+        return True
 
 
 class Component:
-    def __init__(self, failAt=None):
-        self.bRepBodies = Bodies(failAt)
+    def __init__(self, failAt=None, renameFails=False, baseDeletes=True):
+        self.bRepBodies = Bodies(failAt, renameFails)
         self.bases = []
         component = self
 
         class BaseFeatures:
             def add(self):
-                base = Base()
+                base = Base(component, baseDeletes)
                 component.bases.append(base)
                 return base
 
@@ -83,20 +104,26 @@ class Component:
 
 
 class Occurrence:
-    def __init__(self):
+    def __init__(self, deletes):
         self.component = type("Scratch", (), {})()
+        self.component.bRepBodies = []
         self.deleted = False
+        self.deletes = deletes
 
     def deleteMe(self):
-        self.deleted = True
+        if self.deletes == "raise":
+            raise RuntimeError("delete refused")
+        self.deleted = self.deletes
+        return self.deletes
 
 
 class Occurrences:
-    def __init__(self):
+    def __init__(self, deletes=True):
         self.made = []
+        self.deletes = deletes
 
     def addNewComponent(self, transform):
-        occurrence = Occurrence()
+        occurrence = Occurrence(self.deletes)
         self.made.append(occurrence)
         return occurrence
 
@@ -120,10 +147,24 @@ def test_a_copy_is_one_base_feature_with_the_bodies_named_as_drawn(tbm):
 
 def test_a_failed_copy_leaves_no_base_feature_behind(tbm):
     component = Component(failAt=1)
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError, match="add refused"):
         copies.addCopies(component, [("a", "a"), ("b", "b")])
-    assert component.bases[0].deleted
+    assert component.bases[0].deleted and len(component.bRepBodies) == 0
     assert component.bases[0].log[-1] == "finish"
+
+
+def test_a_failed_naming_leaves_no_base_feature_behind(tbm):
+    """Review round 47: the bodies stayed when naming failed, the part was then drawn on top of them"""
+    component = Component(renameFails=True)
+    with pytest.raises(RuntimeError, match="rename refused"):
+        copies.addCopies(component, [("Latch", "l")])
+    assert component.bases[0].deleted and len(component.bRepBodies) == 0
+
+
+def test_a_copy_fusion_does_not_remove_is_left_behind_not_drawn_over(tbm):
+    component = Component(failAt=1, baseDeletes=False)
+    with pytest.raises(copies.LeftBehind):
+        copies.addCopies(component, [("a", "a"), ("b", "b")])
 
 
 def test_a_kept_part_is_drawn_into_a_scratch_component_that_is_deleted(tbm, identity):
@@ -132,8 +173,10 @@ def test_a_kept_part_is_drawn_into_a_scratch_component_that_is_deleted(tbm, iden
 
     def draw(component):
         drawnInto.append(component)
-        return [Body("Latch")]
+        component.bRepBodies.append(Body("Latch"))
+        return []
 
+    # every body the generator leaves in the scratch component, as insertParts took all of a part's bodies (review)
     kept = copies.keepDrawn(parent, draw)
     assert kept == [("Latch", ("copy", tbm.copied[0]))]
     (scratch,) = parent.occurrences.made
@@ -149,3 +192,21 @@ def test_the_scratch_component_goes_also_when_drawing_fails(tbm, identity):
     with pytest.raises(RuntimeError):
         copies.keepDrawn(parent, draw)
     assert parent.occurrences.made[0].deleted
+
+
+def test_a_failed_drawing_is_not_hidden_by_a_failed_clean_up(tbm, identity):
+    parent = Component()
+    parent.occurrences = Occurrences(deletes="raise")
+
+    def draw(component):
+        raise RuntimeError("edge not found")
+
+    with pytest.raises(RuntimeError, match="edge not found"):
+        copies.keepDrawn(parent, draw)
+
+
+def test_a_scratch_component_fusion_keeps_is_an_error(tbm, identity):
+    parent = Component()
+    parent.occurrences = Occurrences(deletes=False)
+    with pytest.raises(RuntimeError, match="not deleted"):
+        copies.keepDrawn(parent, lambda component: component.bRepBodies.append(Body("Latch")))

@@ -6,7 +6,8 @@ bodies; every box set gets copies of them (predBoxInsert.insertParts). Fusion-fr
 Measured (fusion-auftraege/r47_mess.log): drawn in a document with boxes the three cost 27 s (first box) to 45 s (second
 box), copied into a component as a base feature about 1 s each. Their measures hang on no box parameter (decided
 19.11.2026: they need no parameters and no history); the handle follows the box width and is drawn in each set.
-A dict in the add-in's memory: an add-in reload starts it anew, so a changed generator is never served from it.
+A dict in the add-in's memory, as long as this module is loaded: it is loaded and dropped together with the
+generators, so what it keeps was always drawn by the generators that are loaded.
 """
 
 # the roles kept and copied, in the order of predBoxParts.PARTS; the handle is drawn with its width expression

@@ -231,3 +231,11 @@ def test_a_copied_part_gets_its_joint_origin_by_the_generators_function():
     assert "predLatch.addJointOrigin(component)" in jointOrigin
     assert "predHandlePin.addJointOrigin(component)" in jointOrigin
     assert "addPartJointOrigin(component, part.role)" in _insertFunction("partBodies")
+
+
+def test_a_copy_fusion_left_behind_is_not_drawn_over():
+    """Review round 47: drawing in place on top of a copy that could not be removed would double the part"""
+    partBodies = _insertFunction("partBodies")
+    assert partBodies.index("except predPartCopies.LeftBehind:") < partBodies.index("except Exception as err")
+    handler = partBodies[partBodies.index("except predPartCopies.LeftBehind:"):partBodies.index("except Exception as err")]
+    assert "raise" in handler and "drawPart" not in handler
