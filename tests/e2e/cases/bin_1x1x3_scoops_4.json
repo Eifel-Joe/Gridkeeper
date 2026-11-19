@@ -1,0 +1,13 @@
+{
+    "description": "1x1x3 bin with scoops on all four walls under the light lip, the lip bottom chamfer left out on every wall, round 48",
+    "generator": "bin",
+    "settings": {
+        "binWidth": 1,
+        "binLength": 1,
+        "binHeight": 3,
+        "hasScoop": true,
+        "hasScoopBack": true,
+        "hasScoopLeft": true,
+        "hasScoopRight": true
+    }
+}

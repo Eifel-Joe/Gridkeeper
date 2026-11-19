@@ -40,7 +40,11 @@ class InputState:
     lipType: str
     isLipTopTrimmed: bool
 
+    # the front wall's, the only scoop before round 48
     hasScoop: bool
+    hasScoopBack: bool
+    hasScoopLeft: bool
+    hasScoopRight: bool
     scoopMaxRadius: float
 
     hasTab: bool

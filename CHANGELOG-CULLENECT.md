@@ -6,6 +6,26 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased
 
+### More scoops (round 48)
+
+- **A scoop on every wall:** the bin dialog's scoop group has a checkbox for each wall (front, back, left, right)
+  instead of the single front scoop; every compartment gets a scoop at each wall checked. Idea: teateatea, upstream
+  issue #140 (two scoops for long parts, four for small parts, three beside a label tab).
+- **Scoops per compartment:** the compartment layout editor has a Scoops row for the selected compartment; with Own
+  it chooses that compartment's walls alone, without it takes the bin's. Merge and split keep the choice, the drawing
+  marks the scooped walls.
+- Decided: the back wall carries the label tab and is locked while a tab is chosen, for every compartment since each
+  carries its own tab; without a tab four scoops are possible. Compartments without a choice of their own follow the
+  same rule as the single scoop before, only on more walls.
+- Decided: two scoops facing each other in a compartment have their radius limited to half its span less 0.5 mm, a
+  strip of flat floor stays; Scoop max radius stays the upper bound, a single scoop per axis keeps its old limit.
+- A compartment with more than one scoop has no rounded floor edge at its other walls: Fusion fails to round a
+  floor edge running into two different scoops.
+- Scoops on walls that meet blend at the corner. With a lip, every scoop wall reaches up to the lip's inner edge and
+  the lip bottom chamfer leaves it out; creases leave every scoop wall out.
+- A bin with only the front scoop is built as before, and saved settings without the new walls load with the front
+  scoop alone.
+
 ### Box build speed (round 45)
 
 - **Box build and rebuild faster:** measured in Fusion with the same document steps back to back (box 5×4×6 with

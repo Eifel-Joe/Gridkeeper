@@ -5,7 +5,8 @@ from .dim import Dim
 
 class BinBodyCutoutGeneratorInput():
     def __init__(self):
-        self.hasScoop = False
+        # the walls with a scoop, see scoopSides
+        self.scoopSides = frozenset()
         self.scoopMaxRadius = const.BIN_SCOOP_MAX_RADIUS
         self.tabOverhangAngle = const.BIN_TAB_OVERHANG_ANGLE
         self.tabPosition = 0
@@ -49,13 +50,6 @@ class BinBodyCutoutGeneratorInput():
     def origin(self, value: adsk.core.Point3D):
         self._originUnit = value
 
-    @property
-    def hasScoop(self) -> bool:
-        return self._hasScoop
-
-    @hasScoop.setter
-    def hasScoop(self, value: bool):
-        self._hasScoop = value
 
     @property
     def scoopMaxRadius(self) -> float:

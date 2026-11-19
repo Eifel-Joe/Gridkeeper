@@ -70,6 +70,29 @@
         font-style: italic;
         fill-opacity: 0.75;
     }
+    .scoop-mark {
+        stroke: var(--pocket-text);
+        stroke-opacity: 0.6;
+        stroke-width: 2.5px;
+        stroke-linecap: round;
+        pointer-events: none;
+    }
+    .scoop-walls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 2px 8px;
+    }
+    .scoop-walls label {
+        width: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+    }
+    .row .scoop-walls input {
+        flex: none;
+        margin: 0;
+    }
     .pocket-depth {
         fill: var(--pocket-text);
         fill-opacity: 0.8;
@@ -327,8 +350,26 @@
         return selectedCell ? pocketAt(selectedCell.x, selectedCell.y) : null;
     }
 
-    function singleCell(x, y, depth) {
-        return { x: x, y: y, width: 1, length: 1, depth: depth === undefined ? null : depth, label: '', icon: 'Default' };
+    // walls a compartment can have a scoop on (round 48); a pocket without scoops takes the bin's, data.binScoops
+    const SCOOP_WALLS = [['front', 'Front'], ['back', 'Back'], ['left', 'Left'], ['right', 'Right']];
+
+    function scoopsOf(pocket) {
+        return pocket && Array.isArray(pocket.scoops) ? pocket.scoops.slice() : undefined;
+    }
+
+    // the bin's walls come without the tab's lock, so a compartment's own copy keeps the back for when the tab goes off
+    function effectiveScoops(pocket) {
+        const walls = Array.isArray(pocket.scoops) ? pocket.scoops : (data.binScoops || []);
+        // the label tab sits on the back wall of every compartment
+        return walls.filter((wall) => !(wall === 'back' && data.hasTab));
+    }
+
+    function singleCell(x, y, depth, scoops) {
+        const cell = { x: x, y: y, width: 1, length: 1, depth: depth === undefined ? null : depth, label: '', icon: 'Default' };
+        if (Array.isArray(scoops)) {
+            cell.scoops = scoops.slice();
+        }
+        return cell;
     }
 
     function sortPockets() {
@@ -357,12 +398,12 @@
             for (let x = p.x; x < p.x + p.width; x++) {
                 for (let y = p.y; y < p.y + p.length; y++) {
                     if (x < minX || x > maxX || y < minY || y > maxY) {
-                        kept.push(singleCell(x, y, p.depth));
+                        kept.push(singleCell(x, y, p.depth, p.scoops));
                     }
                 }
             }
         }
-        kept.push({
+        const merged = {
             x: minX,
             y: minY,
             width: maxX - minX + 1,
@@ -370,7 +411,12 @@
             depth: source ? source.depth : null,
             label: source ? source.label : '',
             icon: source ? source.icon : 'Default',
-        });
+        };
+        const sourceScoops = scoopsOf(source);
+        if (sourceScoops) {
+            merged.scoops = sourceScoops;
+        }
+        kept.push(merged);
         data.pockets = kept;
         selectedCell = { x: minX, y: minY };
         send();
@@ -381,7 +427,7 @@
         data.pockets = data.pockets.filter((p) => p !== pocket);
         for (let x = pocket.x; x < pocket.x + pocket.width; x++) {
             for (let y = pocket.y; y < pocket.y + pocket.length; y++) {
-                data.pockets.push(singleCell(x, y, pocket.depth));
+                data.pockets.push(singleCell(x, y, pocket.depth, pocket.scoops));
             }
         }
         send();
@@ -442,6 +488,20 @@
             title.textContent = `${p.width} x ${p.length} cells` + (p.depth !== null ? `, ${p.depth} mm deep` : '');
             rect.appendChild(title);
             svg.appendChild(rect);
+
+            // a short line inside each wall with a scoop, Y points to the back of the bin, drawn upwards
+            const inset = 3;
+            for (const wall of effectiveScoops(p)) {
+                const line = {
+                    front: [x + inset, y + pocketHeight - inset, x + pocketWidth - inset, y + pocketHeight - inset],
+                    back: [x + inset, y + inset, x + pocketWidth - inset, y + inset],
+                    left: [x + inset, y + inset, x + inset, y + pocketHeight - inset],
+                    right: [x + pocketWidth - inset, y + inset, x + pocketWidth - inset, y + pocketHeight - inset],
+                }[wall];
+                if (line) {
+                    svg.appendChild(svgElement('line', { class: 'scoop-mark', x1: line[0], y1: line[1], x2: line[2], y2: line[3] }));
+                }
+            }
 
             if (data.hasTab) {
                 const text = p.label || data.defaultLabel;
@@ -612,8 +672,8 @@
     // shown with and without a pocket selected
     function resetButton() {
         const reset = htmlElement('button', {}, 'Reset all');
-        reset.title = 'Back to single cells, without labels or depths';
-        reset.disabled = data.pockets.every((item) => item.width === 1 && item.length === 1 && item.depth === null && !item.label && item.icon === 'Default');
+        reset.title = 'Back to single cells, without labels, depths or scoops of their own';
+        reset.disabled = data.pockets.every((item) => item.width === 1 && item.length === 1 && item.depth === null && !item.label && item.icon === 'Default' && !Array.isArray(item.scoops));
         reset.addEventListener('click', resetAll);
         return reset;
     }
@@ -664,6 +724,51 @@
         );
         iconRow.appendChild(iconPicker);
         editor.appendChild(iconRow);
+
+        // the compartment's own scoop walls, or the bin's (round 48)
+        const scoopRow = htmlElement('div', { class: 'row' });
+        scoopRow.appendChild(htmlElement('label', {}, 'Scoops'));
+        const scoopWalls = htmlElement('div', { class: 'scoop-walls' });
+        const own = Array.isArray(p.scoops);
+        const ownLabel = htmlElement('label', {});
+        const ownInput = htmlElement('input', { type: 'checkbox' });
+        ownInput.checked = own;
+        ownLabel.title = 'Own scoop walls for this compartment, off takes the walls of the Scoop section';
+        ownInput.addEventListener('change', () => {
+            if (ownInput.checked) {
+                p.scoops = (data.binScoops || []).slice();
+            } else {
+                delete p.scoops;
+            }
+            send();
+            render();
+        });
+        ownLabel.append(ownInput, document.createTextNode('Own'));
+        scoopWalls.appendChild(ownLabel);
+        const shown = effectiveScoops(p);
+        for (const [wall, text] of SCOOP_WALLS) {
+            const wallLabel = htmlElement('label', {});
+            const wallInput = htmlElement('input', { type: 'checkbox' });
+            wallInput.checked = shown.includes(wall);
+            const locked = wall === 'back' && data.hasTab;
+            wallInput.disabled = !own || locked;
+            wallLabel.title = locked ? 'The label tab sits on the back wall' : (own ? `A scoop along the ${wall} wall of this compartment` : 'Turn on Own to choose');
+            wallInput.addEventListener('change', () => {
+                const walls = new Set(p.scoops || []);
+                if (wallInput.checked) {
+                    walls.add(wall);
+                } else {
+                    walls.delete(wall);
+                }
+                p.scoops = SCOOP_WALLS.map(([name]) => name).filter((name) => walls.has(name));
+                send();
+                renderDrawing();
+            });
+            wallLabel.append(wallInput, document.createTextNode(text));
+            scoopWalls.appendChild(wallLabel);
+        }
+        scoopRow.appendChild(scoopWalls);
+        editor.appendChild(scoopRow);
 
         const depthRow = htmlElement('div', { class: 'row' });
         depthRow.appendChild(htmlElement('label', {}, 'Depth'));

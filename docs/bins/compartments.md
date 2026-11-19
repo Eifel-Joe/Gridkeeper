@@ -15,7 +15,13 @@ Tick **Edit compartment layout** for a drawing of the grid:
 - **Click a pocket** to give it its own **Label** text, **Icon** and **Depth**. An empty label takes the text of the
   [label tab section](labels.md); the depth is measured from the top of the bin, empty for the full depth.
   **Done** finishes editing that pocket, changes are applied right away.
-- **Reset all** goes back to single cells, without labels or depths.
+- **Scoops** of a pocket: without **Own** it takes the walls checked in the [Scoop](#scoop) section; with **Own** its
+  **Front**, **Back**, **Left** and **Right** toggles choose its scoops alone. **Back** is locked while the label tab is
+  on. The drawing marks every wall with a scoop by a short line; merging keeps the choice of the pocket the drag
+  started on, splitting gives it to every cell.
+- **Reset all** goes back to single cells, without labels, depths or scoops of their own.
+
+![The compartment layout with three compartments: the left one selected, its Scoops row with Own and Left ticked, the drawing marks its left wall and the front wall of the other two](../assets/images/dialog-bin-compartment-scoops.png)
 
 Unticking **Edit compartment layout** resets the compartments to the uniform grid. Bins with a
 [custom shape](size.md#custom-shape) or [creased walls](body.md#creased-walls) have a single compartment: the grid and
@@ -42,9 +48,34 @@ on it. Dividers between grid lines stay below the lip. Hollow bins with a lip an
 
 ## Scoop
 
-**Add scoop (along bin width)** adds a rounded scoop along the bin width, so small parts slide out. **Scoop max radius (mm)** (25 mm, more than 0) limits its size; it is locked while the scoop is off. Bins with a custom shape get no
-scoop.
+![The Scoop group of the bin dialog: Front, Back, Left and Right, Front ticked](../assets/images/dialog-bin-scoop-walls.png)
+
+A scoop rounds the floor up into a wall, so parts slide out instead of getting caught in the corner. Each wall has
+its own checkbox: **Front (along bin width)**, **Back (along bin width)**, **Left (along bin length)** and **Right
+(along bin length)**. Every compartment gets a scoop at each wall that is checked, its dividers too, unless it has
+scoops of its own in the [compartment layout](#compartment-layout). Two scoops on opposite walls let long parts roll
+out either way, four reach small parts from every side.
+
+- **Back** is locked while the label tab is on, every compartment's tab sits on its back wall; its tick stays for
+  when the tab goes off. With a tab a compartment has at most three scoops.
+- With a lip, a bin wall where any compartment has a scoop reaches up to the inner edge of the lip, so the scoop runs
+  into it without a step.
+- Two scoops facing each other in one compartment share it: their radius stays under half its width or length, so a
+  strip of flat floor of at least 1 mm stays between them.
+- The rounded edge between floor and wall that a compartment has elsewhere is left out once it has more than one
+  scoop: its floor meets the walls without a scoop at a sharp edge.
+- A wall with a scoop gets no creases, the scoop braces it already.
+- A left or right scoop runs under the ends of the label tab, the tab follows the scoop there.
+
+**Scoop max radius (mm)** (25 mm, more than 0) limits the size of every scoop, a scoop is never deeper than its
+compartment; it is locked while no wall has one.
+Only hollow bins get scoops, bins with a custom shape get none. Older bins and saved settings with a scoop have it on
+the front wall, as before.
 
 Scoop enabled | Scoop disabled
 :-------------------------:|:-------------------------:
 ![Bin with a scoop](../assets/models/bin-scoop-on.png) | ![Bin without a scoop](../assets/models/bin-scoop-off.png)
+
+Four scoops, no label tab | Front, left and right, with a label tab
+:-------------------------:|:-------------------------:
+![A 2x2x4 bin with scoops on all four walls, blended at the corners](../assets/models/bin-scoops-4.png) | ![A 2x2x4 bin with scoops on the front, left and right walls and a label tab on the back](../assets/models/bin-scoops-3-tab.png)
