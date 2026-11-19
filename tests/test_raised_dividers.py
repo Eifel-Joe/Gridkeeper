@@ -198,3 +198,11 @@ def test_the_corners_between_two_tip_faces_beside_a_ridge_are_filled():
     assert raised.tipCornersBesideRidge(covers, frozenset({'front', 'back'})) == [('left', 'front'), ('left', 'back')]
     # two outer scoop walls, no ridge: the top clearance's own corner takes it (p653)
     assert raised.tipCornersBesideRidge(covers, frozenset()) == []
+
+
+# Re-review round 50: a tab reaching back behind the ridge's tip starts its sloped top higher by as much, so the top is
+# where the label and pocket expect it at the tip
+def test_a_tab_reaching_back_starts_its_sloped_top_higher():
+    import math
+    assert raised.tabTopRise(0.25, 0) == 0
+    assert raised.tabTopRise(0.25, math.radians(15)) == pytest.approx(0.25 * math.tan(math.radians(15)))

@@ -6,6 +6,7 @@ Dividers between grid lines stay below the lip, they would run into the feet.
 Only the choice of walls is here, without Fusion, the body is made by binBodyGenerator.
 """
 
+import math
 from dataclasses import dataclass
 
 # a line of the compartment grid counts as a grid line within this, in grid units
@@ -204,3 +205,12 @@ def tipCornersBesideRidge(covers: dict, ridges: frozenset) -> list[tuple[str, st
         (sideX, sideY) for sideX in ('left', 'right') for sideY in ('front', 'back')
         if covers[sideX] == TIP and covers[sideY] == TIP and (sideX in ridges or sideY in ridges)
     ]
+
+
+def tabTopRise(behind: float, labelAngle: float) -> float:
+    """
+    How much higher a label tab's top starts at its back when the tab reaches behind the ridge's tip by behind, cm: the
+    top slopes down from the back by the label angle, radians, and has to be at its height at the tip, where the label
+    and its pocket are placed (re-review round 50)
+    """
+    return behind * math.tan(labelAngle)

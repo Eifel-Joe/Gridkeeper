@@ -16,7 +16,7 @@ from . import cullenect, binLabelLayout
 from .cullenectSocketGenerator import createCullenectSocket, SocketPlacement
 from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput, LIP_TYPE_FULL
 from .binBodyLipGenerator import createGridfinityBinBodyLip, createStackedFootCutters, createLipSupport, lipInnerInset
-from .raisedDividers import DividerSegment, ridgeBox, raisedSides, cornerRadiusBetween, ridgeTipDepth, TIP, tipCornersBesideRidge
+from .raisedDividers import DividerSegment, ridgeBox, raisedSides, cornerRadiusBetween, ridgeTipDepth, TIP, tipCornersBesideRidge, tabTopRise
 from .dim import Dim, valueInput
 from ... import config
 
@@ -346,7 +346,9 @@ def createGridfinityBinBody(
                     adsk.core.Point3D.create(originX.value, originY.value, bottomZ.value), bottomZ,
                     originX=originX, originY=originY, name=f'{name} corner fill {sideX} {sideY}',
                 ).bodies.item(0)
-                combineUtils.cutBody(box, commonUtils.objectCollectionFromList([cavity]), targetComponent, isKeepToolBodies=True, name=f'{name} corner fill {sideX} {sideY} shape')
+                if clearanceDepth > 0:
+                    # without a cut top the box starts on the cavity's top, nothing to take off
+                    combineUtils.cutBody(box, commonUtils.objectCollectionFromList([cavity]), targetComponent, isKeepToolBodies=True, name=f'{name} corner fill {sideX} {sideY} shape')
                 fills.append(box)
             return fills
 
@@ -398,6 +400,9 @@ def createGridfinityBinBody(
             compartmentTabInput.overhangAngle = input.tabOverhangAngle
             compartmentTabInput.labelAngle = input.tabTopAngle
             compartmentTabInput.topClearance = tabTopClearance(input.labelStyle, input.tabTopOffset)
+            if behindTab.value > const.DEFAULT_FILTER_TOLERANCE:
+                # its sloped top as high at the ridge's tip as the label and pocket expect it there (re-review round 50)
+                compartmentTabInput.topClearance -= tabTopRise(behindTab.value, input.tabTopAngle)
             # a hollow tab of a single compartment is opened through the outer walls of the bin, with more compartments
             # the hollows are left closed
             tabOpenings = None
