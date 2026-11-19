@@ -144,7 +144,26 @@ from a box as wide as the groove instead of the divider. So:
 5. **Evidence:** see the table; the current raised dividers already never collide with a stacked bin, the ridge only
    fills the groove up to the clearance.
 
-## Open questions (for a decision before building)
+## Decisions on the open questions (2026-11-19)
+
+- Q1 decided: a label tab and its Cullenect socket in front of a raised divider start at the ridge's tip.
+- Q2 decided: a compartment scoop on a divider face is built as at an outer scoop wall: the compartment starts at the
+  ridge's tip on that side, the scoop runs up without a step.
+- Q3 decided: in a bin one height unit high the support is cut off at the compartment floor like the outer one.
+- Q4, Q5 decided: the extra material and the ridge on rebuilt saved bins are accepted; the snapshot cases with raised
+  dividers are stored anew after a look.
+
+## Details settled while building
+
+- The ridge is centred on the grid line, where the groove between the feet is; the divider is not (its faces lie
+  0.32 mm and 0.88 mm off the grid line with a 1.2 mm wall, as since round 8). The support (Full) or chamfer (Light)
+  under each side runs at 45° from the ridge's tip to that side's divider face, so the two sides differ a little.
+- With the ridge the rounding of the divider corners (p83) is not built: above the support the feet's rounded corners
+  shape the ridge where it meets the lip or another ridge; below, the compartment's corner fillet meets the support
+  as at the outer wall. Where a ridge's support meets the outer support or another ridge's, the concave corner stays
+  sharp (45° faces, printable).
+
+## Open questions as asked (answered above)
 
 - **Q1 Tabs and Cullenect sockets under a ridge:** (a, recommended) a tab and its socket in front of a raised divider
   start at the ridge's tip, as far in as its overhang (the label face keeps its width, the compartment loses the
