@@ -476,11 +476,12 @@ def materialIntervals(crossings: list[float]) -> list[tuple[float, float]]:
 # how close to the wall's face a stretch of material counts as the wall, mm
 WALL_FACE_TOLERANCE = 0.01
 
-def wallGaps(loops: list[list[tuple[float, float]]], wallFace: float, reach: float, levels: list[float]) -> list[tuple[float, float]]:
+def wallGaps(loops: list[list[tuple[float, float]]], wallFace: float, reach: float, levels: list[float], minWidth: float = 0) -> list[tuple[float, float]]:
     """
     The levels of a section, (along, up), at which the material going in from a wall's outer face at wallFace stops and
     starts again within reach: a gap between the wall and a divider in the section's plane, with its width. Inward is
-    towards the rest of the section
+    towards the rest of the section. A gap narrower than minWidth isn't one: a print can't show it, and the rounded
+    corner of a stacked foot leaves such a sliver of its room between the lip and a ridge just over the body top
     """
     gaps = []
     points = [point[0] for loop in loops for point in loop]
@@ -493,7 +494,7 @@ def wallGaps(loops: list[list[tuple[float, float]]], wallFace: float, reach: flo
         wall = next((stretch for stretch in stretches if stretch[0] <= WALL_FACE_TOLERANCE and stretch[1] >= 0), None)
         if wall is None:
             continue
-        following = [stretch for stretch in stretches if stretch[0] > wall[1] + WALL_FACE_TOLERANCE and stretch[0] <= reach]
+        following = [stretch for stretch in stretches if stretch[0] > wall[1] + max(WALL_FACE_TOLERANCE, minWidth) and stretch[0] <= reach]
         if following:
             gaps.append((level, following[0][0] - wall[1]))
     return gaps

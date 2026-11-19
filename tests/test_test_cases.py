@@ -683,3 +683,12 @@ def test_material_intervals_along_a_line_find_the_dividers():
              [(82, 0), (83.2, 0), (83.2, 1), (82, 1), (82, 0)]]
     intervals = cases.materialIntervals(cases.lineCrossings(loops, 1, 0.5))
     assert intervals == [pytest.approx((0, 1.2)), pytest.approx((41, 42.2)), pytest.approx((82, 83.2))]
+
+
+def test_a_sliver_narrower_than_a_print_can_show_is_no_gap():
+    """0.11 mm left by a stacked foot's rounded corner just over the body top (Fusion) is the foot's room, not a gap;
+    the gaps found at scoop walls (0.4 to 1.1 mm) and under an untrimmed lip (0.3 mm) stay found"""
+    sliver = [[(0, 0), (20, 0), (20, 30), (1.31, 30), (1.31, 10), (1.2, 10), (1.2, 30), (0, 30), (0, 0)]]
+    assert cases.wallGaps(sliver, wallFace=0, reach=8, levels=[15], minWidth=0.2) == []
+    gap = [[(0, 0), (20, 0), (20, 30), (1.5, 30), (1.5, 10), (1.2, 10), (1.2, 30), (0, 30), (0, 0)]]
+    assert [level for (level, _) in cases.wallGaps(gap, wallFace=0, reach=8, levels=[15], minWidth=0.2)] == [15]
