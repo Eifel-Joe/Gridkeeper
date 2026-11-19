@@ -36,18 +36,14 @@ def test_every_tab_top_clearance_takes_the_offset():
 
 
 def test_raised_dividers_start_at_the_lowered_divider_top():
+    """At least: a ridge reaches further down where its support needs it (round 50), see raisedDividers.ridgeBox"""
     arguments = [argument.arg for argument in _function(BIN_BODY_GENERATOR, "createRaisedDividers").args.args]
     assert "topOffset" in arguments
     body = ast.unparse(_function(BIN_BODY_GENERATOR, "createRaisedDividers"))
     assert "BIN_TAB_TOP_CLEARANCE" not in body
-    assert "bottomZ = binBodyTotalHeight - Dim.length(topOffset)" in body
-    assert "height = topOffset + const.BIN_LIP_EXTRA_HEIGHT - lipInput.topTrimHeight" in body
-
-
-def test_raised_divider_corners_start_there_too():
-    body = ast.unparse(_function(BIN_BODY_GENERATOR, "createGridfinityBinBody"))
-    assert "raisedCornersBottomZ = binBodyTotalHeight - Dim.length(input.tabTopOffset)" in body
-    assert "BIN_TAB_TOP_CLEARANCE" not in body
+    assert "minDepth=topOffset" in body
+    assert "bottomZ = binBodyTotalHeight - Dim.length(depth)" in body
+    assert "height = depth + const.BIN_LIP_EXTRA_HEIGHT - lipInput.topTrimHeight" in body
 
 
 def test_the_default_offset_is_the_old_clearance():

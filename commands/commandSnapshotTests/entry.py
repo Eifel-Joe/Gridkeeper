@@ -10,6 +10,9 @@ from typing import Callable
 from ...lib import fusion360utils as futil
 from ...lib.ui import viewportPictures
 from ...lib.gridfinityUtils import parameterUtils, cullenectLabelLayout, labelColors
+from ...lib.gridfinityUtils import const as gridfinityConst
+from ...lib.gridfinityUtils.binBodyLipGenerator import lipInnerInset
+from ...lib.gridfinityUtils.binBodyLipGeneratorInput import LIP_TYPE_FULL
 from ...lib import tagUtils, assembly
 from ... import config
 from ..commandCreateBin import binBuilder
@@ -777,9 +780,13 @@ def raisedCornerLedgeNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BR
     """
     if case.generator != testCases.GENERATOR_BIN or not getattr(case.state, 'hasDividersToTop', False):
         return []
-    # the raised dividers' corners go up from under the lip's height and the tab top offset, the check looks a little
-    # further down
-    reach = testCases.raisedDividersReach(getattr(case.state, 'tabTopOffset', 0.05))
+    # the raised dividers' corners go up from under the lip's height and the tab top offset, their ridges' supports
+    # from further down (round 50), the check looks a little further down still
+    state = case.state
+    ridgeDepth = lipInnerInset(state.lipType, state.xyClearance).value + state.xyClearance
+    if state.lipType == LIP_TYPE_FULL:
+        ridgeDepth += gridfinityConst.BIN_LIP_SUPPORT_WALL_HEIGHT
+    reach = testCases.raisedDividersReach(max(getattr(state, 'tabTopOffset', 0.05), ridgeDepth))
     faces = []
     for body in bodies:
         top = body.boundingBox.maxPoint.z

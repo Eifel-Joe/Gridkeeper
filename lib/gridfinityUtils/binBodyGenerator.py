@@ -16,7 +16,7 @@ from . import cullenect, binLabelLayout
 from .cullenectSocketGenerator import createCullenectSocket, SocketPlacement
 from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput, LIP_TYPE_FULL
 from .binBodyLipGenerator import createGridfinityBinBodyLip, createStackedFootCutters, createLipSupport, lipInnerInset
-from .raisedDividers import DividerSegment, FilletCorner, filletCorners, isCornerChainEdge, chainRuns, runOffset, cornerPlaneAxes
+from .raisedDividers import DividerSegment, FilletCorner, filletCorners, isCornerChainEdge, chainRuns, runOffset, cornerPlaneAxes, ridgeBox, raisedSides
 from .dim import Dim, valueInput, applyTo
 from ... import config
 
@@ -203,8 +203,42 @@ def createGridfinityBinBody(
         compartmentWidthUnit = (totalCompartmentsWidth - wall * (input.compartmentsByX - 1)) / input.compartmentsByX
         compartmentLengthUnit = (totalCompartmentsLength - wall * (input.compartmentsByY - 1)) / input.compartmentsByY
 
+        # Round 50: raised dividers carry the lip's profile on both sides, a ridge centred on their grid line, its tip
+        # as far from it as the lip's tip is from the grid line at the outer wall
+        hasRidges = input.hasLip and len(input.raisedDividers) > 0
+        ridgeTip = lipInnerInset(input.lipType, input.xyClearance) + Dim.length(input.xyClearance)
+
+        def gridLineAt(axis: str, line: int) -> Dim:
+            """Where a grid line of the compartment grid lies, across x for axis 'x', on the body: whole cells of the
+            base from the grid's edge, a clearance outside the body"""
+            (base, cells, count) = (input.baseWidth, input.binWidth, input.compartmentsByX) if axis == 'x' else (input.baseLength, input.binLength, input.compartmentsByY)
+            return base * Dim.number(round(line * cells / count, 6)) - Dim.length(input.xyClearance)
+
+        def ridgeSides(compartment: BinBodyCompartmentDefinition) -> frozenset:
+            """The compartment's sides on a raised divider"""
+            if not hasRidges:
+                return frozenset()
+            return raisedSides((compartment.positionX, compartment.positionY, compartment.width, compartment.length), input.raisedDividers)
+
         def compartmentPlacement(compartment: BinBodyCompartmentDefinition) -> tuple[Dim, Dim, Dim, Dim]:
-            """X, y, width and length of the compartment cavity, shortened along a trimmed scoop wall (round 50)"""
+            """X, y, width and length of the compartment cavity, shortened along a trimmed scoop wall, and starting at
+            the ridge's tip on a raised divider with a scoop on it, as at an outer scoop wall (round 50, decided)"""
+            (x, y, width, length) = compartmentCell(compartment)
+            scoopRidges = ridgeSides(compartment) & compartment.scoopSides
+            if scoopSides.LEFT in scoopRidges:
+                start = gridLineAt('x', compartment.positionX) + ridgeTip
+                (x, width) = (start, x + width - start)
+            if scoopSides.RIGHT in scoopRidges:
+                width = gridLineAt('x', compartment.positionX + compartment.width) - ridgeTip - x
+            if scoopSides.FRONT in scoopRidges:
+                start = gridLineAt('y', compartment.positionY) + ridgeTip
+                (y, length) = (start, y + length - start)
+            if scoopSides.BACK in scoopRidges:
+                length = gridLineAt('y', compartment.positionY + compartment.length) - ridgeTip - y
+            return (x, y, width, length)
+
+        def compartmentCell(compartment: BinBodyCompartmentDefinition) -> tuple[Dim, Dim, Dim, Dim]:
+            """X, y, width and length of the compartment cavity in the grid, shortened along a trimmed scoop wall (round 50)"""
             return scoopSides.trimmedCavity(
                 compartmentsMinX + (compartmentWidthUnit + wall) * compartment.positionX,
                 compartmentsMinY + (compartmentLengthUnit + wall) * compartment.positionY,
@@ -216,16 +250,22 @@ def createGridfinityBinBody(
                 gridTrims,
             )
 
-        def tabPlacement(compartmentX: Dim, compartmentY: Dim, compartmentLength: Dim) -> tuple[Dim, Dim, Dim]:
-            """X and y of the tab's back top corner, along the compartment's back wall, and its length"""
+        def tabPlacement(compartment: BinBodyCompartmentDefinition, compartmentX: Dim, compartmentY: Dim, compartmentLength: Dim) -> tuple[Dim, Dim, Dim]:
+            """X and y of the tab's back top corner, along the compartment's back wall or, on a raised divider, at its
+            ridge's tip (round 50, decided: the ridge would cover a Cullenect socket's back), and its length"""
+            if scoopSides.BACK in ridgeSides(compartment):
+                back = gridLineAt('y', compartment.positionY + compartment.length) - ridgeTip
+            else:
+                back = compartmentY + compartmentLength
             return (
                 compartmentX + input.baseWidth * max(0, min(input.tabPosition, input.binWidth - input.tabLength)),
-                compartmentY + compartmentLength,
+                back,
                 input.baseWidth * max(0, min(input.tabLength, input.binWidth)),
             )
 
-        # trimmed compartments are patterned only while all are trimmed alike (round 50)
-        useCompartmentPattern = (input.isUniformCompartments and len(input.compartments) > 1
+        # trimmed compartments are patterned only while all are trimmed alike, compartments beside a ridge differ in
+        # their tabs and scoops (round 50)
+        useCompartmentPattern = (input.isUniformCompartments and len(input.compartments) > 1 and not hasRidges
             and scoopSides.trimsKeepAlike(gridTrims, (input.compartmentsByX, input.compartmentsByY)))
         compartmentsToBuild = input.compartments[:1] if useCompartmentPattern else input.compartments
         for compartmentIndex, compartment in enumerate(compartmentsToBuild):
@@ -236,7 +276,7 @@ def createGridfinityBinBody(
             compartmentDepth = fullCompartmentDepth if compartment.depth >= fullCompartmentDepth.value else compartment.depth
 
             compartmentTabInput = BinBodyTabGeneratorInput()
-            (tabOriginX, tabOriginY, tabLength) = tabPlacement(compartmentX, compartmentY, compartmentLength)
+            (tabOriginX, tabOriginY, tabLength) = tabPlacement(compartment, compartmentX, compartmentY, compartmentLength)
             compartmentTabInput.origin = adsk.core.Point3D.create(tabOriginX.value, tabOriginY.value, binBodyTotalHeight.value)
             compartmentTabInput.originX = tabOriginX
             compartmentTabInput.originY = tabOriginY
@@ -330,18 +370,8 @@ def createGridfinityBinBody(
             )
             bodiesToSubtract.append(compartmentsTopClearance)
 
-        if input.hasLip and len(input.raisedDividers) > 0:
-            # p83: the corners the raised dividers make, filleted once the bin is in one body
-            raisedCorners = raisedDividerCorners(
-                input.raisedDividers,
-                (compartmentsMinX, compartmentsMinY),
-                (compartmentWidthUnit + wall, compartmentLengthUnit + wall),
-                (input.compartmentsByX, input.compartmentsByY),
-                wall,
-                gridTrims,
-            )
-            # the raised dividers stand on the dividers lowered by the tab top offset (round 38)
-            raisedCornersBottomZ = binBodyTotalHeight - Dim.length(input.tabTopOffset)
+        if hasRidges:
+            # Round 50: the ridges' feet and supports shape the corners, the rounding of p83 is not built for them
             bodiesToMerge.extend(createRaisedDividers(
                 input.raisedDividers,
                 (compartmentsMinX, compartmentsMinY),
@@ -353,6 +383,10 @@ def createGridfinityBinBody(
                 lipInput,
                 targetComponent,
                 gridTrims,
+                gridLineAt,
+                ridgeTip,
+                -const.BIN_LIP_SUPPORT_WALL_HEIGHT if input.lipType == LIP_TYPE_FULL else 0,
+                binBodyTotalHeight.value - const.BIN_COMPARTMENT_BOTTOM_THICKNESS,
             ))
 
     if len(bodiesToSubtract) > 0:
@@ -399,12 +433,12 @@ def createGridfinityBinBody(
             if not isCullenect and (compartment.label is None or compartment.label.isEmpty):
                 continue
             (compartmentX, compartmentY, compartmentWidth, compartmentLength) = compartmentPlacement(compartment)
-            (tabOriginX, tabOriginY, tabLength) = tabPlacement(compartmentX, compartmentY, compartmentLength)
+            (tabOriginX, tabOriginY, tabLength) = tabPlacement(compartment, compartmentX, compartmentY, compartmentLength)
             # tabs are trimmed to their compartment, as an expression (p60)
             (labelMinX, labelMaxX) = binLabelLayout.labelSpan(tabOriginX, tabLength, compartmentX, compartmentWidth)
             labelName = 'Label' if len(input.compartments) == 1 else f'Compartment {compartmentIndex + 1} label'
             if isCullenect:
-                if not cullenect.socketFitsDepth(compartmentLength.value, input.tabWidth, input.cullenectSocketOffset):
+                if not cullenect.socketFitsDepth((tabOriginY - compartmentY).value, input.tabWidth, input.cullenectSocketOffset):
                     # the tab fills the compartment, the socket would cut into the divider in front
                     commonUtils.debugLog(f'{labelName}: compartment {compartmentLength.value * 10:.2f} mm long, too short for a Cullenect socket')
                     continue
@@ -457,18 +491,20 @@ def createRaisedDividers(
     lipInput: BinBodyLipGeneratorInput,
     targetComponent: adsk.fusion.Component,
     trims: dict,
+    gridLineAt,
+    ridgeTip: Dim,
+    tipLift: float,
+    floorDepth: float,
 ) -> list[adsk.fusion.BRepBody]:
     """
-    Divider walls on grid lines from below the compartments top clearance up to the top of the lip, cut by the feet of
-    a bin stacked on top like a notched lip, so they run out in the lip's profile. A wall a little off its grid line,
-    as dividers over more units are, gets the part that fits. Segments reach a wall further where they meet a
-    crossing divider, and half a wall into the outer walls, which keeps every box corner off the sketch axes
+    Ridges on the dividers on grid lines, up to the top of the lip, cut by the feet of a bin stacked on top like a
+    notched lip, so they run out in the lip's profile on both sides (round 50, decided; until then a flat topped wall
+    as thick as the divider, round 8, p61). Each is a box centred on its grid line, as wide as the lip's tips either
+    side, from under the divider top down to where its bottom edges, chamfered at 45 degrees in to the divider's faces,
+    keep it from overhanging the compartments, see raisedDividers.ridgeBox. Segments reach a wall further where they
+    meet a crossing divider, and half a wall into the outer walls, which keeps every box corner off the sketch axes
     """
     boxes: list[adsk.fusion.BRepBody] = []
-    # from the divider top, lowered by the tab top offset (upstream c2e12c0, round 38)
-    bottomZ = binBodyTotalHeight - Dim.length(topOffset)
-    # up to the lip top, trimmed or not (upstream round 17.11.2026, p13)
-    height = topOffset + const.BIN_LIP_EXTRA_HEIGHT - lipInput.topTrimHeight
     for (index, segment) in enumerate(segments):
         # across is the axis the wall stands on, along the one it runs on
         (across, along) = (0, 1) if segment.axis == 'x' else (1, 0)
@@ -486,7 +522,24 @@ def createRaisedDividers(
             runLength = runLength - startTrim
         if endTrim is not None:
             runLength = runLength - endTrim
-        (originX, originY, width, length) = (wallStart, runStart, wall, runLength) if segment.axis == 'x' else (runStart, wallStart, runLength, wall)
+        grid = gridLineAt(segment.axis, segment.line)
+        (depth, lowChamfer, highChamfer) = ridgeBox(
+            ridgeTip.value,
+            (grid - wallStart).value,
+            (wallStart + wall - grid).value,
+            tipLift=tipLift,
+            minDepth=topOffset,
+            maxDepth=floorDepth,
+        )
+        bottomZ = binBodyTotalHeight - Dim.length(depth)
+        # up to the lip top, trimmed or not (upstream round 17.11.2026, p13)
+        height = depth + const.BIN_LIP_EXTRA_HEIGHT - lipInput.topTrimHeight
+        acrossStart = grid - ridgeTip
+        if segment.axis == 'x':
+            (originX, originY, width, length) = (acrossStart, runStart, ridgeTip * 2, runLength)
+        else:
+            (originX, originY, width, length) = (runStart, acrossStart, runLength, ridgeTip * 2)
+        name = f'Raised divider {index + 1}'
         box = extrudeUtils.createBoxAtPoint(
             width,
             length,
@@ -496,9 +549,20 @@ def createRaisedDividers(
             bottomZ,
             originX=originX,
             originY=originY,
-            name=f'Raised divider {index + 1}',
+            name=name,
         )
-        boxes.append(box.bodies.item(0))
+        body = box.bodies.item(0)
+        # the bottom edges along the ridge, on its low and high side across
+        acrossAxis = 0 if segment.axis == 'x' else 1
+        alongRidge = geometryUtils.isCollinearToY if segment.axis == 'x' else geometryUtils.isCollinearToX
+        bottomEdges = [edge for edge in faceUtils.getBottomFace(body).edges if alongRidge(edge)]
+        lowEdge = min(bottomEdges, key=lambda edge: edge.boundingBox.minPoint.asArray()[acrossAxis])
+        highEdge = max(bottomEdges, key=lambda edge: edge.boundingBox.minPoint.asArray()[acrossAxis])
+        for (edge, chamfer, side) in ((lowEdge, lowChamfer, 'low'), (highEdge, highChamfer, 'high')):
+            # a divider as wide as the ridge on that side needs no support
+            if chamfer > const.DEFAULT_FILTER_TOLERANCE:
+                filletUtils.createChamfer(commonUtils.objectCollectionFromList([edge]), chamfer, targetComponent, name=f'{name} {side} support')
+        boxes.append(body)
     # Each box is cut on its own and every body is returned, the bin joins them all. Root cause of p82: the boxes were
     # joined into one body first, but Fusion's join leaves bodies that don't touch apart, so parallel walls came back
     # as one body, the others stayed loose in the design (two boxes 3 cm apart, joined: two bodies, shown in Fusion).

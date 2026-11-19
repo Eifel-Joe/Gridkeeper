@@ -257,3 +257,49 @@ def optionEnabled(
     """Whether the dialog offers raising the dividers: a hollow bin body with a lip and more than one compartment"""
     hasCompartments = not isCreased and compartmentCount > 1
     return generateBody and hasLip and isHollow and not isShaped and hasCompartments
+
+
+def ridgeBox(
+    tipHalf: float,
+    lowFace: float,
+    highFace: float,
+    *,
+    tipLift: float,
+    minDepth: float,
+    maxDepth: float,
+) -> tuple[float, float, float]:
+    """
+    The box a raised divider's ridge is cut from by the feet of a bin stacked on top, round 50 (p650): the lip's
+    profile on both sides. Decided: the ridge is centred on the grid line, tipHalf either side, where the groove
+    between two feet is; the divider is a little off it, its faces lowFace and highFace from the grid line. Under each
+    side the ridge runs at 45 degrees in to that side's divider face, the full lip's support (from tipLift under the
+    tip, -1.2 mm straight down) or the light lip's chamfer (from the body top), so nothing overhangs the compartment.
+    Returns how deep under the body top the box starts and the 45 degree chamfers of its low and high bottom edge, all
+    in cm. It starts at least minDepth down, where the dividers were lowered to, and at most maxDepth, the compartment
+    floor: cut off there, its chamfers shorten by as much (one height unit, decided)
+    """
+    chamfers = [max(0.0, tipHalf - face) for face in (lowFace, highFace)]
+    depth = max(minDepth, max(chamfers) - tipLift)
+    cut = max(0.0, depth - maxDepth)
+    return (depth - cut, max(0.0, chamfers[0] - cut), max(0.0, chamfers[1] - cut))
+
+
+def raisedSides(pocket: tuple[int, int, int, int], segments: list[DividerSegment]) -> frozenset:
+    """
+    The sides of a compartment, x, y, width and length in cells, that lie on raised dividers: front and back at low and
+    high y, left and right at low and high x (round 50)
+    """
+    (x, y, width, length) = pocket
+    sides = set()
+    for segment in segments:
+        if segment.axis == 'y' and segment.start < x + width and segment.end > x:
+            if segment.line == y:
+                sides.add('front')
+            if segment.line == y + length:
+                sides.add('back')
+        if segment.axis == 'x' and segment.start < y + length and segment.end > y:
+            if segment.line == x:
+                sides.add('left')
+            if segment.line == x + width:
+                sides.add('right')
+    return frozenset(sides)

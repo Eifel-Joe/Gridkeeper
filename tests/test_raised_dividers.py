@@ -295,3 +295,52 @@ def test_the_run_above_the_ledge_moves_over_by_it_and_up_to_it():
     (shift, rise) = raised.runOffset(LEDGE_3MM, runs, 1)
     assert shift == pytest.approx(1.9 - 3.0)
     assert rise == pytest.approx(16.0 - 15.5)
+
+
+# Round 50, p650 extension: the lip's profile on both sides of a raised divider. In cm, a 1.2 mm divider 0.32 mm and
+# 0.88 mm off the grid line, a full lip's tip 2.846 mm from it
+FULL_TIP = 0.2846
+LIGHT_TIP = 0.215
+
+
+def test_a_full_ridge_has_its_support_down_to_both_divider_faces():
+    (depth, chamferLow, chamferHigh) = raised.ridgeBox(FULL_TIP, 0.032, 0.088, tipLift=-0.12, minDepth=0.05, maxDepth=10)
+    # each side 45 degrees from the tip to its divider face, under 1.2 mm straight below the tip
+    assert chamferLow == pytest.approx(FULL_TIP - 0.032)
+    assert chamferHigh == pytest.approx(FULL_TIP - 0.088)
+    assert depth == pytest.approx(0.12 + FULL_TIP - 0.032)
+
+
+def test_a_light_ridge_has_its_chamfer_under_the_body_top():
+    (depth, chamferLow, chamferHigh) = raised.ridgeBox(LIGHT_TIP, 0.032, 0.088, tipLift=0, minDepth=0.05, maxDepth=10)
+    assert (depth, chamferLow, chamferHigh) == pytest.approx((LIGHT_TIP - 0.032, LIGHT_TIP - 0.032, LIGHT_TIP - 0.088))
+
+
+def test_a_ridge_reaches_at_least_down_to_the_lowered_dividers():
+    # a divider as wide as the ridge needs no chamfer, the box still starts where the dividers were lowered to
+    (depth, chamferLow, chamferHigh) = raised.ridgeBox(LIGHT_TIP, 0.3, 0.3, tipLift=0, minDepth=0.05, maxDepth=10)
+    assert (depth, chamferLow, chamferHigh) == pytest.approx((0.05, 0, 0))
+
+
+def test_a_ridge_is_cut_off_at_the_compartment_floor():
+    # one height unit: about 1 mm of compartment, the support's lower part is cut off and its chamfers shorten by as much
+    (depth, chamferLow, chamferHigh) = raised.ridgeBox(FULL_TIP, 0.032, 0.088, tipLift=-0.12, minDepth=0.05, maxDepth=0.1)
+    cut = 0.12 + FULL_TIP - 0.032 - 0.1
+    assert depth == pytest.approx(0.1)
+    assert chamferLow == pytest.approx(max(0, FULL_TIP - 0.032 - cut))
+    assert chamferHigh == pytest.approx(max(0, FULL_TIP - 0.088 - cut))
+
+
+def test_the_sides_of_a_compartment_on_raised_dividers():
+    segments = [Segment('x', 1, 0, 3), Segment('y', 1, 0, 2), Segment('y', 2, 0, 2)]
+    # a 2x3 grid: the front left compartment has its right and back on raised dividers
+    assert raised.raisedSides((0, 0, 1, 1), segments) == frozenset({'right', 'back'})
+    assert raised.raisedSides((1, 1, 1, 1), segments) == frozenset({'left', 'front', 'back'})
+    assert raised.raisedSides((0, 2, 2, 1), segments) == frozenset({'front'})
+    assert raised.raisedSides((0, 0, 1, 1), []) == frozenset()
+
+
+def test_a_ridge_cut_off_a_little_keeps_shorter_chamfers():
+    (depth, chamferLow, chamferHigh) = raised.ridgeBox(FULL_TIP, 0.032, 0.088, tipLift=-0.12, minDepth=0.05, maxDepth=0.3)
+    cut = 0.12 + FULL_TIP - 0.032 - 0.3
+    assert (depth, chamferLow, chamferHigh) == pytest.approx((0.3, FULL_TIP - 0.032 - cut, FULL_TIP - 0.088 - cut))
