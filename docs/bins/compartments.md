@@ -58,6 +58,8 @@ out either way, four reach small parts from every side.
   into it without a step.
 - Two scoops facing each other in one compartment share it: their radius stays under half its width or length, so a
   strip of flat floor of at least 1 mm stays between them.
+- The rounded edge between floor and wall that a compartment has elsewhere is left out once it has more than one
+  scoop: its floor meets the walls without a scoop at a sharp edge.
 - A wall with a scoop gets no creases, the scoop braces it already.
 - A left or right scoop runs under the ends of the label tab, the tab follows the scoop there.
 

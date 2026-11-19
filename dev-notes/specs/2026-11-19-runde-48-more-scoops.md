@@ -92,6 +92,13 @@ less `BIN_SCOOP_FLOOR_MARGIN` (new, 0.5 mm), so a flat strip of floor stays betw
 keeps today's limit, so today's bins with one scoop are unchanged. One radius for all scoops of a compartment (one
 fillet feature).
 
+## Bottom fillet with several scoops (found in Fusion, 19.11.)
+
+The cavity's bottom fillet fails (`FILLET_NO_EDGE_FOUND`) whenever its floor chain runs into two different scoops,
+with or without the tangent chain: front+back, front+left+right and front+left failed, front alone and left alone
+build. Every pick of two or more scoops has such a chain, so a compartment with more than one scoop gets no bottom
+fillet, its floor edges at the plain walls stay sharp (`scoopSides.bottomFilletSides`).
+
 ## Dialog
 
 Group **Scoop**: `Front (along bin width)` (the old `Add scoop (along bin width)` input), `Back (along bin width)`,

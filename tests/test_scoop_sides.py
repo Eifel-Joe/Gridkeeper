@@ -191,3 +191,16 @@ def test_tab_openings_reach_through_a_wall_thickened_for_a_scoop():
 def test_chamfer_box_bounds_come_from_its_placement():
     # review round 48: the box's own placement, not a face bounding box Fusion may draw loose
     assert scoops.boxBounds((1.0, 2.0), 10.0, 6.0) == ((1.0, 2.0), (11.0, 8.0))
+
+
+def test_bottom_fillet_only_beside_a_single_scoop():
+    # Fusion 19.11.: a floor fillet chain whose ends run into two different scoops fails (FILLET_NO_EDGE_FOUND), with
+    # or without its tangent chain: front+back, front+left+right, front+left all failed; front only and left only
+    # build, their chain ends at the same scoop on both ends. More than one scoop keeps sharp floor edges
+    assert scoops.bottomFilletSides(frozenset()) == [BACK, LEFT, RIGHT, FRONT]
+    assert scoops.bottomFilletSides(frozenset({FRONT})) == [BACK, LEFT, RIGHT]
+    assert scoops.bottomFilletSides(frozenset({LEFT})) == [BACK, RIGHT, FRONT]
+    assert scoops.bottomFilletSides(frozenset({FRONT, BACK})) == []
+    assert scoops.bottomFilletSides(frozenset({FRONT, LEFT, RIGHT})) == []
+    assert scoops.bottomFilletSides(frozenset({FRONT, LEFT})) == []
+    assert scoops.bottomFilletSides(frozenset({FRONT, BACK, LEFT, RIGHT})) == []

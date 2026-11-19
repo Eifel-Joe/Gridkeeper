@@ -19,6 +19,8 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   same rule as the single scoop before, only on more walls.
 - Decided: two scoops facing each other in a compartment have their radius limited to half its span less 0.5 mm, a
   strip of flat floor stays; Scoop max radius stays the upper bound, a single scoop per axis keeps its old limit.
+- A compartment with more than one scoop has no rounded floor edge at its other walls: Fusion fails to round a
+  floor edge running into two different scoops.
 - Scoops on walls that meet blend at the corner. With a lip, every scoop wall reaches up to the lip's inner edge and
   the lip bottom chamfer leaves it out; creases leave every scoop wall out.
 - A bin with only the front scoop is built as before, and saved settings without the new walls load with the front

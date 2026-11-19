@@ -1,0 +1,13 @@
+{
+    "description": "2x1x4 bin with a left scoop under a full lip and a hollow tab open through the side walls, the opening reaches through the wall the scoop thickens (review round 48)",
+    "generator": "bin",
+    "settings": {
+        "binLength": 1,
+        "binHeight": 4,
+        "lipType": "Full",
+        "hasScoopLeft": true,
+        "hasTab": true,
+        "isTabHollow": true,
+        "isTabOpenThroughSides": true
+    }
+}

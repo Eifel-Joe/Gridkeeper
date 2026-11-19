@@ -92,9 +92,9 @@ def createGridfinityBinBodyCutout(
         name=f'{name} corner fillets',
     )
     # the bottom fillet runs along the floor from the first wall without a scoop, the back as before round 48, through
-    # the corners. A wall without a scoop the chain doesn't reach, between two scoops, adds its edge. Four scoops leave
-    # no straight bottom edge
-    plainSides = [side for side in scoopSides.SIDES_ORDER if side not in input.scoopSides]
+    # the corners. With more than one scoop the floor edges stay sharp, Fusion can't fillet a chain running into two
+    # scoops, see scoopSides.bottomFilletSides
+    plainSides = scoopSides.bottomFilletSides(input.scoopSides)
     if input.hasBottomFillet and len(plainSides) > 0:
         # recalculate faces after fillet
         wallFaces = getInnerCutoutWallFaces(innerCutoutBody)

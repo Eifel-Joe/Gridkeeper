@@ -105,3 +105,14 @@ def tabOpeningDepth(insets: dict, wallThickness: float) -> float:
 def boxBounds(origin, width: float, length: float):
     """XY bounds of a box from its corner and size, for touchesScoopWall"""
     return ((origin[0], origin[1]), (origin[0] + width, origin[1] + length))
+
+def bottomFilletSides(sides: frozenset) -> list:
+    """
+    The walls whose floor edge gets the cavity's bottom fillet, in SIDES_ORDER: every wall without a scoop beside a
+    single scoop, none beside more. Fusion fails to fillet a floor chain whose ends run into two different scoops, with
+    or without its tangent chain (round 48, measured 19.11.2026: front+back, front+left+right and front+left failed,
+    front and left alone build); every pick of two or more scoops has such a chain, so its floor edges stay sharp
+    """
+    if len(sides) > 1:
+        return []
+    return [side for side in SIDES_ORDER if side not in sides]
