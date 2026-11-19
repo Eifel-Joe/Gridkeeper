@@ -1,7 +1,7 @@
 # Round 50 – raised dividers off their grid lines beside a scoop wall (p650)
 
 Status 2026-11-19. Point p650 "Bin: dividers up to the top and lip give faulty geometry at the wall" (bug).
-Branch `r50-dividers-lip` from `master` 5a9d4fa. Target geometry: **open decision**, see below.
+Branch `r50-dividers-lip` from `master` 5a9d4fa.
 
 ## Finding
 
@@ -32,21 +32,38 @@ round 48 made it reachable through compartment scoops and on all four walls. A l
 A first hypothesis, the full lip's support under the corner rounding, was wrong: case B with a full lip and no scoops
 is clean. A fix built on it (rounding started lower) changed nothing of the fault and was dropped.
 
-## Target geometry – decision open
+## Decision (2026-11-19)
 
-Round 8 put raised dividers on grid lines, round 48 keeps the compartment grid even beside a scoop wall. With
-dividers up to the top both can't hold. Options:
+Decided: with dividers up to the top the inner compartment grid stays on the grid lines, the inset of a scoop wall is
+taken by the outer row or column only. Rejected: a scoop that stops at the wall under raised dividers (a step at the
+top of the scoop, a change from round 48), and a raised part set on the grid line over a shifted divider (an offset of
+up to 1.2 mm in the divider).
 
-1. With dividers up to the top the inner grid stays on the grid lines; the inset of a scoop wall is taken by the
-   outer row or column only (1.4 mm shorter with a full lip, 0.7 mm with a light one). Dividers sit as without a
-   scoop. (recommended)
-2. With dividers up to the top a scoop doesn't run up into the lip, the cavities start at the wall: a step at the
-   top of the scoop, a change from round 48.
-3. Only the raised part sits on the grid line, the divider below stays shifted: an offset of up to 1.2 mm in the
-   divider. Not recommended.
+## Target geometry
+
+For a bin with a lip and at least one raised divider (`input.raisedDividers`), and only there:
+
+- The compartment grid (start, pitch) is laid out from the plain walls, as without any scoop: every divider lies
+  where it lies in the same bin without scoops (0.28 mm off with a 1.2 mm wall, as today).
+- A compartment along a scoop wall (`outerScoopWalls`, also the bin's front scoop) has its cavity start at the lip's
+  inner edge on that side, as today: it is shorter by `lip inner inset − wall` (1.4 mm with a full lip and a 1.2 mm
+  wall, 0.7 mm with a light lip). Compartments not along that wall keep the full pitch.
+- Everything placed from a compartment follows its cavity: tab and label (back wall), Cullenect socket, the corners
+  rounded by p83 at a scoop wall, the compartments top clearance (spans the cavities, from the scoop insets).
+- Compartments are patterned only while they stay alike: a trim on a side every compartment touches (one row or one
+  column along that axis) keeps them alike, any other trim builds each compartment on its own.
+
+Bins without raised dividers keep the even grid of round 48 unchanged.
 
 ## Tests
 
-To follow with the decision: pytest of the layout, new shape cases for the reported bin and its light-lip
-counterpart, existing scoop and raised divider cases re-checked; bins one height unit high with a full lip checked
-in Fusion.
+- pytest (pure, numbers): the trims per side from the scoop walls and insets; the cavity placement of a compartment
+  in a 2×3 grid with a front scoop wall, full and light lip; no trims without raised dividers; when compartments
+  stay alike for the pattern.
+- New shape cases: `bin_2x3x5_dividers_to_top_lip_full_compartment_scoops` (the reported bin),
+  `bin_2x3x5_dividers_to_top_lip_full_scoop` (bin front scoop), `bin_2x3x5_dividers_to_top_compartment_scoops`
+  (light lip). Bins one height unit high with a full lip, dividers up to the top and a scoop: checked in Fusion, a
+  case of their own if they build, else a new point.
+- Existing cases re-checked in Fusion: `bin_3x2x3_dividers_to_top_3_columns_tab_scoop_part` (front scoop, column
+  dividers: expected unchanged, the trim is on a side every compartment touches), the raised divider cases without
+  scoops (unchanged), the round 48 scoop cases without raised dividers (unchanged).
