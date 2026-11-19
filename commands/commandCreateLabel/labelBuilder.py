@@ -11,7 +11,7 @@ from ...lib.gridfinityUtils import commonUtils, designIntent, labelColors, appea
 from ...lib.gridfinityUtils import parameterUtils
 from ...lib.gridfinityUtils import const
 from ...lib.gridfinityUtils import cullenect
-from ...lib.gridfinityUtils.baseGenerator import createPointJointOrigins
+from ...lib.gridfinityUtils.jointOriginLayout import createOffsetJointOrigins
 from ...lib.gridfinityUtils.dim import Dim
 from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
 from .inputState import InputState
@@ -252,7 +252,7 @@ def _buildLabel(
         tagUtils.tagBody(body, tagUtils.TAG_LABEL, settings, labelParameters, configJson.stateToJson(configJson.GENERATOR_LABEL, state), prefix)
 
     # at the middle of the bottom, following the width parameter, X along the width like the pockets' (p160)
-    (insertJointOrigin,) = createPointJointOrigins(
+    (insertJointOrigin,) = createOffsetJointOrigins(
         [(INSERT_JOINT_ORIGIN, Dim.length(placement[0]) + labelInput.width / 2, Dim.length(placement[1] + height / 2), Dim.length(0))],
         labelComponent,
         name=INSERT_JOINT_ORIGIN,

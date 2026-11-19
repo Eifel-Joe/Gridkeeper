@@ -58,7 +58,9 @@ def centeredGrid(run, name, body, prefix, step):
     if not origins:
         run.check(f'{name}: joint origins found', False)
         return
-    points = [origin.geometry.origin for origin in origins]
+    # offset joint origins since round 46: the place is the transform; native ones, in the component like the body's box
+    # (placement moves bodies, the Grid and Bins occurrences stay at the identity)
+    points = [origin.transform.translation for origin in origins]
     xs = sorted({round(point.x, 4) for point in points})
     ys = sorted({round(point.y, 4) for point in points})
     box = body.boundingBox
@@ -67,8 +69,8 @@ def centeredGrid(run, name, body, prefix, step):
     centerY = (ys[0] + ys[-1]) / 2 - (box.minPoint.y + box.maxPoint.y) / 2
     run.check(f'{name}: {len(origins)} joint origins one base unit apart, centered on the body', stepsOk and abs(centerX) < TOLERANCE and abs(centerY) < TOLERANCE,
               f'x {[round(x * 10, 2) for x in xs]} y {[round(y * 10, 2) for y in ys]} off center {round(centerX * 10, 4)}, {round(centerY * 10, 4)} mm')
-    loose = [sketch.name for sketch in component.sketches if sketch.name.startswith(prefix) and not sketch.isFullyConstrained]
-    run.check(f'{name}: joint origin sketches fully constrained', len(loose) == 0, str(loose))
+    left = [item.name for item in list(component.sketches) + list(component.constructionPlanes) if item.name.startswith(prefix)]
+    run.check(f'{name}: no joint origin sketch or plane (round 46)', len(left) == 0, str(left))
 
 
 def groupA(run):

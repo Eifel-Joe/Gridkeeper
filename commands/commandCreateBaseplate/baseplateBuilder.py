@@ -267,7 +267,7 @@ def _buildBaseplate(
         cellBlocks.append((0, 0, int(baseplateGeneratorInput.baseplateWidth), int(baseplateGeneratorInput.baseplateLength)))
     if baseplatePlacement != (0, 0):
         placementUtils.moveBodies(baseplateBodies, *baseplatePlacement, gridfinityBaseplateComponent, name=BASEPLATE_PLACEMENT_FEATURE)
-    # last, after the placement, joint origins sit on sketches which don't follow body moves.
+    # last, after the placement, joint origin offsets don't follow body moves.
     # The preview spreads fill pieces apart and only shows the shape, it goes without them
     if not isPreview and inputsState.hasJointOrigins:
         createCellJointOrigins(
