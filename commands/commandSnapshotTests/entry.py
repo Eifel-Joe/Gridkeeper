@@ -664,6 +664,7 @@ def runCase(case: testCases.TestCase, keepOpen: bool) -> dict:
             ('design intent', lambda: designIntentNotes(case, document)),
             ('sketches', lambda: sketchConstraintNotes(case, document)),
             ('raised divider corners', lambda: raisedCornerLedgeNotes(case, bodies)),
+            ('divider gaps', lambda: dividerGapNotes(case, bodies)),
             ('insert text', lambda: insertTextNotes(case, bodies)),
             ('colors', lambda: colorNotes(case, bodies)),
             ('structure', lambda: structureNotes(case, document, bodies)),
@@ -771,6 +772,82 @@ def sketchConstraintNotes(case: testCases.TestCase, document: adsk.core.Document
     if len(names) > 0:
         log(f'{case.name}: {len(names)} of {len(sketches)} sketches not fully constrained, reported only: {", ".join(names)}')
     return []
+
+def sectionLoops(body: adsk.fusion.BRepBody, origin: adsk.core.Point3D, normal: adsk.core.Vector3D, axes: tuple[int, int]) -> list[list[tuple[float, float]]]:
+    """The closed loops a plane cuts from a body as polylines, each point the two coordinates of axes"""
+    tbm = adsk.fusion.TemporaryBRepManager.get()
+    wire = tbm.planeIntersection(tbm.copy(body), adsk.core.Plane.create(origin, normal))
+    loops = []
+    if wire is None:
+        return loops
+    for edge in wire.edges:
+        evaluator = edge.evaluator
+        (_, start, end) = evaluator.getParameterExtents()
+        (_, points) = evaluator.getStrokes(start, end, 0.0005)
+        loops.append([(point.asArray()[axes[0]], point.asArray()[axes[1]]) for point in points])
+    return loops
+
+# how far in from a wall's outer face a divider is looked for, and the height steps of the scan, cm
+DIVIDER_GAP_REACH = 0.8
+DIVIDER_GAP_STEP = 0.02
+DIVIDER_GAP_LEVEL_OFFSET = 0.0013
+# heights of the level sections the dividers are looked for in, shares of the height over the base, and the widest
+# stretch of material that counts as a divider, cm
+DIVIDER_PROBE_SHARES = (0.12, 0.25, 0.4, 0.55, 0.7)
+DIVIDER_MAX_WIDTH = 0.5
+
+def dividerGapNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BRepBody]) -> list[str]:
+    """
+    Why a bin with compartments fails for a gap between a divider and its outer wall, at any height, in the lip too
+    (round 50). The dividers are found on a level section under the lip; in the plane of each, at its middle and a
+    little in from both faces, a line at every height going in from the wall's outer face must not leave the material
+    and enter it again within reach, see testCases.wallGaps
+    """
+    if case.generator != testCases.GENERATOR_BIN or len(bodies) == 0:
+        return []
+    body = bodies[0]
+    box = body.boundingBox
+    (x0, y0, z0, x1, y1, z1) = (box.minPoint.x, box.minPoint.y, box.minPoint.z, box.maxPoint.x, box.maxPoint.y, box.maxPoint.z)
+    # level sections above the base and the floor, low enough to be under the label tabs, which a divider carries on
+    # one side and would make look wider than a divider
+    levelSections = [sectionLoops(body, adsk.core.Point3D.create(0, 0, z0 + 0.6 + (z1 - z0 - 0.6) * share), adsk.core.Vector3D.create(0, 0, 1), (0, 1))
+              for share in DIVIDER_PROBE_SHARES]
+    notes = []
+    found = 0
+    # lines at x find the dividers across y, which meet the walls at x0 and x1, and the other way round
+    for (lineAxis, start, end, span, walls) in ((0, x0, x1, (y0, y1), (x0, x1)), (1, y0, y1, (x0, x1), (y0, y1))):
+        # lines along the other axis at eighths of this one find the dividers across them
+        dividers = set()
+        for level in levelSections:
+            for step in range(1, 8):
+                value = start + (end - start) * step / 8
+                for (low, high) in testCases.materialIntervals(testCases.lineCrossings(level, lineAxis, value)):
+                    if low > span[0] + 0.3 and high < span[1] - 0.3 and high - low <= DIVIDER_MAX_WIDTH:
+                        dividers.add((round((low + high) / 2, 2), round((high - low) / 2, 3)))
+        found += len(dividers)
+        for (middle, half) in sorted(dividers):
+            for offset in (0, half - 0.015, -(half - 0.015)):
+                at = middle + offset
+                # a plane across the divider's other axis, its walls at the ends of that axis
+                origin = adsk.core.Point3D.create(0, at, 0) if lineAxis == 0 else adsk.core.Point3D.create(at, 0, 0)
+                normal = adsk.core.Vector3D.create(0, 1, 0) if lineAxis == 0 else adsk.core.Vector3D.create(1, 0, 0)
+                loops = sectionLoops(body, origin, normal, (0, 2) if lineAxis == 0 else (1, 2))
+                # a little off the round heights of the design: a line on a level face, a divider's top, crossed it at random
+                levels = [z0 + 0.55 + DIVIDER_GAP_LEVEL_OFFSET + DIVIDER_GAP_STEP * index for index in range(int((z1 - z0 - 0.55) / DIVIDER_GAP_STEP))]
+                for wallFace in walls:
+                    gaps = testCases.wallGaps(loops, wallFace, DIVIDER_GAP_REACH, levels)
+                    if gaps:
+                        heights = [gapLevel for (gapLevel, _) in gaps]
+                        widest = max(width for (_, width) in gaps)
+                        notes.append(
+                            f'gap of up to {widest * 10:.2f} mm between the divider at {"y" if lineAxis == 0 else "x"} '
+                            f'{at * 10:.2f} mm and the wall at {wallFace * 10:.2f} mm, from {(min(heights) - z0) * 10:.1f} '
+                            f'to {(max(heights) - z0) * 10:.1f} mm over the bottom')
+    compartments = getattr(case.state, 'compartmentsX', 1) * getattr(case.state, 'compartmentsY', 1)
+    if compartments > 1 and found == 0:
+        # a check that saw no divider proves nothing
+        notes.append(f'no divider found to check for gaps in a bin of {compartments} compartments')
+    return notes
 
 def raisedCornerLedgeNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BRepBody]) -> list[str]:
     """

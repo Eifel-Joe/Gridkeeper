@@ -634,3 +634,52 @@ def test_the_ledge_check_reaches_down_to_the_raised_dividers_at_every_tab_top_of
     assert cases.raisedDividersReach(0.05) == pytest.approx(0.5)
     assert cases.raisedDividersReach(0.2) > 0.44 + 0.2
     assert cases.raisedDividersReach(0) == pytest.approx(0.5)
+
+
+# Round 50: a divider reaching its wall without a gap, checked on sections of the built bin. Polylines are closed loops
+# of a section, (along, up) in mm here
+def _square(a0, a1, z0, z1):
+    return [[(a0, z0), (a1, z0), (a1, z1), (a0, z1), (a0, z0)]]
+
+
+def test_crossings_of_a_line_with_a_closed_section():
+    loops = _square(0, 10, 0, 5)
+    assert cases.lineCrossings(loops, 1, 2.5) == pytest.approx([0, 10])
+    # along the other axis
+    assert cases.lineCrossings(loops, 0, 4) == pytest.approx([0, 5])
+    # a line through a corner counts once on each side, not twice
+    assert cases.lineCrossings(loops, 1, 5) in ([], [0, 10])
+
+
+def test_a_divider_joined_to_its_wall_has_no_gap():
+    # wall 0..1.2 and divider from 1.2 inward, one loop
+    loops = [[(0, 0), (20, 0), (20, 30), (0, 30), (0, 0)]]
+    assert cases.wallGaps(loops, wallFace=0, reach=8, levels=[5, 15, 25]) == []
+
+
+def test_a_gap_between_wall_and_divider_is_found_with_its_height():
+    # the wall 0..1.2 full height, the divider from 1.5 inward, joined to the wall only below 10 (by the floor)
+    loops = [[(0, 0), (20, 0), (20, 30), (1.5, 30), (1.5, 10), (1.2, 10), (1.2, 30), (0, 30), (0, 0)]]
+    gaps = cases.wallGaps(loops, wallFace=0, reach=8, levels=[5, 15, 25])
+    assert [level for (level, _) in gaps] == [15, 25]
+    assert gaps[0][1] == pytest.approx(0.3)
+
+
+def test_a_wall_from_the_far_side_is_scanned_inward():
+    loops = [[(0, 0), (20, 0), (20, 30), (18.8, 30), (18.8, 10), (18.5, 10), (18.5, 30), (0, 30), (0, 0)]]
+    gaps = cases.wallGaps(loops, wallFace=20, reach=8, levels=[15])
+    assert [level for (level, _) in gaps] == [15]
+    assert gaps[0][1] == pytest.approx(0.3)
+
+
+def test_the_cavity_beside_a_wall_is_no_gap():
+    # a wall with nothing beside it within reach: the line leaves the material and doesn't come back
+    loops = [[(0, 0), (1.2, 0), (1.2, 30), (0, 30), (0, 0)], [(0, -2), (40, -2), (40, 0), (0, 0), (0, -2)]]
+    assert cases.wallGaps(loops, wallFace=0, reach=8, levels=[5, 15]) == []
+
+
+def test_material_intervals_along_a_line_find_the_dividers():
+    loops = [[(0, 0), (1.2, 0), (1.2, 1), (0, 1), (0, 0)], [(41, 0), (42.2, 0), (42.2, 1), (41, 1), (41, 0)],
+             [(82, 0), (83.2, 0), (83.2, 1), (82, 1), (82, 0)]]
+    intervals = cases.materialIntervals(cases.lineCrossings(loops, 1, 0.5))
+    assert intervals == [pytest.approx((0, 1.2)), pytest.approx((41, 42.2)), pytest.approx((82, 83.2))]
