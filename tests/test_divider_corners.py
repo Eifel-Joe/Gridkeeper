@@ -244,3 +244,14 @@ def test_support_path_without_a_straight_part_when_the_corner_below_ends_lower()
     # a tab top offset deeper than the support's straight part: the corner below ends on its 45 degree part, its edges
     # start 0.6 mm out from the wall there
     assert flat(raised.supportCornerPath(0.06, supportTopZ=2.88, bottomZ=2.8)) == pytest.approx(flat([(0, 2.74), (0.06, 2.8)]))
+
+
+# Review round 50: a wall thicker than the lip's reach has its face further from its grid line than the lip reaches
+# into the cell; the corner's edges up that face belong to the chain too, else the corner was filleted and stayed sharp
+# from the corner below up to the ledge. Light lip, a 3 mm wall: its face 3.25 mm from the grid line, the lip 2.15 mm
+def test_corner_edges_up_a_thick_walls_face():
+    corner = Corner(0, 0, 1, -1)
+    at = (41.15, 3.25)
+    assert raised.isCornerEdge(corner, at, LINES, reach=2.15, bottomZ=15.5, start=(41.15, 3.25, 15.5), end=(41.15, 3.25, 16.0))
+    # still nothing beyond the face into the cell
+    assert not raised.isCornerEdge(corner, at, LINES, reach=2.15, bottomZ=15.5, start=(41.15, 3.4, 15.5), end=(41.15, 3.4, 16.0))

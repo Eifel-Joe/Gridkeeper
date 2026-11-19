@@ -1,6 +1,6 @@
 """
 Dividers raised up into the stacking lip. The feet of a bin stacked on top have a groove on every grid line, so a
-divider wall lying on one can go up to the top of the lip and run out in its profile, like the lip around the bin.
+divider wall lying on one can go up to the top of the lip and end in the lip's top shape there.
 Dividers between grid lines stay below the lip, they would run into the feet.
 
 Only the choice of walls is here, without Fusion, the body is made by binBodyGenerator.
@@ -131,13 +131,16 @@ def isCornerEdge(
     plane (round 50): the lip runs out of the wall's face into the cell, the divider's top back to its middle. The edge
     stays on the corner's side of both lines, grids x and y, an outer wall's grid line, which the lip runs back to at
     the top, or a raised divider's middle, where its top's ridge is, and no further into the cell from them than reach,
-    the lip's widest. Level edges are none of it
+    the lip's widest, or the cavity's face at cornerAt where that lies further in: a wall thicker than the lip has its
+    face beyond the lip's reach, its edges up to the ledge under the lip were left out and the corner stayed sharp
+    there (review round 50). Level edges are none of it
     """
     for point in (start, end):
         for (axis, side) in ((0, corner.sideX), (1, corner.sideY)):
             # into the cell from the grid line, the cell lies on the far side of its own side
             into = (grids[axis] - point[axis]) * side
-            if into < -tolerance or into > reach + tolerance:
+            limit = max(reach, (grids[axis] - cornerAt[axis]) * side)
+            if into < -tolerance or into > limit + tolerance:
                 return False
         if point[2] < bottomZ - tolerance:
             return False

@@ -5,7 +5,7 @@ import copy
 from dataclasses import dataclass
 
 from ...lib import fusion360utils as futil
-from . import const, combineUtils, faceUtils, commonUtils, sketchUtils, extrudeUtils, baseGenerator, edgeUtils, filletUtils, geometryUtils, patternUtils, binShape, scoopSides
+from . import const, combineUtils, faceUtils, commonUtils, sketchUtils, extrudeUtils, baseGenerator, edgeUtils, filletUtils, patternUtils, binShape, scoopSides
 from .binBodyCutoutGenerator import createGridfinityBinBodyCutout
 from .binBodyCutoutGeneratorInput import BinBodyCutoutGeneratorInput
 from .baseGeneratorInput import BaseGeneratorInput
@@ -600,8 +600,8 @@ def createRaisedDividers(
     straight up as thick as the divider, from the divider top lowered by the tab top offset (upstream c2e12c0, round
     38), and ends at the lip's top in a roof or, under a trimmed lip, a chamfered flat top, see raisedDividerWall; then
     it is cut by the feet of a bin stacked on top like the lip. Segments reach a wall further where they meet a
-    crossing divider, and to RIDGE_WALL_MARGIN under the outer faces of the outer walls, which keeps every box corner
-    off the sketch axes
+    crossing divider, and to RIDGE_WALL_MARGIN under the outer faces of the outer walls, which keeps every section's
+    corner off the sketch axes
     """
     boxes: list[adsk.fusion.BRepBody] = []
     # up to the lip top, trimmed or not (upstream round 17.11.2026, p13)
@@ -729,7 +729,7 @@ def roundRaisedDividerCorners(
     """
     bottomZ = rounding.bottomZ
     radius = Dim.length(rounding.radius)
-    sweeps: list[tuple[int, list[adsk.fusion.BRepBody]]] = []
+    sweeps: list[tuple] = []
     toFillet: list[tuple[int, FilletCorner, tuple[float, float], tuple[float, float]]] = []
     # Each corner's section goes where its edges start, the lowest point of its first run: under a full lip that is
     # the support's face straight down from the lip's tip, not the cavity's corner. Placed at the cavity's corner it
@@ -791,15 +791,10 @@ def roundRaisedDividerCorners(
             made.append(sweep)
             bodies.append(sweep.bodies.item(0))
         if len(bodies) != len(runs) + (1 if support is not None else 0):
-            for item in reversed(made):
-                plane = item.referencePlane if isinstance(item, adsk.fusion.Sketch) else None
-                if item.isValid:
-                    item.deleteMe()
-                if plane is not None and plane.isValid:
-                    plane.deleteMe()
+            deleteMade(made)
             toFillet.append((index, corner, at, grids))
             continue
-        sweeps.append((index, corner, at, grids, bodies))
+        sweeps.append((index, corner, at, grids, bodies, made))
     if len(sweeps) > 0:
         # The corners stay sharp at worst, never the bin: a cut or join Fusion fails on leaves their corners to the
         # fillets. The cutters are kept until the last cut, see createRaisedDividers
@@ -807,7 +802,7 @@ def roundRaisedDividerCorners(
         rounded: list[adsk.fusion.BRepBody] = []
         # the corners whose pieces are in rounded
         joined: list[tuple[int, FilletCorner, tuple[float, float], tuple[float, float]]] = []
-        for (position, (index, corner, at, grids, bodies)) in enumerate(sweeps):
+        for (position, (index, corner, at, grids, bodies, made)) in enumerate(sweeps):
             # only the top run is cut, the pieces below it stay where the feet can't reach
             try:
                 cut = combineUtils.cutBody(
@@ -819,9 +814,8 @@ def roundRaisedDividerCorners(
                 )
             except RuntimeError as error:
                 commonUtils.debugLog(f'Raised divider corner {index + 1}: foot cut failed, {error}')
-                for body in bodies:
-                    # no loose pieces of a corner that is filleted
-                    targetComponent.features.removeFeatures.add(body)
+                # no loose pieces, sweeps or sketches of a corner that is filleted (review round 50)
+                deleteMade(made)
                 if position == len(sweeps) - 1:
                     # the last cut was to use up the cutters, they mustn't stay in the bin (review round 15)
                     for cutter in cutters:
@@ -841,8 +835,20 @@ def roundRaisedDividerCorners(
                 for piece in rounded:
                     targetComponent.features.removeFeatures.add(piece)
                 toFillet.extend(joined)
+    if sketch is not None and len(toFillet) == len(corners):
+        # no corner swept with the shared sections, they go with their plane (review round 50)
+        deleteMade([sketch])
     for (index, corner, at, grids) in toFillet:
         filletRaisedDividerCorner(binBody, index, corner, at, grids, rounding.reach, bottomZ.value, rounding.radius, targetComponent)
+
+def deleteMade(made: list):
+    """Deletes what was made for a corner, last first, a sketch with its construction plane"""
+    for item in reversed(made):
+        plane = item.referencePlane if isinstance(item, adsk.fusion.Sketch) else None
+        if item.isValid:
+            item.deleteMe()
+        if plane is not None and plane.isValid:
+            plane.deleteMe()
 
 def sweepCorner(
     profile: adsk.fusion.Profile,

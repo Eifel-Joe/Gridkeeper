@@ -339,3 +339,12 @@ The rounding of p83 runs from the compartment's corner fillet up over the wall, 
   over the run, then cut by the feet of a stacked bin.
 - `filletCorners`, `isCornerEdge`, `chainPath`, `chainRuns`, `runOffset`, `supportCornerPath` (pure, tested) and the
   sweeps in `roundRaisedDividerCorners`.
+
+## After the review of the divider's top (2026-11-19)
+
+- A wall thicker than the lip's reach (2.15 mm light, 2.85 mm full, less the clearance) had its face beyond what a
+  corner's edges were allowed into the cell; the edges up that face were left out, the corner fell back to a fillet
+  and stayed sharp from the corner below to the ledge under the lip. A corner's edges now reach at least to the
+  cavity's own face. Checked in Fusion with a 3 mm wall, light and full: every corner swept, no face looking down.
+- A corner whose foot cut fails takes its sweeps, sketches and planes with it, and the shared section sketch goes when
+  no corner is swept with it.
