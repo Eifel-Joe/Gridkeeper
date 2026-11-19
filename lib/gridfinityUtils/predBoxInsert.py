@@ -14,6 +14,9 @@ Round 47 (p591): latch, hinge and handle pin need no parameters and no history (
 per Fusion session and every set gets copies of their bodies (partBodies, predPartCache, predPartCopies). Drawn in a
 document with boxes they cost 27-45 s per box, a copy about 1 s (fusion-auftraege/r47_mess.log). The handle follows
 the box width and is drawn in each set.
+
+Round 49 (p610): predPartCache keeps them on disk as well (predPartFile, the add-in's partCache folder), so the first
+box after Fusion starts reads them instead of drawing them; partBodies is unchanged.
 """
 
 import adsk.core, adsk.fusion
