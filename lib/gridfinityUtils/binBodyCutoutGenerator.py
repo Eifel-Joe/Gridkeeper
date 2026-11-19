@@ -69,10 +69,12 @@ def createGridfinityBinBodyCutout(
         ]
         # a margin less deep than the cutout at most and as round as its corners at least, an expression of the cutout
         # depth so it still fits once the height unit changes, see const.BIN_SCOOP_TOP_MARGIN
-        scoopMaxRadius = Dim.max(
-            Dim.min(Dim.length(input.scoopMaxRadius), Dim.asLength(input.height) - Dim.length(const.BIN_SCOOP_TOP_MARGIN)),
-            Dim.length(input.filletRadius),
-        )
+        scoopRadius = Dim.min(Dim.length(input.scoopMaxRadius), Dim.asLength(input.height) - Dim.length(const.BIN_SCOOP_TOP_MARGIN))
+        # two scoops facing each other share the span, a single one per axis keeps the limit it had before round 48
+        for limit in scoopSides.scoopRadiusSpanLimits(
+            input.scoopSides, Dim.asLength(input.width), Dim.asLength(input.length), Dim.length(const.BIN_SCOOP_FLOOR_MARGIN)):
+            scoopRadius = Dim.min(scoopRadius, limit)
+        scoopMaxRadius = Dim.max(scoopRadius, Dim.length(input.filletRadius))
         filletUtils.createFillet(
             scoopEdges,
             scoopMaxRadius,

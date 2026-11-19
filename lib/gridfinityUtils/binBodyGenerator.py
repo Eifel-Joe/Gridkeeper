@@ -250,7 +250,7 @@ def createGridfinityBinBody(
                 compartmentLength,
                 compartmentDepth,
                 input.binCornerFilletRadius - input.wallThickness,
-                input.scoopSides,
+                compartment.scoopSides,
                 input.scoopMaxRadius,
                 input.hasTab,
                 compartmentTabInput,

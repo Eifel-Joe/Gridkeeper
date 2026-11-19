@@ -171,9 +171,13 @@ def creaseLayout(state: InputState) -> list[tuple[wallCreases.WallSide, int]]:
         binScoopSides(state),
     )
 
+def binScoopsBuilt(state: InputState) -> bool:
+    """Only a plain hollow bin builds scoops"""
+    return state.binType == BIN_TYPE_HOLLOW and not isShaped(state)
+
 def binScoopSides(state: InputState) -> frozenset:
-    """The walls with a scoop, only a plain hollow bin builds them (round 48, see scoopSides)"""
-    return scoopSides.stateScoopSides(state, buildsScoop=state.binType == BIN_TYPE_HOLLOW and not isShaped(state))
+    """The walls with a scoop of the bin's checkboxes, see scoopSides (round 48); compartments may have their own"""
+    return scoopSides.stateScoopSides(state, buildsScoop=binScoopsBuilt(state))
 
 def tagged(parameter: adsk.fusion.UserParameter, field: str, owner: str) -> adsk.fusion.UserParameter:
     """The parameter tagged with the config field it holds and the bin it's of, see tagUtils.tagParameterField"""
@@ -388,7 +392,6 @@ def _buildBin(
     binBodyInput.isSolid = isSolid or isShelled or shaped
     binBodyInput.hasLipBottomChamfer = not isSolid
     binBodyInput.wallThickness = state.wallThickness
-    binBodyInput.scoopSides = binScoopSides(state)
     binBodyInput.scoopMaxRadius = state.scoopMaxRadius
     binBodyInput.hasTab = state.hasTab and isHollow and not shaped
     # in base units like the size, the body counts in feet
@@ -433,7 +436,14 @@ def _buildBin(
         compartment = BinBodyCompartmentDefinition(item['x'], item['y'], item['width'], item['length'])
         if item['depth'] is not None:
             compartment.depth = item['depth'] / 10
+        # a compartment's own scoop walls from the layout editor, the bin's without (round 48)
+        compartment.scoopSides = scoopSides.compartmentScoopSides(
+            item.get('scoops') if binScoopsBuilt(state) else None, binScoopSides(state), hasTab=state.hasTab)
         binBodyInput.compartments.append(compartment)
+    binBodyInput.scoopSides = scoopSides.outerScoopWalls(
+        [(c.positionX, c.positionY, c.width, c.length, c.scoopSides) for c in binBodyInput.compartments],
+        compartmentsX, compartmentsY,
+    )
     # grid lines are whole grid units also on a half grid, the feet of any bin stacked on top have a groove there
     binBodyInput.raisedDividers = raisedDividers.segmentsForBin(
         state.hasDividersToTop, state.hasLip, isHollow, shaped,

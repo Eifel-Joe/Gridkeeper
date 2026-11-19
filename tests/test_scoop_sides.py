@@ -125,7 +125,8 @@ def test_bin_builder_passes_the_scoop_walls():
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     with open(os.path.join(project_root, "commands", "commandCreateBin", "binBuilder.py"), encoding="utf-8") as file:
         source = file.read()
-    assert "binBodyInput.scoopSides = binScoopSides(state)" in source
+    # the bin's walls reach each compartment, the outer walls follow them (addendum: per compartment)
+    assert "binScoopSides(state), hasTab=state.hasTab)" in source
     assert "binBodyInput.hasScoop" not in source
 
 
@@ -164,3 +165,17 @@ def test_radius_is_limited_only_between_two_scoops_on_an_axis():
     assert scoops.scoopRadiusSpanLimits(frozenset({FRONT, LEFT}), 30.0, 20.0, 0.5) == []
     assert scoops.scoopRadiusSpanLimits(frozenset({FRONT, BACK}), 30.0, 20.0, 0.5) == [9.5]
     assert scoops.scoopRadiusSpanLimits(frozenset({FRONT, BACK, LEFT, RIGHT}), 30.0, 20.0, 0.5) == [9.5, 14.5]
+
+
+def test_generator_scoops_each_compartment_with_its_own_walls():
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    def source(*path):
+        with open(os.path.join(project_root, *path), encoding="utf-8") as file:
+            return file.read()
+    generator = source("lib", "gridfinityUtils", "binBodyGenerator.py")
+    assert "compartment.scoopSides," in generator
+    builder = source("commands", "commandCreateBin", "binBuilder.py")
+    assert "compartment.scoopSides = scoopSides.compartmentScoopSides(" in builder
+    assert "binBodyInput.scoopSides = scoopSides.outerScoopWalls(" in builder
+    cutout = source("lib", "gridfinityUtils", "binBodyCutoutGenerator.py")
+    assert "scoopSides.scoopRadiusSpanLimits(" in cutout
