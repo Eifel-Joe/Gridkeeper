@@ -6,7 +6,7 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## Unreleased
 
-### Raised dividers beside a scoop wall (round 50)
+### Raised dividers with the lip's profile, and fixes around scoops (round 50)
 
 - **Dividers up to the top stay on their grid lines beside a scoop wall:** a wall with a scoop starts the
   compartments along it at the lip's inner edge. Until now the whole compartment grid moved with it, the dividers
@@ -16,10 +16,29 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   round 48.
   - Decided: with dividers up to the top the grid is laid out from the walls as without a scoop, and only the
     compartments along a scoop wall are shorter by its inset (1.4 mm under a full lip, 0.7 mm under a light lip with a
-    1.2 mm wall). Tabs, labels, Cullenect sockets and the rounded divider corners follow the shorter compartments.
-  - Bins without raised dividers keep the evenly spaced compartments of round 48.
-- **Shape test cases:** three new bins with raised dividers beside a scoop wall (compartment scoops and the bin scoop
-  under a full lip, compartment scoops under a light lip).
+    1.2 mm wall). Bins without raised dividers keep the evenly spaced compartments of round 48.
+- **Raised dividers carry the lip's profile on both sides:** decided, each divider on a grid line rises as a ridge
+  centred on the grid line, with the lip's inner profile mirrored towards both compartments and 0.25 mm clear of the
+  feet of a bin stacked on top, which now sit in it as they sit in the lip at the outer wall (until now a flat topped
+  wall as thick as the divider, round 8). Under a full lip a support runs at 45 degrees from the ridge's tips into the
+  divider, under a light lip a chamfer; in a bin one unit high the support stops at the floor. Saved bins rebuild with
+  the ridge.
+  - A label tab and its Cullenect pocket in front of a ridge start at the ridge's tip; a compartment with a scoop on a
+    ridge starts at the tip on that side, so the scoop runs up into it without a step (decided).
+  - Compartments beside a ridge have tighter corners and floor fillet (2.25 mm instead of 2.55 mm under a full lip
+    with a 1.2 mm wall, 1.4 mm where a scoop starts at the ridge's tip), so the ridge covers them at the top and no
+    level face is left (decided; one radius per compartment, as Fusion can't fillet a floor beside a scoop into
+    corners of different radii).
+  - The rounding of the divider corners of round 8 (p83) is no longer built; a bin with raised dividers builds in
+    about half the time.
+- **No ledges where raised dividers cross (p651):** the crossing ridges cover the compartment corners there.
+- **A bin one unit high with a scoop builds (p652):** the floor fillet beside a scoop is at most the cavity's depth
+  less 0.1 mm; at 1 mm depth the full 2.55 mm failed in Fusion.
+- **No ledge between two scoop walls (p653):** a cavity corner where two scoop walls meet is concentric with the lip's
+  inner corner (1.4 mm under a full lip, 2.1 mm under a light one) instead of leaving a level face of 1.1 mm².
+- **Shape test cases:** seven new bins (raised dividers beside scoop walls under a full and a light lip, crossing
+  ridges, a bin one unit high with a scoop, two scoop walls with raised dividers); all fourteen cases with raised
+  dividers and four round 48 cases with two scoop walls stored anew.
 
 ### Box small parts kept on disk (round 49)
 
