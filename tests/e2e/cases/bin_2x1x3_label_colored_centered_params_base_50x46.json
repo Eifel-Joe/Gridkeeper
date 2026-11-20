@@ -1,0 +1,20 @@
+{
+    "description": "2x1x3 bin centered on the origin with a raised icon and text label in red, base units changed to 50 by 46 mm after building: bin and letters stay centered (round 54)",
+    "generator": "bin",
+    "settings": {
+        "binLength": 1,
+        "binHeight": 3,
+        "hasTab": true,
+        "tabLength": 2,
+        "labelText": "Bolts",
+        "labelIcon": "Hex nut",
+        "labelStyle": "Embossed",
+        "labelColor": "#D02020",
+        "hasCreases": false,
+        "placement": "Center on origin"
+    },
+    "parameters": {
+        "gfBin1_baseWidth": 50.0,
+        "gfBin1_baseLength": 46.0
+    }
+}

@@ -39,8 +39,8 @@ def test_a_bin_into_a_cell_is_built_where_it_is_jointed_from():
     source comes from binCell.placementSource, a cell before Center on origin, a kept spot and a free one"""
     source = _source(BIN_BUILDER, "_buildBin")
     assert "binCell.placementSource(state.placement == PLACEMENT_CENTER, cell is not None and newCmpOcc is not None, placement is not None)" in source
-    assert "(0, 0) if source == 'cell'" in source
-    assert "centeredPlacement(state) if source == 'center'" in source
+    assert "(0, 0) if source in ('cell', 'center')" in source
+    assert "centeredPlacement(state, baseWidth, baseLength) if source == 'center'" in source
     assert "placement if source == 'kept'" in source
     assert "placementUtils.findPlacement(" in source
 

@@ -1,0 +1,14 @@
+{
+    "description": "2x1x3 bin centered on the origin with joint origins, base units changed to 50 by 46 mm after building: it stays centered (round 54)",
+    "generator": "bin",
+    "settings": {
+        "binLength": 1,
+        "binHeight": 3,
+        "hasJointOrigins": true,
+        "placement": "Center on origin"
+    },
+    "parameters": {
+        "gfBin1_baseWidth": 50.0,
+        "gfBin1_baseLength": 46.0
+    }
+}

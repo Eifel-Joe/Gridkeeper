@@ -24,7 +24,7 @@ The dialog is long, its sections are described on these pages:
 
 | Input | Default | What it does |
 |---|---|---|
-| **Position** | Snap to free spot | *Snap to free spot* puts a new bin on the free grid spot closest to the origin, beside the bins already there. *Center on origin* centers the bin on the origin; a centered bin is centered again when it is rebuilt, also with a new size, and its joint origins go with it |
+| **Position** | Snap to free spot | *Snap to free spot* puts a new bin on the free grid spot closest to the origin, beside the bins already there. *Center on origin* centers the bin on the origin; a centered bin is centered again when it is rebuilt, also with a new size, and its joint origins go with it. It also stays centered when its base units are changed in Fusion's parameter table (since 1.2.1); a bin centered with an earlier version does so once it has been rebuilt with the bin command |
 | **Cell** | none | A cell of a baseplate or box to joint the new bin into, see [Picking a joint origin in a dialog](../working/components.md#picking-a-joint-origin-in-a-dialog). A picked cell wins: **Position** is greyed out then |
 
 ![The Placement group of the bin dialog: Cell not picked, Position Center on origin](../assets/images/dialog-bin-placement.png)

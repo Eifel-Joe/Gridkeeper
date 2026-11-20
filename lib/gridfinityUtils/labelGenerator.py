@@ -3,7 +3,7 @@ import math
 import adsk.core, adsk.fusion
 
 from . import const, commonUtils, combineUtils, appearanceUtils, textStyles, binLabelLayout, sketchUtils, svgSymbol
-from .dim import Dim, valueInput, applyTo
+from .dim import Dim, valueInput, applyTo, isZero
 
 LABEL_STYLE_OUTLINE = 'Outline'
 LABEL_STYLE_ENGRAVED = 'Engraved'
@@ -501,7 +501,7 @@ def createLabel(
     name: str,
     textOccurrence=None,
     targetOccurrence: adsk.fusion.Occurrence | None = None,
-    binPlacement: tuple[float, float] = (0, 0),
+    binPlacement: tuple[float | Dim, float | Dim] = (0, 0),
 ) -> list[adsk.fusion.BRepBody]:
     """
     Icon at the left as tall as the letters of the text after it, standing on their baseline, text alone is centered.
@@ -535,14 +535,14 @@ def createLabel(
     # The cut into the bin or the join happens where the bin is when it's built, the colored letters are drawn where the
     # bin ends up: a bin beside others is moved there after it's built (binBuilder, "Bin placement"), and a move of the
     # letter bodies would leave behind the letters a longer text adds (review of round 14). A colored label at the
-    # origin draws both on one face
+    # origin draws both on one face. The placement may be Dims of the bin's parameters, a centered bin's (round 54)
     (shiftX, shiftY) = binPlacement if isColored else (0, 0)
     needsCut = not isColored or not isEmbossed
-    isOneFace = not isColored or (shiftX == 0 and shiftY == 0)
+    isOneFace = not isColored or (isZero(shiftX) and isZero(shiftY))
 
-    def facePlacement(dx: float, dy: float, lettersHeight: float, iconWidth: float, iconHeight: float) -> binLabelLayout.BinLabelPlacement:
-        originX = input.originX + Dim.length(dx) if dx != 0 else input.originX
-        originY = input.originY + Dim.length(dy) if dy != 0 else input.originY
+    def facePlacement(dx: float | Dim, dy: float | Dim, lettersHeight: float, iconWidth: float, iconHeight: float) -> binLabelLayout.BinLabelPlacement:
+        originX = input.originX if isZero(dx) else input.originX + Dim.asLength(dx)
+        originY = input.originY if isZero(dy) else input.originY + Dim.asLength(dy)
         return binLabelLayout.binLabelPlacement(
             originX, originY, input.originZ, input.width, input.length, input.tiltAngle,
             lettersHeight, iconWidth, iconHeight, iconPath is not None, len(text) > 0,
@@ -652,10 +652,10 @@ def createLabel(
             if not isEmbossed:
                 tools = [body.createForAssemblyContext(markingOccurrence) for body in iconBodies] if markingOccurrence is not None else iconBodies
                 combineUtils.cutBody(target, commonUtils.objectCollectionFromList(tools), targetComponent, True, name=f'{name} icon cut')
-            if shiftX != 0 or shiftY != 0:
+            if not (isZero(shiftX) and isZero(shiftY)):
                 # cut where the bin is built, then where it ends up like the letters
                 moveInput = component.features.moveFeatures.createInput2(commonUtils.objectCollectionFromList(iconBodies))
-                moveInput.defineAsTranslateXYZ(valueInput(Dim.length(shiftX)), valueInput(Dim.length(shiftY)), valueInput(Dim.length(0)), True)
+                moveInput.defineAsTranslateXYZ(valueInput(Dim.asLength(shiftX)), valueInput(Dim.asLength(shiftY)), valueInput(Dim.length(0)), True)
                 component.features.moveFeatures.add(moveInput).name = f'{name} icon bin placement'
             labelBodies += iconBodies
     if isColored:

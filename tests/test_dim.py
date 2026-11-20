@@ -148,3 +148,14 @@ def test_min_and_max_of_values_stay_values():
     assert radius.value == pytest.approx(2.5)
     assert not radius.isExpression
     assert dim.valueInput(radius).real == pytest.approx(2.5)
+
+
+def test_is_zero_holds_for_numbers_and_dims_that_stay_zero():
+    """Round 54 (p670): a centered bin's offset made of parameters is no move to leave out, even were it 0 now"""
+    assert dim.isZero(0)
+    assert dim.isZero(Dim.length(0))
+    assert not dim.isZero(0.5)
+    assert not dim.isZero(Dim.length(-4.175))
+    width = Dim.parameter(_FakeParameter("gfBin1_baseWidth", 0))
+    assert not dim.isZero(width * 1)
+    assert dim.isZero(width - width)

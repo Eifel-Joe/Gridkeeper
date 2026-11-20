@@ -19,7 +19,7 @@ from ...lib.gridfinityUtils import const
 from ...lib.gridfinityUtils import raisedDividers
 from ...lib.gridfinityUtils import parameterUtils
 from ...lib.gridfinityUtils import designIntent
-from ...lib.gridfinityUtils.dim import Dim
+from ...lib.gridfinityUtils.dim import Dim, isZero
 from ...lib.gridfinityUtils.jointOriginLayout import createOffsetJointOrigins
 from ...lib.gridfinityUtils.baseGenerator import createFootGrid, cutBaseClearance, cutWallJunctionPockets, footCenters, cellCenters, createCellJointOrigins, keepBodiesInCells, cutOutsideShape, cutShapeWallJunctionPockets
 from ...lib.gridfinityUtils.baseGeneratorInput import BaseGeneratorInput
@@ -136,11 +136,17 @@ def isShaped(state: InputState) -> bool:
     """A custom shape leaving cells out, a full one builds a plain bin"""
     return state.hasCustomShape and not binShape.isRectangle(shapeCells(state), *feetGridSize(state))
 
-def centeredPlacement(state: InputState) -> tuple[float, float]:
-    """XY offset moving the bin, built from the origin into +X and +Y, so its footprint is centered on the origin"""
+def centeredPlacement(state: InputState, baseWidth: Dim, baseLength: Dim) -> tuple[Dim, Dim]:
+    """
+    XY offset moving the bin, built from the origin into +X and +Y, so its footprint is centered on the origin. Made
+    of the bin's base unit parameters, so the move keeps it centered when they change in the parameter table (round
+    54, p670): plain numbers kept the old left edge and the bin grew to the right. Same value at build time as before.
+    The size counts in base units, half grid and custom shape included (a shape is centered on its rectangle).
+    Tested in tests/test_bin_centered_placement.py
+    """
     return (
-        -(state.binWidth * state.baseWidth - state.xyClearance * 2) / 2,
-        -(state.binLength * state.baseLength - state.xyClearance * 2) / 2,
+        (Dim.length(state.xyClearance * 2) - baseWidth * state.binWidth) / 2,
+        (Dim.length(state.xyClearance * 2) - baseLength * state.binLength) / 2,
     )
 
 def shapeError(state: InputState) -> str | None:
@@ -296,9 +302,10 @@ def _buildBin(
 
     # pick the spot before generating, so none of this bin's geometry can count as an obstacle. A bin going into a cell
     # is moved there by its joint, it stays at the origin of its component (round 31). Before upstream's Center on
-    # origin, the kept spot of a rebuild and a free one (round 38)
+    # origin, the kept spot of a rebuild and a free one (round 38). A centered bin's offset is made of its base unit
+    # parameters once they are there, see centeredPlacement (round 54)
     source = binCell.placementSource(state.placement == PLACEMENT_CENTER, cell is not None and newCmpOcc is not None, placement is not None)
-    binPlacement = (0, 0) if source == 'cell' else centeredPlacement(state) if source == 'center' else placement if source == 'kept' else placementUtils.findPlacement(
+    spot = (0, 0) if source in ('cell', 'center') else placement if source == 'kept' else placementUtils.findPlacement(
         des,
         tagUtils.TAG_BIN,
         BIN_LEGACY_NAME_PREFIX,
@@ -332,6 +339,8 @@ def _buildBin(
     ), 'baseLength', binParameterPrefix)
     baseWidth = Dim.parameter(baseWidthParameter)
     baseLength = Dim.parameter(baseLengthParameter)
+    # the offset the bin is moved by, Dims: the move and what is placed after it follow a centered bin's parameters
+    binPlacement = centeredPlacement(state, baseWidth, baseLength) if source == 'center' else (Dim.length(spot[0]), Dim.length(spot[1]))
     gridWidth = baseWidth / feetPerUnit if halfGrid else baseWidth
     gridLength = baseLength / feetPerUnit if halfGrid else baseLength
     # user parameters driving the bin, kept in its tag to show with its settings
@@ -720,7 +729,7 @@ def _buildBin(
         # up and aren't moved with it: a move takes the bodies there are, the letters a longer text adds stayed behind
         # (round 14, p72)
         movedBodies = generatedBodies + labelBodies
-        if binPlacement != (0, 0):
+        if not (isZero(binPlacement[0]) and isZero(binPlacement[1])):
             placementUtils.moveBodies(generatedBodies, *binPlacement, gridfinityBinComponent, name=BIN_PLACEMENT_FEATURE)
         # mark generated geometry so later bins can tell it apart from the rest of the design,
         # with the settings it was generated with to show later. Labels aren't bins, they'd count as bins of their own
@@ -743,8 +752,8 @@ def _buildBin(
             xyClearance,
             columns,
             rows,
-            Dim.length(binPlacement[0]) if binPlacement[0] != 0 else None,
-            Dim.length(binPlacement[1]) if binPlacement[1] != 0 else None,
+            None if isZero(binPlacement[0]) else binPlacement[0],
+            None if isZero(binPlacement[1]) else binPlacement[1],
         )
         createCellJointOrigins(
             [center for center in centers if not shaped or (center[0], center[1]) in set(cells)],
@@ -755,8 +764,8 @@ def _buildBin(
     if len(pockets) > 0:
         # always, the label command joints an insert into them (p160, 15.11.2026). After the placement like the
         # feet's, with the size of the pocket in mm, an insert and a bin have base units of their own
-        offsetX = Dim.length(binPlacement[0])
-        offsetY = Dim.length(binPlacement[1])
+        offsetX = binPlacement[0]
+        offsetY = binPlacement[1]
         jointOrigins = createOffsetJointOrigins(
             [(cullenect.pocketJointOriginName(index, count), pocket.centerX + offsetX, pocket.centerY + offsetY, pocket.floorZ) for (index, count, pocket) in pockets],
             gridfinityBinComponent,
@@ -777,8 +786,8 @@ def _buildBin(
             xyClearance,
             range(1),
             range(1),
-            Dim.length(binPlacement[0]) if binPlacement[0] != 0 else None,
-            Dim.length(binPlacement[1]) if binPlacement[1] != 0 else None,
+            None if isZero(binPlacement[0]) else binPlacement[0],
+            None if isZero(binPlacement[1]) else binPlacement[1],
         )
         (placementOrigin,) = createOffsetJointOrigins(
             [(binCell.PLACEMENT_JOINT_ORIGIN, x, y, Dim.length(-const.BIN_BASE_HEIGHT))],

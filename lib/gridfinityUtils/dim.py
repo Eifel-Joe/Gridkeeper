@@ -165,6 +165,15 @@ def _combineForms(left: Dim, right: Dim, operator: str, expression: str) -> dict
     return _part(expression, left, right)
 
 
+def isZero(value) -> bool:
+    """
+    Whether a number or a dim is 0 and stays 0 whatever its parameters: an offset nothing needs moving by. A dim made of
+    parameters isn't, even when it is 0 now (round 54, p670, a centered bin's offset). Tested in tests/test_dim.py
+    """
+    if isinstance(value, Dim):
+        return value.value == 0 and not value.dependsOnParameters
+    return value == 0
+
 def valueOf(value) -> float:
     """The number behind a dim or a plain value, for the generator's own math"""
     return value.value if isinstance(value, Dim) else value

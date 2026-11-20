@@ -5,6 +5,23 @@ GridfinityGenerator by Le0Michine, merged up to ee027a9 (v2.5.0.0, 17.11.2026; r
 Until 1.2.0 this file was named `CHANGELOG-CULLENECT.md`.
 Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`, the `vX.Y.Z.W` tags belong to GridfinityGenerator.
 
+## 1.2.1 (2026-11-20)
+
+### Centered bin follows its base units (round 54)
+
+- **A bin centered on the origin stays centered when its base units change:** set `gfBinN_baseWidth` or
+  `gfBinN_baseLength` in Fusion's parameter table, and a bin built with *Center on origin* used to keep its old left
+  edge and grow to the right; a bin built with the new units from the start was centered. The *Bin placement* move
+  now holds an expression of the bin's base unit parameters instead of a number, the foot and pocket joint origins
+  and colored label letters take the same offset. Whole grid, half grid and custom shapes alike (a shape is
+  centered on its rectangle, as before). Values at build time are unchanged; bins snapped to a free spot or jointed
+  into a cell are not affected. GridfinityGenerator (Le0Michine) has the same issue.
+- Decided: a bin centered with an earlier version keeps the number in its move until it is rebuilt with the bin
+  command; it loads and rebuilds as before. Changing a centered bin's base unit in the bin dialog still rebuilds it.
+- Snapshot cases `bin_2x1x3_centered_params_base_50x46`, `bin_1_5x2_5x3_half_grid_centered_params_base_50x46`,
+  `bin_3x3x4_l_shape_centered_params_base_50x46` and `bin_2x1x3_label_colored_centered_params_base_50x46` compare the
+  bin with its units set after building against one built with them.
+
 ## 1.2.0 (2026-11-19)
 
 ### Raised dividers with a pointed top, and fixes around scoops (round 50)

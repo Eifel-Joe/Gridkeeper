@@ -12,7 +12,7 @@ import pytest
 def _load_placement_utils():
     # The modules annotate with adsk types, so they only need to exist
     fusion = sys.modules.get("adsk.fusion") or types.ModuleType("adsk.fusion")
-    for name in ("BRepBody", "Design", "Component", "MoveFeature"):
+    for name in ("BRepBody", "Design", "Component", "MoveFeature", "UserParameter"):
         if not hasattr(fusion, name):
             setattr(fusion, name, type(name, (), {}))
     sys.modules["adsk.fusion"] = fusion
@@ -32,8 +32,21 @@ def _load_placement_utils():
         spec.loader.exec_module(mod)
         return mod
 
+    # placementUtils takes dim from its package's gridfinityUtils, which annotates with these
+    # only while loading: other tests put stand-ins of their own when there are none (test_dim)
+    core = sys.modules["adsk.core"]
+    added = [name for name in ("Base", "ValueInput") if not hasattr(core, name)]
+    for name in added:
+        setattr(core, name, type(name, (), {}))
+    utils = types.ModuleType("placementpkg.gridfinityUtils")
+    utils.__path__ = [os.path.join(project_root, "lib", "gridfinityUtils")]
+    sys.modules["placementpkg.gridfinityUtils"] = utils
     load("tagUtils")
-    return load("placementUtils")
+    try:
+        return load("placementUtils")
+    finally:
+        for name in added:
+            delattr(core, name)
 
 
 placementUtils = _load_placement_utils()
@@ -266,3 +279,56 @@ def test_occupied_extents_can_leave_out_the_label_itself(monkeypatch):
     assert len(every) == 2
     skipped = placementUtils.getOccupiedExtents(design, ["box"], "Box label", skipComponents=[labelComponent])
     assert skipped == [(20, 0, 27, 2.45)]
+
+
+# ---------------------------------------------------------------------------
+# moveBodies (round 54, p670)
+# ---------------------------------------------------------------------------
+
+class _RecordingValueInput:
+    @staticmethod
+    def createByReal(value):
+        return ("real", value)
+
+    @staticmethod
+    def createByString(value):
+        return ("string", value)
+
+
+class _MoveFeatures:
+    def __init__(self):
+        self.translation = None
+
+    def createInput2(self, bodies):
+        features = self
+
+        class _Input:
+            def defineAsTranslateXYZ(self, x, y, z, isDesignSpace):
+                features.translation = (x, y, z)
+        return _Input()
+
+    def add(self, moveInput):
+        return types.SimpleNamespace(name=None)
+
+
+def _moveBy(monkeypatch, offsetX, offsetY):
+    core = sys.modules["adsk.core"]
+    monkeypatch.setattr(core, "ValueInput", _RecordingValueInput, raising=False)
+    monkeypatch.setattr(core, "ObjectCollection", types.SimpleNamespace(create=lambda: types.SimpleNamespace(add=lambda body: None)), raising=False)
+    moveFeatures = _MoveFeatures()
+    component = types.SimpleNamespace(features=types.SimpleNamespace(moveFeatures=moveFeatures))
+    placementUtils.moveBodies(["body"], offsetX, offsetY, component, name="Bin placement")
+    return moveFeatures.translation
+
+
+def test_a_move_by_numbers_gives_fusion_the_numbers(monkeypatch):
+    assert _moveBy(monkeypatch, -4.175, 1.0) == (("real", -4.175), ("real", 1.0), ("real", 0))
+
+
+def test_a_move_by_an_expression_gives_fusion_the_expression(monkeypatch):
+    """A centered bin's offset follows its base unit parameters (round 54, p670), the move takes the formula"""
+    dim = sys.modules["placementpkg.gridfinityUtils.dim"]
+    Dim = dim.Dim
+    x = Dim(-4.175, "(0.5 mm - (gfBin1_baseWidth * 2)) / 2", dim.DimKind.EXPRESSION)
+    y = Dim.length(-2.075)
+    assert _moveBy(monkeypatch, x, y) == (("string", "(0.5 mm - (gfBin1_baseWidth * 2)) / 2"), ("real", -2.075), ("real", 0))

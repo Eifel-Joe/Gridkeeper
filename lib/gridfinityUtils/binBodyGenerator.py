@@ -1104,7 +1104,7 @@ def createTabLabel(
         name: str,
         textOccurrence=None,
         targetOccurrence: adsk.fusion.Occurrence | None = None,
-        binPlacement: tuple[float, float] = (0, 0),
+        binPlacement: tuple[float | Dim, float | Dim] = (0, 0),
     ) -> list[adsk.fusion.BRepBody]:
     """Label on the top face of a tab with its back top corner at the tab origin y and z, between the given x.
     On a tilted top the label is as long as the slope, so it still covers the tab width once turned down. The bodies
