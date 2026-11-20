@@ -15,7 +15,7 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   now holds an expression of the bin's base unit parameters instead of a number, the foot and pocket joint origins
   and colored label letters take the same offset. Whole grid, half grid and custom shapes alike (a shape is
   centered on its rectangle, as before). Values at build time are unchanged; bins snapped to a free spot or jointed
-  into a cell are not affected. GridfinityGenerator (Le0Michine) has the same behavior.
+  into a cell are not affected. GridfinityGenerator (Le0Michine) has the same issue.
 - Decided: a bin centered with an earlier version keeps the number in its move until it is rebuilt with the bin
   command; it loads and rebuilds as before. Changing a centered bin's base unit in the bin dialog still rebuilds it.
 - Snapshot cases `bin_2x1x3_centered_params_base_50x46`, `bin_1_5x2_5x3_half_grid_centered_params_base_50x46`,
