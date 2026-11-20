@@ -1,0 +1,36 @@
+{
+    "description": "L-shaped bin centered on the origin, base units changed to 50 by 46 mm after building: it stays centered on its rectangle (round 54)",
+    "generator": "bin",
+    "settings": {
+        "binWidth": 3,
+        "binHeight": 4,
+        "hasCustomShape": true,
+        "shapeCells": [
+            [
+                0,
+                0
+            ],
+            [
+                1,
+                0
+            ],
+            [
+                2,
+                0
+            ],
+            [
+                0,
+                1
+            ],
+            [
+                0,
+                2
+            ]
+        ],
+        "placement": "Center on origin"
+    },
+    "parameters": {
+        "gfBin1_baseWidth": 50.0,
+        "gfBin1_baseLength": 46.0
+    }
+}

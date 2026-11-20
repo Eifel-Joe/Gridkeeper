@@ -1,0 +1,24 @@
+{
+    "bodies": [
+        {
+            "name": "Gridfinity bin 2.5x1.5x3 half grid",
+            "file": "body1.smt",
+            "volume": 48323.140659,
+            "area": 34506.655407,
+            "bboxMin": [
+                -37.25,
+                -57.25,
+                -5.0
+            ],
+            "bboxMax": [
+                37.25,
+                57.25,
+                19.8
+            ],
+            "lumps": 1,
+            "faces": 433,
+            "edges": 954,
+            "vertices": 524
+        }
+    ]
+}

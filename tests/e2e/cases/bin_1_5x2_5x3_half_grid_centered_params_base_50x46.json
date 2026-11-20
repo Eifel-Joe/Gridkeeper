@@ -1,0 +1,15 @@
+{
+    "description": "Half grid bin centered on the origin, base units changed to 50 by 46 mm after building: it stays centered (round 54)",
+    "generator": "bin",
+    "settings": {
+        "binWidth": 1.5,
+        "binLength": 2.5,
+        "binHeight": 3,
+        "isHalfGrid": true,
+        "placement": "Center on origin"
+    },
+    "parameters": {
+        "gfBin1_baseWidth": 50.0,
+        "gfBin1_baseLength": 46.0
+    }
+}
