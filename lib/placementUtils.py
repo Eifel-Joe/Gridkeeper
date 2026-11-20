@@ -2,6 +2,7 @@ import adsk.core, adsk.fusion
 import math
 
 from . import tagUtils
+from .gridfinityUtils.dim import Dim, valueInput
 
 # fraction of a grid cell, keeps bodies sitting exactly on cell borders from spilling into neighbours
 GRID_SNAP_TOLERANCE = 0.001
@@ -142,20 +143,21 @@ def frontPlacement(
 
 def moveBodies(
     bodies: list[adsk.fusion.BRepBody],
-    offsetX: float,
-    offsetY: float,
+    offsetX: float | Dim,
+    offsetY: float | Dim,
     targetComponent: adsk.fusion.Component,
     *,
     name: str,
 ) -> adsk.fusion.MoveFeature:
+    # an offset as a Dim expression keeps following its parameters, a centered bin's (round 54, p670)
     moveFeatures = targetComponent.features.moveFeatures
     bodiesToMove = adsk.core.ObjectCollection.create()
     for body in bodies:
         bodiesToMove.add(body)
     moveInput = moveFeatures.createInput2(bodiesToMove)
     moveInput.defineAsTranslateXYZ(
-        adsk.core.ValueInput.createByReal(offsetX),
-        adsk.core.ValueInput.createByReal(offsetY),
+        valueInput(offsetX),
+        valueInput(offsetY),
         adsk.core.ValueInput.createByReal(0),
         True,
     )
