@@ -102,3 +102,20 @@ Die P1S-Probe hat `curr_bed_type` und `bed_type` aller Platten „Textured PEI P
 `curr_bed_type` aus dem Projekt (`Plater.cpp`, `load_files` → `on_bed_type_change`); die Auswahl oben links folgt
 danach je nach Bambus Einstellung „user_bed_type“ der Liste je Drucker (`Sidebar::update_all_preset_comboboxes`).
 Unbestätigt, dass die „Smooth“-Anzeige daher kommt; die Datei selbst ist richtig, keine Änderung.
+
+## Nachtrag Bambu-Test 2 und Fusion-Lauf 23.11.2026 (Probedateien Stand 056c8c33)
+- P1S und A1 mini: öffnen ohne Warnung, Spülmengen wie in der Datei, kein Wert mehr orange („Re-calculate“ ergibt
+  dieselben Zahlen), Bereich [63, 900] bzw. [48, 900].
+- H2C (neu): öffnet ohne Warnung, Werte je Düse wie in der Datei (Mindestmengen 96 und 111); nach „Re-calculate“
+  bleiben alle Grau-Paare gleich, nur die Paare aus Rot/Blau/Schwarz nehmen Bambus Tabellenwerte (bekannt).
+- H3C unverändert in Ordnung.
+- Fusion-Auftrag `r57_export.py`: P1S-Projekt mit 9 Werten (0 228 123 / 340 0 141 / 408 428 0), `flush_multiplier`
+  `['1']`, Hinweis mit Spülmengen-Satz ohne Düsen-Satz – wie erwartet.
+
+### Angezeigte Untergrenze im Spülmengen-Dialog
+Der H2C-Dialog zeigt [60, 900], nicht [96]/[111]. Quelle (`WipeTowerDialog.cpp`, Aufbau der Dialogdaten): je Düse
+`min(kleinster Wert der Farbtabelle des Datensatzes, kleinste Mindestmenge aus get_min_flush_volumes)`. Die Tabelle
+von Datensatz 1 (`flush_data_dual_standard.txt`) hat als kleinsten Wert 60, die von Datensatz 0
+(`flush_data_standard.txt`) 90. Daher P1S min(90, 63) = 63, A1 mini min(90, 48) = 48, H2C und H3C min(60, …) = 60.
+Die Zahl dient nur der Anzeige und Markierung im Dialog; gerechnet wird je Paar mit der Mindestmenge der Quelle
+(`calc_flush_vol`). Keine Änderung nötig.
