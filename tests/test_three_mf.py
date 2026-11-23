@@ -224,6 +224,10 @@ def test_an_empty_plate_between_is_kept():
 
 def test_the_project_settings_name_the_profiles_and_their_parents_only():
     settings = json.loads(threeMf.projectSettings(PROFILES, ["#808080", "#D02020", "#000000"]))
+    # round 57: and the purging volumes, see test_one_extruder_gets_a_block_of_purging_volumes
+    flush = {"flush_volumes_matrix", "flush_volumes_vector", "flush_multiplier", "flush_multiplier_fast", "filament_map", "filament_map_mode"}
+    assert flush <= set(settings)
+    settings = {key: value for (key, value) in settings.items() if key not in flush}
     assert settings == {
         "version": "02.09.01.70",
         "name": "project_settings",
@@ -367,13 +371,35 @@ def test_four_colours_on_two_extruders():
     assert not flushingMatrixError(settings)
 
 
-def test_one_extruder_gets_no_purging_volumes():
-    # as 1.3.0, Bambu Studio's defaults are valid for one extruder; the H3C stays so too (test of 23.11.2026)
+def test_one_extruder_gets_a_block_of_purging_volumes():
+    # round 57: as Bambu Studio's own project for one nozzle (resources/calib/pressure_advance/auto_pa_line_single.3mf,
+    # A1: n² values, flush_multiplier with one entry, filament_map n × 1, Auto For Flush); without them every change
+    # of color purged Bambu Studio's flat 280. The P1S has no flush data set: no 1.3 towards black
     settings = json.loads(threeMf.projectSettings(P1S, [GREY, RED]))
-    assert not {"flush_volumes_matrix", "flush_volumes_vector", "flush_multiplier", "flush_multiplier_fast", "filament_map",
-                "filament_map_mode"} & set(settings)
+    assert settings["flush_volumes_matrix"] == ["0", "272", "384", "0"]
+    assert settings["flush_volumes_vector"] == ["140"] * 4
+    assert settings["flush_multiplier"] == ["1"]
+    assert settings["flush_multiplier_fast"] == ["1.2"]
+    assert settings["filament_map"] == ["1", "1"]
+    assert settings["filament_map_mode"] == "Auto For Flush"
+    assert not flushingMatrixError(settings)
+
+
+def test_the_h3c_gets_one_block_with_its_flush_data_set():
+    # one extruder with nine hotends: one block (Bambu Studio test of 23.11.2026, r56-h3c-4colours-spuelmengen.3mf
+    # opened without a warning); its data set 1 purges grey to black 60 · 1.3 + 125
     h3c = types.SimpleNamespace(**{**vars(P1S), "nozzleVolumes": (125.9,), "flushDatasets": (1,), "hotends": (9,), "hotendAsExtruder": True})
-    assert "flush_volumes_matrix" not in json.loads(threeMf.projectSettings(h3c, [GREY, RED]))
+    settings = json.loads(threeMf.projectSettings(h3c, [GREY, RED, BLUE, BLACK]))
+    matrix = [int(value) for value in settings["flush_volumes_matrix"]]
+    assert len(matrix) == 16 and matrix[3] == 203
+    assert settings["flush_multiplier"] == ["1"] and settings["flush_multiplier_fast"] == ["1.2"]
+    assert not flushingMatrixError(settings)
+
+
+def test_one_and_two_extruders_get_the_same_keys():
+    one = set(json.loads(threeMf.projectSettings(P1S, [GREY, RED])))
+    two = set(json.loads(threeMf.projectSettings(H2D, [GREY, RED])))
+    assert one == two
 
 
 def test_the_project_settings_of_a_printbeds_profile():
@@ -381,9 +407,11 @@ def test_the_project_settings_of_a_printbeds_profile():
     spec = importlib.util.spec_from_file_location("printBeds", path)
     printBeds = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(printBeds)
-    for name in ("Bambu Lab H2C", "Bambu Lab H2D", "Bambu Lab H2D Pro", "Bambu Lab X2D"):
-        settings = json.loads(threeMf.projectSettings(printBeds.bambuProfiles(printBeds.presetLabel(name)), [GREY, RED, BLUE]))
-        assert len(settings["flush_volumes_matrix"]) == 18 and not flushingMatrixError(settings)
+    # round 57: every Bambu printer, a block of 9 per extruder
+    for name in printBeds.BAMBU_PROFILES:
+        profiles = printBeds.bambuProfiles(printBeds.presetLabel(name))
+        settings = json.loads(threeMf.projectSettings(profiles, [GREY, RED, BLUE]))
+        assert len(settings["flush_volumes_matrix"]) == 9 * profiles.extruders and not flushingMatrixError(settings)
 
 
 def test_one_colour_on_two_extruders():

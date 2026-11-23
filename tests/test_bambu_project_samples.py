@@ -56,4 +56,5 @@ def test_the_h2d_sample_has_purging_volumes_for_both_nozzles(tmp_path):
     matrix = [int(value) for value in project["flush_volumes_matrix"]]
     assert matrix[0:4] == [0, 295, 295, 208] and matrix[16:20] == [0, 310, 310, 223] and len(matrix) == 32
     assert project["flush_multiplier"] == ["1", "1"]
-    assert "flush_volumes_matrix" not in read(tmp_path / "r55-p1s-three-plates.3mf")[2]
+    # round 57: one nozzle gets them too
+    assert read(tmp_path / "r55-p1s-three-plates.3mf")[2]["flush_multiplier"] == ["1"]
