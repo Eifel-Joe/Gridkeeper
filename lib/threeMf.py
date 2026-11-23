@@ -231,13 +231,14 @@ def _rgb(colour: str) -> tuple[int, int, int]:
 
 def flushVolume(source: str, target: str, minimum: float, dataset: int) -> int:
     """
-    mm³ to purge going from the colour source to target, '#RRGGBB', on an extruder of the nozzle volume minimum and the
-    flush data set (nozzle_flush_dataset of the printer profile). Rebuilt after Bambu Studio 02.09.01.70
+    mm³ to purge going from the colour source to target, '#RRGGBB', on an extruder of the least volume minimum (round 57:
+    minFlushVolume, not the bare nozzle volume) and the flush data set (nozzle_flush_dataset of the printer profile). Rebuilt after Bambu Studio 02.09.01.70
     (src/libslic3r/FlushVolCalc.cpp, AGPL-3.0, no code taken): FlushVolCalculator::calc_flush_vol_rgb, distance of hue
     and saturation and the change of luminance, 60 at least; with a data set 1.3 times as much from a "dark" colour to
     a "light" one, the least volume minimum on top (round 57: minFlushVolume), 900 at most.
     Not rebuilt (decided 23.11.2026): Bambu Studio's colour tables (FlushVolPredictor), which take over when both
-    colours are near one of its filament colours; its "Re-calculate" may differ there. Bambu Studio counts in float, a value right at a whole number may come out one apart
+    colours are near one of its filament colours; its "Re-calculate" may differ there. Bambu Studio counts in float, a
+    value right at a whole number may come out one apart
     """
     (sourceRgb, targetRgb) = ([value / 255 for value in _rgb(source)], [value / 255 for value in _rgb(target)])
     (sourceHue, sourceSaturation, sourceValue) = _hsv(*sourceRgb)

@@ -17,10 +17,10 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   with a flush data set (H2S, H3C and the printers with two nozzles). One block of volumes for one extruder: Bambu
   Studio counts the blocks by `flush_multiplier`, and its own project for one nozzle has the same settings.
 - **Long retraction when cut:** where Bambu Studio pulls the filament back when it cuts it, it purges that much less
-  (`get_min_flush_volumes`): 18 mm of 1.75 mm filament, 43 mm³, on the A1, A1 mini, A2L, P1P, P1S, X1 and X1 Carbon
-  with Bambu PLA Basic, 14 mm on the H2C. The export takes it off the same way, from the printer and filament
-  profiles (checked against *Re-calculate* in Bambu Studio 02.09.01.70 on the P1S and A1 mini). This changes the H2C's
-  volumes of 1.3.1 too.
+  (`get_min_flush_volumes`): 18 mm of 1.75 mm filament, 44 mm³ less in whole numbers, on the A1, A1 mini, A2L, P1P,
+  P1S, X1 and X1 Carbon with Bambu PLA Basic, 14 mm on the H2C. The export takes it off the same way, from the printer
+  and filament profiles (checked against *Re-calculate* in Bambu Studio 02.09.01.70 on the P1S and A1 mini). This
+  changes the H2C's volumes of 1.3.1 too (from its profiles, not yet checked in Bambu Studio).
 - The notice before saving tells every Bambu printer where the volumes come from and that *Re-calculate* under
   *Purging volumes* gives Bambu Studio's own values for its filament colors.
 - Credits: Bambu Studio (Bambu Lab, AGPL-3.0) as the source of the color formula; GridfinityGenerator by Le0Michine
