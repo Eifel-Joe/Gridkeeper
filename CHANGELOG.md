@@ -5,6 +5,32 @@ GridfinityGenerator by Le0Michine, merged up to ee027a9 (v2.5.0.0, 17.11.2026; r
 Until 1.2.0 this file was named `CHANGELOG-CULLENECT.md`.
 Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`, the `vX.Y.Z.W` tags belong to GridfinityGenerator.
 
+## 1.3.0 (2026-11-23)
+
+### One Bambu Studio project with all plates (round 55)
+
+- **The 3MF export writes one Bambu Studio project holding every plate** for a Bambu Lab printer: open it and all
+  plates are there, the parts in their print orientation, the label text on its filaments in its colors. Until now
+  it wrote a file per plate. The new *Files* choice of the export dialog keeps *A file per plate* at hand; other
+  printers and *Custom* always get a file per plate, as before.
+- Bambu Studio takes the plates of a 3MF only from a project with its own settings (its `Plater::priv::load_files`;
+  checked in Bambu Studio 02.09.01.70). The project names Bambu Studio's standard profiles of the printer chosen: the
+  0.4 mm nozzle printer profile, *0.20mm Standard*, *Bambu PLA Basic* for every filament and the *Textured PEI
+  Plate*. Only the names are in the file, Bambu Studio fills in the settings from its system profiles. Before saving,
+  the export tells so and asks; *Cancel* saves nothing.
+- **One entry per Bambu Lab printer** in the printer list of the baseplate and export dialogs: P1P, P1S, X1,
+  X1 Carbon and X1E, P2S and X2D, H2D and H2D Pro each have their own, since the project names its printer. A shared
+  entry saved before opens as the X1 Carbon, P2S or H2D. The list moves to `lib/printBeds.py`.
+- **The printer chosen last is where both dialogs start**, shared by the baseplate and export dialogs. With none
+  chosen yet the export starts on the X1 Carbon, the baseplate dialog as before.
+- After GridfinityGenerator's multi-plate 3MF by Le0Michine (upstream commit `1ac1579`, "Pack the 3MF export on print
+  plates"): the plate grid (`plateColumns`, `plateOrigin`, `PLATE_GAP`), the plate list
+  (`Metadata/model_settings.config`, `modelSettings`), the shared printer list in `lib/printBeds.py` with
+  `PURGE_ANCHORS` and `EXCLUDED_AREAS` and the files choice take its names. Gridkeeper adds the project settings
+  without which Bambu Studio drops the plates, and keeps its own layout (`printLayout`) with the print orientation
+  of box parts and labels instead of upstream's `bedPacking`.
+- Not included: OrcaSlicer and other slicers (a file per plate), nozzles other than 0.4 mm.
+
 ## 1.2.1 (2026-11-20)
 
 ### Centered bin follows its base units (round 54)

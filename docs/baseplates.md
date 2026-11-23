@@ -45,10 +45,11 @@ print bed.
 | **Grid position, Y** | Center | *Front*, *Center* or *Back* |
 | **Fill gaps with half cells** | on | Where the space left past the grid fits a row of half size sockets, adds one instead of solid padding |
 
-In the **Print bed** group pick your **Printer** from the list or *Custom*, then **Bed width, X** and **Bed length, Y** are yours to enter. The list: Bambu Lab A1 mini (180 x 180 mm), Bambu Lab A1 (256 x 256), Bambu Lab A2L (330 x 320), Bambu Lab P1P, P1S, X1, X1C, X1E (256 x 256), Bambu Lab P2S, X2D (256 x 256), Bambu Lab H2C (330 x 320), Bambu Lab H2D, H2D Pro (350 x 320), Bambu Lab H2S (340 x 320), Bambu Lab H3C (330 x 320), Prusa MINI
+In the **Print bed** group pick your **Printer** from the list or *Custom*, then **Bed width, X** and **Bed length, Y** are yours to enter. The list: Bambu Lab A1 mini (180 x 180 mm), Bambu Lab A1 (256 x 256), Bambu Lab A2L (330 x 320), Bambu Lab P1P, P1S, X1, X1 Carbon, X1E (256 x 256 each), Bambu Lab P2S, X2D (256 x 256 each), Bambu Lab H2C (330 x 320), Bambu Lab H2D, H2D Pro (350 x 320 each), Bambu Lab H2S (340 x 320), Bambu Lab H3C (330 x 320), Prusa MINI
 (180 x 180), Prusa MK3, MK4 (250 x 210), Prusa CORE One (250 x 220), Prusa XL (360 x 360), Creality Ender-3
 (220 x 220), Creality K1, K1C (220 x 220), Creality K1 Max (300 x 300), Elegoo Neptune 4 (225 x 225), Voron 0
-(120 x 120), Voron 250, 300 and 350. **Bed margin** (5 mm) is kept clear on every
+(120 x 120), Voron 250, 300 and 350. The printer chosen last, here or in the export dialog, is where the dialog
+starts. **Bed margin** (5 mm) is kept clear on every
 side of the bed. **Result** draws the area, the grid and how it is split into pieces.
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../assets/gif/baseplate-fill-area-dark.gif"><img src="../assets/gif/baseplate-fill-area-light.gif" alt="Switching to fill area, entering the area length and switching between Prusa printers, with the baseplate pieces for each"></picture>
