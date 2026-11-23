@@ -56,7 +56,8 @@ For every other printer and *Custom* the square is at the back right: move the s
 any area your printer keeps free yourself. Typing a bed size switches the printer to *Custom*.
 
 Each Bambu Lab printer has an entry of its own (until 1.3.0 several shared one, such as *P1P, P1S, X1, X1C, X1E*),
-since the Bambu Studio project names its printer. A shared entry saved before opens as the X1 Carbon, P2S or H2D.
+since the Bambu Studio project names its printer (the printers with two nozzles get a file per plate for now, see
+below). A shared entry saved before opens as the X1 Carbon, P2S or H2D.
 
 ## Which parts
 

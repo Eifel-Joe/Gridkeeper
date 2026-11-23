@@ -9,10 +9,11 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ### One Bambu Studio project with all plates (round 55)
 
-- **The 3MF export writes one Bambu Studio project holding every plate** for a Bambu Lab printer: open it and all
+- **The 3MF export writes one Bambu Studio project holding every plate** for a Bambu Lab printer with one nozzle: open it and all
   plates are there, the parts in their print orientation, the label text on its filaments in its colors. Until now
   it wrote a file per plate. The new *Files* choice of the export dialog keeps *A file per plate* at hand; other
-  printers and *Custom* always get a file per plate, as before.
+  printers and *Custom* always get a file per plate, as before, and so do the printers with two nozzles for now (see
+  below).
 - Bambu Studio takes the plates of a 3MF only from a project with its own settings (its `Plater::priv::load_files`;
   checked in Bambu Studio 02.09.01.70). The project names Bambu Studio's standard profiles of the printer chosen: the
   0.4 mm nozzle printer profile, *0.20mm Standard*, *Bambu PLA Basic* for every filament and the *Textured PEI
@@ -21,7 +22,8 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   takes its system profiles (Bambu PLA Basic's 220 °C and 21 mm³/s). Each plate carries the bed type too. Before saving,
   the export tells so and asks; *Cancel* saves nothing.
 - **One entry per Bambu Lab printer** in the printer list of the baseplate and export dialogs: P1P, P1S, X1,
-  X1 Carbon and X1E, P2S and X2D, H2D and H2D Pro each have their own, since the project names its printer. A shared
+  X1 Carbon and X1E, P2S and X2D, H2D and H2D Pro each have their own, since the project names its printer (for the printers with two nozzles once
+  they get one). A shared
   entry saved before opens as the X1 Carbon, P2S or H2D. The list moves to `lib/printBeds.py`.
 - **The printer chosen last is where both dialogs start**, shared by the baseplate and export dialogs. With none
   chosen yet the export starts on the X1 Carbon, the baseplate dialog as before.

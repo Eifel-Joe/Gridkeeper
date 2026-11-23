@@ -150,8 +150,13 @@ def test_the_last_printer_file_is_in_the_addins_config_folder():
 SYSTEM_PROFILES = json.load(open(os.path.join(ROOT, "tests", "fixtures", "bambu_system_profiles.json"), encoding="utf-8"))
 
 
-# nozzle_diameter of the printer profiles of Bambu Studio 02.09.01.70 has two entries
-TWO_NOZZLES = {"Bambu Lab H2C", "Bambu Lab H2D", "Bambu Lab H2D Pro", "Bambu Lab X2D"}
+# nozzle_diameter of the printer profiles of Bambu Studio 02.09.01.70 has two entries (review round 55: from the
+# fixture, a printer with two nozzles added to the list is caught)
+TWO_NOZZLES = {name for (name, profiles) in PROFILES.items() if SYSTEM_PROFILES["machine_nozzles"][profiles[0]] == 2}
+
+
+def test_the_printers_with_two_nozzles():
+    assert TWO_NOZZLES == {"Bambu Lab H2C", "Bambu Lab H2D", "Bambu Lab H2D Pro", "Bambu Lab X2D"} == printBeds.TWO_NOZZLES
 
 
 @pytest.mark.parametrize("name", sorted(PROFILES))

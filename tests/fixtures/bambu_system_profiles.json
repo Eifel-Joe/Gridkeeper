@@ -1,5 +1,5 @@
 {
- "source": "Bambu Studio system profiles BBL 02.09.00.83: printer profiles, the Standard process profiles and the PLA Basic filament profiles that can be chosen",
+ "source": "Bambu Studio system profiles BBL 02.09.00.83: printer profiles, the Standard process profiles and the PLA Basic filament profiles that can be chosen; machine_nozzles: entries of nozzle_diameter of the 0.4 nozzle printer profiles",
  "machine": [
   "Bambu Lab A1",
   "Bambu Lab A1 0.2 nozzle",
@@ -204,5 +204,22 @@
   "Bambu PLA Basic @BBL X2D 0.4 nozzle",
   "Bambu PLA Basic @BBL X2D 0.6 nozzle",
   "Bambu PLA Basic @BBL X2D 0.8 nozzle"
- ]
+ ],
+ "machine_nozzles": {
+  "Bambu Lab A1 0.4 nozzle": 1,
+  "Bambu Lab A1 mini 0.4 nozzle": 1,
+  "Bambu Lab A2L 0.4 nozzle": 1,
+  "Bambu Lab H2C 0.4 nozzle": 2,
+  "Bambu Lab H2D 0.4 nozzle": 2,
+  "Bambu Lab H2D Pro 0.4 nozzle": 2,
+  "Bambu Lab H2S 0.4 nozzle": 1,
+  "Bambu Lab H3C 0.4 nozzle": 1,
+  "Bambu Lab P1P 0.4 nozzle": 1,
+  "Bambu Lab P1S 0.4 nozzle": 1,
+  "Bambu Lab P2S 0.4 nozzle": 1,
+  "Bambu Lab X1 0.4 nozzle": 1,
+  "Bambu Lab X1 Carbon 0.4 nozzle": 1,
+  "Bambu Lab X1E 0.4 nozzle": 1,
+  "Bambu Lab X2D 0.4 nozzle": 2
+ }
 }

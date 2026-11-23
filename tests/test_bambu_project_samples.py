@@ -40,8 +40,7 @@ def test_the_one_plate_samples(tmp_path):
     samples.writeSamples(str(tmp_path))
     # no H2D: a printer with two nozzles gets a file per plate, see printBeds.TWO_NOZZLES
     assert sorted(os.listdir(tmp_path)) == ["r55-a1mini-one-plate.3mf", "r55-p1s-three-plates.3mf"]
-    for (name, printer) in (("r55-a1mini-one-plate.3mf", "Bambu Lab A1 mini 0.4 nozzle"),):
-        (_, settings, project) = read(tmp_path / name)
-        assert len(settings.findall("plate")) == 1
-        assert project["printer_settings_id"] == printer
-        assert project["filament_colour"] == ["#808080", "#D02020"]
+    (_, settings, project) = read(tmp_path / "r55-a1mini-one-plate.3mf")
+    assert len(settings.findall("plate")) == 1
+    assert project["printer_settings_id"] == "Bambu Lab A1 mini 0.4 nozzle"
+    assert project["filament_colour"] == ["#808080", "#D02020"]

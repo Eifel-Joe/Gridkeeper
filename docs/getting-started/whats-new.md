@@ -64,7 +64,7 @@ The full list of changes, round by round, is in
 - **Print orientation:** the 3MF lays every part the way it is printed, the box's handle and latches flat, and
   spreads them over the chosen print bed with spacing, a 3MF per plate if one isn't enough, with the corner for the purge
   tower kept free.
-- **One Bambu Studio project with all plates** for a Bambu Lab printer, the label colors on their filaments and
+- **One Bambu Studio project with all plates** for a Bambu Lab printer with one nozzle, the label colors on their filaments and
   Bambu Studio's standard profiles of the printer, after upstream's multi-plate 3MF (Le0Michine). See
   [A Bambu Studio project with all plates](../working/export.md#a-bambu-studio-project-with-all-plates).
 - From GridfinityGenerator too: the letters of outline labels show in a color of their own in Fusion, the bin dialog
