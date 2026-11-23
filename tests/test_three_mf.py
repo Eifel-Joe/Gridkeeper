@@ -166,3 +166,119 @@ def test_objects_laid_out_on_plates_are_written_where_they_are(tmp_path):
     model = read_model(path)
     xs = sorted(float(vertex.get("x")) for vertex in model.iter(f"{CORE}vertex"))
     assert xs[0] == pytest.approx(5) and xs[-1] == pytest.approx(310)
+
+
+# ---------------------------------------------------------------------------
+# Round 55 (p680): a Bambu Studio project with all plates. Plate grid and plate list as upstream 1ac1579 (Le0Michine)
+# names them, the file as Bambu Studio 02.09.01.70 opened it in the test of 23.11.2026 (V2: Bambu's own name and the
+# profile names in the project settings, the rest from its system profiles)
+# ---------------------------------------------------------------------------
+
+import types
+
+PROFILES = types.SimpleNamespace(printer="Bambu Lab P1S 0.4 nozzle", process="0.20mm Standard @BBL X1C", filament="Bambu PLA Basic @BBL P1S 0.4 nozzle")
+BAMBU = "{http://schemas.bambulab.com/package/2021}"
+
+
+def bounds(vertices):
+    xs = [x for (x, _, _) in vertices]
+    ys = [y for (_, y, _) in vertices]
+    zs = [z for (_, _, z) in vertices]
+    return (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
+
+
+def test_plates_fill_a_grid_of_about_as_many_columns_as_rows():
+    assert [threeMf.plateColumns(count) for count in range(1, 11)] == [1, 2, 2, 2, 3, 3, 3, 3, 3, 4]
+
+
+def test_plates_are_a_fifth_of_the_bed_apart_rows_going_down():
+    # as Bambu Studio put the objects of three plates of a 256 mm bed
+    assert threeMf.plateOrigin(0, 3, (256, 256)) == (0, 0)
+    assert threeMf.plateOrigin(1, 3, (256, 256)) == pytest.approx((307.2, 0))
+    assert threeMf.plateOrigin(2, 3, (256, 256)) == pytest.approx((0, -307.2))
+    assert threeMf.plateOrigin(1, 2, (350, 320)) == pytest.approx((420, 0))
+
+
+def test_the_slicer_gets_the_objects_of_each_plate():
+    settings = ElementTree.fromstring(threeMf.modelSettings([cube("a"), cube('b & "c"'), cube("d")], [0, 1, 0]))
+    objects = settings.findall("object")
+    assert [item.get("id") for item in objects] == ["1", "2", "3"]
+    assert [item.find("metadata[@key='name']").get("value") for item in objects] == ["a", 'b & "c"', "d"]
+    assert [item.find("metadata[@key='extruder']").get("value") for item in objects] == ["1", "1", "1"]
+    part = objects[1].find("part")
+    assert part.get("subtype") == "normal_part"
+    assert part.find("metadata[@key='name']").get("value") == 'b & "c"'
+    assert part.find("metadata[@key='matrix']").get("value") == "1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1"
+    plates = [
+        (plate.find("metadata[@key='plater_id']").get("value"), [instance.find("metadata[@key='object_id']").get("value") for instance in plate.findall("model_instance")])
+        for plate in settings.findall("plate")
+    ]
+    assert plates == [("1", ["1", "3"]), ("2", ["2"])]
+
+
+def test_an_empty_plate_between_is_kept():
+    settings = ElementTree.fromstring(threeMf.modelSettings([cube("a"), cube("b")], [0, 2]))
+    assert [len(plate.findall("model_instance")) for plate in settings.findall("plate")] == [1, 0, 1]
+
+
+def test_the_project_settings_name_the_profiles_only():
+    settings = json.loads(threeMf.projectSettings(PROFILES, ["#808080", "#D02020", "#000000"]))
+    assert settings == {
+        "version": "02.09.01.70",
+        "name": "project_settings",
+        "from": "project",
+        "printer_settings_id": "Bambu Lab P1S 0.4 nozzle",
+        "print_settings_id": "0.20mm Standard @BBL X1C",
+        "filament_settings_id": ["Bambu PLA Basic @BBL P1S 0.4 nozzle"] * 3,
+        "filament_colour": ["#808080", "#D02020", "#000000"],
+        "curr_bed_type": "Textured PEI Plate",
+    }
+
+
+def test_the_bambu_model_names_bambu_studio_and_keeps_the_paint():
+    model = ElementTree.fromstring(threeMf.bambuModelXml([cube("a", x=40, painted={2: 2, 5: 4})], "Bins", date=datetime.date(2026, 11, 23)))
+    meta = {item.get("name"): item.text for item in model.findall(f"{CORE}metadata")}
+    assert meta["Application"] == "BambuStudio-02.09.01.70"
+    assert meta["BambuStudio:3mfVersion"] == "1"
+    assert meta["Title"] == "Bins"
+    assert meta["CreationDate"] == "2026-11-23"
+    triangles = model.findall(f".//{CORE}triangle")
+    assert [triangle.get("paint_color") for triangle in triangles[:6]] == [None, None, "8", None, None, "1C"]
+    assert all(triangle.get(f"{SLIC3R}mmu_segmentation") is None for triangle in triangles)
+
+
+def test_each_bambu_object_is_around_its_middle_moved_by_its_build_item():
+    model = ElementTree.fromstring(threeMf.bambuModelXml([cube("a", x=40, z=3)], ""))
+    vertices = [tuple(float(vertex.get(axis)) for axis in "xyz") for vertex in model.findall(f".//{CORE}vertex")]
+    assert bounds(vertices) == pytest.approx((-5, -5, -5, 5, 5, 5))
+    item = model.find(f"{CORE}build/{CORE}item")
+    assert item.get("objectid") == "1"
+    assert item.get("printable") == "1"
+    assert [float(value) for value in item.get("transform").split()] == pytest.approx([1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 5, 8])
+
+
+def test_the_project_holds_the_plates_on_bambus_grid(tmp_path):
+    path = tmp_path / "bins.3mf"
+    # laid out on the bed, a plate each: a at 10, 20 on plate 1, b at 100, 30 on plate 2
+    objects = [cube("a", x=10), cube("b", x=100)]
+    objects[0].vertices[:] = [(x, y + 20, z) for (x, y, z) in objects[0].vertices]
+    objects[1].vertices[:] = [(x, y + 30, z) for (x, y, z) in objects[1].vertices]
+    threeMf.writeBambuProject(str(path), objects, [0, 1], (256, 256), PROFILES, ["#808080"], "bins", "1.3.0")
+    with zipfile.ZipFile(path) as package:
+        names = set(package.namelist())
+        model = ElementTree.fromstring(package.read("3D/3dmodel.model"))
+        settings = ElementTree.fromstring(package.read(threeMf.MODEL_SETTINGS_PATH))
+        project = json.loads(package.read(threeMf.PROJECT_SETTINGS_PATH))
+    assert names == {"[Content_Types].xml", "_rels/.rels", "3D/3dmodel.model", threeMf.MODEL_SETTINGS_PATH, threeMf.PROJECT_SETTINGS_PATH}
+    shifts = [[float(value) for value in item.get("transform").split()][9:] for item in model.findall(f"{CORE}build/{CORE}item")]
+    assert shifts == [pytest.approx([15, 25, 5]), pytest.approx([307.2 + 105, 35, 5])]
+    assert len(settings.findall("plate")) == 2
+    assert project["filament_colour"] == ["#808080"]
+
+
+def test_the_projects_model_names_the_generator_beside_bambu_studio(tmp_path):
+    path = tmp_path / "bins.3mf"
+    threeMf.writeBambuProject(str(path), [cube("a")], [0], (180, 180), PROFILES, ["#808080"], "bins", "1.3.0")
+    meta = metadata(read_model(path))
+    assert meta["Application"] == "BambuStudio-02.09.01.70"
+    assert meta["Designer"] == "Gridkeeper 1.3.0"
