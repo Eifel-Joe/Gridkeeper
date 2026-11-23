@@ -384,3 +384,16 @@ def test_the_project_settings_of_a_printbeds_profile():
     for name in ("Bambu Lab H2C", "Bambu Lab H2D", "Bambu Lab H2D Pro", "Bambu Lab X2D"):
         settings = json.loads(threeMf.projectSettings(printBeds.bambuProfiles(printBeds.presetLabel(name)), [GREY, RED, BLUE]))
         assert len(settings["flush_volumes_matrix"]) == 18 and not flushingMatrixError(settings)
+
+
+def test_one_colour_on_two_extruders():
+    settings = json.loads(threeMf.projectSettings(H2D, [GREY]))
+    assert settings["flush_volumes_matrix"] == ["0", "0"] and settings["flush_multiplier"] == ["1", "1"]
+    assert not flushingMatrixError(settings)
+
+
+def test_extruders_without_a_flush_data_set_each_are_refused():
+    # review round 56: a block missing would bring Bambu Studio's zeros back
+    broken = types.SimpleNamespace(**{**vars(H2D), "flushDatasets": (1,)})
+    with pytest.raises(ValueError):
+        threeMf.projectSettings(broken, [GREY, RED])

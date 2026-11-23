@@ -65,7 +65,8 @@ The full list of changes, round by round, is in
   spreads them over the chosen print bed with spacing, a 3MF per plate if one isn't enough, with the corner for the purge
   tower kept free.
 - **One Bambu Studio project with all plates** for a Bambu Lab printer, the label colors on their filaments and
-  Bambu Studio's standard profiles of the printer, for the printers with two nozzles with the purging volumes, after upstream's multi-plate 3MF (Le0Michine). See
+  Bambu Studio's standard profiles of the printer; for the printers with two nozzles it brings the purging volumes
+  too. After upstream's multi-plate 3MF (Le0Michine), see
   [A Bambu Studio project with all plates](../working/export.md#a-bambu-studio-project-with-all-plates).
 - From GridfinityGenerator too: the letters of outline labels show in a color of their own in Fusion, the bin dialog
   shows the bin's size to the micron, and baseplates set the **Plate edge clearance** per edge (older settings are

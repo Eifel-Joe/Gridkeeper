@@ -267,7 +267,8 @@ def flushSettings(profiles, colours: list[str]) -> dict:
         return {}
     matrix = [
         str(0 if source == target else flushVolume(colours[source], colours[target], volume, dataset))
-        for (volume, dataset) in zip(profiles.nozzleVolumes, profiles.flushDatasets)
+        # strict: a block missing would bring Bambu Studio's zeros back (review round 56)
+        for (volume, dataset) in zip(profiles.nozzleVolumes, profiles.flushDatasets, strict=True)
         for source in range(len(colours)) for target in range(len(colours))
     ]
     return {
