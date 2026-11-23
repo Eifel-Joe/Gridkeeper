@@ -150,21 +150,36 @@ def test_the_last_printer_file_is_in_the_addins_config_folder():
 SYSTEM_PROFILES = json.load(open(os.path.join(ROOT, "tests", "fixtures", "bambu_system_profiles.json"), encoding="utf-8"))
 
 
-# nozzle_diameter of the printer profiles of Bambu Studio 02.09.01.70 has two entries (review round 55: from the
-# fixture, a printer with two nozzles added to the list is caught)
-TWO_NOZZLES = {name for (name, profiles) in PROFILES.items() if SYSTEM_PROFILES["machine_nozzles"][profiles[0]] == 2}
-
-
-def test_the_printers_with_two_nozzles():
-    assert TWO_NOZZLES == {"Bambu Lab H2C", "Bambu Lab H2D", "Bambu Lab H2D Pro", "Bambu Lab X2D"} == printBeds.TWO_NOZZLES
+EXTRUDERS = SYSTEM_PROFILES["machine_extruders"]
 
 
 @pytest.mark.parametrize("name", sorted(PROFILES))
-def test_a_bambu_printer_with_one_nozzle_gets_a_project(name):
-    # Bambu Studio test of 23.11.2026: the H2D project opened with "Partial purging volume set to 0", the purging
-    # volumes Bambu Studio puts in for two nozzles have zeros (GLCanvas3D::is_flushing_matrix_error); the spec's way
-    # out: a printer with two nozzles gets a file per plate
-    assert printBeds.isBambu(printBeds.presetLabel(name)) == (name not in TWO_NOZZLES)
+def test_every_bambu_printer_gets_a_project(name):
+    # round 56 (p690): the printers with two nozzles too, the project brings purging volumes for them, see
+    # threeMf.flushSettings
+    assert printBeds.isBambu(printBeds.presetLabel(name))
+
+
+@pytest.mark.parametrize("name", sorted(PROFILES))
+def test_the_extruders_are_bambu_studios(name):
+    profiles = printBeds.bambuProfiles(printBeds.presetLabel(name))
+    extruders = EXTRUDERS[profiles.printer]
+    assert profiles.extruders == extruders["nozzle_diameter"] == SYSTEM_PROFILES["machine_nozzles"][profiles.printer]
+    assert list(profiles.nozzleVolumes) == extruders["nozzle_volume"]
+    assert list(profiles.flushDatasets) == extruders["nozzle_flush_dataset"]
+    assert list(profiles.hotends) == extruders["extruder_max_nozzle_count"]
+    assert profiles.hotendAsExtruder == bool(extruders["handle_hotend_as_extruder"])
+
+
+def test_the_printers_with_two_extruders():
+    two = {name for (name, profiles) in PROFILES.items() if EXTRUDERS[profiles[0]]["nozzle_diameter"] == 2}
+    assert two == {"Bambu Lab H2C", "Bambu Lab H2D", "Bambu Lab H2D Pro", "Bambu Lab X2D"}
+    assert not hasattr(printBeds, "TWO_NOZZLES")
+
+
+def test_the_h3c_changes_hotends_on_one_extruder():
+    profiles = printBeds.bambuProfiles(printBeds.presetLabel("Bambu Lab H3C"))
+    assert (profiles.extruders, sum(profiles.hotends), profiles.hotendAsExtruder) == (1, 9, True)
 
 
 @pytest.mark.parametrize("name", sorted(PROFILES))

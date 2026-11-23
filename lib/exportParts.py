@@ -369,12 +369,19 @@ def filamentColours(filaments: dict[str, int] | None) -> list[str]:
 def bambuNotice(profiles, plates: int) -> str:
     """
     What the export asks before it saves a Bambu Studio project (round 55, decided 23.11.2026): it comes with Bambu
-    Studio's standard profiles of the printer chosen, the user may have to change them. printBeds.BambuProfiles
+    Studio's standard profiles of the printer chosen, the user may have to change them. printBeds.BambuProfiles.
+    Round 56 (p690, decided 23.11.2026): for two nozzles, where the purging volumes come from and that the user decides
+    on them, see threeMf.flushSettings
     """
     which = 'its plate' if plates == 1 else f'all {plates} plates'
+    purging = (
+        "The purging volumes for the two nozzles come from Bambu Studio's color formula; for its own filament colors "
+        "Bambu Studio has its own values, Re-calculate under Purging volumes takes them. Bambu Studio puts the "
+        "filaments on the nozzles so it purges least; change that and the volumes there if you want.\n\n"
+    ) if profiles.extruders > 1 else ''
     return (
         f"This file is a Bambu Studio project with {which}. It comes with Bambu Studio's standard profiles: "
         f"{profiles.printer}, {profiles.process}, Bambu PLA Basic for every filament and the Textured PEI Plate. "
         "Change them in Bambu Studio to your printer, nozzle, filament and plate where they differ.\n\n"
-        "OK saves the project, Cancel saves nothing."
+        f"{purging}OK saves the project, Cancel saves nothing."
     )

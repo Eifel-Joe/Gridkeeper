@@ -38,9 +38,22 @@ def test_the_p1s_sample_has_three_plates_with_its_profiles_and_colors(tmp_path):
 
 def test_the_one_plate_samples(tmp_path):
     samples.writeSamples(str(tmp_path))
-    # no H2D: a printer with two nozzles gets a file per plate, see printBeds.TWO_NOZZLES
-    assert sorted(os.listdir(tmp_path)) == ["r55-a1mini-one-plate.3mf", "r55-p1s-three-plates.3mf"]
+    assert sorted(os.listdir(tmp_path)) == ["r55-a1mini-one-plate.3mf", "r55-p1s-three-plates.3mf", "r56-h2d-two-plates.3mf"]
     (_, settings, project) = read(tmp_path / "r55-a1mini-one-plate.3mf")
     assert len(settings.findall("plate")) == 1
     assert project["printer_settings_id"] == "Bambu Lab A1 mini 0.4 nozzle"
     assert project["filament_colour"] == ["#808080", "#D02020"]
+
+
+def test_the_h2d_sample_has_purging_volumes_for_both_nozzles(tmp_path):
+    # round 56 (p690): as r56-h2d-4colours.3mf of the Bambu Studio test of 23.11.2026, which opened without a warning
+    results = samples.writeSamples(str(tmp_path))
+    assert results["r56-h2d-two-plates.3mf"] == (2, [], [], [])
+    (_, settings, project) = read(tmp_path / "r56-h2d-two-plates.3mf")
+    assert len(settings.findall("plate")) == 2
+    assert project["printer_settings_id"] == "Bambu Lab H2D 0.4 nozzle"
+    assert project["filament_colour"] == ["#808080", "#D02020", "#2060D0", "#000000"]
+    matrix = [int(value) for value in project["flush_volumes_matrix"]]
+    assert matrix[0:4] == [0, 295, 295, 208] and matrix[16:20] == [0, 310, 310, 223] and len(matrix) == 32
+    assert project["flush_multiplier"] == ["1", "1"]
+    assert "flush_volumes_matrix" not in read(tmp_path / "r55-p1s-three-plates.3mf")[2]

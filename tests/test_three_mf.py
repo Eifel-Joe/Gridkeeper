@@ -176,7 +176,8 @@ def test_objects_laid_out_on_plates_are_written_where_they_are(tmp_path):
 
 import types
 
-PROFILES = types.SimpleNamespace(printer="Bambu Lab P1S 0.4 nozzle", process="0.20mm Standard @BBL X1C", filament="Bambu PLA Basic @BBL P1S 0.4 nozzle")
+PROFILES = types.SimpleNamespace(printer="Bambu Lab P1S 0.4 nozzle", process="0.20mm Standard @BBL X1C", filament="Bambu PLA Basic @BBL P1S 0.4 nozzle",
+                                 nozzleVolumes=(107.0,), flushDatasets=(0,), hotends=(1,), hotendAsExtruder=False, extruders=1)
 BAMBU = "{http://schemas.bambulab.com/package/2021}"
 
 
@@ -292,3 +293,107 @@ def test_each_plate_has_the_textured_pei_plate():
     # project settings name the textured one; Bambu Studio keeps the bed type per plate too (bbs_3mf.cpp BED_TYPE_ATTR)
     settings = ElementTree.fromstring(threeMf.modelSettings([cube("a"), cube("b")], [0, 1]))
     assert [plate.find("metadata[@key='bed_type']").get("value") for plate in settings.findall("plate")] == ["Textured PEI Plate"] * 2
+
+
+# ---------------------------------------------------------------------------
+# purging volumes, round 56 (p690)
+# ---------------------------------------------------------------------------
+
+GREY, RED, BLUE, BLACK, WHITE = "#808080", "#D02020", "#2060D0", "#000000", "#FFFFFF"
+# the H2D's extruders, see printBeds.BAMBU_PROFILES
+H2D = types.SimpleNamespace(printer="Bambu Lab H2D 0.4 nozzle", process="0.20mm Standard @BBL H2D", filament="Bambu PLA Basic @BBL H2D",
+                            nozzleVolumes=(130.0, 145.0), flushDatasets=(1, 1), hotends=(1, 1), hotendAsExtruder=False, extruders=2)
+P1S = PROFILES
+
+
+@pytest.mark.parametrize(("source", "target", "minimum", "volume"), [
+    # Bambu Studio's "Re-calculate" on the H2D, test of 23.11.2026: left extruder 130, right 145
+    (GREY, RED, 130, 295), (RED, GREY, 130, 407), (GREY, BLUE, 130, 295), (BLUE, GREY, 130, 397), (BLACK, GREY, 130, 475),
+    (GREY, RED, 145, 310), (RED, GREY, 145, 422),
+    # to black from a lighter colour 1.3 times as much before the nozzle's volume (60 · 1.3 + 130)
+    (GREY, BLACK, 130, 208), (GREY, BLACK, 145, 223),
+])
+def test_the_purging_volume_is_bambu_studios(source, target, minimum, volume):
+    assert threeMf.flushVolume(source, target, minimum, 1) == volume
+
+
+def test_without_a_flush_data_set_black_is_not_purged_more():
+    assert threeMf.flushVolume(GREY, BLACK, 130, 0) == 190
+
+
+def test_the_same_colour_is_purged_60_at_least():
+    assert threeMf.flushVolume(RED, RED, 0, 1) == 60
+
+
+def test_the_purging_volume_is_900_at_most():
+    # 560 in Bambu Studio's float, a hair below in Python's double
+    assert threeMf.flushVolume(BLACK, WHITE, 0, 1) in (559, 560)
+    assert threeMf.flushVolume(BLACK, WHITE, 400, 1) == 900
+
+
+def flushingMatrixError(settings):
+    """Bambu Studio's GLCanvas3D::is_flushing_matrix_error, the check behind "Partial purging volume set to 0" """
+    matrix = [float(value) for value in settings["flush_volumes_matrix"]]
+    multipliers = [float(value) for value in settings["flush_multiplier"]]
+    if any(multiplier == 0 for multiplier in multipliers):
+        return True
+    size = len(matrix) // len(multipliers)
+    row = round(size ** 0.5)
+    assert row * row == size and size * len(multipliers) == len(matrix)
+    return any(value == 0 and (index % size) // row != (index % size) % row for (index, value) in enumerate(matrix))
+
+
+def test_two_extruders_get_a_block_of_purging_volumes_each():
+    settings = json.loads(threeMf.projectSettings(H2D, [GREY, RED]))
+    # Bambu Studio test of 23.11.2026, r56-h2d-2colours.3mf: opened without a warning, Re-calculate the same
+    assert settings["flush_volumes_matrix"] == ["0", "295", "407", "0", "0", "310", "422", "0"]
+    assert settings["flush_volumes_vector"] == ["140"] * 4
+    assert settings["flush_multiplier"] == ["1", "1"]
+    assert settings["flush_multiplier_fast"] == ["1.2", "1.2"]
+    assert settings["filament_map"] == ["1", "1"]
+    assert settings["filament_map_mode"] == "Auto For Flush"
+    assert not flushingMatrixError(settings)
+
+
+def test_four_colours_on_two_extruders():
+    settings = json.loads(threeMf.projectSettings(H2D, [GREY, RED, BLUE, BLACK]))
+    matrix = [int(value) for value in settings["flush_volumes_matrix"]]
+    assert len(matrix) == 2 * 16
+    assert matrix[0:4] == [0, 295, 295, 208]
+    assert matrix[16:20] == [0, 310, 310, 223]
+    assert [matrix[index * 5] for index in range(4)] == [0] * 4
+    assert settings["filament_map"] == ["1"] * 4
+    assert settings["flush_volumes_vector"] == ["140"] * 8
+    assert not flushingMatrixError(settings)
+
+
+def test_one_extruder_gets_no_purging_volumes():
+    # as 1.3.0, Bambu Studio's defaults are valid for one extruder; the H3C stays so too (test of 23.11.2026)
+    settings = json.loads(threeMf.projectSettings(P1S, [GREY, RED]))
+    assert not {"flush_volumes_matrix", "flush_volumes_vector", "flush_multiplier", "flush_multiplier_fast", "filament_map",
+                "filament_map_mode"} & set(settings)
+    h3c = types.SimpleNamespace(**{**vars(P1S), "nozzleVolumes": (125.9,), "flushDatasets": (1,), "hotends": (9,), "hotendAsExtruder": True})
+    assert "flush_volumes_matrix" not in json.loads(threeMf.projectSettings(h3c, [GREY, RED]))
+
+
+def test_the_project_settings_of_a_printbeds_profile():
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "lib", "printBeds.py")
+    spec = importlib.util.spec_from_file_location("printBeds", path)
+    printBeds = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(printBeds)
+    for name in ("Bambu Lab H2C", "Bambu Lab H2D", "Bambu Lab H2D Pro", "Bambu Lab X2D"):
+        settings = json.loads(threeMf.projectSettings(printBeds.bambuProfiles(printBeds.presetLabel(name)), [GREY, RED, BLUE]))
+        assert len(settings["flush_volumes_matrix"]) == 18 and not flushingMatrixError(settings)
+
+
+def test_one_colour_on_two_extruders():
+    settings = json.loads(threeMf.projectSettings(H2D, [GREY]))
+    assert settings["flush_volumes_matrix"] == ["0", "0"] and settings["flush_multiplier"] == ["1", "1"]
+    assert not flushingMatrixError(settings)
+
+
+def test_extruders_without_a_flush_data_set_each_are_refused():
+    # review round 56: a block missing would bring Bambu Studio's zeros back
+    broken = types.SimpleNamespace(**{**vars(H2D), "flushDatasets": (1,)})
+    with pytest.raises(ValueError):
+        threeMf.projectSettings(broken, [GREY, RED])

@@ -24,7 +24,7 @@ builds and to colored text.
 | **Color label text** | 3MF only: each label color gets a filament the slicer prints it in, see below |
 | **Label filaments** | With **Color label text** on: a list per label color of the selected parts, such as *Red text*, *Blue text* or *Text without color*, to pick the slicer's filament it prints in, 1 to 18, counting from 1 as the slicer lists them. The parts print on filament 1. Each color starts on a filament of its own, 2, 3 …; a number you change is kept for the next export |
 | **Print bed** › **Printer** | 3MF only: your printer, see [Choosing the printer](#choosing-the-printer); its bed size, where its slicer puts the purge tower and the area it keeps free come with it. The printer chosen last, here or in the baseplate dialog, is where both dialogs start |
-| **Files** | 3MF with a Bambu Lab printer of one nozzle only: **One Bambu Studio project with all plates** (to start with) or **A file per plate**, see [A Bambu Studio project with all plates](#a-bambu-studio-project-with-all-plates) |
+| **Files** | 3MF with a Bambu Lab printer only: **One Bambu Studio project with all plates** (to start with) or **A file per plate**, see [A Bambu Studio project with all plates](#a-bambu-studio-project-with-all-plates) |
 | **Bed width, X**, **Bed length, Y** | The bed's usable size; typing a size switches the printer to *Custom* |
 | **Spacing** | Space between the parts and to the bed's edge, 5 mm to start with |
 | **Purge tower area** | With **Color label text** on and text to color: a square kept free on every plate for the purge tower, 50 mm to start with, 0 for none |
@@ -56,8 +56,7 @@ For every other printer and *Custom* the square is at the back right: move the s
 any area your printer keeps free yourself. Typing a bed size switches the printer to *Custom*.
 
 Each Bambu Lab printer has an entry of its own (until 1.3.0 several shared one, such as *P1P, P1S, X1, X1C, X1E*),
-since the Bambu Studio project names its printer (the printers with two nozzles get a file per plate for now, see
-below). A shared entry saved before opens as the X1 Carbon, P2S or H2D.
+since the Bambu Studio project names its printer. A shared entry saved before opens as the X1 Carbon, P2S or H2D.
 
 ## Which parts
 
@@ -140,9 +139,22 @@ another model, *Cancel* keeps the project's printer.
 The project is made for Bambu Studio (tested with 02.09.01.70); an older Bambu Studio may tell of a newer file
 first. For OrcaSlicer, PrusaSlicer and the other printers choose a file per plate.
 
-The Bambu Lab printers with two nozzles, the **H2C, H2D, H2D Pro and X2D**, get a file per plate for now: in a
-project without purging volumes of its own Bambu Studio sets some of theirs to 0 and warns *Partial purging volume
-set to 0*, the colors of the label text would mix.
+### Printers with two nozzles
+
+For the Bambu Lab printers with two nozzles, the **H2C, H2D, H2D Pro and X2D** (since 1.3.1), the project brings the
+**purging volumes** for both nozzles: how much filament each change from one color to another flushes. Without them
+Bambu Studio sets some to 0 and warns *Partial purging volume set to 0*, and it doesn't work them out itself when it
+opens a project. The export works them out with Bambu Studio's color formula and adds the volume of each nozzle, as
+Bambu Studio does. For changes between two of Bambu Studio's own filament colors (black, white, red, blue …) Bambu
+Studio has its own values from a table instead, which the export doesn't have: **Re-calculate** under **Purging
+volumes** in Bambu Studio gives you them. The notice before saving says so.
+
+Bambu Studio puts the filaments on the nozzles so that it flushes least: with two colors each gets a nozzle of its own
+and hardly anything is flushed. Whether and how much it flushes is up to you in Bambu Studio: change the volumes, or
+put the filaments on the nozzles by hand.
+
+The **H3C** changes between several hotends on one extruder; its project is the same as for a printer with one nozzle,
+with Bambu Studio's own purging volumes (tested in Bambu Studio 02.09.01.70).
 
 ## Colored label text in the 3MF
 
