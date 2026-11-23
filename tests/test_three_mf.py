@@ -177,7 +177,8 @@ def test_objects_laid_out_on_plates_are_written_where_they_are(tmp_path):
 import types
 
 PROFILES = types.SimpleNamespace(printer="Bambu Lab P1S 0.4 nozzle", process="0.20mm Standard @BBL X1C", filament="Bambu PLA Basic @BBL P1S 0.4 nozzle",
-                                 nozzleVolumes=(107.0,), flushDatasets=(0,), hotends=(1,), hotendAsExtruder=False, extruders=1)
+                                 nozzleVolumes=(107.0,), flushDatasets=(0,), hotends=(1,), hotendAsExtruder=False, extruders=1,
+                                 cutRetractions=(18,))
 BAMBU = "{http://schemas.bambulab.com/package/2021}"
 
 
@@ -306,8 +307,18 @@ def test_each_plate_has_the_textured_pei_plate():
 GREY, RED, BLUE, BLACK, WHITE = "#808080", "#D02020", "#2060D0", "#000000", "#FFFFFF"
 # the H2D's extruders, see printBeds.BAMBU_PROFILES
 H2D = types.SimpleNamespace(printer="Bambu Lab H2D 0.4 nozzle", process="0.20mm Standard @BBL H2D", filament="Bambu PLA Basic @BBL H2D",
-                            nozzleVolumes=(130.0, 145.0), flushDatasets=(1, 1), hotends=(1, 1), hotendAsExtruder=False, extruders=2)
+                            nozzleVolumes=(130.0, 145.0), flushDatasets=(1, 1), hotends=(1, 1), hotendAsExtruder=False, extruders=2,
+                            cutRetractions=(0, 0))
 P1S = PROFILES
+
+
+@pytest.mark.parametrize(("nozzleVolume", "cutRetraction", "minimum"), [
+    # round 57: Bambu Studio's range of purging volumes, test of 23.11.2026: P1S [63, 900], A1 mini [48, 900], H3C [60,
+    # 900] (60 the formula's least, its minimum 125); 1.75 mm filament
+    (107.0, 18, 63), (92.0, 18, 48), (125.9, 0, 125), (130.0, 0, 130), (130.0, 14, 96), (145.0, 14, 111),
+])
+def test_the_minimum_purging_volume_is_bambu_studios(nozzleVolume, cutRetraction, minimum):
+    assert threeMf.minFlushVolume(nozzleVolume, cutRetraction) == minimum
 
 
 @pytest.mark.parametrize(("source", "target", "minimum", "volume"), [
@@ -376,7 +387,8 @@ def test_one_extruder_gets_a_block_of_purging_volumes():
     # A1: n² values, flush_multiplier with one entry, filament_map n × 1, Auto For Flush); without them every change
     # of color purged Bambu Studio's flat 280. The P1S has no flush data set: no 1.3 towards black
     settings = json.loads(threeMf.projectSettings(P1S, [GREY, RED]))
-    assert settings["flush_volumes_matrix"] == ["0", "272", "384", "0"]
+    # round 57: less the long retraction when cut, as Bambu Studio's Re-calculate (test of 23.11.2026)
+    assert settings["flush_volumes_matrix"] == ["0", "228", "340", "0"]
     assert settings["flush_volumes_vector"] == ["140"] * 4
     assert settings["flush_multiplier"] == ["1"]
     assert settings["flush_multiplier_fast"] == ["1.2"]
@@ -388,7 +400,8 @@ def test_one_extruder_gets_a_block_of_purging_volumes():
 def test_the_h3c_gets_one_block_with_its_flush_data_set():
     # one extruder with nine hotends: one block (Bambu Studio test of 23.11.2026, r56-h3c-4colours-spuelmengen.3mf
     # opened without a warning); its data set 1 purges grey to black 60 · 1.3 + 125
-    h3c = types.SimpleNamespace(**{**vars(P1S), "nozzleVolumes": (125.9,), "flushDatasets": (1,), "hotends": (9,), "hotendAsExtruder": True})
+    h3c = types.SimpleNamespace(**{**vars(P1S), "nozzleVolumes": (125.9,), "flushDatasets": (1,), "hotends": (9,), "hotendAsExtruder": True,
+                                 "cutRetractions": (0,)})
     settings = json.loads(threeMf.projectSettings(h3c, [GREY, RED, BLUE, BLACK]))
     matrix = [int(value) for value in settings["flush_volumes_matrix"]]
     assert len(matrix) == 16 and matrix[3] == 203

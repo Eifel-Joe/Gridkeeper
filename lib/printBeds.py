@@ -106,7 +106,9 @@ class BambuProfiles:
     """
     Bambu Studio's system profile names of a printer with its 0.4 mm nozzle, and its extruders as the printer profile
     has them (round 56, p690): per extruder nozzle_volume and nozzle_flush_dataset of its Standard nozzle and
-    extruder_max_nozzle_count, the hotends it changes between, and handle_hotend_as_extruder
+    extruder_max_nozzle_count, the hotends it changes between, and handle_hotend_as_extruder. Round 57: per extruder
+    the mm of the long retraction when cut Bambu Studio takes off the least purging volume for the printer's Bambu PLA
+    Basic (Plater.cpp get_min_flush_volumes, see threeMf.minFlushVolume)
     """
     printer: str
     process: str
@@ -115,6 +117,7 @@ class BambuProfiles:
     flushDatasets: tuple[int, ...] = (0,)
     hotends: tuple[int, ...] = (1,)
     hotendAsExtruder: bool = False
+    cutRetractions: tuple[int, ...] = (18,)
 
     @property
     def extruders(self) -> int:
@@ -128,9 +131,12 @@ class BambuProfiles:
 # profile in the Bambu Studio test of 23.11.2026
 # Round 56 (p690): the extruders from Bambu Studio's printer profiles (sources of 02.09.01.70, profiles BBL
 # 02.09.00.74), tests/fixtures/bambu_system_profiles.json lists them as machine_extruders. Defaults of BambuProfiles:
-# one extruder of the P1 and X1. The H2C's right extruder changes between 6 hotends, the H3C's one between 9
+# one extruder of the P1 and X1. The H2C's right extruder changes between 6 hotends, the H3C's one between 9.
+# Round 57 (spec dev-notes/specs/2026-11-23-r57-one-nozzle-flush.md): the long retraction when cut, the fixture has the
+# profile values as machine_extruders' cut. The A1, P1 and X1 leave it to the filament, Bambu PLA Basic's is 18 mm;
+# the X1E only takes the printer's, which is off; the H2C's printer profile has 14 mm on; it is off for the others
 _ONE = dict(nozzleVolumes=(92.0,))
-_TWO = dict(nozzleVolumes=(130.0, 145.0), flushDatasets=(1, 1), hotends=(1, 1))
+_TWO = dict(nozzleVolumes=(130.0, 145.0), flushDatasets=(1, 1), hotends=(1, 1), cutRetractions=(0, 0))
 BAMBU_PROFILES: dict[str, BambuProfiles] = {
     'Bambu Lab A1 mini': BambuProfiles('Bambu Lab A1 mini 0.4 nozzle', '0.20mm Standard @BBL A1M', 'Bambu PLA Basic @BBL A1M', **_ONE),
     'Bambu Lab A1': BambuProfiles('Bambu Lab A1 0.4 nozzle', '0.20mm Standard @BBL A1', 'Bambu PLA Basic @BBL A1', **_ONE),
@@ -139,15 +145,15 @@ BAMBU_PROFILES: dict[str, BambuProfiles] = {
     'Bambu Lab P1S': BambuProfiles('Bambu Lab P1S 0.4 nozzle', '0.20mm Standard @BBL X1C', 'Bambu PLA Basic @BBL P1S 0.4 nozzle'),
     'Bambu Lab X1': BambuProfiles('Bambu Lab X1 0.4 nozzle', '0.20mm Standard @BBL X1C', 'Bambu PLA Basic @BBL X1'),
     'Bambu Lab X1 Carbon': BambuProfiles('Bambu Lab X1 Carbon 0.4 nozzle', '0.20mm Standard @BBL X1C', 'Bambu PLA Basic @BBL X1C'),
-    'Bambu Lab X1E': BambuProfiles('Bambu Lab X1E 0.4 nozzle', '0.20mm Standard @BBL X1C', 'Bambu PLA Basic @BBL X1C'),
-    'Bambu Lab P2S': BambuProfiles('Bambu Lab P2S 0.4 nozzle', '0.20mm Standard @BBL P2S', 'Bambu PLA Basic @BBL P2S', nozzleVolumes=(110.0,)),
+    'Bambu Lab X1E': BambuProfiles('Bambu Lab X1E 0.4 nozzle', '0.20mm Standard @BBL X1C', 'Bambu PLA Basic @BBL X1C', cutRetractions=(0,)),
+    'Bambu Lab P2S': BambuProfiles('Bambu Lab P2S 0.4 nozzle', '0.20mm Standard @BBL P2S', 'Bambu PLA Basic @BBL P2S', nozzleVolumes=(110.0,), cutRetractions=(0,)),
     'Bambu Lab X2D': BambuProfiles('Bambu Lab X2D 0.4 nozzle', '0.20mm Standard @BBL X2D', 'Bambu PLA Basic @BBL X2D 0.4 nozzle', **{**_TWO, 'nozzleVolumes': (92.0, 92.0)}),
-    'Bambu Lab H2C': BambuProfiles('Bambu Lab H2C 0.4 nozzle', '0.20mm Standard @BBL H2C', 'Bambu PLA Basic @BBL H2C', **{**_TWO, 'hotends': (1, 6)}),
+    'Bambu Lab H2C': BambuProfiles('Bambu Lab H2C 0.4 nozzle', '0.20mm Standard @BBL H2C', 'Bambu PLA Basic @BBL H2C', **{**_TWO, 'hotends': (1, 6), 'cutRetractions': (14, 14)}),
     'Bambu Lab H2D': BambuProfiles('Bambu Lab H2D 0.4 nozzle', '0.20mm Standard @BBL H2D', 'Bambu PLA Basic @BBL H2D', **_TWO),
     'Bambu Lab H2D Pro': BambuProfiles('Bambu Lab H2D Pro 0.4 nozzle', '0.20mm Standard @BBL H2DP', 'Bambu PLA Basic @BBL H2DP', **_TWO),
-    'Bambu Lab H2S': BambuProfiles('Bambu Lab H2S 0.4 nozzle', '0.20mm Standard @BBL H2S', 'Bambu PLA Basic @BBL H2S', nozzleVolumes=(145.0,), flushDatasets=(1,)),
+    'Bambu Lab H2S': BambuProfiles('Bambu Lab H2S 0.4 nozzle', '0.20mm Standard @BBL H2S', 'Bambu PLA Basic @BBL H2S', nozzleVolumes=(145.0,), flushDatasets=(1,), cutRetractions=(0,)),
     'Bambu Lab H3C': BambuProfiles('Bambu Lab H3C 0.4 nozzle', '0.20mm Standard @BBL H3C', 'Bambu PLA Basic @BBL H3C', nozzleVolumes=(125.9,), flushDatasets=(1,),
-                                   hotends=(9,), hotendAsExtruder=True),
+                                   hotends=(9,), hotendAsExtruder=True, cutRetractions=(0,)),
 }
 
 _NAMES = {presetLabel(name): name for name in PRINT_BED_SIZES}

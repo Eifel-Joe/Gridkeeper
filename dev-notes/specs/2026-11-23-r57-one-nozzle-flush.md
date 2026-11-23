@@ -56,3 +56,49 @@ Schwarz→Weiß deutlich mehr als 280, Blau→Schwarz deutlich weniger.
    dürfen abweichen (Bambus Tabelle, bekannt).
 3. Fusion-Auftrag `fusion-auftraege/r57_export.py`: Export für einen Ein-Düsen-Bambu-Drucker als Projekt, im
    `project_settings.config` stehen n² Werte, `flush_multiplier` mit einem Eintrag, keine 0 außerhalb der Diagonale.
+
+## Nachtrag Bambu-Test 23.11.2026 (Bambu Studio 02.09.01.70, Probedateien `_scratch/r57`, Stand c45ad1b6)
+- P1S, A1 mini, H3C: öffnen ohne Warnung, Spülmengen-Dialog zeigt die Werte der Datei, P1S-Platte slict ohne Fehler.
+- H3C: Grau-Paare gleich Bambus „Re-calculate“, nur Paare aus Rot/Blau/Schwarz weichen ab (Farbtabelle, bekannt).
+- P1S und A1 mini: „Re-calculate“ ergibt **überall 44 weniger**; der Dialog nennt als Bereich [63, 900] (P1S) bzw.
+  [48, 900] (A1 mini) statt nozzle_volume 107 bzw. 92.
+
+### Ursache (Quelltext 8e524a39, `Plater.cpp` `get_min_flush_volumes`)
+Die Mindestmenge je Quellfilament ist `int(nozzle_volume)` minus die Länge, die beim Abschneiden zurückgezogen wird
+(„Long retraction when cut“), als Filamentvolumen: `π · d²/4 · Länge`, d = `filament_diameter` (1,75), Ergebnis in
+`int` abgeschnitten. Die Länge (in `int` abgeschnitten):
+- Maschinenwert `retraction_distances_when_cut[Extruder]`, wenn `enable_long_retraction_when_cut` ≠ 0 und
+  `long_retractions_when_cut[Extruder]` = 1, sonst 0;
+- Filament `filament_long_retractions_when_cut` = 0: 0; = 1 und `enable_long_retraction_when_cut` = 2
+  (EnableFilament): `filament_retraction_distances_when_cut` (nil: Maschinenwert); nil (255): bleibt der Maschinenwert.
+- Der Abzug gilt nur im Formelweg (`FlushVolCalculator::calc_flush_vol`: Formel, ggf. · 1,3, + Mindestmenge), nicht
+  für Werte aus Bambus Farbtabelle.
+
+### Werte (Profile BBL aus 8e524a39, Standard-Variante, Bambu PLA Basic des Druckers)
+| Drucker | enable | Maschine an / Länge | Filament an / Länge | Abzug mm | Mindestmenge |
+|---|---|---|---|---|---|
+| A1 mini, A1, A2L | 2 | 0 / 18 | 1 / 18 | 18 | 92 → 48 |
+| P1P, P1S, X1, X1 Carbon | 2 | 0 / 18 | 1 / 18 | 18 | 107 → 63 |
+| X1E | 1 | 0 / 18 | 1 / 18 | 0 (Filament zählt nur bei 2) | 107 |
+| P2S | 2 | 0 / 18 | nil / 10 | 0 | 110 |
+| X2D | 2 | 0, 0 / 18 | nil / 10 | 0 | 92, 92 |
+| H2D, H2D Pro | 2 | 0, 0 / 10 | nil / nil | 0 | 130, 145 (wie R56-Test) |
+| H2C | 2 | **1, 1 / 14** | nil / nil | 14 | 130 → 96, 145 → 111 (ungeprüft) |
+| H2S | 2 | 0 / 18 | nil / nil | 0 | 145 |
+| H3C | 2 | 0 / 18 | nil / nil | 0 | 125 (wie Test) |
+Gegenprobe: 107 − π·1,75²/4·18 = 63,7 → 63 und 92 → 48,7 → 48, genau Bambus Bereiche; 272 − 44 = 228 wie „Re-calculate“.
+
+### Lösung (Weg A, Formel wie Bambu)
+- `BambuProfiles.cutRetractions`: je Extruder die Länge in mm wie oben (aus den Profilen, Fixture
+  `machine_extruders[…].cut` mit den Rohwerten; ein Test leitet die Länge nach Bambus Regel daraus ab).
+- `threeMf.minFlushVolume(nozzleVolume, cutRetraction)` = `int(int(nozzleVolume) − π·1,75²/4·Länge)`; `flushSettings`
+  gibt sie `flushVolume` als Mindestmenge.
+- Nicht dabei: andere Filamente als Bambu PLA Basic, vom Nutzer geänderte Rückzugseinstellungen.
+- Neue Probedateien P1S und A1 mini; der H2C ändert sich (vorher 130/145) – Vorschlag: H2C-Probe im nächsten
+  Bambu-Test mitprüfen.
+
+### Bettanzeige
+Die P1S-Probe hat `curr_bed_type` und `bed_type` aller Platten „Textured PEI Plate“ (geprüft). Bambu setzt beim Öffnen
+`curr_bed_type` aus dem Projekt (`Plater.cpp`, `load_files` → `on_bed_type_change`); die Auswahl oben links folgt
+danach je nach Bambus Einstellung „user_bed_type“ der Liste je Drucker (`Sidebar::update_all_preset_comboboxes`).
+Unbestätigt, dass die „Smooth“-Anzeige daher kommt; die Datei selbst ist richtig, keine Änderung.

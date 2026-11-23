@@ -71,9 +71,10 @@ def offDiagonalZeros(project):
 
 @pytest.mark.parametrize(("name", "printer", "row"), [
     # round 57: one extruder, one block; grey to red, blue, black: the formula plus the nozzle volume, 1.3 towards
-    # black only with a flush data set (H3C)
-    ("r57-p1s-4colours.3mf", "Bambu Lab P1S 0.4 nozzle", [0, 272, 272, 167]),
-    ("r57-a1mini-4colours.3mf", "Bambu Lab A1 mini 0.4 nozzle", [0, 257, 257, 152]),
+    # black only with a flush data set (H3C); less the long retraction when cut on the P1S and A1 mini, as Bambu
+    # Studio's Re-calculate in the test of 23.11.2026
+    ("r57-p1s-4colours.3mf", "Bambu Lab P1S 0.4 nozzle", [0, 228, 228, 123]),
+    ("r57-a1mini-4colours.3mf", "Bambu Lab A1 mini 0.4 nozzle", [0, 213, 213, 108]),
     ("r57-h3c-4colours.3mf", "Bambu Lab H3C 0.4 nozzle", [0, 290, 290, 203]),
 ])
 def test_the_one_extruder_samples_have_a_block_of_purging_volumes(tmp_path, name, printer, row):

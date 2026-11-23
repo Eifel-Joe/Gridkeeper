@@ -145,7 +145,8 @@ The project brings the **purging volumes** for every Bambu Lab printer (since 1.
 since 1.3.1): how much filament each change from one color to another flushes. Bambu Studio doesn't work them out
 itself when it opens a project; without them a printer with one nozzle flushes a flat 280 mm³ at every change,
 whatever the colors, and one with two nozzles gets some set to 0 and the warning *Partial purging volume set to 0*.
-The export works them out with Bambu Studio's color formula and adds the volume of each nozzle, as Bambu Studio does.
+The export works them out with Bambu Studio's color formula and adds the volume of each nozzle, less what the printer
+pulls back when it cuts the filament, as Bambu Studio does.
 For changes between two of Bambu Studio's own filament colors (black, white, red, blue …) Bambu Studio has its own
 values from a table instead, which the export doesn't have: **Re-calculate** under **Purging volumes** in Bambu Studio
 gives you them. The notice before saving says so.
