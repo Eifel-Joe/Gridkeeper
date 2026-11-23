@@ -5,6 +5,30 @@ GridfinityGenerator by Le0Michine, merged up to ee027a9 (v2.5.0.0, 17.11.2026; r
 Until 1.2.0 this file was named `CHANGELOG-CULLENECT.md`.
 Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`, the `vX.Y.Z.W` tags belong to GridfinityGenerator.
 
+## 1.4.0 (2026-11-23)
+
+### Bambu Studio project for printers with two nozzles (round 56)
+
+- **The Bambu Lab printers with two nozzles (H2C, H2D, H2D Pro, X2D) get the Bambu Studio project with all plates
+  too**, no longer a file per plate. The project brings their purging volumes, so Bambu Studio opens it without
+  *Partial purging volume set to 0* (checked in Bambu Studio 02.09.01.70, H2D with two and four colors).
+- Why the warning came: in a project without purging volumes Bambu Studio puts in its defaults for one nozzle and
+  rebuilds them for two with zeros (`PresetBundle::update_multi_material_filament_presets`); it doesn't work them out
+  itself when it opens a project.
+- The volumes per pair of colors and nozzle follow Bambu Studio's color formula (`FlushVolCalc.cpp`,
+  `calc_flush_vol_rgb`, rebuilt from Bambu Studio's AGPL-3.0 sources, no code taken), 1.3 times as much towards black,
+  plus the nozzle's volume from the printer profile, 900 mm³ at most. Bambu Studio's color tables for its own filament
+  colors aren't part of it; *Re-calculate* under *Flushing volumes* in Bambu Studio gives its own values, the notice
+  before saving says so. Which nozzle prints which filament stays Bambu Studio's choice (*Auto For Flush*) and yours.
+- Each Bambu printer carries its extruders as Bambu Studio's printer profile has them: nozzle volume and flush data
+  set per extruder, the hotends it changes between. The **H3C** (nine hotends on one extruder) keeps the project of a
+  printer with one nozzle, Bambu Studio's own purging volumes hold for it (tested).
+- Not included: color-dependent purging volumes for the printers with one nozzle (they keep Bambu Studio's flat 280
+  mm³), Bambu Studio's color tables and measured values per filament pair.
+- Credits: Bambu Studio (Bambu Lab, AGPL-3.0) as the source of the color formula; GridfinityGenerator by Le0Michine
+  (CC BY-NC-SA 4.0), Cullenect labels by CullenJWebb (MIT), gridfinity_extended_openscad by ostat / Chris Heazlewood
+  (reference), Gridfinity by Zack Freedman.
+
 ## 1.3.0 (2026-11-23)
 
 ### One Bambu Studio project with all plates (round 55)
@@ -855,4 +879,7 @@ the walls, shelled bins with rounded offsets, a clearance between baseplates glu
   reference for the Cullenect tab.
 - **Pred** — [Gridfinity Storage Box v1.1 (parametric)](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric), size and shape of the
   storage box and its lid, rebuilt in code with changes, CC BY-NC.
+- **Bambu Lab** — [Bambu Studio](https://github.com/bambulab/BambuStudio), AGPL-3.0: the color formula for the
+  purging volumes of the Bambu Studio project (`src/libslic3r/FlushVolCalc.cpp`), rebuilt from its description in
+  the sources, no code taken.
 - **Zack Freedman** — [Gridfinity](https://gridfinity.xyz).
