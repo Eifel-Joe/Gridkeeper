@@ -5,6 +5,23 @@ GridfinityGenerator by Le0Michine, merged up to ee027a9 (v2.5.0.0, 17.11.2026; r
 Until 1.2.0 this file was named `CHANGELOG-CULLENECT.md`.
 Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`, the `vX.Y.Z.W` tags belong to GridfinityGenerator.
 
+## 1.3.2 (2026-11-23)
+
+### Color-dependent purging volumes for every Bambu printer (round 57)
+
+- **The Bambu Studio project brings purging volumes for the Bambu Lab printers with one nozzle and the H3C too**, as
+  1.3.1 did for the printers with two nozzles. Until now each change of color purged Bambu Studio's flat 280 mm³,
+  whatever the colors: Bambu Studio doesn't work them out itself when it opens a project.
+- Same color formula as 1.3.1 (rebuilt from Bambu Studio's AGPL-3.0 sources, no code taken), plus the nozzle's
+  volume from the printer profile; 1.3 times as much towards black only where Bambu Studio does so, on the printers
+  with a flush data set (H2S, H3C and the printers with two nozzles). One block of volumes for one extruder: Bambu
+  Studio counts the blocks by `flush_multiplier`, and its own project for one nozzle has the same settings.
+- The notice before saving tells every Bambu printer where the volumes come from and that *Re-calculate* under
+  *Purging volumes* gives Bambu Studio's own values for its filament colors.
+- Credits: Bambu Studio (Bambu Lab, AGPL-3.0) as the source of the color formula; GridfinityGenerator by Le0Michine
+  (CC BY-NC-SA 4.0), Cullenect labels by CullenJWebb (MIT), gridfinity_extended_openscad by ostat / Chris Heazlewood
+  (reference), Gridfinity by Zack Freedman.
+
 ## 1.3.1 (2026-11-23)
 
 ### Bambu Studio project for printers with two nozzles (round 56)

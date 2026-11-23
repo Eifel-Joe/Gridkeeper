@@ -139,22 +139,24 @@ another model, *Cancel* keeps the project's printer.
 The project is made for Bambu Studio (tested with 02.09.01.70); an older Bambu Studio may tell of a newer file
 first. For OrcaSlicer, PrusaSlicer and the other printers choose a file per plate.
 
-### Printers with two nozzles
+### Purging volumes
 
-For the Bambu Lab printers with two nozzles, the **H2C, H2D, H2D Pro and X2D** (since 1.3.1), the project brings the
-**purging volumes** for both nozzles: how much filament each change from one color to another flushes. Without them
-Bambu Studio sets some to 0 and warns *Partial purging volume set to 0*, and it doesn't work them out itself when it
-opens a project. The export works them out with Bambu Studio's color formula and adds the volume of each nozzle, as
-Bambu Studio does. For changes between two of Bambu Studio's own filament colors (black, white, red, blue …) Bambu
-Studio has its own values from a table instead, which the export doesn't have: **Re-calculate** under **Purging
-volumes** in Bambu Studio gives you them. The notice before saving says so.
+The project brings the **purging volumes** for every Bambu Lab printer (since 1.3.2; for the printers with two nozzles
+since 1.3.1): how much filament each change from one color to another flushes. Bambu Studio doesn't work them out
+itself when it opens a project; without them a printer with one nozzle flushes a flat 280 mm³ at every change,
+whatever the colors, and one with two nozzles gets some set to 0 and the warning *Partial purging volume set to 0*.
+The export works them out with Bambu Studio's color formula and adds the volume of each nozzle, as Bambu Studio does.
+For changes between two of Bambu Studio's own filament colors (black, white, red, blue …) Bambu Studio has its own
+values from a table instead, which the export doesn't have: **Re-calculate** under **Purging volumes** in Bambu Studio
+gives you them. The notice before saving says so.
 
-Bambu Studio puts the filaments on the nozzles so that it flushes least: with two colors each gets a nozzle of its own
-and hardly anything is flushed. Whether and how much it flushes is up to you in Bambu Studio: change the volumes, or
-put the filaments on the nozzles by hand.
+For the printers with two nozzles, the **H2C, H2D, H2D Pro and X2D**, there are purging volumes for each nozzle. Bambu
+Studio puts the filaments on the nozzles so that it flushes least: with two colors each gets a nozzle of its own and
+hardly anything is flushed. Whether and how much it flushes is up to you in Bambu Studio: change the volumes, or put
+the filaments on the nozzles by hand.
 
-The **H3C** changes between several hotends on one extruder; its project is the same as for a printer with one nozzle,
-with Bambu Studio's own purging volumes (tested in Bambu Studio 02.09.01.70).
+The **H3C** changes between several hotends on one extruder; for the purging volumes it counts as a printer with one
+nozzle.
 
 ## Colored label text in the 3MF
 
