@@ -38,7 +38,9 @@ def test_the_p1s_sample_has_three_plates_with_its_profiles_and_colors(tmp_path):
 
 def test_the_one_plate_samples(tmp_path):
     samples.writeSamples(str(tmp_path))
-    for (name, printer) in (("r55-a1mini-one-plate.3mf", "Bambu Lab A1 mini 0.4 nozzle"), ("r55-h2d-one-plate.3mf", "Bambu Lab H2D 0.4 nozzle")):
+    # no H2D: a printer with two nozzles gets a file per plate, see printBeds.TWO_NOZZLES
+    assert sorted(os.listdir(tmp_path)) == ["r55-a1mini-one-plate.3mf", "r55-p1s-three-plates.3mf"]
+    for (name, printer) in (("r55-a1mini-one-plate.3mf", "Bambu Lab A1 mini 0.4 nozzle"),):
         (_, settings, project) = read(tmp_path / name)
         assert len(settings.findall("plate")) == 1
         assert project["printer_settings_id"] == printer

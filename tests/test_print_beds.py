@@ -150,10 +150,21 @@ def test_the_last_printer_file_is_in_the_addins_config_folder():
 SYSTEM_PROFILES = json.load(open(os.path.join(ROOT, "tests", "fixtures", "bambu_system_profiles.json"), encoding="utf-8"))
 
 
+# nozzle_diameter of the printer profiles of Bambu Studio 02.09.01.70 has two entries
+TWO_NOZZLES = {"Bambu Lab H2C", "Bambu Lab H2D", "Bambu Lab H2D Pro", "Bambu Lab X2D"}
+
+
+@pytest.mark.parametrize("name", sorted(PROFILES))
+def test_a_bambu_printer_with_one_nozzle_gets_a_project(name):
+    # Bambu Studio test of 23.11.2026: the H2D project opened with "Partial flushing volume set to 0", the purging
+    # volumes Bambu Studio puts in for two nozzles have zeros (GLCanvas3D::is_flushing_matrix_error); the spec's way
+    # out: a printer with two nozzles gets a file per plate
+    assert printBeds.isBambu(printBeds.presetLabel(name)) == (name not in TWO_NOZZLES)
+
+
 @pytest.mark.parametrize("name", sorted(PROFILES))
 def test_every_bambu_printer_names_its_profiles(name):
     label = printBeds.presetLabel(name)
-    assert printBeds.isBambu(label)
     profiles = printBeds.bambuProfiles(label)
     assert (profiles.printer, profiles.process, profiles.filament) == PROFILES[name]
 

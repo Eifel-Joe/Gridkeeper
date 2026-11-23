@@ -8,7 +8,6 @@ writes
 - r55-p1s-three-plates.3mf: Bambu Lab P1S, bins on two plates, Cullenect style labels on a third, label text in red, blue
   and without a color (black), on filaments 2, 3 and 4
 - r55-a1mini-one-plate.3mf: Bambu Lab A1 mini, one plate, red text
-- r55-h2d-one-plate.3mf: Bambu Lab H2D, one plate, red text, a printer with two nozzles
 """
 
 import importlib.util
@@ -68,8 +67,6 @@ def writeSamples(folder):
                                                  bins + labels, filaments, ["bins"] * len(bins) + ["labels"] * len(labels))
     results["r55-a1mini-one-plate.3mf"] = project(os.path.join(folder, "r55-a1mini-one-plate.3mf"), "Bambu Lab A1 mini (180 x 180 mm)",
                                                  [box("Bin 2x1", 83.5, 41.5, 21), box("Label red", 36, 11.5, 1.2, letters=2)], {RED: 2})
-    results["r55-h2d-one-plate.3mf"] = project(os.path.join(folder, "r55-h2d-one-plate.3mf"), "Bambu Lab H2D (350 x 320 mm)",
-                                              [box("Bin 3x2", 125.5, 83.5, 21), box("Label red", 36, 11.5, 1.2, letters=2)], {RED: 2})
     return results
 
 

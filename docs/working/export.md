@@ -24,7 +24,7 @@ builds and to colored text.
 | **Color label text** | 3MF only: each label color gets a filament the slicer prints it in, see below |
 | **Label filaments** | With **Color label text** on: a list per label color of the selected parts, such as *Red text*, *Blue text* or *Text without color*, to pick the slicer's filament it prints in, 1 to 18, counting from 1 as the slicer lists them. The parts print on filament 1. Each color starts on a filament of its own, 2, 3 …; a number you change is kept for the next export |
 | **Print bed** › **Printer** | 3MF only: your printer, see [Choosing the printer](#choosing-the-printer); its bed size, where its slicer puts the purge tower and the area it keeps free come with it. The printer chosen last, here or in the baseplate dialog, is where both dialogs start |
-| **Files** | 3MF with a Bambu Lab printer only: **One Bambu Studio project with all plates** (to start with) or **A file per plate**, see [A Bambu Studio project with all plates](#a-bambu-studio-project-with-all-plates) |
+| **Files** | 3MF with a Bambu Lab printer of one nozzle only: **One Bambu Studio project with all plates** (to start with) or **A file per plate**, see [A Bambu Studio project with all plates](#a-bambu-studio-project-with-all-plates) |
 | **Bed width, X**, **Bed length, Y** | The bed's usable size; typing a size switches the printer to *Custom* |
 | **Spacing** | Space between the parts and to the bed's edge, 5 mm to start with |
 | **Purge tower area** | With **Color label text** on and text to color: a square kept free on every plate for the purge tower, 50 mm to start with, 0 for none |
@@ -138,6 +138,10 @@ another model, *Cancel* keeps the project's printer.
 
 The project is made for Bambu Studio (tested with 02.09.01.70); an older Bambu Studio may tell of a newer file
 first. For OrcaSlicer, PrusaSlicer and the other printers choose a file per plate.
+
+The Bambu Lab printers with two nozzles, the **H2C, H2D, H2D Pro and X2D**, get a file per plate for now: in a
+project without purging volumes of its own Bambu Studio sets some of theirs to 0 and warns *Partial flushing volume
+set to 0*, the colors of the label text would mix.
 
 ## Colored label text in the 3MF
 
