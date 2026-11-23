@@ -694,3 +694,40 @@ def test_the_notice_of_one_plate():
         "This file is a Bambu Studio project with its plate. It comes with Bambu Studio's standard profiles: "
         "Bambu Lab A1 mini 0.4 nozzle, 0.20mm Standard @BBL A1M, Bambu PLA Basic for every filament"
     )
+
+
+def _entry_source():
+    return open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read()
+
+
+def test_the_files_choice_is_in_the_bed_group_for_a_bambu_printer_only():
+    assert "FILES_INPUT_ID = 'export_files'" in _entry_source()
+    added = _entry_function("addLayoutInputs")
+    assert "FILES_INPUT_ID" in added and "exportParts.FILES_CHOICES" in added
+    shown = _entry_function("updateInputs")
+    assert "inputs.itemById(FILES_INPUT_ID).isVisible = format == FORMAT_3MF and printBeds.isBambu(" in shown
+    assert "'files'" in _entry_function("layoutOf")
+    assert "'files': layout['files']" in _entry_function("saveChoices")
+
+
+def test_a_bambu_printer_gets_one_project_when_chosen():
+    source = _entry_function("export3mf")
+    assert "isProject = printBeds.isBambu(layout['bed']) and layout['files'] == exportParts.FILES_ONE" in source
+    assert "threeMf.writeBambuProject(" in source
+    assert "exportParts.filamentColours(filaments)" in source
+    assert "printBeds.bambuProfiles(layout['bed'])" in source
+
+
+def test_the_notice_comes_after_the_replace_question_and_before_anything_is_written():
+    source = _entry_function("export3mf")
+    notice = source.index("exportParts.bambuNotice(")
+    assert source.index("mayReplace(") < notice
+    assert notice < source.index("threeMf.writeBambuProject(")
+    assert notice < source.index("threeMf.write(")
+    assert notice < source.index("os.remove(")
+    assert "OKCancelButtonType" in source
+    assert "DialogOK" in source
+
+
+def test_the_summary_tells_of_the_project():
+    assert "one Bambu Studio project with all plates" in _entry_function("updateInputs")
