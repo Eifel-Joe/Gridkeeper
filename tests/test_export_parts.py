@@ -696,6 +696,26 @@ def test_the_notice_of_one_plate():
     )
 
 
+FLUSH_SENTENCE = (
+    "The purging volumes for the two nozzles come from Bambu Studio's colour formula; Re-calculate under Flushing "
+    "volumes in Bambu Studio works them out more exactly. Bambu Studio puts the filaments on the nozzles so it purges "
+    "least; change that and the volumes there if you want.\n\n"
+)
+
+
+def test_the_notice_of_two_nozzles_tells_of_the_purging_volumes():
+    # round 56 (p690, decided 23.11.2026): Bambu Studio's colour tables aren't rebuilt, its Re-calculate may differ
+    profiles = printBeds.bambuProfiles("Bambu Lab H2D (350 x 320 mm)")
+    notice = exportParts.bambuNotice(profiles, 2)
+    assert "Change them in Bambu Studio to your printer, nozzle, filament and plate where they differ.\n\n" + FLUSH_SENTENCE + \
+        "OK saves the project, Cancel saves nothing." in notice
+
+
+def test_the_notice_of_one_nozzle_has_no_purging_volumes():
+    for label in ("Bambu Lab P1S (256 x 256 mm)", "Bambu Lab H3C (330 x 320 mm)"):
+        assert "purging" not in exportParts.bambuNotice(printBeds.bambuProfiles(label), 2)
+
+
 def _entry_source():
     return open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read()
 
