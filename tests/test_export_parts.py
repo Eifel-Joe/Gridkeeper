@@ -228,7 +228,7 @@ def test_parts_of_one_place_and_turn_go_together():
     assert exportParts.printGroups(keys) == [[0, 2], [1], [3], [4], [5]]
 
 
-printBeds = _load("printBeds", "commands", "commandCreateBaseplate", "printBeds.py")
+printBeds = _load("printBeds", "lib", "printBeds.py")
 BED_NAMES = [printBeds.PRINT_BED_CUSTOM] + list(printBeds.PRINT_BED_PRESETS)
 
 
@@ -239,7 +239,7 @@ def test_the_default_bed_is_one_of_the_baseplate_dialogs():
 
 def test_layout_choices_default_to_the_documented_values():
     choices = exportParts.layoutChoices({}, BED_NAMES)
-    assert choices == {"bed": "Bambu Lab P1P, P1S, X1, X1C, X1E (256 x 256 mm)", "bedWidth": 256.0, "bedLength": 256.0, "spacing": 5.0, "purge": 50.0}
+    assert choices == {"bed": "Bambu Lab X1 Carbon (256 x 256 mm)", "bedWidth": 256.0, "bedLength": 256.0, "spacing": 5.0, "purge": 50.0}
 
 
 def test_layout_choices_are_read_back():
@@ -395,10 +395,56 @@ def test_the_export_lays_out_by_kind():
     assert "exportParts.plateKind(" in source
 
 
-def test_the_old_shared_bambu_bed_is_read_as_the_p1_and_x1():
-    # review r29-export: the click test's export saved it, Custom would put the tower back right again
-    choices = exportParts.layoutChoices({"bed": "Bambu Lab A1, P1, X1 (256 x 256 mm)"}, BED_NAMES)
-    assert choices["bed"] == "Bambu Lab P1P, P1S, X1, X1C, X1E (256 x 256 mm)"
+def test_the_old_shared_bambu_beds_are_read_as_one_printer():
+    # review r29-export: the click test's export saved it, Custom would put the tower back right again. Round 55: the
+    # shared entries are apart
+    for (old, now) in printBeds.OLD_BED_NAMES.items():
+        choices = exportParts.layoutChoices({"bed": old}, BED_NAMES, oldNames=printBeds.OLD_BED_NAMES)
+        assert choices["bed"] == now
+
+
+# Round 55 (decided 23.11.2026): the export starts with the printer chosen last, in either dialog
+PRESETS = printBeds.PRINT_BED_PRESETS
+
+
+def test_the_printer_chosen_last_comes_before_the_exports_own():
+    section = {"bed": "Bambu Lab A1 mini (180 x 180 mm)", "bedWidth": "180", "bedLength": "180"}
+    choices = exportParts.layoutChoices(section, BED_NAMES, lastPrinter="Bambu Lab H2S (340 x 320 mm)", presets=PRESETS)
+    assert (choices["bed"], choices["bedWidth"], choices["bedLength"]) == ("Bambu Lab H2S (340 x 320 mm)", 340.0, 320.0)
+
+
+def test_custom_chosen_last_keeps_the_exports_size():
+    section = {"bed": "Bambu Lab A1 mini (180 x 180 mm)", "bedWidth": "200", "bedLength": "210"}
+    choices = exportParts.layoutChoices(section, BED_NAMES, lastPrinter="Custom", presets=PRESETS)
+    assert (choices["bed"], choices["bedWidth"], choices["bedLength"]) == ("Custom", 200.0, 210.0)
+
+
+def test_without_a_printer_chosen_last_the_exports_own_then_the_x1_carbon():
+    section = {"bed": "Bambu Lab A1 mini (180 x 180 mm)", "bedWidth": "180", "bedLength": "180"}
+    assert exportParts.layoutChoices(section, BED_NAMES, lastPrinter=None, presets=PRESETS)["bed"] == "Bambu Lab A1 mini (180 x 180 mm)"
+    choices = exportParts.layoutChoices({}, BED_NAMES, lastPrinter=None, presets=PRESETS)
+    assert (choices["bed"], choices["bedWidth"], choices["bedLength"]) == ("Bambu Lab X1 Carbon (256 x 256 mm)", 256.0, 256.0)
+
+
+def test_a_preset_brings_its_own_size():
+    # a size saved apart from it doesn't count, the baseplate dialog may have chosen the printer
+    section = {"bed": "Bambu Lab H2D (350 x 320 mm)", "bedWidth": "256", "bedLength": "256"}
+    choices = exportParts.layoutChoices(section, BED_NAMES, presets=PRESETS)
+    assert (choices["bedWidth"], choices["bedLength"]) == (350.0, 320.0)
+
+
+def test_the_export_and_baseplate_dialogs_keep_the_printer_chosen():
+    export = open(os.path.join(PROJECT_ROOT, "commands", "commandExport", "entry.py"), encoding="utf-8").read()
+    assert "printBeds.writeLastPrinter(layout['bed'])" in _entry_function("saveChoices")
+    assert "lastPrinter=printBeds.readLastPrinter()" in export
+    baseplate = open(os.path.join(PROJECT_ROOT, "commands", "commandCreateBaseplate", "entry.py"), encoding="utf-8").read()
+    tree = ast.parse(baseplate)
+    function = lambda name: ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == name))
+    assert "printBeds.writeLastPrinter(" in function("command_execute")
+    created = function("command_created")
+    assert "applyLastPrinter()" in created
+    # a rebuilt or loaded baseplate keeps the bed of its config
+    assert created.index("applyLastPrinter()") < created.index("applyPendingConfig()")
 
 
 def test_the_dialog_summary_tells_of_a_file_per_plate():

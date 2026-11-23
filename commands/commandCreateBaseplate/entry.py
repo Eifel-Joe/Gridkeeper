@@ -35,7 +35,7 @@ from .baseplateBuilder import (
     BASEPLATE_TYPE_FULL,
     BASEPLATE_TYPE_SKELETONIZED,
 )
-from . import printBeds
+from ...lib import printBeds
 from ...lib.ui.commandUiState import CommandUiState
 from ...lib.ui.defaultsButtons import addDefaultsButtonRow, defaultsButtonsHandlers, DEFAULTS_SAVE, DEFAULTS_FACTORY_RESET
 from ...lib.ui.buttonRow import addButtonRow
@@ -315,6 +315,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     if pendingRebuildBody is not None:
         dialogInfo = warningLine(f'<b>Rebuilding {html.escape(pendingRebuildBody.name)}</b> in place, features after it in the timeline are kept.') + dialogInfo
     pendingRebuildBody = None
+    applyLastPrinter()
     applyPendingConfig()
 
     # https://help.autodesk.com/view/fusion360/ENU/?contextId=CommandInputs
@@ -555,6 +556,9 @@ def command_execute(args: adsk.core.CommandEventArgs):
     des = adsk.fusion.Design.cast(app.activeProduct)
     wasPart = des is not None and des.designIntent == adsk.fusion.DesignIntentTypes.PartDesignIntentType
     generateBaseplate(args)
+    # the export dialog starts with it too (round 55)
+    if not printBeds.writeLastPrinter(uiState.getState(PRINT_BED_PRESET_DROPDOWN)):
+        futil.log(f'{CMD_NAME} printer not saved to {printBeds.LAST_PRINTER_PATH}')
     # a new bin or baseplate switches a part design to hybrid for its component of its own, that can't be undone (round 13)
     if wasPart and des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
         ui.messageBox(HYBRID_SWITCH_MESSAGE, CMD_NAME)
@@ -1085,6 +1089,21 @@ def configFileName(settings: dict) -> str:
     defaults = configJson.stateToJson(configJson.GENERATOR_BASEPLATE, DEFAULT_STATE)
     known = {name: value for (name, value) in settings.items() if name in defaults}
     return baseplateName(configJson.stateFromJson(configJson.GENERATOR_BASEPLATE, InputState, {**defaults, **known}))
+
+def applyLastPrinter():
+    """
+    The printer chosen last in this or the export dialog with its bed size, Custom keeps the size of this dialog
+    (round 55, decided 23.11.2026: the printer chosen last is the default). A rebuilt or loaded baseplate's config
+    comes after, it keeps its bed
+    """
+    label = printBeds.readLastPrinter()
+    if label is None:
+        return
+    uiState.setValue(PRINT_BED_PRESET_DROPDOWN, label)
+    size = printBeds.presetBedSize(label)
+    if size is not None:
+        uiState.setValue(PRINT_BED_WIDTH_INPUT, size[0])
+        uiState.setValue(PRINT_BED_LENGTH_INPUT, size[1])
 
 def applyPendingConfig():
     global pendingConfig

@@ -116,13 +116,11 @@ def withMarkings(part, markings: list):
 # Round r29-export (spec dev-notes/specs/2026-11-17-r29-export-drucklage.md): what the print layout needs of a part,
 # and the dialog's bed, spacing and purge choices
 
-# the baseplate dialog's preset (commandCreateBaseplate/printBeds.py) the export starts on, Bambu Lab's 256 mm bed of
-# the P1 and X1 (the X1C is a common printer)
-DEFAULT_BED = 'Bambu Lab P1P, P1S, X1, X1C, X1E (256 x 256 mm)'
+# the printer preset (lib/printBeds.py) the export starts on with no printer chosen before, Bambu Lab's X1 Carbon, a
+# common printer (round 55: one entry per printer, until then the shared P1 and X1 entry)
+DEFAULT_BED = 'Bambu Lab X1 Carbon (256 x 256 mm)'
 DEFAULT_BED_SIZE = 256.0
 CUSTOM_BED = 'Custom'
-# saved names of beds gone from the list, by the one they are now
-OLD_BED_NAMES = {'Bambu Lab A1, P1, X1 (256 x 256 mm)': DEFAULT_BED}
 # mm, 17.11.2026 (D2), see printLayout
 DEFAULT_SPACING = 5.0
 DEFAULT_PURGE = 50.0
@@ -163,10 +161,13 @@ def printGroups(keys: list) -> list[list[int]]:
     return groups
 
 
-def layoutChoices(section: dict, bedNames: list[str]) -> dict:
+def layoutChoices(section: dict, bedNames: list[str], lastPrinter: str | None = None, presets: dict | None = None,
+                  oldNames: dict | None = None) -> dict:
     """
     The saved bed, its size, spacing and purge square in mm, the defaults for what is missing or broken. configparser
-    gives its keys in lower case (review r29-export: bedWidth was never read back)
+    gives its keys in lower case (review r29-export: bedWidth was never read back). The printer chosen last in the
+    baseplate or export dialog comes first (round 55, decided 23.11.2026), a preset brings its own size, Custom the
+    size the export saved. A saved name gone from the list is read as the one it is now, see printBeds.OLD_BED_NAMES
     """
     section = {str(key).lower(): value for (key, value) in section.items()}
     def number(key: str, default: float, minimum: float) -> float:
@@ -176,13 +177,15 @@ def layoutChoices(section: dict, bedNames: list[str]) -> dict:
             return default
         return value if value >= minimum and value == value else default
 
-    bed = section.get('bed', DEFAULT_BED)
-    # the shared entry before the Bambu Lab printers were apart (click test 17.11.2026)
-    bed = OLD_BED_NAMES.get(bed, bed)
+    bed = lastPrinter if lastPrinter is not None else section.get('bed', DEFAULT_BED)
+    # the shared entries before the Bambu Lab printers were apart (click test 17.11.2026, round 55)
+    bed = (oldNames or {}).get(bed, bed)
+    bed = bed if bed in bedNames else CUSTOM_BED
+    (width, length) = (presets or {}).get(bed) or (number('bedwidth', DEFAULT_BED_SIZE, 1e-6), number('bedlength', DEFAULT_BED_SIZE, 1e-6))
     return {
-        'bed': bed if bed in bedNames else CUSTOM_BED,
-        'bedWidth': number('bedwidth', DEFAULT_BED_SIZE, 1e-6),
-        'bedLength': number('bedlength', DEFAULT_BED_SIZE, 1e-6),
+        'bed': bed,
+        'bedWidth': float(width),
+        'bedLength': float(length),
         'spacing': number('spacing', DEFAULT_SPACING, 0),
         'purge': number('purge', DEFAULT_PURGE, 0),
     }

@@ -15,7 +15,7 @@ from ...lib import fusion360utils as futil
 from ...lib.gridfinityUtils import labelGenerator
 from ...lib.gridfinityUtils import labelColors
 from ... import config
-from ..commandCreateBaseplate import printBeds
+from ...lib import printBeds
 
 # Upstream's export of bins and baseplates (Le0Michine, 4b2f167, round 17.11.2026), for every part our generators make
 # (p300): which tags are parts is exportParts.EXPORT_TAGS, and the colored text and symbol bodies in a part's Text
@@ -301,7 +301,7 @@ def readChoices() -> dict:
         # the filaments of the label colors (round 37), an older export's one label filament for text without a color
         'filaments': exportParts.labelFilamentChoices(dict(section)),
         # the bed, its size, spacing and purge square in mm (r29-export)
-        'layout': exportParts.layoutChoices(dict(section), bedNames()),
+        'layout': exportParts.layoutChoices(dict(section), bedNames(), lastPrinter=printBeds.readLastPrinter(), presets=printBeds.PRINT_BED_PRESETS, oldNames=printBeds.OLD_BED_NAMES),
     }
 
 def bedNames() -> list[str]:
@@ -325,6 +325,9 @@ def saveChoices(folder: str, format: str, paint: bool, filaments: dict[str, int]
     }
     if not configUtils.writeConfig(addinConfig, CONFIG_FOLDER_PATH):
         futil.log(f'{CMD_NAME} choices not saved to {CONFIG_FOLDER_PATH}')
+    # the baseplate dialog starts with it too (round 55)
+    if not printBeds.writeLastPrinter(layout['bed']):
+        futil.log(f'{CMD_NAME} printer not saved to {printBeds.LAST_PRINTER_PATH}')
 
 def command_created(args: adsk.core.CommandCreatedEventArgs):
     global dialogFolder, isFileNameTyped, dialogFilaments, dialogAssigned
