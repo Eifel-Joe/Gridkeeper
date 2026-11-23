@@ -167,7 +167,8 @@ def bambuProfiles(label: str) -> BambuProfiles | None:
 def isBambu(label: str) -> bool:
     """
     Whether the export writes a Bambu Studio project for the dropdown's label, see BAMBU_PROFILES. Round 56 (p690):
-    the printers with two extruders too, their project brings purging volumes, see threeMf.flushSettings
+    the printers with two extruders too, their project brings purging volumes, see threeMf.flushSettings (round 57:
+    every Bambu printer's project does)
     """
     return bambuProfiles(label) is not None
 
