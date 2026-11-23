@@ -239,12 +239,12 @@ def test_the_default_bed_is_one_of_the_baseplate_dialogs():
 
 def test_layout_choices_default_to_the_documented_values():
     choices = exportParts.layoutChoices({}, BED_NAMES)
-    assert choices == {"bed": "Bambu Lab X1 Carbon (256 x 256 mm)", "bedWidth": 256.0, "bedLength": 256.0, "spacing": 5.0, "purge": 50.0}
+    assert choices == {"bed": "Bambu Lab X1 Carbon (256 x 256 mm)", "bedWidth": 256.0, "bedLength": 256.0, "spacing": 5.0, "purge": 50.0, "files": exportParts.FILES_ONE}
 
 
 def test_layout_choices_are_read_back():
     section = {"bed": "Custom", "bedWidth": "300", "bedLength": "320.5", "spacing": "8", "purge": "0"}
-    assert exportParts.layoutChoices(section, BED_NAMES) == {"bed": "Custom", "bedWidth": 300.0, "bedLength": 320.5, "spacing": 8.0, "purge": 0.0}
+    assert exportParts.layoutChoices(section, BED_NAMES) == {"bed": "Custom", "bedWidth": 300.0, "bedLength": 320.5, "spacing": 8.0, "purge": 0.0, "files": exportParts.FILES_ONE}
 
 
 def test_broken_layout_choices_fall_back():
@@ -648,3 +648,49 @@ def test_the_dialog_reads_a_filament_from_the_selected_list_item():
     assert "exportParts.filamentOfChoice(" in _entry_function("selectedFilament")
     for name in ("shownFilaments", "command_input_changed"):
         assert "selectedFilament(" in _entry_function(name), name
+
+
+# ---------------------------------------------------------------------------
+# Round 55 (p680): the Bambu Studio project's filaments, the files choice and the notice before it is saved
+# ---------------------------------------------------------------------------
+
+def test_a_filament_per_slot_the_parts_grey():
+    assert exportParts.filamentColours({"#D02020": 2, "": 4}) == ["#808080", "#D02020", "#808080", "#000000"]
+    assert exportParts.filamentColours({"#2060D0": 3, "#D02020": 2}) == ["#808080", "#D02020", "#2060D0"]
+
+
+def test_without_label_filaments_only_the_parts_one():
+    assert exportParts.filamentColours(None) == ["#808080"]
+    assert exportParts.filamentColours({}) == ["#808080"]
+
+
+def test_colours_sharing_the_last_filament_take_the_first():
+    # past the last filament the colors share it, see assignFilaments
+    assert exportParts.filamentColours({"#D02020": 2, "#2060D0": 2}) == ["#808080", "#D02020"]
+
+
+def test_the_files_choice_is_kept():
+    assert exportParts.layoutChoices({}, BED_NAMES)["files"] == exportParts.FILES_ONE
+    assert exportParts.layoutChoices({"files": exportParts.FILES_PER_PLATE}, BED_NAMES)["files"] == exportParts.FILES_PER_PLATE
+    assert exportParts.layoutChoices({"files": "Something else"}, BED_NAMES)["files"] == exportParts.FILES_ONE
+    assert exportParts.FILES_CHOICES == [exportParts.FILES_ONE, exportParts.FILES_PER_PLATE]
+    assert exportParts.FILES_ONE == "One Bambu Studio project with all plates"
+    assert exportParts.FILES_PER_PLATE == "A file per plate"
+
+
+def test_the_notice_names_the_profiles_and_plates():
+    profiles = printBeds.bambuProfiles("Bambu Lab P1S (256 x 256 mm)")
+    assert exportParts.bambuNotice(profiles, 3) == (
+        "This file is a Bambu Studio project with all 3 plates. It comes with Bambu Studio's standard profiles: "
+        "Bambu Lab P1S 0.4 nozzle, 0.20mm Standard @BBL X1C, Bambu PLA Basic for every filament and the Textured PEI "
+        "Plate. Change them in Bambu Studio to your printer, nozzle, filament and plate where they differ.\n\n"
+        "OK saves the project, Cancel saves nothing."
+    )
+
+
+def test_the_notice_of_one_plate():
+    profiles = printBeds.bambuProfiles("Bambu Lab A1 mini (180 x 180 mm)")
+    assert exportParts.bambuNotice(profiles, 1).startswith(
+        "This file is a Bambu Studio project with its plate. It comes with Bambu Studio's standard profiles: "
+        "Bambu Lab A1 mini 0.4 nozzle, 0.20mm Standard @BBL A1M, Bambu PLA Basic for every filament"
+    )

@@ -121,6 +121,15 @@ def withMarkings(part, markings: list):
 DEFAULT_BED = 'Bambu Lab X1 Carbon (256 x 256 mm)'
 DEFAULT_BED_SIZE = 256.0
 CUSTOM_BED = 'Custom'
+# Round 55 (p680): for a Bambu Lab printer the 3MF is one Bambu Studio project with all plates or a file per plate,
+# the names as upstream 1ac1579 has them; other printers always get a file per plate
+FILES_ONE = 'One Bambu Studio project with all plates'
+FILES_PER_PLATE = 'A file per plate'
+FILES_CHOICES = [FILES_ONE, FILES_PER_PLATE]
+# the project's filament colors: the parts' filament 1 and a filament no label color has grey, text without a color
+# black (spec round 55)
+PART_COLOUR = '#808080'
+NO_COLOR_COLOUR = '#000000'
 # mm, 17.11.2026 (D2), see printLayout
 DEFAULT_SPACING = 5.0
 DEFAULT_PURGE = 50.0
@@ -188,6 +197,7 @@ def layoutChoices(section: dict, bedNames: list[str], lastPrinter: str | None = 
         'bedLength': float(length),
         'spacing': number('spacing', DEFAULT_SPACING, 0),
         'purge': number('purge', DEFAULT_PURGE, 0),
+        'files': section.get('files') if section.get('files') in FILES_CHOICES else FILES_ONE,
     }
 
 
@@ -338,3 +348,33 @@ def labelFilamentChoices(section: dict) -> dict[str, int]:
         if 1 <= index <= MAX_FILAMENT:
             mapping[''] = index
     return mapping
+
+
+def filamentColours(filaments: dict[str, int] | None) -> list[str]:
+    """
+    The colors of the Bambu Studio project's filaments, one per filament up to the last a label color has: the parts'
+    filament 1 grey, each label color's its own, text without a color black, those in between grey (round 55). Colors
+    sharing a filament, past the last one, show the first
+    """
+    colours = [PART_COLOUR] * max([1, *(filaments or {}).values()])
+    shown = set()
+    for (color, filament) in (filaments or {}).items():
+        if filament in shown or filament < FIRST_LABEL_FILAMENT:
+            continue
+        shown.add(filament)
+        colours[filament - 1] = color or NO_COLOR_COLOUR
+    return colours
+
+
+def bambuNotice(profiles, plates: int) -> str:
+    """
+    What the export asks before it saves a Bambu Studio project (round 55, decided 23.11.2026): it comes with Bambu
+    Studio's standard profiles of the printer chosen, the user may have to change them. printBeds.BambuProfiles
+    """
+    which = 'its plate' if plates == 1 else f'all {plates} plates'
+    return (
+        f"This file is a Bambu Studio project with {which}. It comes with Bambu Studio's standard profiles: "
+        f"{profiles.printer}, {profiles.process}, Bambu PLA Basic for every filament and the Textured PEI Plate. "
+        "Change them in Bambu Studio to your printer, nozzle, filament and plate where they differ.\n\n"
+        "OK saves the project, Cancel saves nothing."
+    )
