@@ -130,7 +130,8 @@ printer chosen:
   color black;
 - the **Textured PEI Plate**.
 
-Only their names are in the file, Bambu Studio takes the settings from its own system profiles. Before saving the
+Only their names are in the file, Bambu Studio takes the settings from its own system profiles: in Bambu Studio each
+filament shows as *Bambu PLA Basic*, not as a copy named after the file. Before saving the
 export says so and asks: **OK** saves the project, **Cancel** saves nothing. In Bambu Studio change the printer,
 nozzle, filaments and plate to yours where they differ. When Bambu Studio offers to sync with a connected printer of
 another model, *Cancel* keeps the project's printer.

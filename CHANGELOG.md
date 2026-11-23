@@ -16,7 +16,9 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 - Bambu Studio takes the plates of a 3MF only from a project with its own settings (its `Plater::priv::load_files`;
   checked in Bambu Studio 02.09.01.70). The project names Bambu Studio's standard profiles of the printer chosen: the
   0.4 mm nozzle printer profile, *0.20mm Standard*, *Bambu PLA Basic* for every filament and the *Textured PEI
-  Plate*. Only the names are in the file, Bambu Studio fills in the settings from its system profiles. Before saving,
+  Plate*. Only the names are in the file, each also named as its own parent: with the names alone Bambu Studio took
+  the filaments after the first as copies of its general defaults (200 °C nozzle, 2 mm³/s), with the parents it
+  takes its system profiles (Bambu PLA Basic's 220 °C and 21 mm³/s). Each plate carries the bed type too. Before saving,
   the export tells so and asks; *Cancel* saves nothing.
 - **One entry per Bambu Lab printer** in the printer list of the baseplate and export dialogs: P1P, P1S, X1,
   X1 Carbon and X1E, P2S and X2D, H2D and H2D Pro each have their own, since the project names its printer. A shared

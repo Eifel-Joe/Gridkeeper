@@ -18,6 +18,12 @@ sind da, mit unserer Drucklage und den Labelfarben.
   immer aus, ein weiteres nur, wenn es einem vorhandenen Profil gleicht (`PresetCollection::load_external_preset`,
   `LoadAndSelect::OnlyIfModified`). Festlegung: Je Drucker gilt das Filamentprofil aus `default_filament_profile`
   seines Druckerprofils. Bestätigt wird das erst im Bambu-Test (E2E Punkt 3).
+- Nachtrag Bambu-Test 23.11.2026: Der Name war es nicht (Bambus `filament_name_map` setzt ihn ohnehin um). Mit den
+  Namen allein kamen Filament 2 und folgende als Projektkopien „(Datei.3mf)“ mit Bambus allgemeinen Vorgaben (Düse
+  200 °C, 2 mm³/s), also ein Druckrisiko. Filament-ID, Typ, Hersteller, Düsenvarianten und gleiche Farben änderten
+  nichts (Proben A1–A3). Mit `inherits_group` (das Elternprofil je Prozess, Filament und Drucker) nimmt Bambu die
+  Systemprofile: alle Filamente „Bambu PLA Basic“ mit 220 °C und 21 mm³/s, Prozess ohne Änderungsstern (Probe B1).
+  Außerdem führt Bambu den Betttyp je Platte; ohne `bed_type` in den Plattendaten kam beim P1S Smooth PEI.
 
 ## Entscheidungen (vom User, über die Hauptsitzung)
 1. Die Datei gibt sich als Bambu Studio aus: `Application` = `BambuStudio-02.09.01.70`, `BambuStudio:3mfVersion` = 1.
@@ -84,7 +90,8 @@ sind da, mit unserer Drucklage und den Labelfarben.
    - Die Labelfarben stehen wie heute als `paint_color` an den Dreiecken.
    - `Metadata/project_settings.config` enthält nur: `version`, `name`, `from`, `printer_settings_id`,
      `print_settings_id`, `filament_settings_id` (je Slot das Filamentprofil des Druckers), `filament_colour`,
-     `curr_bed_type`.
+     `curr_bed_type` und `inherits_group` = [Prozess, Filament 1…n, Drucker] mit denselben Namen (Nachtrag
+     23.11.2026). Jede Platte trägt `bed_type` = Textured PEI Plate.
    - **Filament-Slots:** so viele wie die höchste vergebene Filamentnummer, mindestens 1. Slot 1 ist der Körper,
      Farbe `#808080` (grau, wie V2). Ein Labelslot bekommt die Farbe seines Labels. Text ohne Farbe bekommt
      `#000000`. Lücken zwischen vergebenen Nummern werden mit `#808080` gefüllt.
