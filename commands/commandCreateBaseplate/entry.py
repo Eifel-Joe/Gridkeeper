@@ -322,7 +322,6 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     global initialBed
     applyLastPrinter()
     applyPendingConfig()
-    initialBed = dialogBed()
 
     # https://help.autodesk.com/view/fusion360/ENU/?contextId=CommandInputs
     inputs = args.command.commandInputs
@@ -412,6 +411,8 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
         printBedPresetDropdown.listItems.item(0).isSelected = True
         uiState.updateValue(PRINT_BED_PRESET_DROPDOWN, printBeds.PRINT_BED_CUSTOM)
     uiState.registerCommandInput(printBedPresetDropdown)
+    # the bed the dialog opens with, its saved label as the list has it now (review round 55)
+    initialBed = dialogBed()
     printBedWidthInput = printBedGroup.children.addValueInput(PRINT_BED_WIDTH_INPUT, 'Bed width, X', defaultLengthUnits, adsk.core.ValueInput.createByReal(uiState.getState(PRINT_BED_WIDTH_INPUT)))
     printBedWidthInput.minimumValue = 0
     printBedWidthInput.isMinimumInclusive = False

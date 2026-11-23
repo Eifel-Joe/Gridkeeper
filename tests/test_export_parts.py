@@ -756,6 +756,8 @@ def test_a_rebuilt_or_cloned_baseplate_keeps_the_printer_chosen_last_unless_one_
     assert "math.isclose" in _baseplate_function("isBedChanged")
     created = _baseplate_function("command_created")
     assert created.index("applyPendingConfig()") < created.index("initialBed = dialogBed()")
+    # after the dropdown's saved label is mapped or turned to Custom, that is no change at OK
+    assert created.index("not in presetNames") < created.index("initialBed = dialogBed()")
     assert "PRINT_BED_PRESET_DROPDOWN, PRINT_BED_WIDTH_INPUT, PRINT_BED_LENGTH_INPUT" in _baseplate_function("dialogBed")
 
 
