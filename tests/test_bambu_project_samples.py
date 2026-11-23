@@ -5,10 +5,11 @@ tests/e2e/bambu_project_samples.py.
 
 import importlib.util
 import json
-import pytest
 import os
 import zipfile
 import xml.etree.ElementTree as ElementTree
+
+import pytest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 spec = importlib.util.spec_from_file_location("bambu_project_samples", os.path.join(ROOT, "tests", "e2e", "bambu_project_samples.py"))

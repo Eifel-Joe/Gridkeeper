@@ -155,8 +155,8 @@ EXTRUDERS = SYSTEM_PROFILES["machine_extruders"]
 
 @pytest.mark.parametrize("name", sorted(PROFILES))
 def test_every_bambu_printer_gets_a_project(name):
-    # round 56 (p690): the printers with two nozzles too, the project brings purging volumes for them, see
-    # threeMf.flushSettings
+    # round 56 (p690): the printers with two nozzles too; since round 57 every Bambu printer's project brings purging
+    # volumes, see threeMf.flushSettings
     assert printBeds.isBambu(printBeds.presetLabel(name))
 
 

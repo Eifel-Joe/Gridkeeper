@@ -420,6 +420,13 @@ def test_one_colour_on_two_extruders():
     assert not flushingMatrixError(settings)
 
 
+def test_one_colour_on_one_extruder():
+    # review round 57: one value, Bambu Studio's size check (n² = values / blocks) holds
+    settings = json.loads(threeMf.projectSettings(P1S, [GREY]))
+    assert settings["flush_volumes_matrix"] == ["0"] and settings["flush_multiplier"] == ["1"]
+    assert not flushingMatrixError(settings)
+
+
 def test_extruders_without_a_flush_data_set_each_are_refused():
     # review round 56: a block missing would bring Bambu Studio's zeros back
     broken = types.SimpleNamespace(**{**vars(H2D), "flushDatasets": (1,)})
