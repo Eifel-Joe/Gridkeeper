@@ -5,6 +5,7 @@ tests/e2e/bambu_project_samples.py.
 
 import importlib.util
 import json
+import pytest
 import os
 import zipfile
 import xml.etree.ElementTree as ElementTree
@@ -38,7 +39,8 @@ def test_the_p1s_sample_has_three_plates_with_its_profiles_and_colors(tmp_path):
 
 def test_the_one_plate_samples(tmp_path):
     samples.writeSamples(str(tmp_path))
-    assert sorted(os.listdir(tmp_path)) == ["r55-a1mini-one-plate.3mf", "r55-p1s-three-plates.3mf", "r56-h2d-two-plates.3mf"]
+    assert sorted(os.listdir(tmp_path)) == ["r55-a1mini-one-plate.3mf", "r55-p1s-three-plates.3mf", "r56-h2d-two-plates.3mf",
+                                            "r57-a1mini-4colours.3mf", "r57-h3c-4colours.3mf", "r57-p1s-4colours.3mf"]
     (_, settings, project) = read(tmp_path / "r55-a1mini-one-plate.3mf")
     assert len(settings.findall("plate")) == 1
     assert project["printer_settings_id"] == "Bambu Lab A1 mini 0.4 nozzle"
@@ -58,3 +60,28 @@ def test_the_h2d_sample_has_purging_volumes_for_both_nozzles(tmp_path):
     assert project["flush_multiplier"] == ["1", "1"]
     # round 57: one nozzle gets them too
     assert read(tmp_path / "r55-p1s-three-plates.3mf")[2]["flush_multiplier"] == ["1"]
+
+
+def offDiagonalZeros(project):
+    matrix = [float(value) for value in project["flush_volumes_matrix"]]
+    size = round((len(matrix) // len(project["flush_multiplier"])) ** 0.5)
+    return [index for (index, value) in enumerate(matrix) if value == 0 and (index % (size * size)) // size != index % size]
+
+
+@pytest.mark.parametrize(("name", "printer", "row"), [
+    # round 57: one extruder, one block; grey to red, blue, black: the formula plus the nozzle volume, 1.3 towards
+    # black only with a flush data set (H3C)
+    ("r57-p1s-4colours.3mf", "Bambu Lab P1S 0.4 nozzle", [0, 272, 272, 167]),
+    ("r57-a1mini-4colours.3mf", "Bambu Lab A1 mini 0.4 nozzle", [0, 257, 257, 152]),
+    ("r57-h3c-4colours.3mf", "Bambu Lab H3C 0.4 nozzle", [0, 290, 290, 203]),
+])
+def test_the_one_extruder_samples_have_a_block_of_purging_volumes(tmp_path, name, printer, row):
+    results = samples.writeSamples(str(tmp_path))
+    assert results[name][1:] == ([], [], [])
+    (_, _, project) = read(tmp_path / name)
+    assert project["printer_settings_id"] == printer
+    assert project["filament_colour"] == ["#808080", "#D02020", "#2060D0", "#000000"]
+    matrix = [int(value) for value in project["flush_volumes_matrix"]]
+    assert len(matrix) == 16 and matrix[0:4] == row
+    assert project["flush_multiplier"] == ["1"] and project["filament_map"] == ["1"] * 4
+    assert not offDiagonalZeros(project)
