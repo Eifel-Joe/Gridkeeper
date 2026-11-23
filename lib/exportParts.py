@@ -376,7 +376,7 @@ def bambuNotice(profiles, plates: int) -> str:
     which = 'its plate' if plates == 1 else f'all {plates} plates'
     purging = (
         "The purging volumes for the two nozzles come from Bambu Studio's color formula; for its own filament colors "
-        "Bambu Studio has measured values, Re-calculate under Flushing volumes takes them. Bambu Studio puts the "
+        "Bambu Studio has its own values, Re-calculate under Purging volumes takes them. Bambu Studio puts the "
         "filaments on the nozzles so it purges least; change that and the volumes there if you want.\n\n"
     ) if profiles.extruders > 1 else ''
     return (

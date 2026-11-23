@@ -18,7 +18,7 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 - The volumes per pair of colors and nozzle follow Bambu Studio's color formula (`FlushVolCalc.cpp`,
   `calc_flush_vol_rgb`, rebuilt from Bambu Studio's AGPL-3.0 sources, no code taken), 1.3 times as much towards black,
   plus the nozzle's volume from the printer profile, 900 mm³ at most. Bambu Studio's color tables for its own filament
-  colors aren't part of it; *Re-calculate* under *Flushing volumes* in Bambu Studio gives its own values, the notice
+  colors aren't part of it; *Re-calculate* under *Purging volumes* in Bambu Studio gives its own values, the notice
   before saving says so. Which nozzle prints which filament stays Bambu Studio's choice (*Auto For Flush*) and yours.
 - Each Bambu printer carries its extruders as Bambu Studio's printer profile has them: nozzle volume and flush data
   set per extruder, the hotends it changes between. The **H3C** (nine hotends on one extruder) keeps the project of a

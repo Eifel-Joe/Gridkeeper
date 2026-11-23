@@ -146,8 +146,8 @@ For the Bambu Lab printers with two nozzles, the **H2C, H2D, H2D Pro and X2D** (
 Bambu Studio sets some to 0 and warns *Partial purging volume set to 0*, and it doesn't work them out itself when it
 opens a project. The export works them out with Bambu Studio's color formula and adds the volume of each nozzle, as
 Bambu Studio does. For changes between two of Bambu Studio's own filament colors (black, white, red, blue …) Bambu
-Studio uses measured values instead, which the export doesn't have: **Re-calculate** under **Flushing volumes** in
-Bambu Studio gives you its own. The notice before saving says so.
+Studio has its own values from a table instead, which the export doesn't have: **Re-calculate** under **Purging
+volumes** in Bambu Studio gives you them. The notice before saving says so.
 
 Bambu Studio puts the filaments on the nozzles so that it flushes least: with two colors each gets a nozzle of its own
 and hardly anything is flushed. Whether and how much it flushes is up to you in Bambu Studio: change the volumes, or
