@@ -32,7 +32,7 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   without which Bambu Studio drops the plates, and keeps its own layout (`printLayout`) with the print orientation
   of box parts and labels instead of upstream's `bedPacking`.
 - The Bambu Lab printers with two nozzles (H2C, H2D, H2D Pro, X2D) keep a file per plate for now: Bambu Studio sets
-  some of their purging volumes to 0 in a project without its own and warns *Partial flushing volume set to 0*.
+  some of their purging volumes to 0 in a project without its own and warns *Partial purging volume set to 0*.
 - Not included: OrcaSlicer and other slicers (a file per plate), nozzles other than 0.4 mm.
 
 ## 1.2.1 (2026-11-20)

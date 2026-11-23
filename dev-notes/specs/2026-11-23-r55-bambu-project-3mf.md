@@ -24,7 +24,7 @@ sind da, mit unserer Drucklage und den Labelfarben.
   nichts (Proben A1–A3). Mit `inherits_group` (das Elternprofil je Prozess, Filament und Drucker) nimmt Bambu die
   Systemprofile: alle Filamente „Bambu PLA Basic“ mit 220 °C und 21 mm³/s, Prozess ohne Änderungsstern (Probe B1).
   Außerdem führt Bambu den Betttyp je Platte; ohne `bed_type` in den Plattendaten kam beim P1S Smooth PEI.
-- Nachtrag Bambu-Test 23.11.2026, H2D: Meldung „Partial flushing volume set to 0“. Bambu setzt für ein Projekt ohne
+- Nachtrag Bambu-Test 23.11.2026, H2D: Meldung „Partial purging volume set to 0“. Bambu setzt für ein Projekt ohne
   `flush_volumes_matrix` Vorgaben ein, für zwei Düsen mit Nullen (`GLCanvas3D::is_flushing_matrix_error`).
   Nach der Regel unten (Zwei-Düsen-Drucker, die nicht sauber öffnen) bekommen H2C, H2D, H2D Pro und X2D eine Datei je
   Platte (`printBeds.TWO_NOZZLES`); Spülmengen für sie sind ein neuer Punkt auf der Liste.

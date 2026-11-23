@@ -146,7 +146,7 @@ def bambuProfiles(label: str) -> BambuProfiles | None:
     return BAMBU_PROFILES.get(_NAMES.get(label))
 
 # Bambu Lab printers with two nozzles (nozzle_diameter of their profiles has two entries). Bambu Studio puts purging
-# volumes with zeros into a project without its own for them and warns "Partial flushing volume set to 0", colored text
+# volumes with zeros into a project without its own for them and warns "Partial purging volume set to 0", colored text
 # would mix (GLCanvas3D::is_flushing_matrix_error; Bambu Studio test of 23.11.2026, H2D). As the spec of round 55 has
 # it for a printer whose project doesn't open cleanly, they keep a file per plate
 TWO_NOZZLES = {'Bambu Lab H2C', 'Bambu Lab H2D', 'Bambu Lab H2D Pro', 'Bambu Lab X2D'}

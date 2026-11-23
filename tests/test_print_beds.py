@@ -156,7 +156,7 @@ TWO_NOZZLES = {"Bambu Lab H2C", "Bambu Lab H2D", "Bambu Lab H2D Pro", "Bambu Lab
 
 @pytest.mark.parametrize("name", sorted(PROFILES))
 def test_a_bambu_printer_with_one_nozzle_gets_a_project(name):
-    # Bambu Studio test of 23.11.2026: the H2D project opened with "Partial flushing volume set to 0", the purging
+    # Bambu Studio test of 23.11.2026: the H2D project opened with "Partial purging volume set to 0", the purging
     # volumes Bambu Studio puts in for two nozzles have zeros (GLCanvas3D::is_flushing_matrix_error); the spec's way
     # out: a printer with two nozzles gets a file per plate
     assert printBeds.isBambu(printBeds.presetLabel(name)) == (name not in TWO_NOZZLES)

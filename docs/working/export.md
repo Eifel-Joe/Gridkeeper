@@ -140,7 +140,7 @@ The project is made for Bambu Studio (tested with 02.09.01.70); an older Bambu S
 first. For OrcaSlicer, PrusaSlicer and the other printers choose a file per plate.
 
 The Bambu Lab printers with two nozzles, the **H2C, H2D, H2D Pro and X2D**, get a file per plate for now: in a
-project without purging volumes of its own Bambu Studio sets some of theirs to 0 and warns *Partial flushing volume
+project without purging volumes of its own Bambu Studio sets some of theirs to 0 and warns *Partial purging volume
 set to 0*, the colors of the label text would mix.
 
 ## Colored label text in the 3MF
