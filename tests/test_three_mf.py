@@ -282,3 +282,10 @@ def test_the_projects_model_names_the_generator_beside_bambu_studio(tmp_path):
     meta = metadata(read_model(path))
     assert meta["Application"] == "BambuStudio-02.09.01.70"
     assert meta["Designer"] == "Gridkeeper 1.3.0"
+
+
+def test_each_plate_has_the_textured_pei_plate():
+    # Bambu Studio test of 23.11.2026: the P1S project with three plates opened on the Smooth PEI plate although the
+    # project settings name the textured one; Bambu Studio keeps the bed type per plate too (bbs_3mf.cpp BED_TYPE_ATTR)
+    settings = ElementTree.fromstring(threeMf.modelSettings([cube("a"), cube("b")], [0, 1]))
+    assert [plate.find("metadata[@key='bed_type']").get("value") for plate in settings.findall("plate")] == ["Textured PEI Plate"] * 2

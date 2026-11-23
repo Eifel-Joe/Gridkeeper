@@ -158,7 +158,10 @@ def modelSettings(objects: list[MeshObject], plates: list[int]) -> str:
             '   <metadata key="matrix" value="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1"/>', '  </part>', ' </object>',
         ]
     for plate in range(max(plates, default=-1) + 1):
-        lines += [' <plate>', f'  <metadata key="plater_id" value="{plate + 1}"/>', '  <metadata key="plater_name" value=""/>', '  <metadata key="locked" value="false"/>']
+        # the bed type of each plate as well, without it Bambu Studio took the Smooth PEI plate for a project of three
+        # plates (test of 23.11.2026)
+        lines += [' <plate>', f'  <metadata key="plater_id" value="{plate + 1}"/>', '  <metadata key="plater_name" value=""/>', '  <metadata key="locked" value="false"/>',
+                  f'  <metadata key="bed_type" value="{BAMBU_BED_TYPE}"/>']
         for (index, objectPlate) in enumerate(plates):
             if objectPlate == plate:
                 lines += ['  <model_instance>', f'   <metadata key="object_id" value="{index + 1}"/>', '   <metadata key="instance_id" value="0"/>', '  </model_instance>']
