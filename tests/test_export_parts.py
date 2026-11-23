@@ -749,12 +749,14 @@ def test_the_baseplate_dialog_reads_an_old_shared_printer_as_its_printer_now():
 
 def test_a_rebuilt_or_cloned_baseplate_keeps_the_printer_chosen_last_unless_one_is_picked():
     # its config's bed turns the dropdown to Custom when it differs, that is no printer chosen
+    # by the bed it opened with, not by input events: Fusion fires them for values set in code too (review round 55)
     execute = _baseplate_function("command_execute")
-    assert "if dialogWorkflow == WORKFLOW_NEW or isPrinterPicked:" in execute
-    assert execute.index("if dialogWorkflow == WORKFLOW_NEW or isPrinterPicked:") < execute.index("printBeds.writeLastPrinter(")
-    assert "isPrinterPicked = False" in _baseplate_function("command_created")
-    changed = _baseplate_function("command_input_changed")
-    assert "isPrinterPicked = True" in changed
+    assert "if dialogWorkflow == WORKFLOW_NEW or isBedChanged(initialBed, dialogBed()):" in execute
+    assert execute.index("isBedChanged(") < execute.index("printBeds.writeLastPrinter(")
+    assert "math.isclose" in _baseplate_function("isBedChanged")
+    created = _baseplate_function("command_created")
+    assert created.index("applyPendingConfig()") < created.index("initialBed = dialogBed()")
+    assert "PRINT_BED_PRESET_DROPDOWN, PRINT_BED_WIDTH_INPUT, PRINT_BED_LENGTH_INPUT" in _baseplate_function("dialogBed")
 
 
 def test_cancel_in_the_notice_returns_before_anything_is_written():

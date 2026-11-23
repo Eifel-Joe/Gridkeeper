@@ -228,9 +228,10 @@ def infoText():
 
 INPUTS_VALID = True
 isApplyingBedPreset = False
-# whether the printer was picked or the bed typed in this dialog: a rebuilt or cloned baseplate's config may turn the
-# dropdown to Custom, that is no printer chosen and stays out of the printer chosen last (review round 55)
-isPrinterPicked = False
+# the printer and bed the dialog opened with: a rebuilt or cloned baseplate's config may turn the dropdown to Custom,
+# that is no printer chosen and stays out of the printer chosen last unless the bed is changed in the dialog (review
+# round 55; compared as it ends rather than by input events, Fusion fires those for values set in code too)
+initialBed = None
 
 def getErrorMessage(text = "An unknown error occurred, please validate your inputs and try again"):
     stackTrace = traceback.format_exc()
@@ -318,10 +319,10 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     if pendingRebuildBody is not None:
         dialogInfo = warningLine(f'<b>Rebuilding {html.escape(pendingRebuildBody.name)}</b> in place, features after it in the timeline are kept.') + dialogInfo
     pendingRebuildBody = None
-    global isPrinterPicked
-    isPrinterPicked = False
+    global initialBed
     applyLastPrinter()
     applyPendingConfig()
+    initialBed = dialogBed()
 
     # https://help.autodesk.com/view/fusion360/ENU/?contextId=CommandInputs
     inputs = args.command.commandInputs
@@ -564,7 +565,7 @@ def command_execute(args: adsk.core.CommandEventArgs):
     wasPart = des is not None and des.designIntent == adsk.fusion.DesignIntentTypes.PartDesignIntentType
     generateBaseplate(args)
     # the export dialog starts with it too (round 55), a rebuilt or cloned baseplate's bed only when picked here
-    if dialogWorkflow == WORKFLOW_NEW or isPrinterPicked:
+    if dialogWorkflow == WORKFLOW_NEW or isBedChanged(initialBed, dialogBed()):
         if not printBeds.writeLastPrinter(uiState.getState(PRINT_BED_PRESET_DROPDOWN)):
             futil.log(f'{CMD_NAME} printer not saved to {printBeds.LAST_PRINTER_PATH}')
     # a new bin or baseplate switches a part design to hybrid for its component of its own, that can't be undone (round 13)
@@ -604,9 +605,7 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
         # 6x2 or 6x3 mm magnets set the depth, Custom leaves it to be typed (p263)
         uiState.forceUIRefresh()
 
-    global isApplyingBedPreset, isPrinterPicked
-    if changed_input.id in (PRINT_BED_PRESET_DROPDOWN, PRINT_BED_WIDTH_INPUT, PRINT_BED_LENGTH_INPUT) and not isApplyingBedPreset:
-        isPrinterPicked = True
+    global isApplyingBedPreset
     if changed_input.id == PRINT_BED_PRESET_DROPDOWN:
         presetBedSize = printBeds.presetBedSize(uiState.getState(PRINT_BED_PRESET_DROPDOWN))
         if presetBedSize is not None:
@@ -1099,6 +1098,16 @@ def configFileName(settings: dict) -> str:
     defaults = configJson.stateToJson(configJson.GENERATOR_BASEPLATE, DEFAULT_STATE)
     known = {name: value for (name, value) in settings.items() if name in defaults}
     return baseplateName(configJson.stateFromJson(configJson.GENERATOR_BASEPLATE, InputState, {**defaults, **known}))
+
+def dialogBed() -> tuple:
+    """The printer and bed size of the dialog"""
+    return tuple(uiState.getState(inputId) for inputId in (PRINT_BED_PRESET_DROPDOWN, PRINT_BED_WIDTH_INPUT, PRINT_BED_LENGTH_INPUT))
+
+def isBedChanged(before: tuple | None, after: tuple) -> bool:
+    """Another printer or a bed size other than the one the dialog opened with, the sizes as Fusion may round them"""
+    if before is None or before[0] != after[0]:
+        return True
+    return not all(math.isclose(a, b, abs_tol=const.DEFAULT_FILTER_TOLERANCE) for (a, b) in zip(before[1:], after[1:]))
 
 def applyLastPrinter():
     """

@@ -65,7 +65,7 @@ sind da, mit unserer Drucklage und den Labelfarben.
    - **Baseplate-Dialog:** Er öffnet mit diesem Drucker und dessen Bettgröße. Bei „Custom“ bleibt seine eigene
      Größe. Fehlt die Datei, bleibt es wie heute: gespeicherte Vorgaben, sonst Custom. Eine Baseplate, die neu gebaut
      oder aus einer Konfiguration geladen wird, behält das Bett ihrer Konfiguration. Beim Neubau oder Klon zählt ihr
-     Bett nur dann als gewählter Drucker, wenn im Dialog ein Drucker oder eine Bettgröße von Hand gewählt wurde
+     Bett nur dann als gewählter Drucker, wenn Drucker oder Bettgröße beim OK anders sind als beim Öffnen
      (Review R55). Alte Sammeleinträge in den gespeicherten Vorgaben werden wie oben abgebildet.
    - Ein unbekannter Eintrag in der Datei zählt wie keine Datei.
 2. **Dialog:** Ist ein Bambu-Drucker gewählt und das Format 3MF, erscheint die Auswahl „Files“:
