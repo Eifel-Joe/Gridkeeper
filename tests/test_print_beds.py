@@ -155,8 +155,8 @@ EXTRUDERS = SYSTEM_PROFILES["machine_extruders"]
 
 @pytest.mark.parametrize("name", sorted(PROFILES))
 def test_every_bambu_printer_gets_a_project(name):
-    # round 56 (p690): the printers with two nozzles too, the project brings purging volumes for them, see
-    # threeMf.flushSettings
+    # round 56 (p690): the printers with two nozzles too; since round 57 every Bambu printer's project brings purging
+    # volumes, see threeMf.flushSettings
     assert printBeds.isBambu(printBeds.presetLabel(name))
 
 
@@ -169,6 +169,37 @@ def test_the_extruders_are_bambu_studios(name):
     assert list(profiles.flushDatasets) == extruders["nozzle_flush_dataset"]
     assert list(profiles.hotends) == extruders["extruder_max_nozzle_count"]
     assert profiles.hotendAsExtruder == bool(extruders["handle_hotend_as_extruder"])
+
+
+def cutRetraction(cut, extruder):
+    """
+    Bambu Studio's length of the long retraction when cut (Plater.cpp get_min_flush_volumes) from the profile values,
+    for the printer's Bambu PLA Basic: the printer's when it is on, the filament's own when the printer leaves it to the
+    filament (EnableFilament, 2) and it is on, none when the filament has it off; nil (None) keeps the printer's
+    """
+    machine = int(cut["retraction_distances_when_cut"][extruder]) if cut["enable_long_retraction_when_cut"] and cut["long_retractions_when_cut"][extruder] == 1 else 0
+    if cut["filament_long_retractions_when_cut"] == 0:
+        return 0
+    if cut["filament_long_retractions_when_cut"] == 1 and cut["enable_long_retraction_when_cut"] == 2:
+        distance = cut["filament_retraction_distances_when_cut"]
+        return int(distance) if distance is not None else int(cut["retraction_distances_when_cut"][extruder])
+    return machine
+
+
+@pytest.mark.parametrize("name", sorted(PROFILES))
+def test_the_cut_retraction_is_bambu_studios(name):
+    # round 57: Bambu Studio's Re-calculate purged 44 less on the P1S and A1 mini (test of 23.11.2026)
+    profiles = printBeds.bambuProfiles(printBeds.presetLabel(name))
+    cut = EXTRUDERS[profiles.printer]["cut"]
+    assert cut["filament_diameter"] == 1.75
+    assert list(profiles.cutRetractions) == [cutRetraction(cut, extruder) for extruder in range(profiles.extruders)]
+
+
+def test_the_cut_retractions():
+    retractions = {name: printBeds.bambuProfiles(printBeds.presetLabel(name)).cutRetractions for name in PROFILES}
+    assert retractions["Bambu Lab P1S"] == retractions["Bambu Lab A1 mini"] == (18,)
+    assert retractions["Bambu Lab X1E"] == retractions["Bambu Lab H3C"] == (0,)
+    assert retractions["Bambu Lab H2D"] == (0, 0) and retractions["Bambu Lab H2C"] == (14, 14)
 
 
 def test_the_printers_with_two_extruders():

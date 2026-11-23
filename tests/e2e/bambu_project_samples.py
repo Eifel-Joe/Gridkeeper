@@ -10,6 +10,9 @@ writes
 - r55-a1mini-one-plate.3mf: Bambu Lab A1 mini, one plate, red text
 - r56-h2d-two-plates.3mf (round 56, p690): Bambu Lab H2D, the bins and labels of the P1S sample on its larger bed,
   two plates, with purging volumes for both nozzles
+- r57-p1s-4colours.3mf, r57-a1mini-4colours.3mf, r57-h3c-4colours.3mf (round 57): the bins (on the A1 mini smaller ones)
+  and labels of the P1S sample for printers with one extruder, grey, red, blue and black, with purging volumes, one block
+- r57-h2c-4colours.3mf (round 57): the same for the H2C, its purging volumes less its long retraction when cut
 """
 
 import importlib.util
@@ -52,7 +55,7 @@ def project(path, label, parts, filaments, kinds=None):
         printBeds.purgeAnchor(label), printBeds.excludedAreas(label))
     threeMf.writeBambuProject(path, [meshObject for (_, meshObject) in laid], [plate for (plate, _) in laid], bed,
                               printBeds.bambuProfiles(label), exportParts.filamentColours(filaments),
-                              os.path.splitext(os.path.basename(path))[0], "1.3.1")
+                              os.path.splitext(os.path.basename(path))[0], "1.3.2")
     return (plates, tooLarge, noPurge, nearExcluded)
 
 
@@ -71,6 +74,13 @@ def writeSamples(folder):
                                                  [box("Bin 2x1", 83.5, 41.5, 21), box("Label red", 36, 11.5, 1.2, letters=2)], {RED: 2})
     results["r56-h2d-two-plates.3mf"] = project(os.path.join(folder, "r56-h2d-two-plates.3mf"), "Bambu Lab H2D (350 x 320 mm)",
                                                bins + labels, filaments, ["bins"] * len(bins) + ["labels"] * len(labels))
+    # the A1 mini's small bed: smaller bins, so every plate keeps room for the purge tower
+    small = [box(f"Bin 2x1 #{index + 1}", 83.5, 41.5, 21) for index in range(4)]
+    for (name, label, parts) in (("r57-p1s-4colours.3mf", "Bambu Lab P1S (256 x 256 mm)", bins),
+                                 ("r57-a1mini-4colours.3mf", "Bambu Lab A1 mini (180 x 180 mm)", small),
+                                 ("r57-h3c-4colours.3mf", "Bambu Lab H3C (330 x 320 mm)", bins),
+                                 ("r57-h2c-4colours.3mf", "Bambu Lab H2C (330 x 320 mm)", bins)):
+        results[name] = project(os.path.join(folder, name), label, parts + labels, filaments, ["bins"] * len(parts) + ["labels"] * len(labels))
     return results
 
 

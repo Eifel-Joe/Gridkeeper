@@ -9,6 +9,8 @@ import os
 import zipfile
 import xml.etree.ElementTree as ElementTree
 
+import pytest
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 spec = importlib.util.spec_from_file_location("bambu_project_samples", os.path.join(ROOT, "tests", "e2e", "bambu_project_samples.py"))
 samples = importlib.util.module_from_spec(spec)
@@ -38,7 +40,8 @@ def test_the_p1s_sample_has_three_plates_with_its_profiles_and_colors(tmp_path):
 
 def test_the_one_plate_samples(tmp_path):
     samples.writeSamples(str(tmp_path))
-    assert sorted(os.listdir(tmp_path)) == ["r55-a1mini-one-plate.3mf", "r55-p1s-three-plates.3mf", "r56-h2d-two-plates.3mf"]
+    assert sorted(os.listdir(tmp_path)) == ["r55-a1mini-one-plate.3mf", "r55-p1s-three-plates.3mf", "r56-h2d-two-plates.3mf",
+                                            "r57-a1mini-4colours.3mf", "r57-h2c-4colours.3mf", "r57-h3c-4colours.3mf", "r57-p1s-4colours.3mf"]
     (_, settings, project) = read(tmp_path / "r55-a1mini-one-plate.3mf")
     assert len(settings.findall("plate")) == 1
     assert project["printer_settings_id"] == "Bambu Lab A1 mini 0.4 nozzle"
@@ -56,4 +59,42 @@ def test_the_h2d_sample_has_purging_volumes_for_both_nozzles(tmp_path):
     matrix = [int(value) for value in project["flush_volumes_matrix"]]
     assert matrix[0:4] == [0, 295, 295, 208] and matrix[16:20] == [0, 310, 310, 223] and len(matrix) == 32
     assert project["flush_multiplier"] == ["1", "1"]
-    assert "flush_volumes_matrix" not in read(tmp_path / "r55-p1s-three-plates.3mf")[2]
+    # round 57: one nozzle gets them too
+    assert read(tmp_path / "r55-p1s-three-plates.3mf")[2]["flush_multiplier"] == ["1"]
+
+
+def offDiagonalZeros(project):
+    matrix = [float(value) for value in project["flush_volumes_matrix"]]
+    size = round((len(matrix) // len(project["flush_multiplier"])) ** 0.5)
+    return [index for (index, value) in enumerate(matrix) if value == 0 and (index % (size * size)) // size != index % size]
+
+
+@pytest.mark.parametrize(("name", "printer", "row"), [
+    # round 57: one extruder, one block; grey to red, blue, black: the formula plus the nozzle volume, 1.3 towards
+    # black only with a flush data set (H3C); less the long retraction when cut on the P1S and A1 mini, as Bambu
+    # Studio's Re-calculate in the test of 23.11.2026
+    ("r57-p1s-4colours.3mf", "Bambu Lab P1S 0.4 nozzle", [0, 228, 228, 123]),
+    ("r57-a1mini-4colours.3mf", "Bambu Lab A1 mini 0.4 nozzle", [0, 213, 213, 108]),
+    ("r57-h3c-4colours.3mf", "Bambu Lab H3C 0.4 nozzle", [0, 290, 290, 203]),
+])
+def test_the_one_extruder_samples_have_a_block_of_purging_volumes(tmp_path, name, printer, row):
+    results = samples.writeSamples(str(tmp_path))
+    assert results[name][1:] == ([], [], [])
+    (_, _, project) = read(tmp_path / name)
+    assert project["printer_settings_id"] == printer
+    assert project["filament_colour"] == ["#808080", "#D02020", "#2060D0", "#000000"]
+    matrix = [int(value) for value in project["flush_volumes_matrix"]]
+    assert len(matrix) == 16 and matrix[0:4] == row
+    assert project["flush_multiplier"] == ["1"] and project["filament_map"] == ["1"] * 4
+    assert not offDiagonalZeros(project)
+
+
+def test_the_h2c_sample_purges_less_its_long_retraction_when_cut(tmp_path):
+    # round 57: the H2C's printer profile pulls 14 mm back when it cuts, 96 and 111 least instead of 130 and 145;
+    # not yet checked in Bambu Studio
+    results = samples.writeSamples(str(tmp_path))
+    assert results["r57-h2c-4colours.3mf"][1:] == ([], [], [])
+    (_, _, project) = read(tmp_path / "r57-h2c-4colours.3mf")
+    matrix = [int(value) for value in project["flush_volumes_matrix"]]
+    assert len(matrix) == 32 and matrix[0:4] == [0, 261, 261, 174] and matrix[16:20] == [0, 276, 276, 189]
+    assert not offDiagonalZeros(project)

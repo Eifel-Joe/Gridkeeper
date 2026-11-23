@@ -1,5 +1,5 @@
 {
- "source": "Bambu Studio system profiles BBL 02.09.00.83: printer profiles, the Standard process profiles and the PLA Basic filament profiles that can be chosen; machine_nozzles: entries of nozzle_diameter of the 0.4 nozzle printer profiles; machine_extruders (round 56): of the 0.4 nozzle printer profiles, from Bambu Studio's sources (master 8e524a39, version 02.09.01.70, profiles BBL 02.09.00.74): count of nozzle_diameter, extruder_max_nozzle_count, handle_hotend_as_extruder, and per extruder nozzle_volume and nozzle_flush_dataset of its first variant of extruder_variant_list (Standard)",
+ "source": "Bambu Studio system profiles BBL 02.09.00.83: printer profiles, the Standard process profiles and the PLA Basic filament profiles that can be chosen; machine_nozzles: entries of nozzle_diameter of the 0.4 nozzle printer profiles; machine_extruders (round 56): of the 0.4 nozzle printer profiles, from Bambu Studio's sources (master 8e524a39, version 02.09.01.70, profiles BBL 02.09.00.74): count of nozzle_diameter, extruder_max_nozzle_count, handle_hotend_as_extruder, and per extruder nozzle_volume and nozzle_flush_dataset of its first variant of extruder_variant_list (Standard); machine_extruders cut (round 57): long retraction when cut as Bambu Studio's get_min_flush_volumes reads it, of the printer profile per extruder (its Standard variant) and of its Bambu PLA Basic filament profile (null for nil)",
  "machine": [
   "Bambu Lab A1",
   "Bambu Lab A1 0.2 nozzle",
@@ -234,7 +234,19 @@
    ],
    "nozzle_flush_dataset": [
     0
-   ]
+   ],
+   "cut": {
+    "enable_long_retraction_when_cut": 2,
+    "long_retractions_when_cut": [
+     0
+    ],
+    "retraction_distances_when_cut": [
+     18.0
+    ],
+    "filament_long_retractions_when_cut": 1,
+    "filament_retraction_distances_when_cut": 18.0,
+    "filament_diameter": 1.75
+   }
   },
   "Bambu Lab A1 mini 0.4 nozzle": {
    "nozzle_diameter": 1,
@@ -247,7 +259,19 @@
    ],
    "nozzle_flush_dataset": [
     0
-   ]
+   ],
+   "cut": {
+    "enable_long_retraction_when_cut": 2,
+    "long_retractions_when_cut": [
+     0
+    ],
+    "retraction_distances_when_cut": [
+     18.0
+    ],
+    "filament_long_retractions_when_cut": 1,
+    "filament_retraction_distances_when_cut": 18.0,
+    "filament_diameter": 1.75
+   }
   },
   "Bambu Lab A2L 0.4 nozzle": {
    "nozzle_diameter": 1,
@@ -260,7 +284,19 @@
    ],
    "nozzle_flush_dataset": [
     0
-   ]
+   ],
+   "cut": {
+    "enable_long_retraction_when_cut": 2,
+    "long_retractions_when_cut": [
+     0
+    ],
+    "retraction_distances_when_cut": [
+     18.0
+    ],
+    "filament_long_retractions_when_cut": 1,
+    "filament_retraction_distances_when_cut": 18.0,
+    "filament_diameter": 1.75
+   }
   },
   "Bambu Lab H2C 0.4 nozzle": {
    "nozzle_diameter": 2,
@@ -276,7 +312,21 @@
    "nozzle_flush_dataset": [
     1,
     1
-   ]
+   ],
+   "cut": {
+    "enable_long_retraction_when_cut": 2,
+    "long_retractions_when_cut": [
+     1,
+     1
+    ],
+    "retraction_distances_when_cut": [
+     14.0,
+     14.0
+    ],
+    "filament_long_retractions_when_cut": null,
+    "filament_retraction_distances_when_cut": null,
+    "filament_diameter": 1.75
+   }
   },
   "Bambu Lab H2D 0.4 nozzle": {
    "nozzle_diameter": 2,
@@ -292,7 +342,21 @@
    "nozzle_flush_dataset": [
     1,
     1
-   ]
+   ],
+   "cut": {
+    "enable_long_retraction_when_cut": 2,
+    "long_retractions_when_cut": [
+     0,
+     0
+    ],
+    "retraction_distances_when_cut": [
+     10.0,
+     10.0
+    ],
+    "filament_long_retractions_when_cut": null,
+    "filament_retraction_distances_when_cut": null,
+    "filament_diameter": 1.75
+   }
   },
   "Bambu Lab H2D Pro 0.4 nozzle": {
    "nozzle_diameter": 2,
@@ -308,7 +372,21 @@
    "nozzle_flush_dataset": [
     1,
     1
-   ]
+   ],
+   "cut": {
+    "enable_long_retraction_when_cut": 2,
+    "long_retractions_when_cut": [
+     0,
+     0
+    ],
+    "retraction_distances_when_cut": [
+     10.0,
+     10.0
+    ],
+    "filament_long_retractions_when_cut": null,
+    "filament_retraction_distances_when_cut": null,
+    "filament_diameter": 1.75
+   }
   },
   "Bambu Lab H2S 0.4 nozzle": {
    "nozzle_diameter": 1,
@@ -321,7 +399,19 @@
    ],
    "nozzle_flush_dataset": [
     1
-   ]
+   ],
+   "cut": {
+    "enable_long_retraction_when_cut": 2,
+    "long_retractions_when_cut": [
+     0
+    ],
+    "retraction_distances_when_cut": [
+     18.0
+    ],
+    "filament_long_retractions_when_cut": null,
+    "filament_retraction_distances_when_cut": null,
+    "filament_diameter": 1.75
+   }
   },
   "Bambu Lab H3C 0.4 nozzle": {
    "nozzle_diameter": 1,
@@ -334,7 +424,19 @@
    ],
    "nozzle_flush_dataset": [
     1
-   ]
+   ],
+   "cut": {
+    "enable_long_retraction_when_cut": 2,
+    "long_retractions_when_cut": [
+     0
+    ],
+    "retraction_distances_when_cut": [
+     18.0
+    ],
+    "filament_long_retractions_when_cut": null,
+    "filament_retraction_distances_when_cut": null,
+    "filament_diameter": 1.75
+   }
   },
   "Bambu Lab P1P 0.4 nozzle": {
    "nozzle_diameter": 1,
@@ -347,7 +449,19 @@
    ],
    "nozzle_flush_dataset": [
     0
-   ]
+   ],
+   "cut": {
+    "enable_long_retraction_when_cut": 2,
+    "long_retractions_when_cut": [
+     0
+    ],
+    "retraction_distances_when_cut": [
+     18.0
+    ],
+    "filament_long_retractions_when_cut": 1,
+    "filament_retraction_distances_when_cut": 18.0,
+    "filament_diameter": 1.75
+   }
   },
   "Bambu Lab P1S 0.4 nozzle": {
    "nozzle_diameter": 1,
@@ -360,7 +474,19 @@
    ],
    "nozzle_flush_dataset": [
     0
-   ]
+   ],
+   "cut": {
+    "enable_long_retraction_when_cut": 2,
+    "long_retractions_when_cut": [
+     0
+    ],
+    "retraction_distances_when_cut": [
+     18.0
+    ],
+    "filament_long_retractions_when_cut": 1,
+    "filament_retraction_distances_when_cut": 18.0,
+    "filament_diameter": 1.75
+   }
   },
   "Bambu Lab P2S 0.4 nozzle": {
    "nozzle_diameter": 1,
@@ -373,7 +499,19 @@
    ],
    "nozzle_flush_dataset": [
     0
-   ]
+   ],
+   "cut": {
+    "enable_long_retraction_when_cut": 2,
+    "long_retractions_when_cut": [
+     0
+    ],
+    "retraction_distances_when_cut": [
+     18.0
+    ],
+    "filament_long_retractions_when_cut": null,
+    "filament_retraction_distances_when_cut": 10.0,
+    "filament_diameter": 1.75
+   }
   },
   "Bambu Lab X1 0.4 nozzle": {
    "nozzle_diameter": 1,
@@ -386,7 +524,19 @@
    ],
    "nozzle_flush_dataset": [
     0
-   ]
+   ],
+   "cut": {
+    "enable_long_retraction_when_cut": 2,
+    "long_retractions_when_cut": [
+     0
+    ],
+    "retraction_distances_when_cut": [
+     18.0
+    ],
+    "filament_long_retractions_when_cut": 1,
+    "filament_retraction_distances_when_cut": 18.0,
+    "filament_diameter": 1.75
+   }
   },
   "Bambu Lab X1 Carbon 0.4 nozzle": {
    "nozzle_diameter": 1,
@@ -399,7 +549,19 @@
    ],
    "nozzle_flush_dataset": [
     0
-   ]
+   ],
+   "cut": {
+    "enable_long_retraction_when_cut": 2,
+    "long_retractions_when_cut": [
+     0
+    ],
+    "retraction_distances_when_cut": [
+     18.0
+    ],
+    "filament_long_retractions_when_cut": 1,
+    "filament_retraction_distances_when_cut": 18.0,
+    "filament_diameter": 1.75
+   }
   },
   "Bambu Lab X1E 0.4 nozzle": {
    "nozzle_diameter": 1,
@@ -412,7 +574,19 @@
    ],
    "nozzle_flush_dataset": [
     0
-   ]
+   ],
+   "cut": {
+    "enable_long_retraction_when_cut": 1,
+    "long_retractions_when_cut": [
+     0
+    ],
+    "retraction_distances_when_cut": [
+     18.0
+    ],
+    "filament_long_retractions_when_cut": 1,
+    "filament_retraction_distances_when_cut": 18.0,
+    "filament_diameter": 1.75
+   }
   },
   "Bambu Lab X2D 0.4 nozzle": {
    "nozzle_diameter": 2,
@@ -428,7 +602,21 @@
    "nozzle_flush_dataset": [
     1,
     1
-   ]
+   ],
+   "cut": {
+    "enable_long_retraction_when_cut": 2,
+    "long_retractions_when_cut": [
+     0,
+     0
+    ],
+    "retraction_distances_when_cut": [
+     18.0,
+     18.0
+    ],
+    "filament_long_retractions_when_cut": null,
+    "filament_retraction_distances_when_cut": 10.0,
+    "filament_diameter": 1.75
+   }
   }
  }
 }

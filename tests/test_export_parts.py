@@ -678,12 +678,23 @@ def test_the_files_choice_is_kept():
     assert exportParts.FILES_PER_PLATE == "A file per plate"
 
 
+FLUSH_SENTENCE = (
+    "The purging volumes come from Bambu Studio's color formula; for its own filament colors Bambu Studio has its "
+    "own values, Re-calculate under Purging volumes takes them."
+)
+NOZZLES_SENTENCE = (
+    " Bambu Studio puts the filaments on the nozzles so it purges least; change that and the volumes there if you want."
+)
+
+
 def test_the_notice_names_the_profiles_and_plates():
     profiles = printBeds.bambuProfiles("Bambu Lab P1S (256 x 256 mm)")
+    # round 57: the purging volumes for one nozzle too
     assert exportParts.bambuNotice(profiles, 3) == (
         "This file is a Bambu Studio project with all 3 plates. It comes with Bambu Studio's standard profiles: "
         "Bambu Lab P1S 0.4 nozzle, 0.20mm Standard @BBL X1C, Bambu PLA Basic for every filament and the Textured PEI "
         "Plate. Change them in Bambu Studio to your printer, nozzle, filament and plate where they differ.\n\n"
+        + FLUSH_SENTENCE + "\n\n"
         "OK saves the project, Cancel saves nothing."
     )
 
@@ -696,24 +707,21 @@ def test_the_notice_of_one_plate():
     )
 
 
-FLUSH_SENTENCE = (
-    "The purging volumes for the two nozzles come from Bambu Studio's color formula; for its own filament colors "
-    "Bambu Studio has its own values, Re-calculate under Purging volumes takes them. Bambu Studio puts the "
-    "filaments on the nozzles so it purges least; change that and the volumes there if you want.\n\n"
-)
-
-
 def test_the_notice_of_two_nozzles_tells_of_the_purging_volumes():
     # round 56 (p690, decided 23.11.2026): Bambu Studio's colour tables aren't rebuilt, its Re-calculate may differ
     profiles = printBeds.bambuProfiles("Bambu Lab H2D (350 x 320 mm)")
     notice = exportParts.bambuNotice(profiles, 2)
     assert "Change them in Bambu Studio to your printer, nozzle, filament and plate where they differ.\n\n" + FLUSH_SENTENCE + \
-        "OK saves the project, Cancel saves nothing." in notice
+        NOZZLES_SENTENCE + "\n\nOK saves the project, Cancel saves nothing." in notice
 
 
-def test_the_notice_of_one_nozzle_has_no_purging_volumes():
-    for label in ("Bambu Lab P1S (256 x 256 mm)", "Bambu Lab H3C (330 x 320 mm)"):
-        assert "purging" not in exportParts.bambuNotice(printBeds.bambuProfiles(label), 2)
+@pytest.mark.parametrize("name", sorted(printBeds.BAMBU_PROFILES))
+def test_every_bambu_notice_tells_of_the_purging_volumes(name):
+    # round 57: every Bambu printer's project brings purging volumes; the nozzles only where there are two
+    profiles = printBeds.bambuProfiles(printBeds.presetLabel(name))
+    notice = exportParts.bambuNotice(profiles, 2)
+    assert FLUSH_SENTENCE in notice
+    assert (NOZZLES_SENTENCE in notice) == (profiles.extruders > 1)
 
 
 def _entry_source():

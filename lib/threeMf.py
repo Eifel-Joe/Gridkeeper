@@ -177,7 +177,8 @@ def projectSettings(profiles, colours: list[str]) -> str:
     The parents in Bambu Studio's order, process, filaments, printer (PresetBundle::load_config_file_config): with
     the names alone filaments 2 and on came as project copies of Bambu Studio's general defaults, 200 °C and
     2 mm³/s; with their parent named Bambu Studio takes its system profile, Bambu PLA Basic's 220 °C and 21 mm³/s
-    (tests of 23.11.2026). Round 56: the purging volumes for two extruders, see flushSettings
+    (tests of 23.11.2026). Round 56: the purging volumes for two extruders, round 57 for every printer, see
+    flushSettings
     """
     return json.dumps({
         'version': BAMBU_VERSION,
@@ -195,7 +196,9 @@ def projectSettings(profiles, colours: list[str]) -> str:
 # Round 56 (p690, spec dev-notes/specs/2026-11-23-r56-multi-nozzle-flush.md): the purging volumes of a printer with
 # two extruders. A project without them gets Bambu Studio's defaults for one extruder, rebuilt for two with zeros
 # (PresetBundle::update_multi_material_filament_presets reads past their end), and the warning "Partial purging volume
-# set to 0" (GLCanvas3D::is_flushing_matrix_error). Bambu Studio doesn't work them out itself when it opens a project
+# set to 0" (GLCanvas3D::is_flushing_matrix_error). Bambu Studio doesn't work them out itself when it opens a project.
+# Round 57 (spec dev-notes/specs/2026-11-23-r57-one-nozzle-flush.md): every Bambu printer gets them, a printer with one
+# extruder had Bambu Studio's flat 280 for every change of color
 FLUSH_MAX = 900
 FLUSH_MIN = 60
 # Bambu Studio's defaults, PrintConfig.cpp
@@ -203,6 +206,8 @@ FLUSH_VECTOR = '140'
 FLUSH_MULTIPLIER = '1'
 FLUSH_MULTIPLIER_FAST = '1.2'
 FLUSH_MAP_MODE = 'Auto For Flush'
+# Bambu PLA Basic's filament_diameter, mm
+FILAMENT_DIAMETER = 1.75
 
 def _hsv(red: float, green: float, blue: float) -> tuple[float, float, float]:
     """Hue in degrees, saturation and value 0 to 1, as Bambu Studio's RGB2HSV"""
@@ -226,14 +231,14 @@ def _rgb(colour: str) -> tuple[int, int, int]:
 
 def flushVolume(source: str, target: str, minimum: float, dataset: int) -> int:
     """
-    mm³ to purge going from the colour source to target, '#RRGGBB', on an extruder of the nozzle volume minimum and the
-    flush data set (nozzle_flush_dataset of the printer profile). Rebuilt after Bambu Studio 02.09.01.70
+    mm³ to purge going from the colour source to target, '#RRGGBB', on an extruder of the least volume minimum (round 57:
+    minFlushVolume, not the bare nozzle volume) and the flush data set (nozzle_flush_dataset of the printer profile). Rebuilt after Bambu Studio 02.09.01.70
     (src/libslic3r/FlushVolCalc.cpp, AGPL-3.0, no code taken): FlushVolCalculator::calc_flush_vol_rgb, distance of hue
     and saturation and the change of luminance, 60 at least; with a data set 1.3 times as much from a "dark" colour to
-    a "light" one, the nozzle volume on top (Plater.cpp get_min_flush_volumes), 900 at most.
+    a "light" one, the least volume minimum on top (round 57: minFlushVolume), 900 at most.
     Not rebuilt (decided 23.11.2026): Bambu Studio's colour tables (FlushVolPredictor), which take over when both
-    colours are near one of its filament colours, and its long retraction when cut; its "Re-calculate" may differ
-    there. Bambu Studio counts in float, a value right at a whole number may come out one apart
+    colours are near one of its filament colours; its "Re-calculate" may differ there. Bambu Studio counts in float, a
+    value right at a whole number may come out one apart
     """
     (sourceRgb, targetRgb) = ([value / 255 for value in _rgb(source)], [value / 255 for value in _rgb(target)])
     (sourceHue, sourceSaturation, sourceValue) = _hsv(*sourceRgb)
@@ -256,19 +261,31 @@ def flushVolume(source: str, target: str, minimum: float, dataset: int) -> int:
         volume *= 1.3
     return min(int(volume + int(minimum)), FLUSH_MAX)
 
+def minFlushVolume(nozzleVolume: float, cutRetraction: int) -> int:
+    """
+    The least mm³ Bambu Studio purges on an extruder of the nozzle volume nozzleVolume (nozzle_volume of the printer
+    profile) whose filament it pulls back cutRetraction mm when it cuts it (printBeds.BambuProfiles.cutRetractions):
+    that filament comes back in first. Rebuilt after Bambu Studio 02.09.01.70 (src/slic3r/GUI/Plater.cpp
+    get_min_flush_volumes, AGPL-3.0, no code taken), cut to whole numbers where Bambu Studio counts in int. Round 57:
+    without it the purging volumes of the P1S and A1 mini were 44 above Bambu Studio's Re-calculate (test of 23.11.2026)
+    """
+    return int(int(nozzleVolume) - math.pi * FILAMENT_DIAMETER ** 2 / 4 * cutRetraction)
+
 def flushSettings(profiles, colours: list[str]) -> dict:
     """
-    The purging volumes of the project for a printer with more than one extruder (printBeds.BambuProfiles), none for
-    one: Bambu Studio's defaults hold for it (1.3.0), the H3C's hotends too (Bambu Studio test of 23.11.2026). A block
-    of each filament to each per extruder, row by row, 0 to itself, as Bambu Studio keeps them; the filaments go on
-    the extruders as Bambu Studio finds it purges least, the user may change that and the volumes
+    The purging volumes of the project for the printer's extruders (printBeds.BambuProfiles): a block of each
+    filament to each per extruder, row by row, 0 to itself, as Bambu Studio keeps them; the filaments go on the
+    extruders as Bambu Studio finds it purges least, the user may change that and the volumes.
+    Round 57: one extruder too, the H3C's nine hotends are one. Bambu Studio counts the blocks by the entries of
+    flush_multiplier (PresetBundle::update_multi_material_filament_presets) and keeps the matrix when they match the
+    printer's extruders; its own project for one nozzle (resources/calib/pressure_advance/auto_pa_line_single.3mf, A1)
+    has the same keys, filament_map one for each filament as Bambu Studio sets it for any printer. Without them every
+    change of color purged Bambu Studio's flat 280 (Bambu Studio test of 23.11.2026)
     """
-    if profiles.extruders < 2:
-        return {}
     matrix = [
-        str(0 if source == target else flushVolume(colours[source], colours[target], volume, dataset))
+        str(0 if source == target else flushVolume(colours[source], colours[target], minFlushVolume(volume, cut), dataset))
         # strict: a block missing would bring Bambu Studio's zeros back (review round 56)
-        for (volume, dataset) in zip(profiles.nozzleVolumes, profiles.flushDatasets, strict=True)
+        for (volume, dataset, cut) in zip(profiles.nozzleVolumes, profiles.flushDatasets, profiles.cutRetractions, strict=True)
         for source in range(len(colours)) for target in range(len(colours))
     ]
     return {
