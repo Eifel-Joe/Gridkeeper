@@ -228,6 +228,9 @@ def infoText():
 
 INPUTS_VALID = True
 isApplyingBedPreset = False
+# whether the printer was picked or the bed typed in this dialog: a rebuilt or cloned baseplate's config may turn the
+# dropdown to Custom, that is no printer chosen and stays out of the printer chosen last (review round 55)
+isPrinterPicked = False
 
 def getErrorMessage(text = "An unknown error occurred, please validate your inputs and try again"):
     stackTrace = traceback.format_exc()
@@ -315,6 +318,8 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     if pendingRebuildBody is not None:
         dialogInfo = warningLine(f'<b>Rebuilding {html.escape(pendingRebuildBody.name)}</b> in place, features after it in the timeline are kept.') + dialogInfo
     pendingRebuildBody = None
+    global isPrinterPicked
+    isPrinterPicked = False
     applyLastPrinter()
     applyPendingConfig()
 
@@ -395,7 +400,9 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     uiState.registerCommandInput(printBedGroup)
     printBedPresetDropdown = printBedGroup.children.addDropDownCommandInput(PRINT_BED_PRESET_DROPDOWN, 'Printer', adsk.core.DropDownStyles.TextListDropDownStyle)
     presetNames = [printBeds.PRINT_BED_CUSTOM] + list(printBeds.PRINT_BED_PRESETS.keys())
-    # a preset saved with the defaults can be gone from the list since, the bed size it set stays as custom
+    # a shared Bambu entry of before 1.3.0 is one printer now (review round 55), a preset saved with the defaults can be
+    # gone from the list since, the bed size it set stays as custom
+    uiState.setValue(PRINT_BED_PRESET_DROPDOWN, printBeds.currentLabel(uiState.getState(PRINT_BED_PRESET_DROPDOWN)))
     if uiState.getState(PRINT_BED_PRESET_DROPDOWN) not in presetNames:
         uiState.updateValue(PRINT_BED_PRESET_DROPDOWN, printBeds.PRINT_BED_CUSTOM)
     for presetName in presetNames:
@@ -556,9 +563,10 @@ def command_execute(args: adsk.core.CommandEventArgs):
     des = adsk.fusion.Design.cast(app.activeProduct)
     wasPart = des is not None and des.designIntent == adsk.fusion.DesignIntentTypes.PartDesignIntentType
     generateBaseplate(args)
-    # the export dialog starts with it too (round 55)
-    if not printBeds.writeLastPrinter(uiState.getState(PRINT_BED_PRESET_DROPDOWN)):
-        futil.log(f'{CMD_NAME} printer not saved to {printBeds.LAST_PRINTER_PATH}')
+    # the export dialog starts with it too (round 55), a rebuilt or cloned baseplate's bed only when picked here
+    if dialogWorkflow == WORKFLOW_NEW or isPrinterPicked:
+        if not printBeds.writeLastPrinter(uiState.getState(PRINT_BED_PRESET_DROPDOWN)):
+            futil.log(f'{CMD_NAME} printer not saved to {printBeds.LAST_PRINTER_PATH}')
     # a new bin or baseplate switches a part design to hybrid for its component of its own, that can't be undone (round 13)
     if wasPart and des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
         ui.messageBox(HYBRID_SWITCH_MESSAGE, CMD_NAME)
@@ -596,7 +604,9 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
         # 6x2 or 6x3 mm magnets set the depth, Custom leaves it to be typed (p263)
         uiState.forceUIRefresh()
 
-    global isApplyingBedPreset
+    global isApplyingBedPreset, isPrinterPicked
+    if changed_input.id in (PRINT_BED_PRESET_DROPDOWN, PRINT_BED_WIDTH_INPUT, PRINT_BED_LENGTH_INPUT) and not isApplyingBedPreset:
+        isPrinterPicked = True
     if changed_input.id == PRINT_BED_PRESET_DROPDOWN:
         presetBedSize = printBeds.presetBedSize(uiState.getState(PRINT_BED_PRESET_DROPDOWN))
         if presetBedSize is not None:

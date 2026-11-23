@@ -731,3 +731,32 @@ def test_the_notice_comes_after_the_replace_question_and_before_anything_is_writ
 
 def test_the_summary_tells_of_the_project():
     assert "one Bambu Studio project with all plates" in _entry_function("updateInputs")
+
+
+# review round 55
+
+def _baseplate_function(name):
+    tree = ast.parse(open(os.path.join(PROJECT_ROOT, "commands", "commandCreateBaseplate", "entry.py"), encoding="utf-8").read())
+    return ast.unparse(next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == name))
+
+
+def test_the_baseplate_dialog_reads_an_old_shared_printer_as_its_printer_now():
+    # saved baseplate defaults of before 1.3.0 hold a shared entry, it opened as Custom
+    source = _baseplate_function("command_created")
+    assert "printBeds.currentLabel(uiState.getState(PRINT_BED_PRESET_DROPDOWN))" in source
+    assert source.index("printBeds.currentLabel(") < source.index("not in presetNames")
+
+
+def test_a_rebuilt_or_cloned_baseplate_keeps_the_printer_chosen_last_unless_one_is_picked():
+    # its config's bed turns the dropdown to Custom when it differs, that is no printer chosen
+    execute = _baseplate_function("command_execute")
+    assert "if dialogWorkflow == WORKFLOW_NEW or isPrinterPicked:" in execute
+    assert execute.index("if dialogWorkflow == WORKFLOW_NEW or isPrinterPicked:") < execute.index("printBeds.writeLastPrinter(")
+    assert "isPrinterPicked = False" in _baseplate_function("command_created")
+    changed = _baseplate_function("command_input_changed")
+    assert "isPrinterPicked = True" in changed
+
+
+def test_cancel_in_the_notice_returns_before_anything_is_written():
+    source = _entry_function("export3mf")
+    assert "if answer != adsk.core.DialogResults.DialogOK:\n            return None" in source
