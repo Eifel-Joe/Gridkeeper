@@ -103,32 +103,51 @@ EXCLUDED_AREAS: dict[str, list[tuple[float, float, float, float]]] = {
 
 @dataclasses.dataclass(frozen=True)
 class BambuProfiles:
-    """Bambu Studio's system profile names of a printer with its 0.4 mm nozzle"""
+    """
+    Bambu Studio's system profile names of a printer with its 0.4 mm nozzle, and its extruders as the printer profile
+    has them (round 56, p690): per extruder nozzle_volume and nozzle_flush_dataset of its Standard nozzle and
+    extruder_max_nozzle_count, the hotends it changes between, and handle_hotend_as_extruder
+    """
     printer: str
     process: str
     filament: str
+    nozzleVolumes: tuple[float, ...] = (107.0,)
+    flushDatasets: tuple[int, ...] = (0,)
+    hotends: tuple[int, ...] = (1,)
+    hotendAsExtruder: bool = False
+
+    @property
+    def extruders(self) -> int:
+        """The entries of nozzle_diameter, Bambu Studio's purging volumes have a block of them each"""
+        return len(self.nozzleVolumes)
 
 # Round 55 (p680): the profiles the export's Bambu Studio project names, Bambu Studio takes their settings from its
 # own system profiles. The printer profile's default_print_profile and default_filament_profile of Bambu Studio
 # 02.09.01.70, the 0.4 mm nozzle only (decided 23.11.2026); tests/fixtures/bambu_system_profiles.json lists the names
 # Bambu Studio has. A filament profile of another printer (Bambu PLA Basic @BBL X1C on a P1S) came in as a project
 # profile in the Bambu Studio test of 23.11.2026
+# Round 56 (p690): the extruders from Bambu Studio's printer profiles (sources of 02.09.01.70, profiles BBL
+# 02.09.00.74), tests/fixtures/bambu_system_profiles.json lists them as machine_extruders. Defaults of BambuProfiles:
+# one extruder of the P1 and X1. The H2C's right extruder changes between 6 hotends, the H3C's one between 9
+_ONE = dict(nozzleVolumes=(92.0,))
+_TWO = dict(nozzleVolumes=(130.0, 145.0), flushDatasets=(1, 1), hotends=(1, 1))
 BAMBU_PROFILES: dict[str, BambuProfiles] = {
-    'Bambu Lab A1 mini': BambuProfiles('Bambu Lab A1 mini 0.4 nozzle', '0.20mm Standard @BBL A1M', 'Bambu PLA Basic @BBL A1M'),
-    'Bambu Lab A1': BambuProfiles('Bambu Lab A1 0.4 nozzle', '0.20mm Standard @BBL A1', 'Bambu PLA Basic @BBL A1'),
-    'Bambu Lab A2L': BambuProfiles('Bambu Lab A2L 0.4 nozzle', '0.20mm Standard @BBL A2L', 'Bambu PLA Basic @BBL A2L 0.4 nozzle'),
+    'Bambu Lab A1 mini': BambuProfiles('Bambu Lab A1 mini 0.4 nozzle', '0.20mm Standard @BBL A1M', 'Bambu PLA Basic @BBL A1M', **_ONE),
+    'Bambu Lab A1': BambuProfiles('Bambu Lab A1 0.4 nozzle', '0.20mm Standard @BBL A1', 'Bambu PLA Basic @BBL A1', **_ONE),
+    'Bambu Lab A2L': BambuProfiles('Bambu Lab A2L 0.4 nozzle', '0.20mm Standard @BBL A2L', 'Bambu PLA Basic @BBL A2L 0.4 nozzle', **_ONE),
     'Bambu Lab P1P': BambuProfiles('Bambu Lab P1P 0.4 nozzle', '0.20mm Standard @BBL P1P', 'Bambu PLA Basic @BBL P1P'),
     'Bambu Lab P1S': BambuProfiles('Bambu Lab P1S 0.4 nozzle', '0.20mm Standard @BBL X1C', 'Bambu PLA Basic @BBL P1S 0.4 nozzle'),
     'Bambu Lab X1': BambuProfiles('Bambu Lab X1 0.4 nozzle', '0.20mm Standard @BBL X1C', 'Bambu PLA Basic @BBL X1'),
     'Bambu Lab X1 Carbon': BambuProfiles('Bambu Lab X1 Carbon 0.4 nozzle', '0.20mm Standard @BBL X1C', 'Bambu PLA Basic @BBL X1C'),
     'Bambu Lab X1E': BambuProfiles('Bambu Lab X1E 0.4 nozzle', '0.20mm Standard @BBL X1C', 'Bambu PLA Basic @BBL X1C'),
-    'Bambu Lab P2S': BambuProfiles('Bambu Lab P2S 0.4 nozzle', '0.20mm Standard @BBL P2S', 'Bambu PLA Basic @BBL P2S'),
-    'Bambu Lab X2D': BambuProfiles('Bambu Lab X2D 0.4 nozzle', '0.20mm Standard @BBL X2D', 'Bambu PLA Basic @BBL X2D 0.4 nozzle'),
-    'Bambu Lab H2C': BambuProfiles('Bambu Lab H2C 0.4 nozzle', '0.20mm Standard @BBL H2C', 'Bambu PLA Basic @BBL H2C'),
-    'Bambu Lab H2D': BambuProfiles('Bambu Lab H2D 0.4 nozzle', '0.20mm Standard @BBL H2D', 'Bambu PLA Basic @BBL H2D'),
-    'Bambu Lab H2D Pro': BambuProfiles('Bambu Lab H2D Pro 0.4 nozzle', '0.20mm Standard @BBL H2DP', 'Bambu PLA Basic @BBL H2DP'),
-    'Bambu Lab H2S': BambuProfiles('Bambu Lab H2S 0.4 nozzle', '0.20mm Standard @BBL H2S', 'Bambu PLA Basic @BBL H2S'),
-    'Bambu Lab H3C': BambuProfiles('Bambu Lab H3C 0.4 nozzle', '0.20mm Standard @BBL H3C', 'Bambu PLA Basic @BBL H3C'),
+    'Bambu Lab P2S': BambuProfiles('Bambu Lab P2S 0.4 nozzle', '0.20mm Standard @BBL P2S', 'Bambu PLA Basic @BBL P2S', nozzleVolumes=(110.0,)),
+    'Bambu Lab X2D': BambuProfiles('Bambu Lab X2D 0.4 nozzle', '0.20mm Standard @BBL X2D', 'Bambu PLA Basic @BBL X2D 0.4 nozzle', **{**_TWO, 'nozzleVolumes': (92.0, 92.0)}),
+    'Bambu Lab H2C': BambuProfiles('Bambu Lab H2C 0.4 nozzle', '0.20mm Standard @BBL H2C', 'Bambu PLA Basic @BBL H2C', **{**_TWO, 'hotends': (1, 6)}),
+    'Bambu Lab H2D': BambuProfiles('Bambu Lab H2D 0.4 nozzle', '0.20mm Standard @BBL H2D', 'Bambu PLA Basic @BBL H2D', **_TWO),
+    'Bambu Lab H2D Pro': BambuProfiles('Bambu Lab H2D Pro 0.4 nozzle', '0.20mm Standard @BBL H2DP', 'Bambu PLA Basic @BBL H2DP', **_TWO),
+    'Bambu Lab H2S': BambuProfiles('Bambu Lab H2S 0.4 nozzle', '0.20mm Standard @BBL H2S', 'Bambu PLA Basic @BBL H2S', nozzleVolumes=(145.0,), flushDatasets=(1,)),
+    'Bambu Lab H3C': BambuProfiles('Bambu Lab H3C 0.4 nozzle', '0.20mm Standard @BBL H3C', 'Bambu PLA Basic @BBL H3C', nozzleVolumes=(125.9,), flushDatasets=(1,),
+                                   hotends=(9,), hotendAsExtruder=True),
 }
 
 _NAMES = {presetLabel(name): name for name in PRINT_BED_SIZES}
@@ -145,18 +164,12 @@ def bambuProfiles(label: str) -> BambuProfiles | None:
     """Bambu Studio's profile names of the dropdown's label, none for other printers and Custom"""
     return BAMBU_PROFILES.get(_NAMES.get(label))
 
-# Bambu Lab printers with two nozzles (nozzle_diameter of their profiles has two entries). Bambu Studio puts purging
-# volumes with zeros into a project without its own for them and warns "Partial purging volume set to 0", colored text
-# would mix (GLCanvas3D::is_flushing_matrix_error; Bambu Studio test of 23.11.2026, H2D). As the spec of round 55 has
-# it for a printer whose project doesn't open cleanly, they keep a file per plate
-TWO_NOZZLES = {'Bambu Lab H2C', 'Bambu Lab H2D', 'Bambu Lab H2D Pro', 'Bambu Lab X2D'}
-
 def isBambu(label: str) -> bool:
     """
-    Whether the export writes a Bambu Studio project for the dropdown's label, see BAMBU_PROFILES, a Bambu Lab
-    printer with one nozzle, see TWO_NOZZLES
+    Whether the export writes a Bambu Studio project for the dropdown's label, see BAMBU_PROFILES. Round 56 (p690):
+    the printers with two extruders too, their project brings purging volumes, see threeMf.flushSettings
     """
-    return bambuProfiles(label) is not None and _NAMES.get(label) not in TWO_NOZZLES
+    return bambuProfiles(label) is not None
 
 # Round 55 (decided 23.11.2026: the printer chosen last is the default): the label of the printer dropdown the baseplate
 # or export dialog was last run with, Custom too, shared by both. In the add-in's config folder, git ignores it
