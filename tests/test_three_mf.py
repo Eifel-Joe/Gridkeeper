@@ -221,7 +221,7 @@ def test_an_empty_plate_between_is_kept():
     assert [len(plate.findall("model_instance")) for plate in settings.findall("plate")] == [1, 0, 1]
 
 
-def test_the_project_settings_name_the_profiles_only():
+def test_the_project_settings_name_the_profiles_and_their_parents_only():
     settings = json.loads(threeMf.projectSettings(PROFILES, ["#808080", "#D02020", "#000000"]))
     assert settings == {
         "version": "02.09.01.70",
@@ -232,6 +232,9 @@ def test_the_project_settings_name_the_profiles_only():
         "filament_settings_id": ["Bambu PLA Basic @BBL P1S 0.4 nozzle"] * 3,
         "filament_colour": ["#808080", "#D02020", "#000000"],
         "curr_bed_type": "Textured PEI Plate",
+        # Bambu Studio test of 23.11.2026: without the parents filaments 2 and on came as project copies of Bambu
+        # Studio's general defaults (200 °C, 2 mm³/s); with them as Bambu PLA Basic (220 °C, 21 mm³/s)
+        "inherits_group": ["0.20mm Standard @BBL X1C"] + ["Bambu PLA Basic @BBL P1S 0.4 nozzle"] * 3 + ["Bambu Lab P1S 0.4 nozzle"],
     }
 
 

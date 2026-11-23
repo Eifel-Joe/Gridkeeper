@@ -172,8 +172,12 @@ def modelSettings(objects: list[MeshObject], plates: list[int]) -> str:
 def projectSettings(profiles, colours: list[str]) -> str:
     """
     The project's printer, process and a filament per colour by Bambu Studio's profile names (printer, process and
-    filament of profiles, see printBeds.BAMBU_PROFILES), and the bed. Nothing else: settings flattened from the
-    profiles were an invalid configuration file to Bambu Studio (test of 23.11.2026, V3)
+    filament of profiles, see printBeds.BAMBU_PROFILES), the same as each one's parent, and the bed. Nothing else:
+    settings flattened from the profiles were an invalid configuration file to Bambu Studio (test of 23.11.2026, V3).
+    The parents in Bambu Studio's order, process, filaments, printer (PresetBundle::load_config_file_config): with
+    the names alone filaments 2 and on came as project copies of Bambu Studio's general defaults, 200 °C and
+    2 mm³/s; with their parent named Bambu Studio takes its system profile, Bambu PLA Basic's 220 °C and 21 mm³/s
+    (tests of 23.11.2026)
     """
     return json.dumps({
         'version': BAMBU_VERSION,
@@ -184,6 +188,7 @@ def projectSettings(profiles, colours: list[str]) -> str:
         'filament_settings_id': [profiles.filament] * len(colours),
         'filament_colour': list(colours),
         'curr_bed_type': BAMBU_BED_TYPE,
+        'inherits_group': [profiles.process] + [profiles.filament] * len(colours) + [profiles.printer],
     }, indent=4)
 
 def bambuModelXml(objects: list[MeshObject], title: str = '', version: str = '', date: datetime.date | None = None) -> str:
