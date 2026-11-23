@@ -116,13 +116,20 @@ def withMarkings(part, markings: list):
 # Round r29-export (spec dev-notes/specs/2026-11-17-r29-export-drucklage.md): what the print layout needs of a part,
 # and the dialog's bed, spacing and purge choices
 
-# the baseplate dialog's preset (commandCreateBaseplate/printBeds.py) the export starts on, Bambu Lab's 256 mm bed of
-# the P1 and X1 (the X1C is a common printer)
-DEFAULT_BED = 'Bambu Lab P1P, P1S, X1, X1C, X1E (256 x 256 mm)'
+# the printer preset (lib/printBeds.py) the export starts on with no printer chosen before, Bambu Lab's X1 Carbon, a
+# common printer (round 55: one entry per printer, until then the shared P1 and X1 entry)
+DEFAULT_BED = 'Bambu Lab X1 Carbon (256 x 256 mm)'
 DEFAULT_BED_SIZE = 256.0
 CUSTOM_BED = 'Custom'
-# saved names of beds gone from the list, by the one they are now
-OLD_BED_NAMES = {'Bambu Lab A1, P1, X1 (256 x 256 mm)': DEFAULT_BED}
+# Round 55 (p680): for a Bambu Lab printer the 3MF is one Bambu Studio project with all plates or a file per plate,
+# the names as upstream 1ac1579 has them; other printers always get a file per plate
+FILES_ONE = 'One Bambu Studio project with all plates'
+FILES_PER_PLATE = 'A file per plate'
+FILES_CHOICES = [FILES_ONE, FILES_PER_PLATE]
+# the project's filament colors: the parts' filament 1 and a filament no label color has grey, text without a color
+# black (spec round 55)
+PART_COLOUR = '#808080'
+NO_COLOR_COLOUR = '#000000'
 # mm, 17.11.2026 (D2), see printLayout
 DEFAULT_SPACING = 5.0
 DEFAULT_PURGE = 50.0
@@ -163,10 +170,13 @@ def printGroups(keys: list) -> list[list[int]]:
     return groups
 
 
-def layoutChoices(section: dict, bedNames: list[str]) -> dict:
+def layoutChoices(section: dict, bedNames: list[str], lastPrinter: str | None = None, presets: dict | None = None,
+                  oldNames: dict | None = None) -> dict:
     """
     The saved bed, its size, spacing and purge square in mm, the defaults for what is missing or broken. configparser
-    gives its keys in lower case (review r29-export: bedWidth was never read back)
+    gives its keys in lower case (review r29-export: bedWidth was never read back). The printer chosen last in the
+    baseplate or export dialog comes first (round 55, decided 23.11.2026), a preset brings its own size, Custom the
+    size the export saved. A saved name gone from the list is read as the one it is now, see printBeds.OLD_BED_NAMES
     """
     section = {str(key).lower(): value for (key, value) in section.items()}
     def number(key: str, default: float, minimum: float) -> float:
@@ -176,15 +186,18 @@ def layoutChoices(section: dict, bedNames: list[str]) -> dict:
             return default
         return value if value >= minimum and value == value else default
 
-    bed = section.get('bed', DEFAULT_BED)
-    # the shared entry before the Bambu Lab printers were apart (click test 17.11.2026)
-    bed = OLD_BED_NAMES.get(bed, bed)
+    bed = lastPrinter if lastPrinter is not None else section.get('bed', DEFAULT_BED)
+    # the shared entries before the Bambu Lab printers were apart (click test 17.11.2026, round 55)
+    bed = (oldNames or {}).get(bed, bed)
+    bed = bed if bed in bedNames else CUSTOM_BED
+    (width, length) = (presets or {}).get(bed) or (number('bedwidth', DEFAULT_BED_SIZE, 1e-6), number('bedlength', DEFAULT_BED_SIZE, 1e-6))
     return {
-        'bed': bed if bed in bedNames else CUSTOM_BED,
-        'bedWidth': number('bedwidth', DEFAULT_BED_SIZE, 1e-6),
-        'bedLength': number('bedlength', DEFAULT_BED_SIZE, 1e-6),
+        'bed': bed,
+        'bedWidth': float(width),
+        'bedLength': float(length),
         'spacing': number('spacing', DEFAULT_SPACING, 0),
         'purge': number('purge', DEFAULT_PURGE, 0),
+        'files': section.get('files') if section.get('files') in FILES_CHOICES else FILES_ONE,
     }
 
 
@@ -335,3 +348,33 @@ def labelFilamentChoices(section: dict) -> dict[str, int]:
         if 1 <= index <= MAX_FILAMENT:
             mapping[''] = index
     return mapping
+
+
+def filamentColours(filaments: dict[str, int] | None) -> list[str]:
+    """
+    The colors of the Bambu Studio project's filaments, one per filament up to the last a label color has: the parts'
+    filament 1 grey, each label color's its own, text without a color black, those in between grey (round 55). Colors
+    sharing a filament, past the last one, show the first
+    """
+    colours = [PART_COLOUR] * max([1, *(filaments or {}).values()])
+    shown = set()
+    for (color, filament) in (filaments or {}).items():
+        if filament in shown or filament < FIRST_LABEL_FILAMENT:
+            continue
+        shown.add(filament)
+        colours[filament - 1] = color or NO_COLOR_COLOUR
+    return colours
+
+
+def bambuNotice(profiles, plates: int) -> str:
+    """
+    What the export asks before it saves a Bambu Studio project (round 55, decided 23.11.2026): it comes with Bambu
+    Studio's standard profiles of the printer chosen, the user may have to change them. printBeds.BambuProfiles
+    """
+    which = 'its plate' if plates == 1 else f'all {plates} plates'
+    return (
+        f"This file is a Bambu Studio project with {which}. It comes with Bambu Studio's standard profiles: "
+        f"{profiles.printer}, {profiles.process}, Bambu PLA Basic for every filament and the Textured PEI Plate. "
+        "Change them in Bambu Studio to your printer, nozzle, filament and plate where they differ.\n\n"
+        "OK saves the project, Cancel saves nothing."
+    )

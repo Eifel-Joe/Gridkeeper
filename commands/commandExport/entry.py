@@ -15,7 +15,7 @@ from ...lib import fusion360utils as futil
 from ...lib.gridfinityUtils import labelGenerator
 from ...lib.gridfinityUtils import labelColors
 from ... import config
-from ..commandCreateBaseplate import printBeds
+from ...lib import printBeds
 
 # Upstream's export of bins and baseplates (Le0Michine, 4b2f167, round 17.11.2026), for every part our generators make
 # (p300): which tags are parts is exportParts.EXPORT_TAGS, and the colored text and symbol bodies in a part's Text
@@ -49,6 +49,8 @@ BED_WIDTH_INPUT_ID = 'export_bed_width'
 BED_LENGTH_INPUT_ID = 'export_bed_length'
 SPACING_INPUT_ID = 'export_spacing'
 PURGE_INPUT_ID = 'export_purge'
+# round 55 (p680): a Bambu Studio project with all plates or a file per plate, for a Bambu Lab printer
+FILES_INPUT_ID = 'export_files'
 
 FORMAT_3MF = '3MF'
 FORMAT_STL = 'STL'
@@ -301,7 +303,7 @@ def readChoices() -> dict:
         # the filaments of the label colors (round 37), an older export's one label filament for text without a color
         'filaments': exportParts.labelFilamentChoices(dict(section)),
         # the bed, its size, spacing and purge square in mm (r29-export)
-        'layout': exportParts.layoutChoices(dict(section), bedNames()),
+        'layout': exportParts.layoutChoices(dict(section), bedNames(), lastPrinter=printBeds.readLastPrinter(), presets=printBeds.PRINT_BED_PRESETS, oldNames=printBeds.OLD_BED_NAMES),
     }
 
 def bedNames() -> list[str]:
@@ -322,9 +324,13 @@ def saveChoices(folder: str, format: str, paint: bool, filaments: dict[str, int]
         'bedLength': f'{layout["bedLength"]:g}',
         'spacing': f'{layout["spacing"]:g}',
         'purge': f'{layout["purge"]:g}',
+        'files': layout['files'],
     }
     if not configUtils.writeConfig(addinConfig, CONFIG_FOLDER_PATH):
         futil.log(f'{CMD_NAME} choices not saved to {CONFIG_FOLDER_PATH}')
+    # the baseplate dialog starts with it too (round 55)
+    if not printBeds.writeLastPrinter(layout['bed']):
+        futil.log(f'{CMD_NAME} printer not saved to {printBeds.LAST_PRINTER_PATH}')
 
 def command_created(args: adsk.core.CommandCreatedEventArgs):
     global dialogFolder, isFileNameTyped, dialogFilaments, dialogAssigned
@@ -347,7 +353,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     formatInput = inputs.addDropDownCommandInput(FORMAT_INPUT_ID, 'Format', adsk.core.DropDownStyles.TextListDropDownStyle)
     for name in FORMATS:
         formatInput.listItems.add(name, name == choices['format'])
-    formatInput.tooltip = '3MF lays the bodies out in print orientation on the print bed, a file per plate, STL and STEP give each body a file of its own in the folder'
+    formatInput.tooltip = '3MF lays the bodies out in print orientation on the print bed, a file per plate or for a Bambu Lab printer one Bambu Studio project with all plates, STL and STEP give each body a file of its own in the folder'
     folderInput = inputs.addTextBoxCommandInput(FOLDER_INPUT_ID, 'Folder', dialogFolder, 2, True)
     folderInput.tooltip = 'Where the files go, the last folder chosen is kept'
     browseInput = inputs.addBoolValueInput(BROWSE_INPUT_ID, '', False, '', False)
@@ -382,6 +388,10 @@ def addLayoutInputs(inputs: adsk.core.CommandInputs, layout: dict):
     for name in bedNames():
         bedInput.listItems.add(name, name == layout['bed'])
     bedInput.tooltip = "The 3MF lays the parts out on this bed in print orientation, what doesn't fit goes on further plates"
+    filesInput = group.children.addDropDownCommandInput(FILES_INPUT_ID, 'Files', adsk.core.DropDownStyles.TextListDropDownStyle)
+    for name in exportParts.FILES_CHOICES:
+        filesInput.listItems.add(name, name == layout['files'])
+    filesInput.tooltip = "For a Bambu Lab printer: one Bambu Studio project holding every plate with Bambu Studio's standard profiles of the printer, or a 3MF file per plate"
     for (inputId, name, value, tooltip) in (
         (BED_WIDTH_INPUT_ID, 'Bed width, X', layout['bedWidth'], 'The usable width of the bed'),
         (BED_LENGTH_INPUT_ID, 'Bed length, Y', layout['bedLength'], 'The usable depth of the bed'),
@@ -403,6 +413,7 @@ def layoutOf(inputs: adsk.core.CommandInputs) -> dict:
         'bedLength': value(BED_LENGTH_INPUT_ID),
         'spacing': value(SPACING_INPUT_ID),
         'purge': value(PURGE_INPUT_ID),
+        'files': adsk.core.DropDownCommandInput.cast(inputs.itemById(FILES_INPUT_ID)).selectedItem.name,
     }
 
 def bedInputChanged(inputs: adsk.core.CommandInputs, changed: adsk.core.CommandInput):
@@ -499,12 +510,16 @@ def updateInputs(inputs: adsk.core.CommandInputs):
     fileNameInput.isVisible = format == FORMAT_3MF
     inputs.itemById(BED_GROUP_ID).isVisible = format == FORMAT_3MF
     inputs.itemById(PURGE_INPUT_ID).isVisible = format == FORMAT_3MF and paintInput.value
+    bed = adsk.core.DropDownCommandInput.cast(inputs.itemById(BED_INPUT_ID)).selectedItem
+    bedName = bed.name if bed is not None else ''
+    inputs.itemById(FILES_INPUT_ID).isVisible = format == FORMAT_3MF and printBeds.isBambu(bedName)
+    isProject = printBeds.isBambu(bedName) and adsk.core.DropDownCommandInput.cast(inputs.itemById(FILES_INPUT_ID)).selectedItem.name == exportParts.FILES_ONE
     try:
         items = exportItems(inputs)
         updateFilamentInputs(inputs, labelColorsOf(items), format == FORMAT_3MF and paintInput.value)
         if not isFileNameTyped:
             fileNameInput.value = defaultFileName(items)
-        files = 'a 3MF file per plate' if format == FORMAT_3MF else 'a file each'
+        files = ('one Bambu Studio project with all plates' if isProject else 'a 3MF file per plate') if format == FORMAT_3MF else 'a file each'
         summary = f'{len(items)} part{"" if len(items) == 1 else "s"}, {files}' if items else 'Select bodies to export'
     except Exception as err:
         summary = f'Bodies not found, {err}'
@@ -623,8 +638,10 @@ def command_execute(args: adsk.core.CommandEventArgs):
             result = export3mf(items, names, folder, fileName, filaments if paint else None, layout)
             if result is None:
                 return
-            (painted, paths, tooLarge, noPurge, nearExcluded) = result
+            (painted, paths, tooLarge, noPurge, nearExcluded, projectPlates) = result
             where = paths[0] if len(paths) == 1 else f'{len(paths)} files, a file per plate, in {folder}'
+            if projectPlates:
+                where += f', a Bambu Studio project with {projectPlates} plate{"" if projectPlates == 1 else "s"}'
             ui.messageBox(f'Exported {len(items)} part{"" if len(items) == 1 else "s"} to {where}.{plateNote(tooLarge, noPurge, nearExcluded, paint)}{paintNote(paint, painted, filaments)}', CMD_NAME)
         else:
             if not mayReplace([os.path.join(folder, f'{name}.{FORMAT_EXTENSIONS[format]}') for name in names]):
@@ -789,13 +806,15 @@ def toOrigin(box: adsk.core.BoundingBox3D) -> adsk.core.Matrix3D:
     )
     return move
 
-def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: str, filaments: dict[str, int] | None, layout: dict) -> tuple[int, list[str], list[str], list[int], list[int]] | None:
+def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: str, filaments: dict[str, int] | None, layout: dict) -> tuple[int, list[str], list[str], list[int], list[int], int] | None:
     """
     The bodies in print orientation laid out on the bed, a 3MF per plate (round r29-export; 17.11.2026: sorting
     only works properly with one 3MF per plate), the purge tower's square free when
-    the text is painted, a chosen Bambu Lab printer's excluded area free. Returns how many have painted letters, the
-    files, the names of the parts too large for the bed, the plates without a free purge square and the plates near an
-    excluded area; none when the files there may not be replaced
+    the text is painted, a chosen Bambu Lab printer's excluded area free. For a Bambu Lab printer one Bambu Studio
+    project with all plates when chosen (round 55, p680): Bambu Studio keeps the plates only of a project, asked first
+    as it comes with Bambu Studio's standard profiles. Returns how many have painted letters, the files, the names of
+    the parts too large for the bed, the plates without a free purge square, the plates near an excluded area and the
+    project's plates, 0 for files per plate; none when the files there may not be replaced or the project not saved
     """
     objects = []
     keys = []
@@ -825,7 +844,8 @@ def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: 
     (laid, plates, tooLarge, noPurge, nearExcluded) = printLayout.layOutKinds(
         [[objects[index] for index in group] for group in groups], [kinds[group[0]] for group in groups], bed,
         layout['spacing'], purge, printBeds.purgeAnchor(layout['bed']), printBeds.excludedAreas(layout['bed']))
-    titles = [printLayout.plateFileName(fileName, plate, plates) for plate in range(plates)]
+    isProject = printBeds.isBambu(layout['bed']) and layout['files'] == exportParts.FILES_ONE
+    titles = [fileName] if isProject else [printLayout.plateFileName(fileName, plate, plates) for plate in range(plates)]
     paths = [os.path.join(folder, f'{title}.3mf') for title in titles]
     # the plate files of an earlier export of the name the new one doesn't write, they'd be printed with the new ones
     written = {os.path.normcase(path) for path in paths}
@@ -833,16 +853,24 @@ def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: 
              if printLayout.isPlateFileOf(name, fileName) and os.path.normcase(os.path.join(folder, name)) not in written]
     if not mayReplace(paths, stale):
         return None
-    for (plate, (title, path)) in enumerate(zip(titles, paths)):
-        onPlate = [meshObject for (index, meshObject) in laid if index == plate]
-        threeMf.write(path, onPlate, title, tagUtils.getGeneratorVersion(), isLaidOut=True)
+    if isProject:
+        profiles = printBeds.bambuProfiles(layout['bed'])
+        answer = ui.messageBox(exportParts.bambuNotice(profiles, plates), CMD_NAME, adsk.core.MessageBoxButtonTypes.OKCancelButtonType, adsk.core.MessageBoxIconTypes.InformationIconType)
+        if answer != adsk.core.DialogResults.DialogOK:
+            return None
+        threeMf.writeBambuProject(paths[0], [meshObject for (_, meshObject) in laid], [plate for (plate, _) in laid], bed, profiles,
+                                  exportParts.filamentColours(filaments), fileName, tagUtils.getGeneratorVersion())
+    else:
+        for (plate, (title, path)) in enumerate(zip(titles, paths)):
+            onPlate = [meshObject for (index, meshObject) in laid if index == plate]
+            threeMf.write(path, onPlate, title, tagUtils.getGeneratorVersion(), isLaidOut=True)
     for path in stale:
         # one held open by a slicer stays, the export itself is done (review r29-export)
         try:
             os.remove(path)
         except OSError as err:
             futil.log(f'{CMD_NAME} older plate file {path} not removed, {err}')
-    return (paintedCount, paths, [names[groups[index][0]] for index in tooLarge], noPurge, nearExcluded)
+    return (paintedCount, paths, [names[groups[index][0]] for index in tooLarge], noPurge, nearExcluded, plates if isProject else 0)
 
 def printRotationOf(item: ExportItem) -> str:
     """How the part turns into its print orientation, by its role in a box set or its label surface, see printLayout"""
