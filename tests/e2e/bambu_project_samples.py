@@ -12,6 +12,7 @@ writes
   two plates, with purging volumes for both nozzles
 - r57-p1s-4colours.3mf, r57-a1mini-4colours.3mf, r57-h3c-4colours.3mf (round 57): the bins (on the A1 mini smaller ones)
   and labels of the P1S sample for printers with one extruder, grey, red, blue and black, with purging volumes, one block
+- r57-h2c-4colours.3mf (round 57): the same for the H2C, its purging volumes less its long retraction when cut
 """
 
 import importlib.util
@@ -77,7 +78,8 @@ def writeSamples(folder):
     small = [box(f"Bin 2x1 #{index + 1}", 83.5, 41.5, 21) for index in range(4)]
     for (name, label, parts) in (("r57-p1s-4colours.3mf", "Bambu Lab P1S (256 x 256 mm)", bins),
                                  ("r57-a1mini-4colours.3mf", "Bambu Lab A1 mini (180 x 180 mm)", small),
-                                 ("r57-h3c-4colours.3mf", "Bambu Lab H3C (330 x 320 mm)", bins)):
+                                 ("r57-h3c-4colours.3mf", "Bambu Lab H3C (330 x 320 mm)", bins),
+                                 ("r57-h2c-4colours.3mf", "Bambu Lab H2C (330 x 320 mm)", bins)):
         results[name] = project(os.path.join(folder, name), label, parts + labels, filaments, ["bins"] * len(parts) + ["labels"] * len(labels))
     return results
 
