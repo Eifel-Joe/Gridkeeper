@@ -43,7 +43,9 @@ Standard, wie `default_nozzle_volume_type`.
 ## Lösung (vom User freigegeben)
 1. Gridkeeper schreibt die Spülmengen selbst in `Metadata/project_settings.config`, als Texte wie Bambu:
    - `flush_volumes_matrix`: je Extruder ein Block von n² Werten (n = Filamente), zeilenweise `von*n+nach`,
-     Diagonale 0, Wert = `calc_flush_vol_rgb(von, nach)` + `int(nozzle_volume)` des Extruders, höchstens 900.
+     Diagonale 0, Wert = `calc_flush_vol_rgb(von, nach)`, bei Datensatz ≠ 0 (`nozzle_flush_dataset` des Extruders)
+     mal 1,3, wenn das Ziel schwarz ist (Bambus Helligkeitsprüfung, siehe Nachtrag), dann + `int(nozzle_volume)` des
+     Extruders, höchstens 900.
    - `flush_volumes_vector`: 2n × 140 (Bambus Vorgabe).
    - `flush_multiplier`: je Extruder 1, `flush_multiplier_fast`: je Extruder 1.2.
    - `filament_map`: n × 1 (wie Bambus Beispielprojekt), `filament_map_mode`: „Auto For Flush“.
@@ -54,9 +56,9 @@ Standard, wie `default_nozzle_volume_type`.
 4. Düsenzahl aus den Profildaten: `BambuProfiles` bekommt `nozzleVolumes` (je Extruder, Länge = Einträge von
    `nozzle_diameter`), `hotends` (Summe `extruder_max_nozzle_count`) und `hotendAsExtruder`. Die Fixture
    `tests/fixtures/bambu_system_profiles.json` bekommt diese Felder für alle Bambu-Drucker; ein Test vergleicht.
-5. Spülmengen schreibt der Export für Drucker mit mehr als einem Extruder. H3C: offene Frage (unten).
+5. Spülmengen schreibt der Export für Drucker mit mehr als einem Extruder. Der H3C bleibt wie 1.3.0 (Nachtrag).
 
-## Offene Frage H3C (klärt der Bambu-Test)
+## Frage H3C (vor dem Bambu-Test; entschieden, siehe Nachtrag)
 Der H3C hat einen Extruder mit 9 Hotends und `handle_hotend_as_extruder`. Für Bambus Matrix zählt nur
 `nozzle_diameter` (1 Eintrag), also ein Block. In 1.3.0 bekommt er das Projekt ohne Spülmengen (ungeprüft).
 - Öffnet `r56-h3c-4colours-wie-1.3.0.3mf` ohne Warnung und mit plausiblen Spülmengen (Bambus 280er-Vorgabe): H3C
@@ -75,3 +77,25 @@ Der H3C hat einen Extruder mit 9 Hotends und `handle_hotend_as_extruder`. Für B
    außerhalb der Diagonale), Filamente Bambu PLA Basic ohne Projektkopie, Slicen einer Platte ohne Fehler.
 2. H3C-Dateien wie oben, Ergebnis entscheidet die offene Frage.
 3. Nach der Umsetzung: E2E-Skript `tests/e2e/bambu_project_samples.py` schreibt H2D-Projekt mit Spülmengen; pytest grün.
+
+## Nachtrag Bambu-Test 23.11.2026 (Bambu Studio 02.09.01.70, Probedateien aus `_scratch/r56`)
+- H2D, 2 Farben: öffnet ohne Warnung, 2 Platten, Spülmengen je Düse wie in der Datei, „Re-calculate“ ergibt dieselben
+  Werte. Beide Platten slicen ohne Fehler; Bambu legt Rot und Grau auf verschiedene Düsen.
+- H2D, 4 Farben: öffnet ohne Warnung. Bambus „Re-calculate“ weicht bei sieben Paaren ab. Ursache (Quelltext):
+  - Bambu sucht zuerst in einer Farbtabelle je Düsentyp (`FlushVolPredictor`, `resources/flush/flush_data_*.txt`,
+    19 Bambu-Filamentfarben, je Paar ein Wert). Ähneln beide Farben einer Tabellenfarbe (CIEDE2000 ≤ 5), gilt der
+    Tabellenwert ohne `nozzle_volume`. Rot, Blau und Schwarz des Exports treffen sie, Grau nicht.
+  - Sonst die Formel; bei Datensatz ≠ 0 mal 1,3, wenn die Quellfarbe „dunkel“ und die Zielfarbe „hell“ heißt. Bambu
+    prüft dabei die Helligkeit der 0–255-Werte gegen 180/255 und 75/255: praktisch jede nicht schwarze Quelle und
+    nur (fast) schwarze Ziele. Grau→Schwarz: (60 · 1,3) + 130 = 208 statt 190.
+  - Gemessene Werte je Filamentpaar (`flush_data_material_pair.json`) gibt es nur für Materialwechsel, nicht für
+    PLA Basic zu PLA Basic.
+- H3C wie 1.3.0: öffnet ohne Warnung, eine Tabelle mit Bambus Vorgabe 280. H3C mit Spülmengen: öffnet ohne Warnung.
+
+### Entscheidung (User, über die Hauptsitzung, 23.11.2026)
+- Möglichkeit A: Farbformel wie Bambu einschließlich der 1,3-Regel, keine Bambu-Tabellen im Code (Daten aus einem
+  AGPL-Projekt, von Bambu jederzeit änderbar). Paare zweier Bambu-Standardfarben weichen darum von Bambus
+  „Re-calculate“ ab. Das Hinweisfenster sagt, dass Bambu mit „Re-calculate“ im Spülmengen-Dialog genauer rechnet.
+- Verworfen: Bambus Tabellen nachbauen (B), je Paar mindestens 280 (C, spült mehr, ohne Schwarz→Rot abzudecken).
+- H3C bleibt wie 1.3.0: Projekt ohne Spülmengen.
+- Farbabhängige Spülmengen für Drucker mit einer Düse: eigener Punkt p710, nicht in dieser Runde.
