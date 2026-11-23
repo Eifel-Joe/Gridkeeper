@@ -39,7 +39,7 @@ Spec: `dev-notes/specs/2026-11-23-r56-multi-nozzle-flush.md`. Tests: `python -m 
   Spülmengen darin.
 
 ## Task 8: Version und Doku
-- Manifest 1.4.0, `CHANGELOG.md` (Credits wie Steckbrief, Bambu Studio AGPL als Quelle der Formel),
+- Manifest 1.3.1, `CHANGELOG.md` (Credits wie Steckbrief, Bambu Studio AGPL als Quelle der Formel),
   `docs/working/export.md`, `docs/getting-started/whats-new.md`; Spec-Nachtrag mit Testergebnis.
 
 ## Task 9: Review (Opus), Funde, PR-Text an Hauptsitzung, push, PR, CI.

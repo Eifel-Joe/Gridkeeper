@@ -5,7 +5,7 @@ GridfinityGenerator by Le0Michine, merged up to ee027a9 (v2.5.0.0, 17.11.2026; r
 Until 1.2.0 this file was named `CHANGELOG-CULLENECT.md`.
 Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`, the `vX.Y.Z.W` tags belong to GridfinityGenerator.
 
-## 1.4.0 (2026-11-23)
+## 1.3.1 (2026-11-23)
 
 ### Bambu Studio project for printers with two nozzles (round 56)
 

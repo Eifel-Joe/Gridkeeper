@@ -1,6 +1,6 @@
 # Runde 56 (p690): Bambu-Projekt auch für Drucker mit zwei Düsen
 
-Version 1.4.0. Baut auf Runde 55 auf (`2026-11-23-r55-bambu-project-3mf.md`).
+Version 1.3.1. Baut auf Runde 55 auf (`2026-11-23-r55-bambu-project-3mf.md`).
 
 ## Problem
 Seit 1.3.0 schreibt der 3MF-Export für Bambu-Drucker ein Bambu-Studio-Projekt mit allen Platten. Beim H2D meldet

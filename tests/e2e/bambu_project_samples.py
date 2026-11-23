@@ -52,7 +52,7 @@ def project(path, label, parts, filaments, kinds=None):
         printBeds.purgeAnchor(label), printBeds.excludedAreas(label))
     threeMf.writeBambuProject(path, [meshObject for (_, meshObject) in laid], [plate for (plate, _) in laid], bed,
                               printBeds.bambuProfiles(label), exportParts.filamentColours(filaments),
-                              os.path.splitext(os.path.basename(path))[0], "1.4.0")
+                              os.path.splitext(os.path.basename(path))[0], "1.3.1")
     return (plates, tooLarge, noPurge, nearExcluded)
 
 

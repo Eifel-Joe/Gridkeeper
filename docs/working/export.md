@@ -141,7 +141,7 @@ first. For OrcaSlicer, PrusaSlicer and the other printers choose a file per plat
 
 ### Printers with two nozzles
 
-For the Bambu Lab printers with two nozzles, the **H2C, H2D, H2D Pro and X2D** (since 1.4.0), the project brings the
+For the Bambu Lab printers with two nozzles, the **H2C, H2D, H2D Pro and X2D** (since 1.3.1), the project brings the
 **purging volumes** for both nozzles: how much filament each change from one color to another flushes. Without them
 Bambu Studio sets some to 0 and warns *Partial purging volume set to 0*, and it doesn't work them out itself when it
 opens a project. The export works them out with Bambu Studio's color formula and adds the volume of each nozzle, as
