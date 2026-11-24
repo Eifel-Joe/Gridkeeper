@@ -236,3 +236,11 @@ def test_other_printers_have_no_bambu_profiles():
 
 def test_the_profile_table_covers_every_bambu_printer():
     assert set(printBeds.BAMBU_PROFILES) == set(BAMBU)
+
+
+def test_a_printer_is_found_by_its_name_or_its_label():
+    label = printBeds.presetLabel('Bambu Lab A1 mini')
+    assert printBeds.presetLabelOf('Bambu Lab A1 mini') == label
+    assert printBeds.presetLabelOf(label) == label
+    assert printBeds.presetLabelOf(printBeds.PRINT_BED_CUSTOM) is None
+    assert printBeds.presetLabelOf('Bambu Lab A1, P1, X1 (256 x 256 mm)') is None

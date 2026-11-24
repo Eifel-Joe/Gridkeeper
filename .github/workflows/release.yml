@@ -18,7 +18,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p Gridkeeper/documentation dist
-          cp -r Gridkeeper.manifest Gridkeeper.py config.py LICENSE.md lib commands Gridkeeper/
+          cp -r Gridkeeper.manifest Gridkeeper.py api.py config.py LICENSE.md lib commands Gridkeeper/
           cp documentation/PRIVACY_POLICY.md Gridkeeper/documentation/
           # gridkeeper-v1.0.0 -> Gridkeeper-v1.0.0.zip
           zip="dist/Gridkeeper-${GITHUB_REF_NAME#gridkeeper-}.zip"

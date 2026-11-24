@@ -238,7 +238,7 @@ def log(message: str):
 def buildCase(case: testCases.TestCase) -> tuple[adsk.core.Document, list[adsk.fusion.BRepBody], list[str]]:
     """
     The case built in a new document, so nothing else in a design moves it or lends it parameters, its parameters set
-    after, with its unhealthy timeline features
+    after, with what Fusion found wrong in building it (its sketches are checked by runCase, see sketchConstraintNotes)
     """
     (document, design) = newCaseDocument(case.name, f'{DOCUMENT_PREFIX} {case.name}', case.designIntent)
     try:
@@ -282,7 +282,7 @@ def activeComponentNotes(design: adsk.fusion.Design) -> list[str]:
 def buildWithParameters(case: testCases.TestCase) -> tuple[list[adsk.fusion.BRepBody], list[str]]:
     """
     Shapes in memory of the case built with its parameters from the start, what setting them has to come to, with the
-    unhealthy timeline features of their document, closed after
+    unhealthy timeline features and sketch notes of their document, closed after
     """
     (document, design) = newCaseDocument(case.name, f'{DOCUMENT_PREFIX} {case.name} with parameters', case.designIntent)
     try:
@@ -300,13 +300,29 @@ DESIGN_INTENT_TYPES = {
     testCases.DESIGN_INTENT_PART: adsk.fusion.DesignIntentTypes.PartDesignIntentType,
 }
 
-def newCaseDocument(caseName: str, title: str, designIntent: str) -> tuple[adsk.core.Document, adsk.fusion.Design]:
+def buildInInches(case: testCases.TestCase, folder: str) -> tuple[list[snapshots.BodyResult], dict[str, dict], list[str]]:
+    """
+    The case built in a document in inches, its parameters set after, against its snapshot, with the fingerprints of
+    its bodies by name and what Fusion found wrong in building it, closed after. Compared while the document is open,
+    copies of the bodies lose their names. Its sketches are constrained the same as in mm, they aren't looked at again
+    """
+    (document, design) = newCaseDocument(case.name, f'{DOCUMENT_PREFIX} {case.name} in inches', case.designIntent, adsk.fusion.DistanceUnits.InchDistanceUnits)
+    try:
+        (_, bodies, notes) = _buildCaseIn(document, design, case)
+        fingerprints = {body.name: snapshots.fingerprint(body) for body in bodies}
+        return (compareWithSnapshot(case, folder, bodies), fingerprints, notes)
+    finally:
+        document.close(False)
+
+def newCaseDocument(caseName: str, title: str, designIntent: str, units: int = adsk.fusion.DistanceUnits.MillimeterDistanceUnits) -> tuple[adsk.core.Document, adsk.fusion.Design]:
     global building
     document = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
     building = (caseName, document)
     nameDocument(document, title)
     design = adsk.fusion.Design.cast(document.products.itemByProductType('DesignProductType'))
     design.designType = adsk.fusion.DesignTypes.ParametricDesignType
+    # a new document takes the length units of the preferences, they are set so a run doesn't depend on them
+    design.fusionUnitsManager.distanceDisplayUnits = units
     # a new document takes the design intent of the preferences, only hybrid has room for a body and components side
     # by side. A part design case builds into the root as for a user whose documents are parts
     intentType = DESIGN_INTENT_TYPES[designIntent]
@@ -442,17 +458,17 @@ UPDATE_STATUSES = {
 
 def bodyReports(results: list[snapshots.BodyResult], statuses: dict[str, str] = None) -> list[dict]:
     """statuses: the report's status of each test result, see UPDATE_STATUSES"""
-    return [
-        report.body(
+    def bodyReport(result: snapshots.BodyResult) -> dict:
+        return report.body(
             result.name,
             (statuses or {}).get(result.status, result.status),
             result.changes,
             snapshots.leftoverData(result.missing),
             snapshots.leftoverData(result.extra),
             result.notes,
+            bodyReport(result.inches) if result.inches is not None else None,
         )
-        for result in results
-    ]
+    return [bodyReport(result) for result in results]
 
 def openTests() -> tuple:
     """
@@ -650,11 +666,12 @@ def runCase(case: testCases.TestCase, keepOpen: bool) -> dict:
     document = None
     bodies = None
     notes = []
+    unhealthy = []
+    folder = os.path.join(SNAPSHOTS_FOLDER, case.name)
     try:
         (document, bodies, unhealthy) = buildCase(case)
-        results = compareWithSnapshot(case, os.path.join(SNAPSHOTS_FOLDER, case.name), bodies)
-        # the shape may match all the same, the case fails for what Fusion found wrong in building it
-        notes += unhealthy
+        results = compareWithSnapshot(case, folder, bodies)
+        # the shape may match all the same, the case fails for what Fusion found wrong in building it, see unitsNotes
     except Exception as err:
         results = [snapshots.BodyResult('', snapshots.STATUS_FAIL, [f'build failed, {buildFailure(case, err)}'])]
     if document is not None and bodies is not None:
@@ -671,14 +688,23 @@ def runCase(case: testCases.TestCase, keepOpen: bool) -> dict:
         ])
     if document is not None and case.parameters:
         try:
-            (references, unhealthy) = buildWithParameters(case)
-            notes += [f'{PARAMETERS_LABEL}, {note}' for note in unhealthy]
+            (references, problems) = buildWithParameters(case)
+            notes += [f'{PARAMETERS_LABEL}, {note}' for note in problems]
         except Exception as err:
             references = None
             results.append(snapshots.BodyResult(PARAMETERS_LABEL, snapshots.STATUS_FAIL, [f'build failed, {buildFailure(case, err)}']))
         if references is not None:
             results += snapshots.compareBodies(bodies, references, PARAMETERS_LABEL)
         document.activate()
+    inchesUnhealthy = None
+    if document is not None:
+        try:
+            (inchesResults, inchesFingerprints, inchesUnhealthy) = buildInInches(case, folder)
+            results = snapshots.withInches(results, inchesResults, bodies, inchesFingerprints)
+        except Exception as err:
+            results.append(snapshots.BodyResult('', snapshots.STATUS_FAIL, [f'{snapshots.INCHES_PREFIX}build failed, {buildFailure(case, err)}']))
+        document.activate()
+    notes = snapshots.unitsNotes(unhealthy, inchesUnhealthy) + notes
     status = snapshots.worstStatus([result.status for result in results] + ([snapshots.STATUS_FAIL] if notes else []))
     view = None
     if document is not None:

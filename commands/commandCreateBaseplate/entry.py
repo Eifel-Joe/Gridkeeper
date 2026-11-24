@@ -918,11 +918,13 @@ def generateBaseplate(args: adsk.core.CommandEventArgs, isPreview: bool = False)
     try:
         inputsState = getInputsState()
         des = adsk.fusion.Design.cast(app.activeProduct)
-        if rebuildBodyToken is not None:
-            body = rebuildUtils.findBodyByToken(des, rebuildBodyToken)
-            (builtBodies, rebuildNotes) = rebuildBaseplate(des, body, inputsState, settings, isPreview)
-        else:
-            builtBodies = buildBaseplate(des, inputsState, settings, isPreview)
+        # the new baseplate's component is active while it's built, the one active before is again afterwards
+        with commonUtils.keepActiveComponent(des):
+            if rebuildBodyToken is not None:
+                body = rebuildUtils.findBodyByToken(des, rebuildBodyToken)
+                (builtBodies, rebuildNotes) = rebuildBaseplate(des, body, inputsState, settings, isPreview)
+            else:
+                builtBodies = buildBaseplate(des, inputsState, settings, isPreview)
         futil.log(f'{CMD_NAME} {baseplateName(inputsState)} generated in {time.perf_counter() - startTime:.3f}s')
     except UnsupportedDesignTypeException as err:
         args.executeFailed = True
@@ -1073,12 +1075,12 @@ def configChoices() -> dict[str, configJson.Choice]:
         'alignmentY': configJson.Choice(list(FILL_ALIGN_Y_OPTIONS.keys()), DEFAULT_STATE.alignmentY),
     }
 
-def readConfig(text: str, source: str) -> InputState | None:
+def readConfig(text: str, source: str, isFromTag: bool = False) -> InputState | None:
     """The state of a config, none when it can't be read, see configButtons.readConfig"""
-    return configButtons.readConfig(text, source, configJson.GENERATOR_BASEPLATE, InputState, getInputsState(), configChoices())
+    return configButtons.readConfig(text, source, configJson.GENERATOR_BASEPLATE, InputState, getInputsState(), configChoices(), isFromTag)
 
 def startWithConfig(settings: dict):
-    """Opens the dialog with a config by field name, see configJson.stateToJson, settings it doesn't have stay"""
+    """Opens the dialog with the config of a body's tag by field name, see configJson.stateToJson and readConfig"""
     global pendingConfig
     pendingConfig = settings
     ui.commandDefinitions.itemById(CMD_ID).execute()
@@ -1129,7 +1131,7 @@ def applyPendingConfig():
     global pendingConfig
     if pendingConfig is None:
         return
-    inputsState = readConfig(configJson.configText(configJson.GENERATOR_BASEPLATE, pendingConfig), 'Rebuilding' if rebuildBodyToken is not None else 'Cloned')
+    inputsState = readConfig(configJson.configText(configJson.GENERATOR_BASEPLATE, pendingConfig), 'Rebuilding' if rebuildBodyToken is not None else 'Cloned', isFromTag=True)
     pendingConfig = None
     if inputsState is not None:
         applyInputsState(inputsState)

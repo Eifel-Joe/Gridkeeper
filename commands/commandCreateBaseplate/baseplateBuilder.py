@@ -289,7 +289,7 @@ def _buildBaseplate(
         )
     # mark generated geometry so it can be told apart from the rest of the design
     for baseplateBody in baseplateBodies:
-        tagUtils.tagBody(baseplateBody, tagUtils.TAG_BASEPLATE, settings, baseplateParameters, configJson.stateToJson(configJson.GENERATOR_BASEPLATE, inputsState), plateParameterPrefix)
+        tagUtils.tagBody(baseplateBody, tagUtils.TAG_BASEPLATE, settings, baseplateParameters, configJson.stateToJson(configJson.GENERATOR_BASEPLATE, inputsState), plateParameterPrefix, plateName, baseplateBody.name)
 
     if des.designType == adsk.fusion.DesignTypes.ParametricDesignType:
         # group features in timeline
@@ -325,6 +325,7 @@ def rebuildBaseplate(
         # bins jointed into its cells by the bin command (round 31, p312) or by the user stay in them: the joints get
         # the socket joint origin of the same name of the new baseplate. Baseplates have no Cullenect pockets
         jointsByName=True,
+        namePrefix=BASEPLATE_LEGACY_NAME_PREFIX,
     )
 
 def configWithParameters(config: dict, parameters: list, findParameter) -> dict:

@@ -3,7 +3,7 @@ import math
 import adsk.core, adsk.fusion
 
 from . import const, commonUtils, combineUtils, appearanceUtils, textStyles, binLabelLayout, sketchUtils, svgSymbol
-from .dim import Dim, valueInput, applyTo, isZero
+from .dim import Dim, valueInput, lengthInput, lengthExpression, applyTo, isZero
 
 LABEL_STYLE_OUTLINE = 'Outline'
 LABEL_STYLE_ENGRAVED = 'Engraved'

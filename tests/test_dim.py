@@ -159,3 +159,19 @@ def test_is_zero_holds_for_numbers_and_dims_that_stay_zero():
     width = Dim.parameter(_FakeParameter("gfBin1_baseWidth", 0))
     assert not dim.isZero(width * 1)
     assert dim.isZero(width - width)
+
+
+def test_length_input_is_in_mm_whatever_the_kind():
+    assert dim.lengthInput(0.255).string == "2.55 mm"
+    assert dim.lengthInput(Dim.length(0.4)).string == "4 mm"
+    assert dim.lengthInput(Dim.length(0.4).asExpression()).string == "4 mm"
+    assert dim.lengthInput(Dim(0.24, "gfHeightUnit / 3", dim.DimKind.EXPRESSION)).string == "gfHeightUnit / 3"
+    # a computed length keeps more digits than a mm literal of Dim.length
+    assert dim.lengthInput(0.4 * 2 ** 0.5).string == "5.656854249 mm"
+
+
+def test_length_expression_is_a_formula_or_mm():
+    assert dim.lengthExpression(-0.05) == "-0.5 mm"
+    assert dim.lengthExpression(0) == "0 mm"
+    assert dim.lengthExpression(Dim.length(0.19)) == "1.9 mm"
+    assert dim.lengthExpression(Dim(0.24, "gfHeightUnit / 3", dim.DimKind.EXPRESSION)) == "gfHeightUnit / 3"

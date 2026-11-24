@@ -106,6 +106,11 @@ def socketSummary(
     }
     return [describeSocket(item, baseWidth, socketOffset) for item in sorted(units, key=lambda item: -1 if item is None else item)]
 
+def dimensionsTableRows(isInInches: bool, hasSockets: bool) -> int:
+    """Rows of the bin dialog's actual dimensions: the sizes in mm, in a document in inches a row in inches below, then
+    the sockets across a row of their own"""
+    return 1 + (1 if isInInches else 0) + (1 if hasSockets else 0)
+
 def socketCounts(
     compartmentWidths: list[float],
     tabStart: float,

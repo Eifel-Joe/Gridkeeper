@@ -60,6 +60,12 @@ def currentLabel(label: str) -> str:
     """The label as the list has it now, see OLD_BED_NAMES"""
     return OLD_BED_NAMES.get(label, label)
 
+def presetLabelOf(printer: str) -> str | None:
+    """The dropdown's label of a printer by its label or its name, none for custom or one not listed"""
+    if printer in PRINT_BED_PRESETS:
+        return printer
+    return presetLabel(printer) if printer in PRINT_BED_SIZES else None
+
 def presetBedSize(label: str) -> tuple[float, float] | None:
     """Bed size in Fusion internal units, cm"""
     if label not in PRINT_BED_PRESETS:

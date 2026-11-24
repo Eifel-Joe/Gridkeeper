@@ -147,6 +147,9 @@ BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH = "total_real_width"
 BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH = "total_real_length"
 BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT = "total_real_height"
 BIN_REAL_DIMENSIONS_TABLE_CULLENECT = "cullenect_sockets"
+BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH_INCHES = "total_real_width_inches"
+BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH_INCHES = "total_real_length_inches"
+BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT_INCHES = "total_real_height_inches"
 BIN_WALL_THICKNESS_INPUT_ID = 'bin_wall_thickness'
 BIN_SHELL_ROUNDED_INPUT_ID = 'bin_shell_rounded'
 BIN_GENERATE_BASE_INPUT_ID = 'bin_generate_base'
@@ -478,33 +481,37 @@ def stop():
 
 def render_actual_bin_dimensions_table(inputs: adsk.core.CommandInputs):
     global actualDimensionsTableUiState
-    actualDimensionsTable = inputs.addTableCommandInput(BIN_REAL_DIMENSIONS_TABLE, "Actual dimensions (mm)", 3, "1:1:1")
-    totalWidth = actualDimensionsTable.commandInputs.addStringValueInput(BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH, "", "Width")
-    totalWidth.isReadOnly = True
-    actualDimensionsTableUiState.registerCommandInput(totalWidth)
-    actualDimensionsTableUiState.initValue(totalWidth.id, "", totalWidth.objectType)
-    totalLength = actualDimensionsTable.commandInputs.addStringValueInput(BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH, "", "Length")
-    totalLength.isReadOnly = True
-    actualDimensionsTableUiState.registerCommandInput(totalLength)
-    actualDimensionsTableUiState.initValue(totalLength.id, "", totalLength.objectType)
-    totalHeight = actualDimensionsTable.commandInputs.addStringValueInput(BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT, "", "Height")
-    totalHeight.isReadOnly = True
-    actualDimensionsTableUiState.registerCommandInput(totalHeight)
-    actualDimensionsTableUiState.initValue(totalHeight.id, "", totalHeight.objectType)
-    actualDimensionsTable.addCommandInput(totalWidth, 0, 0)
-    actualDimensionsTable.addCommandInput(totalLength, 0, 1)
-    actualDimensionsTable.addCommandInput(totalHeight, 0, 2)
+    actualDimensionsTable = inputs.addTableCommandInput(BIN_REAL_DIMENSIONS_TABLE, "Actual dimensions", 3, "1:1:1")
+    rows = [[
+        (BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH, "Width"),
+        (BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH, "Length"),
+        (BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT, "Height"),
+    ]]
+    # a document in inches shows them in inches too, on a line of their own
+    if isDocumentInInches():
+        rows.append([
+            (BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH_INCHES, "Width in inches"),
+            (BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH_INCHES, "Length in inches"),
+            (BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT_INCHES, "Height in inches"),
+        ])
+    for (row, cells) in enumerate(rows):
+        for (column, (inputId, name)) in enumerate(cells):
+            cell = actualDimensionsTable.commandInputs.addStringValueInput(inputId, "", name)
+            cell.isReadOnly = True
+            actualDimensionsTableUiState.registerCommandInput(cell)
+            actualDimensionsTableUiState.initValue(cell.id, "", cell.objectType)
+            actualDimensionsTable.addCommandInput(cell, row, column)
     cullenectSockets = actualDimensionsTable.commandInputs.addStringValueInput(BIN_REAL_DIMENSIONS_TABLE_CULLENECT, "", "")
     cullenectSockets.isReadOnly = True
     actualDimensionsTableUiState.registerCommandInput(cullenectSockets)
     actualDimensionsTableUiState.initValue(cullenectSockets.id, "", cullenectSockets.objectType)
-    # the Cullenect sockets of the bin across the whole row, see updateCullenectSockets
-    actualDimensionsTable.addCommandInput(cullenectSockets, 1, 0, 0, 2)
+    # the Cullenect sockets of the bin across the whole row below the sizes, see updateCullenectSockets
+    actualDimensionsTable.addCommandInput(cullenectSockets, len(rows), 0, 0, 2)
     actualDimensionsTable.tooltip = 'Actual bin dimensions'
     actualDimensionsTable.tablePresentationStyle = adsk.core.TablePresentationStyles.transparentBackgroundTablePresentationStyle
     actualDimensionsTable.hasGrid = False
-    actualDimensionsTable.minimumVisibleRows = 1
-    actualDimensionsTable.maximumVisibleRows = 1
+    actualDimensionsTable.minimumVisibleRows = len(rows)
+    actualDimensionsTable.maximumVisibleRows = cullenect.dimensionsTableRows(isDocumentInInches(), False)
     return actualDimensionsTable
 
 def compartmentCellSize() -> tuple[float, float, float]:
@@ -523,6 +530,13 @@ def millimeters(value: float) -> str:
     """A length in cm as mm, to the micron an untrimmed lip needs, without trailing zeros"""
     return f'{value * 10:.3f}'.rstrip('0').rstrip('.')
 
+def isDocumentInInches() -> bool:
+    return app.activeProduct.unitsManager.defaultLengthUnits == 'in'
+
+def inches(value: float) -> str:
+    """A length in cm in inches, as Fusion shows them"""
+    return app.activeProduct.unitsManager.formatInternalValue(value, 'in', True)
+
 def update_actual_bin_dimensions():
     global actualDimensionsTableUiState
     try:
@@ -531,15 +545,16 @@ def update_actual_bin_dimensions():
         actualLength = commandUIState.getState(BIN_BASE_LENGTH_UNIT_INPUT_ID) * commandUIState.getState(BIN_LENGTH_INPUT_ID) - clearance * 2
         lip = lipHeight(commandUIState.getState(BIN_LIP_TOP_TRIMMED_INPUT_ID), clearance) if commandUIState.getState(BIN_WITH_LIP_INPUT_ID) else 0
         actualHeight = commandUIState.getState(BIN_HEIGHT_UNIT_INPUT_ID) * commandUIState.getState(BIN_HEIGHT_INPUT_ID) + lip
-        totalWidthValue = millimeters(actualWidth)
-        totalLengthValue = millimeters(actualLength)
-        totalHeightValue = millimeters(actualHeight)
-        actualDimensionsTableUiState.updateValue(BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH, f'Width: {totalWidthValue}mm')
-        actualDimensionsTableUiState.getInput(BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH).tooltip = f'Total bin width: {totalWidthValue}mm'
-        actualDimensionsTableUiState.updateValue(BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH, f'Length: {totalLengthValue}mm')
-        actualDimensionsTableUiState.getInput(BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH).tooltip = f'Total bin length: {totalLengthValue}mm'
-        actualDimensionsTableUiState.updateValue(BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT, f'Height: {totalHeightValue}mm')
-        actualDimensionsTableUiState.getInput(BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT).tooltip = f'Total bin height: {totalHeightValue}mm'
+        for (inputId, inchesId, name, value) in [
+            (BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH, BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH_INCHES, 'width', actualWidth),
+            (BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH, BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH_INCHES, 'length', actualLength),
+            (BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT, BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT_INCHES, 'height', actualHeight),
+        ]:
+            actualDimensionsTableUiState.updateValue(inputId, f'{name.capitalize()}: {millimeters(value)}mm')
+            actualDimensionsTableUiState.getInput(inputId).tooltip = f'Total bin {name}: {millimeters(value)}mm'
+            if isDocumentInInches():
+                actualDimensionsTableUiState.updateValue(inchesId, inches(value))
+                actualDimensionsTableUiState.getInput(inchesId).tooltip = f'Total bin {name}: {inches(value)}'
     except:
         showErrorInMessageBox()
 
@@ -600,7 +615,7 @@ def hasCullenectSockets() -> bool:
     )
 
 def updateCullenectSockets():
-    """Second row of the dimensions table, which inserts fit the sockets"""
+    """Last row of the dimensions table, which inserts fit the sockets"""
     try:
         problem = cullenect.wallProblem(commandUIState.getState(BIN_WALL_THICKNESS_INPUT_ID)) if hasCullenectSockets() else None
         # the reason OK is locked, in place of the sockets (p35)
@@ -611,7 +626,7 @@ def updateCullenectSockets():
         socketsInput.isVisible = len(text) > 0
         table = socketsInput.parentCommandInput
         if isinstance(table, adsk.core.TableCommandInput):
-            table.maximumVisibleRows = 2 if len(text) > 0 else 1
+            table.maximumVisibleRows = cullenect.dimensionsTableRows(isDocumentInInches(), len(text) > 0)
     except:
         showErrorInMessageBox()
 
@@ -1579,7 +1594,7 @@ def angleExpression(angle: float) -> str:
     return f'{math.degrees(angle):g} deg'
 
 def startWithConfig(settings: dict):
-    """Opens the dialog with a config by field name, see configJson.stateToJson, settings it doesn't have stay"""
+    """Opens the dialog with the config of a body's tag by field name, see configJson.stateToJson and readConfig"""
     global pendingConfig
     pendingConfig = settings
     ui.commandDefinitions.itemById(CMD_ID).execute()
@@ -1615,20 +1630,20 @@ def configChoices() -> dict[str, configJson.Choice]:
         'placement': configJson.Choice(binBuilder.PLACEMENT_OPTIONS, DEFAULT_STATE.placement),
     }
 
-def readConfig(text: str, source: str) -> InputState | None:
+def readConfig(text: str, source: str, isFromTag: bool = False) -> InputState | None:
     """The state of a config, none when it can't be read, see configButtons.readConfig"""
     # a setting the config doesn't have takes the value of the older models from configJson.OLDER_VALUES, the label
     # color '' among them (round 32, p280, which reverses p151 for it); one no older model lacked keeps the dialog's.
     # The label color of the state is derived, the dialog's choice is what a config with all settings is read over
     color = labelColors.configCurrentColor(commandUIState.getState(BIN_TAB_LABEL_COLOR_INPUT_ID), commandUIState.getState(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID))
     current = dataclasses.replace(getInputsState(), labelColor=color)
-    return configButtons.readConfig(text, source, configJson.GENERATOR_BIN, InputState, current, configChoices())
+    return configButtons.readConfig(text, source, configJson.GENERATOR_BIN, InputState, current, configChoices(), isFromTag)
 
 def applyPendingConfig():
     global pendingConfig
     if pendingConfig is None:
         return
-    state = readConfig(configJson.configText(configJson.GENERATOR_BIN, pendingConfig), 'Rebuilding' if rebuildBodyToken is not None else 'Cloned')
+    state = readConfig(configJson.configText(configJson.GENERATOR_BIN, pendingConfig), 'Rebuilding' if rebuildBodyToken is not None else 'Cloned', isFromTag=True)
     pendingConfig = None
     if state is not None:
         applyInputsState(state)
@@ -1649,10 +1664,12 @@ def generateBin(args: adsk.core.CommandEventArgs, isPreview: bool):
     try:
         state = getInputsState()
         des = adsk.fusion.Design.cast(app.activeProduct)
-        if rebuildBodyToken is not None:
-            (builtBodies, rebuildNotes) = binBuilder.rebuildBin(des, findRebuildBody(des), state, settings, isPreview)
-        else:
-            builtBodies = binBuilder.buildBin(des, state, settings, mayChangeDocument=not isPreview, cell=selectedCell(args.command.commandInputs))
+        # the new bin's component is active while it's built, the one active before is again afterwards
+        with commonUtils.keepActiveComponent(des):
+            if rebuildBodyToken is not None:
+                (builtBodies, rebuildNotes) = binBuilder.rebuildBin(des, findRebuildBody(des), state, settings, isPreview)
+            else:
+                builtBodies = binBuilder.buildBin(des, state, settings, mayChangeDocument=not isPreview, cell=selectedCell(args.command.commandInputs))
         futil.log(f'{CMD_NAME} {binBuilder.binDisplayName(state)} generated in {time.perf_counter() - startTime:.3f}s')
     except UnsupportedDesignTypeException as err:
         args.executeFailed = True

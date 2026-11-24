@@ -71,8 +71,8 @@ def test_a_rebuilt_bin_goes_into_its_cell_again():
     assert "cell=cell" in source
     # the joint places it, its old transform would be taken twice
     assert "None if cell is not None else transform" in source
-    # parameter edits leave the timeline and the joint as they are
-    assert source.index("edits = parameterEdits(") < source.index("binCellOf(")
+    # every rebuild builds the bin again, there is no parameters-only path to skip the cell (round 58)
+    assert "parameterEdits" not in source
 
 
 def test_a_cell_coming_after_the_bin_isnt_jointed_and_says_so():
@@ -160,8 +160,3 @@ def test_a_bin_in_a_cell_is_built_and_tagged_without_centering():
     source = _source(BIN_BUILDER, "buildBin")
     assert "binCell.storedPosition(state.placement, cell is not None, PLACEMENT_AUTO)" in source
     assert source.index("storedPosition") < source.index("buildWithStructure")
-
-
-def test_a_centered_bin_isnt_resized_by_its_parameters_alone():
-    source = _source(BIN_BUILDER, "parameterEdits")
-    assert "binCell.parameterEditKeepsPlacement(state.placement == PLACEMENT_CENTER, changed)" in source
