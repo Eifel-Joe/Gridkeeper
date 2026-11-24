@@ -98,13 +98,6 @@ def test_label_color_goes_back_to_the_dialog_and_round_trips(color):
 
 # --- a text edit of a colored label rebuilds, a parameter edit would leave new letters uncolored (p120) ---
 
-def test_text_of_an_uncolored_label_is_a_parameter_edit():
-    assert labelColors.textEditByParameter("") is True
-
-
-def test_text_of_a_colored_label_is_rebuilt():
-    assert labelColors.textEditByParameter("#D02020") is False
-
 
 # --- a rebuilt bin maps its tagged bodies, colored labels beside it aren't bins ---
 
@@ -157,42 +150,6 @@ def test_nothing_uses_the_removed_shared_parameters():
                 if fileName.endswith(".py"):
                     with open(os.path.join(root, fileName), encoding="utf-8") as file:
                         assert "sharedParameters" not in file.read(), os.path.join(root, fileName)
-
-
-# --- review round 12: a dialog rebuild of a Cullenect bin works the sockets out anew when the grid changes ---
-
-def _load_cullenect():
-    folder = os.path.join(PROJECT_ROOT, "lib", "gridfinityUtils")
-    package = "cullenectMergePackage"
-    if package not in sys.modules:
-        packageSpec = importlib.util.spec_from_loader(package, loader=None, is_package=True)
-        packageModule = importlib.util.module_from_spec(packageSpec)
-        packageModule.__path__ = [folder]
-        sys.modules[package] = packageModule
-    spec = importlib.util.spec_from_file_location(package + ".cullenect", os.path.join(folder, "cullenect.py"))
-    mod = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = mod
-    spec.loader.exec_module(mod)
-    return mod
-
-
-cullenect = _load_cullenect()
-
-
-@pytest.mark.parametrize("changed", [["baseWidth"], ["baseLength"], ["binHeight", "baseWidth"]])
-def test_grid_change_of_a_cullenect_tab_is_rebuilt(changed):
-    # the socket units and whether a compartment is deep enough for a socket are worked out when building
-    assert cullenect.parameterEditKeepsSockets(True, True, changed) is False
-
-
-@pytest.mark.parametrize("isCullenect, hasTab, changed", [
-    (True, True, ["binHeight"]),
-    (True, True, ["heightUnit"]),
-    (False, True, ["baseWidth"]),
-    (True, False, ["baseLength"]),
-])
-def test_other_parameter_edits_keep_the_sockets(isCullenect, hasTab, changed):
-    assert cullenect.parameterEditKeepsSockets(isCullenect, hasTab, changed) is True
 
 
 # --- review round 12: a bin without a label to color keeps the dialog's color choice ---

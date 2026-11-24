@@ -323,8 +323,8 @@ def test_config_with_a_lip_type_keeps_it(current):
 
 
 def test_rebuild_fills_the_older_values_into_a_tagged_config():
-    # parameterEdits compares the tagged config with the dialog's, a bin tagged before the merge would otherwise count
-    # its lip as changed and be rebuilt instead of having its parameters set
+    # the settings window and the rebuild read the tagged config with its parameters, a bin tagged before the merge
+    # would otherwise show and rebuild with the dialog's lip
     path = os.path.join(PROJECT_ROOT, "lib", "rebuildUtils.py")
     with open(path, encoding="utf-8") as file:
         source = file.read()

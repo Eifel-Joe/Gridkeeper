@@ -173,41 +173,7 @@ def test_measured_slow_symbols_are_moved():
     assert not any(layout.isIconHeldByDims(points) for points in slow)
 
 
-# round 19, p181: a label text changed since the bin was built is fitted anew by a rebuild, not set by its parameter
-
-BUILT = {"labelText": "Schrauben", "binHeight": 3, "compartmentPockets": [{"label": "M3"}, {"label": ""}]}
-
-
-def test_text_changed_by_parameter_rebuilds():
-    assert layout.textChangedSinceBuild(BUILT, {**BUILT, "labelText": "Schrauben M4x20"})
-
-
-def test_compartment_label_changed_rebuilds():
-    assert layout.textChangedSinceBuild(BUILT, {**BUILT, "compartmentPockets": [{"label": "M3x20"}, {"label": ""}]})
-
-
-def test_unchanged_text_keeps_the_parameter_edit():
-    assert not layout.textChangedSinceBuild(BUILT, {**BUILT, "binHeight": 4})
-
-
-def test_a_config_without_compartments_compares_the_bin_label():
-    assert not layout.textChangedSinceBuild({"labelText": "A"}, {"labelText": "A", "compartmentPockets": []})
-
-
-def test_empty_compartment_labels_filled_in_by_the_dialog_are_no_change():
-    # review round 19 (I2): a tag without pockets, the dialog fills the grid with empty ones; nothing is labelled
-    built = {"labelText": "A", "compartmentPockets": []}
-    filled = {"labelText": "A", "compartmentPockets": [{"x": 0, "y": 0, "label": ""}, {"x": 1, "y": 0, "label": ""}]}
-    assert not layout.textChangedSinceBuild(built, filled)
-    assert not layout.textChangedSinceBuild({"labelText": "A"}, filled)
-    assert not layout.textChangedSinceBuild(built, {**filled, "compartmentPockets": [{"x": 0, "y": 0, "label": None}]})
-
-
-def test_a_compartment_label_is_keyed_by_its_cell():
-    built = {"labelText": "", "compartmentPockets": [{"x": 0, "y": 0, "label": "M3"}]}
-    moved = {"labelText": "", "compartmentPockets": [{"x": 1, "y": 0, "label": "M3"}]}
-    assert layout.textChangedSinceBuild(built, moved)
-
+# review round 19: the label text of compartments showing the bin label, edited in Fusion
 
 def test_a_shared_text_takes_the_edited_parameter():
     # review round 19 (I1): two compartments show the bin label, each by a parameter of its own; one edited in Fusion
@@ -216,7 +182,6 @@ def test_a_shared_text_takes_the_edited_parameter():
     assert layout.sharedText("Bolzen", ["Bolzen", "Bolzen M4"]) == "Bolzen M4"
     assert layout.sharedText("Bolzen", ["Bolzen", "Bolzen"]) == "Bolzen"
     assert layout.sharedText("Bolzen", []) == "Bolzen"
-
 
 
 # round 22, p13 (as in the original, upstream f1cb49b by Le0Michine): the label icon keeps its full size, as tall
