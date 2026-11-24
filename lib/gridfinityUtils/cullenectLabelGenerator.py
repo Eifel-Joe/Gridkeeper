@@ -1,7 +1,7 @@
 import adsk.core, adsk.fusion
 
 from . import const, commonUtils, combineUtils, filletUtils, sketchUtils, cullenectLabelLayout, cullenectCatalog, textStyles
-from .labelGenerator import _measureText, _iconProfiles, _importIcon, _applyStyle
+from .labelGenerator import _measureText, _iconProfiles, _importIcon, _applyStyle, holdTextHeight
 from .dim import Dim, valueInput, lengthInput
 
 # Insert for the Cullenect label system, after cullenect_base_v2 and cullenect_label_generate in Cullenect.scad by
@@ -111,7 +111,9 @@ def _addLineText(sketch: adsk.fusion.Sketch, text: str, height: float, baseline:
     textInput = sketch.sketchTexts.createInput2(text, height)
     textInput.setAsAlongPath(baseline, True, adsk.core.HorizontalAlignments.LeftHorizontalAlignment, 0)
     _applyStyle(textInput, style)
-    return sketch.sketchTexts.add(textInput)
+    sketchText = sketch.sketchTexts.add(textInput)
+    holdTextHeight(sketchText, height)
+    return sketchText
 
 
 def _texts(sketch: adsk.fusion.Sketch, layout: cullenectLabelLayout.LabelLayout, lines: list[str], textParameters: list, style: str, withTwins: bool, timer: commonUtils.StepTimer) -> tuple[list, list]:

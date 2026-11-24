@@ -124,7 +124,17 @@ def _addText(
         0,
     )
     _applyStyle(textInput, style)
-    return sketch.sketchTexts.add(textInput)
+    sketchText = sketch.sketchTexts.add(textInput)
+    holdTextHeight(sketchText, height)
+    return sketchText
+
+def holdTextHeight(sketchText: adsk.fusion.SketchText, height: float):
+    """
+    The text's height to the micron in mm (as GridfinityGenerator c5a4bfe/9fff015): given as a number, Fusion keeps it
+    to 3 decimals in the document's units, a hundredth of a mm off in inches. More digits would only move the letters by
+    a hair
+    """
+    sketchText.heightParameter.expression = lengthExpression(round(height, 4))
 
 def _measureText(sketch: adsk.fusion.Sketch, text: str, height: float, style: str) -> tuple[float, float] | None:
     """Width and height of the letters of the text style at the given text height, measured on a throwaway text
@@ -339,6 +349,7 @@ def _baselineTexts(
         textInput.setAsAlongPath(baseline, True, alignment, 0)
         _applyStyle(textInput, style)
         sketchText = sketch.sketchTexts.add(textInput)
+        holdTextHeight(sketchText, textHeight)
         sketchText.textParameter.expression = textParameter.name
         texts.append(sketchText)
     if not placement.isCentered and len(texts) > 0:
