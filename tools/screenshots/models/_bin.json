@@ -1,5 +1,6 @@
 {
     "description": "What the bin dialog starts with, for presets to extend",
+    "extends": "_docs.json",
     "generator": "bin",
     "settings": {
         "baseWidth": 42.0,

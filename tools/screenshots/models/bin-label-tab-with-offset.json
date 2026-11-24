@@ -1,9 +1,0 @@
-{
-    "description": "README label tab configuration: with offset",
-    "extends": "_bin-wide.json",
-    "settings": {
-        "hasTab": true,
-        "tabLength": 1,
-        "tabPosition": 1
-    }
-}

@@ -1,0 +1,13 @@
+{
+    "description": "Docs label tabs: a 3x2x4 bin with three compartments, tabs and dividers 2 mm below the top (round 38)",
+    "extends": "_bin.json",
+    "settings": {
+        "binWidth": 3,
+        "binLength": 2,
+        "binHeight": 4,
+        "compartmentsX": 3,
+        "hasTab": true,
+        "tabTopOffset": 2.0,
+        "labelText": "Bits"
+    }
+}

@@ -23,6 +23,8 @@ Tick **Edit compartment layout** for a drawing of the grid:
 
 ![The compartment layout with three compartments: the left one selected, its Scoops row with Own and Left ticked, the drawing marks its left wall and the front wall of the other two](../assets/images/dialog-bin-compartment-scoops.png)
 
+![A 3 × 2 × 4 bin with three compartments, each with a scoop at the front and a label tab at the back](../assets/models/bin-compartments-scoops.png)
+
 Unticking **Edit compartment layout** resets the compartments to the uniform grid. Bins with a
 [custom shape](size.md#custom-shape) or [creased walls](body.md#creased-walls) have a single compartment: the grid and
 the layout are hidden and keep their values for later. Cells under the size the

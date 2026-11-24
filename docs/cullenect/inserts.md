@@ -3,6 +3,8 @@
 **Solid › Create › Gridkeeper label** builds a Cullenect label insert: up to two lines of text and a screw or
 hardware symbol at its right edge. Every insert is a component of its own in the container *Label*.
 
+![A 1U insert with a socket head screw and the text M3x10, raised](../assets/models/cullenect-insert.png)
+
 ![The top of the Gridkeeper label dialog: Info, Size and Text](../assets/images/dialog-label.png)
 
 ## Info

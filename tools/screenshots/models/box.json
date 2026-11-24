@@ -1,0 +1,5 @@
+{
+    "description": "Docs storage boxes: a box 5 x 4 x 6 with its lid",
+    "extends": "_box.json",
+    "settings": {}
+}

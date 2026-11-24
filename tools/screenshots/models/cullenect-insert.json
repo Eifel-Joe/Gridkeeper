@@ -1,0 +1,8 @@
+{
+    "description": "Docs label inserts: a 1U insert with a socket head screw and its size, raised",
+    "extends": "_label.json",
+    "settings": {
+        "line1": "M3x10",
+        "textStyle": "Heavy"
+    }
+}

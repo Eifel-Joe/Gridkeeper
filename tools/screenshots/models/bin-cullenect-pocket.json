@@ -1,0 +1,12 @@
+{
+    "description": "Docs Cullenect pockets: a 2x1x3 bin with a pocket for an insert in its label tab",
+    "extends": "_bin.json",
+    "settings": {
+        "binWidth": 2,
+        "binLength": 1,
+        "binHeight": 3,
+        "hasTab": true,
+        "labelStyle": "Cullenect",
+        "hasCreases": false
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "description": "Docs baseplates: a full 1x1 plate cut through a magnet socket, 8 mm in from its edge, to show the socket's chamfer (round 38)",
+    "extends": "_baseplate.json",
+    "section": {
+        "plane": "xz",
+        "flip": true,
+        "offset": 8
+    },
+    "settings": {
+        "plateWidth": 1,
+        "plateLength": 1,
+        "plateType": "Full",
+        "hasConnectionHoles": false,
+        "sizingMode": "Grid units"
+    }
+}

@@ -25,6 +25,8 @@ The same list, with how many pockets of each size the bin has, is in its **Gridk
 
 ## The tab with a pocket
 
+![A 2 × 1 × 3 bin with a Cullenect pocket in its label tab](../assets/models/bin-cullenect-pocket.png)
+
 - The tab is widened to at least 14 mm, more under steep overhangs, and kept flat: **Tab top angle** is switched off.
 - **Label text**, **Label icon**, **Bold label text** and **Label color** are switched off too, the text goes on the
   insert. They keep their values for when you switch back to another style.

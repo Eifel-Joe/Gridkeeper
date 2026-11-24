@@ -1,0 +1,6 @@
+{
+    "description": "What the label dialog starts with (lib/defaultSettings.py), for presets to extend",
+    "extends": "_docs.json",
+    "generator": "label",
+    "settings": {}
+}

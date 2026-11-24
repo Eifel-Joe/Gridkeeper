@@ -1,0 +1,9 @@
+{
+    "description": "The look of every model picture of Gridkeeper's docs (round 58): orthographic, the docs' blue, shaded, on a transparent background, 1200 x 900",
+    "camera": "orthographic",
+    "style": "shaded",
+    "color": "#4A82C8",
+    "width": 1200,
+    "height": 900,
+    "margin": 0.05
+}

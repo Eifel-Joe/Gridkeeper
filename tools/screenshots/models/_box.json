@@ -1,0 +1,6 @@
+{
+    "description": "What the box dialog starts with (lib/defaultSettings.py), for presets to extend",
+    "extends": "_docs.json",
+    "generator": "box",
+    "settings": {}
+}

@@ -134,7 +134,7 @@ class TestOptions:
 
     def test_section(self, folder):
         write(folder, "cut.json", {"extends": "_base.json", "section": {"plane": "xz"}})
-        assert presets.loadPreset(str(folder), "cut.json").section == {"plane": "xz", "flip": False}
+        assert presets.loadPreset(str(folder), "cut.json").section == {"plane": "xz", "flip": False, "offset": None}
         write(folder, "whole.json", {"extends": "_base.json"})
         assert presets.loadPreset(str(folder), "whole.json").section is None
 
@@ -212,3 +212,42 @@ class TestGridkeeperPresets:
             "exposure": preset.exposure,
             "saturation": preset.saturation,
         }
+
+    def test_a_section_can_be_away_from_the_middle(self, folder):
+        # a magnet socket of a plate is 8 mm in from its edge, not in its middle
+        write(folder, "cut.json", {"extends": "_base.json", "section": {"plane": "xz", "flip": True, "offset": 8}})
+        assert presets.loadPreset(str(folder), "cut.json").section == {"plane": "xz", "flip": True, "offset": 8.0}
+        write(folder, "middle.json", {"extends": "_base.json", "section": {"plane": "xz"}})
+        assert presets.loadPreset(str(folder), "middle.json").section == {"plane": "xz", "flip": False, "offset": None}
+        write(folder, "bad.json", {"extends": "_base.json", "section": {"plane": "xz", "offset": "8"}})
+        with pytest.raises(presets.PresetError, match="offset"):
+            presets.loadPreset(str(folder), "bad.json")
+
+
+class TestDocsPictures:
+    """Round 58: the docs' model pictures all come from the presets, and the presets are the docs' pictures"""
+
+    DOCS = os.path.join(PROJECT_ROOT, "docs")
+
+    def _usedPictures(self):
+        import re
+        used = set()
+        for folder, _, files in os.walk(self.DOCS):
+            for name in files:
+                if name.endswith(".md"):
+                    with open(os.path.join(folder, name), encoding="utf-8") as file:
+                        used |= set(re.findall(r"assets/models/([A-Za-z0-9_-]+)\.png", file.read()))
+        return used
+
+    def test_every_picture_in_the_docs_has_a_preset(self):
+        names = {preset.name for preset in presets.loadPresets(PRESETS_FOLDER)}
+        assert self._usedPictures() - names == set()
+
+    def test_every_preset_is_a_picture_of_the_docs(self):
+        names = {preset.name for preset in presets.loadPresets(PRESETS_FOLDER)}
+        assert names - self._usedPictures() == set()
+
+    def test_every_preset_has_the_docs_look(self):
+        for preset in presets.loadPresets(PRESETS_FOLDER):
+            assert (preset.camera, preset.color, preset.width, preset.height, preset.output) == (
+                "orthographic", "#4A82C8", 1200, 900, presets.DEFAULT_OUTPUT), preset.name

@@ -1,0 +1,13 @@
+{
+    "description": "Docs compartments: a 3x2x4 bin with three compartments, each with a scoop at the front and a label tab",
+    "extends": "_bin.json",
+    "settings": {
+        "binWidth": 3,
+        "binLength": 2,
+        "binHeight": 4,
+        "compartmentsX": 3,
+        "hasScoop": true,
+        "hasTab": true,
+        "labelText": ""
+    }
+}

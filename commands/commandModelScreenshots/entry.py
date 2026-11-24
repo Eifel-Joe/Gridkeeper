@@ -535,9 +535,11 @@ def addSection(design: adsk.fusion.Design, bodies: list[adsk.fusion.BRepBody], s
     box = bodies[0].boundingBox.copy()
     for body in bodies[1:]:
         box.combine(body.boundingBox)
-    middle = (box.minPoint.asArray()[axis] + box.maxPoint.asArray()[axis]) / 2
+    low = box.minPoint.asArray()[axis]
+    # the middle, or offset mm from the low side, a magnet socket of a plate say (round 58)
+    at = low + section['offset'] / 10 if section.get('offset') is not None else (low + box.maxPoint.asArray()[axis]) / 2
     sections = design.analyses.sectionAnalyses
-    sectionInput = sections.createInput(plane, middle)
+    sectionInput = sections.createInput(plane, at)
     sectionInput.isHatchShown = False
     if color is not None:
         sectionInput.sectionColor = adsk.core.Color.create(int(color[1:3], 16), int(color[3:5], 16), int(color[5:7], 16), 255)

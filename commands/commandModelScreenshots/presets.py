@@ -132,14 +132,17 @@ def checkSection(section) -> dict | None:
         return None
     if not isinstance(section, dict):
         raise PresetError('a section is an object with a plane')
-    unknown = [key for key in section if key not in ['plane', 'flip']]
+    unknown = [key for key in section if key not in ['plane', 'flip', 'offset']]
     if unknown:
         raise PresetError(f'unknown section keys {unknown}')
     if section.get('plane') not in SECTION_PLANES:
         raise PresetError(f'section plane is one of {", ".join(SECTION_PLANES)}')
     if not isinstance(section.get('flip', False), bool):
         raise PresetError('section flip is true or false')
-    return {'plane': section['plane'], 'flip': section.get('flip', False)}
+    offset = section.get('offset')
+    if offset is not None and (not isinstance(offset, (int, float)) or isinstance(offset, bool)):
+        raise PresetError('section offset is a distance in mm from the low side of the model, or null for its middle')
+    return {'plane': section['plane'], 'flip': section.get('flip', False), 'offset': float(offset) if offset is not None else None}
 
 def checkDifference(difference) -> dict | None:
     """Settings changed from the preset's, as a test case's, and a color, '#rrggbb'"""
