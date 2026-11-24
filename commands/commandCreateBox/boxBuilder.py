@@ -221,19 +221,31 @@ def rebuildBox(
         # parts (round 28) aren't tagged and come and go with the set's timeline group
         bodies = buildBox(des, state, settings, not isPreview, parameterPrefix, transform, oldPlace)
         return [body for body in bodies if tagUtils.readBodyTag(body) is not None]
+    # the names of the old set's parts by role, read before it is gone, a part the user renamed keeps that name
+    oldPartNames = _partNames(target.occurrence)
     # the old set hidden by its light bulb in a preview, Fusion won't suppress a set's group (round 39, p481)
     (bodies, notes) = rebuildUtils.rebuild(des, target, prefix, BOX_PARAMETER_BASE_NAME, isPreview, build, 'box', jointsByName=True,
                                            hideByLightBulb=True, namePrefix=BOX_NAME_PREFIX)
     if not isPreview:
-        _renameParts(bodies)
+        _renameParts(bodies, oldPartNames)
     return (bodies, notes)
 
 
-def _renameParts(bodies: list[adsk.fusion.BRepBody]):
+def _partNames(setOccurrence: adsk.fusion.Occurrence | None) -> dict[str, str]:
+    """The names of a set's parts by their role, box, lid and small parts"""
+    names = {}
+    for child in (setOccurrence.childOccurrences if setOccurrence is not None else []):
+        role = rebuildUtils.partRole(child.component)
+        if role:
+            names.setdefault(role, child.component.name)
+    return names
+
+
+def _renameParts(bodies: list[adsk.fusion.BRepBody], oldPartNames: dict[str, str]):
     """
     The new set is built while the old one still has its components, Fusion names the new ones "Box (2)", "Lid (2)"
     (r27_cmd 17.11.2026), the small parts "Latch (1)" and so on (review round 28). With the old set gone the names are
-    free again, a name another set still holds stays taken. A part the user renamed keeps that name
+    free again, a name another set still holds stays taken. A part the user renamed gets that name, see _partNames
     """
     components = []
     for body in bodies:
@@ -248,8 +260,8 @@ def _renameParts(bodies: list[adsk.fusion.BRepBody]):
                 components.append(child.component)
     for component in components:
         role = rebuildUtils.partRole(component)
-        # only Fusion's counter goes, a name the user gave the part came back from the old one (round 58)
-        name = rebuildUtils.rebuiltPartName(component.name, role) if role else None
+        # the user's name of the old part of that role, else the role without Fusion's counter (round 58)
+        name = rebuildUtils.rebuiltPartName(component.name, role, oldPartNames.get(role)) if role else None
         if name is not None:
             try:
                 component.name = name

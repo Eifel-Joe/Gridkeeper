@@ -66,7 +66,7 @@ under ~50 s, through the main session.
   1 label case (mm + inches) as a smoke test.
 - [ ] Jobs B…: all 135 cases in batches under 50 s (case lists in the job files), mm + inches.
 - [ ] Re-record cases changed by the lip move or a listed decision; list them with reason. Failures in inches of
-  another pattern → new list points (p720–p729).
+  another pattern → new list points.
 - [ ] Hand checks by script: rename + rebuild keeps names (bin, baseplate, box, label insert), active component kept,
   `import gridkeeper` works.
 

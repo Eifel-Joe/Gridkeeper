@@ -110,6 +110,14 @@ def groupPlacement(group: adsk.fusion.TimelineGroup, placementName: str) -> tupl
     commonUtils.debugLog(f'{LOG_PREFIX} no {placementName} in {group.name}, placing at the origin, its moves: {moves}')
     return (0, 0)
 
+def groupOccurrence(group: adsk.fusion.TimelineGroup) -> adsk.fusion.Occurrence | None:
+    """The first occurrence a generator's timeline group made, the part's own: a bin's, a box's set"""
+    for index in range(group.count):
+        occurrence = adsk.fusion.Occurrence.cast(group.item(index).entity)
+        if occurrence is not None:
+            return occurrence
+    return None
+
 def findTarget(design: adsk.fusion.Design, body: adsk.fusion.BRepBody, tagName: str, placementName: str) -> RebuildTarget:
     """Placement name is of the move the generator places the bodies with. Raises ValueError when the body can't be rebuilt in place"""
     if design.designType != adsk.fusion.DesignTypes.ParametricDesignType:
@@ -122,7 +130,7 @@ def findTarget(design: adsk.fusion.Design, body: adsk.fusion.BRepBody, tagName: 
     bodies = [taggedBody for (taggedBody, _) in tagUtils.findTaggedBodies(design, tagName) if any(generatedBy(item, taggedBody) for item in items)]
     if len(bodies) == 0:
         raise ValueError(f'No generated bodies were found in the timeline group {group.name}')
-    occurrence = next((adsk.fusion.Occurrence.cast(item.entity) for item in items if adsk.fusion.Occurrence.cast(item.entity) is not None), None)
+    occurrence = groupOccurrence(group)
     allItems = timelineItems(design.timeline)
     lastGroupIndex = max(index for (index, item) in enumerate(allItems) if isGroupItem(group, item))
     laterItems = allItems[lastGroupIndex + 1:]
@@ -831,11 +839,14 @@ def withoutCounter(name: str) -> str:
     """A component name without the " (1)" Fusion adds to a name that is taken"""
     return re.sub(r' \(\d+\)$', '', name)
 
-def rebuiltPartName(current: str, role: str) -> str | None:
+def rebuiltPartName(current: str, role: str, oldName: str | None = None) -> str | None:
     """
-    The name a part of a rebuilt set gets, a box's lid or latch say, by its role: Fusion counted it up while the old set
-    had the name ("Lid (1)"), that goes. Any other name is the user's, back from the old part, and stays
+    The name a part of a rebuilt set gets, a box's lid or latch say, by its role, none to leave it: the name the user
+    gave the old part of that role, else the role without the counter Fusion added while the old set had the name
+    ("Lid (1)"). A name other than the role, counted or not, is the user's
     """
+    if oldName is not None and withoutCounter(oldName) != role:
+        return oldName if current != oldName else None
     if current == role or withoutCounter(current) != role:
         return None
     return role
@@ -1027,9 +1038,12 @@ def rebuild(
         occurrences = design.rootComponent.allOccurrencesByComponent(newBodies[0].parentComponent)
         newOccurrence = occurrences.item(0) if occurrences.count > 0 else None
     newGroup = findGroup(design, nativeBody(newBodies[0])) if len(newBodies) > 0 else None
+    # the group's own occurrence takes the old one's name, as findTarget took it: a box's set, whose first body is in
+    # the Box part inside it (review round 58)
+    newSet = groupOccurrence(newGroup) if newGroup is not None else None
     renames = [(item, oldName, generatedName) for (item, oldName) in [
         (newGroup, oldGroupName),
-        (newOccurrence.component if newOccurrence is not None else None, oldComponentName),
+        (newSet.component if newSet is not None else None, oldComponentName),
     ] if item is not None and oldName is not None]
     # bodies taking the place of one each, several going into one have no single name to keep
     if len(newBodies) == len(target.bodies):

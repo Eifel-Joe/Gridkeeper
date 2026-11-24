@@ -76,13 +76,38 @@ def test_a_part_drops_only_fusions_counter():
     assert names.rebuiltPartName("Lid (1)", "Lid") == "Lid"
     assert names.rebuiltPartName("Latch (2)", "Latch") == "Latch"
     assert names.rebuiltPartName("Lid", "Lid") is None
-    # a name the user gave the part, back from the old one, stays
-    assert names.rebuiltPartName("Deckel", "Lid") is None
-    assert names.rebuiltPartName("Deckel (1)", "Lid") is None
+    # the old part had its generated name, maybe counted up
+    assert names.rebuiltPartName("Lid (1)", "Lid", "Lid") == "Lid"
+    assert names.rebuiltPartName("Lid (1)", "Lid", "Lid (1)") == "Lid"
 
 
-def test_the_box_renames_its_parts_by_that_rule():
+def test_a_part_the_user_renamed_gets_that_name_back():
+    # review round 58: the old set's part names by role, read before the rebuild, the new part takes the user's one
+    names = _rebuild_utils("withoutCounter", "rebuiltPartName")
+    assert names.rebuiltPartName("Lid (1)", "Lid", "Deckel") == "Deckel"
+    assert names.rebuiltPartName("Latch", "Latch", "Riegel") == "Riegel"
+    assert names.rebuiltPartName("Deckel", "Lid", "Deckel") is None
+
+
+def test_the_box_renames_its_parts_by_their_old_names():
     source = _source(BUILDERS["box"][0])
+    rebuild = source[source.index("def rebuildBox("):source.index("def _renameParts(")]
+    # read before the old set is gone
+    assert rebuild.index("oldPartNames = _partNames(target.occurrence)") < rebuild.index("rebuildUtils.rebuild(")
+    assert "_renameParts(bodies, oldPartNames)" in rebuild
     body = source[source.index("def _renameParts("):]
     body = body[:body.index("\ndef ", 1)] if "\ndef " in body[1:] else body
-    assert "rebuildUtils.rebuiltPartName(component.name, role)" in body
+    assert "rebuildUtils.rebuiltPartName(component.name, role, oldPartNames.get(role))" in body
+
+
+def test_the_component_named_after_the_old_one_is_the_groups_own():
+    # review round 58: a box's set is the occurrence of its group, its first body is in the Box part inside; the set's
+    # name goes to the new set, as findTarget takes the old one
+    source = _source(REBUILD_UTILS)
+    rebuild = source[source.index("\ndef rebuild("):]
+    rebuild = rebuild[:rebuild.index("\ndef ", 1)]
+    assert "newSet = groupOccurrence(newGroup)" in rebuild
+    assert "(newSet.component if newSet is not None else None, oldComponentName)" in rebuild
+    find = source[source.index("\ndef findTarget("):]
+    find = find[:find.index("\ndef ", 1)]
+    assert "occurrence = groupOccurrence(group)" in find

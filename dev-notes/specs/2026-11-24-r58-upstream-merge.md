@@ -92,12 +92,14 @@ fix of the same pattern, guarded by a unit test that finds feature-parameter sit
 itself: every snapshot case built in inches (D7); a case failing there for another reason than this pattern becomes a
 new list point.
 
-**D7 Snapshot harness.** Upstream's inch build, underdefined-sketch check, closing failed documents and the "first case
-that needs a look" are merged into Gridkeeper's harness (box/label cases, text components, parameter cases). The run
-takes about twice as long.
+**D7 Snapshot harness.** Upstream's inch build, closing failed documents and the "first case that needs a look" are
+merged into Gridkeeper's harness (box/label cases, text components, parameter cases); the inch build goes through the
+same case build as the mm one. Upstream's underdefined-sketch check is not taken: Gridkeeper's own
+(`constraints.unconstrainedSketches`, live text included) checks the same. The run takes about twice as long.
 
 **D8 Label sketches.** Gridkeeper's label layout (`binLabelLayout`, text styles, symbols) stays. From upstream it takes
-the text height as a mm expression and `constrainTextBox` where Gridkeeper's text sketches aren't constrained yet.
+the text height as a mm expression. `constrainTextBox` isn't needed: Gridkeeper's texts run along a fixed baseline,
+the multi-line text boxes are only measuring probes and deleted (it stays in `sketchUtils` as upstream has it).
 
 **D9 Active component.** `commonUtils.keepActiveComponent` wraps the build in the bin and baseplate commands (upstream)
 and in box, box label and label insert (same `occurrence.activate()` in their builders).
@@ -119,7 +121,7 @@ and in box, box label and label insert (same `occurrence.activate()` in their bu
   move or a listed decision explains it (list in the PR); no underdefined sketch.
 - Inch check: result per generator (bin, baseplate, box, box label, label insert) in the PR; open failures as new
   list points.
-- A rebuilt bin, baseplate, box and label insert keep a component/group/body name the user gave; a bin rebuilt by
-  parameters only keeps them too.
+- A rebuilt bin, baseplate, box and label insert keep a component/group/body name the user gave; a renamed part of a
+  box (lid, latch) keeps its name too.
 - After building any part, the component active before is active again.
 - A Fusion script `import gridkeeper; gridkeeper.version()` returns 1.4.0 while the add-in runs.
