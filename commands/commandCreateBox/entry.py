@@ -363,11 +363,13 @@ def generateBox(args: adsk.core.CommandEventArgs, mayChangeDocument: bool = True
     rebuildNotes = []
     try:
         des = adsk.fusion.Design.cast(app.activeProduct)
-        if rebuildBodyToken is not None:
-            body = rebuildUtils.findBodyByToken(des, rebuildBodyToken)
-            (_, rebuildNotes) = rebuildBox(des, body, state, settings, not mayChangeDocument)
-        else:
-            buildBox(des, state, settings, mayChangeDocument)
+        # the component active before is again afterwards, the build activates its own (as the bin dialog)
+        with commonUtils.keepActiveComponent(des):
+            if rebuildBodyToken is not None:
+                body = rebuildUtils.findBodyByToken(des, rebuildBodyToken)
+                (_, rebuildNotes) = rebuildBox(des, body, state, settings, not mayChangeDocument)
+            else:
+                buildBox(des, state, settings, mayChangeDocument)
         futil.log(f'{CMD_NAME} {boxName(state)} generated in {time.perf_counter() - startTime:.3f}s')
     except UnsupportedDesignTypeException:
         args.executeFailed = True
