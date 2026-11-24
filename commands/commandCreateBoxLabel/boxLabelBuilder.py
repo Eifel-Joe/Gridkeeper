@@ -24,6 +24,8 @@ ICONS_FOLDER = os.path.join(
 
 # user parameter names are stored in user documents, keep these literal
 PARAMETER_BASE_NAME = 'gfBoxLabel'
+# the start of the names the generator gives a box label, see predBoxLabelLayout.labelTitle and rebuildUtils.keptName
+LABEL_NAME_PREFIX = 'Gridkeeper box label '
 TEXT_PARAMETER_NAMES = boxLabelConfig.TEXT_PARAMETER_NAMES
 HOLDER_JOINT_SUFFIX = boxLabelConfig.HOLDER_JOINT_SUFFIX
 # the move of the bodies built into the root (a preview in a part design) to their spot, a rebuild finds the spot by it
@@ -186,7 +188,8 @@ def _buildBoxLabel(
     appearanceUtils.colorPart(marking, textOccurrence, state.textColor)
     # the export takes the plate as a part with its marking, Flush lies on its text (p380, round r29-export); the
     # settings menu, rebuild and clone take the whole config (1.1.0: box labels lacked these menu entries)
-    tagUtils.tagBody(plate, tagUtils.TAG_BOX_LABEL, settings, labelParameters, configJson.stateToJson(configJson.GENERATOR_BOX_LABEL, state), prefix)
+    tagUtils.tagBody(plate, tagUtils.TAG_BOX_LABEL, settings, labelParameters, configJson.stateToJson(configJson.GENERATOR_BOX_LABEL, state), prefix,
+                     name=name, bodyName=plate.name)
     if occurrence is None and spot is not None:
         # no occurrence to carry the spot: the bodies themselves move there
         placementUtils.moveBodies([plate] + marking, spot[0], spot[1], component, name=PLACEMENT_FEATURE)
@@ -288,7 +291,8 @@ def rebuildBoxLabel(
         (bodies, _) = buildBoxLabel(des, state, settings, not isPreview, box, parameterPrefix, None if box is not None else transform, rootSpot, oldPlace)
         # only the plate takes the place of the old one, its text and symbols are bodies of their own
         return bodies[:1]
-    result = rebuildUtils.rebuild(des, target, prefix, PARAMETER_BASE_NAME, isPreview, build, 'box label', jointsByName=True)
+    result = rebuildUtils.rebuild(des, target, prefix, PARAMETER_BASE_NAME, isPreview, build, 'box label', jointsByName=True,
+                                  namePrefix=LABEL_NAME_PREFIX)
     if not isPreview:
         # with the timeline at its end again: the one left and the one the new label went into (review)
         assembly.keepShown(oldHolder)

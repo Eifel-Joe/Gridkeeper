@@ -249,7 +249,8 @@ def _buildLabel(
     # mark generated geometry so it can be told apart from the rest of the design
     for body in bodies:
         # with the config, so the insert can be rebuilt, cloned and its config saved like a bin (round 18, p150)
-        tagUtils.tagBody(body, tagUtils.TAG_LABEL, settings, labelParameters, configJson.stateToJson(configJson.GENERATOR_LABEL, state), prefix)
+        tagUtils.tagBody(body, tagUtils.TAG_LABEL, settings, labelParameters, configJson.stateToJson(configJson.GENERATOR_LABEL, state), prefix,
+                         name=name, bodyName=body.name)
 
     # at the middle of the bottom, following the width parameter, X along the width like the pockets' (p160)
     (insertJointOrigin,) = createOffsetJointOrigins(
@@ -352,7 +353,7 @@ def rebuildLabel(
         bodies = buildLabel(des, state, settings, not isPreview, pocket, corner, parameterPrefix, None if pocket is not None else transform, oldPlace)
         # only the insert itself takes the place of the old one, its text and symbol are bodies of their own
         return bodies[:1]
-    result = rebuildUtils.rebuild(des, target, prefix, LABEL_PARAMETER_BASE_NAME, isPreview, build, 'insert')
+    result = rebuildUtils.rebuild(des, target, prefix, LABEL_PARAMETER_BASE_NAME, isPreview, build, 'insert', namePrefix=LABEL_NAME_PREFIX)
     if not isPreview:
         # with the timeline at its end again: the one left and the one the new insert went into (review)
         assembly.keepShown(oldPocket)

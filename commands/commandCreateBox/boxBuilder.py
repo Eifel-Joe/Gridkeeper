@@ -152,7 +152,9 @@ def _buildBox(
 
     config = configJson.stateToJson(configJson.GENERATOR_BOX, state)
     for body in (base, lid):
-        tagUtils.tagBody(rebuildUtils.nativeBody(body), tagUtils.TAG_BOX, settings, boxParameters, config, prefix)
+        # with the names it gave, a rebuild keeps the ones the user changed (round 58, see rebuildUtils.keptName)
+        tagUtils.tagBody(rebuildUtils.nativeBody(body), tagUtils.TAG_BOX, settings, boxParameters, config, prefix,
+                         name=name, bodyName=rebuildUtils.nativeBody(body).name)
 
     # joint origins last, they don't follow moves (as binBuilder); without sketches since round 45 (p480, offsets on the
     # origin point, see jointOriginLayout.createOffsetJointOrigins). The floor cells always: the bin dialog
@@ -221,7 +223,7 @@ def rebuildBox(
         return [body for body in bodies if tagUtils.readBodyTag(body) is not None]
     # the old set hidden by its light bulb in a preview, Fusion won't suppress a set's group (round 39, p481)
     (bodies, notes) = rebuildUtils.rebuild(des, target, prefix, BOX_PARAMETER_BASE_NAME, isPreview, build, 'box', jointsByName=True,
-                                           hideByLightBulb=True)
+                                           hideByLightBulb=True, namePrefix=BOX_NAME_PREFIX)
     if not isPreview:
         _renameParts(bodies)
     return (bodies, notes)
@@ -231,7 +233,7 @@ def _renameParts(bodies: list[adsk.fusion.BRepBody]):
     """
     The new set is built while the old one still has its components, Fusion names the new ones "Box (2)", "Lid (2)"
     (r27_cmd 17.11.2026), the small parts "Latch (1)" and so on (review round 28). With the old set gone the names are
-    free again, a name another set still holds stays taken
+    free again, a name another set still holds stays taken. A part the user renamed keeps that name
     """
     components = []
     for body in bodies:
@@ -246,8 +248,10 @@ def _renameParts(bodies: list[adsk.fusion.BRepBody]):
                 components.append(child.component)
     for component in components:
         role = rebuildUtils.partRole(component)
-        if role and component.name != role:
+        # only Fusion's counter goes, a name the user gave the part came back from the old one (round 58)
+        name = rebuildUtils.rebuiltPartName(component.name, role) if role else None
+        if name is not None:
             try:
-                component.name = role
+                component.name = name
             except RuntimeError as err:
                 commonUtils.fileLog(f'{LOG_PREFIX} {component.name} kept its name, {err}')

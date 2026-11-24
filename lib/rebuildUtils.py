@@ -831,6 +831,15 @@ def withoutCounter(name: str) -> str:
     """A component name without the " (1)" Fusion adds to a name that is taken"""
     return re.sub(r' \(\d+\)$', '', name)
 
+def rebuiltPartName(current: str, role: str) -> str | None:
+    """
+    The name a part of a rebuilt set gets, a box's lid or latch say, by its role: Fusion counted it up while the old set
+    had the name ("Lid (1)"), that goes. Any other name is the user's, back from the old part, and stays
+    """
+    if current == role or withoutCounter(current) != role:
+        return None
+    return role
+
 def isGeneratedName(name: str, generatedName: str | None, namePrefix: str) -> bool:
     """
     Whether the generator gave the name, the one in the tag, maybe counted up by Fusion, rather than the user. A tag from
