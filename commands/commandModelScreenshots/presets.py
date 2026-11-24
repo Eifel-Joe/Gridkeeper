@@ -3,7 +3,8 @@ import json
 import os
 import re
 
-# Model screenshot presets, one JSON file each: a bin or baseplate built from settings as in the shape test cases,
+# Model screenshot presets, one JSON file each: a bin, baseplate, box, box label or label insert built from settings as
+# in the shape test cases (over the dialog's defaults),
 # see commandSnapshotTests/testCases.py, and how the picture of it is taken. A preset can extend another one, named
 # by its file, and only list the settings and options that differ. Files starting with an underscore are only there
 # to be extended, they are not rendered. Kept free of Fusion imports so it can be unit tested
@@ -20,7 +21,10 @@ STYLES = {
 CAMERAS = ['perspective', 'orthographic']
 # origin planes a section cuts the model along, through its middle
 SECTION_PLANES = ['xy', 'xz', 'yz']
-DEFAULT_OUTPUT = os.path.join('tools', 'screenshots', 'out', 'models')
+# where the docs take the pictures from (round 58), from the add-in folder
+DEFAULT_OUTPUT = os.path.join('docs', 'assets', 'models')
+# what a preset can build, configJson's generator names
+GENERATORS = ['bin', 'baseplate', 'label', 'box', 'boxLabel']
 
 # options of the picture, what a preset doesn't set
 DEFAULT_OPTIONS = {
@@ -162,6 +166,8 @@ def loadPreset(folder: str, fileName: str) -> Preset:
             raise PresetError(f'unknown keys {unknown}')
         if 'generator' not in data or not isinstance(data.get('settings'), dict):
             raise PresetError('a preset needs a generator and settings, its own or from the one it extends')
+        if data['generator'] not in GENERATORS:
+            raise PresetError(f'unknown generator {data["generator"]!r}, one of {", ".join(GENERATORS)}')
         if data['camera'] not in CAMERAS:
             raise PresetError(f'unknown camera {data["camera"]!r}, one of {", ".join(CAMERAS)}')
         if data['style'] not in STYLES:
@@ -202,6 +208,23 @@ def loadPreset(folder: str, fileName: str) -> Preset:
         )
     except PresetError as err:
         raise PresetError(f'preset {name}: {err}') from err
+
+def sidecar(preset: Preset, renderPath: str, rootFolder: str) -> dict:
+    """
+    What finishing a raw render of the preset outside Fusion needs, tools/screenshots/finishPictures.py: the render, the
+    picture's path from the add-in folder and its options, see commandModelScreenshots.scriptRender
+    """
+    return {
+        'name': preset.name,
+        'render': renderPath,
+        'output': os.path.join(rootFolder, preset.output, f'{preset.name}.png'),
+        'width': preset.width,
+        'height': preset.height,
+        'margin': preset.margin,
+        'transparent': preset.transparent,
+        'exposure': preset.exposure,
+        'saturation': preset.saturation,
+    }
 
 def loadPresets(folder: str, only: list[str] | None = None) -> list[Preset]:
     """Presets of the folder by name, but the ones only there to be extended"""

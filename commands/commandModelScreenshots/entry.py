@@ -15,6 +15,12 @@ from ..commandCreateBin import binBuilder
 from ..commandCreateBin.inputState import InputState as BinInputState
 from ..commandCreateBaseplate import baseplateBuilder
 from ..commandCreateBaseplate.inputState import InputState as BaseplateInputState
+from ..commandCreateBox import boxBuilder
+from ..commandCreateBox.inputState import InputState as BoxInputState
+from ..commandCreateBoxLabel import boxLabelBuilder
+from ..commandCreateBoxLabel.inputState import InputState as BoxLabelInputState
+from ..commandCreateLabel import labelBuilder
+from ..commandCreateLabel.inputState import InputState as LabelInputState
 from ..commandSnapshotTests import testCases
 from . import presets, picturesPalette
 
@@ -28,9 +34,9 @@ ui = app.userInterface
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdRenderModelScreenshots'
 CMD_NAME = 'Gridkeeper docs: render models'
 # shown on hover over the button, the first paragraph says what it does, the second how, like the generator commands
-CMD_Description = ('Saves pictures of bins and baseplates for the docs.\n\n'
+CMD_Description = ('Saves pictures of bins, baseplates, boxes and labels for the docs.\n\n'
     'Lists the presets of tools/screenshots/models with their pictures. A preset asked for is built in a new '
-    'document, shown from the preset\'s view and saved as a picture, by default to tools/screenshots/out/models.')
+    'document, shown from the preset\'s view and saved as a picture, by default to docs/assets/models.')
 
 # Utilities > Add-ins, out of the way of the generator commands
 WORKSPACE_ID = 'FusionSolidEnvironment'
@@ -40,7 +46,13 @@ FALLBACK_PANEL_ID = 'SolidCreatePanel'
 ROOT_FOLDER = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PRESETS_FOLDER = os.path.join(ROOT_FOLDER, 'tools', 'screenshots', 'models')
 ICON_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources', '')
-STATE_CLASSES = {testCases.GENERATOR_BIN: BinInputState, testCases.GENERATOR_BASEPLATE: BaseplateInputState}
+STATE_CLASSES = {
+    testCases.GENERATOR_BIN: BinInputState,
+    testCases.GENERATOR_BASEPLATE: BaseplateInputState,
+    testCases.GENERATOR_LABEL: LabelInputState,
+    testCases.GENERATOR_BOX: BoxInputState,
+    'boxLabel': BoxLabelInputState,
+}
 # what the pictures since the palette was opened did, with the tracebacks of what failed
 LOG_PATH = os.path.join(ROOT_FOLDER, 'tools', 'screenshots', 'models-render.log')
 # GIFs of the pictures and of the dialog going through the same options are made by the screenshot tool, with its own
@@ -390,7 +402,7 @@ def makePicture(name: str):
     try:
         picturesPalette.setStatus(name, picturesPalette.STATUS_BUILDING)
         preset = presets.loadPreset(PRESETS_FOLDER, f'{name}.json')
-        state = testCases.stateFromJson(preset.generator, STATE_CLASSES[preset.generator], preset.settings)
+        state = presetState(preset)
         document = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
         design = adsk.fusion.Design.cast(document.products.itemByProductType('DesignProductType'))
         design.designType = adsk.fusion.DesignTypes.ParametricDesignType
@@ -413,9 +425,20 @@ def makePicture(name: str):
         document.close(False)
     adsk.doEvents()
 
+def presetState(preset: presets.Preset, settings: dict | None = None):
+    """The state the preset builds, its settings over the dialog's defaults as a test case's"""
+    return testCases.stateFromJson(preset.generator, STATE_CLASSES[preset.generator],
+                                   {**testCases.DEFAULT_SETTINGS.get(preset.generator, {}), **(settings or preset.settings)})
+
 def buildModel(design: adsk.fusion.Design, generator: str, state) -> list[adsk.fusion.BRepBody]:
     if generator == testCases.GENERATOR_BIN:
         return binBuilder.buildBin(design, state, [])
+    if generator == testCases.GENERATOR_LABEL:
+        return labelBuilder.buildLabel(design, state, [])
+    if generator == testCases.GENERATOR_BOX:
+        return boxBuilder.buildBox(design, state, [])
+    if generator == 'boxLabel':
+        return boxLabelBuilder.buildBoxLabel(design, state, [])[0]
     return baseplateBuilder.buildBaseplate(design, state, [])
 
 def failurePlace(err: Exception) -> str:
@@ -455,8 +478,7 @@ def showDifference(design: adsk.fusion.Design, bodies: list[adsk.fusion.BRepBody
     difference color: what it has more and what it lacks. It's shown with the part both share in place of its bodies.
     The other model goes to a spot of its own, it's moved onto the preset's by their lowest corners and removed after
     """
-    settings = {**preset.settings, **preset.difference['settings']}
-    state = testCases.stateFromJson(preset.generator, STATE_CLASSES[preset.generator], settings)
+    state = presetState(preset, {**preset.settings, **preset.difference['settings']})
     others = buildModel(design, preset.generator, state)
     root = design.rootComponent
     brep = adsk.fusion.TemporaryBRepManager.get()

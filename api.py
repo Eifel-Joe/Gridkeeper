@@ -23,6 +23,8 @@ from .commands.commandCreateBoxLabel.inputState import InputState as BoxLabelInp
 from .commands.commandCreateLabel import labelBuilder
 from .commands.commandCreateLabel.inputState import InputState as LabelInputState
 from .commands.commandExport import entry as export
+# model pictures for the docs without the palette, see its renderRaw and tools/screenshots/finishPictures.py
+from .commands.commandModelScreenshots import scriptRender
 
 # see scriptModule.MARKER
 IS_GRIDKEEPER = True

@@ -24,7 +24,18 @@ cases = _load("testCases", "commands", "commandSnapshotTests", "testCases.py")
 binState = _load("binInputState", "commands", "commandCreateBin", "inputState.py")
 baseplateState = _load("baseplateInputState", "commands", "commandCreateBaseplate", "inputState.py")
 
-STATE_CLASSES = {cases.GENERATOR_BIN: binState.InputState, cases.GENERATOR_BASEPLATE: baseplateState.InputState}
+labelState = _load("labelInputState", "commands", "commandCreateLabel", "inputState.py")
+boxState = _load("boxInputState", "commands", "commandCreateBox", "inputState.py")
+boxLabelState = _load("boxLabelInputState", "commands", "commandCreateBoxLabel", "inputState.py")
+defaults = _load("defaultSettings", "lib", "defaultSettings.py")
+
+STATE_CLASSES = {
+    cases.GENERATOR_BIN: binState.InputState,
+    cases.GENERATOR_BASEPLATE: baseplateState.InputState,
+    cases.GENERATOR_LABEL: labelState.InputState,
+    cases.GENERATOR_BOX: boxState.InputState,
+    "boxLabel": boxLabelState.InputState,
+}
 
 
 def write(folder, name, data):
@@ -160,7 +171,9 @@ class TestRepoPresets:
 
     @pytest.mark.parametrize("preset", presets.loadPresets(PRESETS_FOLDER), ids=lambda preset: preset.name)
     def test_builds_a_state(self, preset):
-        cases.stateFromJson(preset.generator, STATE_CLASSES[preset.generator], preset.settings)
+        # over the dialog's defaults, as a test case and the palette (commandModelScreenshots.entry.presetState)
+        settings = {**defaults.SETTINGS.get(preset.generator, {}), **preset.settings}
+        cases.stateFromJson(preset.generator, STATE_CLASSES[preset.generator], settings)
 
     @pytest.mark.parametrize("preset", [preset for preset in presets.loadPresets(PRESETS_FOLDER) if preset.generator == cases.GENERATOR_BIN],
                              ids=lambda preset: preset.name)
@@ -168,3 +181,34 @@ class TestRepoPresets:
         """The builder uses the pockets only while the compartments drawing is shown, see binBuilder"""
         merged = [pocket for pocket in preset.settings["compartmentPockets"] if pocket["width"] != 1 or pocket["length"] != 1]
         assert not merged or preset.settings["showCompartmentsLayout"]
+
+
+class TestGridkeeperPresets:
+    """Round 58: the palette makes the docs' model pictures, of every generator, from scripts too"""
+
+    def test_pictures_go_into_the_docs(self):
+        assert presets.DEFAULT_OUTPUT == os.path.join("docs", "assets", "models")
+
+    def test_every_generator_can_be_pictured(self, tmp_path):
+        for generator in ["bin", "baseplate", "label", "box", "boxLabel"]:
+            write(tmp_path, f"{generator}.json", {"generator": generator, "settings": {}})
+            assert presets.loadPreset(str(tmp_path), f"{generator}.json").generator == generator
+        write(tmp_path, "other.json", {"generator": "shelf", "settings": {}})
+        with pytest.raises(presets.PresetError, match="generator"):
+            presets.loadPreset(str(tmp_path), "other.json")
+
+    def test_a_sidecar_holds_what_the_finisher_needs(self, folder):
+        write(folder, "wide.json", {"extends": "_base.json", "width": 1200, "height": 900, "margin": 0.05})
+        preset = presets.loadPreset(str(folder), "wide.json")
+        data = presets.sidecar(preset, os.path.join("raw", "wide.render.png"), os.path.join("repo"))
+        assert data == {
+            "name": "wide",
+            "render": os.path.join("raw", "wide.render.png"),
+            "output": os.path.join("repo", "docs", "assets", "models", "wide.png"),
+            "width": 1200,
+            "height": 900,
+            "margin": 0.05,
+            "transparent": True,
+            "exposure": preset.exposure,
+            "saturation": preset.saturation,
+        }
