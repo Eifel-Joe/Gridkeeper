@@ -38,7 +38,7 @@ expect rough edges, and please [open an issue](https://github.com/Eifel-Joe/Grid
 find one.
 
 ### Scripting
-While the add-in runs, scripts run in Fusion, such as those of an MCP server, can `import gridfinity` to reach its builders, settings and export, see [api.py](api.py).
+While the add-in runs, scripts run in Fusion, such as those of an MCP server, can `import gridkeeper` to reach its builders (bin, baseplate, box, box label, label insert), settings and export, see [api.py](api.py).
 
 ## Installation
 
