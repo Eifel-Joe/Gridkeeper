@@ -7,6 +7,7 @@ from .labelGenerator import _importIcon, _iconProfiles
 from .predBoxLabelLayout import BoxLabelLayout, PLATE_HEIGHT, PLATE_THICKNESS, PLATE_CORNER_RADIUS, PLATE_CHAMFER, MARKING_DEPTH
 from .predSketch import WorldSketch
 from .predBoxSeats import LABEL_JOINT_ORIGIN
+from .dim import lengthInput
 
 # The label of the storage box after Pred's parametric Gridfinity Storage Box v1.1
 # (https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric, CC BY-NC, by Pred), round 29
@@ -67,7 +68,7 @@ def _plate(width: float, component: adsk.fusion.Component, name: str) -> adsk.fu
     for faces in (extrude.startFaces, extrude.endFaces):
         edges.add(faces.item(0).edges.item(0))
     chamferInput = component.features.chamferFeatures.createInput2()
-    chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(edges, adsk.core.ValueInput.createByReal(PLATE_CHAMFER), True)
+    chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(edges, lengthInput(PLATE_CHAMFER), True)
     component.features.chamferFeatures.add(chamferInput).name = f'{name} plate chamfer'
     return body
 

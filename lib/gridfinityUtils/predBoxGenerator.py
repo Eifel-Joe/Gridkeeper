@@ -13,7 +13,7 @@ from dataclasses import dataclass
 
 import adsk.core, adsk.fusion
 
-from .dim import Dim, valueInput
+from .dim import Dim, valueInput, lengthInput
 from . import fusionLists
 from .predBox import PredBoxDims
 from .predSketch import WorldSketch, collection
@@ -67,14 +67,14 @@ class _Builder:
         """Plane parallel to a base plane at the world coordinate target on the given axis (0 x, 1 y, 2 z)"""
         planes = self.component.constructionPlanes
         planeInput = planes.createInput()
-        planeInput.setByOffset(base, valueInput(target))
+        planeInput.setByOffset(base, lengthInput(target))
         plane = planes.add(planeInput)
         origin = plane.geometry.origin
         if abs((origin.x, origin.y, origin.z)[axis] - target.value) > 1e-6:
             # the base plane's normal points the other way
             plane.deleteMe()
             planeInput = planes.createInput()
-            planeInput.setByOffset(base, valueInput(target * -1))
+            planeInput.setByOffset(base, lengthInput(target * -1))
             plane = planes.add(planeInput)
         plane.name = name
         return plane
@@ -152,7 +152,7 @@ class _Builder:
         def add(tangentChain):
             chamferInput = chamfers.createInput2()
             chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(
-                collection(items), valueInput(Dim.length(edgeSet['distance'])), tangentChain)
+                collection(items), lengthInput(Dim.length(edgeSet['distance'])), tangentChain)
             return chamfers.add(chamferInput)
         feature = _withTangentChainFallback(add)
         feature.name = name or step.split(' ')[1]
@@ -167,7 +167,7 @@ class _Builder:
         def add(tangentChain):
             filletInput = fillets.createInput()
             filletInput.edgeSetInputs.addConstantRadiusEdgeSet(
-                collection(items), valueInput(Dim.length(edgeSet['radius'])), tangentChain)
+                collection(items), lengthInput(Dim.length(edgeSet['radius'])), tangentChain)
             return fillets.add(filletInput)
         feature = _withTangentChainFallback(add)
         feature.name = name or step.split(' ')[1]
@@ -294,7 +294,7 @@ class _Builder:
             raise ValueError(f'floor pads: {len(edges)} blend edges found, {len(blends)} expected')
         fillets = self.features.filletFeatures
         filletInput = fillets.createInput()
-        filletInput.edgeSetInputs.addConstantRadiusEdgeSet(collection(edges), valueInput(mm(5.05)), False)
+        filletInput.edgeSetInputs.addConstantRadiusEdgeSet(collection(edges), lengthInput(mm(5.05)), False)
         blend = fillets.add(filletInput)
         blend.name = 'Floor pad blends'
         self.step('#14 Extrude56')

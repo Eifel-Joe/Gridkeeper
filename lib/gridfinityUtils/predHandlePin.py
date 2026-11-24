@@ -20,7 +20,7 @@ import math
 
 import adsk.core, adsk.fusion
 
-from .dim import Dim, valueInput
+from .dim import Dim, valueInput, lengthInput
 from . import fusionLists
 from .predSketch import WorldSketch, collection
 
@@ -93,7 +93,7 @@ def _tipPlane(component: adsk.fusion.Component) -> adsk.fusion.ConstructionPlane
     target = _mm(X_TIP)
     for sign in (1, -1):
         planeInput = planes.createInput()
-        planeInput.setByOffset(component.yZConstructionPlane, valueInput(target * sign))
+        planeInput.setByOffset(component.yZConstructionPlane, lengthInput(target * sign))
         plane = planes.add(planeInput)
         if abs(plane.geometry.origin.x - target.value) < 1e-6:
             plane.name = 'Pin tip plane'
@@ -162,7 +162,7 @@ def createHandlePin(component: adsk.fusion.Component) -> list[adsk.fusion.BRepBo
     chamfers = component.features.chamferFeatures
     chamferInput = chamfers.createInput2()
     chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(
-        collection([_tipEdge(body)]), valueInput(_mm(CHAMFER)), True)
+        collection([_tipEdge(body)]), lengthInput(_mm(CHAMFER)), True)
     chamfers.add(chamferInput).name = 'Tip chamfer'
 
     cuts = WorldSketch(component, plane, 'Pin cuts')

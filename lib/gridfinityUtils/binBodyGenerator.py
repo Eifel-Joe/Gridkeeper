@@ -514,7 +514,7 @@ def raisedDividerWall(
     (across, along) = (0, 1) if axis == 'x' else (1, 0)
     middle = runStart + runLength / 2
     planeInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    planeInput.setByOffset(targetComponent.xZConstructionPlane if along == 1 else targetComponent.yZConstructionPlane, valueInput(middle))
+    planeInput.setByOffset(targetComponent.xZConstructionPlane if along == 1 else targetComponent.yZConstructionPlane, lengthInput(middle))
     plane = targetComponent.constructionPlanes.add(planeInput)
     plane.name = f'{name} section plane'
     sketch: adsk.fusion.Sketch = targetComponent.sketches.add(plane)
@@ -904,7 +904,7 @@ def supportCornerSweep(
     if len(path) == 3:
         dims.append((cavityAt[axis] + out * direction, rounding.bottomZ))
     planeInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    planeInput.setByOffset(targetComponent.yZConstructionPlane if other == 0 else targetComponent.xZConstructionPlane, valueInput(cavityAt[other]))
+    planeInput.setByOffset(targetComponent.yZConstructionPlane if other == 0 else targetComponent.xZConstructionPlane, lengthInput(cavityAt[other]))
     plane = targetComponent.constructionPlanes.add(planeInput)
     plane.name = f'{name} support path plane'
     made.append(plane)
@@ -962,7 +962,7 @@ def raisedCornerSectionsSketch(
     follow the grid parameters
     """
     planeInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    planeInput.setByOffset(targetComponent.xYConstructionPlane, valueInput(bottomZ))
+    planeInput.setByOffset(targetComponent.xYConstructionPlane, lengthInput(bottomZ))
     plane = targetComponent.constructionPlanes.add(planeInput)
     plane.name = f'{name} plane'
     sketch: adsk.fusion.Sketch = targetComponent.sketches.add(plane)
@@ -1048,7 +1048,7 @@ def filletRaisedDividerCorner(
         filletInput.isRollingBallCorner = True
         filletInput.addConstantRadiusEdgeSet(
             commonUtils.objectCollectionFromList(edges),
-            adsk.core.ValueInput.createByReal(radius * factor),
+            lengthInput(radius * factor),
             False,
         )
         try:

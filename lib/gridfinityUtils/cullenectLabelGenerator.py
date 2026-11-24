@@ -2,7 +2,7 @@ import adsk.core, adsk.fusion
 
 from . import const, commonUtils, combineUtils, filletUtils, sketchUtils, cullenectLabelLayout, cullenectCatalog, textStyles
 from .labelGenerator import _measureText, _iconProfiles, _importIcon, _applyStyle
-from .dim import Dim, valueInput
+from .dim import Dim, valueInput, lengthInput
 
 # Insert for the Cullenect label system, after cullenect_base_v2 and cullenect_label_generate in Cullenect.scad by
 # CullenJWebb (MIT), https://github.com/CullenJWebb/Cullenect-Labels: a 1.2 mm plate with rounded corners whose middle
@@ -31,7 +31,7 @@ class CullenectLabelInput():
 
 def _offsetPlane(offset: float, targetComponent: adsk.fusion.Component, name: str) -> adsk.fusion.ConstructionPlane:
     planeInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    planeInput.setByOffset(targetComponent.xYConstructionPlane, adsk.core.ValueInput.createByReal(offset))
+    planeInput.setByOffset(targetComponent.xYConstructionPlane, lengthInput(offset))
     plane = targetComponent.constructionPlanes.add(planeInput)
     plane.name = name
     plane.isLightBulbOn = False

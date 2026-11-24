@@ -221,7 +221,7 @@ def _iconMeasure(sketch: adsk.fusion.Sketch, path: str) -> tuple[float, int] | N
 
 def _offsetPlane(component: adsk.fusion.Component, base: adsk.fusion.ConstructionPlane, offset: Dim, name: str) -> adsk.fusion.ConstructionPlane:
     planeInput = component.constructionPlanes.createInput()
-    planeInput.setByOffset(base, valueInput(offset))
+    planeInput.setByOffset(base, lengthInput(offset))
     plane = component.constructionPlanes.add(planeInput)
     plane.name = name
     plane.isLightBulbOn = False
