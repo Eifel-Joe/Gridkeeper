@@ -8,7 +8,7 @@ under ~50 s, through the main session.
 
 - [ ] `git merge --no-ff upstream/master`; resolve by the spec's table:
   - Ours: `commandExport/entry.py`, `threeMf.py`, `printBeds.py` (+ upstream's `presetLabelOf`), `test_print_beds.py`
-    (+ its `presetLabelOf` test), `binBuilder.py` parameter path (D3), `baseGenerator.py` joint origins,
+    (+ its `presetLabelOf` test), `baseGenerator.py` joint origins,
     `binBodyCutoutGenerator.py` scoop fillet, label layout in `labelGenerator.py`, all snapshot binaries.
   - Union: imports (`lengthInput`, `lipSharpTop` + Gridkeeper's), `sketchUtils` (both rectangle helpers),
     `commandCreateBin/entry.py` (inch row + Cullenect row; `keepActiveComponent` + `cell=`; `isFromTag` + label color),
@@ -27,13 +27,14 @@ under ~50 s, through the main session.
 - [ ] GREEN: `lib/scriptModule.py`, `api.py` marker, register/unregister in `Gridkeeper.py`; `api.py` exposes box,
   box label and label insert builders. Commit.
 
-## Task 3 — Names on rebuild for every generator (D4)
+## Task 3 — Bins always rebuilt (D3), names on rebuild for every generator (D4)
 
+- [ ] In the merge (Task 1) `binBuilder.py` takes upstream's side: parameters-only path gone. Then remove its helpers
+  (`parameterEditKeepsPlacement`, `parameterEditKeepsSockets`, `textEditByParameter`, `textChangedSinceBuild`) and
+  their tests; source tests that pointed at `parameterEdits` point at the full rebuild (cell, joint, label refit).
 - [ ] RED: `tests/test_rebuild_names.py` cases for a box, box label and label insert prefix (user-given component,
-  group, body names kept; generated names follow the new settings); a case for `retag` writing the generated names
-  after a parameters-only rebuild; existing round-44 counter tests stay green.
-- [ ] GREEN: `rebuildUtils` (one name mechanism, see D4), callers in box, box label, label builders, `binBuilder.retag`.
-  Commit.
+  group, body names kept; generated names follow the new settings); existing round-44 counter tests stay green.
+- [ ] GREEN: `rebuildUtils` (one name mechanism, see D4), callers in box, box label, label builders. Commit.
 
 ## Task 4 — Active component kept for box, box label, label insert (D9)
 
@@ -54,7 +55,8 @@ under ~50 s, through the main session.
 
 ## Task 7 — Version, changelog, docs
 
-- [ ] `Gridkeeper.manifest` 1.4.0; CHANGELOG 1.4.0 with "Merged from GridfinityGenerator by Le0Michine (Lev Mishin),
+- [ ] `Gridkeeper.manifest` 1.4.0; CHANGELOG 1.4.0 with "Changed": the dialog always rebuilds a bin (D3, decision and
+  consequence for later features), with "Merged from GridfinityGenerator by Le0Michine (Lev Mishin),
   up to fadbd128" and credits; header line 4 (merged up to fadbd128, round 58); `docs/getting-started/whats-new.md`;
   README "Scripting". pytest green. Commit.
 

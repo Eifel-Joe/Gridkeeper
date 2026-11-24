@@ -33,7 +33,7 @@ has the inch errors upstream fixed.
 | 7a551eb4 | close the document of a case whose build fails (submitted from Gridkeeper) | taken |
 | 1d7c65da, 5d30bfa3 | keep the names of a rebuilt bin/baseplate: generated names in the tag, user-given names restored | **taken**, combined with Gridkeeper's rebuild (D4) |
 | 25509a2a, 77aaecf4 (wiki part) | contribution guide wiki | not taken, the wiki stays deleted in the fork (as in rounds 22/38) |
-| 77aaecf4 | rebuild a bin every time, the parameters-only path scrapped | **not taken** (D3) |
+| 77aaecf4 | rebuild a bin every time, the parameters-only path scrapped | **taken** (D3) |
 | 9797d4fc | rebuild/clone from an older tag with the settings it was built with (`ADDED_FIELDS`) | **taken**, merged with Gridkeeper's `OLDER_VALUES` (round 32) |
 | 54522054 | actual dimensions also in inches in an inch document | **taken**, Gridkeeper's Cullenect sockets row stays below |
 | 73e35fce | bin one unit high with a scoop (submitted from Gridkeeper) | Gridkeeper's cutout already limits the floor fillet beside a scoop (`scoopSides.scoopFloorRadius`): keep ours; the new case `bin_1x1x1_scoop` is taken and recorded with Gridkeeper |
@@ -61,16 +61,23 @@ Gridkeeper builders (box, box label, label insert). **Module name: `gridkeeper`*
 module. Alternative: keep `gridfinity` (smaller diff to upstream, but Gridkeeper would take over upstream's name
 whenever both run).
 
-**D3 Parameters-only rebuild stays.** Upstream scrapped it; Gridkeeper's path is extended (labels refit, cells,
-Cullenect sockets, creases, rounds 19/31/50) and keeps the timeline features after the bin untouched. Kept, and its
-`retag` writes the generated names into the tag like a full rebuild does (D4), so a later rebuild still knows which
-names the user changed.
+**D3 Bins are always rebuilt (approved change).** Decision: as in GridfinityGenerator, a bin changed in the bin
+dialog is always built again in its place, also when only settings that are its parameters changed. One way to build
+a bin is simpler to keep right than two; the parameters-only path had grown special cases (label refit, cells,
+Cullenect sockets, creases, colored text). Removed with it: `binBuilder.parameterEdits`, `isSameSetting`, `retag`,
+`binCell.parameterEditKeepsPlacement`, `cullenect.parameterEditKeepsSockets`, `labelColors.textEditByParameter`,
+`binLabelLayout.textChangedSinceBuild` and their tests (none is used elsewhere; `configWithParameters` stays, the
+settings window and the other rebuilds use it). What the full rebuild already does stays covered by tests: label
+fitted anew, bin kept in its cell and its joint, Cullenect sockets fitted. Changing the bin's parameters directly in
+Fusion (*Change Parameters*) is unchanged. Consequence: features made after the bin may lose their references when it
+is rebuilt from the dialog, as with any rebuild.
 
 **D4 Names on rebuild.** Upstream's `generatedNames`/`keepName` (component, timeline group, bodies) is taken and
 combined with Gridkeeper's rebuild (joints by name, light-bulb hiding, joint and component counters of round 44).
 Where upstream's name restore and Gridkeeper's `dropComponentCounters` do the same, one of them stays (whichever the
 unit tests show covers both cases). Box, box label and label insert rebuild through `rebuildUtils.rebuild` too: they
-pass their own name prefix and keep user-given names the same way (sister paths).
+pass their own name prefix and keep user-given names the same way (sister paths). (The parameters-only path is gone,
+D3, so no retag is needed.)
 
 **D5 Lip 4.4 mm.** Taken as is. Every bin with a lip moves 0.0036 mm at the default clearance; snapshots that change
 are recorded again with Gridkeeper's code (not upstream's binaries, our bins differ). Gridkeeper code using the lip
@@ -102,7 +109,7 @@ and in box, box label and label insert (same `occurrence.activate()` in their bu
 
 - Export from scripts on Gridkeeper's export (D1) — new list point.
 - Upstream's `bedPacking` and plates palette.
-- Any change of Gridkeeper's export, label layout or rebuild beyond the merge points above.
+- Any change of Gridkeeper's export or label layout beyond the merge points above.
 - Upstream wiki, FUNDING, version number.
 
 ## End-to-end criterion
