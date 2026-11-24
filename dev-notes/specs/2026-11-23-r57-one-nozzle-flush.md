@@ -83,7 +83,7 @@ Die Mindestmenge je Quellfilament ist `int(nozzle_volume)` minus die Länge, die
 | P2S | 2 | 0 / 18 | nil / 10 | 0 | 110 |
 | X2D | 2 | 0, 0 / 18 | nil / 10 | 0 | 92, 92 |
 | H2D, H2D Pro | 2 | 0, 0 / 10 | nil / nil | 0 | 130, 145 (wie R56-Test) |
-| H2C | 2 | **1, 1 / 14** | nil / nil | 14 | 130 → 96, 145 → 111 (ungeprüft) |
+| H2C | 2 | **1, 1 / 14** | nil / nil | 14 | 130 → 96, 145 → 111 (geprüft im Bambu-Test 2) |
 | H2S | 2 | 0 / 18 | nil / nil | 0 | 145 |
 | H3C | 2 | 0 / 18 | nil / nil | 0 | 125 (wie Test) |
 Gegenprobe: 107 − π·1,75²/4·18 = 63,7 → 63 und 92 → 48,7 → 48, genau Bambus Bereiche; 272 − 44 = 228 wie „Re-calculate“.
