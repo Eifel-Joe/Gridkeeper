@@ -13,19 +13,19 @@ Merged from GridfinityGenerator v2.6.0.0 by Le0Michine (Lev Mishin, CC BY-NC-SA 
 history of its 21 commits since ee027a9 (six of them fixes contributed from Gridkeeper):
 - **Documents in inches:** lengths Fusion keeps as parameters (fillets, chamfers, plane offsets, shells, joint origin
   offsets, text heights) go to Fusion in mm. Given as numbers, Fusion kept them in inches to 6 or 7 decimals, and
-  faces that should meet were split (by Le0Michine). Gridkeeper's own generators had the same: the box, its hinge,
-  latches and handle pin, box labels, Cullenect sockets and inserts, raised dividers and joint origins now do the
-  same; a unit test finds a fillet, chamfer, plane offset or joint origin offset in the generator modules given a
-  number again. The box's extrudes and its pattern of cells go in mm too.
-- Known limit: a box built in a document in inches still has a few small round faces of box and lid split in two
-  where the build in mm has one, with the same shape; its snapshot cases fail in inches for that.
+  faces that should meet were split (by Le0Michine). Gridkeeper's own generators had the same: the box, box labels,
+  Cullenect sockets and inserts, raised dividers and joint origins now do the same; a unit test finds a fillet,
+  chamfer, plane offset or joint origin offset in the generator modules given a number again. The box's extrudes and
+  its pattern of cells go in mm too.
+- Known limit: a box built in a document in inches still has a few small round faces split in two where the build in
+  mm has one, with the same shape; its snapshot cases fail in inches for that.
 - **Snapshot tests in inches:** every case is built a second time in a document in inches and has to come out with
   its faces split the same way as in mm (by Le0Michine). Gridkeeper's harness keeps its own sketch check.
 - **Lip on a round height:** the sharp top of the lip is 4.4 mm above the wall at the default clearance instead of
   4.396 mm, the whole lip 0.0036 mm higher; a trimmed lip is still cut flat at 3.8 mm (by Le0Michine).
 - **Names kept on rebuild:** a rebuilt bin or baseplate keeps the names the user gave its component, timeline group
   and bodies, a generated name follows the new size (by Le0Michine and Gridkeeper). Gridkeeper's box, box label and
-  label insert keep them the same way; a box part the user renamed, a lid or a latch, keeps its name too.
+  label insert keep them the same way.
 - **The component active before a build is active again**, for bins and baseplates (contributed from Gridkeeper) and
   for boxes, box labels and inserts.
 - **Older bins rebuilt and cloned with the settings they were built with** (by Le0Michine). Gridkeeper did that
