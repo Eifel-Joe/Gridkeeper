@@ -37,6 +37,9 @@ by clicking through the dialogs; prints follow. Still,
 expect rough edges, and please [open an issue](https://github.com/Eifel-Joe/Gridkeeper/issues) when you
 find one.
 
+### Scripting
+While the add-in runs, scripts run in Fusion, such as those of an MCP server, can `import gridkeeper` to reach its builders (bin, baseplate, box, box label, label insert), settings and export, see [api.py](api.py).
+
 ## Installation
 
 Gridkeeper is installed from a GitHub release, **not** from the Autodesk App Store.

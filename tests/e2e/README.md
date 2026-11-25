@@ -12,6 +12,9 @@ tests: update snapshots**. The commands are there when the add-in runs from a gi
 A case with parameters sets those user parameters once built, the snapshot is of the bodies Fusion recomputed,
 and a run also compares them with the case built with the new values from the start.
 
+A case is built in a document in mm, and a run builds it in a document in inches as well. It fails unless both come to
+the same shape with the faces split the same way, a length Fusion rounds in inches splits them another way.
+
 This page is written from the case files, run `python3 tests/e2e/write_readme.py` after adding or changing one.
 
 ## Bins
@@ -24,6 +27,7 @@ This page is written from the case files, run `python3 tests/e2e/write_readme.py
 | <img src="snapshots/bin_1_5x2_5x3_half_size/preview.png" width="120" alt="bin_1_5x2_5x3_half_size"> | [bin_1_5x2_5x3_half_size](cases/bin_1_5x2_5x3_half_size.json) | 1.5x2.5x3 bin on the whole grid, a row of half feet along two sides, with magnet and screw holes |
 | <img src="snapshots/bin_1_5x2x6_shape_half_grid_shelled_lip_full/preview.png" width="120" alt="bin_1_5x2x6_shape_half_grid_shelled_lip_full"> | [bin_1_5x2x6_shape_half_grid_shelled_lip_full](cases/bin_1_5x2x6_shape_half_grid_shelled_lip_full.json) | 1.5x2x6 shaped shelled bin on the half grid with a full lip, its shaped lip socket failed to join its bottom section |
 | <img src="snapshots/bin_1x1x1_lowest/preview.png" width="120" alt="bin_1x1x1_lowest"> | [bin_1x1x1_lowest](cases/bin_1x1x1_lowest.json) | 1x1x1 bin, the lowest there is, with its lip |
+| <img src="snapshots/bin_1x1x1_scoop/preview.png" width="120" alt="bin_1x1x1_scoop"> | [bin_1x1x1_scoop](cases/bin_1x1x1_scoop.json) | 1x1x1 bin with a scoop, the lowest there is, its bottom fillet opposite the scoop was deeper than the cutout and failed |
 |  | [bin_1x1x2_cullenect](cases/bin_1x1x2_cullenect.json) | 1x1x2 bin, the lowest with a Cullenect socket |
 | <img src="snapshots/bin_1x1x2_solid_no_lip/preview.png" width="120" alt="bin_1x1x2_solid_no_lip"> | [bin_1x1x2_solid_no_lip](cases/bin_1x1x2_solid_no_lip.json) | 1x1x2 solid bin without a lip |
 | <img src="snapshots/bin_1x1x3_40mm_6mm_units/preview.png" width="120" alt="bin_1x1x3_40mm_6mm_units"> | [bin_1x1x3_40mm_6mm_units](cases/bin_1x1x3_40mm_6mm_units.json) | 1x1x3 bin on a 40 mm grid with 6 mm height units |
@@ -39,6 +43,7 @@ This page is written from the case files, run `python3 tests/e2e/write_readme.py
 | <img src="snapshots/bin_1x4x10_creases/preview.png" width="120" alt="bin_1x4x10_creases"> | [bin_1x4x10_creases](cases/bin_1x4x10_creases.json) | 1x4x10 bin, tall and long enough for its long walls to fold in along creases |
 | <img src="snapshots/bin_1x4x10_creases_tuned/preview.png" width="120" alt="bin_1x4x10_creases_tuned"> | [bin_1x4x10_creases_tuned](cases/bin_1x4x10_creases_tuned.json) | 1x4x10 bin with 3.5 mm deep creases folding its long walls in panels of at most 2 units |
 |  | [bin_1x4x10_cullenect_creases](cases/bin_1x4x10_cullenect_creases.json) | 1x4x10 bin with folded walls and a Cullenect socket in its tab |
+| <img src="snapshots/bin_1x4x2_plain/preview.png" width="120" alt="bin_1x4x2_plain"> | [bin_1x4x2_plain](cases/bin_1x4x2_plain.json) | 1x4x2 bin, its lip bottom chamfer failed in a document in inches, issue #217 |
 | <img src="snapshots/bin_2_5x2_5x3_l_shape_half_size/preview.png" width="120" alt="bin_2_5x2_5x3_l_shape_half_size"> | [bin_2_5x2_5x3_l_shape_half_size](cases/bin_2_5x2_5x3_l_shape_half_size.json) | 2.5x2.5x3 L shaped bin on the whole grid, its arms end in half feet |
 | <img src="snapshots/bin_2x1_base_only/preview.png" width="120" alt="bin_2x1_base_only"> | [bin_2x1_base_only](cases/bin_2x1_base_only.json) | 2x1 bin base alone, no body |
 | <img src="snapshots/bin_2x1x1_lip_full_lowest/preview.png" width="120" alt="bin_2x1x1_lip_full_lowest"> | [bin_2x1x1_lip_full_lowest](cases/bin_2x1x1_lip_full_lowest.json) | 2x1x1 bin with a full lip, its support stopping at the floor |

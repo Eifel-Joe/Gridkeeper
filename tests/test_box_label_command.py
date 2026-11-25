@@ -138,4 +138,4 @@ def test_the_plate_is_tagged_so_the_export_takes_it_with_its_surface():
     # p380 (round r29-export): untagged, the export didn't take the label as a part, and a Flush one lay wrong side up
     source = _function(BUILDER, "_buildBoxLabel")
     # its config holds the surface among the rest since the box label is rebuilt and cloned (1.1.0)
-    assert "tagUtils.tagBody(plate, tagUtils.TAG_BOX_LABEL, settings, labelParameters, configJson.stateToJson(configJson.GENERATOR_BOX_LABEL, state), prefix)" in source
+    assert "tagUtils.tagBody(plate, tagUtils.TAG_BOX_LABEL, settings, labelParameters, configJson.stateToJson(configJson.GENERATOR_BOX_LABEL, state), prefix," in source

@@ -20,7 +20,7 @@ import math
 
 import adsk.core, adsk.fusion
 
-from .dim import Dim, valueInput
+from .dim import Dim, lengthInput
 from . import fusionLists
 from .predSketch import WorldSketch, collection
 
@@ -93,7 +93,7 @@ def _tipPlane(component: adsk.fusion.Component) -> adsk.fusion.ConstructionPlane
     target = _mm(X_TIP)
     for sign in (1, -1):
         planeInput = planes.createInput()
-        planeInput.setByOffset(component.yZConstructionPlane, valueInput(target * sign))
+        planeInput.setByOffset(component.yZConstructionPlane, lengthInput(target * sign))
         plane = planes.add(planeInput)
         if abs(plane.geometry.origin.x - target.value) < 1e-6:
             plane.name = 'Pin tip plane'
@@ -110,9 +110,9 @@ def _extrude(component, profiles, operation, distance: float, start: float = Non
     normal = sketch.xDirection.crossProduct(sketch.yDirection)
     sign = 1 if normal.x > 0 else -1
     extrudeInput = features.createInput(collection(profiles), operation)
-    extrudeInput.setDistanceExtent(False, valueInput(_mm(distance * sign)))
+    extrudeInput.setDistanceExtent(False, lengthInput(_mm(distance * sign)))
     if start is not None:
-        extrudeInput.startExtent = adsk.fusion.OffsetStartDefinition.create(valueInput(_mm(start * sign)))
+        extrudeInput.startExtent = adsk.fusion.OffsetStartDefinition.create(lengthInput(_mm(start * sign)))
     if body is not None:
         extrudeInput.participantBodies = [body]
     feature = features.add(extrudeInput)
@@ -162,7 +162,7 @@ def createHandlePin(component: adsk.fusion.Component) -> list[adsk.fusion.BRepBo
     chamfers = component.features.chamferFeatures
     chamferInput = chamfers.createInput2()
     chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(
-        collection([_tipEdge(body)]), valueInput(_mm(CHAMFER)), True)
+        collection([_tipEdge(body)]), lengthInput(_mm(CHAMFER)), True)
     chamfers.add(chamferInput).name = 'Tip chamfer'
 
     cuts = WorldSketch(component, plane, 'Pin cuts')

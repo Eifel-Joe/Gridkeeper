@@ -137,7 +137,7 @@ class TestBuilder:
     def test_the_plate_keeps_the_whole_config_its_settings_parameters_and_id(self):
         source = _function(BUILDER, "_buildBoxLabel")
         assert ("tagUtils.tagBody(plate, tagUtils.TAG_BOX_LABEL, settings, labelParameters, "
-                "configJson.stateToJson(configJson.GENERATOR_BOX_LABEL, state), prefix)") in source
+                "configJson.stateToJson(configJson.GENERATOR_BOX_LABEL, state), prefix,") in source
 
     def test_the_text_parameters_are_labelled_for_the_rebuild(self):
         source = _function(BUILDER, "_buildBoxLabel")
@@ -150,7 +150,7 @@ class TestBuilder:
     def test_a_rebuild_is_built_in_place_of_the_old_label(self):
         source = _function(BUILDER, "rebuildBoxLabel")
         assert "rebuildUtils.findTarget(des, body, tagUtils.TAG_BOX_LABEL, PLACEMENT_FEATURE)" in source
-        assert "rebuildUtils.rebuild(des, target, prefix, PARAMETER_BASE_NAME, isPreview, build, 'box label', jointsByName=True)" in source
+        assert "rebuildUtils.rebuild(des, target, prefix, PARAMETER_BASE_NAME, isPreview, build, 'box label', jointsByName=True," in source
         # a jointed label is placed by its joint, a free one keeps its old transform or the move of its bodies
         assert "None if box is not None else transform" in source
 

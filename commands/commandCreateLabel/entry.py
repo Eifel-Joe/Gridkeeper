@@ -517,11 +517,13 @@ def generateLabel(args: adsk.core.CommandEventArgs, mayChangeDocument: bool = Tr
     try:
         des = adsk.fusion.Design.cast(app.activeProduct)
         pocket = selectedPocket(args.command.commandInputs)
-        if rebuildBodyToken is not None:
-            body = rebuildUtils.findBodyByToken(des, rebuildBodyToken)
-            (_, rebuildNotes) = rebuildLabel(des, body, state, settings, not mayChangeDocument, pocket)
-        else:
-            buildLabel(des, state, settings, mayChangeDocument, pocket)
+        # the component active before is again afterwards, the build activates its own (as the bin dialog)
+        with commonUtils.keepActiveComponent(des):
+            if rebuildBodyToken is not None:
+                body = rebuildUtils.findBodyByToken(des, rebuildBodyToken)
+                (_, rebuildNotes) = rebuildLabel(des, body, state, settings, not mayChangeDocument, pocket)
+            else:
+                buildLabel(des, state, settings, mayChangeDocument, pocket)
         futil.log(f'{CMD_NAME} {labelName(state)} generated in {time.perf_counter() - startTime:.3f}s')
     except UnsupportedDesignTypeException:
         args.executeFailed = True

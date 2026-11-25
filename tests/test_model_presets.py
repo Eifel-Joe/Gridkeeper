@@ -24,7 +24,18 @@ cases = _load("testCases", "commands", "commandSnapshotTests", "testCases.py")
 binState = _load("binInputState", "commands", "commandCreateBin", "inputState.py")
 baseplateState = _load("baseplateInputState", "commands", "commandCreateBaseplate", "inputState.py")
 
-STATE_CLASSES = {cases.GENERATOR_BIN: binState.InputState, cases.GENERATOR_BASEPLATE: baseplateState.InputState}
+labelState = _load("labelInputState", "commands", "commandCreateLabel", "inputState.py")
+boxState = _load("boxInputState", "commands", "commandCreateBox", "inputState.py")
+boxLabelState = _load("boxLabelInputState", "commands", "commandCreateBoxLabel", "inputState.py")
+defaults = _load("defaultSettings", "lib", "defaultSettings.py")
+
+STATE_CLASSES = {
+    cases.GENERATOR_BIN: binState.InputState,
+    cases.GENERATOR_BASEPLATE: baseplateState.InputState,
+    cases.GENERATOR_LABEL: labelState.InputState,
+    cases.GENERATOR_BOX: boxState.InputState,
+    "boxLabel": boxLabelState.InputState,
+}
 
 
 def write(folder, name, data):
@@ -123,7 +134,7 @@ class TestOptions:
 
     def test_section(self, folder):
         write(folder, "cut.json", {"extends": "_base.json", "section": {"plane": "xz"}})
-        assert presets.loadPreset(str(folder), "cut.json").section == {"plane": "xz", "flip": False}
+        assert presets.loadPreset(str(folder), "cut.json").section == {"plane": "xz", "flip": False, "offset": None}
         write(folder, "whole.json", {"extends": "_base.json"})
         assert presets.loadPreset(str(folder), "whole.json").section is None
 
@@ -160,7 +171,9 @@ class TestRepoPresets:
 
     @pytest.mark.parametrize("preset", presets.loadPresets(PRESETS_FOLDER), ids=lambda preset: preset.name)
     def test_builds_a_state(self, preset):
-        cases.stateFromJson(preset.generator, STATE_CLASSES[preset.generator], preset.settings)
+        # over the dialog's defaults, as a test case and the palette (commandModelScreenshots.entry.presetState)
+        settings = {**defaults.SETTINGS.get(preset.generator, {}), **preset.settings}
+        cases.stateFromJson(preset.generator, STATE_CLASSES[preset.generator], settings)
 
     @pytest.mark.parametrize("preset", [preset for preset in presets.loadPresets(PRESETS_FOLDER) if preset.generator == cases.GENERATOR_BIN],
                              ids=lambda preset: preset.name)
@@ -168,3 +181,73 @@ class TestRepoPresets:
         """The builder uses the pockets only while the compartments drawing is shown, see binBuilder"""
         merged = [pocket for pocket in preset.settings["compartmentPockets"] if pocket["width"] != 1 or pocket["length"] != 1]
         assert not merged or preset.settings["showCompartmentsLayout"]
+
+
+class TestGridkeeperPresets:
+    """Round 58: the palette makes the docs' model pictures, of every generator, from scripts too"""
+
+    def test_pictures_go_into_the_docs(self):
+        assert presets.DEFAULT_OUTPUT == os.path.join("docs", "assets", "models")
+
+    def test_every_generator_can_be_pictured(self, tmp_path):
+        for generator in ["bin", "baseplate", "label", "box", "boxLabel"]:
+            write(tmp_path, f"{generator}.json", {"generator": generator, "settings": {}})
+            assert presets.loadPreset(str(tmp_path), f"{generator}.json").generator == generator
+        write(tmp_path, "other.json", {"generator": "shelf", "settings": {}})
+        with pytest.raises(presets.PresetError, match="generator"):
+            presets.loadPreset(str(tmp_path), "other.json")
+
+    def test_a_sidecar_holds_what_the_finisher_needs(self, folder):
+        write(folder, "wide.json", {"extends": "_base.json", "width": 1200, "height": 900, "margin": 0.05})
+        preset = presets.loadPreset(str(folder), "wide.json")
+        data = presets.sidecar(preset, os.path.join("raw", "wide.render.png"), os.path.join("repo"))
+        assert data == {
+            "name": "wide",
+            "render": os.path.join("raw", "wide.render.png"),
+            "output": os.path.join("repo", "docs", "assets", "models", "wide.png"),
+            "width": 1200,
+            "height": 900,
+            "margin": 0.05,
+            "transparent": True,
+            "exposure": preset.exposure,
+            "saturation": preset.saturation,
+        }
+
+    def test_a_section_can_be_away_from_the_middle(self, folder):
+        # a magnet socket of a plate is 8 mm in from its edge, not in its middle
+        write(folder, "cut.json", {"extends": "_base.json", "section": {"plane": "xz", "flip": True, "offset": 8}})
+        assert presets.loadPreset(str(folder), "cut.json").section == {"plane": "xz", "flip": True, "offset": 8.0}
+        write(folder, "middle.json", {"extends": "_base.json", "section": {"plane": "xz"}})
+        assert presets.loadPreset(str(folder), "middle.json").section == {"plane": "xz", "flip": False, "offset": None}
+        write(folder, "bad.json", {"extends": "_base.json", "section": {"plane": "xz", "offset": "8"}})
+        with pytest.raises(presets.PresetError, match="offset"):
+            presets.loadPreset(str(folder), "bad.json")
+
+
+class TestDocsPictures:
+    """Round 58: the docs' model pictures all come from the presets, and the presets are the docs' pictures"""
+
+    DOCS = os.path.join(PROJECT_ROOT, "docs")
+
+    def _usedPictures(self):
+        import re
+        used = set()
+        for folder, _, files in os.walk(self.DOCS):
+            for name in files:
+                if name.endswith(".md"):
+                    with open(os.path.join(folder, name), encoding="utf-8") as file:
+                        used |= set(re.findall(r"assets/models/([A-Za-z0-9_-]+)\.png", file.read()))
+        return used
+
+    def test_every_picture_in_the_docs_has_a_preset(self):
+        names = {preset.name for preset in presets.loadPresets(PRESETS_FOLDER)}
+        assert self._usedPictures() - names == set()
+
+    def test_every_preset_is_a_picture_of_the_docs(self):
+        names = {preset.name for preset in presets.loadPresets(PRESETS_FOLDER)}
+        assert names - self._usedPictures() == set()
+
+    def test_every_preset_has_the_docs_look(self):
+        for preset in presets.loadPresets(PRESETS_FOLDER):
+            assert (preset.camera, preset.color, preset.width, preset.height, preset.output) == (
+                "orthographic", "#4A82C8", 1200, 900, presets.DEFAULT_OUTPUT), preset.name

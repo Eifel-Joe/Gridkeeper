@@ -106,6 +106,11 @@ def socketSummary(
     }
     return [describeSocket(item, baseWidth, socketOffset) for item in sorted(units, key=lambda item: -1 if item is None else item)]
 
+def dimensionsTableRows(isInInches: bool, hasSockets: bool) -> int:
+    """Rows of the bin dialog's actual dimensions: the sizes in mm, in a document in inches a row in inches below, then
+    the sockets across a row of their own"""
+    return 1 + (1 if isInInches else 0) + (1 if hasSockets else 0)
+
 def socketCounts(
     compartmentWidths: list[float],
     tabStart: float,
@@ -142,20 +147,6 @@ def labelInputsEnabled(labelStyle: str) -> dict[str, bool]:
         'topAngle': not isCullenect,
         'socketOffset': isCullenect,
     }
-
-
-# config fields of the bin grid a socket is fitted to when building, see binBuilder.parameterEdits
-_SOCKET_GRID_FIELDS = ('baseWidth', 'baseLength')
-
-def parameterEditKeepsSockets(isCullenect: bool, hasTab: bool, changed: list[str]) -> bool:
-    """
-    Whether setting the bin's parameters builds the same sockets a rebuild would. The number of socket units and
-    whether a compartment is deep enough for a socket are worked out from the base units when building, a change of
-    them is built again (review of round 12). Height changes move the socket along its expressions
-    """
-    if not (isCullenect and hasTab):
-        return True
-    return not any(name in _SOCKET_GRID_FIELDS for name in changed)
 
 
 # --- joint origins of the pockets (round 13, p160): one on the floor of each pocket, the label command finds them by

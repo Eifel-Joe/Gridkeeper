@@ -19,7 +19,7 @@ from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput, LIP_TYPE_FULL
 from .binBodyLipGenerator import createGridfinityBinBodyLip, createStackedFootCutters, createLipSupport, lipInnerInset
 from .raisedDividers import DividerSegment, dividerTop, RIDGE_WALL_MARGIN
 from .raisedDividers import FilletCorner, filletCorners, isCornerEdge, chainRuns, runOffset, supportCornerPath
-from .dim import Dim, valueInput, applyTo
+from .dim import Dim, valueInput, lengthInput, applyTo
 from ... import config
 
 app = adsk.core.Application.get()
@@ -181,7 +181,7 @@ def createGridfinityBinBody(
             bottomLipChamferEdges = commonUtils.objectCollectionFromList(edgesToChamfer)
             bottomLipChamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(
                 bottomLipChamferEdges,
-                adsk.core.ValueInput.createByReal(lipBottomChamferSize),
+                lengthInput(lipBottomChamferSize),
                 False)
             chamferFeatures.add(bottomLipChamferInput).name = 'Lip bottom chamfer'
             combineUtils.cutBody(lipBody, commonUtils.objectCollectionFromList(lipBottomChamferExtrude.bodies), targetComponent, name='Lip bottom chamfer cut')
@@ -514,7 +514,7 @@ def raisedDividerWall(
     (across, along) = (0, 1) if axis == 'x' else (1, 0)
     middle = runStart + runLength / 2
     planeInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    planeInput.setByOffset(targetComponent.xZConstructionPlane if along == 1 else targetComponent.yZConstructionPlane, valueInput(middle))
+    planeInput.setByOffset(targetComponent.xZConstructionPlane if along == 1 else targetComponent.yZConstructionPlane, lengthInput(middle))
     plane = targetComponent.constructionPlanes.add(planeInput)
     plane.name = f'{name} section plane'
     sketch: adsk.fusion.Sketch = targetComponent.sketches.add(plane)
@@ -904,7 +904,7 @@ def supportCornerSweep(
     if len(path) == 3:
         dims.append((cavityAt[axis] + out * direction, rounding.bottomZ))
     planeInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    planeInput.setByOffset(targetComponent.yZConstructionPlane if other == 0 else targetComponent.xZConstructionPlane, valueInput(cavityAt[other]))
+    planeInput.setByOffset(targetComponent.yZConstructionPlane if other == 0 else targetComponent.xZConstructionPlane, lengthInput(cavityAt[other]))
     plane = targetComponent.constructionPlanes.add(planeInput)
     plane.name = f'{name} support path plane'
     made.append(plane)
@@ -962,7 +962,7 @@ def raisedCornerSectionsSketch(
     follow the grid parameters
     """
     planeInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    planeInput.setByOffset(targetComponent.xYConstructionPlane, valueInput(bottomZ))
+    planeInput.setByOffset(targetComponent.xYConstructionPlane, lengthInput(bottomZ))
     plane = targetComponent.constructionPlanes.add(planeInput)
     plane.name = f'{name} plane'
     sketch: adsk.fusion.Sketch = targetComponent.sketches.add(plane)
@@ -1048,7 +1048,7 @@ def filletRaisedDividerCorner(
         filletInput.isRollingBallCorner = True
         filletInput.addConstantRadiusEdgeSet(
             commonUtils.objectCollectionFromList(edges),
-            adsk.core.ValueInput.createByReal(radius * factor),
+            lengthInput(radius * factor),
             False,
         )
         try:
@@ -1135,7 +1135,7 @@ def createShapeLipBottomChamfer(
     # as tall as the plain bin's, its outer corners' radius, a hair less, the taper would close the corner arcs to a point
     height = compartmentCutoutFilletRadius(binShape.cornerRadius(True, grid.cornerFilletRadius, offset)) - 0.001
     planeInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    planeInput.setByOffset(targetComponent.xYConstructionPlane, valueInput(topZ))
+    planeInput.setByOffset(targetComponent.xYConstructionPlane, lengthInput(topZ))
     plane = targetComponent.constructionPlanes.add(planeInput)
     plane.name = 'Lip bottom chamfer plane'
     (sketch, _) = baseGenerator.createShapeOutlineSketch(
@@ -1171,7 +1171,7 @@ def createShapeCavity(
     see baseGenerator.createShapeOutlineSketch
     """
     planeInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    planeInput.setByOffset(targetComponent.xYConstructionPlane, valueInput(topZ))
+    planeInput.setByOffset(targetComponent.xYConstructionPlane, lengthInput(topZ))
     plane = targetComponent.constructionPlanes.add(planeInput)
     plane.name = f'{name} plane'
     offset = baseConfiguration.xyClearance + wallThickness

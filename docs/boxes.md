@@ -34,6 +34,8 @@ A link to this page, the credit to Pred and the version of the add-in. When the 
 The line below shows the outer size: width and length are the cells plus a 10 mm rim on every side
 (5 × 4 → 230 × 188 mm).
 
+![A box 5 × 4 × 6, 230 × 188 mm, with its lid](assets/models/box.png)
+
 ## Magnet holes
 
 | Input | Default | What it does |
@@ -116,6 +118,8 @@ box's group in the timeline and come along with a rebuild or clone. They have an
 **Solid › Create › Gridkeeper box label** makes the label for the holder at the front of the box: Pred's flat plate,
 0.85 mm thick and 24.5 mm high, as wide as the holder of the box (Pred's label width less 3 mm: 25.5 mm at a width of 4,
 67.5 mm at 5, 82 mm from 6 on). It is a command of its own, so a label can be swapped without touching the box.
+
+![The label of a box 4 cells wide: large text M3 and the line Screws, raised](assets/models/box-label.png)
 
 ![The Gridkeeper box label dialog with a box picked: label width Box 5 cells (70.5 mm), plate 67.5 × 24.5 mm, large text M3, two lines, Heavy and Raised, one symbol](assets/images/dialog-box-label.png)
 

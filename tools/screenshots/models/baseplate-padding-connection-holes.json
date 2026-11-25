@@ -1,0 +1,17 @@
+{
+    "description": "Docs baseplates: a skeletonized 2x2 plate with connection holes and padding left and bottom, from below (round 38)",
+    "extends": "_baseplate.json",
+    "view": "isoBottomRight",
+    "settings": {
+        "plateWidth": 2,
+        "plateLength": 2,
+        "plateType": "Skeletonized",
+        "hasScrewHoles": false,
+        "hasMagnetSockets": false,
+        "hasPadding": true,
+        "paddingLeft": 5.0,
+        "paddingBottom": 3.0,
+        "hasConnectionHoles": true,
+        "sizingMode": "Grid units"
+    }
+}

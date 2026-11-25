@@ -260,3 +260,11 @@ def test_one_socket_is_singular():
 def test_too_short_compartments_are_counted():
     rows = cullenect.socketCounts([0, 0, CELL], 0, 4.2, 4.2, 0.03)
     assert rows == [["No socket", "2 compartments too short for a Cullenect pocket"], ["1U", "1 socket, pocket 36.3 mm, insert 36 mm"]]
+
+
+def test_dimensions_table_shows_the_sockets_below_the_sizes_in_mm_and_in_inches():
+    # the actual dimensions of the bin dialog: sizes in mm, in an inch document a line in inches too, then the sockets
+    assert cullenect.dimensionsTableRows(False, False) == 1
+    assert cullenect.dimensionsTableRows(False, True) == 2
+    assert cullenect.dimensionsTableRows(True, False) == 2
+    assert cullenect.dimensionsTableRows(True, True) == 3

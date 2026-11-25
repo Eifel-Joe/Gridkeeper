@@ -24,7 +24,7 @@ from dataclasses import dataclass
 
 import adsk.core, adsk.fusion
 
-from .dim import Dim, valueInput
+from .dim import Dim, lengthInput
 from . import fusionLists
 from .predSketch import WorldSketch, collection
 
@@ -306,7 +306,7 @@ def _plane(component: adsk.fusion.Component, axis: int, at: float, name: str):
     target = at / 10
     for sign in (1, -1):
         planeInput = planes.createInput()
-        planeInput.setByOffset(base, valueInput(_mm(at * sign)))
+        planeInput.setByOffset(base, lengthInput(_mm(at * sign)))
         plane = planes.add(planeInput)
         origin = plane.geometry.origin
         if abs((origin.x, origin.y, origin.z)[axis] - target) < 1e-6:
@@ -329,9 +329,9 @@ def _extrude(component, profiles, operation, start: float, end: float, axis: int
     features = component.features.extrudeFeatures
     plane, sign = _sketchAxis(profiles[0].parentSketch, axis)
     extrudeInput = features.createInput(collection(profiles), operation)
-    extrudeInput.setDistanceExtent(False, valueInput(_mm((end - start) * sign)))
+    extrudeInput.setDistanceExtent(False, lengthInput(_mm((end - start) * sign)))
     if abs(start - plane) > 1e-9:
-        extrudeInput.startExtent = adsk.fusion.OffsetStartDefinition.create(valueInput(_mm((start - plane) * sign)))
+        extrudeInput.startExtent = adsk.fusion.OffsetStartDefinition.create(lengthInput(_mm((start - plane) * sign)))
     if bodies is not None:
         extrudeInput.participantBodies = list(bodies)
     feature = features.add(extrudeInput)
@@ -421,7 +421,7 @@ def _chamfer(component, bodies, items, distance: float, name: str):
     chamfers = component.features.chamferFeatures
     chamferInput = chamfers.createInput2()
     chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(
-        collection(_edges(bodies, items, name)), valueInput(_mm(distance)), True)
+        collection(_edges(bodies, items, name)), lengthInput(_mm(distance)), True)
     feature = chamfers.add(chamferInput)
     feature.name = name
     return feature
@@ -573,7 +573,7 @@ def _pin(component, shape: HingeShape):
     fillets = component.features.filletFeatures
     filletInput = fillets.createInput()
     filletInput.edgeSetInputs.addConstantRadiusEdgeSet(
-        collection(_edges([pin], slotEdges, 'pin slot')), valueInput(_mm(PIN_FILLET)), True)
+        collection(_edges([pin], slotEdges, 'pin slot')), lengthInput(_mm(PIN_FILLET)), True)
     fillets.add(filletInput).name = 'Pin slot rounding'
     return pin
 

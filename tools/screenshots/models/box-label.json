@@ -1,0 +1,6 @@
+{
+    "description": "Docs storage boxes: the label of a box 4 cells wide",
+    "extends": "_boxLabel.json",
+    "view": "isoTopRight",
+    "settings": {}
+}

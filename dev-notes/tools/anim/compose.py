@@ -190,7 +190,11 @@ def main(names: list):
     for name in names or list(anims):
         writeAnimation(name, loadStates(name, anims[name]), OUT)
         sizes = [os.path.getsize(os.path.join(OUT, f'{name}-{t}.gif')) // 1024 for t in ('light', 'dark')]
-        print(f'{name}: {sizes[0]} KB light, {sizes[1]} KB dark')
+        # not '<name>: ...', the palette takes such a line as what kept the GIF from being made
+        print(f'{name} made, {sizes[0]} KB light, {sizes[1]} KB dark')
+        # the pictures palette in Fusion takes these lines as the GIFs made (round 58)
+        for theme in ('light', 'dark'):
+            print(os.path.join(OUT, f'{name}-{theme}.gif'))
 
 
 if __name__ == '__main__':

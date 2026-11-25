@@ -5,7 +5,7 @@ import os
 
 from .sketchUtils import createRectangle
 from ...lib.gridfinityUtils.baseGeneratorInput import BaseGeneratorInput
-from .dim import Dim, valueInput, applyTo
+from .dim import Dim, valueInput, lengthInput, applyTo
 from . import sketchUtils, const, edgeUtils, commonUtils, combineUtils, faceUtils, extrudeUtils, filletUtils, shapeUtils, geometryUtils, patternUtils, binShape, binGrid, jointOriginLayout
 from ...lib import fusion360utils as futil
 from ... import config
@@ -130,7 +130,7 @@ def createSingleGridfinityBaseBody(
     features: adsk.fusion.Features = targetComponent.features
     extrudeFeatures: adsk.fusion.ExtrudeFeatures = features.extrudeFeatures
     baseConstructionPlaneInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    baseConstructionPlaneInput.setByOffset(targetComponent.xYConstructionPlane, valueInput(input.originZ))
+    baseConstructionPlaneInput.setByOffset(targetComponent.xYConstructionPlane, lengthInput(input.originZ))
     baseConstructionPlane = targetComponent.constructionPlanes.add(baseConstructionPlaneInput)
     baseConstructionPlane.name = f'{name} plane'
     # create rectangle for the base
@@ -157,7 +157,7 @@ def createSingleGridfinityBaseBody(
     filletInput = filletFeatures.createInput()
     filletInput.isRollingBallCorner = True
     fillet_edges = edgeUtils.selectEdgesByLength(baseBody.faces, const.BIN_BASE_TOP_SECTION_HEIGH, const.DEFAULT_FILTER_TOLERANCE)
-    filletInput.edgeSetInputs.addConstantRadiusEdgeSet(fillet_edges, adsk.core.ValueInput.createByReal(input.cornerFilletRadius), True)
+    filletInput.edgeSetInputs.addConstantRadiusEdgeSet(fillet_edges, lengthInput(input.cornerFilletRadius), True)
     filletFeatures.add(filletInput).name = f'{name} corner fillet'
 
     # chamfer top section
@@ -167,7 +167,7 @@ def createSingleGridfinityBaseBody(
     # use one edge for chamfer, the rest will be automatically detected with tangent chain condition
     chamfer_edges.add(topSectionExtrudeFeature.endFaces.item(0).edges.item(0))
     chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(chamfer_edges,
-        topSectionExtrudeDepth,
+        lengthInput(const.BIN_BASE_TOP_SECTION_HEIGH),
         True)
     chamferFeatures.add(chamferInput).name = f'{name} top chamfer'
 
@@ -188,7 +188,7 @@ def createSingleGridfinityBaseBody(
         chamferInput = chamferFeatures.createInput2()
         chamfer_edges = commonUtils.objectCollectionFromList(faceUtils.getBottomFace(baseBottomExtrude.bodies.item(0)).edges)
         chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(chamfer_edges,
-            adsk.core.ValueInput.createByReal(const.BIN_BASE_BOTTOM_SECTION_HEIGH),
+            lengthInput(const.BIN_BASE_BOTTOM_SECTION_HEIGH),
             True)
         chamferFeatures.add(chamferInput).name = f'{name} bottom chamfer'
     
@@ -317,12 +317,12 @@ def createSingleGridfinityBaseBody(
             cutoutBodies = commonUtils.objectCollectionFromList(joinFeature.bodies)
 
         baseXZMidPlaneInput = targetComponent.constructionPlanes.createInput()
-        baseXZMidPlaneInput.setByOffset(targetComponent.xZConstructionPlane, valueInput(input.baseLength / 2 - Dim.length(input.xyClearance)))
+        baseXZMidPlaneInput.setByOffset(targetComponent.xZConstructionPlane, lengthInput(input.baseLength / 2 - Dim.length(input.xyClearance)))
         baseXZMidPlane = targetComponent.constructionPlanes.add(baseXZMidPlaneInput)
         baseXZMidPlane.name = f'{name} XZ mid plane'
         baseXZMidPlane.isLightBulbOn = False
         baseYZMidPlaneInput = targetComponent.constructionPlanes.createInput()
-        baseYZMidPlaneInput.setByOffset(targetComponent.yZConstructionPlane, valueInput(input.baseWidth / 2 - Dim.length(input.xyClearance)))
+        baseYZMidPlaneInput.setByOffset(targetComponent.yZConstructionPlane, lengthInput(input.baseWidth / 2 - Dim.length(input.xyClearance)))
         baseYZMidPlane = targetComponent.constructionPlanes.add(baseYZMidPlaneInput)
         baseYZMidPlane.name = f'{name} YZ mid plane'
         baseYZMidPlane.isLightBulbOn = False
@@ -606,7 +606,7 @@ def createWallJunctionPocketCutter(
     # box and cones share the plane, starting with the cones keeps them apart at the bottom, at the feet top
     # neighbouring cones touch in a point which combine can't handle
     pocketPlaneInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    pocketPlaneInput.setByOffset(targetComponent.xYConstructionPlane, valueInput(coneSketchHeight))
+    pocketPlaneInput.setByOffset(targetComponent.xYConstructionPlane, lengthInput(coneSketchHeight))
     pocketPlane = targetComponent.constructionPlanes.add(pocketPlaneInput)
     pocketPlane.name = 'Wall junction pocket plane'
 
@@ -802,7 +802,7 @@ def cutOutsideRoundedRectangle(
     The optional corner dims drive the corner position. Plane, sketch and cut are named after the given name"""
     features = targetComponent.features
     cutConstructionPlaneInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    cutConstructionPlaneInput.setByOffset(targetComponent.xYConstructionPlane, adsk.core.ValueInput.createByReal(cornerPoint.z))
+    cutConstructionPlaneInput.setByOffset(targetComponent.xYConstructionPlane, lengthInput(cornerPoint.z))
     cutConstructionPlane = targetComponent.constructionPlanes.add(cutConstructionPlaneInput)
     cutConstructionPlane.name = f'{name} plane'
     sketches: adsk.fusion.Sketches = targetComponent.sketches

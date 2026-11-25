@@ -1,7 +1,8 @@
 # What's new compared to GridfinityGenerator
 
 Gridkeeper starts from GridfinityGenerator v2.4.2.0 by Le0Michine, takes over its later changes (such as the lip
-types) and keeps all of it: baseplates that fill an area and split it for the print bed, bins of custom shapes with
+types, and up to v2.6.0.0 builds that come out the same in documents in inches and names kept on rebuild) and keeps
+all of it: baseplates that fill an area and split it for the print bed, bins of custom shapes with
 compartments, scoops and label tabs, creased walls, rebuilding and cloning from the right-click menu, settings saved
 to JSON files. On top of that it adds the following.
 The full list of changes, round by round, is in
@@ -83,7 +84,9 @@ The full list of changes, round by round, is in
 - **An assembly of components:** every baseplate, bin and insert is a component of its own, in the containers
   *Grid*, *Bins* and *Label*. Colored letters are in a *Text* component inside, so they export apart. A part design is
   switched to a hybrid design for this. See [Components and joints](../working/components.md).
-- **The root stays active** after a build, Fusion doesn't show everything else half transparent.
+- **The component active before stays active** after a build, Fusion doesn't show everything else half transparent.
+- **Scripts** run in Fusion, such as those of an MCP server, can `import gridkeeper` while the add-in runs, to build
+  bins, baseplates, boxes and labels without the dialogs (GridfinityGenerator's script access under a name of its own).
 
 ## Credits and naming
 

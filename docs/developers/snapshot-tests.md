@@ -43,6 +43,9 @@ and remove before it writes.
 - **Constraints:** every sketch the generator makes must be fully constrained; label cases and Cullenect cases fail
   otherwise, other cases log such sketches.
 - **Part designs:** a case can be built in a part design (`"designIntent": "part"`).
+- **Inches:** every case is built a second time in a document in inches and compared with the same snapshot; its
+  faces have to be split the same way as in mm. A length handed to Fusion as a number instead of in mm (see
+  `dim.lengthInput`) shows up here.
 - **Labels:** bins with a text label are compared by their form, not by where each letter lies, which depends on the
   font and the Fusion version. Colored cases check the look of their bodies.
 

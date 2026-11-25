@@ -1,9 +1,70 @@
 # Changelog — Gridkeeper
 
 Changes of Gridkeeper (`Eifel-Joe/Gridkeeper`, until 16.11.2026 `Eifel-Joe/FusionGridfinityGenerator`) on top of
-GridfinityGenerator by Le0Michine, merged up to ee027a9 (v2.5.0.0, 17.11.2026; rounds 1 to 11 were built on v2.2.0.0, round 22 merged v2.4.2.0, round 38 v2.5.0.0).
+GridfinityGenerator by Le0Michine, merged up to fadbd128 (v2.6.0.0, 23.11.2026; rounds 1 to 11 were built on v2.2.0.0, round 22 merged v2.4.2.0, round 38 v2.5.0.0, round 58 v2.6.0.0).
 Until 1.2.0 this file was named `CHANGELOG-CULLENECT.md`.
 Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`, the `vX.Y.Z.W` tags belong to GridfinityGenerator.
+
+## 1.4.0 (2026-11-25)
+
+### GridfinityGenerator 2.6 merged (round 58)
+
+Merged from GridfinityGenerator v2.6.0.0 by Le0Michine (Lev Mishin, CC BY-NC-SA 4.0), up to fadbd128, with the
+history of its 21 commits since ee027a9 (six of them fixes contributed from Gridkeeper):
+- **Documents in inches:** lengths Fusion keeps as parameters (fillets, chamfers, plane offsets, shells, joint origin
+  offsets, text heights) go to Fusion in mm. Given as numbers, Fusion kept them in inches to 6 or 7 decimals, and
+  faces that should meet were split (by Le0Michine). Gridkeeper's own generators had the same: the box, box labels,
+  Cullenect sockets and inserts, raised dividers and joint origins now do the same; a unit test finds a fillet,
+  chamfer, plane offset or joint origin offset in the generator modules given a number again. The box's extrudes and
+  its pattern of cells go in mm too.
+- Known limit: a box built in a document in inches still has a few small round faces split in two where the build in
+  mm has one, with the same shape; its snapshot cases fail in inches for that.
+- **Snapshot tests in inches:** every case is built a second time in a document in inches and has to come out with
+  its faces split the same way as in mm (by Le0Michine). Gridkeeper's harness keeps its own sketch check.
+- **Lip on a round height:** the sharp top of the lip is 4.4 mm above the wall at the default clearance instead of
+  4.396 mm, the whole lip 0.0036 mm higher; a trimmed lip is still cut flat at 3.8 mm (by Le0Michine).
+- **Names kept on rebuild:** a rebuilt bin or baseplate keeps the names the user gave its component, timeline group
+  and bodies, a generated name follows the new size (by Le0Michine and Gridkeeper). Gridkeeper's box, box label and
+  label insert keep them the same way.
+- **The component active before a build is active again**, for bins and baseplates (contributed from Gridkeeper) and
+  for boxes, box labels and inserts.
+- **Older bins rebuilt and cloned with the settings they were built with** (by Le0Michine). Gridkeeper did that
+  already for tags and for settings files (round 32) and keeps it for files: a saved config builds the bin it was
+  saved for.
+- **Actual dimensions in inches** too in the bin dialog of a document in inches, above the Cullenect sockets (by
+  Le0Michine).
+- **Scripts can import the add-in** while it runs: `import gridkeeper` reaches the builders of bins, baseplates,
+  boxes, box labels and inserts, the settings and the export, see `api.py` (by Le0Michine). Decision: Gridkeeper
+  registers as `gridkeeper`, not as GridfinityGenerator's `gridfinity`, so both add-ins can run side by side and a
+  script knows which one it gets.
+- New snapshot cases `bin_1x4x2_plain` (the bin that failed in inches) and `bin_1x1x1_scoop`.
+
+Changed:
+- **The bin dialog always builds a bin again** in its place, also when only values changed that its parameters hold
+  (height, units). Until now it set the parameters instead. Features made after the bin may lose their references
+  then, as with any rebuild, and Gridkeeper lists them after the rebuild. Decision: as in GridfinityGenerator, one way
+  of rebuilding a bin; the parameter path had grown special cases for labels, cells, Cullenect sockets and creases.
+  Changing the parameters yourself in **Modify › Change Parameters** works as before.
+
+Not taken:
+- GridfinityGenerator's multi-plate 3MF packing (`bedPacking`, plates palette) and its export from scripts without
+  dialogs: Gridkeeper keeps its own export with the Bambu Studio project (1.3.0). Script export for it is left for later.
+- Its version number, wiki pages and manifest; Gridkeeper counts its own versions.
+
+### Docs: model pictures from presets (round 58)
+
+- **Every model picture of the docs comes from a preset** of the pictures palette (*Gridkeeper docs: render models*), in
+  one look: orthographic, the docs' blue, 1200 × 900. New pictures show a Cullenect pocket, a label insert, a box, a box
+  label and compartments with scoops. The palette builds boxes, box labels and inserts too, saves into
+  `docs/assets/models` and makes the docs' GIFs with `dev-notes/tools/anim/compose.py`.
+- **Pictures from a script:** `scriptRender.renderRaw` renders a preset without the palette, and
+  `tools/screenshots/finishPictures.py` finishes it outside Fusion with Pillow, the same way as the palette's page.
+- **No venv needed for the GIFs:** the palette finds a Python with Pillow (the tool's venv, the main checkout's, or the
+  computer's); it failed before with `no tools\screenshots\.venv\Scripts\python.exe`.
+- GridfinityGenerator's presets no page of Gridkeeper's docs shows, its `modelGifs.py` and timelines are gone.
+
+Credits: GridfinityGenerator by Le0Michine (CC BY-NC-SA 4.0), Cullenect labels by CullenJWebb (MIT),
+gridfinity_extended_openscad by ostat / Chris Heazlewood (reference), Gridfinity by Zack Freedman.
 
 ## 1.3.2 (2026-11-23)
 

@@ -7,16 +7,24 @@ import subprocess
 import sys
 import tempfile
 import time
+from typing import Callable
 
 from ...lib import fusion360utils as futil
+from ...lib import configJson
 from ...lib.ui import viewportPictures
 from ... import config
 from ..commandCreateBin import binBuilder
 from ..commandCreateBin.inputState import InputState as BinInputState
 from ..commandCreateBaseplate import baseplateBuilder
 from ..commandCreateBaseplate.inputState import InputState as BaseplateInputState
+from ..commandCreateBox import boxBuilder
+from ..commandCreateBox.inputState import InputState as BoxInputState
+from ..commandCreateBoxLabel import boxLabelBuilder
+from ..commandCreateBoxLabel.inputState import InputState as BoxLabelInputState
+from ..commandCreateLabel import labelBuilder
+from ..commandCreateLabel.inputState import InputState as LabelInputState
 from ..commandSnapshotTests import testCases
-from . import presets, picturesPalette
+from . import presets, picturesPalette, screenshotTools
 
 # Model screenshots for the docs: the presets of tools/screenshots/models are listed in a palette with their pictures,
 # see picturesPalette.py. A preset asked for is built in a new document and saved as a picture, see presets.py. The
@@ -28,9 +36,9 @@ ui = app.userInterface
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdRenderModelScreenshots'
 CMD_NAME = 'Gridkeeper docs: render models'
 # shown on hover over the button, the first paragraph says what it does, the second how, like the generator commands
-CMD_Description = ('Saves pictures of bins and baseplates for the docs.\n\n'
+CMD_Description = ('Saves pictures of bins, baseplates, boxes and labels for the docs.\n\n'
     'Lists the presets of tools/screenshots/models with their pictures. A preset asked for is built in a new '
-    'document, shown from the preset\'s view and saved as a picture, by default to tools/screenshots/out/models.')
+    'document, shown from the preset\'s view and saved as a picture, by default to docs/assets/models.')
 
 # Utilities > Add-ins, out of the way of the generator commands
 WORKSPACE_ID = 'FusionSolidEnvironment'
@@ -40,28 +48,27 @@ FALLBACK_PANEL_ID = 'SolidCreatePanel'
 ROOT_FOLDER = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PRESETS_FOLDER = os.path.join(ROOT_FOLDER, 'tools', 'screenshots', 'models')
 ICON_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources', '')
-STATE_CLASSES = {testCases.GENERATOR_BIN: BinInputState, testCases.GENERATOR_BASEPLATE: BaseplateInputState}
+STATE_CLASSES = {
+    testCases.GENERATOR_BIN: BinInputState,
+    testCases.GENERATOR_BASEPLATE: BaseplateInputState,
+    testCases.GENERATOR_LABEL: LabelInputState,
+    testCases.GENERATOR_BOX: BoxInputState,
+    configJson.GENERATOR_BOX_LABEL: BoxLabelInputState,
+}
 # what the pictures since the palette was opened did, with the tracebacks of what failed
 LOG_PATH = os.path.join(ROOT_FOLDER, 'tools', 'screenshots', 'models-render.log')
-# GIFs of the pictures and of the dialog going through the same options are made by the screenshot tool, with its own
-# Python, set up as in tools/screenshots/README.md, Fusion's has no imaging. How long they may take
+# The docs' animations are made by dev-notes/tools/anim/compose.py from the raw pictures of anims.json, into
+# docs/assets/gif (round 58), the dialog screenshots by tools/screenshots/screenshots.py; each runs with a Python found
+# by screenshotTools.findPython, Fusion's has no imaging. How long they may take
 SCREENSHOTS_FOLDER = os.path.join(ROOT_FOLDER, 'tools', 'screenshots')
-GIF_PYTHON = os.path.join(SCREENSHOTS_FOLDER, '.venv', 'Scripts', 'python.exe') if sys.platform == 'win32' else os.path.join(SCREENSHOTS_FOLDER, '.venv', 'bin', 'python')
-GIF_COMMAND = [GIF_PYTHON, os.path.join(SCREENSHOTS_FOLDER, 'modelGifs.py'), '--dialogs']
-GIFS_FILE = os.path.join(SCREENSHOTS_FOLDER, 'modelGifs.json')
-GIF_FOLDER = os.path.join(ROOT_FOLDER, 'tools', 'screenshots', 'out', 'gif')
-# still screenshots of the dialogs and menus in shots.json, taken by the same tool, the animations go with the GIFs
-SHOT_COMMAND = [GIF_PYTHON, os.path.join(SCREENSHOTS_FOLDER, 'screenshots.py')]
+ANIM_FOLDER = os.path.join(ROOT_FOLDER, screenshotTools.ANIM_FOLDER)
+GIF_FOLDER = os.path.join(ROOT_FOLDER, 'docs', 'assets', 'gif')
+# still screenshots of the dialogs and menus in shots.json
 SHOTS_FILE = os.path.join(SCREENSHOTS_FOLDER, 'shots.json')
 # as screenshots.py has them
 SHOT_THEMES = ['dark', 'light']
 SHOT_OUTPUT = os.path.join('tools', 'screenshots', 'out', 'ui')
-# dialog animations the GIFs are made from, recorded by screenshots.py and not kept in the repo
-DIALOGS_FOLDER = os.path.join(SCREENSHOTS_FOLDER, 'dialogs')
-GIF_THEMES = ['light', 'dark']
 GIF_TIMEOUT = 15 * 60
-# Fusion's Python settings would make the tool's Python load Fusion's libraries
-FUSION_PYTHON_VARIABLES = ['PYTHONHOME', 'PYTHONPATH', 'PYTHONEXECUTABLE', '__PYVENV_LAUNCHER__']
 # runs the pictures asked for outside of the palette's message, which has to answer right away
 QUEUE_EVENT_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_modelPicturesQueue'
 # lighting of the pictures
@@ -164,32 +171,8 @@ def savedPicture(preset: presets.Preset) -> dict | None:
     return savedFile(picturePath(preset))
 
 def gifRows() -> list[dict]:
-    """
-    The GIFs of modelGifs.json: their files by kind and theme, model or dialog, the pictures they show, the ones
-    still missing, and if a picture changed after the GIF was made
-    """
-    with open(GIFS_FILE, encoding='utf-8') as file:
-        gifs = json.load(file)['gifs']
-    rows = []
-    for gif in gifs:
-        pictures = [frame['picture'] for frame in gif['frames']]
-        # modelGifs.py takes the pictures from the default folder of presets
-        picturePaths = [os.path.join(ROOT_FOLDER, presets.DEFAULT_OUTPUT, f'{picture}.png') for picture in pictures]
-        files = {}
-        for theme in GIF_THEMES:
-            files[f'model-{theme}'] = savedFile(os.path.join(GIF_FOLDER, f'{gif["name"]}-{theme}.gif'))
-            if gif.get('loopWith'):
-                files[f'dialog-{theme}'] = savedFile(os.path.join(DIALOGS_FOLDER, f'{gif["loopWith"]}-{theme}.gif'))
-        made = files['model-light']
-        rows.append({
-            'name': gif['name'],
-            'description': ' · '.join(frame.get('caption') or frame['picture'] for frame in gif['frames']),
-            'pictures': pictures,
-            'missing': [picture for (picture, path) in zip(pictures, picturePaths) if not os.path.exists(path)],
-            'outdated': bool(made) and any(os.path.exists(path) and os.path.getmtime(path) > os.path.getmtime(made['file']) for path in picturePaths),
-            'files': files,
-        })
-    return rows
+    """The docs' animations of anims.json with their GIFs and raw pictures, see screenshotTools.gifRows"""
+    return screenshotTools.gifRows(ANIM_FOLDER, GIF_FOLDER, savedFile)
 
 def shotDescription(shot: dict) -> str:
     """What a still screenshot of shots.json shows"""
@@ -238,13 +221,13 @@ def reloadItems(notify: bool = True):
     try:
         picturesPalette.setItems(gifRows(), section=picturesPalette.GIFS, notify=notify)
     except (OSError, ValueError, KeyError) as err:
-        picturesPalette.setBusy(isRunning, f'{os.path.relpath(GIFS_FILE, ROOT_FOLDER)}: {err}', notify)
+        picturesPalette.setBusy(isRunning, f'{os.path.relpath(os.path.join(ANIM_FOLDER, "anims.json"), ROOT_FOLDER)}: {err}', notify)
 
 def request(names: list[str], gifs: list[str], shots: list[str] = []):
     """
     Pictures, dialog screenshots and GIFs asked for in the palette, made one after the other, the palette's answer shows
-    them waiting. Screenshots are taken after the pictures, a menu shows one, GIFs are made last, with the pictures they
-    still miss
+    them waiting. Screenshots are taken after the pictures, a menu shows one, GIFs are made last. A GIF's raw pictures
+    aren't presets, one missing is reported by its row
     """
     for shot in shots:
         if shot not in shotQueue:
@@ -252,7 +235,6 @@ def request(names: list[str], gifs: list[str], shots: list[str] = []):
             picturesPalette.setStatus(shot, picturesPalette.STATUS_QUEUED, section=picturesPalette.SHOTS, notify=False)
     for gif in picturesPalette.state[picturesPalette.GIFS]:
         if gif['name'] in gifs:
-            names = [*names, *(picture for picture in gif['missing'] if picture not in names)]
             if gif['name'] not in gifQueue:
                 gifQueue.append(gif['name'])
                 picturesPalette.setStatus(gif['name'], picturesPalette.STATUS_QUEUED, section=picturesPalette.GIFS, notify=False)
@@ -301,25 +283,32 @@ def queue_custom_event(args: adsk.core.CustomEventArgs):
 
 @dataclasses.dataclass
 class ToolKind:
-    """What the screenshot tool makes for a section of the palette, see makeWithTool"""
+    """What a tool outside Fusion makes for a section of the palette, see makeWithTool"""
     section: str
     # a GIF, a dialog screenshot
     what: str
-    command: list[str]
+    # the command line for one GIF or shot by name, given the Python
+    command: Callable[[list[str], str], list[str]]
+    # what the Python needs to import
+    modules: list[str]
     # the extension of its files and the folder they're said to be in
     extension: str
     folder: str
 
-GIF_KIND = ToolKind(picturesPalette.GIFS, 'GIF', GIF_COMMAND, '.gif', os.path.relpath(GIF_FOLDER, ROOT_FOLDER))
-SHOT_KIND = ToolKind(picturesPalette.SHOTS, 'dialog screenshot', SHOT_COMMAND, '.png', SHOT_OUTPUT)
+GIF_KIND = ToolKind(picturesPalette.GIFS, 'GIF', lambda python, name: screenshotTools.composeCommand(python, ROOT_FOLDER, name),
+                    ['PIL'], '.gif', os.path.relpath(GIF_FOLDER, ROOT_FOLDER))
+SHOT_KIND = ToolKind(picturesPalette.SHOTS, 'dialog screenshot',
+                     lambda python, name: [*python, os.path.join(SCREENSHOTS_FOLDER, 'screenshots.py'), '--only', name],
+                     ['playwright', 'PIL'], '.png', SHOT_OUTPUT)
 
 def makeWithTool(kind: ToolKind, names: list[str]) -> str:
     """
-    GIFs of modelGifs.json with the dialog animations they loop with, or screenshots of shots.json, one at a time so
-    their rows say which is being made and how each went. The result says how all did
+    GIFs of anims.json or screenshots of shots.json, one at a time so their rows say which is being made and how each
+    went. The result says how all did
     """
-    if not os.path.exists(GIF_PYTHON):
-        message = f'no {os.path.relpath(GIF_PYTHON, ROOT_FOLDER)}, set up the screenshot tool as in tools/screenshots/README.md'
+    python = screenshotTools.findPython(ROOT_FOLDER, kind.modules, main=screenshotTools.mainCheckout(ROOT_FOLDER))
+    if python is None:
+        message = f'no Python with {" and ".join(kind.modules)} found, see tools/screenshots/README.md'
         for name in names:
             picturesPalette.setStatus(name, picturesPalette.STATUS_FAILED, message, section=kind.section, notify=False)
         return f'{kind.what[0].upper()}{kind.what[1:]}s not made, {message}'
@@ -333,7 +322,7 @@ def makeWithTool(kind: ToolKind, names: list[str]) -> str:
             failed.append(name)
             continue
         picturesPalette.setStatus(name, picturesPalette.STATUS_RENDERING, section=kind.section, notify=False)
-        failure = runTool(kind, name, f'Making {kind.what} {index + 1} of {len(names)}', started)
+        failure = runTool(kind, python, name, f'Making {kind.what} {index + 1} of {len(names)}', started)
         # the row gets the new files
         reloadItems(notify=False)
         if failure:
@@ -346,14 +335,15 @@ def makeWithTool(kind: ToolKind, names: list[str]) -> str:
         return f'Made {made} {kind.what}s in {seconds} s, {len(failed)} failed: {", ".join(failed)}'
     return f'Made {made} {kind.what}s in {seconds} s, in {kind.folder}'
 
-def runTool(kind: ToolKind, name: str, message: str, started: float) -> str | None:
-    """A GIF or screenshot by running the screenshot tool for it, what kept it from being made, if anything"""
-    environment = {key: value for (key, value) in os.environ.items() if key not in FUSION_PYTHON_VARIABLES}
+def runTool(kind: ToolKind, python: list[str], name: str, message: str, started: float) -> str | None:
+    """A GIF or screenshot by running its tool for it, what kept it from being made, if anything"""
+    # Fusion's Python settings would make the tool's Python load Fusion's libraries
+    environment = screenshotTools.toolEnvironment(dict(os.environ))
     outputPath = os.path.join(tempfile.gettempdir(), 'gridfinity-gifs.log')
     with open(outputPath, 'w', encoding='utf-8') as output:
         # no console window flashing up on Windows
         flags = subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
-        process = subprocess.Popen([*kind.command, '--only', name], cwd=ROOT_FOLDER, env=environment, stdout=output, stderr=subprocess.STDOUT, creationflags=flags)
+        process = subprocess.Popen(kind.command(python, name), cwd=ROOT_FOLDER, env=environment, stdout=output, stderr=subprocess.STDOUT, creationflags=flags)
         (shown, elapsed) = (-1, 0)
         # Fusion keeps drawing and the palette answering while it is made
         while process.poll() is None:
@@ -390,7 +380,7 @@ def makePicture(name: str):
     try:
         picturesPalette.setStatus(name, picturesPalette.STATUS_BUILDING)
         preset = presets.loadPreset(PRESETS_FOLDER, f'{name}.json')
-        state = testCases.stateFromJson(preset.generator, STATE_CLASSES[preset.generator], preset.settings)
+        state = presetState(preset)
         document = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
         design = adsk.fusion.Design.cast(document.products.itemByProductType('DesignProductType'))
         design.designType = adsk.fusion.DesignTypes.ParametricDesignType
@@ -413,9 +403,20 @@ def makePicture(name: str):
         document.close(False)
     adsk.doEvents()
 
+def presetState(preset: presets.Preset, settings: dict | None = None):
+    """The state the preset builds, its settings over the dialog's defaults as a test case's"""
+    return testCases.stateFromJson(preset.generator, STATE_CLASSES[preset.generator],
+                                   {**testCases.DEFAULT_SETTINGS.get(preset.generator, {}), **(settings or preset.settings)})
+
 def buildModel(design: adsk.fusion.Design, generator: str, state) -> list[adsk.fusion.BRepBody]:
     if generator == testCases.GENERATOR_BIN:
         return binBuilder.buildBin(design, state, [])
+    if generator == testCases.GENERATOR_LABEL:
+        return labelBuilder.buildLabel(design, state, [])
+    if generator == testCases.GENERATOR_BOX:
+        return boxBuilder.buildBox(design, state, [])
+    if generator == configJson.GENERATOR_BOX_LABEL:
+        return boxLabelBuilder.buildBoxLabel(design, state, [])[0]
     return baseplateBuilder.buildBaseplate(design, state, [])
 
 def failurePlace(err: Exception) -> str:
@@ -455,8 +456,7 @@ def showDifference(design: adsk.fusion.Design, bodies: list[adsk.fusion.BRepBody
     difference color: what it has more and what it lacks. It's shown with the part both share in place of its bodies.
     The other model goes to a spot of its own, it's moved onto the preset's by their lowest corners and removed after
     """
-    settings = {**preset.settings, **preset.difference['settings']}
-    state = testCases.stateFromJson(preset.generator, STATE_CLASSES[preset.generator], settings)
+    state = presetState(preset, {**preset.settings, **preset.difference['settings']})
     others = buildModel(design, preset.generator, state)
     root = design.rootComponent
     brep = adsk.fusion.TemporaryBRepManager.get()
@@ -513,9 +513,11 @@ def addSection(design: adsk.fusion.Design, bodies: list[adsk.fusion.BRepBody], s
     box = bodies[0].boundingBox.copy()
     for body in bodies[1:]:
         box.combine(body.boundingBox)
-    middle = (box.minPoint.asArray()[axis] + box.maxPoint.asArray()[axis]) / 2
+    low = box.minPoint.asArray()[axis]
+    # the middle, or offset mm from the low side, a magnet socket of a plate say (round 58)
+    at = low + section['offset'] / 10 if section.get('offset') is not None else (low + box.maxPoint.asArray()[axis]) / 2
     sections = design.analyses.sectionAnalyses
-    sectionInput = sections.createInput(plane, middle)
+    sectionInput = sections.createInput(plane, at)
     sectionInput.isHatchShown = False
     if color is not None:
         sectionInput.sectionColor = adsk.core.Color.create(int(color[1:3], 16), int(color[3:5], 16), int(color[5:7], 16), 255)

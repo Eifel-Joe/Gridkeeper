@@ -24,7 +24,7 @@ from types import SimpleNamespace
 
 import adsk.core, adsk.fusion
 
-from .dim import Dim, valueInput, applyTo
+from .dim import Dim, applyTo, lengthInput
 from . import fusionLists
 from .predSketch import WorldSketch, collection
 from .predBoxEdges import EdgeNotFound, mirrorItem
@@ -387,7 +387,7 @@ class _Builder:
     def extrude(self, profiles, operation, distance: Dim, name):
         extrudes = self.features.extrudeFeatures
         extrudeInput = extrudes.createInput(collection(profiles), operation)
-        extrudeInput.setDistanceExtent(False, valueInput(distance))
+        extrudeInput.setDistanceExtent(False, lengthInput(distance))
         if self.body is not None:
             extrudeInput.participantBodies = [self.body]
         feature = extrudes.add(extrudeInput)
@@ -410,13 +410,13 @@ class _Builder:
             fillets = self.features.filletFeatures
             filletInput = fillets.createInput()
             for _, size, found in adds:
-                filletInput.edgeSetInputs.addConstantRadiusEdgeSet(collection(found), valueInput(mm(size)), True)
+                filletInput.edgeSetInputs.addConstantRadiusEdgeSet(collection(found), lengthInput(mm(size)), True)
             feature = fillets.add(filletInput)
         else:
             chamfers = self.features.chamferFeatures
             chamferInput = chamfers.createInput2()
             for _, size, found in adds:
-                chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(collection(found), valueInput(mm(size)), True)
+                chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(collection(found), lengthInput(mm(size)), True)
             feature = chamfers.add(chamferInput)
         feature.name = step
         return feature

@@ -1,12 +1,11 @@
 import adsk.core, adsk.fusion, traceback
 import os
-import math
 
 from ...lib import fusion360utils as futil
 from . import const, combineUtils, faceUtils, commonUtils, sketchUtils, extrudeUtils, baseGenerator, edgeUtils, filletUtils, geometryUtils, binGrid, patternUtils
 from .baseGeneratorInput import BaseGeneratorInput
-from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput, LIP_TYPE_FULL, lipSocketHasBottomChamfer
-from .dim import Dim, valueInput, applyTo
+from .binBodyLipGeneratorInput import BinBodyLipGeneratorInput, LIP_TYPE_FULL, lipSocketHasBottomChamfer, lipSharpTop
+from .dim import Dim, valueInput, lengthInput, applyTo
 
 app = adsk.core.Application.get()
 ui = app.userInterface
@@ -14,12 +13,11 @@ ui = app.userInterface
 def lipSocketTop(xyClearance: float) -> Dim:
     """
     Height of the lip socket top above the lip bottom. It sits lower than the base it's shaped after, so its 45 degree
-    face keeps the clearance from the grid's measured square to the face rather than straight across. Its walls stay
-    the clearance out, its bottom goes past the lip bottom, it only cuts the lip. Fed as an expression, so the formula
-    stays readable in the model
+    face keeps the clearance from the grid's measured square to the face rather than straight across, and as high
+    again as puts the lip's sharp top on a round height, see lipSharpTop. Its walls stay the clearance out, its bottom
+    goes past the lip bottom, it only cuts the lip. Fed as an expression, the sharp top and twice the clearance above it
     """
-    drop = Dim.length(xyClearance) * Dim.number(math.sqrt(2) - 1, '(sqrt(2) - 1)')
-    return Dim.length(const.BIN_BASE_HEIGHT).asExpression() - drop
+    return Dim.length(lipSharpTop(xyClearance)).asExpression() + Dim.length(xyClearance) * Dim.number(2)
 
 def lipInnerInset(lipType: str, xyClearance: float) -> Dim:
     """
@@ -42,7 +40,7 @@ def createShapeLipSocket(
     """
     grid = baseGenerator.shapeGridInput(input.baseWidth, input.baseLength, input.xyClearance, input.shapeCellsPerFoot)
     planeInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    planeInput.setByOffset(targetComponent.xYConstructionPlane, valueInput(input.originZ + lipSocketTop(input.xyClearance)))
+    planeInput.setByOffset(targetComponent.xYConstructionPlane, lengthInput(input.originZ + lipSocketTop(input.xyClearance)))
     plane = targetComponent.constructionPlanes.add(planeInput)
     plane.name = 'Lip cutout plane'
     (sketch, _) = baseGenerator.createShapeOutlineSketch(
@@ -105,7 +103,7 @@ def createLipSupport(
         return None
 
     topPlaneInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    topPlaneInput.setByOffset(targetComponent.xYConstructionPlane, valueInput(topZ))
+    topPlaneInput.setByOffset(targetComponent.xYConstructionPlane, lengthInput(topZ))
     topPlane = targetComponent.constructionPlanes.add(topPlaneInput)
     topPlane.name = 'Lip support plane'
     (outerSketch, _) = baseGenerator.createShapeOutlineSketch(cells, grid, outerOffset, topPlane, targetComponent, name='Lip support')
@@ -124,7 +122,7 @@ def createLipSupport(
     # it meets the outside of the support in an edge rather than ending on it
     margin = const.BIN_LIP_SUPPORT_WALL_HEIGHT / 10
     insidePlaneInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    insidePlaneInput.setByOffset(targetComponent.xYConstructionPlane, valueInput(topZ - Dim.length(fullDepth + margin)))
+    insidePlaneInput.setByOffset(targetComponent.xYConstructionPlane, lengthInput(topZ - Dim.length(fullDepth + margin)))
     insidePlane = targetComponent.constructionPlanes.add(insidePlaneInput)
     insidePlane.name = 'Lip support inside plane'
     (insideSketch, _) = baseGenerator.createShapeOutlineSketch(cells, grid, outerOffset - margin, insidePlane, targetComponent, name='Lip support inside')
@@ -156,7 +154,7 @@ def createShapeLipMiddleCutout(
     """Inside of the lip wall of a shaped bin, between the notches"""
     grid = baseGenerator.shapeGridInput(input.baseWidth, input.baseLength, input.xyClearance, input.shapeCellsPerFoot)
     planeInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    planeInput.setByOffset(targetComponent.xYConstructionPlane, valueInput(input.originZ))
+    planeInput.setByOffset(targetComponent.xYConstructionPlane, lengthInput(input.originZ))
     plane = targetComponent.constructionPlanes.add(planeInput)
     plane.name = 'Lip middle cutout plane'
     (sketch, _) = baseGenerator.createShapeOutlineSketch(
@@ -244,7 +242,7 @@ def createLipNotch(
     # where the socket's top section ends, box and cones start there
     notchPlaneInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
     notchPlaneZ = input.originZ + lipSocketTop(input.xyClearance) - topSectionHeight
-    notchPlaneInput.setByOffset(targetComponent.xYConstructionPlane, valueInput(notchPlaneZ))
+    notchPlaneInput.setByOffset(targetComponent.xYConstructionPlane, lengthInput(notchPlaneZ))
     notchPlane = targetComponent.constructionPlanes.add(notchPlaneInput)
     notchPlane.name = 'Lip notch plane'
 
@@ -410,7 +408,7 @@ def createGridfinityBinBodyLip(
     lipCutoutPlaneInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
     lipCutoutPlaneInput.setByOffset(
         lipBodyExtrude.endFaces.item(0),
-        adsk.core.ValueInput.createByReal(0)
+        lengthInput(0)
     )
 
     if input.shapeCells is not None:

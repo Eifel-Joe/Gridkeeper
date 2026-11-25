@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from . import const, commonUtils, combineUtils, filletUtils, sketchUtils, cullenect
 from .binBodyTabGenerator import tabFilletAllowance
-from .dim import Dim, valueInput
+from .dim import Dim, valueInput, lengthInput
 
 # Socket for exchangeable Cullenect labels, Cullenect.scad by CullenJWebb (MIT),
 # https://github.com/CullenJWebb/Cullenect-Labels: a rounded pocket 0.3 mm larger than the insert, 1.2 mm deep, with a
@@ -11,7 +11,7 @@ from .dim import Dim, valueInput
 
 def _offsetPlane(base, offset: float, targetComponent: adsk.fusion.Component, name: str) -> adsk.fusion.ConstructionPlane:
     planeInput: adsk.fusion.ConstructionPlaneInput = targetComponent.constructionPlanes.createInput()
-    planeInput.setByOffset(base, adsk.core.ValueInput.createByReal(offset))
+    planeInput.setByOffset(base, lengthInput(offset))
     plane = targetComponent.constructionPlanes.add(planeInput)
     plane.name = name
     plane.isLightBulbOn = False

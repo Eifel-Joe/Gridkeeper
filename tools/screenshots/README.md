@@ -1,8 +1,11 @@
-# Dialog screenshots
+# Pictures for the docs
 
-> **Gridkeeper:** these tools come from GridfinityGenerator and write to `tools/screenshots/out/` (ignored by git), not
-> into the documentation. The pictures and animations of the docs are made with `dev-notes/tools/anim/compose.py`,
-> see `docs/assets/images/NEEDED.md`.
+The model pictures of the docs (`docs/assets/models`) are made from the presets in `models/`, by the palette
+**Gridkeeper docs: render models** in Fusion or by a script; the animations (`docs/assets/gif`) by
+`dev-notes/tools/anim/compose.py`, see `docs/assets/images/NEEDED.md`. The dialog screenshot tool below comes from
+GridfinityGenerator and writes to `tools/screenshots/out/` (ignored by git).
+
+## Dialog screenshots
 
 Screenshots of the bin and baseplate dialogs for the docs and release notes, in Fusion's dark and light themes, without
 opening Fusion. Each command's own `command_created` runs against a fake of the Fusion API (`fakeAdsk`), so the inputs,
@@ -11,15 +14,22 @@ the dialog the way Fusion does, with the add-in's own pages in it, and a headles
 
 ## Setup
 
+The tools outside Fusion need a Python with Pillow, the dialog screenshots Playwright too, both from PyPI. Either a
+venv of the tool:
+
 ```sh
 python3 -m venv tools/screenshots/.venv
 tools/screenshots/.venv/bin/pip install -r tools/screenshots/requirements.txt
 ```
 
-It uses the installed Google Chrome. Without Chrome, run `tools/screenshots/.venv/bin/playwright install chromium`.
+(on Windows `py -3 -m venv tools\screenshots\.venv` and `tools\screenshots\.venv\Scripts\pip install -r
+tools\screenshots\requirements.txt`), or `pip install pillow playwright` into the computer's Python. The palette takes
+the first of: the checkout's `tools/screenshots/.venv`, for a git worktree the main checkout's, then `py -3`, `python`,
+`python3`, each only when it imports what the tool needs (`commands/commandModelScreenshots/screenshotTools.py`); a row
+says which Python is missing. Playwright uses the installed Google Chrome.
 The dialog font, Artifakt Element, is taken from the Fusion install. Use `--font-dir` to point to it if it isn't found.
 
-## Taking shots
+### Taking shots
 
 ```sh
 tools/screenshots/.venv/bin/python tools/screenshots/screenshots.py                  # every shot in shots.json
@@ -50,7 +60,7 @@ A shot in `shots.json`:
 | `format` | `gif`, the default, or `webp` for an animated WebP with a transparent background |
 | `background` | Color behind the dialog, GIFs default to GitHub's page color of the theme, as they can't fade a shadow into transparency |
 
-## Animations
+### Animations
 
 A shot with `steps` is a GIF of a cursor going through them. The dialog reacts through the command's own handlers and
 the drawings are the add-in's pages receiving real mouse and keyboard input, so what changes, enables or shows up is
@@ -75,8 +85,8 @@ largest. Each step has one action:
 
 ## Model pictures
 
-Pictures of bins and baseplates come from Fusion itself: with the add-in running from a git checkout, Utilities >
-Add-ins has a **Gridfinity docs: render models** button. It opens a palette docked on the right listing every preset
+Pictures of bins, baseplates, boxes, box labels and label inserts come from Fusion itself: with the add-in running from
+a git checkout, Utilities > Add-ins has a **Gridkeeper docs: render models** button. It opens a palette docked on the right listing every preset
 in `models/` with its saved picture, or **No picture**. **Create** or **Refresh** makes a preset's picture, **Refresh
 all** makes every one and then the GIFs below, **Make GIFs** only the GIFs, **Open location** shows the folder of the
 pictures in Finder or Explorer; presets are read again from their files each time, and clicks while pictures are being made
@@ -84,7 +94,7 @@ wait their turn. Click a picture to see it large, **Open file** opens it in the 
 
 A picture is made by building the preset in a new document with the add-in's own builders, hiding everything but the
 bodies, setting up the view in Fusion's Photo Booth lighting and saving it, by default to
-`tools/screenshots/out/models/<preset>.png`. The document is closed without saving.
+`docs/assets/models/<preset>.png`, where the pages take it. The document is closed without saving.
 
 The palette also finishes the pictures, Fusion's Python has no imaging. Fusion renders the view at the viewport's
 proportions and `supersample` times the picture's size, the palette's page cuts that to the model, fits it in the
@@ -118,31 +128,31 @@ degrees). `"extends": "_bin.json"` takes everything from another preset, so a pr
 | `difference` | `{"settings": {"hasLipNotches": false}, "color": "#d73a49"}` builds the model again with the settings changed and shows what sets the preset's model apart from it in the color, what it has more and what it lacks, such as the lip notches. Settings changing nothing fail the preset |
 | `section` | `{"plane": "xz"}` cuts the model through its middle with a section analysis along `xy`, `xz` or `yz`, the cut faces in the preset's `color`, to show a profile. With `color` `null` Fusion picks the cut's color, it differs between pictures. `"flip": true` keeps the other half |
 
-### GIFs of model pictures
+### From a script
 
-`modelGifs.py` turns saved model pictures into a GIF that holds each one with a caption and cross-fades to the next,
-for options shown side by side, such as the bin bottoms. The GIFs are listed in `modelGifs.json`: a `name` and the
-`frames`, each a `picture`, the name of a preset, and a `caption`. `size` of the pictures in pixels, `hold` and `fade` in
-milliseconds and `captionSize` are optional. `loopWith` names a dialog animation of `shots.json` going through the same
-options, for the two to be shown side by side. Its `model` steps say which picture goes with what the dialog shows,
-recording it saves when they happen to `timelines/<animation>-<theme>.json`, and the GIF fades to each picture at that
-moment and is as long, so both change and loop together. `hold` doesn't apply to it. `"combine": true` puts the
-dialog animation beside the pictures in the GIF itself, for one image instead of a pair. The dialog animations are
-recorded to `tools/screenshots/dialogs`, which isn't kept in the repo, only the GIFs made from them are. Make the pictures in Fusion
-first, then
+Without the palette, a script in Fusion renders a preset larger than its picture and writes a sidecar of its options
+beside it, `commands/commandModelScreenshots/scriptRender.py`:
 
-    tools/screenshots/.venv/bin/python tools/screenshots/modelGifs.py [--only bin-bottom-options]
+    from gridkeeper import scriptRender      # while the add-in runs, see api.py
+    scriptRender.renderRaw('bin-scoops-4', r'C:\temp\raw')
 
-writes `tools/screenshots/out/gif/<name>-light.gif` and `-dark.gif`, on GitHub's page colors as GIFs can't be partly
-transparent. `--pictures` takes the pictures from another folder, `--dialogs` records the dialog animations of
-`loopWith` first. A GIF missing a picture is reported and the others are still made.
+`tools/screenshots/finishPictures.py` then finishes the renders outside Fusion as the palette's page does (cut to the
+model, graded, fitted with the margin, scaled down) and saves each picture where its sidecar says:
 
-The palette also lists the still screenshots of `shots.json`, the ones without `steps`, after the presets, each
-with **Create** or **Refresh** that runs `screenshots.py --only <name>`. **Refresh all** takes them after the pictures,
-as a menu over the viewport shows one, and before the GIFs.
+    python tools/screenshots/finishPictures.py C:\temp\raw [--only bin-scoops-4]
 
-The palette in Fusion lists the GIFs after the presets and screenshots, each with its dialog animation in Fusion's theme, the pictures
-it still needs, or that its pictures changed since it was made. Its **Create** or **Refresh** makes the pictures it
-needs, then the GIF. The palette runs this script with `--dialogs` for it, once per GIF so its row shows the one being made, after **Refresh all** and for **Make GIFs**, with the Python of
-`tools/screenshots/.venv`, so the screenshot tool has to be set up as above. Its output goes to the log of the
-pictures.
+A model touching the edge of its render is reported, it may be cut off.
+
+### The docs' presets
+
+Every preset is a picture of the docs, and every model picture of the docs has a preset (`tests/test_model_presets.py`).
+They extend `_docs.json`, the docs' look: orthographic, the blue `#4A82C8`, shaded, transparent, 1200 × 900 px.
+`_bin.json`, `_baseplate.json`, `_label.json`, `_box.json` and `_boxLabel.json` start from what the dialogs start
+with; settings a preset leaves out take the dialog's defaults (`lib/defaultSettings.py`), as in a shape test case.
+`section` can take an `offset`, mm from the low side of the model instead of its middle, to cut through a magnet socket.
+
+### GIFs
+
+The palette lists the docs' animations of `dev-notes/tools/anim/anims.json` after the presets and screenshots, with the
+raw pictures each still misses. **Create**, **Refresh** and **Make GIFs** run `compose.py` for them, which writes
+`docs/assets/gif/<name>-light.gif` and `-dark.gif`; its output goes to the log of the pictures.

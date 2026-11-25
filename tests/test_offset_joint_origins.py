@@ -81,9 +81,10 @@ def test_one_joint_origin_per_point_on_the_origin_point_with_the_dims_as_offsets
     assert made == component.jointOrigins.added
     first, second = (jo.input for jo in made)
     assert first.geometry == ("byPoint", component.originConstructionPoint)
-    assert (first.offsetX.real, first.offsetY.real, first.offsetZ.real) == (2.1, -3.0, 0.5)
+    # in mm, a real would be kept in the document's units and be a hair off in inches (round 58)
+    assert (first.offsetX.string, first.offsetY.string, first.offsetZ.string) == ("21 mm", "-30 mm", "5 mm")
     assert second.offsetX.string == "(gfBox1_baseWidth * 42 mm) / 2"
-    assert (second.offsetY.real, second.offsetZ.real) == (9.4, 0.0)
+    assert (second.offsetY.string, second.offsetZ.string) == ("94 mm", "0 mm")
 
 
 def _source(*parts):
@@ -184,7 +185,7 @@ def test_cell_joint_origins_are_offset_ones(fusion):
     assert [jo.name for jo in made] == ["Socket joint origin 1-1", "Socket joint origin 2-1"]
     first, second = (jo.input for jo in made)
     assert first.geometry == ("byPoint", component.originConstructionPoint)
-    assert (first.offsetX.real, first.offsetY.real, first.offsetZ.real) == (2.1, 2.1, -0.5)
+    assert (first.offsetX.string, first.offsetY.string, first.offsetZ.string) == ("21 mm", "21 mm", "-5 mm")
     assert second.offsetX.string == (width * 1.5).expression
     assert "gfBaseplate1_baseWidth" in second.offsetX.string
-    assert second.offsetZ.real == -0.5
+    assert second.offsetZ.string == "-5 mm"

@@ -1,9 +1,9 @@
 23200 0 2 2           
-16 Autodesk Neutron 20 ASM 232.5.0.65535 NT 24 Fri Nov 20 10:14:54 2026 
+16 Autodesk Neutron 20 ASM 232.5.0.65535 NT 24 Wed Nov 25 02:15:00 2026 
 10 9.999999999999999547e-07 1.000000000000000036e-10 
 asmheader $-1 -1 @13 232.5.0.65535 #
 body $2 -1 $-1 $3 $-1 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $4 $-1 $1 @20 Timestamp_attrib_def 1 1795166094121271 #
+ATTRIB_CUSTOM-attrib $-1 -1 $4 $-1 $1 @20 Timestamp_attrib_def 1 1795569299672555 #
 lump $-1 -1 $-1 $-1 $5 $1 #
 ATTRIB_CUSTOM-attrib $-1 -1 $-1 $2 $1 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 3 @3 369 114 0 0 #
 shell $-1 -1 $-1 $-1 $-1 $6 $-1 $3 #
@@ -22,7 +22,7 @@ face $26 -1 $-1 $27 $28 $5 $-1 $29 forward single #
 loop $-1 -1 $-1 $-1 $30 $12 #
 plane-surface $-1 -1 $-1 -1.678746055550765615 1.327389523983002029 1.5 1 0 -0 -0 1 -0 forward_v I I I I #
 coedge $31 -1 $-1 $32 $33 $34 $35 reversed $13 0 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $15 @17 sketch_attrib_def 1 1 3 @16 466 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $15 @17 sketch_attrib_def 1 1 3 @16 466 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $36 $15 $37 $38 forward $9 0 $-1 #
 coedge $-1 -1 $-1 $15 $36 $32 $39 reversed $9 0 $-1 #
 coedge $40 -1 $-1 $34 $41 $15 $25 forward $42 0 $-1 #
@@ -69,7 +69,7 @@ spline-surface $-1 -1 $-1 forward { cyl_spl_sur 23100
 	0 
 	F } I I I I #
 coedge $51 -1 $-1 $52 $53 $54 $55 reversed $18 0 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $20 @17 sketch_attrib_def 1 1 3 @16 469 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $20 @17 sketch_attrib_def 1 1 3 @16 469 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $56 $20 $23 $39 forward $13 0 $-1 #
 coedge $-1 -1 $-1 $20 $56 $52 $57 reversed $13 0 $-1 #
 coedge $58 -1 $-1 $54 $24 $20 $35 forward $42 0 $-1 #
@@ -78,7 +78,7 @@ coedge $-1 -1 $-1 $23 $22 $61 $62 reversed $9 0 $-1 #
 coedge $-1 -1 $-1 $63 $64 $22 $38 reversed $65 0 $-1 #
 edge $-1 -1 $-1 $43 0 $66 0.05000000000000004441 $37 $67 forward @7 unknown #
 edge $-1 -1 $-1 $44 0 $68 0.05000000000000004441 $32 $69 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $24 @17 sketch_attrib_def 1 1 3 @16 466 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $24 @17 sketch_attrib_def 1 1 3 @16 466 2773 1 0 1 1 #
 coedge $70 -1 $-1 $24 $71 $63 $72 forward $42 0 $-1 #
 loop $-1 -1 $-1 $-1 $41 $73 #
 vertex $-1 -1 $-1 $72 1 $74 #
@@ -126,14 +126,14 @@ spline-surface $-1 -1 $-1 forward { cyl_spl_sur 23100
 	0 
 	F } I I I I #
 coedge $81 -1 $-1 $82 $83 $84 $85 reversed $28 0 $86 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $30 @17 sketch_attrib_def 1 1 3 @16 472 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $30 @17 sketch_attrib_def 1 1 3 @16 472 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $87 $30 $33 $57 forward $18 0 $-1 #
 coedge $-1 -1 $-1 $30 $87 $82 $88 reversed $18 0 $-1 #
 coedge $89 -1 $-1 $84 $34 $30 $55 forward $42 0 $-1 #
 edge $-1 -1 $-1 $59 0 $90 0.2269334197044372559 $30 $91 forward @7 unknown #
 coedge $-1 -1 $-1 $33 $32 $92 $93 reversed $13 0 $-1 #
 edge $-1 -1 $-1 $59 0 $94 0.05000000000000004441 $52 $95 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $34 @17 sketch_attrib_def 1 1 3 @16 469 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $34 @17 sketch_attrib_def 1 1 3 @16 469 2773 1 0 1 1 #
 vertex $-1 -1 $-1 $55 0 $96 #
 straight-curve $-1 -1 $-1 -1.576944153495025258 1.554322943687439285 1.5 -1 0 0 F 0 F 0.1018019020557403564 #
 coedge $-1 -1 $-1 $97 $92 $36 $62 forward $98 0 $-1 #
@@ -145,7 +145,7 @@ vertex $-1 -1 $-1 $38 1 $104 #
 straight-curve $-1 -1 $-1 -1.576944153495025258 1.673091814517975173 1.5 0 0 1 I I #
 vertex $-1 -1 $-1 $39 1 $105 #
 straight-curve $-1 -1 $-1 -1.576944153495025258 1.554322943687439285 1.5 0 0 1 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $41 @17 sketch_attrib_def 1 1 3 @16 526 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $41 @17 sketch_attrib_def 1 1 3 @16 526 2773 1 0 1 1 #
 coedge $106 -1 $-1 $41 $107 $108 $109 forward $42 0 $-1 #
 edge $-1 -1 $-1 $110 0 $43 0.1018019020557403564 $63 $111 forward @7 unknown #
 face $112 -1 $-1 $-1 $42 $5 $-1 $113 reversed single #
@@ -193,7 +193,7 @@ spline-surface $-1 -1 $-1 forward { cyl_spl_sur 23100
 	0 
 	F } I I I I #
 coedge $119 -1 $-1 $120 $121 $122 $123 reversed $48 0 $124 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $50 @17 sketch_attrib_def 1 1 3 @16 475 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $50 @17 sketch_attrib_def 1 1 3 @16 475 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $125 $50 $53 $88 forward $28 0 $126 #
 coedge $-1 -1 $-1 $50 $125 $120 $127 reversed $28 0 $128 #
 coedge $129 -1 $-1 $122 $54 $50 $85 forward $42 0 $-1 #
@@ -207,7 +207,7 @@ pcurve $-1 -1 $-1 0 forward { exp_par_cur nubs 1 open 2
 	} 0 0 #
 coedge $-1 -1 $-1 $53 $52 $132 $133 reversed $18 0 $-1 #
 edge $-1 -1 $-1 $90 0 $134 0.05000000000000004441 $82 $135 forward @7 tangent #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $54 @17 sketch_attrib_def 1 1 3 @16 472 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $54 @17 sketch_attrib_def 1 1 3 @16 472 2773 1 0 1 1 #
 vertex $-1 -1 $-1 $85 0 $136 #
 straight-curve $-1 -1 $-1 -1.678746055550765615 1.554322943687439285 1.5 0 -1 0 F 0 F 0.2269334197044372559 #
 coedge $-1 -1 $-1 $61 $132 $56 $93 forward $98 0 $-1 #
@@ -218,13 +218,13 @@ point $-1 -1 $-1 -1.678746055550765615 1.554322943687439285 1.5 #
 coedge $-1 -1 $-1 $139 $61 $64 $102 forward $98 0 $-1 #
 loop $-1 -1 $-1 $-1 $97 $140 #
 straight-curve $-1 -1 $-1 -1.576944153495025258 1.673091814517975173 1.550000000000000044 0 1 0 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $63 @17 sketch_attrib_def 1 1 3 @16 526 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $63 @17 sketch_attrib_def 1 1 3 @16 526 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $64 $63 $141 $142 forward $65 0 $-1 #
 edge $-1 -1 $-1 $66 -0.1018019020557403564 $143 -0 $64 $144 forward @7 unknown #
 face $145 -1 $-1 $140 $65 $5 $-1 $146 forward single #
 point $-1 -1 $-1 -1.576944153495025258 1.673091814517975173 1.550000000000000044 #
 point $-1 -1 $-1 -1.576944153495025258 1.554322943687439285 1.550000000000000044 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $71 @17 sketch_attrib_def 1 1 3 @16 523 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $71 @17 sketch_attrib_def 1 1 3 @16 523 2773 1 0 1 1 #
 coedge $147 -1 $-1 $71 $148 $149 $150 forward $42 0 $-1 #
 coedge $151 -1 $-1 $152 $141 $71 $109 reversed $153 0 $-1 #
 edge $-1 -1 $-1 $154 0 $110 0.1988318562507629395 $108 $155 forward @7 unknown #
@@ -274,7 +274,7 @@ spline-surface $-1 -1 $-1 forward { cyl_spl_sur 23100
 	0 
 	F } I I I I #
 coedge $162 -1 $-1 $163 $164 $165 $166 reversed $78 0 $167 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $80 @17 sketch_attrib_def 1 1 3 @16 478 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $80 @17 sketch_attrib_def 1 1 3 @16 478 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $168 $80 $83 $127 forward $48 0 $169 #
 coedge $-1 -1 $-1 $80 $168 $163 $170 reversed $48 0 $171 #
 coedge $172 -1 $-1 $165 $84 $80 $123 forward $42 0 $-1 #
@@ -302,7 +302,7 @@ pcurve $-1 -1 $-1 0 forward { exp_par_cur nubs 1 open 2
 	0 
 	spline forward { ref 0 } I I I I 
 	} 0 0 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $84 @17 sketch_attrib_def 1 1 3 @16 475 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $84 @17 sketch_attrib_def 1 1 3 @16 475 2773 1 0 1 1 #
 vertex $-1 -1 $-1 $123 0 $180 #
 intcurve-curve $-1 -1 $-1 forward { ref 1 } F 0 F 1 #
 coedge $-1 -1 $-1 $92 $175 $87 $133 forward $98 0 $-1 #
@@ -320,11 +320,11 @@ vertex $-1 -1 $-1 $142 1 $189 #
 straight-curve $-1 -1 $-1 -1.678746055550765615 1.673091814517975173 1.550000000000000044 -1 -0 -0 I I #
 ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $103 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 1 @1 3 0 1 369 0 #
 plane-surface $-1 -1 $-1 -1.576944153495025258 1.673091814517975173 1.5 0 1 0 -1 -0 -0 forward_v I I I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $107 @17 sketch_attrib_def 1 1 3 @16 520 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $107 @17 sketch_attrib_def 1 1 3 @16 520 2773 1 0 1 1 #
 coedge $190 -1 $-1 $107 $191 $192 $193 forward $42 0 $-1 #
 coedge $194 -1 $-1 $195 $196 $107 $150 reversed $197 0 $-1 #
 edge $-1 -1 $-1 $198 0 $154 0.1729682208500259166 $149 $199 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $108 @17 sketch_attrib_def 1 1 3 @16 523 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $108 @17 sketch_attrib_def 1 1 3 @16 523 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $184 $108 $196 $200 forward $153 0 $-1 #
 loop $-1 -1 $-1 $-1 $108 $201 #
 vertex $-1 -1 $-1 $109 0 $202 #
@@ -335,7 +335,7 @@ face $203 -1 $-1 $204 $205 $5 $-1 $206 forward single #
 loop $-1 -1 $-1 $-1 $207 $115 #
 plane-surface $-1 -1 $-1 -1.564749132580947499 1.119543955326080642 1.5 0.9939944396178574948 0.1094305899133395515 -0 -0.1094305899133395515 0.9939944396178574948 -0 forward_v I I I I #
 coedge $208 -1 $-1 $209 $210 $211 $212 reversed $116 0 $213 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $118 @17 sketch_attrib_def 1 1 3 @16 481 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $118 @17 sketch_attrib_def 1 1 3 @16 481 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $214 $118 $121 $170 forward $78 0 $215 #
 coedge $-1 -1 $-1 $118 $214 $209 $216 reversed $78 0 $217 #
 coedge $218 -1 $-1 $211 $122 $118 $166 forward $42 0 $-1 #
@@ -363,7 +363,7 @@ pcurve $-1 -1 $-1 0 forward { exp_par_cur nubs 1 open 2
 	0 
 	spline forward { ref 2 } I I I I 
 	} 0 0 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $122 @17 sketch_attrib_def 1 1 3 @16 478 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $122 @17 sketch_attrib_def 1 1 3 @16 478 2773 1 0 1 1 #
 vertex $-1 -1 $-1 $166 0 $226 #
 intcurve-curve $-1 -1 $-1 forward { ref 3 } F 0 F 1 #
 coedge $-1 -1 $-1 $132 $221 $125 $176 forward $98 0 $-1 #
@@ -387,11 +387,11 @@ ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $140 @22 generic_tag_attrib_def 3 3 -1 @23 g
 plane-surface $-1 -1 $-1 -1.730707457028221707 1.484599218368530593 1.550000000000000044 0 0 1 1 0 0 forward_v I I I I #
 straight-curve $-1 -1 $-1 -1.678746055550765615 1.673091814517975173 1.5 0 0 1 I I #
 point $-1 -1 $-1 -1.678746055550765615 1.673091814517975173 1.550000000000000044 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $148 @17 sketch_attrib_def 1 1 3 @16 517 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $148 @17 sketch_attrib_def 1 1 3 @16 517 2773 1 0 1 1 #
 coedge $234 -1 $-1 $148 $235 $236 $237 forward $42 0 $-1 #
 coedge $238 -1 $-1 $239 $240 $148 $193 reversed $241 0 $-1 #
 edge $-1 -1 $-1 $242 0 $198 0.111876070499420166 $192 $243 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $149 @17 sketch_attrib_def 1 1 3 @16 520 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $149 @17 sketch_attrib_def 1 1 3 @16 520 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $230 $149 $240 $244 forward $197 0 $-1 #
 coedge $-1 -1 $-1 $149 $230 $152 $200 reversed $197 0 $-1 #
 loop $-1 -1 $-1 $-1 $149 $245 #
@@ -442,7 +442,7 @@ spline-surface $-1 -1 $-1 forward { cyl_spl_sur 23100
 	0 
 	F } I I I I #
 coedge $255 -1 $-1 $256 $257 $258 $259 reversed $159 0 $-1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $161 @17 sketch_attrib_def 1 1 3 @16 484 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $161 @17 sketch_attrib_def 1 1 3 @16 484 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $260 $161 $164 $216 forward $116 0 $261 #
 coedge $-1 -1 $-1 $161 $260 $256 $262 reversed $116 0 $263 #
 coedge $264 -1 $-1 $258 $165 $161 $212 forward $42 0 $-1 #
@@ -470,7 +470,7 @@ pcurve $-1 -1 $-1 0 forward { exp_par_cur nubs 1 open 2
 	0 
 	spline forward { ref 4 } I I I I 
 	} 0 0 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $165 @17 sketch_attrib_def 1 1 3 @16 481 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $165 @17 sketch_attrib_def 1 1 3 @16 481 2773 1 0 1 1 #
 vertex $-1 -1 $-1 $212 0 $272 #
 intcurve-curve $-1 -1 $-1 forward { ref 5 } F 0 F 1 #
 coedge $-1 -1 $-1 $175 $267 $168 $222 forward $98 0 $-1 #
@@ -508,11 +508,11 @@ coedge $-1 -1 $-1 $196 $195 $183 $231 reversed $197 0 $-1 #
 edge $-1 -1 $-1 $232 -0.1729682208500259166 $278 -0 $230 $279 forward @7 unknown #
 vertex $-1 -1 $-1 $200 1 $280 #
 straight-curve $-1 -1 $-1 -1.678746055550765615 1.871923670768738113 1.550000000000000044 0 1 0 I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $191 @17 sketch_attrib_def 1 1 3 @16 514 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $191 @17 sketch_attrib_def 1 1 3 @16 514 2773 1 0 1 1 #
 coedge $281 -1 $-1 $191 $282 $283 $284 forward $42 0 $-1 #
 coedge $285 -1 $-1 $286 $287 $191 $237 reversed $288 0 $-1 #
 edge $-1 -1 $-1 $289 0 $242 0.06839816644787788391 $236 $290 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $192 @17 sketch_attrib_def 1 1 3 @16 517 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $192 @17 sketch_attrib_def 1 1 3 @16 517 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $276 $192 $287 $291 forward $241 0 $-1 #
 coedge $-1 -1 $-1 $192 $276 $195 $244 reversed $241 0 $-1 #
 loop $-1 -1 $-1 $-1 $192 $292 #
@@ -566,7 +566,7 @@ spline-surface $-1 -1 $-1 forward { cyl_spl_sur 23100
 	0 
 	F } I I I I #
 coedge $302 -1 $-1 $303 $304 $305 $306 reversed $205 0 $307 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $207 @17 sketch_attrib_def 1 1 3 @16 487 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $207 @17 sketch_attrib_def 1 1 3 @16 487 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $308 $207 $210 $262 forward $159 0 $-1 #
 coedge $-1 -1 $-1 $207 $308 $303 $309 reversed $159 0 $-1 #
 coedge $310 -1 $-1 $305 $211 $207 $259 forward $42 0 $-1 #
@@ -587,7 +587,7 @@ pcurve $-1 -1 $-1 0 forward { exp_par_cur nubs 1 open 2
 	0 
 	spline forward { ref 7 } I I I I 
 	} 0 0 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $211 @17 sketch_attrib_def 1 1 3 @16 484 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $211 @17 sketch_attrib_def 1 1 3 @16 484 2773 1 0 1 1 #
 vertex $-1 -1 $-1 $259 0 $318 #
 intcurve-curve $-1 -1 $-1 forward { ref 8 } F 0 F 1 #
 coedge $-1 -1 $-1 $221 $313 $214 $268 forward $98 0 $-1 #
@@ -626,11 +626,11 @@ edge $-1 -1 $-1 $278 -0.111876070499420166 $324 -0 $276 $325 forward @7 unknown 
 vertex $-1 -1 $-1 $244 1 $326 #
 straight-curve $-1 -1 $-1 -1.828267615027618032 1.784967885017395339 1.550000000000000044 -0.8644452648125275918 -0.5027269478983587003 -0 I I #
 point $-1 -1 $-1 -1.678746055550765615 1.871923670768738113 1.550000000000000044 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $235 @17 sketch_attrib_def 1 1 3 @16 511 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $235 @17 sketch_attrib_def 1 1 3 @16 511 2773 1 0 1 1 #
 coedge $327 -1 $-1 $235 $328 $329 $330 forward $42 0 $-1 #
 coedge $331 -1 $-1 $332 $333 $235 $284 reversed $334 0 $-1 #
 edge $-1 -1 $-1 $335 0 $289 0.1187688708305358887 $283 $336 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $236 @17 sketch_attrib_def 1 1 3 @16 514 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $236 @17 sketch_attrib_def 1 1 3 @16 514 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $322 $236 $333 $337 forward $288 0 $-1 #
 coedge $-1 -1 $-1 $236 $322 $239 $291 reversed $288 0 $-1 #
 loop $-1 -1 $-1 $-1 $236 $338 #
@@ -684,7 +684,7 @@ spline-surface $-1 -1 $-1 forward { cyl_spl_sur 23100
 	0 
 	F } I I I I #
 coedge $348 -1 $-1 $349 $350 $351 $352 reversed $252 0 $353 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $254 @17 sketch_attrib_def 1 1 3 @16 490 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $254 @17 sketch_attrib_def 1 1 3 @16 490 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $354 $254 $257 $309 forward $205 0 $355 #
 coedge $-1 -1 $-1 $254 $354 $349 $356 reversed $205 0 $357 #
 coedge $358 -1 $-1 $351 $258 $254 $306 forward $42 0 $-1 #
@@ -698,7 +698,7 @@ pcurve $-1 -1 $-1 0 forward { exp_par_cur nubs 1 open 2
 	} 0 0 #
 coedge $-1 -1 $-1 $257 $256 $361 $362 reversed $159 0 $-1 #
 edge $-1 -1 $-1 $311 0 $363 0.05000000000000004441 $303 $364 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $258 @17 sketch_attrib_def 1 1 3 @16 487 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $258 @17 sketch_attrib_def 1 1 3 @16 487 2773 1 0 1 1 #
 vertex $-1 -1 $-1 $306 0 $365 #
 straight-curve $-1 -1 $-1 -1.577474366612624745 1.235131487846374831 1.5 0.1094305899133395515 -0.9939944396178574948 0 F 0 F 0.1162858944811924478 #
 coedge $-1 -1 $-1 $267 $361 $260 $314 forward $98 0 $-1 #
@@ -737,11 +737,11 @@ edge $-1 -1 $-1 $324 -0.06839816644787788391 $371 -0 $322 $372 forward @7 unknow
 vertex $-1 -1 $-1 $291 1 $373 #
 straight-curve $-1 -1 $-1 -1.828267615027618032 1.673091814517975173 1.550000000000000044 -0 -1 -0 I I #
 point $-1 -1 $-1 -1.828267615027618032 1.784967885017395339 1.550000000000000044 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $282 @17 sketch_attrib_def 1 1 3 @16 508 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $282 @17 sketch_attrib_def 1 1 3 @16 508 2773 1 0 1 1 #
 coedge $374 -1 $-1 $282 $375 $376 $377 forward $42 0 $-1 #
 coedge $378 -1 $-1 $379 $380 $282 $330 reversed $381 0 $-1 #
 edge $-1 -1 $-1 $382 0 $335 0.06839816644787788391 $329 $383 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $283 @17 sketch_attrib_def 1 1 3 @16 511 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $283 @17 sketch_attrib_def 1 1 3 @16 511 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $369 $283 $380 $384 forward $334 0 $-1 #
 coedge $-1 -1 $-1 $283 $369 $286 $337 reversed $334 0 $-1 #
 loop $-1 -1 $-1 $-1 $283 $385 #
@@ -795,7 +795,7 @@ spline-surface $-1 -1 $-1 forward { cyl_spl_sur 23100
 	0 
 	F } I I I I #
 coedge $395 -1 $-1 $396 $397 $398 $399 reversed $299 0 $400 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $301 @17 sketch_attrib_def 1 1 3 @16 493 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $301 @17 sketch_attrib_def 1 1 3 @16 493 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $401 $301 $304 $356 forward $252 0 $402 #
 coedge $-1 -1 $-1 $301 $401 $396 $403 reversed $252 0 $404 #
 coedge $405 -1 $-1 $398 $305 $301 $352 forward $42 0 $-1 #
@@ -823,7 +823,7 @@ pcurve $-1 -1 $-1 0 forward { exp_par_cur nubs 1 open 2
 	0 
 	spline forward { ref 16 } I I I I 
 	} 0 0 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $305 @17 sketch_attrib_def 1 1 3 @16 490 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $305 @17 sketch_attrib_def 1 1 3 @16 490 2773 1 0 1 1 #
 vertex $-1 -1 $-1 $352 0 $413 #
 intcurve-curve $-1 -1 $-1 forward { ref 17 } F 0 F 1 #
 coedge $-1 -1 $-1 $313 $408 $308 $362 forward $98 0 $-1 #
@@ -855,11 +855,11 @@ edge $-1 -1 $-1 $371 -0.1187688708305358887 $419 -0 $369 $420 forward @7 unknown
 vertex $-1 -1 $-1 $337 1 $421 #
 straight-curve $-1 -1 $-1 -1.896665781475495915 1.673091814517975173 1.550000000000000044 -1 -0 -0 I I #
 point $-1 -1 $-1 -1.828267615027618032 1.673091814517975173 1.550000000000000044 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $328 @17 sketch_attrib_def 1 1 3 @16 505 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $328 @17 sketch_attrib_def 1 1 3 @16 505 2773 1 0 1 1 #
 coedge $422 -1 $-1 $328 $423 $424 $425 forward $42 0 $-1 #
 coedge $426 -1 $-1 $427 $428 $328 $377 reversed $429 0 $-1 #
 edge $-1 -1 $-1 $430 0 $382 0.2454910874366760254 $376 $431 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $329 @17 sketch_attrib_def 1 1 3 @16 508 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $329 @17 sketch_attrib_def 1 1 3 @16 508 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $417 $329 $428 $432 forward $381 0 $-1 #
 coedge $-1 -1 $-1 $329 $417 $332 $384 reversed $381 0 $-1 #
 loop $-1 -1 $-1 $-1 $329 $433 #
@@ -913,7 +913,7 @@ spline-surface $-1 -1 $-1 forward { cyl_spl_sur 23100
 	0 
 	F } I I I I #
 coedge $440 -1 $-1 $441 $442 $423 $443 reversed $345 0 $444 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $347 @17 sketch_attrib_def 1 1 3 @16 496 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $347 @17 sketch_attrib_def 1 1 3 @16 496 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $445 $347 $350 $403 forward $299 0 $446 #
 coedge $-1 -1 $-1 $347 $445 $441 $447 reversed $299 0 $448 #
 coedge $449 -1 $-1 $423 $351 $347 $399 forward $42 0 $-1 #
@@ -941,7 +941,7 @@ pcurve $-1 -1 $-1 0 forward { exp_par_cur nubs 1 open 2
 	0 
 	spline forward { ref 23 } I I I I 
 	} 0 0 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $351 @17 sketch_attrib_def 1 1 3 @16 493 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $351 @17 sketch_attrib_def 1 1 3 @16 493 2773 1 0 1 1 #
 vertex $-1 -1 $-1 $399 0 $457 #
 intcurve-curve $-1 -1 $-1 forward { ref 24 } F 0 F 1 #
 coedge $-1 -1 $-1 $361 $452 $354 $409 forward $98 0 $-1 #
@@ -964,11 +964,11 @@ edge $-1 -1 $-1 $419 -0.06839816644787788391 $463 -0 $417 $464 forward @7 unknow
 vertex $-1 -1 $-1 $384 1 $465 #
 straight-curve $-1 -1 $-1 -1.896665781475495915 1.554322943687439285 1.550000000000000044 -0 -1 -0 I I #
 point $-1 -1 $-1 -1.896665781475495915 1.673091814517975173 1.550000000000000044 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $375 @17 sketch_attrib_def 1 1 3 @16 502 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $375 @17 sketch_attrib_def 1 1 3 @16 502 2773 1 0 1 1 #
 coedge $466 -1 $-1 $375 $398 $394 $443 forward $42 0 $-1 #
 coedge $467 -1 $-1 $468 $469 $375 $425 reversed $392 0 $470 #
 edge $-1 -1 $-1 $471 0 $430 1 $424 $472 forward @7 unknown #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $376 @17 sketch_attrib_def 1 1 3 @16 505 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $376 @17 sketch_attrib_def 1 1 3 @16 505 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $461 $376 $469 $473 forward $429 0 $-1 #
 coedge $-1 -1 $-1 $376 $461 $379 $432 reversed $429 0 $-1 #
 loop $-1 -1 $-1 $-1 $376 $391 #
@@ -982,7 +982,7 @@ ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $385 @22 generic_tag_attrib_def 3 3 -1 @23 g
 plane-surface $-1 -1 $-1 -1.896665781475495915 1.673091814517975173 1.5 -1 0 0 -0 -1 -0 forward_v I I I I #
 ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $391 @22 generic_tag_attrib_def 3 3 -1 @23 generic_tag_attrib_def  1 2 @2 10 0 1 369 0 #
 plane-surface $-1 -1 $-1 -1.828267615027618032 1.554322943687439285 1.5 -1 0 0 -0 -1 -0 forward_v I I I I #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $394 @17 sketch_attrib_def 1 1 3 @16 499 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $394 @17 sketch_attrib_def 1 1 3 @16 499 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $478 $394 $397 $447 forward $345 0 $479 #
 coedge $-1 -1 $-1 $394 $478 $468 $480 reversed $345 0 $481 #
 edge $-1 -1 $-1 $450 0 $471 1 $394 $482 forward @7 unknown #
@@ -1009,7 +1009,7 @@ pcurve $-1 -1 $-1 0 forward { exp_par_cur nubs 1 open 2
 	0 
 	spline forward { ref 29 } I I I I 
 	} 0 0 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $398 @17 sketch_attrib_def 1 1 3 @16 496 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $398 @17 sketch_attrib_def 1 1 3 @16 496 2773 1 0 1 1 #
 vertex $-1 -1 $-1 $443 0 $488 #
 intcurve-curve $-1 -1 $-1 forward { ref 30 } F 0 F 1 #
 coedge $-1 -1 $-1 $408 $483 $401 $453 forward $98 0 $-1 #
@@ -1048,8 +1048,8 @@ edge $-1 -1 $-1 $463 -0.2454910874366760254 $494 -0 $461 $495 forward @7 unknown
 vertex $-1 -1 $-1 $432 1 $496 #
 straight-curve $-1 -1 $-1 -1.828267615027618032 1.554322943687439285 1.550000000000000044 1 0 0 I I #
 point $-1 -1 $-1 -1.896665781475495915 1.554322943687439285 1.550000000000000044 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $423 @17 sketch_attrib_def 1 1 3 @16 499 2770 1 0 1 1 #
-ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $424 @17 sketch_attrib_def 1 1 3 @16 502 2770 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $423 @17 sketch_attrib_def 1 1 3 @16 499 2773 1 0 1 1 #
+ATTRIB_CUSTOM-attrib $-1 -1 $-1 $-1 $424 @17 sketch_attrib_def 1 1 3 @16 502 2773 1 0 1 1 #
 coedge $-1 -1 $-1 $492 $424 $442 $480 forward $392 0 $497 #
 coedge $-1 -1 $-1 $424 $492 $427 $473 reversed $392 0 $498 #
 pcurve $-1 -1 $-1 0 forward { exp_par_cur nubs 1 open 2 

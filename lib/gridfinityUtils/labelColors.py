@@ -140,16 +140,6 @@ def binHasLabel(generateBody: bool, hasTab: bool, isShaped: bool, isSolid: bool)
     return bool(generateBody and hasTab and not isShaped and not isSolid)
 
 
-def textEditByParameter(labelColor: str) -> bool:
-    """
-    Whether a rebuild that only changes the label text may just set the text parameter, see binBuilder.parameterEdits.
-    Not for a colored label: before round 14 Fusion made the letters a text parameter adds in the default appearance
-    (p120), and bins built as bodies in the root still color body by body. Since round 14 a bin in a component shows
-    the color on its Text component and new letters get it too, a rebuild still builds it anew, it's never wrong
-    """
-    return labelColor == ''
-
-
 def restoresColor(labelColor: str, hasLabel: bool, isCullenect: bool) -> bool:
     """
     Whether a bin's state sets the dialog's color choice, see commandCreateBin.entry.applyInputsState. A bin without a

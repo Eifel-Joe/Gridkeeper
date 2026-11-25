@@ -1,0 +1,15 @@
+{
+    "description": "What the box label dialog starts with for a box 4 cells wide, for presets to extend",
+    "extends": "_docs.json",
+    "generator": "boxLabel",
+    "settings": {
+        "cells": 4,
+        "bigText": "M3",
+        "line1": "Screws",
+        "line2": "",
+        "symbols": [],
+        "textStyle": "Heavy",
+        "surface": "Embossed",
+        "textColor": ""
+    }
+}

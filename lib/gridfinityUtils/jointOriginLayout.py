@@ -1,6 +1,6 @@
 import adsk.core, adsk.fusion
 
-from .dim import Dim, valueInput
+from .dim import Dim, valueInput, lengthInput
 
 # Joint origins at the cells of bin feet and baseplate sockets (round 15, p170). They used to share one sketch with
 # reference dimensions and stayed put when the grid parameters changed; then each got a sketch point of its own with
@@ -28,9 +28,9 @@ def createOffsetJointOrigins(
     jointOrigins = []
     for (pointName, x, y, z) in points:
         jointOriginInput = targetComponent.jointOrigins.createInput(adsk.fusion.JointGeometry.createByPoint(targetComponent.originConstructionPoint))
-        jointOriginInput.offsetX = valueInput(x)
-        jointOriginInput.offsetY = valueInput(y)
-        jointOriginInput.offsetZ = valueInput(z)
+        jointOriginInput.offsetX = lengthInput(x)
+        jointOriginInput.offsetY = lengthInput(y)
+        jointOriginInput.offsetZ = lengthInput(z)
         jointOrigin = targetComponent.jointOrigins.add(jointOriginInput)
         jointOrigin.name = pointName
         jointOrigins.append(jointOrigin)

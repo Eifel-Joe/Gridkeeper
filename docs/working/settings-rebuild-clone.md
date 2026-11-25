@@ -47,8 +47,12 @@ which model is rebuilt.
   pocket picked already and the new insert is jointed into it.
 - A rebuilt box label goes into the holder of its box again, the dialog has the box picked already; a label without
   a box stays where it was, see [Storage boxes](../boxes.md#label).
-- For a bin, changing only what its [parameters](parameters.md) hold, the height and the units, sets the parameters
-  instead of building it again. Any change of a label text builds the bin anew, so the text is fitted to its label.
+- A bin is always built anew, also when you changed only what its [parameters](parameters.md) hold, the height and the
+  units (since 1.4.0); its label text is fitted to its label again. To change those values without building the bin
+  again, change its parameters in **Modify › Change Parameters**.
+- Names you gave the model's component, its timeline group or its bodies stay; a name Gridkeeper gave follows the new
+  size. A box part you renamed, its lid or a latch, keeps its name too.
+- The component that was active before is active again afterwards.
 
 ## Gridkeeper clone
 

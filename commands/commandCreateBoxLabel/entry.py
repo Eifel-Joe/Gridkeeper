@@ -435,11 +435,13 @@ def generateBoxLabel(args: adsk.core.CommandEventArgs, mayChangeDocument: bool =
     rebuildNotes = []
     try:
         des = adsk.fusion.Design.cast(app.activeProduct)
-        if rebuildBodyToken is not None:
-            body = rebuildUtils.findBodyByToken(des, rebuildBodyToken)
-            (_, rebuildNotes) = rebuildBoxLabel(des, body, state, settings, not mayChangeDocument, selectedBox(inputs))
-        else:
-            buildBoxLabel(des, state, settings, mayChangeDocument, selectedBox(inputs))
+        # the component active before is again afterwards, the build activates its own (as the bin dialog)
+        with commonUtils.keepActiveComponent(des):
+            if rebuildBodyToken is not None:
+                body = rebuildUtils.findBodyByToken(des, rebuildBodyToken)
+                (_, rebuildNotes) = rebuildBoxLabel(des, body, state, settings, not mayChangeDocument, selectedBox(inputs))
+            else:
+                buildBoxLabel(des, state, settings, mayChangeDocument, selectedBox(inputs))
         futil.log(f'{CMD_NAME} {labelName(state)} generated in {time.perf_counter() - startTime:.3f}s')
     except UnsupportedDesignTypeException:
         args.executeFailed = True

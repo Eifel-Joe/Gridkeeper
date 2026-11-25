@@ -110,6 +110,14 @@ def groupPlacement(group: adsk.fusion.TimelineGroup, placementName: str) -> tupl
     commonUtils.debugLog(f'{LOG_PREFIX} no {placementName} in {group.name}, placing at the origin, its moves: {moves}')
     return (0, 0)
 
+def groupOccurrence(group: adsk.fusion.TimelineGroup) -> adsk.fusion.Occurrence | None:
+    """The first occurrence a generator's timeline group made, the part's own: a bin's, a box's set"""
+    for index in range(group.count):
+        occurrence = adsk.fusion.Occurrence.cast(group.item(index).entity)
+        if occurrence is not None:
+            return occurrence
+    return None
+
 def findTarget(design: adsk.fusion.Design, body: adsk.fusion.BRepBody, tagName: str, placementName: str) -> RebuildTarget:
     """Placement name is of the move the generator places the bodies with. Raises ValueError when the body can't be rebuilt in place"""
     if design.designType != adsk.fusion.DesignTypes.ParametricDesignType:
@@ -122,7 +130,7 @@ def findTarget(design: adsk.fusion.Design, body: adsk.fusion.BRepBody, tagName: 
     bodies = [taggedBody for (taggedBody, _) in tagUtils.findTaggedBodies(design, tagName) if any(generatedBy(item, taggedBody) for item in items)]
     if len(bodies) == 0:
         raise ValueError(f'No generated bodies were found in the timeline group {group.name}')
-    occurrence = next((adsk.fusion.Occurrence.cast(item.entity) for item in items if adsk.fusion.Occurrence.cast(item.entity) is not None), None)
+    occurrence = groupOccurrence(group)
     allItems = timelineItems(design.timeline)
     lastGroupIndex = max(index for (index, item) in enumerate(allItems) if isGroupItem(group, item))
     laterItems = allItems[lastGroupIndex + 1:]
@@ -827,6 +835,62 @@ def _boxCells(jointOrigin: adsk.fusion.JointOrigin) -> int | None:
         return None
     return predBoxLabelLayout.cellsOfBoxWidth(max(body.boundingBox.maxPoint.x - body.boundingBox.minPoint.x for body in bodies))
 
+def withoutCounter(name: str) -> str:
+    """A component name without the " (1)" Fusion adds to a name that is taken"""
+    return re.sub(r' \(\d+\)$', '', name)
+
+def rebuiltPartName(current: str, role: str, oldName: str | None = None) -> str | None:
+    """
+    The name a part of a rebuilt set gets, a box's lid or latch say, by its role, none to leave it: the name the user
+    gave the old part of that role, else the role without the counter Fusion added while the old set had the name
+    ("Lid (1)"). A name other than the role, counted or not, is the user's
+    """
+    if oldName is not None and withoutCounter(oldName) != role:
+        return oldName if current != oldName else None
+    if current == role or withoutCounter(current) != role:
+        return None
+    return role
+
+def isGeneratedName(name: str, generatedName: str | None, namePrefix: str) -> bool:
+    """
+    Whether the generator gave the name, the one in the tag, maybe counted up by Fusion, rather than the user. A tag from
+    before it held the name goes by the prefix the generator's names start with
+    """
+    if generatedName is None:
+        return name.startswith(namePrefix)
+    return withoutCounter(name) == withoutCounter(generatedName)
+
+def keptName(newName: str, oldName: str, generatedName: str | None, namePrefix: str) -> str | None:
+    """
+    The name the new component, timeline group or body gets once the old one is gone, none to leave its own. The user's
+    name stays. A generated one only when Fusion counted the same name up while the old one had it, the generator's
+    names never end in a number in brackets, a bin of another size has a name of its own
+    """
+    if newName == oldName:
+        return None
+    if not isGeneratedName(oldName, generatedName, namePrefix):
+        return oldName
+    if withoutCounter(newName) != withoutCounter(oldName):
+        return None
+    return oldName
+
+def keepName(item, oldName: str, generatedName: str | None, namePrefix: str):
+    """Gives the new component, timeline group or body the old one's name, see keptName"""
+    name = keptName(item.name, oldName, generatedName, namePrefix)
+    if name is None:
+        return
+    try:
+        item.name = name
+    except RuntimeError as err:
+        commonUtils.fileLog(f'{LOG_PREFIX} {item.name} wasn\'t renamed to {name}, {err}')
+
+def generatedNames(body: adsk.fusion.BRepBody) -> tuple[str | None, str | None]:
+    """The names the generator gave the bin or baseplate, its component and timeline group, and the body, see tagUtils.tagBody"""
+    tag = tagUtils.readBodyTag(body)
+    if tag is None:
+        return (None, None)
+    return (tag[1].get('name'), tag[1].get('bodyName'))
+
 def newlyUnhealthy(target: RebuildTarget) -> list[str]:
     """Later items that were fine before and have a warning or an error now, with Fusion's message"""
     notes = []
@@ -944,11 +1008,14 @@ def rebuild(
     title: str,
     jointsByName: bool = False,
     hideByLightBulb: bool = False,
+    namePrefix: str | None = None,
 ) -> tuple[list[adsk.fusion.BRepBody], list[str]]:
     """
     Builds the replacement of the target in its place, keeping the features after it. build gets the placement, the
     prefix of the parameters to keep, none for new ones, the transform of the component and where the old part is, and
     returns the new bodies. Returns them with what of the later features needs a look, title names the body in it.
+    namePrefix starts every name the generator gives, see isGeneratedName; without one the new items keep the names the
+    build gave them.
     A preview is undone anyway, it builds at the end of the timeline with the old body suppressed, rolling the
     timeline back and forth for each would be slow
     """
@@ -959,6 +1026,10 @@ def rebuild(
 
     oldNames = tagParameterNames(target.bodies[0])
     jointsBefore = existingJoints(design)
+    # the new items get the user's names once the old ones are gone, see keptName
+    (generatedName, _) = generatedNames(target.bodies[0])
+    oldGroupName = target.group.name
+    oldComponentName = target.occurrence.component.name if target.occurrence is not None else None
     rollAfterGroup(target)
     with componentNames.recording() as named:
         newBodies = build(target.placement, prefix, transform, target.oldPlace)
@@ -966,6 +1037,17 @@ def rebuild(
     if len(newBodies) > 0 and newBodies[0].parentComponent != design.rootComponent:
         occurrences = design.rootComponent.allOccurrencesByComponent(newBodies[0].parentComponent)
         newOccurrence = occurrences.item(0) if occurrences.count > 0 else None
+    newGroup = findGroup(design, nativeBody(newBodies[0])) if len(newBodies) > 0 else None
+    # the group's own occurrence takes the old one's name, as findTarget took it: a box's set, whose first body is in
+    # the Box part inside it (review round 58)
+    newSet = groupOccurrence(newGroup) if newGroup is not None else None
+    renames = [(item, oldName, generatedName) for (item, oldName) in [
+        (newGroup, oldGroupName),
+        (newSet.component if newSet is not None else None, oldComponentName),
+    ] if item is not None and oldName is not None]
+    # bodies taking the place of one each, several going into one have no single name to keep
+    if len(newBodies) == len(target.bodies):
+        renames += [(new, old.name, generatedNames(old)[1]) for (old, new) in bodyMap(target, newBodies)]
     failed = replaceBodies(target, newBodies, newOccurrence)
     if jointsByName:
         (_, jointNotes) = repointJointsByName(design, target, newBodies)
@@ -975,6 +1057,10 @@ def rebuild(
     keptOldItems = removeOldGroup(target, jointsMoved=len(target.movedFrom) > 0)
     dropJointCounters(design, jointsBefore)
     dropComponentCounters(design, named)
+    if len(keptOldItems) == 0 and namePrefix is not None:
+        # the old items are gone with their group, their names are free: a name the user gave comes back, see keptName
+        for (item, oldName, itemGeneratedName) in renames:
+            keepName(item, oldName, itemGeneratedName, namePrefix)
     # shared units stay, the body's own ones it no longer has go, like the label of a tab turned off
     newNames = tagParameterNames(newBodies[0]) if len(newBodies) > 0 else []
     removeUnusedParameters(design, [name for name in oldNames if prefix is not None and prefixOf([name], baseName) == prefix and name not in newNames])

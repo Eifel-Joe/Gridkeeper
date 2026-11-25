@@ -48,8 +48,8 @@ BIN_CHOICES = {
 }
 
 
-def read(text, current, generator=BIN, stateClass=None, choices=None):
-    return configJson.readConfig(text, generator, stateClass or binState.InputState, current, choices)
+def read(text, current, generator=BIN, stateClass=None, choices=None, isFromTag=False):
+    return configJson.readConfig(text, generator, stateClass or binState.InputState, current, choices, isFromTag)
 
 
 def settings_text(**settings):
@@ -92,6 +92,38 @@ def test_missing_settings_keep_the_current_ones(current):
     assert state.wallThickness == pytest.approx(current.wallThickness)
     assert ("binLength", current.binLength) in notes.missing
     assert "binWidth" not in [name for (name, _) in notes.missing]
+
+
+def test_tags_without_added_settings_build_as_older_versions_did(current):
+    current = dataclasses.replace(current, placement="Center on origin", lipType="Full", isLipTopTrimmed=False, tabTopOffset=0.2)
+    (state, notes) = read(json.dumps({"generator": BIN, "settings": {"binWidth": 4}}), current, isFromTag=True)
+    assert (state.placement, state.lipType, state.isLipTopTrimmed) == ("Snap to free spot", "Light", True)
+    assert state.tabTopOffset == pytest.approx(0.05)
+    missing = [name for (name, _) in notes.missing]
+    assert not set(configJson.ADDED_FIELDS[BIN]) & set(missing)
+    assert "binLength" in missing
+
+
+def test_tags_keep_the_added_settings_they_have(current):
+    (state, _) = read(settings_text(lipType="Full", tabTopOffset=1.5), current, isFromTag=True)
+    assert state.lipType == "Full"
+    assert state.tabTopOffset == pytest.approx(0.15)
+
+
+def test_files_without_added_settings_build_as_older_versions_did_too(current):
+    # Gridkeeper differs from GridfinityGenerator here: a file takes OLDER_VALUES as a tag does (round 32), so a
+    # saved config builds the bin it was saved for, not one with the dialog's newer settings
+    current = dataclasses.replace(current, lipType="Full")
+    (state, notes) = read(settings_text(binWidth=4), current)
+    assert state.lipType == "Light"
+    assert "lipType" not in [name for (name, _) in notes.missing]
+
+
+@pytest.mark.parametrize("generator, stateClass", [(BIN, binState.InputState), (BASEPLATE, baseplateState.InputState)])
+def test_added_settings_are_settings(generator, stateClass):
+    fieldTypes = {field.name: field.type for field in dataclasses.fields(stateClass)}
+    for (name, value) in configJson.ADDED_FIELDS[generator].items():
+        assert configJson._fitsType(value, fieldTypes[name]), name
 
 
 def test_unknown_settings_are_skipped(current):
@@ -291,8 +323,8 @@ def test_config_with_a_lip_type_keeps_it(current):
 
 
 def test_rebuild_fills_the_older_values_into_a_tagged_config():
-    # parameterEdits compares the tagged config with the dialog's, a bin tagged before the merge would otherwise count
-    # its lip as changed and be rebuilt instead of having its parameters set
+    # the settings window and the rebuild read the tagged config with its parameters, a bin tagged before the merge
+    # would otherwise show and rebuild with the dialog's lip
     path = os.path.join(PROJECT_ROOT, "lib", "rebuildUtils.py")
     with open(path, encoding="utf-8") as file:
         source = file.read()
@@ -494,3 +526,10 @@ def test_old_scoop_bin_keeps_its_single_front_scoop(current):
     saved = {**_oldest_bin_config(current), "hasScoop": True}
     (state, _) = read(configJson.configText(BIN, saved), _opposite(current))
     assert (state.hasScoop, state.hasScoopBack, state.hasScoopLeft, state.hasScoopRight) == (True, False, False, False)
+
+
+def test_older_values_hold_every_added_setting_of_gridfinity_generator():
+    # GridfinityGenerator's ADDED_FIELDS for tags are covered by Gridkeeper's OLDER_VALUES with the same values
+    for (generator, added) in configJson.ADDED_FIELDS.items():
+        for (name, value) in added.items():
+            assert configJson.OLDER_VALUES[generator][name] == value, name
