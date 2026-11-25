@@ -16,7 +16,9 @@ history of its 21 commits since ee027a9 (six of them fixes contributed from Grid
   faces that should meet were split (by Le0Michine). Gridkeeper's own generators had the same: the box, its hinge,
   latches and handle pin, box labels, Cullenect sockets and inserts, raised dividers and joint origins now do the
   same; a unit test finds a fillet, chamfer, plane offset or joint origin offset in the generator modules given a
-  number again.
+  number again. The box's extrudes and its pattern of cells go in mm too.
+- Known limit: a box built in a document in inches still has a few small round faces of box and lid split in two
+  where the build in mm has one, with the same shape; its snapshot cases fail in inches for that.
 - **Snapshot tests in inches:** every case is built a second time in a document in inches and has to come out with
   its faces split the same way as in mm (by Le0Michine). Gridkeeper's harness keeps its own sketch check.
 - **Lip on a round height:** the sharp top of the lip is 4.4 mm above the wall at the default clearance instead of
