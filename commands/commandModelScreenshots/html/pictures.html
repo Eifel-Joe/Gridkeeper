@@ -212,7 +212,7 @@
     <span>Model pictures</span>
     <span class="buttons">
         <button id="open-folder" title="Shows the folder of the pictures in Finder or Explorer">Open location</button>
-        <button id="make-gifs" title="Makes the GIFs of modelGifs.json from the saved pictures, with the dialog animations they go with">Make GIFs</button>
+        <button id="make-gifs" title="Makes the GIFs of the docs' animations, dev-notes/tools/anim/anims.json, from their raw pictures with compose.py">Make GIFs</button>
         <button id="refresh-all" title="Makes the pictures of every preset again, from their files, then the dialog screenshots and the GIFs">Refresh all</button>
     </span>
 </div>
@@ -353,7 +353,7 @@
             thumbs.append(thumbnail(dialog, '', () => view(gif, 'gifs')));
         }
         const note = gif.missing.length ? `Needs pictures of ${gif.missing.join(', ')}` : gif.outdated ? 'Pictures changed since it was made' : '';
-        const title = gif.missing.length ? 'Makes the missing pictures, then the GIF and its dialog animation' : 'Makes the GIF and its dialog animation';
+        const title = 'Makes the light and dark GIF from the raw pictures in dev-notes/tools/anim/raw';
         row.append(thumbs, textOf(gif, model ? 'Refresh' : 'Create', title, () => request([], [gif.name]), note));
         return row;
     }

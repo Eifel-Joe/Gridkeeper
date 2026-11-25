@@ -6,8 +6,8 @@ A shot is played twice. The first time measures how much of the dialog its input
 the second, captured one, keeps the same frame while inputs show and hide.
 
 {"model": n} steps mark when a GIF of model pictures shown beside the animation goes to its picture n, at the moment
-the dialog last changed. They are saved as a timeline the model GIF is made from, so the two change together, see
-modelGifs.py.
+the dialog last changed. They are saved as a timeline for GridfinityGenerator's modelGifs.py; Gridkeeper's docs make
+their animations with dev-notes/tools/anim/compose.py instead.
 """
 
 import io
