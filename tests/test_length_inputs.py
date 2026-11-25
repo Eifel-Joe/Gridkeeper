@@ -77,3 +77,37 @@ def test_a_text_height_is_kept_to_the_micron_in_mm():
     text = types.SimpleNamespace(heightParameter=types.SimpleNamespace(expression=None))
     namespace["holdTextHeight"](text, 0.3214567)
     assert text.heightParameter.expression == "3.215 mm"
+
+
+# the box's own extrudes and its pattern of cells (round 58): the boxes built in inches had their faces split another
+# way than in mm, every cell copy of the pattern 42 mm apart as Fusion keeps it in inches, a hair off
+BOX_MODULES = [path for path in GENERATORS if os.path.basename(path).startswith("pred")]
+BOX_LENGTH_ARGUMENTS = {
+    "setDistanceExtent": 1,
+    "setSymmetricExtent": 0,
+    "adsk.fusion.OffsetStartDefinition.create": 0,
+    "setDirectionTwo": 2,
+}
+
+
+def _boxSites(path):
+    with open(path, encoding="utf-8") as file:
+        tree = ast.parse(file.read())
+    sites = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        name = ast.unparse(node.func)
+        short = node.func.attr if isinstance(node.func, ast.Attribute) else name
+        index = BOX_LENGTH_ARGUMENTS.get(name, BOX_LENGTH_ARGUMENTS.get(short))
+        # rectangularPatternFeatures.createInput(entities, axis, quantity, distance, type): the distance
+        if short == "createInput" and "PatternDistanceType" in ast.unparse(node):
+            index = 3
+        if index is not None and len(node.args) > index and _gives_a_real(node.args[index]):
+            sites.append(f"{os.path.basename(path)}:{node.lineno} {short}")
+    return sites
+
+
+def test_box_extrudes_and_patterns_go_to_fusion_in_mm():
+    sites = [site for path in BOX_MODULES for site in _boxSites(path)]
+    assert sites == []

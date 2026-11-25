@@ -329,9 +329,9 @@ def _extrude(component, profiles, operation, start: float, end: float, axis: int
     features = component.features.extrudeFeatures
     plane, sign = _sketchAxis(profiles[0].parentSketch, axis)
     extrudeInput = features.createInput(collection(profiles), operation)
-    extrudeInput.setDistanceExtent(False, valueInput(_mm((end - start) * sign)))
+    extrudeInput.setDistanceExtent(False, lengthInput(_mm((end - start) * sign)))
     if abs(start - plane) > 1e-9:
-        extrudeInput.startExtent = adsk.fusion.OffsetStartDefinition.create(valueInput(_mm((start - plane) * sign)))
+        extrudeInput.startExtent = adsk.fusion.OffsetStartDefinition.create(lengthInput(_mm((start - plane) * sign)))
     if bodies is not None:
         extrudeInput.participantBodies = list(bodies)
     feature = features.add(extrudeInput)

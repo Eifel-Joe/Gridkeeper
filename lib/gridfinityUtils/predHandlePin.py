@@ -110,9 +110,9 @@ def _extrude(component, profiles, operation, distance: float, start: float = Non
     normal = sketch.xDirection.crossProduct(sketch.yDirection)
     sign = 1 if normal.x > 0 else -1
     extrudeInput = features.createInput(collection(profiles), operation)
-    extrudeInput.setDistanceExtent(False, valueInput(_mm(distance * sign)))
+    extrudeInput.setDistanceExtent(False, lengthInput(_mm(distance * sign)))
     if start is not None:
-        extrudeInput.startExtent = adsk.fusion.OffsetStartDefinition.create(valueInput(_mm(start * sign)))
+        extrudeInput.startExtent = adsk.fusion.OffsetStartDefinition.create(lengthInput(_mm(start * sign)))
     if body is not None:
         extrudeInput.participantBodies = [body]
     feature = features.add(extrudeInput)

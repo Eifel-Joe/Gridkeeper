@@ -387,7 +387,7 @@ class _Builder:
     def extrude(self, profiles, operation, distance: Dim, name):
         extrudes = self.features.extrudeFeatures
         extrudeInput = extrudes.createInput(collection(profiles), operation)
-        extrudeInput.setDistanceExtent(False, valueInput(distance))
+        extrudeInput.setDistanceExtent(False, lengthInput(distance))
         if self.body is not None:
             extrudeInput.participantBodies = [self.body]
         feature = extrudes.add(extrudeInput)

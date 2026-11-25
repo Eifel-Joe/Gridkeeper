@@ -82,9 +82,9 @@ class _Builder:
     def extrude(self, profiles, operation, distance: Dim, start: Dim = None, bodies=None, name=None):
         extrudes = self.features.extrudeFeatures
         extrudeInput = extrudes.createInput(collection(profiles), operation)
-        extrudeInput.setDistanceExtent(False, valueInput(distance))
+        extrudeInput.setDistanceExtent(False, lengthInput(distance))
         if start is not None:
-            extrudeInput.startExtent = adsk.fusion.OffsetStartDefinition.create(valueInput(start))
+            extrudeInput.startExtent = adsk.fusion.OffsetStartDefinition.create(lengthInput(start))
         if bodies is not None:
             extrudeInput.participantBodies = bodies
         feature = extrudes.add(extrudeInput)
@@ -306,9 +306,9 @@ class _Builder:
         self.step('#15 Extrude57')
         patterns = self.features.rectangularPatternFeatures
         patternInput = patterns.createInput(collection(patterned), self.component.xConstructionAxis,
-                                            valueInput(d.gridX), valueInput(mm(42)),
+                                            valueInput(d.gridX), lengthInput(mm(42)),
                                             adsk.fusion.PatternDistanceType.SpacingPatternDistanceType)
-        patternInput.setDirectionTwo(self.component.yConstructionAxis, valueInput(d.gridY), valueInput(mm(42)))
+        patternInput.setDirectionTwo(self.component.yConstructionAxis, valueInput(d.gridY), lengthInput(mm(42)))
         # every cell is the same, identical copies instead of each computed anew: the slowest step of the build
         # (11 s of 69 s at 5 x 4 x 6, fusion-auftraege/r27_timing.out)
         patternInput.patternComputeOption = adsk.fusion.PatternComputeOptions.IdenticalPatternCompute
@@ -621,7 +621,7 @@ class _Builder:
             sketch.close()
             extrudes = self.features.extrudeFeatures
             extrudeInput = extrudes.createInput(collection(list(sketch.sketch.profiles)), operation)
-            extrudeInput.setSymmetricExtent(valueInput(mm(half)), False)
+            extrudeInput.setSymmetricExtent(lengthInput(mm(half)), False)
             extrudeInput.participantBodies = [self.base]
             feature = extrudes.add(extrudeInput)
             feature.name = name
