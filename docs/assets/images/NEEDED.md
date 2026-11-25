@@ -11,7 +11,7 @@ from GridfinityGenerator. The models in `docs/assets/models` are made from the p
 `docs/assets/gif` are put together by `dev-notes/tools/anim/compose.py` from rendered models and dialog screenshots
 (raw pictures in `dev-notes/tools/anim/raw`, states and captions in `anims.json`).
 
-## Taken (round 58, presets rendered by `fusion-auftraege/r58_pictures.py`)
+## Taken (round 58, presets rendered by a Fusion script, see `tools/screenshots/README.md`)
 
 - All 24 model pictures of `docs/assets/models` from their presets in one look (orthographic, `#4A82C8`, 1200 × 900),
   five new: `bin-cullenect-pocket.png` ([Pockets in bins](../../cullenect/pockets.md)), `cullenect-insert.png`

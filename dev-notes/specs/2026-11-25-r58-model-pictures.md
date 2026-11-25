@@ -22,7 +22,7 @@ original's `modelGifs.py` (Playwright) in a venv nobody set up, while Gridkeeper
    finisher finishes. The palette keeps its own page and works as before.
 2. **Into the docs.** The presets' default output is `docs/assets/models` of the checkout, where the pages take them.
 3. **One look.** A `_docs.json` base all doc presets extend: orthographic, Gridkeeper's docs blue `#4A82C8`, shaded
-   with edges, transparent, 1200 × 900 px, margin 0.05. All 19 doc pictures are made again from presets, the three
+   (without edges, as the docs' pictures before), transparent, 1200 × 900 px, margin 0.05. All 19 doc pictures are made again from presets, the three
    without one get one (`bin-tab-top-offset`, `baseplate-padding-connection-holes`, `baseplate-magnet-socket-chamfer`).
    File names stay, so the pages need no change for them.
 4. **New presets** for what the docs don't show as a model yet: a bin with a Cullenect pocket, a Cullenect insert, a

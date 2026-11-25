@@ -30,7 +30,8 @@ def mainCheckout(checkout: str) -> str | None:
         line = file.readline().strip()
     if not line.startswith('gitdir:'):
         return None
-    gitDir = os.path.normpath(line[len('gitdir:'):].strip())
+    # git writes it absolute, or relative to the worktree with worktree.useRelativePaths
+    gitDir = os.path.normpath(os.path.join(checkout, line[len('gitdir:'):].strip()))
     # <main>/.git/worktrees/<name>
     parts = gitDir.split(os.sep)
     if len(parts) < 3 or parts[-2] != 'worktrees' or parts[-3] != '.git':
@@ -86,7 +87,9 @@ def gifRows(animFolder: str, gifFolder: str, saved=savedFile) -> list[dict]:
         anims = json.load(file)
     rows = []
     for (name, states) in anims.items():
-        pictures = [f'{index}-{kind}.png' for index in range(1, len(states) + 1) for kind in ('model', 'dialog')]
+        # a state may name a dialog picture of another, as compose.py reads it
+        pictures = list(dict.fromkeys(picture for (index, state) in enumerate(states, 1)
+                                      for picture in (f'{index}-model.png', state.get('dialog', f'{index}-dialog.png'))))
         paths = [os.path.join(animFolder, 'raw', name, picture) for picture in pictures]
         files = {f'model-{theme}': saved(os.path.join(gifFolder, f'{name}-{theme}.gif')) for theme in GIF_THEMES}
         made = files['model-light']

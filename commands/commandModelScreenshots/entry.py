@@ -10,6 +10,7 @@ import time
 from typing import Callable
 
 from ...lib import fusion360utils as futil
+from ...lib import configJson
 from ...lib.ui import viewportPictures
 from ... import config
 from ..commandCreateBin import binBuilder
@@ -52,7 +53,7 @@ STATE_CLASSES = {
     testCases.GENERATOR_BASEPLATE: BaseplateInputState,
     testCases.GENERATOR_LABEL: LabelInputState,
     testCases.GENERATOR_BOX: BoxInputState,
-    'boxLabel': BoxLabelInputState,
+    configJson.GENERATOR_BOX_LABEL: BoxLabelInputState,
 }
 # what the pictures since the palette was opened did, with the tracebacks of what failed
 LOG_PATH = os.path.join(ROOT_FOLDER, 'tools', 'screenshots', 'models-render.log')
@@ -414,7 +415,7 @@ def buildModel(design: adsk.fusion.Design, generator: str, state) -> list[adsk.f
         return labelBuilder.buildLabel(design, state, [])
     if generator == testCases.GENERATOR_BOX:
         return boxBuilder.buildBox(design, state, [])
-    if generator == 'boxLabel':
+    if generator == configJson.GENERATOR_BOX_LABEL:
         return boxLabelBuilder.buildBoxLabel(design, state, [])[0]
     return baseplateBuilder.buildBaseplate(design, state, [])
 

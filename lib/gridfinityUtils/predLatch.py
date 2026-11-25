@@ -24,7 +24,7 @@ from types import SimpleNamespace
 
 import adsk.core, adsk.fusion
 
-from .dim import Dim, valueInput, applyTo, lengthInput
+from .dim import Dim, applyTo, lengthInput
 from . import fusionLists
 from .predSketch import WorldSketch, collection
 from .predBoxEdges import EdgeNotFound, mirrorItem

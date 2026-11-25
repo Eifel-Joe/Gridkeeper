@@ -82,3 +82,22 @@ def test_compose_names_the_gifs_it_wrote():
     with open(os.path.join(ROOT, "dev-notes", "tools", "anim", "compose.py"), encoding="utf-8") as file:
         source = file.read()
     assert "print(os.path.join(OUT, f'{name}-{theme}.gif'))" in source
+
+
+def test_a_state_can_name_its_own_dialog_picture(tmp_path):
+    # review round 58: compose.py takes a state's "dialog" (bin-solid-tool reuses 2-dialog.png), the row does too
+    anim = tmp_path / "anim"
+    (anim / "raw" / "tool").mkdir(parents=True)
+    (anim / "anims.json").write_text(json.dumps({"tool": [{"caption": "A"}, {"caption": "B", "dialog": "1-dialog.png"}]}))
+    for picture in ["1-model.png", "1-dialog.png", "2-model.png"]:
+        (anim / "raw" / "tool" / picture).write_bytes(b"png")
+    (row,) = tools.gifRows(str(anim), str(tmp_path))
+    assert row["missing"] == []
+
+
+def test_a_relative_gitdir_is_read_from_the_worktree(tmp_path):
+    main = tmp_path / "Gridkeeper"
+    worktree = main / ".claude" / "worktrees" / "r58"
+    worktree.mkdir(parents=True)
+    (worktree / ".git").write_text("gitdir: ../../../.git/worktrees/r58\n")
+    assert tools.mainCheckout(str(worktree)) == str(main)

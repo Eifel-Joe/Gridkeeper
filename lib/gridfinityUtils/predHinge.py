@@ -24,7 +24,7 @@ from dataclasses import dataclass
 
 import adsk.core, adsk.fusion
 
-from .dim import Dim, valueInput, lengthInput
+from .dim import Dim, lengthInput
 from . import fusionLists
 from .predSketch import WorldSketch, collection
 
