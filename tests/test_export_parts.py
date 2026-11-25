@@ -749,12 +749,15 @@ def test_a_bambu_printer_gets_one_project_when_chosen():
 def test_the_notice_comes_after_the_replace_question_and_before_anything_is_written():
     source = _entry_function("export3mf")
     notice = source.index("exportParts.bambuNotice(")
-    assert source.index("mayReplace(") < notice
+    assert source.index("mayWrite(") < notice
     assert notice < source.index("threeMf.writeBambuProject(")
     assert notice < source.index("threeMf.write(")
     assert notice < source.index("os.remove(")
-    assert "OKCancelButtonType" in source
-    assert "DialogOK" in source
+    # the dialog asks it (round 59: a script's export gets the notice in its result instead)
+    asked = _entry_function("askBambuProject")
+    assert "OKCancelButtonType" in asked
+    assert "DialogOK" in asked
+    assert "mayReplace, askBambuProject, progressDialog" in _entry_function("command_execute")
 
 
 def test_the_summary_tells_of_the_project():
@@ -791,7 +794,7 @@ def test_a_rebuilt_or_cloned_baseplate_keeps_the_printer_chosen_last_unless_one_
 
 def test_cancel_in_the_notice_returns_before_anything_is_written():
     source = _entry_function("export3mf")
-    assert "if answer != adsk.core.DialogResults.DialogOK:\n            return None" in source
+    assert "if not confirmProject(exportParts.bambuNotice(profiles, plates)):\n            return None" in source
 
 
 # Round 59: the export from scripts takes options, each left out the dialog's last choice
@@ -880,3 +883,48 @@ def test_files_there_already_stop_a_script_export_unless_overwritten(tmp_path):
     assert "a plate 3.3mf" in str(raised.value)
     exportParts.refuseExisting([str(there)], [str(stale)], overwrite=True)
     exportParts.refuseExisting([str(tmp_path / "b.3mf")], [], overwrite=False)
+
+
+# Round 59: scripts export through the dialog's export, without its questions, messages and progress bar
+SCRIPT_PATH = ("exportBodies", "exportFiles", "export3mf", "exportEach", "exportStep")
+
+
+def test_the_script_export_shows_nothing():
+    for name in SCRIPT_PATH:
+        source = _entry_function(name)
+        for call in ("ui.messageBox(", "createFolderDialog(", "createProgressDialog(", "mayReplace(", "askBambuProject(", "progressDialog("):
+            assert call not in source, (name, call)
+
+
+def test_the_script_export_refuses_files_there_already_and_notes_the_project_notice():
+    source = _entry_function("exportBodies")
+    assert "exportParts.refuseExisting(paths, removed or [], resolved.overwrite)" in source
+    assert "notices.append(notice)" in source
+    assert "result.notes = notices + result.notes" in source
+    assert "noProgress)" in source
+
+
+def test_the_script_export_takes_the_dialogs_last_choices_and_saves_none():
+    source = _entry_function("exportBodies")
+    assert "readChoices()" in source
+    assert "exportParts.resolveScriptOptions(" in source
+    assert "saveChoices(" not in source
+
+
+def test_the_script_export_checks_what_it_gets_before_writing():
+    source = _entry_function("exportBodies")
+    assert source.index("resolveScriptOptions(") < source.index("exportFiles(")
+    assert "raise NotADirectoryError(" in source
+    assert "raise ValueError('nothing to export')" in source
+
+
+def test_the_dialog_tells_what_the_export_wrote():
+    assert "exportMessage(result, folder)" in _entry_function("command_execute")
+    message = _entry_function("exportMessage")
+    assert "result.projectPlates" in message and "result.notes" in message
+
+
+def test_scripts_import_the_export():
+    tree = ast.parse(open(os.path.join(PROJECT_ROOT, "api.py"), encoding="utf-8").read())
+    names = {alias.asname or alias.name for node in tree.body if isinstance(node, ast.ImportFrom) for alias in node.names}
+    assert {"export", "exportBodies", "ExportOptions", "ExportResult"} <= names
