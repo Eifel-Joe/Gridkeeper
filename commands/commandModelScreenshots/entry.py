@@ -158,7 +158,7 @@ def writeLog(text: str):
         file.write(text + '\n')
 
 def picturePath(preset: presets.Preset) -> str:
-    return os.path.join(ROOT_FOLDER, preset.output, f'{preset.name}.png')
+    return os.path.join(ROOT_FOLDER, preset.output, f'{preset.file or preset.name}.png')
 
 def savedFile(path: str) -> dict | None:
     """A file on disk for the page, its url changes with the file so the page shows a new one"""

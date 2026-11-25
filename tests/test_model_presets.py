@@ -113,6 +113,10 @@ class TestOptions:
         ({"saturation": -1}, "saturation"),
         ({"color": "#4e79a"}, "color"),
         ({"colour": "blue"}, "unknown keys"),
+        ({"file": ""}, "file is"),
+        ({"file": "sub/toolclip"}, "file is"),
+        ({"file": "toolclip.png"}, "file is"),
+        ({"file": 3}, "file is"),
         ({"section": "middle"}, "section"),
         ({"section": {"plane": "xx"}}, "section plane"),
         ({"section": {"plane": "xz", "flip": 1}}, "section flip"),
@@ -251,3 +255,51 @@ class TestDocsPictures:
         for preset in presets.loadPresets(PRESETS_FOLDER):
             assert (preset.camera, preset.color, preset.width, preset.height, preset.output) == (
                 "orthographic", "#4A82C8", 1200, 900, presets.DEFAULT_OUTPUT), preset.name
+
+
+
+class TestPictureFile:
+    """Round 59: a preset may name its picture's file, three hover pictures are each a toolclip.png"""
+
+    def test_the_picture_is_named_after_the_preset_by_default(self, folder):
+        write(folder, "wide.json", {"extends": "_base.json"})
+        preset = presets.loadPreset(str(folder), "wide.json")
+        assert preset.file == "wide"
+        assert presets.sidecar(preset, "r.png", "repo")["output"] == os.path.join("repo", "docs", "assets", "models", "wide.png")
+
+    def test_a_preset_names_its_picture(self, folder):
+        write(folder, "label.json", {"extends": "_base.json", "file": "toolclip", "output": "commands/commandCreateLabel/resources"})
+        preset = presets.loadPreset(str(folder), "label.json")
+        data = presets.sidecar(preset, "r.png", "repo")
+        assert (data["name"], data["output"]) == ("label", os.path.join("repo", "commands/commandCreateLabel/resources", "toolclip.png"))
+
+    def test_the_file_is_not_passed_on(self, folder):
+        write(folder, "_named.json", {"extends": "_base.json", "file": "toolclip"})
+        write(folder, "other.json", {"extends": "_named.json"})
+        assert presets.loadPreset(str(folder), "other.json").file == "other"
+
+
+TOOL_CLIPS_FOLDER = os.path.join(PROJECT_ROOT, "tools", "screenshots", "toolclips")
+
+
+class TestToolClipPresets:
+    """Round 59: the hover pictures of the menu in the look of the original's bin and baseplate pictures"""
+
+    def test_each_create_command_without_one_gets_a_picture(self):
+        outputs = {preset.output.replace("\\", "/") for preset in presets.loadPresets(TOOL_CLIPS_FOLDER)}
+        assert outputs == {f"commands/{command}/resources" for command in ("commandCreateLabel", "commandCreateBox", "commandCreateBoxLabel")}
+
+    def test_each_writes_a_toolclip_beside_the_icons(self):
+        for preset in presets.loadPresets(TOOL_CLIPS_FOLDER):
+            assert preset.file == "toolclip", preset.name
+            assert os.path.isfile(os.path.join(PROJECT_ROOT, preset.output, "32x32.png")), preset.name
+
+    def test_each_has_the_look_of_the_originals(self):
+        for preset in presets.loadPresets(TOOL_CLIPS_FOLDER):
+            assert (preset.width, preset.height, preset.transparent, preset.style, preset.camera, preset.view) == (
+                300, 230, True, "shadedWithEdges", "orthographic", "isoTopRight"), preset.name
+
+    def test_each_builds_a_state(self):
+        for preset in presets.loadPresets(TOOL_CLIPS_FOLDER):
+            cases.stateFromJson(preset.generator, STATE_CLASSES[preset.generator],
+                                {**cases.DEFAULT_SETTINGS.get(preset.generator, {}), **preset.settings})

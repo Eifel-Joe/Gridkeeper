@@ -1,0 +1,11 @@
+{
+    "description": "Hover picture of the label insert command: a Cullenect insert with a socket head screw and its size",
+    "extends": "_toolclip.json",
+    "generator": "label",
+    "file": "toolclip",
+    "output": "commands/commandCreateLabel/resources",
+    "settings": {
+        "line1": "M3x10",
+        "textStyle": "Heavy"
+    }
+}
