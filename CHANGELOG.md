@@ -5,7 +5,7 @@ GridfinityGenerator by Le0Michine, merged up to fadbd128 (v2.6.0.0, 23.11.2026; 
 Until 1.2.0 this file was named `CHANGELOG-CULLENECT.md`.
 Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`, the `vX.Y.Z.W` tags belong to GridfinityGenerator.
 
-## 1.4.1 (unreleased)
+## 1.4.1 (2026-11-25)
 
 ### Hover pictures, export from scripts, boxes in inches (round 59)
 
@@ -15,8 +15,8 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   `tools/screenshots/toolclips`, so they can be made again; a preset may name its picture's file.
 - **Export from scripts:** `gridkeeper.exportBodies(bodies, folder, options)` exports as the export dialog does, without
   a dialog, message or progress bar: 3MF with the label colors on their filaments, a Bambu Studio project or a file
-  per plate, STL or STEP. Options left out are the dialog's last choices, a printer is named as in the dialog's list,
-  a wrong option stops the export before anything is written, files there already stop it unless `overwrite=True`.
+  per plate, STL or STEP. Options left out are the dialog's last choices, a printer is found by its name, its label in the
+  dialog's list or a name it had in an earlier version, a wrong option stops the export before anything is written, files there already stop it unless `overwrite=True`.
   The notice the dialog shows before saving a Bambu Studio project comes back in the result's notes. The dialog goes
   through the same export. The idea of an export from scripts with options and a result follows GridfinityGenerator
   2.6 (Le0Michine); Gridkeeper's options are its own, as its export is.
