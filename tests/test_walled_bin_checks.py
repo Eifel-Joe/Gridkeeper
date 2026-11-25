@@ -34,3 +34,16 @@ def test_a_state_without_the_setting_is_a_whole_bin():
 def test_other_generators_have_no_bin_walls_to_check():
     for generator in (testCases.GENERATOR_BASEPLATE, testCases.GENERATOR_LABEL, testCases.GENERATOR_BOX):
         assert not testCases.hasWalls(generator, SimpleNamespace(generateBody=True))
+
+
+# A bin of one compartment has no divider: the gap check took the engraved icon in the top of its label tab, a thin
+# stretch on a level section, for one, and the recess of the icon for a 3 mm gap to the wall
+# (bin_2x1x4_hollow_tab_open_sides; the same with the sides closed)
+def test_a_bin_of_one_compartment_has_no_dividers():
+    assert not testCases.hasDividers(SimpleNamespace(compartmentsX=1, compartmentsY=1))
+    assert not testCases.hasDividers(SimpleNamespace())
+
+
+def test_a_bin_of_more_compartments_has_dividers():
+    assert testCases.hasDividers(SimpleNamespace(compartmentsX=2, compartmentsY=1))
+    assert testCases.hasDividers(SimpleNamespace(compartmentsX=1, compartmentsY=3))

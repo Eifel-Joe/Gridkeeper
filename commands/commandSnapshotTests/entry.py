@@ -831,7 +831,7 @@ def dividerGapNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BRepBody]
     little in from both faces and 0.5 and 1.0 mm out from them where a ridge's support is, a line at every height going in from the wall's outer face must not leave the material
     and enter it again within reach, see testCases.wallGaps
     """
-    if not testCases.hasWalls(case.generator, case.state) or len(bodies) == 0:
+    if not testCases.hasWalls(case.generator, case.state) or not testCases.hasDividers(case.state) or len(bodies) == 0:
         return []
     body = bodies[0]
     box = body.boundingBox
