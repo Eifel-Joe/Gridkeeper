@@ -522,15 +522,13 @@ class _Builder:
         self.step('#48 Extrude12')
         self.sideTabChamfer = self.chamfer('#49 Chamfer2')
 
-        # catch slides: 2 x 4 mm slots at the latch edges, open 4 mm at the top and at the bottom
+        # catch slides: 2 x 4 mm slots at the latch edges, open 4 mm at the top and at the bottom, on both halves (round
+        # 59: the right ones drawn and rounded here instead of mirrored by Mirror2, see catchSlideRectangles)
         self.topPlane = self.offsetPlane(c.xYConstructionPlane, 2, d.bodyTop, 'TopPlane')
         slides = WorldSketch(c, self.topPlane, 'TopFeaturesAndCatchSlides')
         top = d.bodyTop
-        L = d.outerLength
-        for xa, xb in ((mm(19), mm(21)), (mm(41), mm(43))):
-            slides.rectangle((xa, mm(1.75), top), (xb, mm(1.75), top), (xb, mm(5.75), top), (xa, mm(5.75), top))
-        for ya, yb in ((mm(19), mm(21)), (mm(41), mm(43)), (L - mm(43), L - mm(41)), (L - mm(21), L - mm(19))):
-            slides.rectangle((mm(1.75), ya, top), (mm(5.75), ya, top), (mm(5.75), yb, top), (mm(1.75), yb, top))
+        for (xa, xb, ya, yb) in catchSlideRectangles(d.outerWidth, d.outerLength, mm):
+            slides.rectangle((xa, ya, top), (xb, ya, top), (xb, yb, top), (xa, yb, top))
         slides.close()
         self.step('#50 TopFeaturesAndCatchSlides')
         slideProfiles = list(slides.sketch.profiles)
@@ -541,6 +539,7 @@ class _Builder:
         self.slideBottom = self.along(slideProfiles, cut, 2, mm(4), offset=d.bottom - d.bodyTop, name='Catch slides bottom')
         self.step('#53 Extrude15')
         self.slideFillet = self.fillet('#54 Fillet2')
+        self.slideFilletRight = self.fillet('#54 Fillet2', name='Fillet2 right', mirrored=True)
 
         # stacking: a quarter ring on top of each corner, a matching groove under each corner
         # Variant b: full circles and two radius lines instead of concentric arcs
@@ -647,9 +646,10 @@ class _Builder:
         self.step('#71 SideGroove')
         mirror1 = self.mirror([self.sideTabs, self.sideTabChamfer, self.stackTab, self.stackChamfer, self.stackGroove,
                                self.grooveChamfer, sideSocket], self.midYPlane, '#72 Mirror1')
-        self.mirror([self.frontTabs, self.frontTabChamfer, self.sideTabs, self.sideTabChamfer, mirror1, self.slideTop,
-                     self.slide, self.slideBottom, self.slideFillet, self.stackTab, self.stackChamfer, self.stackGroove,
-                     self.grooveChamfer, sideSocket, frontSocket] + hinge, self.midXPlane, '#73 Mirror2')
+        # the catch slides are on both halves already, see catches (round 59)
+        self.mirror([self.frontTabs, self.frontTabChamfer, self.sideTabs, self.sideTabChamfer, mirror1, self.stackTab,
+                     self.stackChamfer, self.stackGroove, self.grooveChamfer, sideSocket, frontSocket] + hinge,
+                     self.midXPlane, '#73 Mirror2')
         outline = [curve for curve in self.footprint.sketch.sketchCurves.sketchLines
                    if abs(curve.startSketchPoint.geometry.y) < 1e-9 and abs(curve.endSketchPoint.geometry.y) < 1e-9]
         path = self.features.createPath(outline[0], True)
@@ -714,6 +714,21 @@ class _Builder:
         if len(magnets) != 4:
             raise ValueError(f'FloorPads: {len(magnets)} magnet profiles')
         return floor, magnets, blends
+
+
+def catchSlideRectangles(width, length, mmOf=lambda value: value) -> list[tuple]:
+    """
+    The catch slides seen from the top, (xa, xb, ya, yb) from low to high: Pred's at the front left latch and along the
+    left side, and their counterparts across the box middle, x to width - x. Mirrored by Pred's #73 Mirror2, the round
+    ends of the right ones came out split in two in a document in inches (round 59, fusion-auftraege/r59_rollback.log),
+    drawn where they are they're the same in mm and inches as the left ones. width and length the box's outer size,
+    mmOf makes a length of a number of mm. Tested in tests/test_pred_box_catch_slides.py
+    """
+    (y0, y1) = (mmOf(1.75), mmOf(5.75))
+    front = [(mmOf(19), mmOf(21)), (mmOf(41), mmOf(43))]
+    side = [(mmOf(19), mmOf(21)), (mmOf(41), mmOf(43)), (length - mmOf(43), length - mmOf(41)), (length - mmOf(21), length - mmOf(19))]
+    left = [(xa, xb, y0, y1) for (xa, xb) in front] + [(y0, y1, ya, yb) for (ya, yb) in side]
+    return left + [(width - xb, width - xa, ya, yb) for (xa, xb, ya, yb) in left]
 
 
 # how far from a lookup point an edge or face may be, cm; the coordinates are exact sums of Pred's dimensions
