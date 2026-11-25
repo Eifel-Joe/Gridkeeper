@@ -92,6 +92,13 @@ fix of the same pattern, guarded by a unit test that finds feature-parameter sit
 itself: every snapshot case built in inches (D7); a case failing there for another reason than this pattern becomes a
 new list point.
 
+**D6, result (Fusion run).** Bins, baseplates and label inserts build the same in inches as in mm. Boxes don't:
+in inches box and lid have 12 small vertical round faces split in two halves each, at six places near the front and
+right edge, bottom and top, with the same shape. Giving the box's extrudes, start offsets, symmetric extents and the
+spacing of its cell pattern to Fusion in mm (same pattern as D6) did not change that; it stays, as D6 applied to the
+box's own lengths, its build in mm and all its snapshots are unchanged by it. Finding the feature that cuts these
+circles is a list point of its own.
+
 **D7 Snapshot harness.** Upstream's inch build, closing failed documents and the "first case that needs a look" are
 merged into Gridkeeper's harness (box/label cases, text components, parameter cases); the inch build goes through the
 same case build as the mm one. Upstream's underdefined-sketch check is not taken: Gridkeeper's own
