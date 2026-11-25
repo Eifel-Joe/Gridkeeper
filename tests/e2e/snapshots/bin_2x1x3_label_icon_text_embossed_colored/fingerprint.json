@@ -3,8 +3,8 @@
         {
             "name": "Gridfinity bin 1x2x3",
             "file": "body1.smt",
-            "volume": 32439.064797,
-            "area": 18202.496084,
+            "volume": 32440.155142,
+            "area": 18202.966177,
             "bboxMin": [
                 0.0,
                 0.0,
@@ -23,8 +23,8 @@
         {
             "name": "Label text 1",
             "file": "body2.smt",
-            "volume": 19.214259,
-            "area": 97.545941,
+            "volume": 19.21426,
+            "area": 97.545945,
             "bboxMin": [
                 3.0,
                 29.85,
