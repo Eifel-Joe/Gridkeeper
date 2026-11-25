@@ -5,9 +5,18 @@ All pictures in this folder are renders and screenshots from the English Fusion 
 ## Own pictures only
 
 Since Gridkeeper 1.0.0 every picture and animation of the documentation is Gridkeeper's own; none is taken over
-from GridfinityGenerator. The models in `docs/assets/models` are rendered by a Fusion script, the animations in
+from GridfinityGenerator. The models in `docs/assets/models` are made from the presets in `tools/screenshots/models`
+(since round 58, see `tools/screenshots/README.md`: the palette *Gridkeeper docs: render models*, or a script with
+`tools/screenshots/finishPictures.py`), the animations in
 `docs/assets/gif` are put together by `dev-notes/tools/anim/compose.py` from rendered models and dialog screenshots
 (raw pictures in `dev-notes/tools/anim/raw`, states and captions in `anims.json`).
+
+## Taken (round 58, presets rendered by `fusion-auftraege/r58_pictures.py`)
+
+- All 24 model pictures of `docs/assets/models` from their presets in one look (orthographic, `#4A82C8`, 1200 × 900),
+  five new: `bin-cullenect-pocket.png` ([Pockets in bins](../../cullenect/pockets.md)), `cullenect-insert.png`
+  ([Label inserts](../../cullenect/inserts.md)), `box.png` and `box-label.png` ([Storage boxes](../../boxes.md)),
+  `bin-compartments-scoops.png` ([Compartments and scoop](../../bins/compartments.md)).
 
 ## Wanted
 
