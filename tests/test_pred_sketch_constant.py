@@ -143,3 +143,28 @@ def test_a_document_is_in_mm_unless_its_units_say_otherwise():
     assert not predSketch.isInMm(design(3), units)
     assert not predSketch.isInMm(design(1), units)
     assert predSketch.isInMm(None, units)
+
+
+# Review of the Fusion run r59_box2: the latch hands WorldSketch a stand-in holding only `sketches` (its sketch on a
+# face goes through addWithoutEdges), the stand-in has no parentDesign and the box failed to build. The units come
+# from the sketch made, whatever made it
+def _worldSketchOn(component, units):
+    design = types.SimpleNamespace(fusionUnitsManager=types.SimpleNamespace(distanceDisplayUnits=units))
+    origin = types.SimpleNamespace(x=0.0, y=0.0, z=0.0)
+    axis = lambda x, y, z: types.SimpleNamespace(x=x, y=y, z=z)
+    made = types.SimpleNamespace(
+        name="", parentComponent=types.SimpleNamespace(parentDesign=design),
+        transform=types.SimpleNamespace(getAsCoordinateSystem=lambda: (origin, axis(1, 0, 0), axis(0, 1, 0), axis(0, 0, 1))))
+    component.sketches = types.SimpleNamespace(add=lambda plane: made)
+    return predSketch.WorldSketch(component, "plane", "sketch")
+
+
+def test_a_stand_in_for_the_component_takes_the_units_of_the_sketch(monkeypatch):
+    monkeypatch.setattr(predSketch.adsk.fusion, "DistanceUnits", types.SimpleNamespace(MillimeterDistanceUnits=2, InchDistanceUnits=3), raising=False)
+    assert not _worldSketchOn(types.SimpleNamespace(), 3).isDocumentInMm
+    assert _worldSketchOn(types.SimpleNamespace(), 2).isDocumentInMm
+
+
+def test_a_sketch_without_a_design_counts_as_mm():
+    units = types.SimpleNamespace(MillimeterDistanceUnits=2)
+    assert predSketch.isInMm(types.SimpleNamespace(), units)

@@ -62,8 +62,9 @@ class WorldSketch:
         self.curves = []
         self.roundedRectangles = []
         self.closed = False
-        # see isInMm and _drive (round 59)
-        self.isDocumentInMm = isInMm(component.parentDesign)
+        # see isInMm and _drive (round 59); from the sketch made, the latch passes a stand-in for the component that
+        # only adds the sketch (predLatch._faceSketch), it has no design
+        self.isDocumentInMm = isInMm(getattr(getattr(self.sketch, 'parentComponent', None), 'parentDesign', None))
 
     # -- collecting ------------------------------------------------------------------------------------------------
 
