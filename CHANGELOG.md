@@ -49,6 +49,18 @@ Not taken:
   dialogs: Gridkeeper keeps its own export with the Bambu Studio project (1.3.0). Script export for it is left for later.
 - Its version number, wiki pages and manifest; Gridkeeper counts its own versions.
 
+### Docs: model pictures from presets (round 58)
+
+- **Every model picture of the docs comes from a preset** of the pictures palette (*Gridkeeper docs: render models*), in
+  one look: orthographic, the docs' blue, 1200 × 900. New pictures show a Cullenect pocket, a label insert, a box, a box
+  label and compartments with scoops. The palette builds boxes, box labels and inserts too, saves into
+  `docs/assets/models` and makes the docs' GIFs with `dev-notes/tools/anim/compose.py`.
+- **Pictures from a script:** `scriptRender.renderRaw` renders a preset without the palette, and
+  `tools/screenshots/finishPictures.py` finishes it outside Fusion with Pillow, the same way as the palette's page.
+- **No venv needed for the GIFs:** the palette finds a Python with Pillow (the tool's venv, the main checkout's, or the
+  computer's); it failed before with `no tools\screenshots\.venv\Scripts\python.exe`.
+- GridfinityGenerator's presets no page of Gridkeeper's docs shows, its `modelGifs.py` and timelines are gone.
+
 Credits: GridfinityGenerator by Le0Michine (CC BY-NC-SA 4.0), Cullenect labels by CullenJWebb (MIT),
 gridfinity_extended_openscad by ostat / Chris Heazlewood (reference), Gridfinity by Zack Freedman.
 
