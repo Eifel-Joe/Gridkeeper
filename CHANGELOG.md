@@ -7,7 +7,7 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 
 ## 1.4.1 (unreleased)
 
-### Hover pictures and export from scripts (round 59)
+### Hover pictures, export from scripts, boxes in inches (round 59)
 
 - **Hover pictures in the menu:** hovering over *Gridkeeper label*, *Gridkeeper box* and *Gridkeeper box label* shows
   a picture under the description, as *Gridkeeper bin* and *Gridkeeper baseplate* do, in the look of their pictures
@@ -24,6 +24,10 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   only) failed it, the check cut a section through a foot; a bin of one compartment with an engraved icon on its label
   tab failed it too, the check took the icon for a divider and its recess for a 3 mm gap to the wall. The print has
   no gap there.
+- **Box in documents in inches:** the round ends of the right and front right catch slides are no longer split in two
+  in a document in inches. Pred's box mirrors the left slides across the box middle, and Fusion's mirror split their
+  rounding in inches only (found by rolling the timeline forward); they are drawn and rounded where they are now, as
+  the right handle holders already were. Same shape, the limit noted in 1.4.0 is gone.
 
 ## 1.4.0 (2026-11-25)
 
