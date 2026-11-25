@@ -47,6 +47,8 @@ PANEL_ID = 'SolidCreatePanel'
 COMMAND_BESIDE_ID = 'ScriptsManagerCommand'
 
 ICON_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources', '')
+# picture under the description on hover, as the bin and baseplate commands, see tools/screenshots/toolclips
+TOOL_CLIP_PATH = os.path.join(ICON_FOLDER, 'toolclip.png')
 CONFIG_FOLDER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'commandConfig')
 UI_INPUT_DEFAULTS_CONFIG_PATH = os.path.join(CONFIG_FOLDER_PATH, "ui_input_defaults.json")
 
@@ -112,6 +114,8 @@ def start():
         cmd_def = ui.commandDefinitions.itemById(CMD_ID)
         if not cmd_def:
             cmd_def = ui.commandDefinitions.addButtonDefinition(CMD_ID, CMD_NAME, CMD_Description, ICON_FOLDER)
+            if os.path.isfile(TOOL_CLIP_PATH):
+                cmd_def.toolClipFilename = TOOL_CLIP_PATH
             futil.add_handler(cmd_def.commandCreated, command_created)
             workspace = ui.workspaces.itemById(WORKSPACE_ID)
             panel = workspace.toolbarPanels.itemById(PANEL_ID)
