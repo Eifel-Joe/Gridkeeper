@@ -22,3 +22,10 @@ def test_the_command_sets_its_picture_when_it_is_there(command):
     (tree, start) = _start(command)
     assert "TOOL_CLIP_PATH = os.path.join(ICON_FOLDER, 'toolclip.png')" in ast.unparse(tree)
     assert "if os.path.isfile(TOOL_CLIP_PATH):\n                cmd_def.toolClipFilename = TOOL_CLIP_PATH" in start
+
+
+@pytest.mark.parametrize("command", COMMANDS)
+def test_the_picture_is_there_in_the_size_of_the_originals(command):
+    Image = pytest.importorskip("PIL.Image")
+    with Image.open(os.path.join(PROJECT_ROOT, "commands", command, "resources", "toolclip.png")) as picture:
+        assert (picture.size, picture.mode) == ((300, 230), "RGBA")
