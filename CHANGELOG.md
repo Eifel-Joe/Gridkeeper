@@ -27,7 +27,11 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 - **Box in documents in inches:** the round ends of the right and front right catch slides are no longer split in two
   in a document in inches. Pred's box mirrors the left slides across the box middle, and Fusion's mirror split their
   rounding in inches only (found by rolling the timeline forward); they are drawn and rounded where they are now, as
-  the right handle holders already were. Same shape, the limit noted in 1.4.0 is gone.
+  the right handle holders already were. With its parameters changed in inches, a box split the round ends of the
+  slides that move with them and the middle of its handle's underside: Fusion keeps a sketch dimension left as drawn
+  as a rounded text in inches and evaluates it again on the change. In a document not in mm every sketch dimension of
+  the box and its parts now gets its length in mm, which makes building a box in inches about a fifth slower;
+  documents in mm are as before. Same shape, the limit noted in 1.4.0 is gone.
 
 ## 1.4.0 (2026-11-25)
 
