@@ -749,12 +749,15 @@ def test_a_bambu_printer_gets_one_project_when_chosen():
 def test_the_notice_comes_after_the_replace_question_and_before_anything_is_written():
     source = _entry_function("export3mf")
     notice = source.index("exportParts.bambuNotice(")
-    assert source.index("mayReplace(") < notice
+    assert source.index("mayWrite(") < notice
     assert notice < source.index("threeMf.writeBambuProject(")
     assert notice < source.index("threeMf.write(")
     assert notice < source.index("os.remove(")
-    assert "OKCancelButtonType" in source
-    assert "DialogOK" in source
+    # the dialog asks it (round 59: a script's export gets the notice in its result instead)
+    asked = _entry_function("askBambuProject")
+    assert "OKCancelButtonType" in asked
+    assert "DialogOK" in asked
+    assert "mayReplace, askBambuProject, progressDialog" in _entry_function("command_execute")
 
 
 def test_the_summary_tells_of_the_project():
@@ -791,4 +794,145 @@ def test_a_rebuilt_or_cloned_baseplate_keeps_the_printer_chosen_last_unless_one_
 
 def test_cancel_in_the_notice_returns_before_anything_is_written():
     source = _entry_function("export3mf")
-    assert "if answer != adsk.core.DialogResults.DialogOK:\n            return None" in source
+    assert "if not confirmProject(exportParts.bambuNotice(profiles, plates)):\n            return None" in source
+
+
+# Round 59: the export from scripts takes options, each left out the dialog's last choice
+FORMATS = ["3MF", "STL", "STEP"]
+SAVED = {
+    "format": "3MF",
+    "paint": True,
+    "filaments": {"#D02020": 2, "": 4},
+    "layout": {"bed": "Custom", "bedWidth": 300.0, "bedLength": 320.0, "spacing": 8.0, "purge": 40.0, "files": exportParts.FILES_ONE},
+}
+
+
+def resolve(**given):
+    return exportParts.resolveScriptOptions(exportParts.ScriptExportOptions(**given), SAVED, FORMATS, BED_NAMES,
+                                            printBeds.PRINT_BED_PRESETS, printBeds.OLD_BED_NAMES)
+
+
+def test_script_options_left_out_are_the_dialogs_last_choices():
+    options = resolve()
+    assert (options.format, options.fileName, options.paint, options.overwrite) == ("3MF", "", True, False)
+    assert options.filaments == {"#D02020": 2, "": 4}
+    assert options.layout == SAVED["layout"]
+
+
+def test_script_options_given_win():
+    options = resolve(format="stl", fileName="drawer", paint=False, spacing=3, purge=0, overwrite=True)
+    assert (options.format, options.fileName, options.paint, options.overwrite) == ("STL", "drawer", False, True)
+    assert (options.layout["spacing"], options.layout["purge"]) == (3.0, 0.0)
+
+
+def test_script_filaments_merge_over_the_saved_ones_by_color():
+    options = resolve(filaments={"d02020": 3, "#00FF00": 5, "none": 6})
+    assert options.filaments == {"#D02020": 3, "": 6, "#00FF00": 5}
+
+
+def test_a_printer_by_its_name_takes_its_bed():
+    options = resolve(printer="bambu lab x1 carbon")
+    label = printBeds.presetLabel("Bambu Lab X1 Carbon")
+    assert options.layout["bed"] == label
+    assert (options.layout["bedWidth"], options.layout["bedLength"]) == printBeds.PRINT_BED_PRESETS[label]
+
+
+def test_a_printer_by_its_label_or_an_old_name():
+    label = printBeds.presetLabel("Bambu Lab X1 Carbon")
+    assert resolve(printer=label).layout["bed"] == label
+    old = next(name for (name, now) in printBeds.OLD_BED_NAMES.items() if now == label)
+    assert resolve(printer=old).layout["bed"] == label
+
+
+def test_a_custom_printer_takes_the_bed_size_given_or_saved():
+    assert (resolve(printer="Custom", bedSize=(200, 210)).layout["bedWidth"], resolve(printer="custom", bedSize=(200, 210)).layout["bedLength"]) == (200.0, 210.0)
+    assert resolve(printer="Custom").layout["bedWidth"] == 300.0
+
+
+def test_files_per_plate_or_one_project():
+    assert resolve(perPlate=True).layout["files"] == exportParts.FILES_PER_PLATE
+    assert resolve(perPlate=False).layout["files"] == exportParts.FILES_ONE
+
+
+@pytest.mark.parametrize("given, option", [
+    ({"format": "OBJ"}, "format"),
+    ({"printer": "Prusa XXL 3000"}, "printer"),
+    ({"printer": printBeds.presetLabel("Bambu Lab X1 Carbon"), "bedSize": (200, 200)}, "bedSize"),
+    ({"printer": "Custom", "bedSize": (0, 200)}, "bedSize"),
+    ({"printer": "Custom", "bedSize": (200,)}, "bedSize"),
+    ({"spacing": -1}, "spacing"),
+    ({"purge": -0.5}, "purge"),
+    ({"filaments": {"#D02020": 0}}, "filaments"),
+    ({"filaments": {"#D02020": exportParts.MAX_FILAMENT + 1}}, "filaments"),
+    ({"filaments": {"red": 2}}, "filaments"),
+    ({"fileName": "a/b"}, "fileName"),
+    ({"fileName": 3}, "fileName"),
+    ({"printer": 3}, "printer"),
+    ({"filaments": [2, 3]}, "filaments"),
+    ({"paint": "no"}, "paint"),
+    ({"perPlate": 1}, "perPlate"),
+    ({"overwrite": "yes"}, "overwrite"),
+    ({"spacing": float("inf")}, "spacing"),
+    ({"printer": "Custom", "bedSize": (float("nan"), 200)}, "bedSize"),
+    ({"fileName": "a\\b"}, "fileName"),
+])
+def test_wrong_script_options_are_named(given, option):
+    with pytest.raises(ValueError, match=option):
+        resolve(**given)
+
+
+def test_files_there_already_stop_a_script_export_unless_overwritten(tmp_path):
+    there = tmp_path / "a.3mf"
+    there.write_text("x")
+    stale = tmp_path / "a plate 3.3mf"
+    stale.write_text("x")
+    with pytest.raises(FileExistsError, match="a.3mf") as raised:
+        exportParts.refuseExisting([str(there), str(tmp_path / "b.3mf")], [str(stale)], overwrite=False)
+    assert "a plate 3.3mf" in str(raised.value)
+    exportParts.refuseExisting([str(there)], [str(stale)], overwrite=True)
+    exportParts.refuseExisting([str(tmp_path / "b.3mf")], [], overwrite=False)
+
+
+# Round 59: scripts export through the dialog's export, without its questions, messages and progress bar
+SCRIPT_PATH = ("exportBodies", "exportFiles", "export3mf", "exportEach", "exportStep")
+
+
+def test_the_script_export_shows_nothing():
+    for name in SCRIPT_PATH:
+        source = _entry_function(name)
+        for call in ("ui.messageBox(", "createFolderDialog(", "createProgressDialog(", "mayReplace(", "askBambuProject(", "progressDialog("):
+            assert call not in source, (name, call)
+
+
+def test_the_script_export_refuses_files_there_already_and_notes_the_project_notice():
+    source = _entry_function("exportBodies")
+    assert "exportParts.refuseExisting(paths, removed or [], resolved.overwrite)" in source
+    assert "notices.append(notice)" in source
+    assert "result.notes = notices + result.notes" in source
+    assert "noProgress)" in source
+
+
+def test_the_script_export_takes_the_dialogs_last_choices_and_saves_none():
+    source = _entry_function("exportBodies")
+    assert "readChoices()" in source
+    assert "exportParts.resolveScriptOptions(" in source
+    assert "saveChoices(" not in source
+
+
+def test_the_script_export_checks_what_it_gets_before_writing():
+    source = _entry_function("exportBodies")
+    assert source.index("resolveScriptOptions(") < source.index("exportFiles(")
+    assert "raise NotADirectoryError(" in source
+    assert "raise ValueError('nothing to export')" in source
+
+
+def test_the_dialog_tells_what_the_export_wrote():
+    assert "exportMessage(result, folder)" in _entry_function("command_execute")
+    message = _entry_function("exportMessage")
+    assert "result.projectPlates" in message and "result.notes" in message
+
+
+def test_scripts_import_the_export():
+    tree = ast.parse(open(os.path.join(PROJECT_ROOT, "api.py"), encoding="utf-8").read())
+    names = {alias.asname or alias.name for node in tree.body if isinstance(node, ast.ImportFrom) for alias in node.names}
+    assert {"export", "exportBodies", "ExportOptions", "ExportResult"} <= names

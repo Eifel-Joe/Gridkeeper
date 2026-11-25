@@ -38,7 +38,7 @@ expect rough edges, and please [open an issue](https://github.com/Eifel-Joe/Grid
 find one.
 
 ### Scripting
-While the add-in runs, scripts run in Fusion, such as those of an MCP server, can `import gridkeeper` to reach its builders (bin, baseplate, box, box label, label insert), settings and export, see [api.py](api.py).
+While the add-in runs, scripts run in Fusion, such as those of an MCP server, can `import gridkeeper` to reach its builders (bin, baseplate, box, box label, label insert), settings and export, see [api.py](api.py). `gridkeeper.exportBodies(bodies, folder, gridkeeper.ExportOptions(format='3MF', printer='Bambu Lab X1 Carbon'))` exports without a dialog; each option left out is the export dialog's last choice, files there already stop it unless `overwrite=True`, and the result lists the files written and the dialog's notes.
 
 ## Installation
 

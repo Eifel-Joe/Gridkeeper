@@ -51,9 +51,12 @@ DEFAULT_OPTIONS = {
     'section': None,
     # what other settings add to the model, shown in a color of its own, none shows the model alone, see checkDifference
     'difference': None,
+    # the picture's file name without its extension, none for the preset's name: the hover pictures of the menu are
+    # each a toolclip.png in their command's resources (round 59)
+    'file': None,
 }
 # not passed on to presets extending this one
-OWN_KEYS = ['description']
+OWN_KEYS = ['description', 'file']
 
 class PresetError(Exception):
     pass
@@ -85,6 +88,8 @@ class Preset:
     section: dict | None
     # settings changed from the preset's and a color, what the model built with them has more is shown in the color
     difference: dict | None = None
+    # the picture's file name without its extension
+    file: str = ''
 
 def readPresetData(folder: str, fileName: str, extending: tuple[str, ...] = ()) -> dict:
     """The preset's data with what it extends filled in, settings merged one by one"""
@@ -188,6 +193,8 @@ def loadPreset(folder: str, fileName: str) -> Preset:
             raise PresetError('saturation is a number from 0, grey, to 3')
         if data['color'] is not None and not (isinstance(data['color'], str) and re.fullmatch(r'#[0-9a-fA-F]{6}', data['color'])):
             raise PresetError('color is #rrggbb, or null for the appearance\'s own')
+        if data['file'] is not None and not (isinstance(data['file'], str) and re.fullmatch(r'[A-Za-z0-9_-]+', data['file'])):
+            raise PresetError('file is a name of letters, digits, _ and -, without a folder or an extension')
         return Preset(
             name=name,
             description=data.get('description', ''),
@@ -208,6 +215,7 @@ def loadPreset(folder: str, fileName: str) -> Preset:
             output=data['output'],
             section=checkSection(data['section']),
             difference=checkDifference(data['difference']),
+            file=data['file'] or name,
         )
     except PresetError as err:
         raise PresetError(f'preset {name}: {err}') from err
@@ -220,7 +228,7 @@ def sidecar(preset: Preset, renderPath: str, rootFolder: str) -> dict:
     return {
         'name': preset.name,
         'render': renderPath,
-        'output': os.path.join(rootFolder, preset.output, f'{preset.name}.png'),
+        'output': os.path.join(rootFolder, preset.output, f'{preset.file or preset.name}.png'),
         'width': preset.width,
         'height': preset.height,
         'margin': preset.margin,

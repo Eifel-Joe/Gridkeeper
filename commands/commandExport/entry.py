@@ -631,23 +631,10 @@ def command_execute(args: adsk.core.CommandEventArgs):
         if len(items) == 0:
             ui.messageBox('Nothing to export, select bodies or turn on All Gridkeeper parts.', CMD_NAME)
             return
-        names = fileNames(items)
-        if format == FORMAT_3MF:
-            fileName = safeFileName(adsk.core.StringValueCommandInput.cast(inputs.itemById(FILE_NAME_INPUT_ID)).value) or defaultFileName(items)
-            fileName = fileName[:-4] if fileName.lower().endswith('.3mf') else fileName
-            result = export3mf(items, names, folder, fileName, filaments if paint else None, layout)
-            if result is None:
-                return
-            (painted, paths, tooLarge, noPurge, nearExcluded, projectPlates) = result
-            where = paths[0] if len(paths) == 1 else f'{len(paths)} files, a file per plate, in {folder}'
-            if projectPlates:
-                where += f', a Bambu Studio project with {projectPlates} plate{"" if projectPlates == 1 else "s"}'
-            ui.messageBox(f'Exported {len(items)} part{"" if len(items) == 1 else "s"} to {where}.{plateNote(tooLarge, noPurge, nearExcluded, paint)}{paintNote(paint, painted, filaments)}', CMD_NAME)
-        else:
-            if not mayReplace([os.path.join(folder, f'{name}.{FORMAT_EXTENSIONS[format]}') for name in names]):
-                return
-            exportEach(items, names, folder, format)
-            ui.messageBox(f'Exported {len(items)} {format} file{"" if len(items) == 1 else "s"} to {folder}.', CMD_NAME)
+        fileName = adsk.core.StringValueCommandInput.cast(inputs.itemById(FILE_NAME_INPUT_ID)).value
+        result = exportFiles(items, folder, format, fileName, filaments if paint else None, layout, mayReplace, askBambuProject, progressDialog)
+        if result is not None:
+            ui.messageBox(exportMessage(result, folder), CMD_NAME)
     except Exception as err:
         futil.handle_error(f'{CMD_NAME} failed, {err}', show_message_box=True)
 
@@ -655,6 +642,103 @@ def command_destroy(args: adsk.core.CommandEventArgs):
     global local_handlers
     # the context menu handler stays for the next menu
     local_handlers = [handler for handler in local_handlers if handler is markingMenuHandler]
+
+# Round 59: the export from scripts, without dialogs (the idea of GridfinityGenerator 2.6's exportBodies, Le0Michine).
+# ExportOptions: what a script chooses, each left out the dialog's last choice, see exportParts.ScriptExportOptions
+ExportOptions = exportParts.ScriptExportOptions
+
+@dataclasses.dataclass
+class ExportResult:
+    """What an export wrote, and what the dialog tells after it"""
+    paths: list[str]
+    parts: int
+    format: str
+    # parts with painted label text, 3MF only
+    painted: int = 0
+    # the parts larger than the bed, the plates (from 0) without room for the purge tower or near an area kept free
+    tooLarge: list[str] = dataclasses.field(default_factory=list)
+    noPurge: list[int] = dataclasses.field(default_factory=list)
+    nearExcluded: list[int] = dataclasses.field(default_factory=list)
+    # the plates of the Bambu Studio project, 0 for files per plate
+    projectPlates: int = 0
+    # the notes the dialog shows after the export; for a script also the notice the dialog asks before saving a
+    # Bambu Studio project, first
+    notes: list[str] = dataclasses.field(default_factory=list)
+
+def exportBodies(bodies: list | None = None, folder: str = '', options: ExportOptions | None = None) -> ExportResult:
+    """
+    The export without dialogs, for scripts. Bodies and occurrences as the dialog takes them, none for every visible
+    Gridkeeper part of the active design, into the folder, the dialog's last one when none, with the options. No
+    question, message or progress bar: a wrong option raises ValueError, files there already FileExistsError unless
+    the options overwrite them, nothing to export ValueError. The notice the dialog asks before saving a Bambu Studio
+    project goes into the result's notes. The dialog's choices aren't saved
+    """
+    choices = readChoices()
+    resolved = exportParts.resolveScriptOptions(options or ExportOptions(), choices, FORMATS, bedNames(),
+                                                printBeds.PRINT_BED_PRESETS, printBeds.OLD_BED_NAMES)
+    folder = folder or choices['folder']
+    if not os.path.isdir(folder):
+        raise NotADirectoryError(f'no folder {folder}')
+    if bodies is None:
+        design = adsk.fusion.Design.cast(app.activeProduct)
+        if design is None:
+            raise ValueError('no design to export from')
+        bodies = gridfinityBodies(design)
+    items = exportItemsOf(bodies)
+    if len(items) == 0:
+        raise ValueError('nothing to export')
+    filaments = exportParts.assignFilaments(labelColorsOf(items), resolved.filaments) if resolved.paint else None
+    notices = []
+
+    def mayWrite(paths: list[str], removed: list[str] = None) -> bool:
+        exportParts.refuseExisting(paths, removed or [], resolved.overwrite)
+        return True
+
+    def noteProject(notice: str) -> bool:
+        notices.append(notice)
+        return True
+    result = exportFiles(items, folder, resolved.format, resolved.fileName, filaments, resolved.layout, mayWrite, noteProject, noProgress)
+    result.notes = notices + result.notes
+    return result
+
+def exportFiles(items: list[ExportItem], folder: str, format: str, fileName: str, filaments: dict[str, int] | None,
+                layout: dict, mayWrite, confirmProject, progressOf) -> ExportResult | None:
+    """
+    The export of the dialog and of scripts: the parts in the format into the folder, the label text painted with the
+    filaments, none for no paint. mayWrite(paths, removed) says whether files there may be replaced and earlier plate
+    files removed, confirmProject(notice) whether a Bambu Studio project may be saved, progressOf(count) gives what
+    shows how far it got. None when one of them said no
+    """
+    names = fileNames(items)
+    if format == FORMAT_3MF:
+        fileName = safeFileName(fileName) or defaultFileName(items)
+        fileName = fileName[:-4] if fileName.lower().endswith('.3mf') else fileName
+        written = export3mf(items, names, folder, fileName, filaments, layout, mayWrite, confirmProject, progressOf)
+        if written is None:
+            return None
+        (painted, paths, tooLarge, noPurge, nearExcluded, projectPlates) = written
+        notes = [note.strip() for note in (plateNote(tooLarge, noPurge, nearExcluded, filaments is not None),
+                                           paintNote(filaments is not None, painted, filaments)) if note.strip()]
+        return ExportResult(paths, len(items), format, painted, tooLarge, noPurge, nearExcluded, projectPlates, notes)
+    paths = [os.path.join(folder, f'{name}.{FORMAT_EXTENSIONS[format]}') for name in names]
+    if not mayWrite(paths, []):
+        return None
+    exportEach(items, names, folder, format, progressOf)
+    return ExportResult(paths, len(items), format)
+
+def exportMessage(result: ExportResult, folder: str) -> str:
+    """What the dialog tells after an export"""
+    if result.format != FORMAT_3MF:
+        return f'Exported {result.parts} {result.format} file{"" if result.parts == 1 else "s"} to {folder}.'
+    where = result.paths[0] if len(result.paths) == 1 else f'{len(result.paths)} files, a file per plate, in {folder}'
+    if result.projectPlates:
+        where += f', a Bambu Studio project with {result.projectPlates} plate{"" if result.projectPlates == 1 else "s"}'
+    return f'Exported {result.parts} part{"" if result.parts == 1 else "s"} to {where}.' + ''.join(f'\n\n{note}' for note in result.notes)
+
+def askBambuProject(notice: str) -> bool:
+    """The dialog's question before it saves a Bambu Studio project (round 55)"""
+    answer = ui.messageBox(notice, CMD_NAME, adsk.core.MessageBoxButtonTypes.OKCancelButtonType, adsk.core.MessageBoxIconTypes.InformationIconType)
+    return answer == adsk.core.DialogResults.DialogOK
 
 def paintNote(paint: bool, painted: int, filaments: dict[str, int] | None) -> str:
     """What of the labels was colored, after the export's message: each color with its filament (round 37)"""
@@ -738,12 +822,22 @@ def progressDialog(count: int) -> adsk.core.ProgressDialog:
     progress.show(CMD_NAME, 'Exporting %v of %m', 0, count)
     return progress
 
-def exportEach(items: list[ExportItem], names: list[str], folder: str, format: str):
+class _NoProgress:
+    """What a script's export shows of its progress: nothing, see exportBodies"""
+    progressValue = 0
+
+    def hide(self):
+        pass
+
+def noProgress(count: int) -> _NoProgress:
+    return _NoProgress()
+
+def exportEach(items: list[ExportItem], names: list[str], folder: str, format: str, progressOf=progressDialog):
     """
     A file of each body in the folder, files of the same name are replaced. Each body at the origin, centered on x and
     y with its bottom at z 0, as made on its own, whatever its place in the design
     """
-    progress = progressDialog(len(items))
+    progress = progressOf(len(items))
     # Fusion's STEP export writes a whole component where it is, and Fusion can't open a design hidden, so each body
     # goes alone into a design opened for a moment, which is closed without saving
     previous = app.activeDocument
@@ -806,7 +900,8 @@ def toOrigin(box: adsk.core.BoundingBox3D) -> adsk.core.Matrix3D:
     )
     return move
 
-def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: str, filaments: dict[str, int] | None, layout: dict) -> tuple[int, list[str], list[str], list[int], list[int], int] | None:
+def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: str, filaments: dict[str, int] | None, layout: dict,
+              mayWrite, confirmProject, progressOf) -> tuple[int, list[str], list[str], list[int], list[int], int] | None:
     """
     The bodies in print orientation laid out on the bed, a 3MF per plate (round r29-export; 17.11.2026: sorting
     only works properly with one 3MF per plate), the purge tower's square free when
@@ -814,13 +909,14 @@ def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: 
     project with all plates when chosen (round 55, p680): Bambu Studio keeps the plates only of a project, asked first
     as it comes with Bambu Studio's standard profiles. Returns how many have painted letters, the files, the names of
     the parts too large for the bed, the plates without a free purge square, the plates near an excluded area and the
-    project's plates, 0 for files per plate; none when the files there may not be replaced or the project not saved
+    project's plates, 0 for files per plate; none when the files there may not be replaced or the project not saved,
+    asked by mayWrite and confirmProject, see exportFiles
     """
     objects = []
     keys = []
     kinds = []
     paintedCount = 0
-    progress = progressDialog(len(items))
+    progress = progressOf(len(items))
     try:
         for (index, (item, name)) in enumerate(zip(items, names)):
             rotation = printRotationOf(item)
@@ -851,12 +947,11 @@ def export3mf(items: list[ExportItem], names: list[str], folder: str, fileName: 
     written = {os.path.normcase(path) for path in paths}
     stale = [os.path.join(folder, name) for name in os.listdir(folder)
              if printLayout.isPlateFileOf(name, fileName) and os.path.normcase(os.path.join(folder, name)) not in written]
-    if not mayReplace(paths, stale):
+    if not mayWrite(paths, stale):
         return None
     if isProject:
         profiles = printBeds.bambuProfiles(layout['bed'])
-        answer = ui.messageBox(exportParts.bambuNotice(profiles, plates), CMD_NAME, adsk.core.MessageBoxButtonTypes.OKCancelButtonType, adsk.core.MessageBoxIconTypes.InformationIconType)
-        if answer != adsk.core.DialogResults.DialogOK:
+        if not confirmProject(exportParts.bambuNotice(profiles, plates)):
             return None
         threeMf.writeBambuProject(paths[0], [meshObject for (_, meshObject) in laid], [plate for (plate, _) in laid], bed, profiles,
                                   exportParts.filamentColours(filaments), fileName, tagUtils.getGeneratorVersion())

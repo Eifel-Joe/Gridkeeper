@@ -98,3 +98,73 @@ def test_a_diameter_only_with_a_parameter_in_it(sketch):
     expressions = [d.parameter.expression for d in sketch.sketch.sketchDimensions.made]
     assert expressions[:2] == [None, None]
     assert "gfBox1_baseWidth" in expressions[2]
+
+
+# Round 59: in a document that isn't in mm, Fusion keeps a dimension left as drawn as a rounded text in its units,
+# '0.0787401575 in' for 2 mm, and evaluates it again when a parameter change recomputes the sketch: 1e-10 cm off, the
+# two 2 mm roundings of a 4 mm catch slide no longer meet in one face, nor the mirrored halves of the handle
+# (fusion-auftraege/r59_paramfaces.log, the same with every dimension in mm: r59_paramfaces2.log). There every
+# dimension gets its expression, in mm; documents in mm stay as they are.
+def test_in_inches_a_distance_on_the_same_measure_gets_its_length_in_mm(sketch):
+    sketch.isDocumentInMm = False
+    outer = _width()
+    sketch.worldPoints = [(outer - Dim.length(2.1), Dim.length(1.0), 0.0), (outer - Dim.length(4.1), Dim.length(1.0), 0.0)]
+    sketch.curves = []
+    points = {0: _Point(19.9, 1.0), 1: _Point(17.9, 1.0)}
+    sketch._apply([("hdim", 0, 1)], [], points, [points[0], points[1]])
+    (dimension,) = sketch.sketch.sketchDimensions.made
+    assert dimension.parameter.expression == "20 mm"
+
+
+def test_in_inches_a_constant_diameter_gets_its_length_in_mm(sketch):
+    sketch.isDocumentInMm = False
+    sketch.worldPoints = [(Dim.length(1.0), Dim.length(1.0), 0.0)]
+    sketch.curves = [{"kind": "circle", "center": 0, "diameter": Dim.length(0.6)}]
+    sketch._apply([("diameter", 0)], [_Circle(1.0, 1.0)], {0: _Point(1.0, 1.0)}, [_Point(1.0, 1.0)])
+    (dimension,) = sketch.sketch.sketchDimensions.made
+    assert dimension.parameter.expression == "6 mm"
+
+
+def test_in_inches_a_distance_that_follows_a_parameter_keeps_its_expression(sketch):
+    sketch.isDocumentInMm = False
+    outer = _width()
+    sketch.worldPoints = [(outer - Dim.length(2.1), Dim.length(1.0), 0.0), (Dim.length(3.0), Dim.length(1.0), 0.0)]
+    sketch.curves = []
+    points = {0: _Point(19.9, 1.0), 1: _Point(3.0, 1.0)}
+    sketch._apply([("hdim", 0, 1)], [], points, [points[0], points[1]])
+    (dimension,) = sketch.sketch.sketchDimensions.made
+    assert "gfBox1_baseWidth" in dimension.parameter.expression
+
+
+def test_a_document_is_in_mm_unless_its_units_say_otherwise():
+    units = types.SimpleNamespace(MillimeterDistanceUnits=2, InchDistanceUnits=3, CentimeterDistanceUnits=1)
+    design = lambda unit: types.SimpleNamespace(fusionUnitsManager=types.SimpleNamespace(distanceDisplayUnits=unit))
+    assert predSketch.isInMm(design(2), units)
+    assert not predSketch.isInMm(design(3), units)
+    assert not predSketch.isInMm(design(1), units)
+    assert predSketch.isInMm(None, units)
+
+
+# Review of the Fusion run r59_box2: the latch hands WorldSketch a stand-in holding only `sketches` (its sketch on a
+# face goes through addWithoutEdges), the stand-in has no parentDesign and the box failed to build. The units come
+# from the sketch made, whatever made it
+def _worldSketchOn(component, units):
+    design = types.SimpleNamespace(fusionUnitsManager=types.SimpleNamespace(distanceDisplayUnits=units))
+    origin = types.SimpleNamespace(x=0.0, y=0.0, z=0.0)
+    axis = lambda x, y, z: types.SimpleNamespace(x=x, y=y, z=z)
+    made = types.SimpleNamespace(
+        name="", parentComponent=types.SimpleNamespace(parentDesign=design),
+        transform=types.SimpleNamespace(getAsCoordinateSystem=lambda: (origin, axis(1, 0, 0), axis(0, 1, 0), axis(0, 0, 1))))
+    component.sketches = types.SimpleNamespace(add=lambda plane: made)
+    return predSketch.WorldSketch(component, "plane", "sketch")
+
+
+def test_a_stand_in_for_the_component_takes_the_units_of_the_sketch(monkeypatch):
+    monkeypatch.setattr(predSketch.adsk.fusion, "DistanceUnits", types.SimpleNamespace(MillimeterDistanceUnits=2, InchDistanceUnits=3), raising=False)
+    assert not _worldSketchOn(types.SimpleNamespace(), 3).isDocumentInMm
+    assert _worldSketchOn(types.SimpleNamespace(), 2).isDocumentInMm
+
+
+def test_a_sketch_without_a_design_counts_as_mm():
+    units = types.SimpleNamespace(MillimeterDistanceUnits=2)
+    assert predSketch.isInMm(types.SimpleNamespace(), units)

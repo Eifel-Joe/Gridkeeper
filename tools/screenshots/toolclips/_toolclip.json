@@ -1,0 +1,14 @@
+{
+    "description": "The look of the menu's hover pictures, as the original's bin and baseplate pictures (round 59): orthographic from the top right, turquoise, shaded with its edges, on a transparent background, 300 x 230",
+    "camera": "orthographic",
+    "view": "isoTopRight",
+    "style": "shadedWithEdges",
+    "color": "#4BC1EC",
+    "exposure": 0.8,
+    "saturation": 1,
+    "width": 300,
+    "height": 230,
+    "margin": 0.03,
+    "supersample": 2,
+    "transparent": true
+}

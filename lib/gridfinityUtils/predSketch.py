@@ -13,7 +13,7 @@ be the component's base planes or offsets of them, so the sketch origin lies on 
 import math
 import adsk.core, adsk.fusion
 
-from .dim import Dim, applyTo
+from .dim import Dim, applyTo, lengthExpression
 from .sketchUtils import deferSketchCompute, createRectangle
 from . import sketchChain
 
@@ -62,6 +62,9 @@ class WorldSketch:
         self.curves = []
         self.roundedRectangles = []
         self.closed = False
+        # see isInMm and _drive (round 59); from the sketch made, the latch passes a stand-in for the component that
+        # only adds the sketch (predLatch._faceSketch), it has no design
+        self.isDocumentInMm = isInMm(getattr(getattr(self.sketch, 'parentComponent', None), 'parentDesign', None))
 
     # -- collecting ------------------------------------------------------------------------------------------------
 
@@ -97,6 +100,9 @@ class WorldSketch:
 
     # -- drawing -----------------------------------------------------------------------------------------------------
 
+    def _inMm(self) -> bool:
+        return getattr(self, 'isDocumentInMm', True)
+
     def _sketchPoint3D(self, world):
         return self.sketch.modelToSketchSpace(adsk.core.Point3D.create(*[_value(v) for v in world]))
 
@@ -130,7 +136,7 @@ class WorldSketch:
             fillets.append(arcs.addFillet(first, first.endSketchPoint.geometry, second, second.startSketchPoint.geometry, radius.value))
         for fillet in fillets[1:]:
             self.sketch.geometricConstraints.addEqual(fillets[0], fillet)
-        _drive(self.sketch.sketchDimensions.addRadialDimension(fillets[0], fillets[0].startSketchPoint.geometry, True).parameter, radius)
+        _drive(self.sketch.sketchDimensions.addRadialDimension(fillets[0], fillets[0].startSketchPoint.geometry, True).parameter, radius, self._inMm())
 
     def _chain(self):
         geometry = [self._sketchPoint3D(world) for world in self.worldPoints]
@@ -188,7 +194,7 @@ class WorldSketch:
                 circle = drawn[item[1]]
                 c = circle.centerSketchPoint.geometry
                 dimension = dimensions.addDiameterDimension(circle, adsk.core.Point3D.create(c.x + 0.4, c.y + 0.1, 0), True)
-                _drive(dimension.parameter, self.curves[item[1]]['diameter'])
+                _drive(dimension.parameter, self.curves[item[1]]['diameter'], self._inMm())
             else:
                 i, j = item[1], item[2]
                 axis = 0 if kind == 'hdim' else 1
@@ -199,7 +205,7 @@ class WorldSketch:
                 text = adsk.core.Point3D.create((a.x + b.x) / 2 + 0.25 + shift, (a.y + b.y) / 2 + 0.25 + shift, 0)
                 dimension = dimensions.addDistanceDimension(second, sketchPoints[i], H if axis == 0 else V, text, True)
                 value = self._coordinate(i, axis) if j is None else self._coordinate(i, axis) - self._coordinate(j, axis)
-                _drive(dimension.parameter, value.abs())
+                _drive(dimension.parameter, value.abs(), self._inMm())
 
     # -- reading -----------------------------------------------------------------------------------------------------
 
@@ -251,7 +257,18 @@ class WorldSketch:
         return found
 
 
-def _drive(parameter, value):
+def isInMm(design, units=None) -> bool:
+    """Whether the design's lengths are shown in mm, see _drive; none, as on the test stand-ins, counts as mm"""
+    if design is None:
+        return True
+    units = units or adsk.fusion.DistanceUnits
+    try:
+        return design.fusionUnitsManager.distanceDisplayUnits == units.MillimeterDistanceUnits
+    except AttributeError:
+        return True
+
+
+def _drive(parameter, value, isDocumentInMm: bool = True):
     """
     A dimension follows its dim's expression only when the dim depends on a parameter (round 45, p480). Two points that
     hang on the same measure keep their distance whatever the parameter: the dimension stays at the value it was drawn
@@ -260,6 +277,15 @@ def _drive(parameter, value):
     Tested in tests/test_pred_sketch_constant.py
     """
     if isinstance(value, Dim) and not value.dependsOnParameters:
+        # Round 59: a document not in mm keeps a dimension left as drawn as a rounded text in its units, '0.0787401575
+        # in' for 2 mm, and evaluates it again when a parameter change recomputes the sketch: 1e-10 cm off, the two
+        # 2 mm roundings of a 4 mm catch slide no longer met in one face, nor the mirrored halves of the handle
+        # (fusion-auftraege/r59_paramfaces.log; with every dimension in mm the faces were those of mm,
+        # r59_paramfaces2.log, the build in inches 19 s longer). Documents in mm keep it as drawn, without the cost.
+        # Tested in tests/test_pred_sketch_constant.py
+        if not isDocumentInMm:
+            # its value in mm, a constant: the formula would tie it to parameters it doesn't depend on
+            parameter.expression = lengthExpression(value.value)
         return
     applyTo(parameter, value)
 

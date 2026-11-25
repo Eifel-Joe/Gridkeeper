@@ -6,6 +6,8 @@ export command (commands/commandExport) finds the bodies.
 """
 
 import dataclasses
+import os
+import re
 
 # The tags of the bodies the export takes, as tagUtils writes them (tags are literals, they're stored in documents).
 # 'box' is the box and the lid of round 27, there from its merge on. A new part, the small parts of round 28 or the box
@@ -388,3 +390,134 @@ def bambuNotice(profiles, plates: int) -> str:
         "Change them in Bambu Studio to your printer, nozzle, filament and plate where they differ.\n\n"
         f"{purging}OK saves the project, Cancel saves nothing."
     )
+
+
+# Round 59: the export from scripts, without dialogs. The original (GridfinityGenerator 2.6, Le0Michine) gave scripts
+# exportBodies with ExportOptions; Gridkeeper's export has other choices (a filament per label color, a Bambu Studio
+# project or a file per plate), the options here are its own, by the same idea: what a script leaves out is the
+# dialog's last choice, and files there already stop the export instead of a question
+@dataclasses.dataclass
+class ScriptExportOptions:
+    """What a script chooses for an export, none for the dialog's last choice"""
+    # 3MF, STL or STEP
+    format: str | None = None
+    # the 3MF's, without its extension; empty for the part's name of one part, 'Gridkeeper parts' of more
+    fileName: str | None = None
+    # the label text in filaments of its own, 3MF only
+    paint: bool | None = None
+    # the filament of a label color, '#rrggbb' or 'none' for text without a color, over the saved ones
+    filaments: dict | None = None
+    # a printer of the dialog's list by its name, as 'Bambu Lab X1 Carbon', or its label; 'Custom' with bedSize
+    printer: str | None = None
+    # mm, (width, length), for a custom printer only
+    bedSize: tuple | None = None
+    # mm between the parts and of the purge tower's square
+    spacing: float | None = None
+    purge: float | None = None
+    # a Bambu Lab printer's plates each in a 3MF instead of one Bambu Studio project
+    perPlate: bool | None = None
+    # files there already are replaced, else the export stops before writing any
+    overwrite: bool = False
+
+
+@dataclasses.dataclass
+class ResolvedExportOptions:
+    format: str
+    fileName: str
+    paint: bool
+    filaments: dict
+    # as layoutChoices gives it
+    layout: dict
+    overwrite: bool
+
+
+def _scriptColor(key) -> str:
+    """A label color as the saved filaments name it, '#RRGGBB' or '' for text without a color"""
+    text = str(key).strip()
+    if text.lower() == NO_COLOR_KEY or text == '':
+        return ''
+    digits = text.lstrip('#').upper()
+    if not re.fullmatch(r'[0-9A-F]{6}', digits):
+        raise ValueError(f'filaments: {key!r} is no label color, #rrggbb or none')
+    return f'#{digits}'
+
+
+def _scriptPrinter(printer: str, bedNames: list[str], oldNames: dict) -> str:
+    """The dialog's label of a printer named by a script: by its label or its name, any case, or a name it had"""
+    wanted = printer.strip().lower()
+    for name in bedNames:
+        if wanted in (name.lower(), re.sub(r'\s*\([^)]*\)$', '', name).lower()):
+            return name
+    for (old, now) in oldNames.items():
+        if wanted == old.lower() and now in bedNames:
+            return now
+    raise ValueError(f'printer: no printer {printer!r}, one of {", ".join(bedNames)}')
+
+
+def _length(option: str, value, minimum: float, isZeroKept: bool) -> float:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        raise ValueError(f'{option}: {value!r} is no length in mm')
+    if number != number or number in (float('inf'), float('-inf')) or number < minimum or (number == minimum and not isZeroKept):
+        raise ValueError(f'{option}: {value!r} is {"negative" if isZeroKept else "not more than 0"}')
+    return number
+
+
+def _checkType(option: str, value, kind: type, name: str):
+    """A script's option of the wrong kind, named, before any of it is used (review round 59: a list of filaments
+    failed with AttributeError, 'no' for paint turned it on)"""
+    if value is not None and (not isinstance(value, kind) or (kind is not bool and isinstance(value, bool))):
+        raise ValueError(f'{option}: {value!r} is not {name}')
+
+
+def resolveScriptOptions(options: ScriptExportOptions, saved: dict, formats: list[str], bedNames: list[str],
+                         presets: dict, oldNames: dict) -> ResolvedExportOptions:
+    """
+    The choices of a script's export, those it leaves out from saved (the export dialog's readChoices). Checked before
+    anything is written: a wrong value raises ValueError naming its option
+    """
+    for (option, kind, name) in (('format', str, 'a text'), ('fileName', str, 'a text'), ('paint', bool, 'True or False'),
+                                 ('filaments', dict, 'a dict of label colors and filaments'), ('printer', str, 'a text'),
+                                 ('perPlate', bool, 'True or False'), ('overwrite', bool, 'True or False')):
+        _checkType(option, getattr(options, option), kind, name)
+    format = saved['format'] if options.format is None else str(options.format).upper()
+    if format not in formats:
+        raise ValueError(f'format: {options.format!r}, one of {", ".join(formats)}')
+    fileName = (options.fileName or '').strip()
+    if re.search(r'[\\/:*?"<>|]', fileName):
+        raise ValueError(f'fileName: {options.fileName!r} has a character file names can not have')
+    filaments = dict(saved['filaments'])
+    for (key, filament) in (options.filaments or {}).items():
+        if isinstance(filament, bool) or not isinstance(filament, int) or not 1 <= filament <= MAX_FILAMENT:
+            raise ValueError(f'filaments: {filament!r} for {key!r}, a filament from 1 to {MAX_FILAMENT}')
+        filaments[_scriptColor(key)] = filament
+    layout = dict(saved['layout'])
+    if options.printer is not None:
+        layout['bed'] = _scriptPrinter(options.printer, bedNames, oldNames)
+        if layout['bed'] in presets:
+            (layout['bedWidth'], layout['bedLength']) = (float(size) for size in presets[layout['bed']])
+    if options.bedSize is not None:
+        if layout['bed'] in presets:
+            raise ValueError(f'bedSize: {layout["bed"]} has its own bed, a size is for {CUSTOM_BED}')
+        if not isinstance(options.bedSize, (tuple, list)) or len(options.bedSize) != 2:
+            raise ValueError(f'bedSize: {options.bedSize!r}, (width, length) in mm')
+        (layout['bedWidth'], layout['bedLength']) = (_length('bedSize', size, 0, False) for size in options.bedSize)
+    if options.spacing is not None:
+        layout['spacing'] = _length('spacing', options.spacing, 0, True)
+    if options.purge is not None:
+        layout['purge'] = _length('purge', options.purge, 0, True)
+    if options.perPlate is not None:
+        layout['files'] = FILES_PER_PLATE if options.perPlate else FILES_ONE
+    return ResolvedExportOptions(format, fileName, saved['paint'] if options.paint is None else bool(options.paint),
+                                 filaments, layout, bool(options.overwrite))
+
+
+def refuseExisting(paths: list[str], removed: list[str], overwrite: bool):
+    """
+    A script's answer to the dialog's question before files are replaced, see replaceQuestion: none, the export stops
+    with the files there already and the earlier plate files it would remove, unless the script lets it overwrite them
+    """
+    there = [path for path in paths if os.path.exists(path)] + list(removed)
+    if there and not overwrite:
+        raise FileExistsError(f'files there already, pass overwrite to replace them: {", ".join(os.path.basename(path) for path in there)}')

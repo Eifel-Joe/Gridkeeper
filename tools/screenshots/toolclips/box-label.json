@@ -1,0 +1,17 @@
+{
+    "description": "Hover picture of the box label command: the label of a box 4 cells wide",
+    "extends": "_toolclip.json",
+    "generator": "boxLabel",
+    "file": "toolclip",
+    "output": "commands/commandCreateBoxLabel/resources",
+    "settings": {
+        "cells": 4,
+        "bigText": "M3",
+        "line1": "Screws",
+        "line2": "",
+        "symbols": [],
+        "textStyle": "Heavy",
+        "surface": "Embossed",
+        "textColor": ""
+    }
+}

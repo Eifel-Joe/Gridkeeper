@@ -86,7 +86,9 @@ The full list of changes, round by round, is in
   switched to a hybrid design for this. See [Components and joints](../working/components.md).
 - **The component active before stays active** after a build, Fusion doesn't show everything else half transparent.
 - **Scripts** run in Fusion, such as those of an MCP server, can `import gridkeeper` while the add-in runs, to build
-  bins, baseplates, boxes and labels without the dialogs (GridfinityGenerator's script access under a name of its own).
+  bins, baseplates, boxes and labels without the dialogs (GridfinityGenerator's script access under a name of its own),
+  and export them with `gridkeeper.exportBodies(bodies, folder, options)`: 3MF with the label colors, a Bambu Studio
+  project, STL or STEP, the export dialog's last choices for what the script leaves out, no dialog or message.
 
 ## Credits and naming
 
