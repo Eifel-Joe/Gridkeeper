@@ -459,9 +459,16 @@ def _length(option: str, value, minimum: float, isZeroKept: bool) -> float:
         number = float(value)
     except (TypeError, ValueError):
         raise ValueError(f'{option}: {value!r} is no length in mm')
-    if number != number or number < minimum or (number == minimum and not isZeroKept):
+    if number != number or number in (float('inf'), float('-inf')) or number < minimum or (number == minimum and not isZeroKept):
         raise ValueError(f'{option}: {value!r} is {"negative" if isZeroKept else "not more than 0"}')
     return number
+
+
+def _checkType(option: str, value, kind: type, name: str):
+    """A script's option of the wrong kind, named, before any of it is used (review round 59: a list of filaments
+    failed with AttributeError, 'no' for paint turned it on)"""
+    if value is not None and (not isinstance(value, kind) or (kind is not bool and isinstance(value, bool))):
+        raise ValueError(f'{option}: {value!r} is not {name}')
 
 
 def resolveScriptOptions(options: ScriptExportOptions, saved: dict, formats: list[str], bedNames: list[str],
@@ -470,6 +477,10 @@ def resolveScriptOptions(options: ScriptExportOptions, saved: dict, formats: lis
     The choices of a script's export, those it leaves out from saved (the export dialog's readChoices). Checked before
     anything is written: a wrong value raises ValueError naming its option
     """
+    for (option, kind, name) in (('format', str, 'a text'), ('fileName', str, 'a text'), ('paint', bool, 'True or False'),
+                                 ('filaments', dict, 'a dict of label colors and filaments'), ('printer', str, 'a text'),
+                                 ('perPlate', bool, 'True or False'), ('overwrite', bool, 'True or False')):
+        _checkType(option, getattr(options, option), kind, name)
     format = saved['format'] if options.format is None else str(options.format).upper()
     if format not in formats:
         raise ValueError(f'format: {options.format!r}, one of {", ".join(formats)}')

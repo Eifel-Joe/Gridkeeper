@@ -866,6 +866,14 @@ def test_files_per_plate_or_one_project():
     ({"filaments": {"#D02020": exportParts.MAX_FILAMENT + 1}}, "filaments"),
     ({"filaments": {"red": 2}}, "filaments"),
     ({"fileName": "a/b"}, "fileName"),
+    ({"fileName": 3}, "fileName"),
+    ({"printer": 3}, "printer"),
+    ({"filaments": [2, 3]}, "filaments"),
+    ({"paint": "no"}, "paint"),
+    ({"perPlate": 1}, "perPlate"),
+    ({"overwrite": "yes"}, "overwrite"),
+    ({"spacing": float("inf")}, "spacing"),
+    ({"printer": "Custom", "bedSize": (float("nan"), 200)}, "bedSize"),
     ({"fileName": "a\\b"}, "fileName"),
 ])
 def test_wrong_script_options_are_named(given, option):
