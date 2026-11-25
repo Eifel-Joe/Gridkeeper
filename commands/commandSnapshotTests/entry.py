@@ -831,7 +831,7 @@ def dividerGapNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BRepBody]
     little in from both faces and 0.5 and 1.0 mm out from them where a ridge's support is, a line at every height going in from the wall's outer face must not leave the material
     and enter it again within reach, see testCases.wallGaps
     """
-    if case.generator != testCases.GENERATOR_BIN or len(bodies) == 0:
+    if not testCases.hasWalls(case.generator, case.state) or len(bodies) == 0:
         return []
     body = bodies[0]
     box = body.boundingBox
@@ -899,7 +899,7 @@ def raisedCornerLedgeNotes(case: testCases.TestCase, bodies: list[adsk.fusion.BR
     corner below it: the small upward faces in the reach of the raised dividers, under the top of the lip, see
     testCases.raisedCornerLedges
     """
-    if case.generator != testCases.GENERATOR_BIN or not getattr(case.state, 'hasDividersToTop', False):
+    if not testCases.hasWalls(case.generator, case.state) or not getattr(case.state, 'hasDividersToTop', False):
         return []
     # the raised dividers' corners go up from under the lip's height and the tab top offset, their ridges' supports
     # from further down (round 50), the check looks a little further down still

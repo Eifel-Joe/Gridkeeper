@@ -457,6 +457,13 @@ def colorProblems(appearanceName: str, base: tuple[str, str | None], parts: list
     problems += [f'{name} is {appearance}, not {appearanceName}' for (name, appearance) in parts if appearance != appearanceName]
     return problems
 
+def hasWalls(generator: str, state) -> bool:
+    """
+    Whether a case is a bin with walls and dividers to check. A bin built without its body is feet only: a section
+    through a foot made Fusion fail the divider gap check (InternalValidationError) of the case bin_2x1_base_only
+    """
+    return generator == GENERATOR_BIN and getattr(state, 'generateBody', True)
+
 # Round 50: a divider reaches its wall without a gap. Checked on sections of the built bin, closed loops of points;
 # a line at a level crosses them where it goes in and out of the material
 def lineCrossings(loops: list[list[tuple[float, float]]], lineAxis: int, value: float) -> list[float]:
