@@ -2,6 +2,26 @@
 
 All pictures in this folder are renders and screenshots from the English Fusion with Gridkeeper 1.0.0.
 
+## German versions (round 60, still to be taken)
+
+The German pages show a German version `name.de.png` (`name-dark.de.gif`) where it exists beside the English
+picture, else the English one; raw HTML `<picture>` paths on a German page point one folder higher for the English
+picture and to `/de/assets/...` once the German one is there (`tests/test_docs_i18n.py`). Pictures of the add-in's
+dialogs and windows get German versions, taken in a German Fusion (or with `languageOverride` = `de`; then Fusion's
+own items around them stay English), same state, size and crop as the English one. Models, hover pictures, Fusion's
+own interface (Scripts and Add-Ins, Change Parameters, browser, joints) and the snapshot test report stay English.
+
+- [ ] `docs/assets/images`: `bin-lip-dialog`, `context-menu-dark`, `context-menu-light`, `context-menu-export-scene`,
+  `dialog-baseplate`, `dialog-baseplate-connection-holes`, `dialog-baseplate-magnet-size`, `dialog-bin`,
+  `dialog-bin-compartment-scoops`, `dialog-bin-cullenect`, `dialog-bin-magnet-size`, `dialog-bin-placement`,
+  `dialog-bin-placement-cell`, `dialog-bin-scoop-walls`, `dialog-bin-tab-top-offset`, `dialog-box`, `dialog-box-label`,
+  `dialog-insert-pocket`, `dialog-label`, `dialog-settings-buttons`, `settings-window`, `update-dialog-available`,
+  `updates-dialog-git`, `updates-dialog-installed` (24, `.de.png`)
+- [ ] `docs/assets/ui`: the three `bin-*-compartments-*-options` (3, `.de.png`)
+- [ ] `docs/assets/gif`: the dialog part of each state of the 15 animations (`dev-notes/tools/anim/raw/<name>/N-dialog.png`
+  in German), the captions of `anims.json` in German, then `compose.py` for `<name>-dark.de.gif` and `-light.de.gif`
+  (compose needs a language option for that)
+
 ## Own pictures only
 
 Since Gridkeeper 1.0.0 every picture and animation of the documentation is Gridkeeper's own; none is taken over
