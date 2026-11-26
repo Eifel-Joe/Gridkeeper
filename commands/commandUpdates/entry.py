@@ -1,6 +1,7 @@
 import datetime
 import os
 import threading
+import traceback
 import webbrowser
 
 import adsk.core
@@ -19,6 +20,12 @@ from ... import config
 
 app = adsk.core.Application.get()
 ui = app.userInterface
+
+
+def showFailure(englishName: str, shownName: str, err: Exception):
+    """The log in English, the message box in the add-in's language (review round 60, as the export's)"""
+    futil.handle_error(f'{englishName} failed, {err}')
+    ui.messageBox(tr('{command} failed, {error}', command=shownName, error=err) + '\n' + traceback.format_exc())
 
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdUpdates'
 CMD_NAME = tr('Gridkeeper updates')
@@ -228,8 +235,8 @@ def reload_custom_event(args: adsk.core.CustomEventArgs):
         if failed is not None:
             futil.log(f'Gridkeeper reload failed: {failed.reason}')
             ui.messageBox(selfReload.failedText(failed), CMD_NAME)
-    except Exception:
-        futil.handle_error('Reload Gridkeeper', show_message_box=True)
+    except Exception as err:
+        showFailure('Reload Gridkeeper', tr('Reload Gridkeeper'), err)
 
 # the dialog
 
@@ -328,8 +335,8 @@ def command_execute(args: adsk.core.CommandEventArgs):
             requestReload()
         elif okAction == 'update' and canInstall():
             installRelease(pendingRelease)
-    except Exception:
-        futil.handle_error('Gridkeeper updates failed', show_message_box=True)
+    except Exception as err:
+        showFailure('Gridkeeper updates', CMD_NAME, err)
 
 def command_input_changed(args: adsk.core.InputChangedEventArgs):
     global pendingRelease
@@ -377,8 +384,8 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
                     inputs.itemById(UPDATE_NOW_INPUT).isVisible = False
                 except Exception as err:
                     futil.log(f'Gridkeeper updates: dialog not updated after the update, {err}')
-    except Exception:
-        futil.handle_error(f'{CMD_NAME} failed', show_message_box=True)
+    except Exception as err:
+        showFailure('Gridkeeper updates', CMD_NAME, err)
 
 def command_destroy(args: adsk.core.CommandEventArgs):
     global local_handlers

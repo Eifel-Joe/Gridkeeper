@@ -42,7 +42,7 @@ CMD_NAME = 'Gridkeeper label'
 # the name the user reads, CMD_NAME stays for the log
 CMD_TITLE = tr('Gridkeeper label')
 # the first section of a part's settings names the part, as the settings window does (review round 23)
-SETTINGS_TITLE = 'Gridfinity label'
+SETTINGS_TITLE = tr('Gridfinity label')
 # shown on hover over the button, the first paragraph says what it makes, the second how
 CMD_Description = tr('Creates a Cullenect label insert for the label sockets of bins.\n\n'
     'Set its width in base units or in mm, up to two lines of text and a screw or hardware symbol. The text and symbol '

@@ -1,5 +1,6 @@
 import adsk.core, adsk.fusion
 import os
+import traceback
 
 from ...lib import tagUtils
 from ...lib import settingsUtils
@@ -18,6 +19,12 @@ from ..commandCreateBoxLabel import entry as boxLabelEntry
 
 app = adsk.core.Application.get()
 ui = app.userInterface
+
+
+def showFailure(englishName: str, shownName: str, err: Exception):
+    """The log in English, the message box in the add-in's language (review round 60, as the export's)"""
+    futil.handle_error(f'{englishName} failed, {err}')
+    ui.messageBox(tr('{command} failed, {error}', command=shownName, error=err) + '\n' + traceback.format_exc())
 
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdShowSettings'
 CMD_NAME = tr('Gridkeeper settings')
@@ -213,7 +220,7 @@ def rebuild_command_created(args: adsk.core.CommandCreatedEventArgs):
             return
         startRebuild(tag)
     except Exception as err:
-        futil.handle_error(f'Gridkeeper rebuild failed, {err}', show_message_box=True)
+        showFailure('Gridkeeper rebuild', tr('Gridkeeper rebuild'), err)
 
 def clone_command_created(args: adsk.core.CommandCreatedEventArgs):
     """Opens the generator's dialog in place of this command, which has nothing to show"""
@@ -225,7 +232,7 @@ def clone_command_created(args: adsk.core.CommandCreatedEventArgs):
         (_, tagName, value) = tag
         CLONE_COMMANDS[tagName].startWithConfig(value['config'])
     except Exception as err:
-        futil.handle_error(f'Gridkeeper clone failed, {err}', show_message_box=True)
+        showFailure('Gridkeeper clone', tr('Gridkeeper clone'), err)
 
 def command_incoming_from_html(args: adsk.core.HTMLEventArgs, body: adsk.fusion.BRepBody, tagName: str, value: dict):
     browserPages.handleMessage(args, pageHandlers(body, tagName, value))

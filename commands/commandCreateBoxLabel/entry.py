@@ -118,7 +118,7 @@ rebuildBodyToken: str | None = None
 # what of the features after a rebuilt label needs a look, shown when the dialog closes
 rebuildNotes: list[str] = []
 BOX_NOTE = 'box_note'
-SETTINGS_TITLE = 'Box label'
+SETTINGS_TITLE = tr('Box label')
 # the dialog's first defaults, see initUiState, for the name of a saved config file
 DEFAULT_STATE = InputState(
     cells=predBoxLabelLayout.DEFAULT_CELLS,

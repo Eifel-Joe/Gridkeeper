@@ -65,7 +65,7 @@ CMD_NAME = 'Gridkeeper baseplate'
 # the name as shown, CMD_NAME stays the English one for ids and the log
 CMD_TITLE = tr('Gridkeeper baseplate')
 # the first section of a part's settings names the part, as the settings window does (review round 23)
-SETTINGS_TITLE = 'Gridfinity baseplate'
+SETTINGS_TITLE = tr('Gridfinity baseplate')
 # shown on hover over the button, the first paragraph says what it makes, the second how
 CMD_Description = tr('Creates a gridfinity baseplate for bins to sit in.\n\n'
     'Set its size in base units, or fill an area such as a drawer, split into pieces that fit the print bed, '
