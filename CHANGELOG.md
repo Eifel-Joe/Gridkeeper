@@ -14,6 +14,8 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
   the error window. Any other Fusion language keeps English. The German follows the words of Fusion's German interface
   (taken from Fusion's own string tables); bins are *Behälter*, baseplates *Grundplatten*, Cullenect label inserts
   *Einleger*, see `tools/i18n/glossary.md`.
+  German dialogs open 150 px wider and can't be made narrower than that, so Fusion doesn't cut the German input
+  names off; English dialogs keep their sizes.
 - **Nothing changes in what is saved:** dropdown values, saved defaults, settings files, the settings kept in a part
   and the names in the model (components, bodies, parameters, file names) stay English, so a design built in German
   rebuilds, clones and exports the same in English and back. The settings record a part shows in the *Gridkeeper
