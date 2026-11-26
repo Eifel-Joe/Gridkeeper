@@ -90,7 +90,7 @@ def test_manifest_is_gridkeepers():
     manifest = json.load(open(os.path.join(ROOT, 'Gridkeeper.manifest'), encoding='utf-8'))
     assert manifest['id'] != 'bbbd3c0a-34f1-4bcf-b9f9-accd46c35cd0'
     assert re.fullmatch(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', manifest['id'])
-    assert manifest['version'] == '1.4.1'
+    assert manifest['version'] == '1.5.0'
     description = manifest['description']['']
     assert 'Gridkeeper' in description and 'Le0Michine' in description
 
