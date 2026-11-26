@@ -18,9 +18,12 @@ own interface (Scripts and Add-Ins, Change Parameters, browser, joints) and the 
   `dialog-insert-pocket`, `dialog-label`, `dialog-settings-buttons`, `settings-window`, `update-dialog-available`,
   `updates-dialog-git`, `updates-dialog-installed` (24, `.de.png`)
 - [ ] `docs/assets/ui`: the three `bin-*-compartments-*-options` (3, `.de.png`)
-- [ ] `docs/assets/gif`: the dialog part of each state of the 15 animations (`dev-notes/tools/anim/raw/<name>/N-dialog.png`
-  in German), the captions of `anims.json` in German, then `compose.py` for `<name>-dark.de.gif` and `-light.de.gif`
-  (compose needs a language option for that)
+- [ ] `docs/assets/gif`: the dialog part of each state of the 15 animations (`dev-notes/tools/anim/raw/<name>/N-dialog.de.png`),
+  then `compose.py --language de` for `<name>-dark.de.gif` and `-light.de.gif`; the German captions are in
+  `anims.json` (`captionDe`), the model parts are shared
+- All of these are taken in Fusion: the pictures above are Fusion screenshots, and the dialog screenshot tool
+  (`tools/screenshots/screenshots.py --language de`) draws its own style (torn edges, other scale and crop), so it
+  can't make them in the same size and crop
 
 ## Own pictures only
 
