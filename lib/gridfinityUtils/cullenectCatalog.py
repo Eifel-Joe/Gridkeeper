@@ -50,7 +50,7 @@ CULLENECT_NAMES = {
     'crimp_spade_open': 'Crimp Spade - Open', 'crimp_spade_closed': 'Crimp Spade - Closed',
     'crimp_receptacle_open': 'Crimp Receptacle - Open', 'crimp_receptacle_closed': 'Crimp Receptacle - Closed',
     'crimp_butt_splice': 'Crimp Butt Splice',
-}
+}  # tr-values hardware
 
 SCREWS_FOLDER = 'screws'
 SETSCREWS_FOLDER = 'setscrews'

@@ -19,6 +19,9 @@ CASES_FOLDER = os.path.join(PROJECT_ROOT, "tests", "e2e", "cases")
 def _load(name, *path, package=None):
     spec = importlib.util.spec_from_file_location(name, os.path.join(PROJECT_ROOT, *path))
     mod = importlib.util.module_from_spec(spec)
+    if "." not in name:
+        # lib modules import the texts (lib/i18n) relatively
+        mod.__package__ = "lib"
     sys.modules[name] = mod
     spec.loader.exec_module(mod)
     return mod

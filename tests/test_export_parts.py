@@ -14,6 +14,8 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 def _load(name, *path):
     spec = importlib.util.spec_from_file_location(name, os.path.join(PROJECT_ROOT, *path))
     mod = importlib.util.module_from_spec(spec)
+    # a module of the add-in's lib, its relative imports (lib/i18n) resolve in the virtual package of conftest.py
+    mod.__package__ = "FusionGridfinityGenerator.lib"
     spec.loader.exec_module(mod)
     return mod
 

@@ -1,9 +1,8 @@
 # Saving and loading settings
 
-Every Gridkeeper dialog has a section with buttons for its settings: **Inputs** in the baseplate and label dialogs,
-**Changes** in the bin dialog.
+Every Gridkeeper dialog has a section with buttons for its settings, **Inputs**.
 
-![The Changes section of the bin dialog with its buttons for defaults and settings files](../assets/images/dialog-settings-buttons.png)
+![The Inputs section of the bin dialog with its buttons for defaults and settings files](../assets/images/dialog-settings-buttons.png)
 
 ## Dialog defaults
 

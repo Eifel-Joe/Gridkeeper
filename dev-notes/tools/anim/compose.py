@@ -2,7 +2,7 @@
 Puts the animations of the documentation together: per state the rendered model on the left with its caption below
 and the part of the dialog that changes on the right, then a GIF that holds each state and fades the model to the next.
 
-Usage: python compose.py [name ...]   (no name: all animations of anims.json)
+Usage: python compose.py [--language de] [name ...]   (no name: all animations of anims.json)
 Reads anims.json and the raw pictures in raw/<name>/, writes docs/assets/gif/<name>-light.gif and -dark.gif.
 
 The model pictures come from Fusion with a transparent background, the dialog pictures are screenshots of Fusion's
@@ -155,9 +155,14 @@ def centered(picture: Image.Image, size: tuple, background: tuple) -> Image.Imag
     return page
 
 
-def writeAnimation(name: str, states: list, folder: str):
+def gifName(name: str, theme: str, language: str = 'en') -> str:
+    """<name>-dark.gif, in German <name>-dark.de.gif beside it, as the German docs pages find it (round 60)"""
+    return f'{name}-{theme}.gif' if language == 'en' else f'{name}-{theme}.{language}.gif'
+
+
+def writeAnimation(name: str, states: list, folder: str, language: str = 'en'):
     for theme in ('light', 'dark'):
-        writeGif(states, theme, os.path.join(folder, f'{name}-{theme}.gif'))
+        writeGif(states, theme, os.path.join(folder, gifName(name, theme, language)))
 
 
 def cropToCommonBox(models: list, margin: int = 20) -> list:
@@ -173,28 +178,42 @@ def cropToCommonBox(models: list, margin: int = 20) -> list:
     return [m.convert('RGBA').crop(box) for m in models]
 
 
-def loadStates(name: str, entries: list) -> list:
-    raw = os.path.join(HERE, 'raw', name)
+def loadStates(name: str, entries: list, language: str = 'en', rawFolder: str | None = None) -> list:
+    """
+    The states of an animation from raw/<name>. In German (round 60) the same models with the dialog taken in German,
+    N-dialog.de.png beside N-dialog.png, the caption captionDe and, where the German dialog's inputs moved, cursorDe
+    """
+    raw = os.path.join(rawFolder or os.path.join(HERE, 'raw'), name)
+    german = language == 'de'
     states = []
     for (index, entry) in enumerate(entries):
         modelPath = os.path.join(raw, f'{index + 1}-model.png')
-        dialogPath = os.path.join(raw, entry.get('dialog', f'{index + 1}-dialog.png'))
-        states.append(State(Image.open(modelPath), Image.open(dialogPath), entry['caption'], tuple(entry['cursor']) if entry.get('cursor') else None, dialogPath))
+        (stem, extension) = os.path.splitext(entry.get('dialog', f'{index + 1}-dialog.png'))
+        dialogPath = os.path.join(raw, f'{stem}.de{extension}' if german else f'{stem}{extension}')
+        if not os.path.exists(dialogPath):
+            raise FileNotFoundError(f'{name}: {os.path.basename(dialogPath)} is missing in {raw}')
+        caption = entry['captionDe'] if german else entry['caption']
+        cursor = (entry.get('cursorDe') or entry.get('cursor')) if german else entry.get('cursor')
+        states.append(State(Image.open(modelPath), Image.open(dialogPath), caption, tuple(cursor) if cursor else None, dialogPath))
     for (state, model) in zip(states, cropToCommonBox([s.model for s in states])):
         state.model = model
     return states
 
 
-def main(names: list):
+def main(arguments: list):
+    """[--language de] [name ...]"""
+    language = 'en'
+    if arguments[:1] == ['--language']:
+        (language, arguments) = (arguments[1], arguments[2:])
     anims = json.load(open(os.path.join(HERE, 'anims.json'), encoding='utf-8'))
-    for name in names or list(anims):
-        writeAnimation(name, loadStates(name, anims[name]), OUT)
-        sizes = [os.path.getsize(os.path.join(OUT, f'{name}-{t}.gif')) // 1024 for t in ('light', 'dark')]
+    for name in arguments or list(anims):
+        writeAnimation(name, loadStates(name, anims[name], language), OUT, language)
+        sizes = [os.path.getsize(os.path.join(OUT, gifName(name, t, language))) // 1024 for t in ('light', 'dark')]
         # not '<name>: ...', the palette takes such a line as what kept the GIF from being made
         print(f'{name} made, {sizes[0]} KB light, {sizes[1]} KB dark')
         # the pictures palette in Fusion takes these lines as the GIFs made (round 58)
         for theme in ('light', 'dark'):
-            print(os.path.join(OUT, f'{name}-{theme}.gif'))
+            print(os.path.join(OUT, gifName(name, theme, language)))
 
 
 if __name__ == '__main__':

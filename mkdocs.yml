@@ -56,6 +56,62 @@ exclude_docs: |
 
 plugins:
   - search
+  # English at the site root, German under /de/ from the pages' .de.md twins (round 60); Material's language selector
+  # in the header leads to the same page in the other language. A page without a German twin shows the English one.
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: de
+          name: Deutsch
+          build: true
+          site_description: Gridkeeper, ein Fusion-Zusatzmodul für Gridfinity-Behälter, Grundplatten und Cullenect-Einleger, unsere Weiterentwicklung von GridfinityGenerator
+          copyright: >-
+            Gridkeeper von Eifel-Joe, CC BY-NC-SA 4.0 · Basiert auf
+            <a href="https://github.com/Le0Michine/FusionGridfinityGenerator">GridfinityGenerator</a> von Le0Michine ·
+            Cullenect-Beschriftungen von <a href="https://github.com/CullenJWebb/Cullenect-Labels">CullenJWebb</a> (MIT) ·
+            Aufbewahrungsbox nach <a href="https://www.printables.com/model/543553">Pred</a> (CC BY-NC) ·
+            Gridfinity von Zack Freedman
+          nav_translations:
+            Home: Start
+            Getting started: Erste Schritte
+            Installation and updates: Installation und Updates
+            First bin: Der erste Behälter
+            What's new: Neuigkeiten
+            Baseplates: Grundplatten
+            Storage boxes: Aufbewahrungsboxen
+            Bins: Behälter
+            Size and shape: Größe und Form
+            Body, walls and lip: Körper, Wände und Stapelrand
+            Compartments and scoop: Fächer und Griffmulde
+            Label tab and labels: Beschriftungslasche und Beschriftungen
+            Base, magnets and screws: Füße, Magnete und Schrauben
+            Cullenect labels: Cullenect-Beschriftungen
+            Pockets in bins: Aufnahmen in Behältern
+            Label inserts: Einleger
+            Symbols: Symbole
+            Working with models: Arbeiten mit Modellen
+            Settings, rebuild and clone: Einstellungen, neu erstellen und klonen
+            Saving and loading settings: Einstellungen speichern und laden
+            Changing parameters: Parameter ändern
+            Colors and multicolor printing: Farben und Mehrfarbdruck
+            Exporting for printing: Exportieren zum Drucken
+            Components and joints: Komponenten und Gelenke
+            Help: Hilfe
+            Messages and locked OK: Meldungen und gesperrtes OK
+            Troubleshooting and FAQ: Fehlersuche und FAQ
+            Reference: Referenz
+            Known deviations from the Gridfinity specification: Bekannte Abweichungen von der Gridfinity-Spezifikation
+            Credits and license: Danksagung und Lizenz
+            Privacy: Datenschutz
+            Developers: Entwickler
+            Snapshot tests: Snapshot-Tests
 
 markdown_extensions:
   - admonition

@@ -67,7 +67,7 @@ def test_the_width_is_a_choice_of_preds_fixed_widths():
     """17.11.2026: the label has fixed widths, so the width is a choice menu, not a free setting.
     It works without a box in the document (a reprint)"""
     source = _function(ENTRY, "command_created")
-    assert "widthDropdown = addDropdown(boxGroup.children, WIDTH_DROPDOWN, 'Label width', [name for name, _ in predBoxLabelLayout.widthChoices()])" in source
+    assert "widthDropdown = addDropdown(boxGroup.children, WIDTH_DROPDOWN, tr('Label width'), [name for name, _ in predBoxLabelLayout.widthChoices()])" in source
     assert "addIntegerSpinnerCommandInput" not in open(ENTRY, encoding="utf-8").read()
     assert "cells=predBoxLabelLayout.cellsOfChoice(uiState.getState(WIDTH_DROPDOWN))" in _function(ENTRY, "getInputsState")
 

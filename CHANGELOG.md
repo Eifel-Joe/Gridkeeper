@@ -5,6 +5,36 @@ GridfinityGenerator by Le0Michine, merged up to fadbd128 (v2.6.0.0, 23.11.2026; 
 Until 1.2.0 this file was named `CHANGELOG-CULLENECT.md`.
 Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`, the `vX.Y.Z.W` tags belong to GridfinityGenerator.
 
+## 1.5.0 (2026-11-26)
+
+### German (round 60)
+
+- **The add-in in German:** with Fusion set to German, every text of the add-in is German: menu entries and their
+  descriptions, dialogs, tooltips, dropdown items, messages, the settings window, the export, the update dialogs and
+  the error window. Any other Fusion language keeps English. The German follows the words of Fusion's German interface
+  (taken from Fusion's own string tables); bins are *Behälter*, baseplates *Grundplatten*, Cullenect label inserts
+  *Einleger*, see `tools/i18n/glossary.md`.
+  The German input names are short enough for the dialogs' English widths (a test checks their length), so Fusion
+  doesn't cut them off.
+- **Nothing changes in what is saved:** dropdown values, saved defaults, settings files, the settings kept in a part
+  and the names in the model (components, bodies, parameters, file names) stay English, so a design built in German
+  rebuilds, clones and exports the same in English and back. The settings record a part shows in the *Gridkeeper
+  settings* window stays in the language the part was built in. The text of an error report for an issue stays English.
+- **For testing:** a file `languageOverride` in the add-in folder with `de` or `en` sets the language, whatever Fusion's
+  is. The development commands (snapshot tests, model pictures) stay English.
+- **German docs:** the documentation site has every page in German too, under `/de/`, with a language switch in the
+  header (mkdocs-static-i18n). The pictures of the add-in's dialogs and windows and the animations are German there;
+  models and pictures of Fusion's own interface stay English.
+- **One name for the settings buttons' group:** the bin dialog's group with the buttons for defaults and settings
+  files is called *Inputs* like in the other dialogs (it was *Changes*); its id and saved state stay the same.
+- **How it works:** English is the source, `tr('English text')` in the code; the German is in `lib/i18n/de.json`. A test
+  finds every text the add-in shows and fails on a missing or stale German entry or different placeholders; pages get
+  their texts with their data (`data-i18n` attributes).
+
+Gridkeeper builds on GridfinityGenerator by Le0Michine (CC BY-NC-SA 4.0); Cullenect labels by CullenJWebb (MIT);
+reference gridfinity_extended_openscad by ostat (Chris Heazlewood); Gridfinity by Zack Freedman. The translation is
+Gridkeeper's own; GridfinityGenerator has no translations to build on.
+
 ## 1.4.1 (2026-11-25)
 
 ### Hover pictures, export from scripts, boxes in inches (round 59)

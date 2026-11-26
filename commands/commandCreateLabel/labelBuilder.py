@@ -14,6 +14,7 @@ from ...lib.gridfinityUtils import cullenect
 from ...lib.gridfinityUtils.jointOriginLayout import createOffsetJointOrigins
 from ...lib.gridfinityUtils.dim import Dim
 from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
+from ...lib.i18n import tr, number
 from .inputState import InputState
 
 # Builds Cullenect inserts from an InputState, without the dialog, so the same settings always build the same insert.
@@ -70,7 +71,7 @@ def labelProblem(state: InputState) -> str | None:
     if not labelColors.isColor(state.textColor):
         return labelColors.colorProblem(labelColors.CUSTOM_CHOICE, state.textColor)
     if state.useUnits and state.baseWidth < const.BASE_UNIT_MIN:
-        return f'The base width unit is at least {const.BASE_UNIT_MIN * 10:g} mm'
+        return tr('The base width unit is at least {value} mm', value=number(f'{const.BASE_UNIT_MIN * 10:g}'))
     (width, height) = labelSize(state)
     (iconPath, isScrew) = labelSymbol(state)
     isSymbolMissing = iconPath is None and (state.showScrew or state.hardware != NO_HARDWARE)
@@ -331,7 +332,7 @@ def rebuildLabel(
     # inserts aren't moved into place but drawn there, no move of this name: the placement is (0, 0)
     target = rebuildUtils.findTarget(des, body, tagUtils.TAG_LABEL, LABEL_PLACEMENT_FEATURE)
     if rebuildUtils.comesAfter(target, pocket):
-        raise ValueError("The bin of this pocket comes after the insert in the timeline, the insert can't be rebuilt into it in place")
+        raise ValueError(tr("The bin of this pocket comes after the insert in the timeline, the insert can't be rebuilt into it in place"))
     old = _insertBody(target)
     # the pocket the old insert leaves, Fusion turned it off for the old joint, see assembly.keepShown
     oldPocket = insertPocket(des, body)

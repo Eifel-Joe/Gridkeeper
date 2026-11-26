@@ -1,6 +1,7 @@
 import adsk.core, adsk.fusion
 
 from ...lib import tagUtils
+from ...lib.i18n import trValue
 from ...lib import configJson
 from ...lib import placementUtils
 from ...lib import rebuildUtils
@@ -50,20 +51,20 @@ PARAMETER_FIELDS = {
     'Padding top': 'paddingTop',
     'Padding right': 'paddingRight',
     'Padding bottom': 'paddingBottom',
-}
+}  # tr-keys
 # the move placing the baseplate, rebuilding in place reads the spot from it, see rebuildUtils
 BASEPLATE_PLACEMENT_FEATURE = 'Baseplate placement'
 
-SIZING_MODE_GRID_UNITS = 'Grid units'
-SIZING_MODE_FILL_AREA = 'Fill area'
+SIZING_MODE_GRID_UNITS = trValue('Grid units')
+SIZING_MODE_FILL_AREA = trValue('Fill area')
 
 # where the grid goes, the padding takes the rest of the space
-FILL_ALIGN_X_OPTIONS = {'Left': baseplateLayout.ALIGN_START, 'Center': baseplateLayout.ALIGN_CENTER, 'Right': baseplateLayout.ALIGN_END}
-FILL_ALIGN_Y_OPTIONS = {'Front': baseplateLayout.ALIGN_START, 'Center': baseplateLayout.ALIGN_CENTER, 'Back': baseplateLayout.ALIGN_END}
+FILL_ALIGN_X_OPTIONS = {trValue('Left'): baseplateLayout.ALIGN_START, trValue('Center'): baseplateLayout.ALIGN_CENTER, trValue('Right'): baseplateLayout.ALIGN_END}
+FILL_ALIGN_Y_OPTIONS = {trValue('Front'): baseplateLayout.ALIGN_START, trValue('Center'): baseplateLayout.ALIGN_CENTER, trValue('Back'): baseplateLayout.ALIGN_END}
 
-BASEPLATE_TYPE_LIGHT = 'Light'
-BASEPLATE_TYPE_FULL = 'Full'
-BASEPLATE_TYPE_SKELETONIZED = 'Skeletonized'
+BASEPLATE_TYPE_LIGHT = trValue('Light')
+BASEPLATE_TYPE_FULL = trValue('Full')
+BASEPLATE_TYPE_SKELETONIZED = trValue('Skeletonized')
 
 FILL_PREVIEW_PIECE_GAP = 0.5
 

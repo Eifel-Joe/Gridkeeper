@@ -22,7 +22,7 @@ class Part:
 # stay in print position.
 # Decided 17.11.2026: all three can be picked: Pred's three hinges (Hinge_M3x30, Hinge_Pined, Hinge), M3x30
 # the default; they are jointed too, in their print position beside the box
-HINGES = ('M3x30', 'Pinned', 'Plain')
+HINGES = ('M3x30', 'Pinned', 'Plain')  # tr-values
 DEFAULT_HINGE = 'M3x30'
 
 PARTS = [

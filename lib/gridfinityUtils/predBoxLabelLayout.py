@@ -22,6 +22,16 @@ from dataclasses import dataclass, field
 from . import cullenectCatalog
 from .predBox import PRED
 
+try:
+    from ..i18n import tr, number
+except ImportError:
+    # loaded on its own by a test or a tool, outside the add-in package: English
+    def tr(text, context=None, /, **values):
+        return text.format(**values) if values else text
+
+    def number(value):
+        return value if isinstance(value, str) else f'{value:g}'
+
 # Pred's plate, cm (pred_read2.out: EmptyLabel 67.5 x 24.5 x 0.85 mm at 5 x 4 x 6)
 PLATE_HEIGHT = 2.45
 PLATE_THICKNESS = 0.085
@@ -77,6 +87,13 @@ def widthChoices() -> list[tuple[str, int]]:
             for cells in WIDTH_CHOICE_CELLS]
 
 
+def widthChoiceShown(cells: int) -> str:
+    """The choice of a box that many cells wide in the add-in's language for a sentence, the dropdown value stays English"""
+    shown = min(max(cells, WIDTH_CHOICE_CELLS[0]), WIDTH_CHOICE_CELLS[-1])
+    return tr('Box {cells} cells ({width} mm)', cells=f'{shown}{"+" if shown == WIDTH_CHOICE_CELLS[-1] else ""}',
+        width=number(f'{labelWidth(shown) * 10:g}'))
+
+
 def widthChoiceFor(cells: int) -> str:
     """The choice of a box that many cells wide, the widest from 6 cells on"""
     choices = widthChoices()
@@ -95,7 +112,7 @@ def cellsOfBoxWidth(width: float) -> int | None:
 
 def sizeProblem(cells: int) -> str | None:
     if cells < MIN_CELLS:
-        return f'A box is at least {MIN_CELLS} cells wide'
+        return tr('A box is at least {value} cells wide', value=MIN_CELLS)
     return None
 
 

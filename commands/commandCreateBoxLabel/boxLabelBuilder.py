@@ -9,6 +9,7 @@ from ...lib import rebuildUtils
 from ...lib.gridfinityUtils import predBoxLabel, predBoxLabelLayout, predBoxSeats, boxLabelConfig
 from ...lib.gridfinityUtils import designIntent, labelColors, appearanceUtils, parameterUtils, commonUtils
 from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
+from ...lib.i18n import tr
 from .inputState import InputState
 
 # Builds the label of a box after Pred's parametric Gridfinity Storage Box v1.1
@@ -110,7 +111,7 @@ def buildBoxLabel(
     if problem is not None:
         raise ValueError(problem)
     if box is not None and not isBoxLabelJointOrigin(box):
-        raise ValueError(f'Pick the {predBoxSeats.LABEL_JOINT_ORIGIN} of a box')
+        raise ValueError(tr('Pick the {name} of a box', name=predBoxSeats.LABEL_JOINT_ORIGIN))
     plan = designIntent.structurePlan(des.designIntent, mayChangeDocument, assembly.rebuildKind(oldPlace))
     return assembly.buildWithStructure(des, plan, lambda: _buildBoxLabel(des, state, settings, plan, box, parameterPrefix, occurrenceTransform, rootSpot, oldPlace))
 
@@ -274,10 +275,10 @@ def rebuildBoxLabel(
     if problem is not None:
         raise ValueError(problem)
     if box is not None and not isBoxLabelJointOrigin(box):
-        raise ValueError(f'Pick the {predBoxSeats.LABEL_JOINT_ORIGIN} of a box')
+        raise ValueError(tr('Pick the {name} of a box', name=predBoxSeats.LABEL_JOINT_ORIGIN))
     target = rebuildUtils.findTarget(des, body, tagUtils.TAG_BOX_LABEL, PLACEMENT_FEATURE)
     if _isAfter(target, box):
-        raise ValueError("The box comes after the label in the timeline, the label can't be rebuilt into its holder in place")
+        raise ValueError(tr("The box comes after the label in the timeline, the label can't be rebuilt into its holder in place"))
     prefix = rebuildUtils.bodyId(target.bodies[0], PARAMETER_BASE_NAME)
     # the holder the old label leaves, Fusion turned it off for the old joint, see assembly.keepShown
     oldHolder = labelHolder(des, body)

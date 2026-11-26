@@ -45,6 +45,8 @@ from ...lib.ui import errorPalette
 from ...lib import errorReport
 from ...lib import rebuildUtils
 from ...lib import configJson
+from ...lib.i18n import tr, trKnown, number
+from ...lib.ui import dropdowns
 from ...lib import defaultSettings
 
 # what the dialog starts with before saved defaults, see lib/defaultSettings.py
@@ -57,10 +59,12 @@ ui = app.userInterface
 # *** The command identity information. ***
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdBin'
 CMD_NAME = 'Gridkeeper bin'
+# what the user reads, CMD_NAME stays for the log and the dialog state
+CMD_TITLE = tr('Gridkeeper bin')
 # the first section of a part's settings names the part, as the settings window does (review round 23)
-SETTINGS_TITLE = 'Gridfinity bin'
+SETTINGS_TITLE = tr('Gridfinity bin')
 # shown on hover over the button, the first paragraph says what it makes, the second how
-CMD_Description = ('Creates a gridfinity bin that drops into a baseplate.\n\n'
+CMD_Description = tr('Creates a gridfinity bin that drops into a baseplate.\n\n'
     'Set its size in base and height units, then pick a hollow, shelled or solid body with a stacking lip, '
     'compartments, a scoop, a label tab and magnet or screw holes in its feet. '
     'A custom shape fills odd spots like a tetris piece.')
@@ -215,7 +219,7 @@ BIN_TYPE_DROPDOWN_ID = 'bin_type'
 # a drawing of the bin's cells to leave some out, like a tetris piece, shown with the checkbox
 BIN_SHAPE_CUSTOM_ID = 'custom_shape'
 BIN_SHAPE_BROWSER_ID = 'shape_browser'
-SHAPE_NOTE = 'Compartments, scoop and label tab are not built for custom shapes yet'
+SHAPE_NOTE = tr('Compartments, scoop and label tab are not built for custom shapes yet')
 
 # InputState fields kept as they are in the dialog state, see getInputsState
 STATE_INPUT_IDS = {
@@ -285,13 +289,13 @@ SHOW_PREVIEW_INPUT = 'show_preview'
 SHOW_PREVIEW_MANUAL_INPUT = 'show_preview_manual'
 PREVIEW_TIME_INPUT = 'preview_time'
 
-INFO_TEXT = ("<b>Help:</b> every input is explained "
+INFO_TEXT = tr("<b>Help:</b> every input is explained "
              "<a href=\"https://eifel-joe.github.io/Gridkeeper/bins/\">"
              "in the Gridkeeper documentation</a>.")
 
 def infoText():
     version = tagUtils.getGeneratorVersion()
-    return f"{INFO_TEXT}<br><span style=\"color:#808080; font-size:small\">Version {version}</span>" if version else INFO_TEXT
+    return f"{INFO_TEXT}<br><span style=\"color:#808080; font-size:small\">{tr('Version {version}', version=version)}</span>" if version else INFO_TEXT
 
 def refreshUi():
     global commandUIState
@@ -415,13 +419,13 @@ def initDefaultUiState():
         magnetSizeInput.syncMagnetSize(commandUIState, BIN_MAGNET_SIZE_INPUT, BIN_MAGNET_HEIGHT_INPUT, magnetSizes.ALL_CHOICES)
     futil.log(f'{CMD_NAME} UI state initialized')
 
-def getErrorMessage(text = "An unknown error occurred, please validate your inputs and try again"):
+def getErrorMessage(text = None):
     stackTrace = traceback.format_exc()
-    return f"{text}:<br>{stackTrace}"
+    return f"{text or tr('An unknown error occurred, please validate your inputs and try again')}:<br>{stackTrace}"
 
-def showErrorInMessageBox(text = "An unknown error occurred, please validate your inputs and try again"):
+def showErrorInMessageBox(text = None):
     if ui:
-        ui.messageBox(getErrorMessage(text), f"{CMD_NAME} Error")
+        ui.messageBox(getErrorMessage(text), tr('{name} Error', name=CMD_TITLE))
 
 # Executed when add-in is run.
 def start():
@@ -432,7 +436,7 @@ def start():
         # Create a command Definition.
         cmd_def = ui.commandDefinitions.itemById(CMD_ID)
         if not cmd_def:
-            cmd_def = ui.commandDefinitions.addButtonDefinition(CMD_ID, CMD_NAME, CMD_Description, ICON_FOLDER)
+            cmd_def = ui.commandDefinitions.addButtonDefinition(CMD_ID, CMD_TITLE, CMD_Description, ICON_FOLDER)
             if os.path.isfile(TOOL_CLIP_PATH):
                 cmd_def.toolClipFilename = TOOL_CLIP_PATH
 
@@ -455,8 +459,8 @@ def start():
         ui.statusMessage = ""
     except Exception as err:
         futil.log(f'{CMD_NAME} Error occurred at the start, {err}, {getErrorMessage()}')
-        ui.statusMessage = f"{CMD_NAME} failed to initialize"
-        showErrorInMessageBox(f"{CMD_NAME} Critical error occurred at the start, the command will be unavailable, if the issue persists use <a href=\"{errorReport.ISSUES_URL}\">this link</a> to report it")
+        ui.statusMessage = tr('{name} failed to initialize', name=CMD_TITLE)
+        showErrorInMessageBox(tr('{name} Critical error occurred at the start, the command will be unavailable, if the issue persists use <a href="{url}">this link</a> to report it', name=CMD_TITLE, url=errorReport.ISSUES_URL))
 
 # Executed when add-in is stopped.
 def stop():
@@ -481,18 +485,18 @@ def stop():
 
 def render_actual_bin_dimensions_table(inputs: adsk.core.CommandInputs):
     global actualDimensionsTableUiState
-    actualDimensionsTable = inputs.addTableCommandInput(BIN_REAL_DIMENSIONS_TABLE, "Actual dimensions", 3, "1:1:1")
+    actualDimensionsTable = inputs.addTableCommandInput(BIN_REAL_DIMENSIONS_TABLE, tr("Actual dimensions"), 3, "1:1:1")
     rows = [[
-        (BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH, "Width"),
-        (BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH, "Length"),
-        (BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT, "Height"),
+        (BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH, tr("Width")),
+        (BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH, tr("Length")),
+        (BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT, tr("Height")),
     ]]
     # a document in inches shows them in inches too, on a line of their own
     if isDocumentInInches():
         rows.append([
-            (BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH_INCHES, "Width in inches"),
-            (BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH_INCHES, "Length in inches"),
-            (BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT_INCHES, "Height in inches"),
+            (BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH_INCHES, tr("Width in inches")),
+            (BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH_INCHES, tr("Length in inches")),
+            (BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT_INCHES, tr("Height in inches")),
         ])
     for (row, cells) in enumerate(rows):
         for (column, (inputId, name)) in enumerate(cells):
@@ -507,7 +511,7 @@ def render_actual_bin_dimensions_table(inputs: adsk.core.CommandInputs):
     actualDimensionsTableUiState.initValue(cullenectSockets.id, "", cullenectSockets.objectType)
     # the Cullenect sockets of the bin across the whole row below the sizes, see updateCullenectSockets
     actualDimensionsTable.addCommandInput(cullenectSockets, len(rows), 0, 0, 2)
-    actualDimensionsTable.tooltip = 'Actual bin dimensions'
+    actualDimensionsTable.tooltip = tr('Actual bin dimensions')
     actualDimensionsTable.tablePresentationStyle = adsk.core.TablePresentationStyles.transparentBackgroundTablePresentationStyle
     actualDimensionsTable.hasGrid = False
     actualDimensionsTable.minimumVisibleRows = len(rows)
@@ -545,16 +549,24 @@ def update_actual_bin_dimensions():
         actualLength = commandUIState.getState(BIN_BASE_LENGTH_UNIT_INPUT_ID) * commandUIState.getState(BIN_LENGTH_INPUT_ID) - clearance * 2
         lip = lipHeight(commandUIState.getState(BIN_LIP_TOP_TRIMMED_INPUT_ID), clearance) if commandUIState.getState(BIN_WITH_LIP_INPUT_ID) else 0
         actualHeight = commandUIState.getState(BIN_HEIGHT_UNIT_INPUT_ID) * commandUIState.getState(BIN_HEIGHT_INPUT_ID) + lip
-        for (inputId, inchesId, name, value) in [
-            (BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH, BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH_INCHES, 'width', actualWidth),
-            (BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH, BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH_INCHES, 'length', actualLength),
-            (BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT, BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT_INCHES, 'height', actualHeight),
+        for (inputId, inchesId, value) in [
+            (BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH, BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH_INCHES, actualWidth),
+            (BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH, BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH_INCHES, actualLength),
+            (BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT, BIN_REAL_DIMENSIONS_TABLE_TOTAL_HEIGHT_INCHES, actualHeight),
         ]:
-            actualDimensionsTableUiState.updateValue(inputId, f'{name.capitalize()}: {millimeters(value)}mm')
-            actualDimensionsTableUiState.getInput(inputId).tooltip = f'Total bin {name}: {millimeters(value)}mm'
+            # the texts are written out in every branch, tr takes literals only
+            millimeterText = number(millimeters(value))
+            if inputId == BIN_REAL_DIMENSIONS_TABLE_TOTAL_WIDTH:
+                texts = (tr('Width: {value}mm', value=millimeterText), tr('Total bin width: {value}mm', value=millimeterText), lambda v: tr('Total bin width: {value}', value=v))
+            elif inputId == BIN_REAL_DIMENSIONS_TABLE_TOTAL_LENGTH:
+                texts = (tr('Length: {value}mm', value=millimeterText), tr('Total bin length: {value}mm', value=millimeterText), lambda v: tr('Total bin length: {value}', value=v))
+            else:
+                texts = (tr('Height: {value}mm', value=millimeterText), tr('Total bin height: {value}mm', value=millimeterText), lambda v: tr('Total bin height: {value}', value=v))
+            actualDimensionsTableUiState.updateValue(inputId, texts[0])
+            actualDimensionsTableUiState.getInput(inputId).tooltip = texts[1]
             if isDocumentInInches():
                 actualDimensionsTableUiState.updateValue(inchesId, inches(value))
-                actualDimensionsTableUiState.getInput(inchesId).tooltip = f'Total bin {name}: {inches(value)}'
+                actualDimensionsTableUiState.getInput(inchesId).tooltip = texts[2](inches(value))
     except:
         showErrorInMessageBox()
 
@@ -619,10 +631,10 @@ def updateCullenectSockets():
     try:
         problem = cullenect.wallProblem(commandUIState.getState(BIN_WALL_THICKNESS_INPUT_ID)) if hasCullenectSockets() else None
         # the reason OK is locked, in place of the sockets (p35)
-        text = f'Cullenect: {problem}' if problem is not None else f'Cullenect: {"; ".join(cullenectSockets())}' if hasCullenectSockets() else ''
+        text = tr('Cullenect: {text}', text=problem) if problem is not None else tr('Cullenect: {text}', text='; '.join(cullenectSockets())) if hasCullenectSockets() else ''
         socketsInput = actualDimensionsTableUiState.getInput(BIN_REAL_DIMENSIONS_TABLE_CULLENECT)
         actualDimensionsTableUiState.updateValue(BIN_REAL_DIMENSIONS_TABLE_CULLENECT, text)
-        socketsInput.tooltip = 'Socket width of the label tabs and the width of the Cullenect insert that fits them'
+        socketsInput.tooltip = tr('Socket width of the label tabs and the width of the Cullenect insert that fits them')
         socketsInput.isVisible = len(text) > 0
         table = socketsInput.parentCommandInput
         if isinstance(table, adsk.core.TableCommandInput):
@@ -633,11 +645,12 @@ def updateCullenectSockets():
 def addIconItems(dropdown: adsk.core.DropDownCommandInput, firstItems: list[str], selected: str):
     """Icons show their preview, separated by type"""
     for name in firstItems:
-        dropdown.listItems.add(name, name == selected)
+        dropdowns.addItem(dropdown, name, name == selected)
     for group in labelGenerator.listIconGroups():
         dropdown.listItems.addSeparator(-1)
         for icon in group:
-            dropdown.listItems.add(icon.name, icon.name == selected, icon.previewFolder)
+            # icon names come from the folders on disk
+            dropdowns.addItem(dropdown, icon.name, icon.name == selected, icon.previewFolder, translate=False)
     if dropdown.selectedItem is None:
         dropdown.listItems.item(0).isSelected = True
 
@@ -676,18 +689,22 @@ def updateTabHollowSidesInput(isTabEnabled: bool):
     if not isEnabled:
         commandUIState.updateValue(BIN_TAB_HOLLOW_SIDES_INPUT_ID, False)
 
+def iconText(name: str) -> str:
+    """An icon's name as the dropdown shows it: the two the add-in has itself translated, those of the icon files not"""
+    return trKnown(name) if name in (compartmentLayout.DEFAULT_ICON, labelGenerator.LABEL_ICON_NONE) else name
+
 def compartmentIconOptions() -> list[dict]:
     """Label icons for the drawing, with the preview images the icon dropdowns show"""
     def option(name: str, group: str = '', previewFolder: str = '') -> dict:
         def image(fileName: str) -> str:
             path = os.path.join(previewFolder, fileName)
             return pathlib.Path(path).as_uri() if previewFolder and os.path.isfile(path) else ''
-        return {'name': name, 'group': group, 'image': image('32x32.png'), 'imageDark': image('32x32-dark.png')}
+        return {'name': name, 'text': iconText(name), 'group': group, 'image': image('32x32.png'), 'imageDark': image('32x32-dark.png')}
     options = [option(compartmentLayout.DEFAULT_ICON), option(labelGenerator.LABEL_ICON_NONE)]
     for group in labelGenerator.listIconGroups():
         for icon in group:
             folder = os.path.dirname(icon.path)
-            groupName = 'Other' if os.path.samefile(folder, labelGenerator.LABEL_ICONS_FOLDER) else os.path.basename(folder).capitalize()
+            groupName = tr('Other') if os.path.samefile(folder, labelGenerator.LABEL_ICONS_FOLDER) else os.path.basename(folder).capitalize()
             options.append(option(icon.name, groupName, icon.previewFolder))
     return options
 
@@ -714,6 +731,9 @@ def compartmentsDrawingData(browserId: str) -> dict:
         'hasTab': hasTab,
         'defaultLabel': commandUIState.getState(BIN_TAB_LABEL_TEXT_INPUT_ID),
         'defaultIcon': commandUIState.getState(BIN_TAB_LABEL_ICON_INPUT_ID),
+        # the page writes its numbers with the decimal sign of the language
+        'decimal': number('1.5')[1],
+        'defaultIconText': iconText(commandUIState.getState(BIN_TAB_LABEL_ICON_INPUT_ID)),
         'icons': compartmentIconOptions(),
     }
 
@@ -851,7 +871,7 @@ def is_all_input_valid(inputs: adsk.core.CommandInputs):
         result = result and inputs.itemById(BIN_CREASE_DEPTH_INPUT_ID).value > 0
         result = result and inputs.itemById(BIN_CREASE_MAX_PANEL_LENGTH_INPUT_ID).value > 0
 
-    if bin_generate_body.value and binTypeDropdownInput.selectedItem.name == BIN_TYPE_HOLLOW:
+    if bin_generate_body.value and dropdowns.value(binTypeDropdownInput) == BIN_TYPE_HOLLOW:
         if anyScoopWall():
             result = result and binScoopMaxRadius.value > 0
         if hasTabInput.value:
@@ -891,11 +911,11 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     # Create a value input field and set the default using 1 unit of the default length unit.
     defaultLengthUnits = app.activeProduct.unitsManager.defaultLengthUnits
 
-    infoGroup = inputs.addGroupCommandInput(INFO_GROUP, 'Info')
+    infoGroup = inputs.addGroupCommandInput(INFO_GROUP, tr('Info'))
     dialogInfo = infoText()
     if rebuildName is not None:
-        dialogInfo = warningLine(f'<b>Rebuilding {html.escape(rebuildName)}</b> in place, features after it in the timeline are kept. '
-            'Changing only what its parameters hold, like its height or label, sets them instead.') + dialogInfo
+        dialogInfo = warningLine(tr('<b>Rebuilding {name}</b> in place, features after it in the timeline are kept. '
+            'Changing only what its parameters hold, like its height or label, sets them instead.', name=html.escape(rebuildName))) + dialogInfo
     addInfoPage(infoGroup.children, INFO_BROWSER)
     infoGroup.isExpanded = commandUIState.getState(INFO_GROUP)
     commandUIState.registerCommandInput(infoGroup)
@@ -903,65 +923,65 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     # Where the bin goes (round 38): upstream's snap or center (d37c166) as Position, always, and a cell of a baseplate
     # or box (round 31, p312), only offered when there's one and not for a rebuilt bin, it keeps its joint. The cell is
     # neither remembered nor in the settings, a picked one wins, see binCell.placementSource
-    placementGroup = inputs.addGroupCommandInput(BIN_PLACEMENT_GROUP_ID, 'Placement')
+    placementGroup = inputs.addGroupCommandInput(BIN_PLACEMENT_GROUP_ID, tr('Placement'))
     placementGroup.isExpanded = True
     if binCell.offersCellPick(dialogWorkflow != WORKFLOW_REBUILD, binBuilder.hasCellParts(adsk.fusion.Design.cast(app.activeProduct))):
-        cellInput = placementGroup.children.addSelectionInput(BIN_CELL_INPUT_ID, 'Cell', 'A cell joint origin of a baseplate or of the floor of a box')
+        cellInput = placementGroup.children.addSelectionInput(BIN_CELL_INPUT_ID, tr('Cell'), tr('A cell joint origin of a baseplate or of the floor of a box'))
         cellInput.addSelectionFilter(adsk.core.SelectionCommandInput.JointOrigins)
         cellInput.setSelectionLimits(0, 1)
-        cellInput.tooltip = ('Optional: pick a cell joint origin of a baseplate or of the floor of a box, the bin is jointed there '
+        cellInput.tooltip = tr('Optional: pick a cell joint origin of a baseplate or of the floor of a box, the bin is jointed there '
             'with its front left cell. Without, it goes beside the other bins. Baseplates offer their cells with Add joint '
             'origins, a box without cell joint origins gets them when it is rebuilt.')
-    placementInput = placementGroup.children.addDropDownCommandInput(BIN_PLACEMENT_INPUT_ID, 'Position', adsk.core.DropDownStyles.TextListDropDownStyle)
-    placementInput.tooltip = ('Snaps the bin to the free grid spot closest to the origin, next to bins already there, or centers '
+    placementInput = placementGroup.children.addDropDownCommandInput(BIN_PLACEMENT_INPUT_ID, tr('Position'), adsk.core.DropDownStyles.TextListDropDownStyle)
+    placementInput.tooltip = tr('Snaps the bin to the free grid spot closest to the origin, next to bins already there, or centers '
         'it on the origin. A centered bin is centered again when rebuilt. A picked cell wins, this is greyed out then')
     for option in binBuilder.PLACEMENT_OPTIONS:
-        placementInput.listItems.add(option, option == commandUIState.getState(BIN_PLACEMENT_INPUT_ID))
+        dropdowns.addItem(placementInput, option, option == commandUIState.getState(BIN_PLACEMENT_INPUT_ID))
     commandUIState.registerCommandInput(placementInput)
 
-    basicSizesGroup = inputs.addGroupCommandInput(BIN_BASIC_SIZES_GROUP, 'Basic sizes')
+    basicSizesGroup = inputs.addGroupCommandInput(BIN_BASIC_SIZES_GROUP, tr('Basic sizes'))
     basicSizesGroup.isExpanded = commandUIState.getState(BIN_BASIC_SIZES_GROUP)
     commandUIState.registerCommandInput(basicSizesGroup)
-    baseWidthUnitInput = basicSizesGroup.children.addValueInput(BIN_BASE_WIDTH_UNIT_INPUT_ID, 'Base width unit (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_BASE_WIDTH_UNIT_INPUT_ID)))
+    baseWidthUnitInput = basicSizesGroup.children.addValueInput(BIN_BASE_WIDTH_UNIT_INPUT_ID, tr('Base width unit (mm)'), defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_BASE_WIDTH_UNIT_INPUT_ID)))
     baseWidthUnitInput.minimumValue = const.BASE_UNIT_MIN
     baseWidthUnitInput.isMinimumInclusive = True
     commandUIState.registerCommandInput(baseWidthUnitInput)
-    baseLengthUnitInput = basicSizesGroup.children.addValueInput(BIN_BASE_LENGTH_UNIT_INPUT_ID, 'Base length unit (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_BASE_LENGTH_UNIT_INPUT_ID)))
+    baseLengthUnitInput = basicSizesGroup.children.addValueInput(BIN_BASE_LENGTH_UNIT_INPUT_ID, tr('Base length unit (mm)'), defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_BASE_LENGTH_UNIT_INPUT_ID)))
     baseLengthUnitInput.minimumValue = const.BASE_UNIT_MIN
     baseLengthUnitInput.isMinimumInclusive = True
     commandUIState.registerCommandInput(baseLengthUnitInput)
-    binHeightUnitInput = basicSizesGroup.children.addValueInput(BIN_HEIGHT_UNIT_INPUT_ID, 'Bin height unit (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_HEIGHT_UNIT_INPUT_ID)))
+    binHeightUnitInput = basicSizesGroup.children.addValueInput(BIN_HEIGHT_UNIT_INPUT_ID, tr('Bin height unit (mm)'), defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_HEIGHT_UNIT_INPUT_ID)))
     binHeightUnitInput.minimumValue = const.HEIGHT_UNIT_MIN
     binHeightUnitInput.isMinimumInclusive = True
     commandUIState.registerCommandInput(binHeightUnitInput)
-    xyClearanceInput = basicSizesGroup.children.addValueInput(BIN_XY_CLEARANCE_INPUT_ID, 'Bin xy clearance (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_XY_CLEARANCE_INPUT_ID)))
+    xyClearanceInput = basicSizesGroup.children.addValueInput(BIN_XY_CLEARANCE_INPUT_ID, tr('Bin xy clearance (mm)'), defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_XY_CLEARANCE_INPUT_ID)))
     xyClearanceInput.minimumValue = 0.01
     xyClearanceInput.isMinimumInclusive = True
     xyClearanceInput.maximumValue = 0.05
     xyClearanceInput.isMaximumInclusive = True
     commandUIState.registerCommandInput(xyClearanceInput)
 
-    binDimensionsGroup = inputs.addGroupCommandInput(BIN_DIMENSIONS_GROUP, 'Main dimensions')
-    binDimensionsGroup.tooltipDescription = 'Set in base units'
+    binDimensionsGroup = inputs.addGroupCommandInput(BIN_DIMENSIONS_GROUP, tr('Main dimensions'))
+    binDimensionsGroup.tooltipDescription = tr('Set in base units')
     binDimensionsGroup.isExpanded = commandUIState.getState(BIN_DIMENSIONS_GROUP)
     commandUIState.registerCommandInput(binDimensionsGroup)
-    binWidthInput = binDimensionsGroup.children.addFloatSpinnerCommandInput(BIN_WIDTH_INPUT_ID, 'Bin width, X (u)', '', 0.5, 100, 0.5, commandUIState.getState(BIN_WIDTH_INPUT_ID))
-    binWidthInput.tooltip = 'In whole or half base units'
+    binWidthInput = binDimensionsGroup.children.addFloatSpinnerCommandInput(BIN_WIDTH_INPUT_ID, tr('Bin width, X (u)'), '', 0.5, 100, 0.5, commandUIState.getState(BIN_WIDTH_INPUT_ID))
+    binWidthInput.tooltip = tr('In whole or half base units')
     commandUIState.registerCommandInput(binWidthInput)
-    binLengthInput = binDimensionsGroup.children.addFloatSpinnerCommandInput(BIN_LENGTH_INPUT_ID, 'Bin length, Y (u)', '', 0.5, 100, 0.5, commandUIState.getState(BIN_LENGTH_INPUT_ID))
-    binLengthInput.tooltip = 'In whole or half base units'
+    binLengthInput = binDimensionsGroup.children.addFloatSpinnerCommandInput(BIN_LENGTH_INPUT_ID, tr('Bin length, Y (u)'), '', 0.5, 100, 0.5, commandUIState.getState(BIN_LENGTH_INPUT_ID))
+    binLengthInput.tooltip = tr('In whole or half base units')
     commandUIState.registerCommandInput(binLengthInput)
-    halfGridInput = binDimensionsGroup.children.addBoolValueInput(BIN_HALF_GRID_INPUT_ID, 'Half grid', True, '', commandUIState.getState(BIN_HALF_GRID_INPUT_ID))
-    halfGridInput.tooltip = ('Puts the bin on half size feet, for a half grid baseplate, the bin keeps its size in base units. '
+    halfGridInput = binDimensionsGroup.children.addBoolValueInput(BIN_HALF_GRID_INPUT_ID, tr('Half grid'), True, '', commandUIState.getState(BIN_HALF_GRID_INPUT_ID))
+    halfGridInput.tooltip = tr('Puts the bin on half size feet, for a half grid baseplate, the bin keeps its size in base units. '
         'Without it a size ending in a half gets whole feet and a row of half feet along the back or right side, halved across the row only. '
         'Half feet have no magnet or screw holes, there is no room for them')
     commandUIState.registerCommandInput(halfGridInput)
-    binHeightInput = binDimensionsGroup.children.addValueInput(BIN_HEIGHT_INPUT_ID, 'Bin height, Z (u)', '', adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_HEIGHT_INPUT_ID)))
+    binHeightInput = binDimensionsGroup.children.addValueInput(BIN_HEIGHT_INPUT_ID, tr('Bin height, Z (u)'), '', adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_HEIGHT_INPUT_ID)))
     binHeightInput.minimumValue = 1
     binHeightInput.isMinimumInclusive = True
     commandUIState.registerCommandInput(binHeightInput)
-    customShapeInput = binDimensionsGroup.children.addBoolValueInput(BIN_SHAPE_CUSTOM_ID, 'Custom shape', True, '', commandUIState.getState(BIN_SHAPE_CUSTOM_ID))
-    customShapeInput.tooltip = 'Shows a drawing of the bin cells to leave some of them out, so the bin fills an L or another tetris like spot. Unticking it fills every cell again'
+    customShapeInput = binDimensionsGroup.children.addBoolValueInput(BIN_SHAPE_CUSTOM_ID, tr('Custom shape'), True, '', commandUIState.getState(BIN_SHAPE_CUSTOM_ID))
+    customShapeInput.tooltip = tr('Shows a drawing of the bin cells to leave some of them out, so the bin fills an L or another tetris like spot. Unticking it fills every cell again')
     commandUIState.registerCommandInput(customShapeInput)
     shapeBrowser = binDimensionsGroup.children.addBrowserCommandInput(BIN_SHAPE_BROWSER_ID, '', SHAPE_HTML_URL, 200, 200)
     shapeBrowser.isFullWidth = True
@@ -969,156 +989,156 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     commandUIState.registerCommandInput(shapeBrowser)
     render_actual_bin_dimensions_table(binDimensionsGroup.children)
 
-    binFeaturesGroup = inputs.addGroupCommandInput(BIN_FEATURES_GROUP, 'Bin features')
+    binFeaturesGroup = inputs.addGroupCommandInput(BIN_FEATURES_GROUP, tr('Bin features'))
     binFeaturesGroup.isExpanded = commandUIState.getState(BIN_FEATURES_GROUP)
     commandUIState.registerCommandInput(binFeaturesGroup)
-    generateBodyCheckboxInput = binFeaturesGroup.children.addBoolValueInput(BIN_GENERATE_BODY_INPUT_ID, 'Generate body', True, '', commandUIState.getState(BIN_GENERATE_BODY_INPUT_ID))
+    generateBodyCheckboxInput = binFeaturesGroup.children.addBoolValueInput(BIN_GENERATE_BODY_INPUT_ID, tr('Generate body'), True, '', commandUIState.getState(BIN_GENERATE_BODY_INPUT_ID))
     commandUIState.registerCommandInput(generateBodyCheckboxInput)
-    binTypeDropdown = binFeaturesGroup.children.addDropDownCommandInput(BIN_TYPE_DROPDOWN_ID, 'Bin type', adsk.core.DropDownStyles.LabeledIconDropDownStyle)
+    binTypeDropdown = binFeaturesGroup.children.addDropDownCommandInput(BIN_TYPE_DROPDOWN_ID, tr('Bin type'), adsk.core.DropDownStyles.LabeledIconDropDownStyle)
     binTypeDropdownDefaultValue = commandUIState.getState(BIN_TYPE_DROPDOWN_ID)
-    binTypeDropdown.listItems.add(BIN_TYPE_HOLLOW, binTypeDropdownDefaultValue == BIN_TYPE_HOLLOW)
-    binTypeDropdown.listItems.add(BIN_TYPE_SHELLED, binTypeDropdownDefaultValue == BIN_TYPE_SHELLED)
-    binTypeDropdown.listItems.add(BIN_TYPE_SOLID, binTypeDropdownDefaultValue == BIN_TYPE_SOLID)
+    dropdowns.addItem(binTypeDropdown, BIN_TYPE_HOLLOW, binTypeDropdownDefaultValue == BIN_TYPE_HOLLOW)
+    dropdowns.addItem(binTypeDropdown, BIN_TYPE_SHELLED, binTypeDropdownDefaultValue == BIN_TYPE_SHELLED)
+    dropdowns.addItem(binTypeDropdown, BIN_TYPE_SOLID, binTypeDropdownDefaultValue == BIN_TYPE_SOLID)
     commandUIState.registerCommandInput(binTypeDropdown)
 
-    binWallThicknessInput = binFeaturesGroup.children.addValueInput(BIN_WALL_THICKNESS_INPUT_ID, 'Bin wall thickness', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_WALL_THICKNESS_INPUT_ID)))
+    binWallThicknessInput = binFeaturesGroup.children.addValueInput(BIN_WALL_THICKNESS_INPUT_ID, tr('Bin wall thickness'), defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_WALL_THICKNESS_INPUT_ID)))
     binWallThicknessInput.minimumValue = 0.04
     binWallThicknessInput.isMinimumInclusive = True
     binWallThicknessInput.maximumValue = 0.2
     binWallThicknessInput.isMaximumInclusive = True
     commandUIState.registerCommandInput(binWallThicknessInput)
-    generateLipCheckboxInput = binFeaturesGroup.children.addBoolValueInput(BIN_WITH_LIP_INPUT_ID, 'Generate lip for stackability', True, '', commandUIState.getState(BIN_WITH_LIP_INPUT_ID))
+    generateLipCheckboxInput = binFeaturesGroup.children.addBoolValueInput(BIN_WITH_LIP_INPUT_ID, tr('Generate lip for stackability'), True, '', commandUIState.getState(BIN_WITH_LIP_INPUT_ID))
     commandUIState.registerCommandInput(generateLipCheckboxInput)
-    hasLipNotches = binFeaturesGroup.children.addBoolValueInput(BIN_WITH_LIP_NOTCHES_INPUT_ID, 'Generate lip notches', True, '', commandUIState.getState(BIN_WITH_LIP_NOTCHES_INPUT_ID))
+    hasLipNotches = binFeaturesGroup.children.addBoolValueInput(BIN_WITH_LIP_NOTCHES_INPUT_ID, tr('Generate lip notches'), True, '', commandUIState.getState(BIN_WITH_LIP_NOTCHES_INPUT_ID))
     hasLipNotches.isEnabled = commandUIState.getState(BIN_WITH_LIP_INPUT_ID)
     commandUIState.registerCommandInput(hasLipNotches)
-    lipTypeInput = binFeaturesGroup.children.addDropDownCommandInput(BIN_LIP_TYPE_INPUT_ID, 'Lip type', adsk.core.DropDownStyles.LabeledIconDropDownStyle)
-    lipTypeInput.tooltip = ('Light keeps the inside of the lip straight down to the bin top. '
+    lipTypeInput = binFeaturesGroup.children.addDropDownCommandInput(BIN_LIP_TYPE_INPUT_ID, tr('Lip type'), adsk.core.DropDownStyles.LabeledIconDropDownStyle)
+    lipTypeInput.tooltip = tr('Light keeps the inside of the lip straight down to the bin top. '
         'Full follows the original Gridfinity profile, narrowing to an inner tip with a support under it, and a scoop wall as thick as the tip')
     for lipType in LIP_TYPES:
-        lipTypeInput.listItems.add(lipType, lipType == commandUIState.getState(BIN_LIP_TYPE_INPUT_ID), os.path.join(LIP_TYPE_ICON_FOLDER, lipType))
+        dropdowns.addItem(lipTypeInput, lipType, lipType == commandUIState.getState(BIN_LIP_TYPE_INPUT_ID), os.path.join(LIP_TYPE_ICON_FOLDER, lipType))
     commandUIState.registerCommandInput(lipTypeInput)
-    lipTopTrimmedInput = binFeaturesGroup.children.addBoolValueInput(BIN_LIP_TOP_TRIMMED_INPUT_ID, 'Trim lip top', True, '', commandUIState.getState(BIN_LIP_TOP_TRIMMED_INPUT_ID))
-    lipTopTrimmedInput.tooltip = 'Cuts the top of the lip flat, 0.6mm lower, instead of the sharp edge of the original profile'
+    lipTopTrimmedInput = binFeaturesGroup.children.addBoolValueInput(BIN_LIP_TOP_TRIMMED_INPUT_ID, tr('Trim lip top'), True, '', commandUIState.getState(BIN_LIP_TOP_TRIMMED_INPUT_ID))
+    lipTopTrimmedInput.tooltip = tr('Cuts the top of the lip flat, 0.6mm lower, instead of the sharp edge of the original profile')
     commandUIState.registerCommandInput(lipTopTrimmedInput)
-    creasesInput = binFeaturesGroup.children.addBoolValueInput(BIN_CREASES_INPUT_ID, 'Fold long walls for stiffness', True, '', commandUIState.getState(BIN_CREASES_INPUT_ID))
-    creasesInput.tooltip = ('Folds walls of hollow and shelled bins in along shallow creases, origami style, so tall long walls bow less. '
+    creasesInput = binFeaturesGroup.children.addBoolValueInput(BIN_CREASES_INPUT_ID, tr('Fold long walls for stiffness'), True, '', commandUIState.getState(BIN_CREASES_INPUT_ID))
+    creasesInput.tooltip = tr('Folds walls of hollow and shelled bins in along shallow creases, origami style, so tall long walls bow less. '
         'Bins from the min height with a wall from the min length get them. Walls are split into even panels up to the max panel length, '
         'walls shorter than a panel of the longest one stay flat. '
         'The scoop wall stays flat, the scoop braces it. A creased bin has a single compartment and a solid label tab')
     commandUIState.registerCommandInput(creasesInput)
     for (inputId, label, units, minimum) in [
-        (BIN_CREASE_DEPTH_INPUT_ID, 'Crease depth', defaultLengthUnits, 0.05),
-        (BIN_CREASE_MIN_LENGTH_INPUT_ID, 'Creased wall min length (u)', '', 1),
-        (BIN_CREASE_MAX_PANEL_LENGTH_INPUT_ID, 'Crease panel max length (u)', '', 1),
-        (BIN_CREASE_MIN_HEIGHT_INPUT_ID, 'Creased bin min height (u)', '', 1),
+        (BIN_CREASE_DEPTH_INPUT_ID, tr('Crease depth'), defaultLengthUnits, 0.05),
+        (BIN_CREASE_MIN_LENGTH_INPUT_ID, tr('Creased wall min length (u)'), '', 1),
+        (BIN_CREASE_MAX_PANEL_LENGTH_INPUT_ID, tr('Crease panel max length (u)'), '', 1),
+        (BIN_CREASE_MIN_HEIGHT_INPUT_ID, tr('Creased bin min height (u)'), '', 1),
     ]:
         creaseValueInput = binFeaturesGroup.children.addValueInput(inputId, label, units, adsk.core.ValueInput.createByReal(commandUIState.getState(inputId)))
         creaseValueInput.minimumValue = minimum
         creaseValueInput.isMinimumInclusive = True
         commandUIState.registerCommandInput(creaseValueInput)
 
-    compartmentsGroup: adsk.core.GroupCommandInput = inputs.addGroupCommandInput(BIN_COMPARTMENTS_GROUP_ID, 'Bin compartments')
+    compartmentsGroup: adsk.core.GroupCommandInput = inputs.addGroupCommandInput(BIN_COMPARTMENTS_GROUP_ID, tr('Bin compartments'))
     compartmentsGroup.isExpanded = commandUIState.getState(BIN_COMPARTMENTS_GROUP_ID)
     commandUIState.registerCommandInput(compartmentsGroup)
     compartmentsGridBrowser = compartmentsGroup.children.addBrowserCommandInput(BIN_COMPARTMENTS_GRID_BROWSER_ID, '', COMPARTMENTS_HTML_URL, 30, 30)
     compartmentsGridBrowser.isFullWidth = True
     commandUIState.registerCommandInput(compartmentsGridBrowser)
-    showLayoutInput = compartmentsGroup.children.addBoolValueInput(BIN_COMPARTMENTS_SHOW_LAYOUT_ID, 'Edit compartment layout', True, '', commandUIState.getState(BIN_COMPARTMENTS_SHOW_LAYOUT_ID))
-    showLayoutInput.tooltip = 'Shows a drawing of the compartment grid to merge cells into larger compartments and give each its own label and depth. Unticking it resets the compartments to the uniform grid'
+    showLayoutInput = compartmentsGroup.children.addBoolValueInput(BIN_COMPARTMENTS_SHOW_LAYOUT_ID, tr('Edit compartment layout'), True, '', commandUIState.getState(BIN_COMPARTMENTS_SHOW_LAYOUT_ID))
+    showLayoutInput.tooltip = tr('Shows a drawing of the compartment grid to merge cells into larger compartments and give each its own label and depth. Unticking it resets the compartments to the uniform grid')
     commandUIState.registerCommandInput(showLayoutInput)
     compartmentsBrowser = compartmentsGroup.children.addBrowserCommandInput(BIN_COMPARTMENTS_BROWSER_ID, '', COMPARTMENTS_HTML_URL, 270, 270)
     compartmentsBrowser.isFullWidth = True
     compartmentsBrowser.isVisible = commandUIState.getState(BIN_COMPARTMENTS_SHOW_LAYOUT_ID)
     commandUIState.registerCommandInput(compartmentsBrowser)
     # with the compartments it divides, the id stays so saved defaults keep the setting
-    dividersToTopInput = compartmentsGroup.children.addBoolValueInput(BIN_DIVIDERS_TO_TOP_INPUT_ID, 'Dividers up to the top on grid lines', True, '', commandUIState.getState(BIN_DIVIDERS_TO_TOP_INPUT_ID))
-    dividersToTopInput.tooltip = ('Compartment dividers lying on a grid line go up to the top of the lip and run out in its profile, '
+    dividersToTopInput = compartmentsGroup.children.addBoolValueInput(BIN_DIVIDERS_TO_TOP_INPUT_ID, tr('Dividers up to the top on grid lines'), True, '', commandUIState.getState(BIN_DIVIDERS_TO_TOP_INPUT_ID))
+    dividersToTopInput.tooltip = tr('Compartment dividers lying on a grid line go up to the top of the lip and run out in its profile, '
         'the feet of a bin stacked on top have a groove there. Dividers between grid lines stay below the lip. '
         'Hollow bins with a lip and more than one compartment only')
     commandUIState.registerCommandInput(dividersToTopInput)
 
-    binScoopGroup = compartmentsGroup.children.addGroupCommandInput(BIN_SCOOP_GROUP_ID, 'Scoop')
+    binScoopGroup = compartmentsGroup.children.addGroupCommandInput(BIN_SCOOP_GROUP_ID, tr('Scoop'))
     binScoopGroup.isExpanded = commandUIState.getState(BIN_SCOOP_GROUP_ID)
     commandUIState.registerCommandInput(binScoopGroup)
     # one per wall (round 48, idea of upstream issue #140 by teateatea), every compartment gets a scoop at each
     for (inputId, title, tooltip) in [
-        (BIN_HAS_SCOOP_INPUT_ID, 'Front (along bin width)', 'A scoop along the front wall of every compartment'),
-        (BIN_HAS_SCOOP_BACK_INPUT_ID, 'Back (along bin width)', 'A scoop along the back wall of every compartment. Locked while the label tab is on, the tab sits on the back wall'),
-        (BIN_HAS_SCOOP_LEFT_INPUT_ID, 'Left (along bin length)', 'A scoop along the left wall of every compartment'),
-        (BIN_HAS_SCOOP_RIGHT_INPUT_ID, 'Right (along bin length)', 'A scoop along the right wall of every compartment'),
+        (BIN_HAS_SCOOP_INPUT_ID, tr('Front (along bin width)'), tr('A scoop along the front wall of every compartment')),
+        (BIN_HAS_SCOOP_BACK_INPUT_ID, tr('Back (along bin width)'), tr('A scoop along the back wall of every compartment. Locked while the label tab is on, the tab sits on the back wall')),
+        (BIN_HAS_SCOOP_LEFT_INPUT_ID, tr('Left (along bin length)'), tr('A scoop along the left wall of every compartment')),
+        (BIN_HAS_SCOOP_RIGHT_INPUT_ID, tr('Right (along bin length)'), tr('A scoop along the right wall of every compartment')),
     ]:
         scoopWallInput = binScoopGroup.children.addBoolValueInput(inputId, title, True, '', commandUIState.getState(inputId))
         scoopWallInput.tooltip = tooltip
         commandUIState.registerCommandInput(scoopWallInput)
-    binScoopMaxRadiusInput = binScoopGroup.children.addValueInput(BIN_SCOOP_MAX_RADIUS_INPUT_ID, 'Scoop max radius (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_SCOOP_MAX_RADIUS_INPUT_ID)))
+    binScoopMaxRadiusInput = binScoopGroup.children.addValueInput(BIN_SCOOP_MAX_RADIUS_INPUT_ID, tr('Scoop max radius (mm)'), defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_SCOOP_MAX_RADIUS_INPUT_ID)))
     commandUIState.registerCommandInput(binScoopMaxRadiusInput)
     binScoopMaxRadiusInput.isEnabled = anyScoopWall()
 
-    binTabFeaturesGroup = compartmentsGroup.children.addGroupCommandInput(BIN_TAB_FEATURES_GROUP_ID, 'Label tab')
+    binTabFeaturesGroup = compartmentsGroup.children.addGroupCommandInput(BIN_TAB_FEATURES_GROUP_ID, tr('Label tab'))
     binTabFeaturesGroup.isExpanded = commandUIState.getState(BIN_TAB_FEATURES_GROUP_ID)
     commandUIState.registerCommandInput(binTabFeaturesGroup)
-    generateTabCheckboxinput = binTabFeaturesGroup.children.addBoolValueInput(BIN_HAS_TAB_INPUT_ID, 'Add label tab (along bin width)', True, '', commandUIState.getState(BIN_HAS_TAB_INPUT_ID))
+    generateTabCheckboxinput = binTabFeaturesGroup.children.addBoolValueInput(BIN_HAS_TAB_INPUT_ID, tr('Add label tab (along bin width)'), True, '', commandUIState.getState(BIN_HAS_TAB_INPUT_ID))
     commandUIState.registerCommandInput(generateTabCheckboxinput)
-    binTabLengthInput = binTabFeaturesGroup.children.addValueInput(BIN_TAB_LENGTH_INPUT_ID, 'Tab length (u)', '', adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_TAB_LENGTH_INPUT_ID)))
+    binTabLengthInput = binTabFeaturesGroup.children.addValueInput(BIN_TAB_LENGTH_INPUT_ID, tr('Tab length (u)'), '', adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_TAB_LENGTH_INPUT_ID)))
     commandUIState.registerCommandInput(binTabLengthInput)
-    binTabWidthInput = binTabFeaturesGroup.children.addValueInput(BIN_TAB_WIDTH_INPUT_ID, 'Tab width (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_TAB_WIDTH_INPUT_ID)))
+    binTabWidthInput = binTabFeaturesGroup.children.addValueInput(BIN_TAB_WIDTH_INPUT_ID, tr('Tab width (mm)'), defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_TAB_WIDTH_INPUT_ID)))
     commandUIState.registerCommandInput(binTabWidthInput)
-    binTabPostionInput = binTabFeaturesGroup.children.addValueInput(BIN_TAB_POSITION_INPUT_ID, 'Tab offset (u)', '', adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_TAB_POSITION_INPUT_ID)))
+    binTabPostionInput = binTabFeaturesGroup.children.addValueInput(BIN_TAB_POSITION_INPUT_ID, tr('Tab offset (u)'), '', adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_TAB_POSITION_INPUT_ID)))
     commandUIState.registerCommandInput(binTabPostionInput)
-    tabObverhangAngleInput = binTabFeaturesGroup.children.addValueInput(BIN_TAB_ANGLE_INPUT_ID, 'Tab overhang angle', 'deg', adsk.core.ValueInput.createByString(str(commandUIState.getState(BIN_TAB_ANGLE_INPUT_ID))))
+    tabObverhangAngleInput = binTabFeaturesGroup.children.addValueInput(BIN_TAB_ANGLE_INPUT_ID, tr('Tab overhang angle'), 'deg', adsk.core.ValueInput.createByString(str(commandUIState.getState(BIN_TAB_ANGLE_INPUT_ID))))
     tabObverhangAngleInput.minimumValue = math.radians(30)
     tabObverhangAngleInput.isMinimumInclusive = True
     tabObverhangAngleInput.maximumValue = math.radians(65)
     tabObverhangAngleInput.isMaximumInclusive = True
     commandUIState.registerCommandInput(tabObverhangAngleInput)
-    tabTopAngleInput = binTabFeaturesGroup.children.addValueInput(BIN_TAB_TOP_ANGLE_INPUT_ID, 'Tab top angle', 'deg', adsk.core.ValueInput.createByString(str(commandUIState.getState(BIN_TAB_TOP_ANGLE_INPUT_ID))))
-    tabTopAngleInput.tooltip = 'Tilts the tab top down towards the front, so the label faces the front of the bin'
+    tabTopAngleInput = binTabFeaturesGroup.children.addValueInput(BIN_TAB_TOP_ANGLE_INPUT_ID, tr('Tab top angle'), 'deg', adsk.core.ValueInput.createByString(str(commandUIState.getState(BIN_TAB_TOP_ANGLE_INPUT_ID))))
+    tabTopAngleInput.tooltip = tr('Tilts the tab top down towards the front, so the label faces the front of the bin')
     tabTopAngleInput.minimumValue = 0
     tabTopAngleInput.isMinimumInclusive = True
     tabTopAngleInput.maximumValue = math.radians(45)
     tabTopAngleInput.isMaximumInclusive = True
     commandUIState.registerCommandInput(tabTopAngleInput)
-    tabTopOffsetInput = binTabFeaturesGroup.children.addValueInput(BIN_TAB_TOP_OFFSET_INPUT_ID, 'Tab top offset (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_TAB_TOP_OFFSET_INPUT_ID)))
-    tabTopOffsetInput.tooltip = 'How far the tab is below the top of the bin, up to 2mm, the label goes down with it. Dividers between compartments are lowered as much'
+    tabTopOffsetInput = binTabFeaturesGroup.children.addValueInput(BIN_TAB_TOP_OFFSET_INPUT_ID, tr('Tab top offset (mm)'), defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_TAB_TOP_OFFSET_INPUT_ID)))
+    tabTopOffsetInput.tooltip = tr('How far the tab is below the top of the bin, up to 2mm, the label goes down with it. Dividers between compartments are lowered as much')
     tabTopOffsetInput.minimumValue = 0
     tabTopOffsetInput.isMinimumInclusive = True
     tabTopOffsetInput.maximumValue = 0.2
     tabTopOffsetInput.isMaximumInclusive = True
     commandUIState.registerCommandInput(tabTopOffsetInput)
-    tabHollowInput = binTabFeaturesGroup.children.addBoolValueInput(BIN_TAB_HOLLOW_INPUT_ID, 'Hollow tab', True, '', commandUIState.getState(BIN_TAB_HOLLOW_INPUT_ID))
-    tabHollowInput.tooltip = 'Shells the tab with the wall thickness. With a single compartment it is opened through the back wall of the bin, with more compartments it is left closed. On by default for shelled bins'
+    tabHollowInput = binTabFeaturesGroup.children.addBoolValueInput(BIN_TAB_HOLLOW_INPUT_ID, tr('Hollow tab'), True, '', commandUIState.getState(BIN_TAB_HOLLOW_INPUT_ID))
+    tabHollowInput.tooltip = tr('Shells the tab with the wall thickness. With a single compartment it is opened through the back wall of the bin, with more compartments it is left closed. On by default for shelled bins')
     commandUIState.registerCommandInput(tabHollowInput)
-    tabHollowSidesInput = binTabFeaturesGroup.children.addBoolValueInput(BIN_TAB_HOLLOW_SIDES_INPUT_ID, 'Open through side walls', True, '', commandUIState.getState(BIN_TAB_HOLLOW_SIDES_INPUT_ID))
-    tabHollowSidesInput.tooltip = 'Also opens a hollow tab through the side walls of the bin where it runs into them, not only through the back wall. Only for a single compartment'
+    tabHollowSidesInput = binTabFeaturesGroup.children.addBoolValueInput(BIN_TAB_HOLLOW_SIDES_INPUT_ID, tr('Open through side walls'), True, '', commandUIState.getState(BIN_TAB_HOLLOW_SIDES_INPUT_ID))
+    tabHollowSidesInput.tooltip = tr('Also opens a hollow tab through the side walls of the bin where it runs into them, not only through the back wall. Only for a single compartment')
     commandUIState.registerCommandInput(tabHollowSidesInput)
-    labelTextInput = binTabFeaturesGroup.children.addStringValueInput(BIN_TAB_LABEL_TEXT_INPUT_ID, 'Label text', commandUIState.getState(BIN_TAB_LABEL_TEXT_INPUT_ID))
-    labelTextInput.tooltip = 'Text on every compartment label, compartments in the drawing above can have their own. Each label gets a text parameter to edit it later'
+    labelTextInput = binTabFeaturesGroup.children.addStringValueInput(BIN_TAB_LABEL_TEXT_INPUT_ID, tr('Label text'), commandUIState.getState(BIN_TAB_LABEL_TEXT_INPUT_ID))
+    labelTextInput.tooltip = tr('Text on every compartment label, compartments in the drawing above can have their own. Each label gets a text parameter to edit it later')
     commandUIState.registerCommandInput(labelTextInput)
-    labelIconInput = binTabFeaturesGroup.children.addDropDownCommandInput(BIN_TAB_LABEL_ICON_INPUT_ID, 'Label icon', adsk.core.DropDownStyles.LabeledIconDropDownStyle)
+    labelIconInput = binTabFeaturesGroup.children.addDropDownCommandInput(BIN_TAB_LABEL_ICON_INPUT_ID, tr('Label icon'), adsk.core.DropDownStyles.LabeledIconDropDownStyle)
     addIconItems(labelIconInput, [labelGenerator.LABEL_ICON_NONE], commandUIState.getState(BIN_TAB_LABEL_ICON_INPUT_ID))
     commandUIState.registerCommandInput(labelIconInput)
-    labelStyleInput = binTabFeaturesGroup.children.addDropDownCommandInput(BIN_TAB_LABEL_STYLE_INPUT_ID, 'Label style', adsk.core.DropDownStyles.TextListDropDownStyle)
-    labelStyleInput.tooltip = 'Outline splits the tab face along the label so a slicer can color it, engraved cuts it in, embossed raises it from a lowered tab. Cullenect cuts a socket for exchangeable Cullenect label inserts (CullenJWebb) instead, the tab is widened to at least 14 mm and kept flat'
+    labelStyleInput = binTabFeaturesGroup.children.addDropDownCommandInput(BIN_TAB_LABEL_STYLE_INPUT_ID, tr('Label style'), adsk.core.DropDownStyles.TextListDropDownStyle)
+    labelStyleInput.tooltip = tr('Outline splits the tab face along the label so a slicer can color it, engraved cuts it in, embossed raises it from a lowered tab. Cullenect cuts a socket for exchangeable Cullenect label inserts (CullenJWebb) instead, the tab is widened to at least 14 mm and kept flat')
     for style in labelGenerator.LABEL_STYLES:
-        labelStyleInput.listItems.add(style, style == commandUIState.getState(BIN_TAB_LABEL_STYLE_INPUT_ID))
+        dropdowns.addItem(labelStyleInput, style, style == commandUIState.getState(BIN_TAB_LABEL_STYLE_INPUT_ID))
     commandUIState.registerCommandInput(labelStyleInput)
-    labelBoldInput = binTabFeaturesGroup.children.addBoolValueInput(BIN_TAB_LABEL_BOLD_INPUT_ID, 'Bold label text', True, '', commandUIState.getState(BIN_TAB_LABEL_BOLD_INPUT_ID))
+    labelBoldInput = binTabFeaturesGroup.children.addBoolValueInput(BIN_TAB_LABEL_BOLD_INPUT_ID, tr('Bold label text'), True, '', commandUIState.getState(BIN_TAB_LABEL_BOLD_INPUT_ID))
     commandUIState.registerCommandInput(labelBoldInput)
-    labelColorInput = binTabFeaturesGroup.children.addDropDownCommandInput(BIN_TAB_LABEL_COLOR_INPUT_ID, 'Label color', adsk.core.DropDownStyles.TextListDropDownStyle)
-    labelColorInput.tooltip = 'Keeps the label as bodies of its own in this color, for printing it in another filament: raised letters are not joined to the bin, engraved and outline ones fill their cut flush. None joins or cuts them as before'
+    labelColorInput = binTabFeaturesGroup.children.addDropDownCommandInput(BIN_TAB_LABEL_COLOR_INPUT_ID, tr('Label color'), adsk.core.DropDownStyles.TextListDropDownStyle)
+    labelColorInput.tooltip = tr('Keeps the label as bodies of its own in this color, for printing it in another filament: raised letters are not joined to the bin, engraved and outline ones fill their cut flush. None joins or cuts them as before')
     labelColorChoice = commandUIState.getState(BIN_TAB_LABEL_COLOR_INPUT_ID)
     if labelColorChoice not in labelColors.CHOICES:
         labelColorChoice = labelColors.NO_COLOR_CHOICE
         commandUIState.updateValue(BIN_TAB_LABEL_COLOR_INPUT_ID, labelColorChoice)
     for choice in labelColors.CHOICES:
-        labelColorInput.listItems.add(choice, choice == labelColorChoice)
+        dropdowns.addItem(labelColorInput, choice, choice == labelColorChoice)
     commandUIState.registerCommandInput(labelColorInput)
-    labelCustomColorInput = binTabFeaturesGroup.children.addStringValueInput(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID, 'Custom label color', commandUIState.getState(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID))
-    labelCustomColorInput.tooltip = '#rrggbb, e.g. #D02020'
+    labelCustomColorInput = binTabFeaturesGroup.children.addStringValueInput(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID, tr('Custom label color'), commandUIState.getState(BIN_TAB_LABEL_CUSTOM_COLOR_INPUT_ID))
+    labelCustomColorInput.tooltip = tr('#rrggbb, e.g. #D02020')
     commandUIState.registerCommandInput(labelCustomColorInput)
-    cullenectOffsetInput = binTabFeaturesGroup.children.addValueInput(BIN_TAB_CULLENECT_OFFSET_INPUT_ID, 'Socket play (mm)', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_TAB_CULLENECT_OFFSET_INPUT_ID)))
-    cullenectOffsetInput.tooltip = 'How much larger the Cullenect socket is than the insert, in width and height. 0.3 mm like Cullenect, the inserts themselves are made to size'
+    cullenectOffsetInput = binTabFeaturesGroup.children.addValueInput(BIN_TAB_CULLENECT_OFFSET_INPUT_ID, tr('Socket play (mm)'), defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_TAB_CULLENECT_OFFSET_INPUT_ID)))
+    cullenectOffsetInput.tooltip = tr('How much larger the Cullenect socket is than the insert, in width and height. 0.3 mm like Cullenect, the inserts themselves are made to size')
     cullenectOffsetInput.minimumValue = 0
     cullenectOffsetInput.isMinimumInclusive = True
     cullenectOffsetInput.maximumValue = 0.1
@@ -1129,54 +1149,54 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
             input.isEnabled = commandUIState.getState(BIN_HAS_TAB_INPUT_ID)
     updateTabHollowSidesInput(commandUIState.getState(BIN_HAS_TAB_INPUT_ID))
 
-    baseFeaturesGroup = inputs.addGroupCommandInput(BIN_BASE_FEATURES_GROUP_ID, 'Base interface features')
+    baseFeaturesGroup = inputs.addGroupCommandInput(BIN_BASE_FEATURES_GROUP_ID, tr('Base interface features'))
     baseFeaturesGroup.isExpanded = commandUIState.getState(BIN_BASE_FEATURES_GROUP_ID)
     commandUIState.registerCommandInput(baseFeaturesGroup)
-    generateBaseCheckboxInput = baseFeaturesGroup.children.addBoolValueInput(BIN_GENERATE_BASE_INPUT_ID, 'Generate base', True, '', commandUIState.getState(BIN_GENERATE_BASE_INPUT_ID))
+    generateBaseCheckboxInput = baseFeaturesGroup.children.addBoolValueInput(BIN_GENERATE_BASE_INPUT_ID, tr('Generate base'), True, '', commandUIState.getState(BIN_GENERATE_BASE_INPUT_ID))
     commandUIState.registerCommandInput(generateBaseCheckboxInput)
-    jointOriginsCheckboxInput = baseFeaturesGroup.children.addBoolValueInput(BIN_JOINT_ORIGINS_INPUT_ID, 'Add joint origins', True, '', commandUIState.getState(BIN_JOINT_ORIGINS_INPUT_ID))
-    jointOriginsCheckboxInput.tooltip = 'A joint origin at the bottom center of every foot, to joint the bin into baseplate sockets'
+    jointOriginsCheckboxInput = baseFeaturesGroup.children.addBoolValueInput(BIN_JOINT_ORIGINS_INPUT_ID, tr('Add joint origins'), True, '', commandUIState.getState(BIN_JOINT_ORIGINS_INPUT_ID))
+    jointOriginsCheckboxInput.tooltip = tr('A joint origin at the bottom center of every foot, to joint the bin into baseplate sockets')
     commandUIState.registerCommandInput(jointOriginsCheckboxInput)
-    generateScrewHolesCheckboxInput = baseFeaturesGroup.children.addBoolValueInput(BIN_SCREW_HOLES_INPUT_ID, 'Add screw holes', True, '', commandUIState.getState(BIN_SCREW_HOLES_INPUT_ID))
+    generateScrewHolesCheckboxInput = baseFeaturesGroup.children.addBoolValueInput(BIN_SCREW_HOLES_INPUT_ID, tr('Add screw holes'), True, '', commandUIState.getState(BIN_SCREW_HOLES_INPUT_ID))
     commandUIState.registerCommandInput(generateScrewHolesCheckboxInput)
-    screwSizeInput = baseFeaturesGroup.children.addValueInput(BIN_SCREW_DIAMETER_INPUT, 'Screw hole diameter', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_SCREW_DIAMETER_INPUT)))
+    screwSizeInput = baseFeaturesGroup.children.addValueInput(BIN_SCREW_DIAMETER_INPUT, tr('Screw hole diameter'), defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_SCREW_DIAMETER_INPUT)))
     screwSizeInput.minimumValue = 0.1
     screwSizeInput.isMinimumInclusive = True
     screwSizeInput.maximumValue = 1
     screwSizeInput.isMaximumInclusive = True
     commandUIState.registerCommandInput(screwSizeInput)
-    generateMagnetSocketCheckboxInput = baseFeaturesGroup.children.addBoolValueInput(BIN_MAGNET_CUTOUTS_INPUT_ID, 'Add magnet sockets', True, '', commandUIState.getState(BIN_MAGNET_CUTOUTS_INPUT_ID))
+    generateMagnetSocketCheckboxInput = baseFeaturesGroup.children.addBoolValueInput(BIN_MAGNET_CUTOUTS_INPUT_ID, tr('Add magnet sockets'), True, '', commandUIState.getState(BIN_MAGNET_CUTOUTS_INPUT_ID))
     commandUIState.registerCommandInput(generateMagnetSocketCheckboxInput)
-    generateMagnetsTabCheckboxInput = baseFeaturesGroup.children.addBoolValueInput(BIN_MAGNET_CUTOUTS_TABS_INPUT_ID, 'Add tabs to magnet sockets', True, '', commandUIState.getState(BIN_MAGNET_CUTOUTS_TABS_INPUT_ID))
+    generateMagnetsTabCheckboxInput = baseFeaturesGroup.children.addBoolValueInput(BIN_MAGNET_CUTOUTS_TABS_INPUT_ID, tr('Add tabs to magnet sockets'), True, '', commandUIState.getState(BIN_MAGNET_CUTOUTS_TABS_INPUT_ID))
     commandUIState.registerCommandInput(generateMagnetsTabCheckboxInput)
-    magnetDiameterInput = baseFeaturesGroup.children.addValueInput(BIN_MAGNET_DIAMETER_INPUT, 'Magnet cutout diameter', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_MAGNET_DIAMETER_INPUT)))
+    magnetDiameterInput = baseFeaturesGroup.children.addValueInput(BIN_MAGNET_DIAMETER_INPUT, tr('Magnet cutout diameter'), defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_MAGNET_DIAMETER_INPUT)))
     magnetDiameterInput.minimumValue = 0.1
     magnetDiameterInput.isMinimumInclusive = True
     magnetDiameterInput.maximumValue = 1
     magnetDiameterInput.isMaximumInclusive = True
     commandUIState.registerCommandInput(magnetDiameterInput)
     magnetSizeInput.addMagnetSizeInput(baseFeaturesGroup.children, BIN_MAGNET_SIZE_INPUT, commandUIState, magnetSizes.ALL_CHOICES)
-    magnetHeightInput = baseFeaturesGroup.children.addValueInput(BIN_MAGNET_HEIGHT_INPUT, 'Magnet cutout depth', defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_MAGNET_HEIGHT_INPUT)))
+    magnetHeightInput = baseFeaturesGroup.children.addValueInput(BIN_MAGNET_HEIGHT_INPUT, tr('Magnet cutout depth'), defaultLengthUnits, adsk.core.ValueInput.createByReal(commandUIState.getState(BIN_MAGNET_HEIGHT_INPUT)))
     magnetHeightInput.minimumValue = 0.1
     magnetHeightInput.isMinimumInclusive = True
     commandUIState.registerCommandInput(magnetHeightInput)
 
-    userChangesGroup = inputs.addGroupCommandInput(USER_CHANGES_GROUP_ID, 'Changes')
+    userChangesGroup = inputs.addGroupCommandInput(USER_CHANGES_GROUP_ID, tr('Inputs'))
     userChangesGroup.isExpanded = commandUIState.getState(USER_CHANGES_GROUP_ID)
     commandUIState.registerCommandInput(userChangesGroup)
     addDefaultsButtonRow(userChangesGroup.children, INPUT_CHANGES_BUTTONS_BROWSER)
     addButtonRow(userChangesGroup.children, CONFIG_BUTTONS_BROWSER)
 
-    previewGroup = inputs.addGroupCommandInput(PREVIEW_GROUP_ID, 'Preview')
+    previewGroup = inputs.addGroupCommandInput(PREVIEW_GROUP_ID, tr('Preview'))
     previewGroup.isExpanded = commandUIState.getState(PREVIEW_GROUP_ID)
     commandUIState.registerCommandInput(userChangesGroup)
-    showPreviewCheckboxInput =  previewGroup.children.addBoolValueInput(SHOW_PREVIEW_INPUT, 'Show auto update preview (slow)', True, '', False)
+    showPreviewCheckboxInput =  previewGroup.children.addBoolValueInput(SHOW_PREVIEW_INPUT, tr('Show auto update preview (slow)'), True, '', False)
     commandUIState.registerCommandInput(showPreviewCheckboxInput)
-    showPreviewManual = previewGroup.children.addBoolValueInput(SHOW_PREVIEW_MANUAL_INPUT, 'Update preview once', False, '', False)
+    showPreviewManual = previewGroup.children.addBoolValueInput(SHOW_PREVIEW_MANUAL_INPUT, tr('Update preview once'), False, '', False)
     showPreviewManual.isFullWidth = True
     commandUIState.registerCommandInput(showPreviewManual)
     # not registered with the dialog state, it's neither remembered nor part of the generated settings
-    previewGroup.children.addTextBoxCommandInput(PREVIEW_TIME_INPUT, 'Last preview', 'None yet', 1, True)
+    previewGroup.children.addTextBoxCommandInput(PREVIEW_TIME_INPUT, tr('Last preview'), tr('None yet'), 1, True)
 
     refreshUi()
 
@@ -1220,7 +1240,7 @@ def command_execute(args: adsk.core.CommandEventArgs):
     generateBin(args, False)
     # a new bin or baseplate switches a part design to hybrid for its component of its own, that can't be undone (round 13)
     if wasPart and des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
-        ui.messageBox(HYBRID_SWITCH_MESSAGE, CMD_NAME)
+        ui.messageBox(HYBRID_SWITCH_MESSAGE, CMD_TITLE)
 
 # This event handler is called when the command needs to compute a new preview in the graphics window.
 def command_preview(args: adsk.core.CommandEventArgs):
@@ -1239,10 +1259,11 @@ def command_preview(args: adsk.core.CommandEventArgs):
             commandUIState.onInputUpdate(showPreviewManual)
     else:
         args.executeFailed = True
-        args.executeFailedMessage = "Some inputs are invalid, unable to generate preview"
+        args.executeFailedMessage = tr("Some inputs are invalid, unable to generate preview")
 
 def showPreviewTime(inputs: adsk.core.CommandInputs, seconds: float, isValid: bool):
-    inputs.itemById(PREVIEW_TIME_INPUT).text = f'{seconds:.2f} s{textStyles.previewNote(textStyles.notes())}' if isValid else f'failed after {seconds:.2f} s'
+    secondsText = number(f'{seconds:.2f}')
+    inputs.itemById(PREVIEW_TIME_INPUT).text = f'{secondsText} s{textStyles.previewNote(textStyles.notes())}' if isValid else tr('failed after {seconds} s', seconds=secondsText)
 
 def command_input_changed(args: adsk.core.InputChangedEventArgs):
     changed_input = args.input
@@ -1345,7 +1366,7 @@ def pageHandlers(browserId: str, command: adsk.core.Command) -> dict[str, browse
         return compartmentsDrawingData(browserId)
 
     def onLoadConfig(text: str, fileName: str):
-        state = readConfig(text, f'Loaded "{fileName}"')
+        state = readConfig(text, tr('Loaded "{file}"', file=fileName))
         if state is None:
             return
         loadedConfigs.append(fileName)
@@ -1381,9 +1402,9 @@ def command_destroy(args: adsk.core.CommandEventArgs):
         selection.showBuiltBodies(builtBodies)
         if len(rebuildNotes) > 0:
             ui.messageBox(
-                'The bin was rebuilt. These features after it need a look, ones using a face or an edge of the old bin '
-                'need them picked again:\n\n' + '\n'.join(rebuildNotes),
-                CMD_NAME,
+                tr('The bin was rebuilt. These features after it need a look, ones using a face or an edge of the old bin '
+                    'need them picked again:\n\n') + '\n'.join(rebuildNotes),
+                CMD_TITLE,
                 adsk.core.MessageBoxButtonTypes.OKButtonType,
                 adsk.core.MessageBoxIconTypes.WarningIconType,
             )
@@ -1393,7 +1414,7 @@ def command_destroy(args: adsk.core.CommandEventArgs):
         # builds the label anew and fits its text (round 58)
         hint = textStyles.hintText(textStyles.notes(), suggestHeavy=False, isBinLabel=True)
         if hint is not None:
-            ui.messageBox(hint, CMD_NAME)
+            ui.messageBox(hint, CMD_TITLE)
 
 def onChangeValidate():
     global commandUIState
@@ -1498,14 +1519,14 @@ def snapshotSettings(inputs: adsk.core.CommandInputs) -> list[dict]:
         SETTINGS_TITLE,
     )
     # the drawing isn't an input with a value, it holds the grid size too
-    items = [['Grid', f'{commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID)} x {commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID)}']]
+    items = [[tr('Grid'), f'{commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_WIDTH_ID)} x {commandUIState.getState(BIN_COMPARTMENTS_GRID_BASE_LENGTH_ID)}']]
     if commandUIState.getState(BIN_COMPARTMENTS_SHOW_LAYOUT_ID) and compartmentLayout.isCustomized(compartmentPockets):
-        items.extend([f'Compartment {index}', compartmentLayout.describe(item)] for (index, item) in enumerate(compartmentPockets, 1))
-    settings.append({'title': 'Compartments', 'items': items})
+        items.extend([tr('Compartment {index}', index=index), compartmentLayout.describe(item)] for (index, item) in enumerate(compartmentPockets, 1))
+    settings.append({'title': tr('Compartments'), 'items': items})
     if hasCullenectSockets():
         # the dimensions table isn't kept, the insert widths are needed later to make inserts that fit
         # the tab as built, widened for the socket (p32), and each socket size with how many of it (p33)
-        tabWidth = [['Label tab width', f'{round(cullenectTabWidth() * 10, 2):g} mm (built)']]
+        tabWidth = [[tr('Label tab width'), tr('{width} mm (built)', width=number(round(cullenectTabWidth() * 10, 2)))]]
         settings.append({'title': 'Cullenect', 'items': tabWidth + cullenect.socketCounts(*cullenectSocketLayout())})
     if isShaped():
         # the drawing as text, front row last like it's shown
@@ -1515,7 +1536,7 @@ def snapshotSettings(inputs: adsk.core.CommandInputs) -> list[dict]:
             ''.join('#' if (x, y) in cells else '.' for x in range(columnCount))
             for y in reversed(range(rowCount))
         ]
-        settings.append({'title': 'Shape', 'items': [[f'Row {index}', row] for (index, row) in zip(reversed(range(1, len(rows) + 1)), rows)]})
+        settings.append({'title': tr('Shape'), 'items': [[tr('Row {index}', index=index), row] for (index, row) in zip(reversed(range(1, len(rows) + 1)), rows)]})
     return settings
 
 def reportConfig(state: InputState | None) -> str | None:
@@ -1642,7 +1663,7 @@ def applyPendingConfig():
     global pendingConfig
     if pendingConfig is None:
         return
-    state = readConfig(configJson.configText(configJson.GENERATOR_BIN, pendingConfig), 'Rebuilding' if rebuildBodyToken is not None else 'Cloned', isFromTag=True)
+    state = readConfig(configJson.configText(configJson.GENERATOR_BIN, pendingConfig), tr('Rebuilding') if rebuildBodyToken is not None else tr('Cloned'), isFromTag=True)
     pendingConfig = None
     if state is not None:
         applyInputsState(state)
@@ -1672,14 +1693,14 @@ def generateBin(args: adsk.core.CommandEventArgs, isPreview: bool):
         futil.log(f'{CMD_NAME} {binBuilder.binDisplayName(state)} generated in {time.perf_counter() - startTime:.3f}s')
     except UnsupportedDesignTypeException as err:
         args.executeFailed = True
-        args.executeFailedMessage = 'Design type is unsupported. Projects with disabled design history are unsupported, please enable timeline feature to proceed.'
+        args.executeFailedMessage = tr('Design type is unsupported. Projects with disabled design history are unsupported, please enable timeline feature to proceed.')
         # a failed build has no label to hint at, like rebuildNotes it only keeps what a build that went through noted
         textStyles.clearNotes()
         return False
     except Exception as err:
         args.executeFailed = True
         textStyles.clearNotes()
-        args.executeFailedMessage = f'{html.escape(errorReport.errorMessage(err))}<br>See the {errorPalette.PALETTE_TITLE} panel to copy a report of it'
+        args.executeFailedMessage = tr('{message}<br>See the {title} panel to copy a report of it', message=html.escape(errorReport.errorMessage(err)), title=errorPalette.PALETTE_TITLE)
         commonUtils.fileLog(f'{CMD_NAME} Error occurred, {err}, {getErrorMessage()}')
         errorPalette.show(f'{CMD_NAME} failed', err, reportConfig(state), buildWorkflow(isPreview), rebuiltConfig())
         return False

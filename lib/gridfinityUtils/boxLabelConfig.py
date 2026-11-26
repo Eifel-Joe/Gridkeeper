@@ -8,13 +8,27 @@ Settings are by field name as configJson.stateToJson has them, the symbols by th
 
 import re
 
-from .predBoxLabelLayout import MAX_SYMBOLS, NO_SYMBOL, labelWidth, widthChoiceFor
+from .predBoxLabelLayout import MAX_SYMBOLS, NO_SYMBOL, labelWidth, widthChoiceFor, widthChoiceShown
+
+try:
+    from ..i18n import tr, number
+except ImportError:
+    # loaded on its own by a test or a tool, outside the add-in package: English
+    def tr(text, context=None, /, **values):
+        return text.format(**values) if values else text
+
+    def number(value):
+        return value if isinstance(value, str) else f'{value:g}'
 
 # the label's text parameters: the end of their name in the document (gfBoxLabel1_text1, kept as built in round 29),
 # the config field each holds and the label the tag gives it; a rebuild takes their values back into the settings, see
 # rebuildUtils.configWithParameters. One table: the names and the fields differ, a lookup of a name among the fields
 # failed every build (click test 17.11.2026, KeyError 'text1')
-TEXT_PARAMETERS = [('bigText', 'bigText', 'Large text'), ('text1', 'line1', 'Line 1'), ('text2', 'line2', 'Line 2')]
+# the labels, the settings window shows them translated (round 60)
+LABEL_BIG_TEXT = 'Large text'  # tr-value
+LABEL_LINE_1 = 'Line 1'  # tr-value
+LABEL_LINE_2 = 'Line 2'  # tr-value
+TEXT_PARAMETERS = [('bigText', 'bigText', LABEL_BIG_TEXT), ('text1', 'line1', LABEL_LINE_1), ('text2', 'line2', LABEL_LINE_2)]
 TEXT_PARAMETER_NAMES = [name for (name, _, _) in TEXT_PARAMETERS]
 PARAMETER_FIELDS = {label: field for (_, field, label) in TEXT_PARAMETERS}
 
@@ -61,10 +75,12 @@ def widthNote(jointName: str, labelCells: int | None, boxCells: int | None, plac
     fit = labelFit(labelCells, boxCells)
     if fit == FIT_SAME:
         return None
-    widths = f'{widthChoiceFor(labelCells)} against {widthChoiceFor(boxCells)} the box takes now'
+    widths = tr('{label} against {box} the box takes now', label=widthChoiceShown(labelCells), box=widthChoiceShown(boxCells))
     if fit == FIT_TOO_WIDE:
-        return f'{jointName}: the label is too wide for the box now ({widths}), it was laid {place} the box; rebuild the label with that width'
-    return f'{jointName}: the label is narrower than the holder now ({widths}), it stays in the holder; rebuild the label with that width'
+        if place == 'in front of':
+            return tr('{joint}: the label is too wide for the box now ({widths}), it was laid in front of the box; rebuild the label with that width', joint=jointName, widths=widths)
+        return tr('{joint}: the label is too wide for the box now ({widths}), it was laid beside the box; rebuild the label with that width', joint=jointName, widths=widths)
+    return tr('{joint}: the label is narrower than the holder now ({widths}), it stays in the holder; rebuild the label with that width', joint=jointName, widths=widths)
 
 
 def knownSymbols(symbols: list[str], names: list[str]) -> tuple[list[str], list[str]]:

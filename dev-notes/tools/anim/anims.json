@@ -5,21 +5,24 @@
    "cursor": [
     378,
     44
-   ]
+   ],
+   "captionDe": "Leicht"
   },
   {
    "caption": "Skeletonized",
    "cursor": [
     378,
     44
-   ]
+   ],
+   "captionDe": "Skelettiert"
   },
   {
    "caption": "Full",
    "cursor": [
     378,
     44
-   ]
+   ],
+   "captionDe": "Voll"
   }
  ],
  "baseplate-fill-area": [
@@ -28,35 +31,40 @@
    "cursor": [
     378,
     44
-   ]
+   ],
+   "captionDe": "Raster 2x3"
   },
   {
    "caption": "450x200 mm area, Prusa MK4",
    "cursor": [
     378,
     103
-   ]
+   ],
+   "captionDe": "Fläche 450x200 mm, Prusa MK4"
   },
   {
    "caption": "450x300 mm area",
    "cursor": [
     378,
     103
-   ]
+   ],
+   "captionDe": "Fläche 450x300 mm"
   },
   {
    "caption": "Prusa MINI",
    "cursor": [
     378,
     253
-   ]
+   ],
+   "captionDe": "Prusa MINI"
   },
   {
    "caption": "Prusa XL",
    "cursor": [
     378,
     253
-   ]
+   ],
+   "captionDe": "Prusa XL"
   }
  ],
  "baseplate-connection-holes": [
@@ -65,12 +73,22 @@
    "cursor": [
     216,
     102
+   ],
+   "captionDe": "Ohne Verbindungslöcher",
+   "cursorDe": [
+    178,
+    102
    ]
   },
   {
    "caption": "3.2 mm connection holes",
    "cursor": [
     216,
+    102
+   ],
+   "captionDe": "Verbindungslöcher 3,2 mm",
+   "cursorDe": [
+    178,
     102
    ]
   },
@@ -79,7 +97,8 @@
    "cursor": [
     378,
     131
-   ]
+   ],
+   "captionDe": "Verbindungslöcher 5 mm"
   }
  ],
  "bin-bottom-options": [
@@ -88,6 +107,11 @@
    "cursor": [
     194,
     103
+   ],
+   "captionDe": "Geschlossener Boden",
+   "cursorDe": [
+    188,
+    104
    ]
   },
   {
@@ -95,6 +119,11 @@
    "cursor": [
     194,
     103
+   ],
+   "captionDe": "Mit Schraubenbohrungen",
+   "cursorDe": [
+    188,
+    104
    ]
   },
   {
@@ -102,6 +131,11 @@
    "cursor": [
     194,
     164
+   ],
+   "captionDe": "Mit Magnetaussparungen",
+   "cursorDe": [
+    188,
+    165
    ]
   },
   {
@@ -109,6 +143,11 @@
    "cursor": [
     194,
     194
+   ],
+   "captionDe": "Kombiniert, mit Zuglaschen",
+   "cursorDe": [
+    188,
+    195
    ]
   }
  ],
@@ -118,6 +157,11 @@
    "cursor": [
     194,
     76
+   ],
+   "captionDe": "3x2 Fächer",
+   "cursorDe": [
+    188,
+    76
    ]
   },
   {
@@ -125,6 +169,11 @@
    "cursor": [
     212,
     239
+   ],
+   "captionDe": "Zusammengefasst",
+   "cursorDe": [
+    184,
+    186
    ]
   },
   {
@@ -132,6 +181,11 @@
    "cursor": [
     378,
     290
+   ],
+   "captionDe": "Beschriftet",
+   "cursorDe": [
+    378,
+    235
    ]
   }
  ],
@@ -141,6 +195,11 @@
    "cursor": [
     194,
     15
+   ],
+   "captionDe": "Glatte Wände",
+   "cursorDe": [
+    188,
+    14
    ]
   },
   {
@@ -148,6 +207,11 @@
    "cursor": [
     194,
     15
+   ],
+   "captionDe": "Eingefalzt",
+   "cursorDe": [
+    188,
+    14
    ]
   },
   {
@@ -155,7 +219,8 @@
    "cursor": [
     378,
     104
-   ]
+   ],
+   "captionDe": "Felder über 2 Einheiten"
   }
  ],
  "bin-features": [
@@ -164,28 +229,32 @@
    "cursor": [
     378,
     44
-   ]
+   ],
+   "captionDe": "2 breit"
   },
   {
    "caption": "3 wide",
    "cursor": [
     378,
     44
-   ]
+   ],
+   "captionDe": "3 breit"
   },
   {
    "caption": "Shelled",
    "cursor": [
     378,
     305
-   ]
+   ],
+   "captionDe": "Schale"
   },
   {
    "caption": "0.8 mm walls",
    "cursor": [
     378,
     335
-   ]
+   ],
+   "captionDe": "Wände 0,8 mm"
   }
  ],
  "bin-half-grid": [
@@ -194,12 +263,22 @@
    "cursor": [
     194,
     103
+   ],
+   "captionDe": "Ganze Füße",
+   "cursorDe": [
+    188,
+    103
    ]
   },
   {
    "caption": "Half grid",
    "cursor": [
     194,
+    103
+   ],
+   "captionDe": "Halbraster",
+   "cursorDe": [
+    188,
     103
    ]
   },
@@ -208,7 +287,8 @@
    "cursor": [
     378,
     44
-   ]
+   ],
+   "captionDe": "2,5 breit, eine Reihe halber Füße"
   }
  ],
  "bin-custom-shape": [
@@ -217,6 +297,11 @@
    "cursor": [
     194,
     164
+   ],
+   "captionDe": "Jede Zelle",
+   "cursorDe": [
+    188,
+    164
    ]
   },
   {
@@ -224,7 +309,8 @@
    "cursor": [
     269,
     266
-   ]
+   ],
+   "captionDe": "Zellen ausgelassen"
   }
  ],
  "bin-label-options": [
@@ -233,28 +319,32 @@
    "cursor": [
     378,
     16
-   ]
+   ],
+   "captionDe": "Leer"
   },
   {
    "caption": "Engraved text",
    "cursor": [
     378,
     16
-   ]
+   ],
+   "captionDe": "Eingravierter Text"
   },
   {
    "caption": "Engraved text and icon",
    "cursor": [
     378,
     46
-   ]
+   ],
+   "captionDe": "Eingravierter Text und Symbol"
   },
   {
    "caption": "Embossed text and icon",
    "cursor": [
     378,
     76
-   ]
+   ],
+   "captionDe": "Erhabener Text und Symbol"
   }
  ],
  "bin-label-tab-options": [
@@ -263,21 +353,24 @@
    "cursor": [
     378,
     73
-   ]
+   ],
+   "captionDe": "Volle Länge"
   },
   {
    "caption": "Single slot",
    "cursor": [
     378,
     73
-   ]
+   ],
+   "captionDe": "Ein Feld"
   },
   {
    "caption": "With offset",
    "cursor": [
     378,
     132
-   ]
+   ],
+   "captionDe": "Mit Versatz"
   }
  ],
  "bin-solid-tool": [
@@ -286,14 +379,16 @@
    "cursor": [
     378,
     305
-   ]
+   ],
+   "captionDe": "Hohl"
   },
   {
    "caption": "Solid",
    "cursor": [
     378,
     305
-   ]
+   ],
+   "captionDe": "Voll"
   },
   {
    "caption": "Solid, a tool cut into it",
@@ -301,7 +396,8 @@
     378,
     305
    ],
-   "dialog": "2-dialog.png"
+   "dialog": "2-dialog.png",
+   "captionDe": "Voll, mit eingeschnittenem Werkzeug"
   }
  ],
  "cullenect-pocket": [
@@ -310,20 +406,27 @@
    "cursor": [
     378,
     343
-   ]
+   ],
+   "captionDe": "Einfache Beschriftungslasche"
   },
   {
    "caption": "Cullenect pocket",
    "cursor": [
     378,
     343
-   ]
+   ],
+   "captionDe": "Cullenect-Aufnahme"
   },
   {
    "caption": "Pocket over 2 units",
    "cursor": [
     378,
     73
+   ],
+   "captionDe": "Aufnahme über 2 Einheiten",
+   "cursorDe": [
+    378,
+    42
    ]
   }
  ],
@@ -333,28 +436,32 @@
    "cursor": [
     328,
     44
-   ]
+   ],
+   "captionDe": "Eine Zeile"
   },
   {
    "caption": "Two lines",
    "cursor": [
     328,
     74
-   ]
+   ],
+   "captionDe": "Zwei Zeilen"
   },
   {
    "caption": "Set in",
    "cursor": [
     328,
     133
-   ]
+   ],
+   "captionDe": "Vertieft"
   },
   {
    "caption": "Raised",
    "cursor": [
     328,
     133
-   ]
+   ],
+   "captionDe": "Erhaben"
   }
  ],
  "cullenect-insert-symbol": [
@@ -363,12 +470,22 @@
    "cursor": [
     158,
     44
+   ],
+   "captionDe": "Kein Symbol",
+   "cursorDe": [
+    160,
+    44
    ]
   },
   {
    "caption": "Socket head screw",
    "cursor": [
     158,
+    44
+   ],
+   "captionDe": "Zylinderkopfschraube",
+   "cursorDe": [
+    160,
     44
    ]
   },
@@ -377,14 +494,16 @@
    "cursor": [
     328,
     253
-   ]
+   ],
+   "captionDe": "Sicherungsmutter (Nylon)"
   },
   {
    "caption": "Washer",
    "cursor": [
     328,
     253
-   ]
+   ],
+   "captionDe": "Unterlegscheibe"
   }
  ]
 }

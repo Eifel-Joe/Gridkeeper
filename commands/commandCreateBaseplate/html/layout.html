@@ -119,6 +119,27 @@
     // padding thinner than this at the drawing scale would be a sliver, it's drawn this thick, in from the plate edge
     const MIN_PADDING_THICKNESS = 8;
     const SVG_NS = 'http://www.w3.org/2000/svg';
+    // the decimal sign of the language, sent with the data
+    let decimalSign = '.';
+
+    function formatMm(value) {
+        return value.toFixed(1).replace('.', decimalSign);
+    }
+
+    // the padding of a side as a tooltip, each side a text of its own for the translation
+    function paddingTitle(side, size) {
+        const values = { size: formatMm(size) };
+        if (side === 'left') {
+            return fusionBridge.t('padding left {size} mm', values);
+        }
+        if (side === 'right') {
+            return fusionBridge.t('padding right {size} mm', values);
+        }
+        if (side === 'front') {
+            return fusionBridge.t('padding front {size} mm', values);
+        }
+        return fusionBridge.t('padding back {size} mm', values);
+    }
 
     function svgElement(name, attributes) {
         const element = document.createElementNS(SVG_NS, name);
@@ -255,7 +276,7 @@
             }
             const rect = svgElement('rect', { class: 'padding', x: x, y: y, width: stripWidth, height: stripHeight });
             const title = svgElement('title', {});
-            title.textContent = `padding ${strip.side} ${strip.size.toFixed(1)} mm`;
+            title.textContent = paddingTitle(strip.side, strip.size);
             rect.appendChild(title);
             group.appendChild(rect);
             group.appendChild(svgElement('rect', { x: x, y: y, width: stripWidth, height: stripHeight, fill: 'url(#padding-hatch)', 'pointer-events': 'none' }));
@@ -264,7 +285,7 @@
             // its background lets it reach past a thin strip over the sockets
             const isSide = strip.side === 'left' || strip.side === 'right';
             let [centerX, centerY] = [x + stripWidth / 2, y + stripHeight / 2];
-            const label = drawLabel(`${strip.size.toFixed(1)} mm`, centerX, centerY, svg);
+            const label = drawLabel(fusionBridge.t('{size} mm', { size: formatMm(strip.size) }), centerX, centerY, svg);
             if (label.width + PADDING_LABEL_MARGIN * 2 > (isSide ? stripHeight : stripWidth)) {
                 label.group.remove();
                 continue;
@@ -304,6 +325,7 @@
     }
 
     function render(data) {
+        decimalSign = data.decimalSign || '.';
         const drawing = document.getElementById('drawing');
         const caption = document.getElementById('caption');
         drawing.replaceChildren();
@@ -366,7 +388,7 @@
             const group = svgElement('g', { mask: `url(#${maskId})` });
             const rect = svgElement('rect', { class: 'piece', x: x, y: y, width: pieceWidth, height: pieceHeight, rx: 2 });
             const title = svgElement('title', {});
-            title.textContent = `${piece.label} u, ${piece.width.toFixed(1)} x ${piece.length.toFixed(1)} mm`;
+            title.textContent = fusionBridge.t('{label} u, {width} x {length} mm', { label: piece.label, width: formatMm(piece.width), length: formatMm(piece.length) });
             rect.appendChild(title);
             group.appendChild(rect);
             for (const cell of piece.cells || []) {

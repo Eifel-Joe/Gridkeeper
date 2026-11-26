@@ -5,9 +5,9 @@ from . import const
 from .dim import Dim
 
 # the socket's inner wall goes straight down to the bin top
-LIP_TYPE_LIGHT = 'Light'
+LIP_TYPE_LIGHT = 'Light'  # tr-value
 # the original Gridfinity profile, narrowing at 45 degrees to its inner tip with a support under it
-LIP_TYPE_FULL = 'Full'
+LIP_TYPE_FULL = 'Full'  # tr-value
 LIP_TYPES = [LIP_TYPE_LIGHT, LIP_TYPE_FULL]
 
 def lipSocketHasBottomChamfer(lipType: str) -> bool:

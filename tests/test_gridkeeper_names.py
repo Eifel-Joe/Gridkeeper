@@ -24,6 +24,10 @@ def _constants(path: str) -> dict[str, str]:
         if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
             if isinstance(node.value, ast.Constant) and isinstance(node.value.value, str):
                 found[node.targets[0].id] = node.value.value
+            elif (isinstance(node.value, ast.Call) and isinstance(node.value.func, ast.Name) and node.value.func.id == 'tr'
+                  and isinstance(node.value.args[0], ast.Constant)):
+                # a name in the add-in's language, the English text is the call's argument (round 60)
+                found[node.targets[0].id] = node.value.args[0].value
             elif isinstance(node.value, ast.JoinedStr):
                 found[node.targets[0].id] = ast.unparse(node.value)
     return found
@@ -52,7 +56,7 @@ def test_window_titles_say_gridkeeper(path):
 def test_config_dialogs_say_gridkeeper():
     source = open(os.path.join(ROOT, 'lib', 'ui', 'configButtons.py'), encoding='utf-8').read()
     assert 'Gridfinity config' not in source
-    assert "'Save Gridkeeper config'" in source and "'Load Gridkeeper config'" in source
+    assert "tr('Save Gridkeeper config')" in source and "tr('Load Gridkeeper config')" in source
 
 
 def test_ids_no_longer_those_of_the_original():
@@ -86,7 +90,7 @@ def test_manifest_is_gridkeepers():
     manifest = json.load(open(os.path.join(ROOT, 'Gridkeeper.manifest'), encoding='utf-8'))
     assert manifest['id'] != 'bbbd3c0a-34f1-4bcf-b9f9-accd46c35cd0'
     assert re.fullmatch(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', manifest['id'])
-    assert manifest['version'] == '1.4.1'
+    assert manifest['version'] == '1.5.0'
     description = manifest['description']['']
     assert 'Gridkeeper' in description and 'Le0Michine' in description
 
@@ -127,7 +131,7 @@ def test_no_old_ids_in_pages_either():
 def test_every_palette_title_says_gridkeeper():
     found = 0
     for (path, source) in _sources('commands/**/*.py', 'lib/**/*.py'):
-        for match in re.finditer(r"^PALETTE_TITLE = '([^']*)'", source, re.MULTILINE):
+        for match in re.finditer(r"^PALETTE_TITLE = (?:tr\()?'([^']*)'", source, re.MULTILINE):
             found += 1
             assert match.group(1).startswith('Gridkeeper '), path
     assert found >= 3

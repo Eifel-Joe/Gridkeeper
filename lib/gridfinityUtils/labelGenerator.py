@@ -5,14 +5,14 @@ import adsk.core, adsk.fusion
 from . import const, commonUtils, combineUtils, appearanceUtils, textStyles, binLabelLayout, sketchUtils, svgSymbol
 from .dim import Dim, valueInput, lengthInput, lengthExpression, applyTo, isZero
 
-LABEL_STYLE_OUTLINE = 'Outline'
-LABEL_STYLE_ENGRAVED = 'Engraved'
-LABEL_STYLE_EMBOSSED = 'Embossed'
+LABEL_STYLE_OUTLINE = 'Outline'  # tr-value
+LABEL_STYLE_ENGRAVED = 'Engraved'  # tr-value
+LABEL_STYLE_EMBOSSED = 'Embossed'  # tr-value
 # a socket for exchangeable Cullenect inserts instead of a label, see cullenect
 LABEL_STYLE_CULLENECT = 'Cullenect'
 LABEL_STYLES = [LABEL_STYLE_OUTLINE, LABEL_STYLE_ENGRAVED, LABEL_STYLE_EMBOSSED, LABEL_STYLE_CULLENECT]
 
-LABEL_ICON_NONE = 'None'
+LABEL_ICON_NONE = 'None'  # tr-value
 LABEL_ICONS_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'labelIcons')
 
 # icons are grouped by type in folders, these types come first in this order, any others after them

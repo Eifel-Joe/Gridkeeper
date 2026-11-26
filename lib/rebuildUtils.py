@@ -4,12 +4,14 @@ import re
 from dataclasses import dataclass, field
 from typing import Callable
 
+from .i18n import tr
 from . import configJson
 from . import tagUtils
 from . import assembly
 from . import placementUtils
 from .gridfinityUtils import commonUtils
 from .gridfinityUtils import cullenect
+from .gridfinityUtils import designIntent
 from .gridfinityUtils import boxLabelConfig, predBoxLabelLayout, predBoxParts, predBoxSeats
 from .gridfinityUtils import timelineRemoval
 from .gridfinityUtils import jointNames
@@ -484,7 +486,7 @@ def repointJoints(
                 continue
             newName = remap[jointOrigin.name]
             if newName is None:
-                notes.append(f'{joint.name}: the new {newComponent.name} has no {jointOrigin.name}, the joint goes with the old one')
+                notes.append(tr('{joint}: the new {component} has no {jointOrigin}, the joint goes with the old one', joint=joint.name, component=newComponent.name, jointOrigin=jointOrigin.name))
                 continue
             try:
                 group = item.parentGroup
@@ -509,7 +511,7 @@ def repointJoints(
                         notes.append(fitNote)
             except Exception as err:
                 commonUtils.fileLog(f'{LOG_PREFIX} {joint.name} couldn\'t be moved over to {newName}, {err}')
-                notes.append(f'{joint.name}: couldn\'t be moved over to {newName} of the new {newComponent.name}, it goes with the old one')
+                notes.append(tr("{joint}: couldn't be moved over to {newName} of the new {component}, it goes with the old one", joint=joint.name, newName=newName, component=newComponent.name))
     design.timeline.moveToEnd()
     for group in collapsedGroups:
         group.isCollapsed = True
@@ -618,7 +620,7 @@ def repointJointsByName(
                 continue
             newJointOrigin = newJointOrigins.get(oldJointOriginKey(jointOrigin, oldNative, seats, jointOccurrence))
             if newJointOrigin is None:
-                notes.append(f'{joint.name}: the new part has no {jointOrigin.name}, the joint goes with the old one')
+                notes.append(tr('{joint}: the new part has no {jointOrigin}, the joint goes with the old one', joint=joint.name, jointOrigin=jointOrigin.name))
                 continue
             try:
                 # rolled to first: the marker may still stand before a joint moved earlier, the label's bodies after it
@@ -652,7 +654,7 @@ def repointJointsByName(
                 moved += 1
             except Exception as err:
                 commonUtils.fileLog(f"{LOG_PREFIX} {joint.name} couldn't be moved over to {jointOrigin.name}, {err}")
-                notes.append(f"{joint.name}: couldn't be moved over to the new part, it goes with the old one")
+                notes.append(tr("{joint}: couldn't be moved over to the new part, it goes with the old one", joint=joint.name))
     design.timeline.moveToEnd()
     for group in collapsedGroups:
         group.isCollapsed = True
@@ -670,9 +672,9 @@ def repointJointsByName(
         elif laid == LAID_BESIDE:
             notes.append(boxLabelConfig.widthNote(jointName, labelCells, boxCells))
         elif laid == LAID_FREE:
-            notes.append(f"{jointName}: the label is too wide for the box now, it was taken out but lies where it was built; move it and rebuild it with the new width")
+            notes.append(tr("{joint}: the label is too wide for the box now, it was taken out but lies where it was built; move it and rebuild it with the new width", joint=jointName))
         else:
-            notes.append(f"{jointName}: the label is too wide for the box now and couldn't be taken out, it goes with the old box; rebuild the label")
+            notes.append(tr("{joint}: the label is too wide for the box now and couldn't be taken out, it goes with the old box; rebuild the label", joint=jointName))
     for jointOrigin in shown:
         assembly.keepShown(jointOrigin)
     return (moved, notes)
@@ -897,7 +899,7 @@ def newlyUnhealthy(target: RebuildTarget) -> list[str]:
     for (item, health) in zip(target.laterItems, target.laterHealth):
         if not item.isValid or health != HEALTHY or item.healthState == HEALTHY:
             continue
-        notes.append(f'{item.name}: {item.errorOrWarningMessage or "needs its inputs picked again"}')
+        notes.append(tr('{name}: {message}', name=item.name, message=item.errorOrWarningMessage or tr('needs its inputs picked again')))
     return notes
 
 def removeUnusedParameters(design: adsk.fusion.Design, names: list[str]):
@@ -1064,8 +1066,8 @@ def rebuild(
     # shared units stay, the body's own ones it no longer has go, like the label of a tab turned off
     newNames = tagParameterNames(newBodies[0]) if len(newBodies) > 0 else []
     removeUnusedParameters(design, [name for name in oldNames if prefix is not None and prefixOf([name], baseName) == prefix and name not in newNames])
-    notes = [f'{name}: couldn\'t be given the new {title}' for name in failed] + jointNotes + newlyUnhealthy(target)
-    notes += [f'{name}: of the old {title}, Fusion wouldn\'t delete it, it\'s suppressed instead' for name in keptOldItems]
+    notes = [tr("{name}: couldn't be given the new {title}", name=name, title=designIntent.partNoun(title)) for name in failed] + jointNotes + newlyUnhealthy(target)
+    notes += [tr("{name}: of the old {title}, Fusion wouldn't delete it, it's suppressed instead", name=name, title=designIntent.partNoun(title)) for name in keptOldItems]
     return (newBodies, notes)
 
 def configChanges(generator: str, body: adsk.fusion.BRepBody, newConfig: dict) -> str:

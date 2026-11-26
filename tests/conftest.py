@@ -20,6 +20,10 @@ tests_dir    = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(tests_dir)
 stubs_dir    = os.path.join(tests_dir, "stubs")
 
+# the tests expect English, also in copies of lib/i18n that tests load on their own, whatever a languageOverride file
+# in the checkout says (review round 60)
+os.environ["GRIDKEEPER_LANGUAGE"] = "en"
+
 for p in (stubs_dir, project_root):
     if p not in sys.path:
         sys.path.insert(0, p)
@@ -70,6 +74,25 @@ sys.modules["FusionGridfinityGenerator.lib.fusion360utils"] = fu_pkg
 
 # ── 4. Load the real commandUiState into the virtual package ─────────────────
 import importlib.util
+
+
+def _loadReal(name: str, relativePath: str, package: str, isPackage: bool = False):
+    """A module of the add-in under its name in the virtual package, for relative imports of others"""
+    spec = importlib.util.spec_from_file_location(name, os.path.join(project_root, *relativePath.split("/")),
+                                                  submodule_search_locations=[] if isPackage else None)
+    module = importlib.util.module_from_spec(spec)
+    module.__package__ = package
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    setattr(sys.modules[name.rsplit(".", 1)[0]], name.rsplit(".", 1)[1], module)
+    return module
+
+
+# the texts (round 60), commandUiState shows dropdown values through lib/ui/dropdowns
+_loadReal("FusionGridfinityGenerator.lib.i18n", "lib/i18n/__init__.py", "FusionGridfinityGenerator.lib.i18n", True)
+# the tests expect English, whatever a languageOverride file in the checkout says (review round 60)
+sys.modules["FusionGridfinityGenerator.lib.i18n"].setLanguage("en")
+_loadReal("FusionGridfinityGenerator.lib.ui.dropdowns", "lib/ui/dropdowns.py", "FusionGridfinityGenerator.lib.ui")
 
 _cu_path = os.path.join(project_root, "lib", "ui", "commandUiState.py")
 _spec    = importlib.util.spec_from_file_location(

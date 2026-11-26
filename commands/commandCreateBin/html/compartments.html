@@ -113,10 +113,14 @@
         gap: 6px;
         margin-bottom: 4px;
     }
+    /* the label column as wide as its widest label, German ones are longer (round 60), see fitLabelColumn */
     .row label {
-        width: 44px;
         flex: none;
         color: var(--label);
+    }
+    .row > label {
+        width: var(--label-width, 44px);
+        white-space: nowrap;
     }
     .row input, .row select {
         flex: 1;
@@ -214,10 +218,15 @@
     .row .unit {
         color: var(--muted);
     }
+    /* longer German names go to a second line instead of out of the dialog (round 60) */
     .buttons {
         display: flex;
+        flex-wrap: wrap;
         gap: 6px;
         justify-content: flex-end;
+    }
+    .buttons button {
+        white-space: nowrap;
     }
     #grid {
         display: flex;
@@ -351,7 +360,20 @@
     }
 
     // walls a compartment can have a scoop on (round 48); a pocket without scoops takes the bin's, data.binScoops
-    const SCOOP_WALLS = [['front', 'Front'], ['back', 'Back'], ['left', 'Left'], ['right', 'Right']];
+    // with their texts, read when drawn: the page's texts arrive with its data
+    function scoopWalls() {
+        return [
+            ['front', fusionBridge.t('Front'), fusionBridge.t('A scoop along the front wall of this compartment')],
+            ['back', fusionBridge.t('Back'), fusionBridge.t('A scoop along the back wall of this compartment')],
+            ['left', fusionBridge.t('Left'), fusionBridge.t('A scoop along the left wall of this compartment')],
+            ['right', fusionBridge.t('Right'), fusionBridge.t('A scoop along the right wall of this compartment')],
+        ];
+    }
+
+    // a number in the text, with the decimal comma the dialog's language has
+    function fmt(value) {
+        return String(value).replace('.', data.decimal || '.');
+    }
 
     function scoopsOf(pocket) {
         return pocket && Array.isArray(pocket.scoops) ? pocket.scoops.slice() : undefined;
@@ -485,7 +507,7 @@
             const pocketHeight = Math.max(p.length * layout.cellLength - WALL, 1);
             const rect = svgElement('rect', { class: 'pocket' + (p === selected ? ' selected' : ''), x: x, y: y, width: pocketWidth, height: pocketHeight, rx: 2 });
             const title = svgElement('title', {});
-            title.textContent = `${p.width} x ${p.length} cells` + (p.depth !== null ? `, ${p.depth} mm deep` : '');
+            title.textContent = fusionBridge.t('{width} x {length} cells', { width: p.width, length: p.length }) + (p.depth !== null ? fusionBridge.t(', {depth} mm deep', { depth: fmt(p.depth) }) : '');
             rect.appendChild(title);
             svg.appendChild(rect);
 
@@ -534,7 +556,7 @@
             }
             if (p.depth !== null && pocketHeight >= 32 && pocketWidth >= 40) {
                 const depth = svgElement('text', { class: 'pocket-depth', x: x + pocketWidth - 3, y: y + pocketHeight - 3 });
-                depth.textContent = `${p.depth} mm`;
+                depth.textContent = `${fmt(p.depth)} mm`;
                 svg.appendChild(depth);
             }
         }
@@ -671,8 +693,8 @@
 
     // shown with and without a pocket selected
     function resetButton() {
-        const reset = htmlElement('button', {}, 'Reset all');
-        reset.title = 'Back to single cells, without labels, depths or scoops of their own';
+        const reset = htmlElement('button', {}, fusionBridge.t('Reset all'));
+        reset.title = fusionBridge.t('Back to single cells, without labels, depths or scoops of their own');
         reset.disabled = data.pockets.every((item) => item.width === 1 && item.length === 1 && item.depth === null && !item.label && item.icon === 'Default' && !Array.isArray(item.scoops));
         reset.addEventListener('click', resetAll);
         return reset;
@@ -683,8 +705,8 @@
         editor.replaceChildren();
         const p = selectedPocket();
         if (!p) {
-            editor.appendChild(htmlElement('div', { class: 'hint' }, 'Drag across cells to merge them into a pocket.'));
-            editor.appendChild(htmlElement('div', { class: 'hint' }, 'Click a pocket to set its label and depth.'));
+            editor.appendChild(htmlElement('div', { class: 'hint' }, fusionBridge.t('Drag across cells to merge them into a pocket.')));
+            editor.appendChild(htmlElement('div', { class: 'hint' }, fusionBridge.t('Click a pocket to set its label and depth.')));
             const buttons = htmlElement('div', { class: 'buttons' });
             buttons.appendChild(resetButton());
             editor.appendChild(buttons);
@@ -692,11 +714,11 @@
         }
 
         const labelRow = htmlElement('div', { class: 'row' });
-        labelRow.appendChild(htmlElement('label', {}, 'Label'));
-        const labelInput = htmlElement('input', { type: 'text', placeholder: data.defaultLabel || 'label tab text' });
+        labelRow.appendChild(htmlElement('label', {}, fusionBridge.t('Label')));
+        const labelInput = htmlElement('input', { type: 'text', placeholder: data.defaultLabel || fusionBridge.t('label tab text') });
         labelInput.value = p.label;
         labelInput.disabled = !data.hasTab;
-        labelInput.title = data.hasTab ? 'Empty takes the text from the label tab section' : 'Turn on the label tab to label pockets';
+        labelInput.title = data.hasTab ? fusionBridge.t('Empty takes the text from the label tab section') : fusionBridge.t('Turn on the label tab to label pockets');
         labelInput.addEventListener('input', () => {
             p.label = labelInput.value;
             renderDrawing();
@@ -706,11 +728,11 @@
         editor.appendChild(labelRow);
 
         const iconRow = htmlElement('div', { class: 'row' });
-        iconRow.appendChild(htmlElement('label', {}, 'Icon'));
+        iconRow.appendChild(htmlElement('label', {}, fusionBridge.t('Icon')));
         const iconPicker = picker(
             data.icons.map((icon) => ({
                 value: icon.name,
-                text: icon.name === 'Default' ? `Default (${data.defaultIcon})` : icon.name,
+                text: icon.name === 'Default' ? fusionBridge.t('Default ({icon})', { icon: data.defaultIconText }) : icon.text,
                 group: icon.group,
                 image: iconImage(icon.name === 'Default' ? data.defaultIcon : icon.name, isDark()),
             })),
@@ -727,13 +749,13 @@
 
         // the compartment's own scoop walls, or the bin's (round 48)
         const scoopRow = htmlElement('div', { class: 'row' });
-        scoopRow.appendChild(htmlElement('label', {}, 'Scoops'));
-        const scoopWalls = htmlElement('div', { class: 'scoop-walls' });
+        scoopRow.appendChild(htmlElement('label', {}, fusionBridge.t('Scoops')));
+        const wallsBox = htmlElement('div', { class: 'scoop-walls' });
         const own = Array.isArray(p.scoops);
         const ownLabel = htmlElement('label', {});
         const ownInput = htmlElement('input', { type: 'checkbox' });
         ownInput.checked = own;
-        ownLabel.title = 'Own scoop walls for this compartment, off takes the walls of the Scoop section';
+        ownLabel.title = fusionBridge.t('Own scoop walls for this compartment, off takes the walls of the Scoop section');
         ownInput.addEventListener('change', () => {
             if (ownInput.checked) {
                 p.scoops = (data.binScoops || []).slice();
@@ -743,16 +765,16 @@
             send();
             render();
         });
-        ownLabel.append(ownInput, document.createTextNode('Own'));
-        scoopWalls.appendChild(ownLabel);
+        ownLabel.append(ownInput, document.createTextNode(fusionBridge.t('Own')));
+        wallsBox.appendChild(ownLabel);
         const shown = effectiveScoops(p);
-        for (const [wall, text] of SCOOP_WALLS) {
+        for (const [wall, text, wallTitle] of scoopWalls()) {
             const wallLabel = htmlElement('label', {});
             const wallInput = htmlElement('input', { type: 'checkbox' });
             wallInput.checked = shown.includes(wall);
             const locked = wall === 'back' && data.hasTab;
             wallInput.disabled = !own || locked;
-            wallLabel.title = locked ? 'The label tab sits on the back wall' : (own ? `A scoop along the ${wall} wall of this compartment` : 'Turn on Own to choose');
+            wallLabel.title = locked ? fusionBridge.t('The label tab sits on the back wall') : (own ? wallTitle : fusionBridge.t('Turn on Own to choose'));
             wallInput.addEventListener('change', () => {
                 const walls = new Set(p.scoops || []);
                 if (wallInput.checked) {
@@ -760,21 +782,21 @@
                 } else {
                     walls.delete(wall);
                 }
-                p.scoops = SCOOP_WALLS.map(([name]) => name).filter((name) => walls.has(name));
+                p.scoops = scoopWalls().map(([name]) => name).filter((name) => walls.has(name));
                 send();
                 renderDrawing();
             });
             wallLabel.append(wallInput, document.createTextNode(text));
-            scoopWalls.appendChild(wallLabel);
+            wallsBox.appendChild(wallLabel);
         }
-        scoopRow.appendChild(scoopWalls);
+        scoopRow.appendChild(wallsBox);
         editor.appendChild(scoopRow);
 
         const depthRow = htmlElement('div', { class: 'row' });
-        depthRow.appendChild(htmlElement('label', {}, 'Depth'));
-        const depthInput = htmlElement('input', { type: 'number', min: '1', step: '0.5', placeholder: `full, ${data.fullDepth}` });
+        depthRow.appendChild(htmlElement('label', {}, fusionBridge.t('Depth')));
+        const depthInput = htmlElement('input', { type: 'number', min: '1', step: '0.5', placeholder: fusionBridge.t('full, {depth}', { depth: fmt(data.fullDepth) }) });
         depthInput.value = p.depth === null ? '' : p.depth;
-        depthInput.title = 'From the top of the bin, empty for the full depth';
+        depthInput.title = fusionBridge.t('From the top of the bin, empty for the full depth');
         depthInput.addEventListener('change', () => {
             const value = parseFloat(depthInput.value);
             p.depth = isFinite(value) && value > 0 && value < data.fullDepth ? value : null;
@@ -786,13 +808,13 @@
         depthRow.appendChild(htmlElement('span', { class: 'unit' }, 'mm'));
         const buttons = htmlElement('div', { class: 'buttons' });
         buttons.style.flex = '1';
-        const splitButton = htmlElement('button', {}, 'Split');
+        const splitButton = htmlElement('button', {}, fusionBridge.t('Split'));
         splitButton.disabled = p.width === 1 && p.length === 1;
-        splitButton.title = 'Back to single cells';
+        splitButton.title = fusionBridge.t('Back to single cells');
         splitButton.addEventListener('click', () => split(p));
         // changes apply as they're made, this only lets go of the pocket
-        const doneButton = htmlElement('button', {}, 'Done');
-        doneButton.title = 'Finish editing this compartment, changes are already applied';
+        const doneButton = htmlElement('button', {}, fusionBridge.t('Done'));
+        doneButton.title = fusionBridge.t('Finish editing this compartment, changes are already applied');
         doneButton.addEventListener('click', () => {
             selectedCell = null;
             render();
@@ -803,6 +825,15 @@
         buttons.appendChild(resetButton());
         depthRow.appendChild(buttons);
         editor.appendChild(depthRow);
+        fitLabelColumn(editor);
+    }
+
+    // the rows are flex rows of their own, their labels share one width: the widest, at least 44 px
+    function fitLabelColumn(editor) {
+        const labels = Array.from(editor.querySelectorAll('.row > label'));
+        editor.style.removeProperty('--label-width');
+        const widest = Math.max(44, ...labels.map((label) => Math.ceil(label.scrollWidth)));
+        editor.style.setProperty('--label-width', `${widest}px`);
     }
 
     // the grid size is the dialog's, the answer brings the pockets fitted to it
@@ -838,15 +869,15 @@
     function renderGrid() {
         const grid = document.getElementById('grid');
         grid.replaceChildren();
-        grid.appendChild(htmlElement('span', { class: 'field-label' }, 'Grid'));
-        grid.appendChild(stepper('X', 'Cells along the bin width', data.columns, (columns) => setGrid(columns, data.rows)));
-        grid.appendChild(stepper('Y', 'Cells along the bin length', data.rows, (rows) => setGrid(data.columns, rows)));
+        grid.appendChild(htmlElement('span', { class: 'field-label' }, fusionBridge.t('Grid')));
+        grid.appendChild(stepper('X', fusionBridge.t('Cells along the bin width'), data.columns, (columns) => setGrid(columns, data.rows)));
+        grid.appendChild(stepper('Y', fusionBridge.t('Cells along the bin length'), data.rows, (rows) => setGrid(data.columns, rows)));
         const tooSmall = data.cellWidth < data.minCellSize || data.cellLength < data.minCellSize;
-        const size = htmlElement('span', { class: 'cell-size' + (tooSmall ? ' too-small' : '') }, `cell ${data.cellWidth} x ${data.cellLength} mm`);
-        size.title = tooSmall ? `Cells under ${data.minCellSize} mm are too small for the compartment corner fillets` : 'Size of one cell inside its walls';
+        const size = htmlElement('span', { class: 'cell-size' + (tooSmall ? ' too-small' : '') }, fusionBridge.t('cell {width} x {length} mm', { width: fmt(data.cellWidth), length: fmt(data.cellLength) }));
+        size.title = tooSmall ? fusionBridge.t('Cells under {size} mm are too small for the compartment corner fillets', { size: fmt(data.minCellSize) }) : fusionBridge.t('Size of one cell inside its walls');
         grid.appendChild(size);
-        const reset = htmlElement('button', { class: 'grid-reset' }, 'Clear');
-        reset.title = 'Back to a single cell';
+        const reset = htmlElement('button', { class: 'grid-reset' }, fusionBridge.t('Clear'));
+        reset.title = fusionBridge.t('Back to a single cell');
         reset.disabled = data.columns === 1 && data.rows === 1;
         reset.addEventListener('click', () => setGrid(1, 1));
         grid.appendChild(reset);

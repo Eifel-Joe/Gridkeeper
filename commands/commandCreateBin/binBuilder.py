@@ -4,6 +4,7 @@ import dataclasses
 from dataclasses import dataclass
 
 from ...lib import tagUtils
+from ...lib.i18n import tr, trValue
 from ...lib import configJson
 from ...lib import placementUtils
 from ...lib import rebuildUtils
@@ -46,9 +47,9 @@ from .inputState import InputState
 
 LOG_PREFIX = 'Gridfinity bin'
 
-BIN_TYPE_HOLLOW = 'Hollow'
-BIN_TYPE_SHELLED = 'Shelled'
-BIN_TYPE_SOLID = 'Solid'
+BIN_TYPE_HOLLOW = trValue('Hollow')
+BIN_TYPE_SHELLED = trValue('Shelled')
+BIN_TYPE_SOLID = trValue('Solid')
 
 # default name of bins generated before tagging, keep as is even if the naming changes
 BIN_LEGACY_NAME_PREFIX = 'Gridfinity bin '
@@ -64,11 +65,11 @@ BIN_BASE_LENGTH_PARAMETER = 'baseLength'
 BIN_PARAMETERS = [BIN_HEIGHT_PARAMETER, BIN_HEIGHT_UNIT_PARAMETER, BIN_BASE_WIDTH_PARAMETER, BIN_BASE_LENGTH_PARAMETER]
 
 # Labels of the parameters in the tag are stored in user documents, keep these literal
-PARAMETER_LABEL_BASE_WIDTH = 'Base width unit'
-PARAMETER_LABEL_BASE_LENGTH = 'Base length unit'
-PARAMETER_LABEL_BIN_HEIGHT = 'Bin height (u)'
-PARAMETER_LABEL_HEIGHT_UNIT = 'Height unit'
-PARAMETER_LABEL_LABEL = 'Label'
+PARAMETER_LABEL_BASE_WIDTH = 'Base width unit'  # tr-value
+PARAMETER_LABEL_BASE_LENGTH = 'Base length unit'  # tr-value
+PARAMETER_LABEL_BIN_HEIGHT = 'Bin height (u)'  # tr-value
+PARAMETER_LABEL_HEIGHT_UNIT = 'Height unit'  # tr-value
+PARAMETER_LABEL_LABEL = 'Label'  # tr-value
 # config fields the parameters stand for, lengths in mm like the config, see configJson
 PARAMETER_FIELDS = {
     PARAMETER_LABEL_BASE_WIDTH: 'baseWidth',
@@ -83,8 +84,8 @@ BIN_PLACEMENT_FEATURE = 'Bin placement'
 # the same move of the colored labels in the bin's Text component (round 13)
 
 # where a bin goes, stored in configs, keep these literal
-PLACEMENT_AUTO = 'Snap to free spot'
-PLACEMENT_CENTER = 'Center on origin'
+PLACEMENT_AUTO = trValue('Snap to free spot')
+PLACEMENT_CENTER = trValue('Center on origin')
 PLACEMENT_OPTIONS = [PLACEMENT_AUTO, PLACEMENT_CENTER]
 
 def binDisplayName(state: InputState) -> str:
@@ -828,11 +829,11 @@ def rebuildBin(
     cell = found.cell
     notes = []
     if cell is not None and rebuildUtils.comesAfter(target, cell):
-        notes.append(f'{target.group.name}: the part of {cell.name} comes after the bin in the timeline, the new bin stays where it was without a joint into the cell')
+        notes.append(tr('{name}: the part of {cell} comes after the bin in the timeline, the new bin stays where it was without a joint into the cell', name=target.group.name, cell=cell.name))
         cell = None
     elif cell is None and found.wasInCell:
         # its cell was deleted, or a rebuilt baseplate or box no longer has it (spec decision 4, review)
-        notes.append(f'{target.group.name}: the cell it was jointed into is gone, the new bin stays where it was without a joint')
+        notes.append(tr('{name}: the cell it was jointed into is gone, the new bin stays where it was without a joint', name=target.group.name))
     (bodies, rebuildNotes) = rebuildUtils.rebuild(
         des,
         target,
@@ -854,7 +855,10 @@ def rebuildBin(
 LID_ROLE = 'Lid'
 
 def hasCellParts(des: adsk.fusion.Design) -> bool:
-    """Whether the design has a baseplate or a box, the bin dialog offers a cell then (round 31)"""
+    """Whether the design has a baseplate or a box, the bin dialog offers a cell then (round 31). None without a design:
+    Design.cast of another product, and the dialog screenshot tool, which has no design open"""
+    if des is None:
+        return False
     return any(len(des.findAttributes(tagUtils.TAG_GROUP, tagName)) > 0 for tagName in (tagUtils.TAG_BASEPLATE, tagUtils.TAG_BOX))
 
 def isCellJointOrigin(jointOrigin: adsk.fusion.JointOrigin | None) -> bool:

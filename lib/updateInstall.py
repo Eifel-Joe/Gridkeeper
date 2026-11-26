@@ -6,6 +6,8 @@ import shutil
 import threading
 import zipfile
 
+from .i18n import tr
+
 # Installing an update (p310): the release ZIP is downloaded, checked and unpacked before anything of the add-in folder
 # is touched, then the folder is swapped with a way back on every failure. A git checkout is never replaced. Kept free
 # of Fusion imports so it can be unit tested, the dialogs are in commands/commandUpdates
@@ -37,14 +39,14 @@ def download(url: str, target: str, urlopen=None, limit: int = MAX_DOWNLOAD, pro
             while chunk := response.read(64 * 1024):
                 size += len(chunk)
                 if size > limit:
-                    raise UpdateError(f'The download is too large, more than {limit // 2**20} MB.')
+                    raise UpdateError(tr('The download is too large, more than {size} MB.', size=limit // 2**20))
                 file.write(chunk)
                 if progress is not None:
                     progress(size)
     except UpdateError:
         raise
     except Exception as err:
-        raise UpdateError(f'The download failed: {err}') from err
+        raise UpdateError(tr('The download failed: {err}', err=err)) from err
 
 def _entryParts(name: str) -> list[str] | None:
     """The path parts of a ZIP entry, none when it could land outside the folder it's unpacked to"""
@@ -64,9 +66,9 @@ def verifyZip(zipPath: str, version: tuple[int, int, int], digest: str | None, s
         with open(zipPath, 'rb') as file:
             actual = hashlib.sha256(file.read()).hexdigest()
         if actual != digest[len('sha256:'):].lower():
-            raise UpdateError('The checksum of the download is wrong.')
+            raise UpdateError(tr('The checksum of the download is wrong.'))
     elif size is None or os.path.getsize(zipPath) != size:
-        raise UpdateError('The size of the download is wrong, and GitHub gave no checksum to check it.')
+        raise UpdateError(tr('The size of the download is wrong, and GitHub gave no checksum to check it.'))
     try:
         with zipfile.ZipFile(zipPath) as archive:
             entries = archive.infolist()
@@ -74,24 +76,24 @@ def verifyZip(zipPath: str, version: tuple[int, int, int], digest: str | None, s
             for entry in entries:
                 parts = _entryParts(entry.filename)
                 if parts is None or len(parts) == 0 or parts[0] != ADDIN_FOLDER_NAME or (len(parts) == 1 and not entry.is_dir()):
-                    raise UpdateError(f'The download holds a file outside the folder {ADDIN_FOLDER_NAME}: {entry.filename}')
+                    raise UpdateError(tr('The download holds a file outside the folder {folder}: {name}', folder=ADDIN_FOLDER_NAME, name=entry.filename))
                 unpacked += entry.file_size
             if unpacked > maxUnpacked:
-                raise UpdateError(f'The download is too large unpacked, more than {maxUnpacked // 2**20} MB.')
+                raise UpdateError(tr('The download is too large unpacked, more than {size} MB.', size=maxUnpacked // 2**20))
             names = {'/'.join(_entryParts(entry.filename)) for entry in entries}
             if f'{ADDIN_FOLDER_NAME}/Gridkeeper.py' not in names:
-                raise UpdateError('The download has no Gridkeeper.py.')
+                raise UpdateError(tr('The download has no Gridkeeper.py.'))
             try:
                 manifest = json.loads(archive.read(f'{ADDIN_FOLDER_NAME}/Gridkeeper.manifest').decode('utf-8'))
             except KeyError:
-                raise UpdateError('The download has no Gridkeeper.manifest.')
+                raise UpdateError(tr('The download has no Gridkeeper.manifest.'))
     except zipfile.BadZipFile as err:
-        raise UpdateError(f'The download is no ZIP file: {err}') from err
+        raise UpdateError(tr('The download is no ZIP file: {err}', err=err)) from err
     except ValueError as err:
-        raise UpdateError(f'The manifest of the download can\'t be read: {err}') from err
+        raise UpdateError(tr('The manifest of the download can\'t be read: {err}', err=err)) from err
     found = manifest.get('version') if isinstance(manifest, dict) else None
     if found != versionText:
-        raise UpdateError(f'The download is version {found}, not {versionText}.')
+        raise UpdateError(tr('The download is version {found}, not {expected}.', found=found, expected=versionText))
 
 def extract(zipPath: str, targetParent: str) -> str:
     """Unpacks a ZIP verifyZip passed into targetParent, the path of the add-in folder in it"""
@@ -191,9 +193,9 @@ def swap(addinFolder: str, newFolder: str, backupFolder: str, rename=os.replace,
         try:
             rename(backupFolder, addinFolder)
         except OSError:
-            raise UpdateError(f"The new version couldn't be put in place ({err}) and the old one not back. "
-                              f"It's in {backupFolder}, move it back to {addinFolder}.") from err
-        raise UpdateError(f"The new version couldn't be put in place: {err}. Nothing changed.") from err
+            raise UpdateError(tr("The new version couldn't be put in place ({err}) and the old one not back. It's in {backup}, move it back to {folder}.",
+                                 err=err, backup=backupFolder, folder=addinFolder)) from err
+        raise UpdateError(tr("The new version couldn't be put in place: {err}. Nothing changed.", err=err)) from err
     return 'renamed'
 
 def _swapByCopy(addinFolder: str, newFolder: str, backupFolder: str, copyFile) -> str:
@@ -201,7 +203,7 @@ def _swapByCopy(addinFolder: str, newFolder: str, backupFolder: str, copyFile) -
         shutil.copytree(addinFolder, backupFolder, copy_function=copyFile)
     except OSError as err:
         shutil.rmtree(backupFolder, ignore_errors=True)
-        raise UpdateError(f"The old version couldn't be backed up: {err}. Nothing changed.") from err
+        raise UpdateError(tr("The old version couldn't be backed up: {err}. Nothing changed.", err=err)) from err
     try:
         shutil.copytree(newFolder, addinFolder, dirs_exist_ok=True, copy_function=copyFile)
     except OSError as err:
@@ -215,9 +217,9 @@ def _swapByCopy(addinFolder: str, newFolder: str, backupFolder: str, copyFile) -
             pass
         _prune(addinFolder, _files(backupFolder))
         if not _sameFiles(addinFolder, backupFolder):
-            raise UpdateError(f"The new version couldn't be copied ({err}) and the old one not back. "
-                              f"It's in {backupFolder}, copy it back to {addinFolder} with Fusion closed.") from err
-        raise UpdateError(f"The new version couldn't be copied: {err}. The old version is back.") from err
+            raise UpdateError(tr("The new version couldn't be copied ({err}) and the old one not back. It's in {backup}, copy it back to {folder} with Fusion closed.",
+                                 err=err, backup=backupFolder, folder=addinFolder)) from err
+        raise UpdateError(tr("The new version couldn't be copied: {err}. The old version is back.", err=err)) from err
     # as after a rename, files of the old version the new one doesn't have go, the user's are in it, see carryOver
     _prune(addinFolder, _files(newFolder))
     return 'copied'
@@ -231,12 +233,12 @@ def install(release, addinFolder: str, urlopen=None, now=datetime.datetime.now, 
     One at a time, and not while cleanupBackups runs, see WORK_LOCK
     """
     if isGitCheckout(addinFolder):
-        raise UpdateError('This add-in runs from a git checkout, update it with git.')
+        raise UpdateError(tr('This add-in runs from a git checkout, update it with git.'))
     if not release.assetUrl:
-        raise UpdateError('The release has no ZIP file to install.')
+        raise UpdateError(tr('The release has no ZIP file to install.'))
     # mostly the cleanup at startup holding it, a few seconds at most
     if not WORK_LOCK.acquire(timeout=lockTimeout):
-        raise UpdateError('Gridkeeper is still tidying up after the last update or installing one, try again in a moment.')
+        raise UpdateError(tr('Gridkeeper is still tidying up after the last update or installing one, try again in a moment.'))
     try:
         return _install(release, addinFolder, urlopen, now, progress, rename)
     finally:
@@ -270,7 +272,7 @@ def _install(release, addinFolder: str, urlopen, now, progress, rename) -> str:
             os.rmdir(backupParent)
         if isinstance(err, UpdateError):
             raise
-        raise UpdateError(f"The update couldn't be prepared: {err}. Nothing changed.") from err
+        raise UpdateError(tr("The update couldn't be prepared: {err}. Nothing changed.", err=err)) from err
     finally:
         shutil.rmtree(newParent, ignore_errors=True)
         try:

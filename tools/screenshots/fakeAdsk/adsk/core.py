@@ -195,6 +195,7 @@ class SelectionCommandInput(CommandInput):
     SolidBodies = 'SolidBodies'
     Bodies = 'Bodies'
     Occurrences = 'Occurrences'
+    JointOrigins = 'JointOrigins'
 
     def __init__(self, inputs, inputId, name, commandPrompt: str):
         super().__init__(inputs, inputId, name)

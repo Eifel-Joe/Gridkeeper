@@ -3,6 +3,7 @@ import dataclasses
 import math
 import os
 import re
+import traceback
 
 from ...lib import tagUtils
 from ...lib import labelFaces
@@ -16,6 +17,8 @@ from ...lib.gridfinityUtils import labelGenerator
 from ...lib.gridfinityUtils import labelColors
 from ... import config
 from ...lib import printBeds
+from ...lib.ui import dropdowns
+from ...lib.i18n import tr, trKnown, number
 
 # Upstream's export of bins and baseplates (Le0Michine, 4b2f167, round 17.11.2026), for every part our generators make
 # (p300): which tags are parts is exportParts.EXPORT_TAGS, and the colored text and symbol bodies in a part's Text
@@ -26,7 +29,9 @@ ui = app.userInterface
 
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdExport'
 CMD_NAME = 'Gridkeeper export'
-CMD_Description = 'Export bins, baseplates, Cullenect inserts and boxes for printing, 3MF with the label text in a color of its own, or STL and STEP files'
+# what the user reads of the name; CMD_NAME stays English for the log
+CMD_TITLE = tr('Gridkeeper export')
+CMD_Description = tr('Export bins, baseplates, Cullenect inserts and boxes for printing, 3MF with the label text in a color of its own, or STL and STEP files')
 ICON_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources', '')
 # in the context menu after Fusion's Save As Mesh
 SAVE_AS_MESH_COMMAND_ID = 'FusionSaveAsSTLCommand'
@@ -130,7 +135,7 @@ def start():
     global markingMenuHandler
     cmd_def = ui.commandDefinitions.itemById(CMD_ID)
     if not cmd_def:
-        cmd_def = ui.commandDefinitions.addButtonDefinition(CMD_ID, CMD_NAME, CMD_Description, ICON_FOLDER)
+        cmd_def = ui.commandDefinitions.addButtonDefinition(CMD_ID, CMD_TITLE, CMD_Description, ICON_FOLDER)
     futil.add_handler(cmd_def.commandCreated, command_created)
     markingMenuHandler = futil.add_handler(ui.markingMenuDisplaying, marking_menu_displaying, local_handlers=local_handlers)
 
@@ -343,28 +348,28 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     dialogAssigned = {}
     design = adsk.fusion.Design.cast(app.activeProduct)
     # the whole design when its root was picked
-    allInput = inputs.addBoolValueInput(ALL_INPUT_ID, 'All Gridkeeper parts', True, '', isRootSelected(design))
-    allInput.tooltip = 'Selects every visible bin, baseplate, Cullenect insert and box of the design, with their colored text, off goes back to what was selected'
-    selectionInput = inputs.addSelectionInput(SELECTION_INPUT_ID, 'Bodies', 'Bins, baseplates, Cullenect inserts, boxes or any other bodies to export, a letter stands for its part')
+    allInput = inputs.addBoolValueInput(ALL_INPUT_ID, tr('All Gridkeeper parts'), True, '', isRootSelected(design))
+    allInput.tooltip = tr('Selects every visible bin, baseplate, Cullenect insert and box of the design, with their colored text, off goes back to what was selected')
+    selectionInput = inputs.addSelectionInput(SELECTION_INPUT_ID, tr('Bodies'), tr('Bins, baseplates, Cullenect inserts, boxes or any other bodies to export, a letter stands for its part'))
     # bodies only, Fusion puts a selected component in too as the command starts, beside its bodies
     selectionInput.addSelectionFilter(adsk.core.SelectionCommandInput.SolidBodies)
     selectionInput.setSelectionLimits(0, 0)
     selectAll(inputs, allInput.value)
-    formatInput = inputs.addDropDownCommandInput(FORMAT_INPUT_ID, 'Format', adsk.core.DropDownStyles.TextListDropDownStyle)
+    formatInput = inputs.addDropDownCommandInput(FORMAT_INPUT_ID, tr('Format'), adsk.core.DropDownStyles.TextListDropDownStyle)
     for name in FORMATS:
-        formatInput.listItems.add(name, name == choices['format'])
-    formatInput.tooltip = '3MF lays the bodies out in print orientation on the print bed, a file per plate or for a Bambu Lab printer one Bambu Studio project with all plates, STL and STEP give each body a file of its own in the folder'
-    folderInput = inputs.addTextBoxCommandInput(FOLDER_INPUT_ID, 'Folder', dialogFolder, 2, True)
-    folderInput.tooltip = 'Where the files go, the last folder chosen is kept'
+        dropdowns.addItem(formatInput, name, name == choices['format'], translate=False)
+    formatInput.tooltip = tr('3MF lays the bodies out in print orientation on the print bed, a file per plate or for a Bambu Lab printer one Bambu Studio project with all plates, STL and STEP give each body a file of its own in the folder')
+    folderInput = inputs.addTextBoxCommandInput(FOLDER_INPUT_ID, tr('Folder'), dialogFolder, 2, True)
+    folderInput.tooltip = tr('Where the files go, the last folder chosen is kept')
     browseInput = inputs.addBoolValueInput(BROWSE_INPUT_ID, '', False, '', False)
-    browseInput.text = 'Choose folder...'
-    fileNameInput = inputs.addStringValueInput(FILE_NAME_INPUT_ID, 'File name', '')
-    fileNameInput.tooltip = 'The 3MF file\'s name, the body\'s name for one body'
-    paintInput = inputs.addBoolValueInput(PAINT_INPUT_ID, 'Color label text', True, '', choices['paint'])
-    paintInput.tooltip = 'Assigns each label color a filament so the slicer paints it automatically: the letters of outline labels, and the colored text and symbols of bins, Cullenect inserts and box labels. The parts print on filament 1'
-    filamentsGroup = inputs.addGroupCommandInput(FILAMENTS_GROUP_ID, 'Label filaments')
+    browseInput.text = tr('Choose folder...')
+    fileNameInput = inputs.addStringValueInput(FILE_NAME_INPUT_ID, tr('File name'), '')
+    fileNameInput.tooltip = tr("The 3MF file's name, the body's name for one body")
+    paintInput = inputs.addBoolValueInput(PAINT_INPUT_ID, tr('Color label text'), True, '', choices['paint'])
+    paintInput.tooltip = tr('Assigns each label color a filament so the slicer paints it automatically: the letters of outline labels, and the colored text and symbols of bins, Cullenect inserts and box labels. The parts print on filament 1')
+    filamentsGroup = inputs.addGroupCommandInput(FILAMENTS_GROUP_ID, tr('Label filaments'))
     filamentsGroup.isExpanded = True
-    filamentsGroup.tooltip = 'The slicer\'s filament of each label color of the parts, counting from 1 as the slicer lists them, 1 is the filament the parts print on. Each color starts on a filament of its own, a change is kept for the next export'
+    filamentsGroup.tooltip = tr("The slicer's filament of each label color of the parts, counting from 1 as the slicer lists them, 1 is the filament the parts print on. Each color starts on a filament of its own, a change is kept for the next export")
     addLayoutInputs(inputs, choices['layout'])
     inputs.addTextBoxCommandInput(SUMMARY_INPUT_ID, '', '', 2, True)
     # as wide as the bin dialog, the minimum widens one Fusion kept narrower from before
@@ -382,21 +387,22 @@ def addLayoutInputs(inputs: adsk.core.CommandInputs, layout: dict):
     """
     product = adsk.fusion.Design.cast(app.activeProduct)
     units = product.unitsManager.defaultLengthUnits if product is not None else 'mm'
-    group = inputs.addGroupCommandInput(BED_GROUP_ID, 'Print bed')
+    group = inputs.addGroupCommandInput(BED_GROUP_ID, tr('Print bed'))
     group.isExpanded = True
-    bedInput = group.children.addDropDownCommandInput(BED_INPUT_ID, 'Printer', adsk.core.DropDownStyles.TextListDropDownStyle)
+    bedInput = group.children.addDropDownCommandInput(BED_INPUT_ID, tr('Printer'), adsk.core.DropDownStyles.TextListDropDownStyle)
     for name in bedNames():
-        bedInput.listItems.add(name, name == layout['bed'])
-    bedInput.tooltip = "The 3MF lays the parts out on this bed in print orientation, what doesn't fit goes on further plates"
-    filesInput = group.children.addDropDownCommandInput(FILES_INPUT_ID, 'Files', adsk.core.DropDownStyles.TextListDropDownStyle)
+        # the printers are names, only Custom is a word
+        dropdowns.addItem(bedInput, name, name == layout['bed'], translate=name == printBeds.PRINT_BED_CUSTOM)
+    bedInput.tooltip = tr("The 3MF lays the parts out on this bed in print orientation, what doesn't fit goes on further plates")
+    filesInput = group.children.addDropDownCommandInput(FILES_INPUT_ID, tr('Files'), adsk.core.DropDownStyles.TextListDropDownStyle)
     for name in exportParts.FILES_CHOICES:
-        filesInput.listItems.add(name, name == layout['files'])
-    filesInput.tooltip = "For a Bambu Lab printer: one Bambu Studio project holding every plate with Bambu Studio's standard profiles of the printer, or a 3MF file per plate"
+        dropdowns.addItem(filesInput, name, name == layout['files'])
+    filesInput.tooltip = tr("For a Bambu Lab printer: one Bambu Studio project holding every plate with Bambu Studio's standard profiles of the printer, or a 3MF file per plate")
     for (inputId, name, value, tooltip) in (
-        (BED_WIDTH_INPUT_ID, 'Bed width, X', layout['bedWidth'], 'The usable width of the bed'),
-        (BED_LENGTH_INPUT_ID, 'Bed length, Y', layout['bedLength'], 'The usable depth of the bed'),
-        (SPACING_INPUT_ID, 'Spacing', layout['spacing'], 'Space between the parts and to the edge of the bed'),
-        (PURGE_INPUT_ID, 'Purge tower area', layout['purge'], 'A square kept free on each plate for the purge tower when label text is colored: where Bambu Studio puts the tower for a Bambu Lab printer, the back right corner for others, 0 for none'),
+        (BED_WIDTH_INPUT_ID, tr('Bed width, X'), layout['bedWidth'], tr('The usable width of the bed')),
+        (BED_LENGTH_INPUT_ID, tr('Bed length, Y'), layout['bedLength'], tr('The usable depth of the bed')),
+        (SPACING_INPUT_ID, tr('Spacing'), layout['spacing'], tr('Space between the parts and to the edge of the bed')),
+        (PURGE_INPUT_ID, tr('Purge tower area'), layout['purge'], tr('A square kept free on each plate for the purge tower when label text is colored: where Bambu Studio puts the tower for a Bambu Lab printer, the back right corner for others, 0 for none')),
     ):
         valueInput = group.children.addValueInput(inputId, name, units, adsk.core.ValueInput.createByReal(value / 10))
         valueInput.minimumValue = 0
@@ -408,12 +414,12 @@ def layoutOf(inputs: adsk.core.CommandInputs) -> dict:
     def value(inputId: str) -> float:
         return adsk.core.ValueCommandInput.cast(inputs.itemById(inputId)).value * 10
     return {
-        'bed': adsk.core.DropDownCommandInput.cast(inputs.itemById(BED_INPUT_ID)).selectedItem.name,
+        'bed': dropdowns.value(adsk.core.DropDownCommandInput.cast(inputs.itemById(BED_INPUT_ID))),
         'bedWidth': value(BED_WIDTH_INPUT_ID),
         'bedLength': value(BED_LENGTH_INPUT_ID),
         'spacing': value(SPACING_INPUT_ID),
         'purge': value(PURGE_INPUT_ID),
-        'files': adsk.core.DropDownCommandInput.cast(inputs.itemById(FILES_INPUT_ID)).selectedItem.name,
+        'files': dropdowns.value(adsk.core.DropDownCommandInput.cast(inputs.itemById(FILES_INPUT_ID))),
     }
 
 def bedInputChanged(inputs: adsk.core.CommandInputs, changed: adsk.core.CommandInput):
@@ -421,7 +427,7 @@ def bedInputChanged(inputs: adsk.core.CommandInputs, changed: adsk.core.CommandI
     global isApplyingBedPreset
     bedInput = adsk.core.DropDownCommandInput.cast(inputs.itemById(BED_INPUT_ID))
     if changed.id == BED_INPUT_ID:
-        size = printBeds.presetBedSize(bedInput.selectedItem.name)
+        size = printBeds.presetBedSize(dropdowns.value(bedInput))
         if size is None:
             return
         isApplyingBedPreset = True
@@ -432,7 +438,7 @@ def bedInputChanged(inputs: adsk.core.CommandInputs, changed: adsk.core.CommandI
             isApplyingBedPreset = False
     elif changed.id in (BED_WIDTH_INPUT_ID, BED_LENGTH_INPUT_ID) and not isApplyingBedPreset:
         # only a size that is no longer the preset's, should Fusion report the preset's own setting late
-        size = printBeds.presetBedSize(bedInput.selectedItem.name) if bedInput.selectedItem is not None else None
+        size = printBeds.presetBedSize(dropdowns.value(bedInput)) if bedInput.selectedItem is not None else None
         typed = tuple(adsk.core.ValueCommandInput.cast(inputs.itemById(inputId)).value for inputId in (BED_WIDTH_INPUT_ID, BED_LENGTH_INPUT_ID))
         if size is not None and not all(math.isclose(a, b, abs_tol=1e-6) for (a, b) in zip(size, typed)):
             bedInput.listItems.item(0).isSelected = True
@@ -499,7 +505,7 @@ def gridfinityBodies(design: adsk.fusion.Design) -> list[adsk.fusion.BRepBody]:
     return bodies
 
 def selectedFormat(inputs: adsk.core.CommandInputs) -> str:
-    return adsk.core.DropDownCommandInput.cast(inputs.itemById(FORMAT_INPUT_ID)).selectedItem.name
+    return dropdowns.value(adsk.core.DropDownCommandInput.cast(inputs.itemById(FORMAT_INPUT_ID)))
 
 def updateInputs(inputs: adsk.core.CommandInputs):
     """Painting is for 3MF only, the summary says what goes out"""
@@ -510,19 +516,23 @@ def updateInputs(inputs: adsk.core.CommandInputs):
     fileNameInput.isVisible = format == FORMAT_3MF
     inputs.itemById(BED_GROUP_ID).isVisible = format == FORMAT_3MF
     inputs.itemById(PURGE_INPUT_ID).isVisible = format == FORMAT_3MF and paintInput.value
-    bed = adsk.core.DropDownCommandInput.cast(inputs.itemById(BED_INPUT_ID)).selectedItem
-    bedName = bed.name if bed is not None else ''
+    bedName = dropdowns.value(adsk.core.DropDownCommandInput.cast(inputs.itemById(BED_INPUT_ID))) or ''
     inputs.itemById(FILES_INPUT_ID).isVisible = format == FORMAT_3MF and printBeds.isBambu(bedName)
-    isProject = printBeds.isBambu(bedName) and adsk.core.DropDownCommandInput.cast(inputs.itemById(FILES_INPUT_ID)).selectedItem.name == exportParts.FILES_ONE
+    isProject = printBeds.isBambu(bedName) and dropdowns.value(adsk.core.DropDownCommandInput.cast(inputs.itemById(FILES_INPUT_ID))) == exportParts.FILES_ONE
     try:
         items = exportItems(inputs)
         updateFilamentInputs(inputs, labelColorsOf(items), format == FORMAT_3MF and paintInput.value)
         if not isFileNameTyped:
             fileNameInput.value = defaultFileName(items)
-        files = ('one Bambu Studio project with all plates' if isProject else 'a 3MF file per plate') if format == FORMAT_3MF else 'a file each'
-        summary = f'{len(items)} part{"" if len(items) == 1 else "s"}, {files}' if items else 'Select bodies to export'
+        files = (tr('one Bambu Studio project with all plates') if isProject else tr('a 3MF file per plate')) if format == FORMAT_3MF else tr('a file each')
+        if not items:
+            summary = tr('Select bodies to export')
+        elif len(items) == 1:
+            summary = tr('1 part, {files}', files=files)
+        else:
+            summary = tr('{count} parts, {files}', count=len(items), files=files)
     except Exception as err:
-        summary = f'Bodies not found, {err}'
+        summary = tr('Bodies not found, {error}', error=err)
     adsk.core.TextBoxCommandInput.cast(inputs.itemById(SUMMARY_INPUT_ID)).text = summary
 
 def filamentInputId(color: str) -> str:
@@ -566,12 +576,19 @@ def updateFilamentInputs(inputs: adsk.core.CommandInputs, colors: list[str], isS
             filamentInput.deleteMe()
         dialogAssigned = exportParts.assignFilaments(colors, dialogFilaments)
         for (color, filament) in dialogAssigned.items():
-            name = labelColors.textName(color)
+            name = labelTextName(color)
             filamentInput = group.children.addDropDownCommandInput(filamentInputId(color), name, adsk.core.DropDownStyles.TextListDropDownStyle)
             for choice in exportParts.filamentChoices():
-                filamentInput.listItems.add(choice, choice == str(filament))
-            filamentInput.tooltip = f'{name}: the slicer\'s filament it prints in, 1 is the filament of the parts'
+                dropdowns.addItem(filamentInput, choice, choice == str(filament), translate=False)
+            filamentInput.tooltip = tr("{name}: the slicer's filament it prints in, 1 is the filament of the parts", name=name)
     group.isVisible = isShown and len(colors) > 0
+
+def labelTextName(color: str) -> str:
+    """labelColors.textName in the add-in's language: the color's dialog choice is a translated value"""
+    if color == '':
+        return tr('Text without color')
+    (choice, custom) = labelColors.choiceOf(color)
+    return tr('{color} text', color=custom or trKnown(choice))
 
 def selectedEntities(inputs: adsk.core.CommandInputs) -> list:
     selectionInput = adsk.core.SelectionCommandInput.cast(inputs.itemById(SELECTION_INPUT_ID))
@@ -629,14 +646,16 @@ def command_execute(args: adsk.core.CommandEventArgs):
         filaments = exportParts.assignFilaments(labelColorsOf(items), {**dialogFilaments, **shown})
         saveChoices(folder, format, paint, {**shown, **filaments}, layout)
         if len(items) == 0:
-            ui.messageBox('Nothing to export, select bodies or turn on All Gridkeeper parts.', CMD_NAME)
+            ui.messageBox(tr('Nothing to export, select bodies or turn on All Gridkeeper parts.'), CMD_TITLE)
             return
         fileName = adsk.core.StringValueCommandInput.cast(inputs.itemById(FILE_NAME_INPUT_ID)).value
         result = exportFiles(items, folder, format, fileName, filaments if paint else None, layout, mayReplace, askBambuProject, progressDialog)
         if result is not None:
-            ui.messageBox(exportMessage(result, folder), CMD_NAME)
+            ui.messageBox(exportMessage(result, folder), CMD_TITLE)
     except Exception as err:
-        futil.handle_error(f'{CMD_NAME} failed, {err}', show_message_box=True)
+        # the log in English, the message box in the add-in's language
+        futil.handle_error(f'{CMD_NAME} failed, {err}')
+        ui.messageBox(f"{tr('{command} failed, {error}', command=CMD_TITLE, error=err)}\n{traceback.format_exc()}")
 
 def command_destroy(args: adsk.core.CommandEventArgs):
     global local_handlers
@@ -729,15 +748,18 @@ def exportFiles(items: list[ExportItem], folder: str, format: str, fileName: str
 def exportMessage(result: ExportResult, folder: str) -> str:
     """What the dialog tells after an export"""
     if result.format != FORMAT_3MF:
-        return f'Exported {result.parts} {result.format} file{"" if result.parts == 1 else "s"} to {folder}.'
-    where = result.paths[0] if len(result.paths) == 1 else f'{len(result.paths)} files, a file per plate, in {folder}'
+        if result.parts == 1:
+            return tr('Exported 1 {format} file to {folder}.', format=result.format, folder=folder)
+        return tr('Exported {count} {format} files to {folder}.', count=result.parts, format=result.format, folder=folder)
+    where = result.paths[0] if len(result.paths) == 1 else tr('{count} files, a file per plate, in {folder}', count=len(result.paths), folder=folder)
     if result.projectPlates:
-        where += f', a Bambu Studio project with {result.projectPlates} plate{"" if result.projectPlates == 1 else "s"}'
-    return f'Exported {result.parts} part{"" if result.parts == 1 else "s"} to {where}.' + ''.join(f'\n\n{note}' for note in result.notes)
+        where += tr(', a Bambu Studio project with 1 plate') if result.projectPlates == 1 else tr(', a Bambu Studio project with {count} plates', count=result.projectPlates)
+    message = tr('Exported 1 part to {where}.', where=where) if result.parts == 1 else tr('Exported {count} parts to {where}.', count=result.parts, where=where)
+    return message + ''.join(f'\n\n{note}' for note in result.notes)
 
 def askBambuProject(notice: str) -> bool:
     """The dialog's question before it saves a Bambu Studio project (round 55)"""
-    answer = ui.messageBox(notice, CMD_NAME, adsk.core.MessageBoxButtonTypes.OKCancelButtonType, adsk.core.MessageBoxIconTypes.InformationIconType)
+    answer = ui.messageBox(notice, CMD_TITLE, adsk.core.MessageBoxButtonTypes.OKCancelButtonType, adsk.core.MessageBoxIconTypes.InformationIconType)
     return answer == adsk.core.DialogResults.DialogOK
 
 def paintNote(paint: bool, painted: int, filaments: dict[str, int] | None) -> str:
@@ -745,20 +767,21 @@ def paintNote(paint: bool, painted: int, filaments: dict[str, int] | None) -> st
     if not paint:
         return ''
     if painted == 0 or not filaments:
-        return '\n\nNo label text to color.'
-    bodies = 'the part' if painted == 1 else f'{painted} parts'
-    colors = ', '.join(f'{labelColors.textName(color)} on filament {filament}' for (color, filament) in filaments.items())
-    return f'\n\nLabel text of {bodies}: {colors}.'
+        return '\n\n' + tr('No label text to color.')
+    colors = ', '.join(tr('{name} on filament {filament}', name=labelTextName(color), filament=filament) for (color, filament) in filaments.items())
+    if painted == 1:
+        return '\n\n' + tr('Label text of the part: {colors}.', colors=colors)
+    return '\n\n' + tr('Label text of {count} parts: {colors}.', count=painted, colors=colors)
 
 def plateNote(tooLarge: list[str], noPurge: list[int], nearExcluded: list[int], paint: bool) -> str:
     """Which parts don't fit the bed, and which plates have no free corner for the purge tower"""
     note = ''
     if tooLarge:
-        note += '\n\nLarger than the bed, on a plate of its own: ' + ', '.join(tooLarge) + '.'
+        note += '\n\n' + tr('Larger than the bed, on a plate of its own: {parts}.', parts=', '.join(tooLarge))
     if paint and noPurge:
-        note += '\n\nNo room kept free for the purge tower on plate ' + ', '.join(str(plate + 1) for plate in noPurge) + ', move the tower or a part in the slicer.'
+        note += '\n\n' + tr('No room kept free for the purge tower on plate {plates}, move the tower or a part in the slicer.', plates=', '.join(str(plate + 1) for plate in noPurge))
     if nearExcluded:
-        note += '\n\nA part comes near the area the printer keeps free on plate ' + ', '.join(str(plate + 1) for plate in nearExcluded) + ', the slicer may warn of collisions.'
+        note += '\n\n' + tr('A part comes near the area the printer keeps free on plate {plates}, the slicer may warn of collisions.', plates=', '.join(str(plate + 1) for plate in nearExcluded))
     return note
 
 def mayReplace(paths: list[str], removed: list[str] = None) -> bool:
@@ -772,7 +795,7 @@ def mayReplace(paths: list[str], removed: list[str] = None) -> bool:
         return True
     folder = os.path.dirname((existing + removed)[0])
     question = exportParts.replaceQuestion([os.path.basename(path) for path in existing], [os.path.basename(path) for path in removed], folder, MAX_LISTED_FILES)
-    answer = ui.messageBox(question, CMD_NAME, adsk.core.MessageBoxButtonTypes.YesNoButtonType, adsk.core.MessageBoxIconTypes.WarningIconType)
+    answer = ui.messageBox(question, CMD_TITLE, adsk.core.MessageBoxButtonTypes.YesNoButtonType, adsk.core.MessageBoxIconTypes.WarningIconType)
     return answer == adsk.core.DialogResults.DialogYes
 
 def safeFileName(name: str) -> str:
@@ -811,7 +834,7 @@ def fileNames(items: list[ExportItem]) -> list[str]:
 
 def askFolder(folder: str) -> str | None:
     dialog = ui.createFolderDialog()
-    dialog.title = f'{CMD_NAME}, a folder for the files'
+    dialog.title = tr('{command}, a folder for the files', command=CMD_TITLE)
     if os.path.isdir(folder):
         dialog.initialDirectory = folder
     return dialog.folder if dialog.showDialog() == adsk.core.DialogResults.DialogOK else None
@@ -819,7 +842,7 @@ def askFolder(folder: str) -> str | None:
 def progressDialog(count: int) -> adsk.core.ProgressDialog:
     progress = ui.createProgressDialog()
     progress.isCancelButtonShown = False
-    progress.show(CMD_NAME, 'Exporting %v of %m', 0, count)
+    progress.show(CMD_TITLE, tr('Exporting %v of %m'), 0, count)
     return progress
 
 class _NoProgress:

@@ -2,6 +2,8 @@ import dataclasses
 import json
 import math
 
+from .i18n import tr, number
+
 # Bin, baseplate and label (Cullenect insert) settings as JSON, every field of a generator's InputState by its name. Lengths are in mm and
 # angles in degrees to read easily, the state keeps Fusion's cm and radians. Shape test cases and the config files
 # users save are in this format, see commandSnapshotTests/testCases.py.
@@ -104,6 +106,21 @@ CELL_LIST_FIELDS = {
 
 GENERATOR_TITLES = {GENERATOR_BIN: 'bin', GENERATOR_BASEPLATE: 'baseplate', GENERATOR_LABEL: 'label', GENERATOR_BOX: 'box', GENERATOR_BOX_LABEL: 'box label'}
 
+def generatorTitle(generator: str) -> str:
+    """The generator's title in the add-in's language, see GENERATOR_TITLES for the English one"""
+    titles = {
+        GENERATOR_BIN: tr('bin', 'generator'),
+        GENERATOR_BASEPLATE: tr('baseplate', 'generator'),
+        GENERATOR_LABEL: tr('label', 'generator'),
+        GENERATOR_BOX: tr('box', 'generator'),
+        GENERATOR_BOX_LABEL: tr('box label', 'generator'),
+    }
+    return titles[generator]
+
+def translatedTitle(title: str) -> str:
+    """A value of GENERATOR_TITLES, which the dialogs pass on, in the add-in's language, other text as it is"""
+    return {GENERATOR_TITLES[generator]: generatorTitle(generator) for generator in GENERATOR_TITLES}.get(title, title)
+
 # settings older versions saved under another name, their new name and what their value is multiplied by
 RENAMED_FIELDS = {
     GENERATOR_BIN: {},
@@ -145,7 +162,7 @@ def stateFromJson(generator: str, stateClass: type, settings: dict) -> object:
     missing = [name for name in fieldNames if name not in settings]
     unknown = [name for name in settings if name not in fieldNames]
     if missing or unknown:
-        raise ConfigError(f'missing settings {missing}, unknown settings {unknown}')
+        raise ConfigError(tr('missing settings {missing}, unknown settings {unknown}', missing=missing, unknown=unknown))
     def value(name: str):
         if name in MM_FIELDS[generator]:
             return settings[name] / 10
@@ -197,19 +214,19 @@ class ConfigNotes:
 
 def _typeName(fieldType) -> str:
     if fieldType is bool:
-        return 'yes or no'
+        return tr('yes or no')
     if fieldType is int:
-        return 'a whole number'
+        return tr('a whole number')
     if fieldType is float:
-        return 'a number'
+        return tr('a number')
     if fieldType is str:
-        return 'text'
+        return tr('text')
     if fieldType == list[tuple[int, int]]:
-        return 'a list of [x, y] cells'
+        return tr('a list of [x, y] cells')
     if fieldType == list[dict]:
-        return 'a list of objects'
+        return tr('a list of objects')
     if fieldType == list[str]:
-        return 'a list of names'
+        return tr('a list of names')
     return str(fieldType)
 
 def _isNumber(value) -> bool:
@@ -253,17 +270,20 @@ def readConfig(text: str, generator: str, stateClass: type, current: object, cho
     try:
         data = json.loads(text)
     except ValueError as err:
-        raise ConfigError(f'It isn\'t a JSON file, {err}') from err
+        raise ConfigError(tr('It isn\'t a JSON file, {err}', err=err)) from err
     if not isinstance(data, dict) or not isinstance(data.get('settings'), dict):
-        raise ConfigError('It has no settings of a bin or a baseplate')
+        raise ConfigError(tr('It has no settings of a bin or a baseplate'))
     if data.get('generator') != generator:
-        title = GENERATOR_TITLES.get(data.get('generator'))
-        raise ConfigError(f'It\'s the config of a {title}, not of a {GENERATOR_TITLES[generator]}' if title else f'It isn\'t the config of a {GENERATOR_TITLES[generator]}')
+        other = data.get('generator')
+        expected = generatorTitle(generator)
+        if other in GENERATOR_TITLES:
+            raise ConfigError(tr('It\'s the config of a {title}, not of a {expected}', title=generatorTitle(other), expected=expected))
+        raise ConfigError(tr('It isn\'t the config of a {expected}', expected=expected))
     fieldTypes = {field.name: field.type for field in dataclasses.fields(stateClass)}
     # renamed ones first, a renamed old setting is there then and keeps its value
     loaded = withOlderValues(generator, renamedSettings(generator, data['settings']))
     wrongTypes = [
-        f'{name} has to be {_typeName(fieldTypes[name])}, not {json.dumps(value)}'
+        tr('{name} has to be {type}, not {value}', name=name, type=_typeName(fieldTypes[name]), value=json.dumps(value))
         for (name, value) in loaded.items()
         if name in fieldTypes and not _fitsType(value, fieldTypes[name])
     ]
@@ -288,28 +308,28 @@ def readConfig(text: str, generator: str, stateClass: type, current: object, cho
 
 def _displayValue(generator: str, name: str, value) -> str:
     if isinstance(value, bool):
-        return 'yes' if value else 'no'
+        return tr('yes') if value else tr('no')
     if isinstance(value, list):
-        return f'{len(value)} items'
+        return tr('{count} items', count=len(value))
     if isinstance(value, str):
         return f'"{value}"'
     if name in MM_FIELDS[generator]:
-        return f'{value:g} mm'
+        return tr('{value} mm', value=number(value))
     if name in DEGREE_FIELDS[generator]:
-        return f'{value:g} deg'
-    return f'{value:g}'
+        return tr('{value} deg', value=number(value))
+    return number(value)
 
 def notesText(generator: str, notes: ConfigNotes) -> str:
     """What reading a config changed, a section per kind of change"""
     sections = []
     if notes.unknown:
-        sections.append('Not recognised, skipped:\n' + '\n'.join(f'  • {name}' for name in notes.unknown))
+        sections.append(tr('Not recognised, skipped:') + '\n' + '\n'.join(f'  • {name}' for name in notes.unknown))
     if notes.missing:
-        sections.append('Not in the file, kept the current value:\n' + '\n'.join(
+        sections.append(tr('Not in the file, kept the current value:') + '\n' + '\n'.join(
             f'  • {name} ({_displayValue(generator, name, value)})' for (name, value) in notes.missing
         ))
     if notes.replaced:
-        sections.append('Unknown option, used the default:\n' + '\n'.join(
+        sections.append(tr('Unknown option, used the default:') + '\n' + '\n'.join(
             f'  • {name} "{value}" → {default}' for (name, value, default) in notes.replaced
         ))
     return '\n\n'.join(sections)

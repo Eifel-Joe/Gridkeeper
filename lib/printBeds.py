@@ -4,7 +4,7 @@ import os
 # The printers of the baseplate and export dialogs, kept free of Fusion imports so it can be unit tested. In lib as
 # upstream has it since 1ac1579 (Le0Michine, "Pack the 3MF export on print plates"), with its table names.
 
-PRINT_BED_CUSTOM = 'Custom'
+PRINT_BED_CUSTOM = 'Custom'  # tr-value
 
 # usable bed size X, Y in mm
 PRINT_BED_SIZES: dict[str, tuple[float, float]] = {

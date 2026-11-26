@@ -11,6 +11,16 @@ import math
 
 from . import const, cullenectLabelLayout
 
+try:
+    from ..i18n import tr, number
+except ImportError:
+    # loaded on its own by a test or a tool, outside the add-in package: English
+    def tr(text, context=None, /, **values):
+        return text.format(**values) if values else text
+
+    def number(value):
+        return value if isinstance(value, str) else f'{value:g}'
+
 # the label style of labelGenerator.LABEL_STYLE_CULLENECT, kept here so this module needs no Fusion
 LABEL_STYLE = 'Cullenect'
 
@@ -56,7 +66,7 @@ def wallProblem(wallThickness: float) -> str | None:
     """Why a bin with these walls takes no Cullenect socket, none if it does (p35). A wall entered as 1.2 mm may come back
     a hair under it from the units, so the check has a tolerance"""
     if wallThickness < const.CULLENECT_MIN_WALL_THICKNESS - 1e-6:
-        return f'Cullenect sockets need walls of at least {const.CULLENECT_MIN_WALL_THICKNESS * 10:g} mm'
+        return tr('Cullenect sockets need walls of at least {value} mm', value=number(const.CULLENECT_MIN_WALL_THICKNESS * 10))
     return None
 
 def hollowTabWallThickness(wallThickness: float) -> float:
@@ -85,11 +95,17 @@ def socketFitsDepth(
 def _mm(value: float) -> str:
     return f"{round(value * 10, 2):g}"
 
-def describeSocket(units: float | None, baseWidth: float, socketOffset: float) -> str:
-    """Socket and matching insert width, to make the insert for a compartment tab without measuring"""
+def describeSocket(units: float | None, baseWidth: float, socketOffset: float, shown: bool = False) -> str:
+    """Socket and matching insert width, to make the insert for a compartment tab without measuring. English for the
+    log, in the add-in's language with `shown` for the dialog"""
+    if not shown:
+        if units is None:
+            return "too short for a Cullenect pocket"
+        return f"{units:g}U: pocket {_mm(socketWidth(units, baseWidth, socketOffset))} mm, insert {_mm(labelWidth(units, baseWidth))} mm"
     if units is None:
-        return "too short for a Cullenect pocket"
-    return f"{units:g}U: pocket {_mm(socketWidth(units, baseWidth, socketOffset))} mm, insert {_mm(labelWidth(units, baseWidth))} mm"
+        return tr('too short for a Cullenect pocket')
+    return tr('{units}U: pocket {pocket} mm, insert {insert} mm', units=number(units),
+        pocket=number(_mm(socketWidth(units, baseWidth, socketOffset))), insert=number(_mm(labelWidth(units, baseWidth))))
 
 def socketSummary(
     compartmentWidths: list[float],
@@ -104,7 +120,7 @@ def socketSummary(
         socketUnits(tabSpanInCompartment(width, tabStart, tabLength), baseWidth, socketOffset)
         for width in compartmentWidths
     }
-    return [describeSocket(item, baseWidth, socketOffset) for item in sorted(units, key=lambda item: -1 if item is None else item)]
+    return [describeSocket(item, baseWidth, socketOffset, shown=True) for item in sorted(units, key=lambda item: -1 if item is None else item)]
 
 def dimensionsTableRows(isInInches: bool, hasSockets: bool) -> int:
     """Rows of the bin dialog's actual dimensions: the sizes in mm, in a document in inches a row in inches below, then
@@ -130,9 +146,13 @@ def socketCounts(
     for units in sorted(counts, key=lambda item: -1 if item is None else item):
         count = counts[units]
         if units is None:
-            rows.append(['No socket', f'{count} compartment{"s" if count != 1 else ""} too short for a Cullenect pocket'])
+            rows.append([tr('No socket'), tr('{count} compartment too short for a Cullenect pocket', count=count) if count == 1
+                else tr('{count} compartments too short for a Cullenect pocket', count=count)])
         else:
-            rows.append([f'{units:g}U', f'{count} socket{"s" if count != 1 else ""}, pocket {_mm(socketWidth(units, baseWidth, socketOffset))} mm, insert {_mm(labelWidth(units, baseWidth))} mm'])
+            pocket = number(_mm(socketWidth(units, baseWidth, socketOffset)))
+            insert = number(_mm(labelWidth(units, baseWidth)))
+            rows.append([f'{number(units)}U', tr('{count} socket, pocket {pocket} mm, insert {insert} mm', count=count, pocket=pocket, insert=insert) if count == 1
+                else tr('{count} sockets, pocket {pocket} mm, insert {insert} mm', count=count, pocket=pocket, insert=insert)])
     return rows
 
 def labelInputsEnabled(labelStyle: str) -> dict[str, bool]:
@@ -190,4 +210,6 @@ def pocketFitNote(jointName: str, pocketName: str, insertSizeMm: tuple[float, fl
     """What the rebuild notes when the insert jointed into a pocket no longer fits the rebuilt one, none when it fits"""
     if cullenectLabelLayout.insertFitsPocket(*insertSizeMm, *pocketSizeMm):
         return None
-    return f'{jointName}: the insert doesn\'t fit the rebuilt {pocketName} any more, {insertSizeMm[0]:g} x {insertSizeMm[1]:g} mm into {pocketSizeMm[0]:g} x {pocketSizeMm[1]:g} mm'
+    return tr("{joint}: the insert doesn't fit the rebuilt {pocket} any more, {insertWidth} x {insertHeight} mm into {pocketWidth} x {pocketHeight} mm",
+        joint=jointName, pocket=pocketName, insertWidth=number(insertSizeMm[0]), insertHeight=number(insertSizeMm[1]),
+        pocketWidth=number(pocketSizeMm[0]), pocketHeight=number(pocketSizeMm[1]))

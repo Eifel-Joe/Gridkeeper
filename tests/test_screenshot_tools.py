@@ -81,7 +81,8 @@ def test_compose_names_the_gifs_it_wrote():
     # the palette takes a line ending in .gif named after the animation as made, see entry.runTool
     with open(os.path.join(ROOT, "dev-notes", "tools", "anim", "compose.py"), encoding="utf-8") as file:
         source = file.read()
-    assert "print(os.path.join(OUT, f'{name}-{theme}.gif'))" in source
+    assert "print(os.path.join(OUT, gifName(name, theme, language)))" in source
+    assert "return f'{name}-{theme}.gif' if language == 'en'" in source
 
 
 def test_a_state_can_name_its_own_dialog_picture(tmp_path):

@@ -43,7 +43,7 @@ def test_the_dialog_has_no_joint_origins_checkbox_any_more():
 def test_the_dialog_has_a_lid_group_with_the_lid_tops():
     source = _function("command_created")
     assert "LID_TOP_DROPDOWN" in source and "predBoxConfig.LID_TOPS" in source
-    assert "addGroup(inputs, LID_GROUP, 'Lid')" in source
+    assert "addGroup(inputs, LID_GROUP, tr('Lid'))" in source
     # between the magnet holes and the small parts (the joint origins group went in round 31)
     assert source.index("MAGNET_GROUP") < source.index("LID_GROUP") < source.index("PARTS_GROUP")
     assert "LID_GROUP" in _function("initUiState")

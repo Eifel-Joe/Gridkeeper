@@ -73,6 +73,13 @@ The full list of changes, round by round, is in
   shows the bin's size to the micron, and baseplates set the **Plate edge clearance** per edge (older settings are
   read as half the old gap).
 
+## German
+
+- **The add-in in German** when Fusion is set to German: menu entries, dialogs, tooltips, messages, the settings
+  window, the export and the update dialogs, in the words of Fusion's German interface. Any other language keeps
+  English. What is saved stays English, so a design moves between German and English Fusion unchanged.
+- **These docs in German**, with the language switch in the header.
+
 ## Updates
 
 - **Update check:** once a day at startup Gridkeeper asks GitHub for a new version and shows it with a link to its

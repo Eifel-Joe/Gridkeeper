@@ -5,9 +5,9 @@ the depth field; settings keep the depth alone, the choice is read back from it,
 depths load unchanged. Fusion-free, cm.
 """
 
-SIZE_6X2 = '6×2 mm (2.4 mm deep)'
-SIZE_6X3 = '6×3 mm (3.4 mm deep)'
-CUSTOM = 'Custom'
+SIZE_6X2 = '6×2 mm (2.4 mm deep)'  # tr-value
+SIZE_6X3 = '6×3 mm (3.4 mm deep)'  # tr-value
+CUSTOM = 'Custom'  # tr-value
 MAGNET_SIZES = [(SIZE_6X2, 0.24), (SIZE_6X3, 0.34)]
 
 ALL_CHOICES = [SIZE_6X2, SIZE_6X3, CUSTOM]

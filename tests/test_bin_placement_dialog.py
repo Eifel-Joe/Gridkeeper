@@ -22,9 +22,9 @@ def _source(name):
 
 def test_the_placement_group_is_always_there_with_the_position_in_it():
     source = _source("command_created")
-    group = source.index("placementGroup = inputs.addGroupCommandInput(BIN_PLACEMENT_GROUP_ID, 'Placement')")
+    group = source.index("placementGroup = inputs.addGroupCommandInput(BIN_PLACEMENT_GROUP_ID, tr('Placement'))")
     offer = source.index("if binCell.offersCellPick(")
-    position = source.index("placementGroup.children.addDropDownCommandInput(BIN_PLACEMENT_INPUT_ID, 'Position'")
+    position = source.index("placementGroup.children.addDropDownCommandInput(BIN_PLACEMENT_INPUT_ID, tr('Position')")
     assert group < offer
     assert "binDimensionsGroup.children.addDropDownCommandInput(BIN_PLACEMENT_INPUT_ID" not in source
     # the cell stays under the offer, the position isn't
