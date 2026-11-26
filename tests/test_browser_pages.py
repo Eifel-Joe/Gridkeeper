@@ -93,3 +93,32 @@ def test_update_comes_with_the_font():
 def test_update_to_a_page_not_loaded_yet_is_dropped():
     pages.sendUpdate(FakeBrowser(failing=True), {})
     pages.sendUpdate(None, {})
+
+
+# Round 60: pages get their texts in the add-in's language with the data
+
+i18n = sys.modules["FusionGridfinityGenerator.lib.i18n"]
+
+
+@pytest.fixture
+def german(monkeypatch):
+    monkeypatch.setattr(pages, "pageTexts", lambda: {"Compartments", "Merge", "Not translated"})
+    i18n.setLanguage("de", {"Compartments": "Fächer", "Merge": "Zusammenfassen", "Bin type": "Behältertyp"})
+    yield
+    i18n.setLanguage("en")
+
+
+def test_german_pages_get_their_strings(german):
+    message = json.loads(pages.encode({"cells": []}))
+    assert message["strings"] == {"Compartments": "Fächer", "Merge": "Zusammenfassen"}
+    assert message["data"] == {"cells": []}
+
+
+def test_english_pages_get_no_strings():
+    assert "strings" not in json.loads(pages.encode({}))
+
+
+def test_the_page_texts_are_read_from_the_pages():
+    texts = pages.pageTexts()
+    assert isinstance(texts, set)
+    assert pages.pageTexts() is texts

@@ -11,7 +11,12 @@ import pathlib
 from typing import Any, Callable
 
 from ...lib import fusion360utils as futil
+from .. import i18n
 from .dialogFont import dialogFontUrl
+
+# the add-in's folder, its pages are in commands/*/html and lib/ui/html
+ADDIN_FOLDER = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_pageTexts: set[str] | None = None
 
 # the answer when the page has nothing to redraw
 NO_ANSWER = 'OK'
@@ -25,9 +30,25 @@ def pageUrl(commandFile: str, name: str) -> str:
     """A page in the html folder beside a command's entry"""
     return pathlib.Path(os.path.dirname(os.path.abspath(commandFile)), 'html', name).as_uri()
 
+def pageTexts() -> set[str]:
+    """The texts every page has translated, read once from the pages' files, see i18n.pageTexts"""
+    global _pageTexts
+    if _pageTexts is None:
+        files = list(pathlib.Path(ADDIN_FOLDER, 'commands').glob('*/html/*')) + list(pathlib.Path(ADDIN_FOLDER, 'lib', 'ui', 'html').glob('*'))
+        _pageTexts = set()
+        for file in files:
+            if file.suffix in ('.html', '.js'):
+                _pageTexts |= i18n.pageTexts(file.read_text(encoding='utf-8'))
+    return _pageTexts
+
 def encode(data) -> str:
     # without a bold cut the page would draw bold text as the regular one
-    return json.dumps({'fontUrl': dialogFontUrl(), 'boldFontUrl': dialogFontUrl('Bold'), 'data': data})
+    message = {'fontUrl': dialogFontUrl(), 'boldFontUrl': dialogFontUrl('Bold'), 'data': data}
+    # the pages' texts in German, all pages' at once, a page puts in the ones it has (round 60)
+    strings = i18n.pageStrings(pageTexts())
+    if strings:
+        message['strings'] = strings
+    return json.dumps(message)
 
 def sendUpdate(browserInput: adsk.core.BrowserCommandInput, data) -> None:
     """New data for a page to redraw from"""

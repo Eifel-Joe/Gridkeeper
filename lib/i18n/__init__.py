@@ -11,8 +11,10 @@ Only what the user reads is translated: values the add-in keeps (dropdown values
 lib/ui/dropdowns.py.
 """
 
+import html
 import json
 import os
+import re
 
 LANGUAGES = ('en', 'de')
 DEFAULT_LANGUAGE = 'en'
@@ -110,6 +112,20 @@ def number(value) -> str:
     """A number for a text, with a decimal comma in German; strings are taken as they are formatted"""
     text = value if isinstance(value, str) else f'{value:g}'
     return text.replace('.', ',') if language() == 'de' else text
+
+
+PAGE_ATTRIBUTE = re.compile(r'data-i18n(?:-title|-placeholder)?\s*=\s*"([^"]*)"')
+PAGE_CALL = re.compile(r'fusionBridge\.t\(\s*(?:\'((?:[^\'\\]|\\.)*)\'|"((?:[^"\\]|\\.)*)")')
+
+
+def pageTexts(page: str) -> set[str]:
+    """
+    The English texts a page (HTML or JavaScript) has translated: data-i18n, data-i18n-title and
+    data-i18n-placeholder attributes and fusionBridge.t('…') calls, see lib/ui/html/fusionBridge.js
+    """
+    texts = {html.unescape(match) for match in PAGE_ATTRIBUTE.findall(page)}
+    texts |= {re.sub(r'\\(.)', r'\1', single or double) for (single, double) in PAGE_CALL.findall(page)}
+    return texts
 
 
 def pageStrings(texts) -> dict[str, str]:

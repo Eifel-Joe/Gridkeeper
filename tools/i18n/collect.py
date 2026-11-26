@@ -11,7 +11,8 @@ Usage: python tools/i18n/collect.py [--missing | --stale]
 """
 
 import ast
-import html
+import importlib.util
+
 import json
 import os
 import re
@@ -21,8 +22,18 @@ import sys
 CONTEXT_SEPARATOR = '|'
 # English only (dev-notes/specs/2026-11-26-r60-german.md)
 DEVELOPMENT_COMMANDS = ('commandSnapshotTests', 'commandModelScreenshots')
-PAGE_ATTRIBUTE = re.compile(r'data-i18n(?:-title|-placeholder)?\s*=\s*"([^"]*)"')
-PAGE_CALL = re.compile(r'fusionBridge\.t\(\s*(?:\'((?:[^\'\\]|\\.)*)\'|"((?:[^"\\]|\\.)*)")')
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+def _loadI18n():
+    """lib/i18n by its path, it reads pages the same way for the dialogs (lib/ui/browserPages.py)"""
+    spec = importlib.util.spec_from_file_location('gridkeeper_i18n', os.path.join(ROOT, 'lib', 'i18n', '__init__.py'))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+i18n = _loadI18n()
 
 
 # tr translates a literal, trValue marks a value a dropdown shows translated (lib/ui/dropdowns.py)
@@ -56,15 +67,9 @@ def collectTexts(source: str, fileName: str) -> tuple[set[str], list[str]]:
     return (texts, errors)
 
 
-def _unescapeJs(text: str) -> str:
-    return re.sub(r'\\(.)', r'\1', text)
-
-
 def collectPageTexts(page: str) -> set[str]:
     """The texts a page (HTML or JavaScript) has translated"""
-    texts = {html.unescape(match) for match in PAGE_ATTRIBUTE.findall(page)}
-    texts |= {_unescapeJs(single or double) for (single, double) in PAGE_CALL.findall(page)}
-    return texts
+    return i18n.pageTexts(page)
 
 
 def _isDevelopment(path: str) -> bool:
