@@ -7,8 +7,9 @@ were decided with the spec `dev-notes/specs/2026-11-26-r60-german.md`.
 ## Style
 
 - Address the user formally with *Sie*, as Fusion's German interface does ("Möchten Sie …?", "Wählen Sie … aus.").
-- Input names are short nouns as in Fusion ("Wandstärke", "Höhe des Behälters (u)"); checkboxes keep their verb where
-  the English has one ("Stapelrand erzeugen").
+- Input names are short, about 24 characters at most (Fusion cuts longer ones off), the tooltip explains: "Wandstärke",
+  "Höhe, Z (u)", "Ø Schraubenbohrung"; checkboxes name the feature, a verb only where it says what happens
+  ("Stapelrand erzeugen", "Magnetaussparungen"). German dialogs are 150 px wider than English ones (lib/ui/dialogSize.py).
 - Units and symbols stay: mm, u, °, ×. Numbers in texts get a decimal comma (`i18n.number`), a space before mm in
   running text ("83,5 mm").
 - Keep product and format names: Gridkeeper, Gridfinity, Cullenect, Fusion, 3MF, STL, STEP, Bambu Studio, OrcaSlicer,
@@ -52,6 +53,7 @@ were decided with the spec `dev-notes/specs/2026-11-26-r60-german.md`.
 |---|---|
 | bin | Behälter |
 | baseplate | Grundplatte |
+| base (of a bin, its feet) | Füße |
 | base unit / height unit (u) | Rastereinheit / Höheneinheit (u) |
 | half grid | Halbraster |
 | xy clearance | Spiel XY |

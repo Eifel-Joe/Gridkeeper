@@ -43,11 +43,11 @@ Gleichmäßige Fächer | Eigene Fächer A | Eigene Fächer B
 !!! note "Bilder des ursprünglichen Zusatzmoduls"
     Die Bilder auf dieser Seite stammen aus GridfinityGenerator, die Aufteilung funktioniert in Gridkeeper genauso.
 
-## Trennwände auf Rasterlinien bis nach oben { #dividers-up-to-the-top-on-grid-lines }
+## Trennwände bis oben { #dividers-up-to-the-top-on-grid-lines }
 
-**Trennwände auf Rasterlinien bis nach oben** (aus): Trennwände zwischen Fächern, die auf einer Rasterlinie liegen,
+**Trennwände bis oben** (aus): Trennwände zwischen Fächern, die auf einer Rasterlinie liegen,
 gehen gerade bis zur Oberkante des Stapelrands. Ihre Oberseite nimmt die Form des Stapelrands an: ein Dach mit den
-Schrägen des Stapelrands, oder bei **Oberseite des Stapelrands kürzen** eine flache Oberseite, die auf beiden Seiten
+Schrägen des Stapelrands, oder bei **Stapelrand oben kürzen** eine flache Oberseite, die auf beiden Seiten
 angefast ist. Die Füße eines darauf gestapelten Behälters haben dort eine Nut und sitzen darüber so, wie sie am
 Außenrand im Stapelrand sitzen, sodass ein Behälter beliebiger Größe weiterhin darauf stapelbar ist. Trennwände
 zwischen Rasterlinien bleiben unter dem Stapelrand. Nur für hohle Behälter mit Stapelrand und mehr als einem Fach.
@@ -64,8 +64,8 @@ zwischen Rasterlinien bleiben unter dem Stapelrand. Nur für hohle Behälter mit
 ![Die Gruppe Griffmulde des Behälter-Dialogs: Vorne, Hinten, Links und Rechts, Vorne eingeschaltet](../assets/images/dialog-bin-scoop-walls.png)
 
 Eine Griffmulde rundet den Boden zu einer Wand hin hoch, sodass Teile herausrutschen, statt in der Ecke hängen zu
-bleiben. Jede Wand hat ein eigenes Kontrollkästchen: **Vorne (entlang der Behälterbreite)**, **Hinten (entlang der
-Behälterbreite)**, **Links (entlang der Behälterlänge)** und **Rechts (entlang der Behälterlänge)**. Jedes Fach
+bleiben. Jede Wand hat ein eigenes Kontrollkästchen: **Vorne (Breite)**, **Hinten (entlang der
+Behälterbreite)**, **Links (Länge)** und **Rechts (Länge)**. Jedes Fach
 bekommt an jeder angekreuzten Wand eine Griffmulde, auch seine Trennwände, es sei denn, es hat in der
 [Fachaufteilung](#compartment-layout) eigene Griffmulden. Zwei Griffmulden an gegenüberliegenden Wänden lassen lange
 Teile in beide Richtungen herausrollen, vier erreichen kleine Teile von allen Seiten.
@@ -83,7 +83,7 @@ Teile in beide Richtungen herausrollen, vier erreichen kleine Teile von allen Se
 - Eine linke oder rechte Griffmulde läuft unter den Enden der Beschriftungslasche hindurch, die Lasche folgt dort der
   Griffmulde.
 
-**Max. Radius der Griffmulde (mm)** (25 mm, mehr als 0) begrenzt die Größe jeder Griffmulde, eine Griffmulde ist nie
+**Max. Muldenradius (mm)** (25 mm, mehr als 0) begrenzt die Größe jeder Griffmulde, eine Griffmulde ist nie
 tiefer als ihr Fach; er ist gesperrt, solange keine Wand eine hat.
 Nur hohle Behälter bekommen Griffmulden, Behälter mit eigener Form keine. Ältere Behälter und gespeicherte
 Einstellungen mit Griffmulde haben sie an der vorderen Wand, wie zuvor.

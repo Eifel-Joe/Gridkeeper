@@ -18,6 +18,7 @@ from ...lib.gridfinityUtils import labelColors
 from ... import config
 from ...lib import printBeds
 from ...lib.ui import dropdowns
+from ...lib.ui import dialogSize
 from ...lib.i18n import tr, trKnown, number
 
 # Upstream's export of bins and baseplates (Le0Michine, 4b2f167, round 17.11.2026), for every part our generators make
@@ -373,8 +374,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     addLayoutInputs(inputs, choices['layout'])
     inputs.addTextBoxCommandInput(SUMMARY_INPUT_ID, '', '', 2, True)
     # as wide as the bin dialog, the minimum widens one Fusion kept narrower from before
-    command.setDialogInitialSize(450, 400)
-    command.setDialogMinimumSize(450, 300)
+    dialogSize.setDialogSize(command, 450, 400, minimum=(450, 300))
     updateInputs(inputs)
     futil.add_handler(command.inputChanged, command_input_changed, local_handlers=local_handlers)
     futil.add_handler(command.execute, command_execute, local_handlers=local_handlers)

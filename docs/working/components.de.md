@@ -37,8 +37,8 @@ dazu da, dass Sie Teile von Hand per Gelenk verbinden.
 
 | Modell | Gelenkursprung | Wo | Wann |
 |---|---|---|---|
-| Grundplatte | *Socket joint origin column-row* | Mitte des Bodens jedes Steckplatzes | **Gelenkursprünge hinzufügen** |
-| Behälter | *Foot joint origin column-row* | Mitte der Unterseite jedes Fußes | **Gelenkursprünge hinzufügen** |
+| Grundplatte | *Socket joint origin column-row* | Mitte des Bodens jedes Steckplatzes | **Gelenkursprünge** |
+| Behälter | *Foot joint origin column-row* | Mitte der Unterseite jedes Fußes | **Gelenkursprünge** |
 | In eine Zelle gesetzter Behälter | *Cell placement joint origin* | Mitte der Unterseite der vorderen linken Zelle des Behälters, verwendet von seinem Gelenk *… in cell* | wenn im Behälter-Dialog eine **Zelle** gewählt wurde |
 | Behälter mit Cullenect-Aufnahmen | *Pocket joint origin*; bei Fächern *Compartment 1 pocket joint origin*, *Compartment 2 …* | Mitte jedes Aufnahmebodens, Z nach oben, X entlang der Aufnahme | immer |
 | Cullenect-Einleger | *Insert joint origin* | Mitte seiner Unterseite | immer |
@@ -65,7 +65,7 @@ Gelenkursprung lässt sich auswählen; andere leuchten nicht auf.
 
 **Ein neuer Behälter in eine Zelle einer Grundplatte oder einer Box**
 
-1. Bauen Sie die Grundplatte mit **Gelenkursprünge hinzufügen**; eine Box hat ihre Zellen-Gelenkursprünge ohnehin.
+1. Bauen Sie die Grundplatte mit **Gelenkursprünge**; eine Box hat ihre Zellen-Gelenkursprünge ohnehin.
 2. Öffnen Sie **Gridkeeper Behälter**. Der Abschnitt **Platzierung** hat **Zelle** nur, wenn die Konstruktion eine
    Grundplatte oder eine Box enthält, und nur für einen neuen Behälter, nicht beim Neuerstellen eines Behälters.
    Klicken Sie in **Zelle**; **Position** ist ausgegraut, solange eine Zelle gewählt ist.
@@ -120,7 +120,7 @@ Ohne Auswahl bauen die Dialoge das Teil neben den anderen, ohne Gelenk, z. B. f�
 ### Von Hand per Gelenk verbinden { #jointing-by-hand }
 
 Alles andere wird mit **Zusammenfügen › Gelenk** von Fusion (Tastenkürzel **J**) verbunden. Schalten Sie für
-Behälter und Grundplatten zuerst **Gelenkursprünge hinzufügen** ein; eine Box hat ihre Zellen-Gelenkursprünge
+Behälter und Grundplatten zuerst **Gelenkursprünge** ein; eine Box hat ihre Zellen-Gelenkursprünge
 ohnehin.
 
 **Ein Behälter in eine Grundplatte oder eine Boxzelle**
@@ -151,7 +151,7 @@ werden. Eine neu erstellte Grundplatte oder Box überträgt Gelenke an ihren Gel
 
 | Was Sie sehen | Warum, und was zu tun ist |
 |---|---|
-| Keine Gelenkursprünge in der Zeichenfläche | Ihre Glühbirne ist aus: Öffnen Sie im Browser den Ordner *Gelenkursprünge* der Komponente und schalten Sie sie ein. Füße eines Behälters und Steckplätze einer Grundplatte brauchen **Gelenkursprünge hinzufügen**, die Zellen einer Box sind immer da |
+| Keine Gelenkursprünge in der Zeichenfläche | Ihre Glühbirne ist aus: Öffnen Sie im Browser den Ordner *Gelenkursprünge* der Komponente und schalten Sie sie ein. Füße eines Behälters und Steckplätze einer Grundplatte brauchen **Gelenkursprünge**, die Zellen einer Box sind immer da |
 | Der Gelenkursprung lässt sich im Dialog nicht anklicken | Er ist nicht die Art, die der Dialog annimmt: **Aufnahme** nimmt nur Aufnahme-Gelenkursprünge, **Box** nur den *Label joint origin* einer Box, **Zelle** nur Steckplätze einer Grundplatte und Zellen eines Boxbodens, von Teilen in eigenen Komponenten (nicht Körpern in der Wurzel einer Bauteilkonstruktion) |
 | Der Browser zeigt keine Gelenkursprünge | Der Ordner oder die Komponente ist eingeklappt: Öffnen Sie den Pfeil der Komponente, dann *Gelenkursprünge* |
 | Das Teil sitzt an der falschen Stelle | Es wurde ein anderer Gelenkursprung gewählt, eine benachbarte Aufnahme oder Zelle. Halten Sie die Maus darüber, um seinen Namen zu sehen; löschen Sie das Gelenk (*Beziehungen › Gelenke*) und wählen Sie erneut |

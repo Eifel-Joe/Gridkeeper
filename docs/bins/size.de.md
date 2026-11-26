@@ -11,8 +11,8 @@ Dialog über **Gridkeeper neu erstellen** geöffnet, steht dort, welcher Behält
 |---|---|---|
 | **Rastereinheit Breite (mm)** | 42 mm | Größe einer Rasterzelle entlang X, mindestens 10 mm |
 | **Rastereinheit Länge (mm)** | 42 mm | Größe einer Rasterzelle entlang Y, mindestens 10 mm |
-| **Höheneinheit des Behälters (mm)** | 7 mm | Eine Höheneinheit, mindestens 5 mm |
-| **Spiel XY des Behälters (mm)** | 0,25 mm | Spalt auf jeder Seite zwischen dem Behälter und seiner Zelle, 0,1 bis 0,5 mm. Wählen Sie denselben Wert wie bei der Grundplatte |
+| **Höheneinheit (mm)** | 7 mm | Eine Höheneinheit, mindestens 5 mm |
+| **Spiel XY (mm)** | 0,25 mm | Spalt auf jeder Seite zwischen dem Behälter und seiner Zelle, 0,1 bis 0,5 mm. Wählen Sie denselben Wert wie bei der Grundplatte |
 
 Jeder Behälter hat seine Einheiten als eigene [Benutzerparameter](../working/parameters.md), eine Änderung an einem
 Behälter ändert also keinen anderen.
@@ -21,17 +21,17 @@ Behälter ändert also keinen anderen.
 
 | Eingabe | Vorgabe | Wirkung |
 |---|---|---|
-| **Breite des Behälters, X (u)** | 2 | In ganzen oder halben Rastereinheiten, 0,5 bis 100 |
-| **Länge des Behälters, Y (u)** | 3 | In ganzen oder halben Rastereinheiten, 0,5 bis 100 |
+| **Breite, X (u)** | 2 | In ganzen oder halben Rastereinheiten, 0,5 bis 100 |
+| **Länge, Y (u)** | 3 | In ganzen oder halben Rastereinheiten, 0,5 bis 100 |
 | **Halbraster** | aus | Setzt den Behälter auf Füße in halber Größe, für eine Grundplatte im Halbraster; der Behälter behält seine Größe in Rastereinheiten |
-| **Höhe des Behälters, Z (u)** | 5 | Gesamthöhe in Höheneinheiten, Basis eingerechnet, mindestens 1; der Stapelrand addiert oben 3,8 mm, bei ausgeschaltetem **Oberseite des Stapelrands kürzen** 4,4 mm |
+| **Höhe, Z (u)** | 5 | Gesamthöhe in Höheneinheiten, Füße eingerechnet, mindestens 1; der Stapelrand addiert oben 3,8 mm, bei ausgeschaltetem **Stapelrand oben kürzen** 4,4 mm |
 | **Eigene Form** | aus | Zeigt eine Zeichnung der Behälterzellen, in der Sie Zellen weglassen können |
 
 ### Tatsächliche Maße { #actual-dimensions }
 
 Am Ende des Abschnitts zeigt die Tabelle **Tatsächliche Maße** die äußere Breite, Länge und Höhe, die der Behälter
 haben wird, auf den Mikrometer genau: Breite und Länge folgen dem **Spiel XY des Behälters**, die Höhe dem Stapelrand
-mit ein- oder ausgeschaltetem **Oberseite des Stapelrands kürzen**, wobei seine scharfe Oberkante um das Spiel
+mit ein- oder ausgeschaltetem **Stapelrand oben kürzen**, wobei seine scharfe Oberkante um das Spiel
 abgesenkt ist. Beim Beschriftungsstil Cullenect nennt eine zweite Zeile die Größen der Aufnahmen und die Breite des
 jeweils passenden Einlegers, z. B. `Cullenect: 2U: Aufnahme 78,3 mm, Einleger 78 mm`, siehe
 [Aufnahmen in Behältern](../cullenect/pockets.md).

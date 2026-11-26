@@ -22,6 +22,7 @@ from .inputState import InputState
 from .boxLabelBuilder import buildBoxLabel, rebuildBoxLabel, labelHolder, boxCells, isBoxLabelJointOrigin, labelLayout, labelName, labelProblem, ICONS_FOLDER
 from ...lib.ui.commandUiState import CommandUiState
 from ...lib.ui import configButtons
+from ...lib.ui import dialogSize
 from ...lib.ui import selectionPrefill
 from ...lib.ui.defaultsButtons import addDefaultsButtonRow, defaultsButtonsHandlers, DEFAULTS_SAVE, DEFAULTS_FACTORY_RESET
 from ...lib.ui import browserPages
@@ -215,7 +216,7 @@ def addString(inputs, inputId, label, tooltip=''):
 
 def command_created(args: adsk.core.CommandCreatedEventArgs):
     futil.log(f'{CMD_NAME} Command Created Event')
-    args.command.setDialogInitialSize(400, 500)
+    dialogSize.setDialogSize(args.command, 400, 500)
     inputs = args.command.commandInputs
     global rebuildBodyToken
     global pendingRebuildBody

@@ -8,14 +8,14 @@ Hinweise nach einem Neuerstellen. Diese Seite führt alle auf, mit dem, was Sie 
 
 | Dialog | Meldung oder Grund | Was zu tun ist |
 |---|---|---|
-| Behälter | **Cullenect: Cullenect-Steckplätze brauchen Wände von mindestens 1,2 mm** (in der Tabelle Tatsächliche Maße) | Stellen Sie **Wandstärke des Behälters** auf 1,2 mm oder mehr, oder wählen Sie einen anderen Beschriftungsstil |
+| Behälter | **Cullenect: Cullenect-Steckplätze brauchen Wände von mindestens 1,2 mm** (in der Tabelle Tatsächliche Maße) | Stellen Sie **Wandstärke** auf 1,2 mm oder mehr, oder wählen Sie einen anderen Beschriftungsstil |
 | Behälter | **Wählen Sie mindestens eine Zelle aus** (Zeichnung der eigenen Form) | Klicken Sie mindestens eine Zelle an, oder schalten Sie **Eigene Form** ab |
 | Behälter | **Alle Zellen müssen ein zusammenhängendes Teil bilden, verbunden entlang ihrer Seiten** | Zellen, die sich nur an einer Ecke berühren, zählen nicht; verbinden Sie sie |
-| Behälter | Eine **Benutzerdefinierte Beschriftungsfarbe**, die nicht `#rrggbb` ist | Geben Sie eine Farbe wie `#D02020` ein |
-| Behälter | Ein Wert außerhalb seines Bereichs: Rastereinheit über 10 mm, Höheneinheit über 5 mm, Spiel XY 0,1 bis 0,5 mm, Breite und Länge in halben Einheiten, Höhe mindestens 1, Wand 0,4 bis 2 mm, Überhangwinkel der Lasche 30° bis 65°, Winkel der Laschenoberseite 0° bis 45°, Spiel des Steckplatzes 0 bis 1 mm, eine Schraubenbohrung über 1 mm und kleiner als die Magnetaussparung | Korrigieren Sie den Wert; Fusion zeigt ihn rot an |
+| Behälter | Eine **Benutzerdefinierte Farbe**, die nicht `#rrggbb` ist | Geben Sie eine Farbe wie `#D02020` ein |
+| Behälter | Ein Wert außerhalb seines Bereichs: Rastereinheit über 10 mm, Höheneinheit über 5 mm, Spiel XY 0,1 bis 0,5 mm, Breite und Länge in halben Einheiten, Höhe mindestens 1, Wand 0,4 bis 2 mm, Überhangwinkel Lasche 30° bis 65°, Winkel Laschenoberseite 0° bis 45°, Spiel des Steckplatzes 0 bis 1 mm, eine Schraubenbohrung über 1 mm und kleiner als die Magnetaussparung | Korrigieren Sie den Wert; Fusion zeigt ihn rot an |
 | Grundplatte | **Die Rastereinheiten müssen größer als 0 sein**, **Die Plattengröße muss mindestens 1 x 1 u betragen** (unter Ergebnis) | Korrigieren Sie die Größe |
 | Grundplatte | **Die Fläche ist zu klein für eine einzelne Zelle** | Machen Sie die Fläche größer als eine Zelle plus Spiel |
-| Grundplatte | **Das Druckbett ist zu klein für eine einzelne Zelle mit der Auffüllung an den Seiten** | Wählen Sie ein größeres Druckbett, einen kleineren Rand des Druckbetts oder weniger Auffüllung |
+| Grundplatte | **Das Druckbett ist zu klein für eine einzelne Zelle mit der Seitliche Auffüllung** | Wählen Sie ein größeres Druckbett, einen kleineren Rand des Druckbetts oder weniger Auffüllung |
 | Grundplatte | Spiel außerhalb des Bereichs, Magnet über 10 mm, Schraubenbohrung über 10 mm, Schraubenkopf nicht größer als die Schraubenbohrung oder über 15 mm, Verbindungsloch über 5 mm | Korrigieren Sie den Wert |
 | Einleger | **Ein Einleger ist 10 bis 300 mm breit** | Ändern Sie die Breite oder die Korrektur |
 | Einleger | **Ein Einleger ist mindestens 5 mm hoch** | Wählen Sie die Höhenkorrektur kleiner |

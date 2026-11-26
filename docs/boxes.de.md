@@ -42,8 +42,8 @@ Die Zeile darunter zeigt das Außenmaß: Breite und Länge sind die Zellen plus 
 |---|---|---|
 | **Magnetlöcher hinzufügen** | aus | Ein Loch im Sockel an jeder Ecke jeder Zelle |
 | **Magnetgröße** | 6×2 mm (2,4 mm tief) | Setzt die Tiefe für Magnete 6 × 2 mm, oder *Benutzerdefiniert*, um sie einzugeben |
-| **Tiefe der Magnetaussparung** | 2,4 mm | Bis 2,6 mm: Der Sockel unter dem Loch ist 2,8 mm dick, Magnete 6 × 3 mm gingen durch den Boden |
-| **Durchmesser der Magnetaussparung** | 6,5 mm | 3 bis 8,5 mm, der Sockel um das Loch wächst mit |
+| **Tiefe Magnetaussparung** | 2,4 mm | Bis 2,6 mm: Der Sockel unter dem Loch ist 2,8 mm dick, Magnete 6 × 3 mm gingen durch den Boden |
+| **Ø Magnetaussparung** | 6,5 mm | 3 bis 8,5 mm, der Sockel um das Loch wächst mit |
 
 ## Gelenkursprünge { #joint-origins }
 
@@ -51,7 +51,7 @@ Jede Zelle des Bodens hat einen Gelenkursprung, *Cell joint origin column-row*, 
 Gelenk in die Box zu setzen: Der Behälterdialog setzt einen neuen Behälter in einen davon
 ([Gelenkursprung in einem Dialog wählen](working/components.md#picking-a-joint-origin-in-a-dialog)), von Hand siehe
 [Gelenkursprünge](working/components.md#jointing-by-hand). Früher gab es dafür ein Kontrollkästchen
-**Gelenkursprünge hinzufügen**; eine Box, die ohne sie gebaut wurde, bekommt sie beim Neuerstellen, sonst ändert sich
+**Gelenkursprünge**; eine Box, die ohne sie gebaut wurde, bekommt sie beim Neuerstellen, sonst ändert sich
 nichts an ihr. Diese sind außerdem immer vorhanden:
 
 | Gelenkursprung | Wo |

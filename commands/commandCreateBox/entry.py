@@ -22,6 +22,7 @@ from ...lib.ui.commandUiState import CommandUiState
 from ...lib.ui.defaultsButtons import addDefaultsButtonRow, defaultsButtonsHandlers, DEFAULTS_SAVE, DEFAULTS_FACTORY_RESET
 from ...lib.ui.buttonRow import addButtonRow
 from ...lib.ui import configButtons
+from ...lib.ui import dialogSize
 from ...lib.ui import browserPages
 from ...lib.ui import dropdowns
 from ...lib.i18n import tr, number
@@ -180,7 +181,7 @@ def addGroup(inputs, groupId, label):
 
 def command_created(args: adsk.core.CommandCreatedEventArgs):
     futil.log(f'{CMD_NAME} Command Created Event')
-    args.command.setDialogInitialSize(400, 500)
+    dialogSize.setDialogSize(args.command, 400, 500)
     inputs = args.command.commandInputs
     global rebuildBodyToken
     global pendingRebuildBody

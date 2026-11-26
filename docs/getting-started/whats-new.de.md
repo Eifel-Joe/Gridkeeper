@@ -48,7 +48,7 @@ Die vollständige Liste der Änderungen, Runde für Runde, steht in
 
 ## Behälter { #bins }
 
-- **Trennwände auf Rasterlinien bis nach oben:** Fachtrennwände auf einer Rasterlinie reichen bis zur Oberkante des Stapelrands; die Füße eines
+- **Trennwände bis oben:** Fachtrennwände auf einer Rasterlinie reichen bis zur Oberkante des Stapelrands; die Füße eines
   darauf gestapelten Behälters haben dort eine Nut, sodass Behälter jeder Größe weiterhin stapelbar sind.
 - **Gelenkursprünge folgen dem Raster:** Die Gelenkursprünge der Behälterfüße und der Steckplätze der Grundplatte bewegen sich mit den Parametern der
   Rastereinheit.

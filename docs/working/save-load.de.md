@@ -9,9 +9,9 @@ Grundplatten und Einleger, **Änderungen** im Behälter-Dialog.
 
 | Schaltfläche | Was sie bewirkt |
 |---|---|
-| **Als Vorgaben speichern** | Der Dialog öffnet sich ab jetzt mit den aktuellen Eingaben |
-| **Auf Vorgaben zurücksetzen** | Setzt die Eingaben auf die gespeicherten Vorgaben zurück |
-| **Vorgaben löschen** | Löscht die gespeicherten Vorgaben und setzt die Eingaben auf die ursprünglichen zurück |
+| **Als Vorgabe speichern** | Der Dialog öffnet sich ab jetzt mit den aktuellen Eingaben |
+| **Vorgabe laden** | Setzt die Eingaben auf die gespeicherten Vorgaben zurück |
+| **Vorgabe löschen** | Löscht die gespeicherten Vorgaben und setzt die Eingaben auf die ursprünglichen zurück |
 
 Ohne gespeicherte Vorgaben öffnet sich ein Dialog mit den Eingaben, die er zuletzt in dieser Fusion-Sitzung hatte, nach
 einem Neustart mit den ursprünglichen. Die Vorgaben werden im Ordner des Add-ins gespeichert und überstehen ein

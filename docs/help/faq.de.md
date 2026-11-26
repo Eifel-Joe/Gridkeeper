@@ -25,8 +25,8 @@ Nein. Der App Store enthält das ursprüngliche Zusatzmodul von Le0Michine. Grid
 ## Erstellen { #building }
 
 **Der Dialog reagiert langsam.**
-Schalten Sie die Vorschau ab (**Vorschau automatisch aktualisieren (langsam)**, **Vorschau anzeigen (langsam)**); im
-Dialog Behälter zeigt **Vorschau einmal aktualisieren** das Ergebnis jeweils bei Bedarf. Große Grundplatten mit
+Schalten Sie die Vorschau ab (**Vorschau laufend (langsam)**, **Vorschau anzeigen (langsam)**); im
+Dialog Behälter zeigt **Vorschau aktualisieren** das Ergebnis jeweils bei Bedarf. Große Grundplatten mit
 Gelenkursprüngen und Einleger mit Symbolen aus vielen Punkten brauchen einige Sekunden.
 
 **Ein eingegebener Wert wurde ignoriert.**
@@ -57,7 +57,7 @@ zurückzuerhalten; ihre Werte sind erhalten geblieben.
 
 **Löcher im Boden sind ausgegraut.**
 Der Behälter steht auf dem **Halbraster**: Halbe Füße haben keinen Platz für Magnet- oder Schraubenlöcher. Oder
-**Basis erzeugen** ist abgeschaltet.
+**Füße erzeugen** ist abgeschaltet.
 
 ## Beschriftungen und Text { #labels-and-text }
 
@@ -92,11 +92,11 @@ Erstellen Sie den Einleger neu und wählen Sie eine Aufnahme aus.
 ## Drucken { #printing }
 
 **Der Einleger rastet nicht ein oder fällt heraus.**
-Ändern Sie die Passung: **Spiel des Steckplatzes (mm)** am Behälter (größer ist lockerer) oder **Korrektur Breite** /
+Ändern Sie die Passung: **Steckplatzspiel (mm)** am Behälter (größer ist lockerer) oder **Korrektur Breite** /
 **Korrektur Höhe** am Einleger (kleiner ist lockerer). Drucken Sie zuerst einen Test-Einleger.
 
 **Die Behälter sitzen nicht plan auf der Grundplatte.**
-Verwenden Sie bei Behältern und Grundplatte dasselbe **Spiel XY des Behälters (mm)**. **Abschnitt oben (mm)** an der
+Verwenden Sie bei Behältern und Grundplatte dasselbe **Spiel XY (mm)**. **Abschnitt oben (mm)** an der
 Grundplatte lässt Behälter auf ihren Füßen statt auf den Stegen der Platte sitzen.
 
 **Wie drucke ich die Beschriftung in einer zweiten Farbe?**

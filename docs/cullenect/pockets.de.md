@@ -4,7 +4,7 @@ Im Behälter-Dialog unter **Fächer des Behälters › Beschriftungslasche**: Sc
 (entlang der Behälterbreite)** ein und wählen Sie als **Beschriftungsstil** **Cullenect**. Jede Beschriftungslasche
 erhält statt einer gedruckten Beschriftung eine Aufnahme, bei mehreren Fächern jede Fachlasche.
 
-![Der Abschnitt Beschriftungslasche des Behälter-Dialogs mit dem Beschriftungsstil Cullenect: Text, Symbol, Fett, Farbe und Winkel der Laschenoberseite ausgegraut, Spiel des Steckplatzes eingeblendet](../assets/images/dialog-bin-cullenect.png)
+![Der Abschnitt Beschriftungslasche des Behälter-Dialogs mit dem Beschriftungsstil Cullenect: Text, Symbol, Fett, Farbe und Winkel Laschenoberseite ausgegraut, Spiel des Steckplatzes eingeblendet](../assets/images/dialog-bin-cullenect.png)
 
 ## Größe der Aufnahme { #pocket-size }
 
@@ -35,7 +35,7 @@ Dieselbe Liste, mit der Anzahl der Aufnahmen jeder Größe im Behälter, steht i
   abgeschaltet, der Text kommt auf den Einleger. Sie behalten ihre Werte für den Fall, dass Sie wieder einen anderen Stil
   wählen.
 - Eine hohle Lasche behält unter der Aufnahme eine 0,4 mm dicke Haut.
-- **Spiel des Steckplatzes (mm)** (0,3 mm wie bei Cullenect, bis 1 mm) gibt an, um wie viel die Aufnahme in Breite und
+- **Steckplatzspiel (mm)** (0,3 mm wie bei Cullenect, bis 1 mm) gibt an, um wie viel die Aufnahme in Breite und
   Höhe größer ist als der Einleger. Die Einleger selbst werden maßgenau erzeugt; sitzen Ihre Einleger zu fest oder zu
   locker, ändern Sie das Spiel hier oder die Korrektur des Einlegers, siehe [Einleger](inserts.md#size).
 

@@ -24,13 +24,13 @@ erweitert ihn auf jedes Teil, das es erzeugt, und auf farbigen Text.
 | **Format** | **3MF**: die Teile in Druckausrichtung auf dem Druckbett angeordnet, ein Bambu-Studio-Projekt mit allen Druckplatten für einen Bambu-Lab-Drucker oder eine Datei je Druckplatte, siehe unten. **STL** oder **STEP**: je eine Datei pro Teil, nach dem Teil benannt (bei einer Box *Base*, *Lid* und Kleinteile mit dem Namen der Box davor, etwa *Box 5×4×6 Base*, *Box 5×4×6 Latch*), am Ursprung, mit der Unterseite bei null. STL-Dateien liegen in Druckausrichtung, STEP-Dateien wie konstruiert |
 | **Ordner**, **Ordner wählen...** | Wohin die Dateien kommen; der zuletzt verwendete Ordner wird gemerkt |
 | **Dateiname** | Name der 3MF-Datei, bei einem einzelnen Teil der Name des Teils; bei einer Datei je Druckplatte und mehreren Druckplatten wird *, plate 1*, *, plate 2* … angehängt |
-| **Beschriftungstext einfärben** | Nur 3MF: Jede Beschriftungsfarbe erhält ein Filament, in dem der Slicer sie druckt, siehe unten |
-| **Filamente der Beschriftung** | Bei eingeschaltetem **Beschriftungstext einfärben**: eine Liste mit je einer Beschriftungsfarbe der ausgewählten Teile, etwa *Rot*, *Blau* oder *Text ohne Farbe*, um das Filament des Slicers zu wählen, in dem sie gedruckt wird, 1 bis 18, gezählt ab 1 wie im Slicer aufgelistet. Die Teile werden mit Filament 1 gedruckt. Jede Farbe beginnt mit einem eigenen Filament, 2, 3 …; eine geänderte Nummer wird für den nächsten Export gemerkt |
+| **Text einfärben** | Nur 3MF: Jede Beschriftungsfarbe erhält ein Filament, in dem der Slicer sie druckt, siehe unten |
+| **Filamente Beschriftung** | Bei eingeschaltetem **Text einfärben**: eine Liste mit je einer Beschriftungsfarbe der ausgewählten Teile, etwa *Rot*, *Blau* oder *Text ohne Farbe*, um das Filament des Slicers zu wählen, in dem sie gedruckt wird, 1 bis 18, gezählt ab 1 wie im Slicer aufgelistet. Die Teile werden mit Filament 1 gedruckt. Jede Farbe beginnt mit einem eigenen Filament, 2, 3 …; eine geänderte Nummer wird für den nächsten Export gemerkt |
 | **Druckbett** › **Drucker** | Nur 3MF: Ihr Drucker, siehe [Den Drucker wählen](#choosing-the-printer); Druckbettgröße, die Stelle, an der sein Slicer den Reinigungsturm platziert, und der freizuhaltende Bereich gehören dazu. Der zuletzt gewählte Drucker, hier oder im Grundplatten-Dialog, ist die Vorgabe beider Dialoge |
 | **Dateien** | Nur 3MF mit einem Bambu-Lab-Drucker: **Ein Bambu-Studio-Projekt mit allen Druckplatten** (Vorgabe) oder **Eine Datei je Druckplatte**, siehe [Ein Bambu-Studio-Projekt mit allen Druckplatten](#a-bambu-studio-project-with-all-plates) |
-| **Breite des Druckbetts, X**, **Länge des Druckbetts, Y** | Die nutzbare Größe des Druckbetts; wenn Sie eine Größe eingeben, wechselt der Drucker auf *Benutzerdefiniert* |
+| **Druckbettbreite, X**, **Druckbettlänge, Y** | Die nutzbare Größe des Druckbetts; wenn Sie eine Größe eingeben, wechselt der Drucker auf *Benutzerdefiniert* |
 | **Abstand** | Abstand zwischen den Teilen und zum Rand des Druckbetts, Vorgabe 5 mm |
-| **Fläche für den Reinigungsturm** | Bei eingeschaltetem **Beschriftungstext einfärben** und Text zum Einfärben: ein Quadrat, das auf jeder Druckplatte für den Reinigungsturm frei bleibt, Vorgabe 50 mm, 0 für keines |
+| **Fläche für den Reinigungsturm** | Bei eingeschaltetem **Text einfärben** und Text zum Einfärben: ein Quadrat, das auf jeder Druckplatte für den Reinigungsturm frei bleibt, Vorgabe 50 mm, 0 für keines |
 
 Der Dialog merkt sich seine Eingaben für den nächsten Export. Vorhandene Dateien werden nur nach Rückfrage ersetzt.
 3MF- und STL-Netze werden in der höchsten Qualität von Fusion erzeugt.
@@ -38,7 +38,7 @@ Der Dialog merkt sich seine Eingaben für den nächsten Export. Vorhandene Datei
 ## Den Drucker wählen { #choosing-the-printer }
 
 **Druckbett › Drucker** teilt dem Export mit, auf welchem Druckbett die Teile angeordnet werden. Wählen Sie Ihren
-Drucker oder *Benutzerdefiniert* und geben Sie **Breite des Druckbetts, X** und **Länge des Druckbetts, Y** selbst
+Drucker oder *Benutzerdefiniert* und geben Sie **Druckbettbreite, X** und **Druckbettlänge, Y** selbst
 ein. Die Liste ist dieselbe wie im Grundplatten-Dialog:
 
 | Drucker | Druckbett (mm) | Quadrat für den Reinigungsturm, bei farbigem Text | Freigehalten |
@@ -108,7 +108,7 @@ Druckplatte alles aufnimmt. Ein Teil, das größer ist als das Druckbett, liegt 
 wird in der Meldung nach dem Export genannt. Dateien je Druckplatte aus einem früheren Export desselben Namens, die
 der neue nicht schreibt, werden entfernt, nach Rückfrage zusammen mit den Dateien, die er ersetzt.
 
-Bei eingeschaltetem **Beschriftungstext einfärben** und Beschriftungstext zum Einfärben bleibt auf jeder Druckplatte
+Bei eingeschaltetem **Text einfärben** und Beschriftungstext zum Einfärben bleibt auf jeder Druckplatte
 ein Quadrat für den Reinigungsturm frei. Bei einem Bambu-Lab-Drucker liegt es dort, wo Bambu Studio den Turm
 platziert (aus seinen Druckerprofilen): hinten, bei etwa zwei Dritteln der Breite, bei den Druckern P1, X1, P2S, X2D
 und H2; hinten links beim A1, A1 mini und A2L; vorne rechts beim H3C. Bei den anderen Druckern und bei
@@ -177,8 +177,8 @@ Düse.
 
 ## Farbiger Beschriftungstext in der 3MF-Datei { #colored-label-text-in-the-3mf }
 
-Bei eingeschaltetem **Beschriftungstext einfärben** werden die Dreiecke des Beschriftungstexts mit dem Filament ihrer
-Farbe aus **Filamente der Beschriftung** bemalt, so wie das Malwerkzeug der Slicer es speichert. Bambu Studio,
+Bei eingeschaltetem **Text einfärben** werden die Dreiecke des Beschriftungstexts mit dem Filament ihrer
+Farbe aus **Filamente Beschriftung** bemalt, so wie das Malwerkzeug der Slicer es speichert. Bambu Studio,
 OrcaSlicer und PrusaSlicer drucken sie in diesem Filament, ohne dass Sie von Hand malen müssen:
 
 - **Umriss-Beschriftungen ohne Farbe:** Die Oberseiten der Buchstaben werden bemalt.
@@ -204,7 +204,7 @@ Filament 1 ist `4`, Filament 2 ist `8`, ab Filament 3 `0C`, `1C`, … (in `paint
 `slic3rpe:mmu_segmentation` und in `Metadata/Slic3r_facets_annotation.json` von PrusaSlicer). Der Slicer zeigt es als
 die von Ihnen gewählte Filamentnummer an.
 
-Ohne **Beschriftungstext einfärben** ist der Text trotzdem in der Datei, im Filament des Teils.
+Ohne **Text einfärben** ist der Text trotzdem in der Datei, im Filament des Teils.
 
 !!! note "Bekannte Einschränkungen"
     - Ein Behälter, der als Körper in der Wurzelkomponente ohne eigene Komponente gebaut wurde (ältere
@@ -221,7 +221,7 @@ Ohne **Beschriftungstext einfärben** ist der Text trotzdem in der Datei, im Fil
 ## Im Slicer { #in-the-slicer }
 
 1. Öffnen Sie die 3MF-Datei in Bambu Studio, OrcaSlicer oder PrusaSlicer.
-2. Stellen Sie sicher, dass die Filamentliste bei jeder Nummer aus **Filamente der Beschriftung** ein Filament in der
+2. Stellen Sie sicher, dass die Filamentliste bei jeder Nummer aus **Filamente Beschriftung** ein Filament in der
    gewünschten Farbe hat. Ein Bambu-Studio-Projekt bringt sie als Bambu PLA Basic in den Beschriftungsfarben mit;
    wählen Sie dort Ihre eigenen Filamente.
 3. Slicen Sie und prüfen Sie in der Vorschau, dass die Buchstaben jeder Farbe in ihrem Filament gedruckt werden.

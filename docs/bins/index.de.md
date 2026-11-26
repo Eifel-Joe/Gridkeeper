@@ -14,7 +14,7 @@ Der Dialog ist lang, seine Abschnitte werden auf diesen Seiten beschrieben:
 | **Merkmale des Behälters**: Körper, Typ, Wände, Stapelrand, Falze | [Körper, Wände und Stapelrand](body.md) |
 | **Fächer des Behälters**: Aufteilung, Trennwände, **Griffmulde** | [Fächer und Griffmulde](compartments.md) |
 | **Fächer des Behälters › Beschriftungslasche** | [Beschriftungslasche und Beschriftungen](labels.md), für den Cullenect-Stil auch [Aufnahmen in Behältern](../cullenect/pockets.md) |
-| **Merkmale der Basis-Schnittstelle** | [Basis, Magnete und Schrauben](base.md) |
+| **Füße** | [Füße, Magnete und Schrauben](base.md) |
 | **Änderungen** | [Einstellungen speichern und laden](../working/save-load.md) |
 | **Vorschau** | weiter unten |
 
@@ -39,8 +39,8 @@ wurden. Die Positionsoption stammt aus GridfinityGenerator 2.5 von Le0Michine.
 
 Einen Behälter zu erzeugen dauert einige Sekunden, deshalb ist die Vorschau standardmäßig aus.
 
-- **Vorschau automatisch aktualisieren (langsam)** erzeugt den Behälter nach jeder Änderung neu.
-- **Vorschau einmal aktualisieren** erzeugt ihn einmal mit den aktuellen Eingaben; die Schaltfläche ist ausgeblendet,
+- **Vorschau laufend (langsam)** erzeugt den Behälter nach jeder Änderung neu.
+- **Vorschau aktualisieren** erzeugt ihn einmal mit den aktuellen Eingaben; die Schaltfläche ist ausgeblendet,
   solange die automatische Aktualisierung an ist.
 - **Letzte Vorschau** zeigt, wie lange die letzte Vorschau gedauert hat, und weist auf Text hin, der zu dünn zum
   Drucken ist.

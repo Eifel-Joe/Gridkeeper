@@ -6,7 +6,7 @@ die Buchstaben und Symbole zu eigenen Körpern mit einer Farbe, sodass der Slice
 ## Beschriftungen von Behältern { #bin-labels }
 
 **Beschriftungsfarbe** im Abschnitt der Beschriftungslasche: *Ohne*, *Schwarz*, *Weiß*, *Rot*, *Orange*, *Gelb*,
-*Grün*, *Blau*, *Grau* oder *Benutzerdefiniert* mit einem `#rrggbb`-Wert in **Benutzerdefinierte Beschriftungsfarbe**.
+*Grün*, *Blau*, *Grau* oder *Benutzerdefiniert* mit einem `#rrggbb`-Wert in **Benutzerdefinierte Farbe**.
 
 - **Ohne** funktioniert wie in GridfinityGenerator: Erhabene Buchstaben werden mit dem Behälter verbunden,
   eingravierte und Umriss-Buchstaben werden ausgeschnitten. Die Buchstaben einer Umriss-Beschriftung erscheinen in

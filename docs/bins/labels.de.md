@@ -8,15 +8,15 @@ Lasche.
 
 | Eingabe | Vorgabe | Wirkung |
 |---|---|---|
-| **Beschriftungslasche hinzufügen (entlang der Behälterbreite)** | aus | Fügt die Lasche hinzu; die übrigen Eingaben der Gruppe sind ohne sie gesperrt |
+| **Lasche entlang der Breite** | aus | Fügt die Lasche hinzu; die übrigen Eingaben der Gruppe sind ohne sie gesperrt |
 | **Länge der Lasche (u)** | 1 | Länge entlang der Behälterbreite, in Rastereinheiten |
 | **Breite der Lasche (mm)** | 13 mm | Wie weit die Lasche von der hinteren Wand absteht |
 | **Versatz der Lasche (u)** | 0 | Wo die Lasche entlang der Behälterbreite beginnt |
-| **Überhangwinkel der Lasche** | 45° | Schräge unter der Lasche, 30° bis 65° |
-| **Winkel der Laschenoberseite** | 0° | Neigt die Laschenoberseite nach vorn, sodass die Beschriftung zur Vorderseite zeigt, bis 45° |
-| **Versatz der Laschenoberseite (mm)** | 0,5 mm | Wie weit die Laschenoberseite unter der Oberkante des Behälters liegt, 0 bis 2 mm; die Beschriftung geht mit nach unten. Die Trennwände zwischen den Fächern werden um denselben Betrag abgesenkt, bis nach oben geführte Trennwände beginnen dort, und eine Cullenect-Aufnahme wird in die abgesenkte Lasche geschnitten. Einstellungen ohne diesen Wert werden mit 0,5 mm geladen. Aus GridfinityGenerator 2.5 von Le0Michine |
+| **Überhangwinkel Lasche** | 45° | Schräge unter der Lasche, 30° bis 65° |
+| **Winkel Laschenoberseite** | 0° | Neigt die Laschenoberseite nach vorn, sodass die Beschriftung zur Vorderseite zeigt, bis 45° |
+| **Laschenversatz oben (mm)** | 0,5 mm | Wie weit die Laschenoberseite unter der Oberkante des Behälters liegt, 0 bis 2 mm; die Beschriftung geht mit nach unten. Die Trennwände zwischen den Fächern werden um denselben Betrag abgesenkt, bis nach oben geführte Trennwände beginnen dort, und eine Cullenect-Aufnahme wird in die abgesenkte Lasche geschnitten. Einstellungen ohne diesen Wert werden mit 0,5 mm geladen. Aus GridfinityGenerator 2.5 von Le0Michine |
 | **Hohle Lasche** | aus | Höhlt die Lasche mit der Wandstärke aus. Bei einem einzigen Fach wird sie durch die hintere Wand des Behälters geöffnet, bei mehreren Fächern bleibt sie geschlossen. Für Behälter als Schale standardmäßig an, für Behälter mit gefalzten Wänden gesperrt und aus |
-| **Durch die Seitenwände öffnen** | aus | Öffnet eine hohle Lasche zusätzlich durch die Seitenwände, wo sie auf diese trifft. Nur bei einem einzigen Fach |
+| **Seitlich offen** | aus | Öffnet eine hohle Lasche zusätzlich durch die Seitenwände, wo sie auf diese trifft. Nur bei einem einzigen Fach |
 
 ![Die Eingaben für die Beschriftungslasche im Behälter-Dialog mit Versatz der Laschenoberseite 2 mm](../assets/images/dialog-bin-tab-top-offset.png)
 
@@ -33,8 +33,8 @@ Lasche.
 | **Beschriftungsstil** | Umriss | *Umriss*, *Eingraviert*, *Erhaben* oder *Cullenect*, siehe unten |
 | **Beschriftungstext fett** | an | Arial fett oder normal |
 | **Beschriftungsfarbe** | Ohne | Eine Farbe für die Beschriftungskörper, siehe [Farben und mehrfarbiger Druck](../working/colors.md) |
-| **Benutzerdefinierte Beschriftungsfarbe** | | Wird bei *Beschriftungsfarbe* *Benutzerdefiniert* angezeigt: `#rrggbb`, z. B. `#D02020`. Jeder andere Wert sperrt **OK** |
-| **Spiel des Steckplatzes (mm)** | 0,3 mm | Nur beim Cullenect-Stil angezeigt, 0 bis 1 mm, siehe [Aufnahmen in Behältern](../cullenect/pockets.md) |
+| **Benutzerdefinierte Farbe** | | Wird bei *Beschriftungsfarbe* *Benutzerdefiniert* angezeigt: `#rrggbb`, z. B. `#D02020`. Jeder andere Wert sperrt **OK** |
+| **Steckplatzspiel (mm)** | 0,3 mm | Nur beim Cullenect-Stil angezeigt, 0 bis 1 mm, siehe [Aufnahmen in Behältern](../cullenect/pockets.md) |
 
 ### Beschriftungsstile { #label-styles }
 
@@ -43,7 +43,7 @@ Lasche.
 | **Umriss** | Teilt die Laschenfläche entlang der Buchstaben, sodass ein Slicer sie in einer anderen Farbe einfärben kann |
 | **Eingraviert** | Schneidet die Buchstaben in die Lasche |
 | **Erhaben** | Hebt die Buchstaben von einer abgesenkten Lasche ab |
-| **Cullenect** | Eine Aufnahme für einen austauschbaren [Cullenect](../cullenect/index.md)-Einleger statt einer gedruckten Beschriftung. Die Lasche wird auf mindestens 14 mm verbreitert und bleibt flach; Text, Symbol, Fett, Beschriftungsfarbe und Winkel der Laschenoberseite sind abgeschaltet, behalten aber ihre Werte |
+| **Cullenect** | Eine Aufnahme für einen austauschbaren [Cullenect](../cullenect/index.md)-Einleger statt einer gedruckten Beschriftung. Die Lasche wird auf mindestens 14 mm verbreitert und bleibt flach; Text, Symbol, Fett, Beschriftungsfarbe und Winkel Laschenoberseite sind abgeschaltet, behalten aber ihre Werte |
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../../../assets/gif/bin-label-options-dark.gif"><img src="../../../assets/gif/bin-label-options-light.gif" alt="Beschriftungstext eingeben, ein Symbol wählen und jeden Beschriftungsstil, mit dem Behälter nach jeder Änderung"></picture>
 

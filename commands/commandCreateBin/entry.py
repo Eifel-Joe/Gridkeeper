@@ -28,6 +28,7 @@ from ...lib.gridfinityUtils import binShape
 from ...lib.gridfinityUtils import binGrid
 from ...lib.gridfinityUtils import magnetSizes
 from ...lib.ui import magnetSizeInput
+from ...lib.ui import dialogSize
 from ...lib.gridfinityUtils import wallCreases
 from ...lib.gridfinityUtils import raisedDividers
 from .inputState import InputState
@@ -894,7 +895,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     global commandUIState
     global actualDimensionsTableUiState
 
-    args.command.setDialogInitialSize(450, 500)
+    dialogSize.setDialogSize(args.command, 450, 500)
     global rebuildBodyToken
     global pendingRebuildBody
     global dialogInfo

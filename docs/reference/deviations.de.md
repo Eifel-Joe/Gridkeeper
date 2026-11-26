@@ -13,7 +13,7 @@ auszulaufen: Seine Oberseite steht **3,8 mm** über der Wand statt 4,4 mm (an ei
 - Das ist im ursprünglichen GridfinityGenerator absichtlich genauso, siehe
   [Le0Michine/FusionGridfinityGenerator#176](https://github.com/Le0Michine/FusionGridfinityGenerator/issues/176):
   Eine scharfe Kante braucht mehr Filament und druckt nicht sauber, eine flache Oberseite schon.
-- Es ist nur die Vorgabe: Ist **Oberseite des Stapelrands kürzen** abgeschaltet, bleibt die scharfe Kante erhalten, und
+- Es ist nur die Vorgabe: Ist **Stapelrand oben kürzen** abgeschaltet, bleibt die scharfe Kante erhalten, und
   der **Stapelrandtyp** *Voll* baut das ganze ursprüngliche Profil mit seiner inneren Spitze, siehe
   [Stapelrandtypen](../bins/body.md#lip-types).
 
