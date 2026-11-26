@@ -17,7 +17,7 @@ Die zweite Zeile der Tabelle **Tatsächliche Maße** nennt jede Aufnahmegröße,
 Breite des Einlegers, zum Beispiel:
 
 ```
-Cullenect: 1U: pocket 36.3 mm, insert 36 mm; 2U: pocket 78.3 mm, insert 78 mm
+Cullenect: 1U: Aufnahme 36,3 mm, Einleger 36 mm; 2U: Aufnahme 78,3 mm, Einleger 78 mm
 ```
 
 Dieselbe Liste, mit der Anzahl der Aufnahmen jeder Größe im Behälter, steht in seinen **Gridkeeper Einstellungen** unter

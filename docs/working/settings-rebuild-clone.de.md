@@ -34,10 +34,10 @@ Schaltflächen; sie lassen sich nicht neu erstellen oder klonen.
 ## Gridkeeper neu erstellen { #gridkeeper-rebuild }
 
 Öffnet den Dialog des Modells mit seinen Einstellungen. Ändern Sie, was Sie möchten, und klicken Sie auf **OK**: Das
-Modell wird **an seiner Stelle in der Zeitachse** erneut gebaut, und die nachfolgenden Features arbeiten weiter am
+Modell wird **an seiner Stelle in der Zeitachse** erneut gebaut, und die nachfolgenden Elemente arbeiten weiter am
 neuen Körper. Der Abschnitt Informationen des Dialogs nennt, welches Modell neu erstellt wird.
 
-- Features, die eine Fläche oder eine Kante des alten Körpers verwendet haben, müssen möglicherweise neu ausgewählt
+- Elemente, die eine Fläche oder eine Kante des alten Körpers verwendet haben, müssen möglicherweise neu ausgewählt
   werden; Gridkeeper listet sie nach der Neuerstellung in einer Meldung auf.
 - Ein Behälter oder eine Grundplatte bleibt in der Komponente, in der er oder sie war.
 - Einleger in den Aufnahmen eines neu erstellten Behälters werden wieder mit den gleichnamigen Aufnahmen per Gelenk

@@ -33,7 +33,7 @@ erstellen** geöffnet, steht dort, welcher Einleger an Ort und Stelle neu erstel
 | **Zeile 2** | leer | Zweite Zeile; bei zwei Zeilen werden beide kleiner gesetzt |
 | **Textstil** | Extrafett | *Normal*, *Fett* oder *Extrafett*. Extrafett ist Arial Black, seine Striche lassen sich mit einer 0,4-mm-Düse drucken. Normal und Fett sind Arial, bei kleiner Schrift dünn |
 | **Text und Symbol** | Erhaben | *Erhaben* 0,4 mm, *Vertieft* 0,4 mm oder *Bündig*, siehe unten |
-| **Textfarbe** | Keine | Eine Farbe für Text und Symbol, siehe [Farben und Mehrfarbdruck](../working/colors.md) |
+| **Textfarbe** | Ohne | Eine Farbe für Text und Symbol, siehe [Farben und Mehrfarbdruck](../working/colors.md) |
 | **Benutzerdefinierte Farbe** | | Wird bei *Textfarbe* *Benutzerdefiniert* angezeigt: `#rrggbb`, z. B. `#D02020` |
 
 Text und Symbol sind immer eigene Körper, zwei Schichten (0,4 mm) dick, damit sie in einer anderen Farbe gedruckt werden

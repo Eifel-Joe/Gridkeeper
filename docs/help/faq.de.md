@@ -81,7 +81,7 @@ Klicken Sie mit der rechten Maustaste auf den **Körper** des Modells (im Zeiche
 Komponente › Bodies), nicht auf die Komponente selbst. Modelle, die von sehr alten Versionen ohne gespeicherte
 Einstellungen erstellt wurden, lassen sich nicht neu erstellen.
 
-**Nach dem Neuerstellen sind einige Funktionen rot.**
+**Nach dem Neuerstellen sind einige Elemente rot.**
 Sie verwendeten eine Fläche oder Kante des alten Körpers. Die Meldung nach dem Neuerstellen führt sie auf; bearbeiten
 Sie jede und wählen Sie ihre Flächen oder Kanten neu aus.
 

@@ -48,7 +48,7 @@ Die vollständige Liste der Änderungen, Runde für Runde, steht in
 
 ## Behälter { #bins }
 
-- **Trennwände bis nach oben auf Rasterlinien:** Fachtrennwände auf einer Rasterlinie reichen bis zur Oberkante des Stapelrands; die Füße eines
+- **Trennwände auf Rasterlinien bis nach oben:** Fachtrennwände auf einer Rasterlinie reichen bis zur Oberkante des Stapelrands; die Füße eines
   darauf gestapelten Behälters haben dort eine Nut, sodass Behälter jeder Größe weiterhin stapelbar sind.
 - **Gelenkursprünge folgen dem Raster:** Die Gelenkursprünge der Behälterfüße und der Steckplätze der Grundplatte bewegen sich mit den Parametern der
   Rastereinheit.
@@ -64,10 +64,10 @@ Die vollständige Liste der Änderungen, Runde für Runde, steht in
 - **Druckausrichtung:** Die 3MF-Datei legt jedes Teil so, wie es gedruckt wird, Griff und Verschlüsse der Box flach,
   und verteilt sie mit Abstand über das gewählte Druckbett, eine 3MF-Datei je Platte, wenn eine nicht reicht, wobei die Ecke für den Reinigungs-
   turm frei bleibt.
-- **Ein Bambu-Studio-Projekt mit allen Platten** für einen Bambu-Lab-Drucker, mit den Beschriftungsfarben auf ihren Filamenten und
+- **Ein Bambu-Studio-Projekt mit allen Druckplatten** für einen Bambu-Lab-Drucker, mit den Beschriftungsfarben auf ihren Filamenten und
   den Standardprofilen des Druckers von Bambu Studio, mit aus den Beschriftungsfarben berechneten Spülmengen. Nach
   der Mehrplatten-3MF-Datei des Originals (Le0Michine), siehe
-  [Ein Bambu-Studio-Projekt mit allen Platten](../working/export.md#a-bambu-studio-project-with-all-plates).
+  [Ein Bambu-Studio-Projekt mit allen Druckplatten](../working/export.md#a-bambu-studio-project-with-all-plates).
 - Ebenfalls aus dem GridfinityGenerator: Die Buchstaben von Umrissbeschriftungen werden in Fusion in einer eigenen Farbe angezeigt, der Behälterdialog
   zeigt die Größe des Behälters auf den Mikrometer genau, und Grundplatten legen das **Spiel am Plattenrand** je Kante fest (ältere Einstellungen
   werden als die Hälfte des alten Spalts gelesen).

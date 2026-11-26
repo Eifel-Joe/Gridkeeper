@@ -94,7 +94,7 @@ Gelenkursprung lässt sich auswählen; andere leuchten nicht auf.
 1. Öffnen Sie **Gridkeeper Box-Etikett** und klicken Sie in **Box**.
 2. Klicken Sie auf den *Label joint origin* vorne an der Box, in der Zeichenfläche oder im Browser unter der
    Komponente *Box* der Box.
-3. **Etikettbreite** wird auf die Breite der Box gesetzt (*Box 5 cells*, *Box 6+ cells* …). Die Breite wird einmal
+3. **Etikettbreite** wird auf die Breite der Box gesetzt (*Box 5 Rasterfelder*, *Box 6+ Rasterfelder* …). Die Breite wird einmal
    übernommen, beim Auswählen: Wird die Box später breiter, erstellen Sie ein neues Etikett.
 4. **OK**: Das Etikett wird per Gelenk in den Halter gesetzt (Gelenk *… in holder*).
 

@@ -4,7 +4,7 @@
 [Preds parametrischer Gridfinity Storage Box v1.1](https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric)
 (CC BY-NC). Die Box nimmt Gridfinity-Behälter in ihrem Boden auf, trägt auf ihrem Deckel ein Gridfinity-Raster (oder eine
 geschlossene Oberseite, siehe [Deckel](#lid)) und lässt sich mit Boxen, die nach Preds eigener Datei gedruckt wurden,
-stapeln und verschließen: Außenmaß, Nuten, Verschlussnasen, Scharniersitze, Griff, Etikettenhalter und Stapelrand sind
+stapeln und verschließen: Außenmaß, Nuten, Verschlussnasen, Scharniersitze, Griff, Etikett-Halter und Stapelrand sind
 auf den Millimeter die von Pred.
 
 Jede neue Box ist eine eigene Komponente im Container *Boxes*. Sie enthält die Komponenten *Box* und *Lid* sowie die
@@ -59,7 +59,7 @@ nichts an ihr. Diese sind außerdem immer vorhanden:
 | *Stack bottom joint origin* | Mitte der Unterseite der Box |
 | *Stack top joint origin* | Mitte der Oberseite des Deckels: Setzen Sie den Boden einer anderen Box per Gelenk darauf, um sie zu stapeln |
 | *Lid joint origin* | In Box und Deckel in der Mitte der Verbindung zwischen ihnen, vom Gelenk *Lid on box* verwendet |
-| *Label joint origin* | Im Etikettenhalter vorne, die Mitte der Rückseite des Etiketts; **Gridkeeper Box-Etikett** setzt das Etikett dort per Gelenk ein |
+| *Label joint origin* | Im Etikett-Halter vorne, die Mitte der Rückseite des Etiketts; **Gridkeeper Box-Etikett** setzt das Etikett dort per Gelenk ein |
 
 *Lid on box* gehört zur Box: Ein Neuerstellen erzeugt es als starres Gelenk neu, Änderungen von Ihnen daran bleiben
 nicht erhalten.
@@ -96,7 +96,7 @@ Jeder Satz enthält Preds Kleinteile als eigene Komponenten, jeweils mit druckfe
 Jedes Teil sitzt auf einem Gelenkursprung der Box, *Latch front left joint origin*, *Hinge 1 joint origin* und so
 weiter; die starren Gelenke sind nach dem Satz und dem Sitz benannt, *Box 5×4×6 Latch front left*. Die Teile wandern mit
 der Box, wenn sich ihre Größe ändert oder wenn sie verschoben oder gestapelt wird. Der Griff ist so breit, wie es der
-Platz der Etikettenhalter zulässt: die Etikettenbreite plus 28,5 mm, also 57 mm bei einer Breite von 4, 99 mm bei 5 und
+Platz der Etikett-Halter zulässt: die Etikettbreite plus 28,5 mm, also 57 mm bei einer Breite von 4, 99 mm bei 5 und
 höchstens 113,5 mm ab einer Breite von 6. Die Scharniere behalten bei jeder Größe ihren Platz neben der Box, das zweite
 5 mm neben dem ersten.
 
@@ -122,7 +122,7 @@ abheben.
 ## Etikett { #label }
 
 **Volumenkörper › Erstellen › Gridkeeper Box-Etikett** erzeugt das Etikett für den Halter vorne an der Box: Preds flache
-Platte, 0,85 mm dick und 24,5 mm hoch, so breit wie der Halter der Box (Preds Etikettenbreite minus 3 mm: 25,5 mm bei
+Platte, 0,85 mm dick und 24,5 mm hoch, so breit wie der Halter der Box (Preds Etikettbreite minus 3 mm: 25,5 mm bei
 einer Breite von 4, 67,5 mm bei 5, 82 mm ab 6). Es ist ein eigener Befehl, sodass ein Etikett getauscht werden kann,
 ohne die Box anzufassen.
 
@@ -141,7 +141,7 @@ ohne die Box anzufassen.
 | Eingabe | Vorgabe | Was sie bewirkt |
 |---|---|---|
 | **Box** | keine | Optional: Wählen Sie den *Label joint origin* einer Box, das Etikett wird per Gelenk in ihren Halter gesetzt (Gelenk *… in holder*) und die **Etikettbreite** wird auf die der Box gesetzt. Ohne Auswahl liegt das Etikett neben den vorhandenen Teilen, z. B. für einen erneuten Druck. Schritt für Schritt: [Gelenkursprung in einem Dialog wählen](working/components.md#picking-a-joint-origin-in-a-dialog) |
-| **Etikettbreite** | Box 5 Rasterfelder (70,5 mm) | Preds feste Etikettenbreiten: *Box 4 Rasterfelder (28,5 mm)*, *Box 5 Rasterfelder (70,5 mm)*, *Box 6+ Rasterfelder (85 mm)*; die Platte ist 3 mm schmaler. Bei gewählter Box wird nur deren eigene Breite erzeugt |
+| **Etikettbreite** | Box 5 Rasterfelder (70,5 mm) | Preds feste Etikettbreiten: *Box 4 Rasterfelder (28,5 mm)*, *Box 5 Rasterfelder (70,5 mm)*, *Box 6+ Rasterfelder (85 mm)*; die Platte ist 3 mm schmaler. Bei gewählter Box wird nur deren eigene Breite erzeugt |
 | **Großer Text** | M3 | Eine Zeile in großen Buchstaben (bis 12 mm) links, etwas mehr als ein Drittel der Breite; leer lässt den Platz den Zeilen |
 | **Zeile 1**, **Zeile 2** | Socket head, DIN 912 | Zwei Zeilen rechts, 4 mm hoch, kleiner, wenn sie lang sind |
 | **Textstil**, **Text und Symbole**, **Textfarbe** | Extrafett, Erhaben, Ohne | Wie bei den [Cullenect-Einlegern](cullenect/inserts.md): 0,4 mm erhaben wie bei Preds eigenen Etiketten, 0,4 mm vertieft oder bündig, als eigene Körper, die in einer anderen Farbe gedruckt werden können |
@@ -196,6 +196,6 @@ Preds Gridfinity Storage Box v1.1 steht unter der Lizenz CC BY-NC. Die Kleinteil
 gezeichnet, dieselbe Form. Gridkeeper baut seine Box und den Deckel im Code mit vollständig bestimmten Skizzen und
 Parametern neu und ändert sie dort, wo es auf dieser Seite vermerkt ist (die Magnetlöcher, die Bodensockel, der aus
 Kreisen gezeichnete Stapelrand, die Gelenkursprünge). Die Zeitachse folgt Preds Schritten, nur dass die rechten Griff-
-und Etikettenhalter direkt gebaut statt von den linken gespiegelt werden; die Form bleibt die von Pred.
+und Etikett-Halter direkt gebaut statt von den linken gespiegelt werden; die Form bleibt die von Pred.
 Das Etikett ist Preds Platte mit Gridkeeper-Text und den Cullenect-Symbolen von CullenJWebb
 ([Cullenect-Labels](https://github.com/CullenJWebb/Cullenect-Labels), MIT) statt Preds Text.

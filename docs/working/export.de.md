@@ -86,7 +86,7 @@ Jedes Teil der 3MF-Datei liegt so, wie es gedruckt wird, unabhängig von seinem 
 | Teil | Liegt auf dem Druckbett |
 |---|---|
 | Behälter, Grundplatte | stehend, wie konstruiert |
-| Cullenect-Einleger, Box-Etikett | auf seiner Unterseite, wie es gebaut wird; ein **bündiger** Einleger auf seinem Text |
+| Cullenect-Einleger, Box-Etikett | auf seiner Unterseite, wie es gebaut wird; ein Einleger mit **Bündig** auf seinem Text |
 | Box | auf ihrem Boden |
 | Deckel | so, wie er auf der Box sitzt |
 | Verschluss | flach |
