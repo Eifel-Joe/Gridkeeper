@@ -39,6 +39,14 @@ def test_values_marked_for_dropdowns_are_found():
     assert errors == []
 
 
+def test_values_marked_by_a_comment_are_found():
+    """Fusion-free modules can't import lib/i18n, a comment marks their values"""
+    source = "CUSTOM = 'Custom'  # tr-value\nOTHER = 'Other'\nBAD = name  # tr-value\n"
+    (texts, errors) = collect.collectTexts(source, "x.py")
+    assert texts == {"Custom"}
+    assert len(errors) == 1 and "x.py:3" in errors[0]
+
+
 def test_values_are_no_part_of_the_key():
     (texts, errors) = collect.collectTexts("tr('Total {name}', name=n)\n", "x.py")
     assert texts == {"Total {name}"}

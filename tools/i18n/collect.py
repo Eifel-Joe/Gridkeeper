@@ -1,7 +1,8 @@
 """
 The texts the add-in shows, for keeping lib/i18n/de.json complete (tests/test_i18n_complete.py) and for translators.
 
-Python: every call of tr('English text'[, 'context']) and trValue('value') in the add-in's code, read with ast, the text and the context
+Python: every call of tr('English text'[, 'context']) and trValue('value') in the add-in's code and string constants marked
+'# tr-value' (Fusion-free modules), read with ast, the text and the context
 must be string literals. Pages: data-i18n, data-i18n-title and data-i18n-placeholder attributes and calls of
 fusionBridge.t('English text'). The development commands stay English and are left out.
 
@@ -38,6 +39,7 @@ i18n = _loadI18n()
 
 # tr translates a literal, trValue marks a value a dropdown shows translated (lib/ui/dropdowns.py)
 COLLECTED = ('tr', 'trValue')
+VALUE_MARK = re.compile(r'#\s*tr-value\b')
 
 
 def _isTr(func: ast.expr) -> bool:
@@ -54,7 +56,16 @@ def collectTexts(source: str, fileName: str) -> tuple[set[str], list[str]]:
     """The keys of the tr calls in a Python source, and an error for each call whose text isn't a literal"""
     texts = set()
     errors = []
+    lines = source.splitlines()
     for node in ast.walk(ast.parse(source, fileName)):
+        # a value in a module that can't import lib/i18n (Fusion-free ones): NAME = 'Value'  # tr-value
+        if isinstance(node, ast.Assign) and VALUE_MARK.search(lines[node.end_lineno - 1]):
+            value = _literal(node.value)
+            if value is None:
+                errors.append(f'{fileName}:{node.lineno} {VALUE_MARK.pattern} needs a string literal')
+            else:
+                texts.add(value)
+            continue
         if not (isinstance(node, ast.Call) and _isTr(node.func)):
             continue
         text = _literal(node.args[0]) if node.args else None
