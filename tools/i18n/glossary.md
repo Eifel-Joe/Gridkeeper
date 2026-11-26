@@ -29,6 +29,7 @@ were decided with the spec `dev-notes/specs/2026-11-26-r60-german.md`.
 | Part Design / Hybrid Design / Capture Design History | Bauteilkonstruktion / Hybride Konstruktion / Konstruktionsverlauf erfassen |
 | Appearance / Material | Darstellung / Material |
 | Fillet / Chamfer / Shell / Extrude / Combine / Pattern | Abrundung / Fase / Schale / Extrusion / Kombinieren / Anordnung |
+| Feature(s) (in the timeline) | Element(e) |
 | Export / Mesh / Save / Open / Insert | Exportieren / Netz / Speichern / Öffnen / Einfügen |
 | OK / Cancel / Preview / Apply / Close / Reset | OK / Abbrechen / Vorschau / Anwenden / Schließen / Zurücksetzen |
 | Settings / Preferences / General / Options / Advanced / Custom | Einstellungen / Voreinstellungen / Allgemein / Optionen / Erweitert / Benutzerdefiniert |
@@ -69,7 +70,7 @@ were decided with the spec `dev-notes/specs/2026-11-26-r60-german.md`.
 | small parts (of a box) | Kleinteile |
 | box label | Box-Etikett |
 | rebuild / clone | Neu erstellen / Klonen |
-| print bed / plate / prime tower / purge / filament | Druckbett / Druckplatte / Reinigungsturm / Spülmenge / Filament |
+| print bed / plate / prime tower / purge (volume) / filament | Druckbett / Druckplatte / Reinigungsturm / Spülvolumen / Filament |
 | connection holes (baseplate) | Verbindungslöcher |
 | fill area / fill pieces (baseplate) | Füllfläche / Füllstücke |
 | skeletonized / light / full (baseplate type) | Skelettiert / Leicht / Voll |
