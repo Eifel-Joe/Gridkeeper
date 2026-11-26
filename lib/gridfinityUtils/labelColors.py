@@ -6,6 +6,16 @@ No Fusion imports, so it is testable, the appearance itself is made by appearanc
 
 import re
 
+try:
+    from ..i18n import tr, number
+except ImportError:
+    # loaded on its own by a test or a tool, outside the add-in package: English
+    def tr(text, context=None, /, **values):
+        return text.format(**values) if values else text
+
+    def number(value):
+        return value if isinstance(value, str) else f'{value:g}'
+
 NO_COLOR_CHOICE = 'None'  # tr-value
 CUSTOM_CHOICE = 'Custom'  # tr-value
 # named colors, about the filaments one has
@@ -50,7 +60,7 @@ def colorOf(choice: str, custom: str) -> str | None:
 def colorProblem(choice: str, custom: str) -> str | None:
     """Why the color can't be used, none if it can"""
     if colorOf(choice, custom) is None:
-        return f"The custom color is #rrggbb, e.g. {NAMED_COLORS['Red']}"
+        return tr('The custom color is #rrggbb, e.g. {example}', example=NAMED_COLORS['Red'])
     return None
 
 

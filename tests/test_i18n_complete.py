@@ -26,9 +26,9 @@ collect = _load()
 
 
 def test_tr_calls_are_found_with_their_context():
-    source = "from ..lib.i18n import tr\nx = tr('Bin type')\ny = i18n.tr(\"Label\", 'container')\nz = tr('Lid', context='box')\n"
+    source = "from ..lib.i18n import tr\nx = tr('Bin type')\ny = i18n.tr(\"Label\", 'container')\nz = tr('Lid', 'box')\nw = tr('Cullenect: {context}', context=c)\n"
     (texts, errors) = collect.collectTexts(source, "x.py")
-    assert texts == {"Bin type", "container|Label", "box|Lid"}
+    assert texts == {"Bin type", "container|Label", "box|Lid", "Cullenect: {context}"}
     assert errors == []
 
 

@@ -5,6 +5,16 @@ unit tested; the numbers are those of adsk.fusion.DesignIntentTypes.
 
 from dataclasses import dataclass
 
+try:
+    from ..i18n import tr, number
+except ImportError:
+    # loaded on its own by a test or a tool, outside the add-in package: English
+    def tr(text, context=None, /, **values):
+        return text.format(**values) if values else text
+
+    def number(value):
+        return value if isinstance(value, str) else f'{value:g}'
+
 # adsk.fusion.DesignIntentTypes, read in Fusion 14.11.2026
 PART = 0
 ASSEMBLY = 1
@@ -48,7 +58,19 @@ def structurePlan(designIntent: int, mayChangeDocument: bool, rebuild: str = REB
     return StructurePlan(switchToHybrid=designIntent == PART, place=PLACE_CONTAINER)
 
 
+def partNoun(name: str) -> str:
+    """The noun of a part the callers name in English ('bin', 'baseplate', 'insert', 'box', 'box label') in the add-in's
+    language, as the part's own name in a sentence; any other noun stays as it is"""
+    return {
+        'bin': tr('bin', 'generator'),
+        'baseplate': tr('baseplate', 'generator'),
+        'insert': tr('label', 'generator'),
+        'box': tr('box', 'generator'),
+        'box label': tr('box label', 'generator'),
+    }.get(name, name)
+
 def hybridSwitchMessage(partName: str) -> str:
     """The notice after a part design was switched to hybrid for a bin, baseplate or insert, see structurePlan"""
-    return (f'This document was a part design. It has been switched to a hybrid design, so the {partName} is a '
-        'component of its own. A design holding components can no longer be switched back to a part design.')
+    return tr('This document was a part design. It has been switched to a hybrid design, so the {part} is a '
+        'component of its own. A design holding components can no longer be switched back to a part design.',
+        part=partNoun(partName))

@@ -93,12 +93,12 @@ def _lookup(text: str, context: str | None, values: dict) -> str:
     return translated.format(**values) if values else translated
 
 
-def tr(text: str, context: str | None = None, **values) -> str:
+def tr(text: str, context: str | None = None, /, **values) -> str:
     """The text in the add-in's language, English when it has no entry, then formatted with the values"""
     return _lookup(text, context, values)
 
 
-def trValue(text: str, context: str | None = None) -> str:
+def trValue(text: str, context: str | None = None, /) -> str:
     """
     Marks a value a dropdown shows translated (tools/i18n/collect.py finds it), the value itself stays English. A
     context goes with lib/ui/dropdowns.addItem(..., context=)
@@ -106,7 +106,7 @@ def trValue(text: str, context: str | None = None) -> str:
     return text
 
 
-def trKnown(text: str, context: str | None = None, **values) -> str:
+def trKnown(text: str, context: str | None = None, /, **values) -> str:
     """tr for a text marked elsewhere, with trValue or a tr call, where the code only has it in a variable"""
     return _lookup(text, context, values)
 

@@ -3,12 +3,22 @@ Bin footprints made of base grid cells, like tetris pieces: which cells a bin co
 Cells are (x, y) pairs with x along the bin width and y along its length, both from the front left corner.
 """
 
+try:
+    from ..i18n import tr, number
+except ImportError:
+    # loaded on its own by a test or a tool, outside the add-in package: English
+    def tr(text, context=None, /, **values):
+        return text.format(**values) if values else text
+
+    def number(value):
+        return value if isinstance(value, str) else f'{value:g}'
+
 # 4-neighbours, a shape is held together by shared sides, cells touching at a corner only aren't connected
 _NEIGHBOURS = [(1, 0), (-1, 0), (0, 1), (0, -1)]
 
-ERROR_EMPTY = 'Pick at least one cell'
-ERROR_NOT_CONNECTED = 'All cells must form one piece, joined along their sides'
-ERROR_HOLES = 'Shapes with holes are not supported yet'
+ERROR_EMPTY = tr('Pick at least one cell')
+ERROR_NOT_CONNECTED = tr('All cells must form one piece, joined along their sides')
+ERROR_HOLES = tr('Shapes with holes are not supported yet')
 
 def rectangle(columns: int, rows: int) -> list[tuple[int, int]]:
     return [(x, y) for x in range(columns) for y in range(rows)]

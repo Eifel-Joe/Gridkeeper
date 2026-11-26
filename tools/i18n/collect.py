@@ -89,7 +89,8 @@ def collectTexts(source: str, fileName: str) -> tuple[set[str], list[str]]:
         if not (isinstance(node, ast.Call) and _isTr(node.func)):
             continue
         text = _literal(node.args[0]) if node.args else None
-        contextNodes = node.args[1:2] + [keyword.value for keyword in node.keywords if keyword.arg == 'context']
+        # tr's text and context are positional only, keywords are placeholders
+        contextNodes = node.args[1:2]
         context = _literal(contextNodes[0]) if contextNodes else None
         if text is None or (contextNodes and context is None):
             errors.append(f'{fileName}:{node.lineno} tr() needs a literal text and context')

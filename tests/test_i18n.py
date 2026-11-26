@@ -119,3 +119,10 @@ def test_strings_for_a_page_are_the_ones_it_names(german):
     assert i18n.pageStrings(["Bin type", "Not translated"]) == {"Bin type": "Behältertyp"}
     i18n.setLanguage("en")
     assert i18n.pageStrings(["Bin type"]) == {}
+
+
+def test_placeholders_may_be_named_text_or_context(german):
+    """tr's own parameters are positional only, a {text} or {context} placeholder is a value like any other"""
+    assert i18n.tr("Cullenect: {text}", text="ok") == "Cullenect: ok"
+    assert i18n.tr("{context} and {text}", context="a", text="b") == "a and b"
+    assert i18n.trKnown("Cullenect: {text}", text="ok") == "Cullenect: ok"

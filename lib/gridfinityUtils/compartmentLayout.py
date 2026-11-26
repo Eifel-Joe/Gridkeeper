@@ -3,6 +3,16 @@ Compartment pockets of a bin: rectangles of compartment grid cells tiling the gr
 Pockets are plain dicts, so they go to the dialog drawing and the saved defaults as they are.
 """
 
+try:
+    from ..i18n import tr, number
+except ImportError:
+    # loaded on its own by a test or a tool, outside the add-in package: English
+    def tr(text, context=None, /, **values):
+        return text.format(**values) if values else text
+
+    def number(value):
+        return value if isinstance(value, str) else f'{value:g}'
+
 # a pocket's label icon taken from the label tab section
 DEFAULT_ICON = 'Default'  # tr-value
 # the walls a pocket can have a scoop on, in this order, the names of scoopSides (round 48)
@@ -110,18 +120,26 @@ def fromTableRows(rows: list, fullDepth: float | None = None) -> list[dict]:
             pockets.append(item)
     return pockets
 
+def _sides(scoops: list[str]) -> str:
+    """The walls with a scoop, named in the add-in's language: 'front and left'"""
+    names = {'front': tr('front'), 'back': tr('back'), 'left': tr('left'), 'right': tr('right')}
+    text = ''
+    for scoop in scoops:
+        text = tr('{first} and {second}', first=text, second=names.get(scoop, scoop)) if text else names.get(scoop, scoop)
+    return text
+
 def describe(item: dict) -> str:
     """A pocket in the recorded settings"""
     parts = [
-        f'cell {item["x"] + 1}, {item["y"] + 1}',
-        f'{item["width"]} x {item["length"]} cells',
-        f'depth {item["depth"]:g} mm' if item['depth'] is not None else 'full depth',
+        tr('cell {x}, {y}', x=item["x"] + 1, y=item["y"] + 1),
+        tr('{width} x {length} cells', width=item["width"], length=item["length"]),
+        tr('depth {depth} mm', depth=number(item["depth"])) if item['depth'] is not None else tr('full depth'),
     ]
     if item['label']:
-        parts.append(f'label {item["label"]}')
+        parts.append(tr('label {label}', label=item["label"]))
     if item['icon'] != DEFAULT_ICON:
-        parts.append(f'icon {item["icon"]}')
+        parts.append(tr('icon {icon}', icon=item["icon"]))
     scoops = item.get('scoops')
     if scoops is not None:
-        parts.append(f'scoops {" and ".join(scoops)}' if scoops else 'no scoops')
+        parts.append(tr('scoops {sides}', sides=_sides(scoops)) if scoops else tr('no scoops'))
     return ', '.join(parts)

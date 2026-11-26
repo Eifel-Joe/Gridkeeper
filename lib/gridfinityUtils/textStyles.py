@@ -6,6 +6,16 @@ slicer left parts of the letters out (15.11.2026). How low a text of each style 
 thinnest stroke, see minTextHeight (round 17). The hint on thin text follows the same limit (round 21, p232).
 """
 
+try:
+    from ..i18n import tr, number
+except ImportError:
+    # loaded on its own by a test or a tool, outside the add-in package: English
+    def tr(text, context=None, /, **values):
+        return text.format(**values) if values else text
+
+    def number(value):
+        return value if isinstance(value, str) else f'{value:g}'
+
 STYLE_REGULAR = 'Regular'  # tr-value
 STYLE_BOLD = 'Bold'  # tr-value
 STYLE_HEAVY = 'Heavy'  # tr-value
@@ -106,17 +116,23 @@ def hintText(noted: list[tuple[str, float, str]], suggestHeavy: bool = True, isB
         return None
     # a bin labels each compartment, the same text there is said once
     sentences = dict.fromkeys(
-        f'"{text}": {height * 10:.1f} mm high, below the {minTextHeight(style) * 10:.2f} mm a 0.4 mm nozzle prints in {style}.'
+        tr('"{words}": {height} mm high, below the {limit} mm a 0.4 mm nozzle prints in {style}.', words=text,
+            height=number(f'{height * 10:.1f}'), limit=number(f'{minTextHeight(style) * 10:.2f}'), style=_styleName(style))
         for (text, height, style) in noted
     )
     lines = ' '.join(sentences)
     if isBinLabel:
-        remedy = 'Make the tab wider or use the Bold style' if any(style == STYLE_REGULAR for (_, _, style) in noted) else 'Make the tab wider'
+        remedy = tr('Make the tab wider or use the Bold style') if any(style == STYLE_REGULAR for (_, _, style) in noted) else tr('Make the tab wider')
     else:
-        remedy = 'Shorten the text, make it wider or use the Heavy style' if suggestHeavy else 'Shorten the text or make it wider'
-    return f'{lines} {remedy}.'
+        remedy = tr('Shorten the text, make it wider or use the Heavy style') if suggestHeavy else tr('Shorten the text or make it wider')
+    return tr('{lines} {remedy}.', lines=lines, remedy=remedy)
+
+
+def _styleName(style: str) -> str:
+    """A style in the add-in's language for a sentence, the value itself stays English"""
+    return {STYLE_REGULAR: tr('Regular'), STYLE_BOLD: tr('Bold'), STYLE_HEAVY: tr('Heavy')}.get(style, style)
 
 
 def previewNote(noted: list[tuple[str, float, str]]) -> str:
     """Added to the preview time, a preview shows no message box"""
-    return ', text below the print limit' if len(noted) > 0 else ''
+    return tr(', text below the print limit') if len(noted) > 0 else ''

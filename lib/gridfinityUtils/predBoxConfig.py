@@ -8,6 +8,16 @@ from . import const
 from .predBox import PRED
 from . import predBoxParts
 
+try:
+    from ..i18n import tr, number
+except ImportError:
+    # loaded on its own by a test or a tool, outside the add-in package: English
+    def tr(text, context=None, /, **values):
+        return text.format(**values) if values else text
+
+    def number(value):
+        return value if isinstance(value, str) else f'{value:g}'
+
 MIN_GRID_X = 4
 MIN_GRID_Y = 3
 # Decided 16.11.2026: minimum height 6 for now. At 5 the holders reach the lid joint and Pred's chamfer there fails
@@ -63,23 +73,23 @@ _EPS = 1e-9
 def boxProblem(state) -> str | None:
     """Why the box can't be built with these settings, none if it can"""
     if state.gridX < MIN_GRID_X:
-        return f'Width must be at least {MIN_GRID_X} units'
+        return tr('Width must be at least {value} units', value=MIN_GRID_X)
     if state.gridY < MIN_GRID_Y:
-        return f'Length must be at least {MIN_GRID_Y} units'
+        return tr('Length must be at least {value} units', value=MIN_GRID_Y)
     if state.heightU < MIN_HEIGHT_U:
-        return f'Height must be at least {MIN_HEIGHT_U} units'
+        return tr('Height must be at least {value} units', value=MIN_HEIGHT_U)
     # a defaults file or test case may hold a hinge no longer known, it broke the build halfway (review R28)
     if state.hinge not in predBoxParts.HINGES:
-        return f"Unknown hinge {state.hinge}, pick one of {', '.join(predBoxParts.HINGES)}"
+        return tr('Unknown hinge {hinge}, pick one of {choices}', hinge=state.hinge, choices=', '.join(predBoxParts.HINGES))
     if state.lidTop not in LID_TOPS:
-        return f"Unknown lid top {state.lidTop}, pick one of {', '.join(LID_TOPS)}"
+        return tr('Unknown lid top {lidTop}, pick one of {choices}', lidTop=state.lidTop, choices=', '.join(LID_TOPS))
     if state.hasMagnets:
         if state.magnetDepth <= _EPS:
-            return 'The magnet holes need a depth'
+            return tr('The magnet holes need a depth')
         if state.magnetDepth > MAGNET_DEPTH_MAX + _EPS:
-            return f'Magnet holes deeper than {MAGNET_DEPTH_MAX * 10:g} mm would break through the floor'
+            return tr('Magnet holes deeper than {value} mm would break through the floor', value=number(f'{MAGNET_DEPTH_MAX * 10:g}'))
         if not MAGNET_DIAMETER_MIN - _EPS <= state.magnetDiameter <= MAGNET_DIAMETER_MAX + _EPS:
-            return f'The magnet diameter is {MAGNET_DIAMETER_MIN * 10:g} to {MAGNET_DIAMETER_MAX * 10:g} mm'
+            return tr('The magnet diameter is {least} to {most} mm', least=number(f'{MAGNET_DIAMETER_MIN * 10:g}'), most=number(f'{MAGNET_DIAMETER_MAX * 10:g}'))
     return None
 
 

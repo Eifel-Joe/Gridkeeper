@@ -11,6 +11,16 @@ from dataclasses import dataclass, field, replace
 
 from . import const, cullenectCatalog, textStyles
 
+try:
+    from ..i18n import tr, number
+except ImportError:
+    # loaded on its own by a test or a tool, outside the add-in package: English
+    def tr(text, context=None, /, **values):
+        return text.format(**values) if values else text
+
+    def number(value):
+        return value if isinstance(value, str) else f'{value:g}'
+
 MIN_WIDTH = 1.0
 MAX_WIDTH = 30.0
 MAX_LINES = 2
@@ -155,13 +165,13 @@ def iconSize(iconPath: str, width: float, height: float, isScrew: bool = True, r
 def layoutProblem(layout: LabelLayout) -> str | None:
     """Why the insert can't be built like this, none if it can"""
     if layout.height < MIN_HEIGHT - 1e-9:
-        return f'An insert is at least {MIN_HEIGHT * 10:g} mm high'
+        return tr('An insert is at least {value} mm high', value=number(f'{MIN_HEIGHT * 10:g}'))
     if layout.iconMaxX is not None and layout.iconMaxX - layout.iconWidth < const.CULLENECT_TEXT_MARGIN - 1e-9:
-        return 'No room for the symbol, make the insert wider'
+        return tr('No room for the symbol, make the insert wider')
     if len(layout.lineHeights) > 0 and layout.textMaxX - layout.textMinX < MIN_TEXT_SPACE - 1e-9:
-        return 'No room for text beside the symbol, make the insert wider'
+        return tr('No room for text beside the symbol, make the insert wider')
     if layout.descenderLimit is not None and len(layout.lineHeights) > 0 and layout.lineHeights[0] > layout.descenderLimit + 1e-9:
-        return "Two lines don't fit this height: their descenders would reach over the edge and the letters can't get smaller without getting too thin to print. Make the height correction smaller, use one line or the Heavy style"
+        return tr("Two lines don't fit this height: their descenders would reach over the edge and the letters can't get smaller without getting too thin to print. Make the height correction smaller, use one line or the Heavy style")
     return None
 
 
@@ -248,11 +258,11 @@ def insertProblem(
 ) -> str | None:
     """Why the dialog can't build the insert, none if it can. `isSymbolMissing`: a symbol was chosen but has no svg"""
     if abs(offsetX) > MAX_OFFSET + 1e-9 or abs(offsetY) > MAX_OFFSET + 1e-9:
-        return f'Corrections are at most {MAX_OFFSET * 10:g} mm either way'
+        return tr('Corrections are at most {value} mm either way', value=number(f'{MAX_OFFSET * 10:g}'))
     if not validWidth(width):
-        return f'An insert is {MIN_WIDTH * 10:g} to {MAX_WIDTH * 10:g} mm wide'
+        return tr('An insert is {least} to {most} mm wide', least=number(f'{MIN_WIDTH * 10:g}'), most=number(f'{MAX_WIDTH * 10:g}'))
     if isSymbolMissing:
-        return 'No svg for this symbol, see tools/cullenectIcons.py and tools/setScrewIcons.py'
+        return tr('No svg for this symbol, see tools/cullenectIcons.py and tools/setScrewIcons.py')
     rim = DEBOSS_RIM if isDebossed else 0
     size = iconSize(iconPath, width, height, isScrew, rim) if iconPath is not None else None
     return layoutProblem(labelLayout(width, height, size, isScrew, lineCount, textStyle, rim))
@@ -262,7 +272,7 @@ def insertProblem(
 
 # shown in the label dialog, the insert isn't built then (decided 15.11.2026: nothing built, a hint that this pocket
 # does not fit and a fitting one is to be picked)
-POCKET_MISFIT = 'This pocket is too small for the insert, pick one that fits'
+POCKET_MISFIT = tr('This pocket is too small for the insert, pick one that fits')
 
 def insertFitsPocket(insertWidthMm: float, insertHeightMm: float, pocketWidthMm: float, pocketHeightMm: float) -> bool:
     """Whether the insert fits the pocket, in mm: an insert and a bin have base units of their own, and an insert may
