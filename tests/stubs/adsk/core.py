@@ -118,11 +118,17 @@ class _ListItems:
     def __init__(self, items: list):
         self._items = [_ListItem(n) for n in items]
 
+    @property
     def count(self):
         return len(self._items)
 
     def item(self, i: int) -> _ListItem:
         return self._items[i]
+
+    def add(self, name: str, isSelected: bool, icon: str = '', beforeIndex: int = -1) -> _ListItem:
+        item = _ListItem(name, isSelected)
+        self._items.append(item)
+        return item
 
 
 class DropDownCommandInput(CommandInput):

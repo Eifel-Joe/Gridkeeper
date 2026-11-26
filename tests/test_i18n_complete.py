@@ -32,6 +32,13 @@ def test_tr_calls_are_found_with_their_context():
     assert errors == []
 
 
+def test_values_marked_for_dropdowns_are_found():
+    source = "HOLLOW = trValue('Hollow')\nSOLID = i18n.trValue('Solid')\nx = trKnown(v)\n"
+    (texts, errors) = collect.collectTexts(source, "x.py")
+    assert texts == {"Hollow", "Solid"}
+    assert errors == []
+
+
 def test_values_are_no_part_of_the_key():
     (texts, errors) = collect.collectTexts("tr('Total {name}', name=n)\n", "x.py")
     assert texts == {"Total {name}"}

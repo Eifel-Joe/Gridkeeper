@@ -85,11 +85,25 @@ def key(text: str, context: str | None = None) -> str:
     return f'{context}{CONTEXT_SEPARATOR}{text}' if context else text
 
 
-def tr(text: str, context: str | None = None, **values) -> str:
-    """The text in the add-in's language, English when it has no entry, then formatted with the values"""
+def _lookup(text: str, context: str | None, values: dict) -> str:
     language()
     translated = _table.get(key(text, context), text)
     return translated.format(**values) if values else translated
+
+
+def tr(text: str, context: str | None = None, **values) -> str:
+    """The text in the add-in's language, English when it has no entry, then formatted with the values"""
+    return _lookup(text, context, values)
+
+
+def trValue(text: str) -> str:
+    """Marks a value a dropdown shows translated (tools/i18n/collect.py finds it), the value itself stays English"""
+    return text
+
+
+def trKnown(text: str, context: str | None = None, **values) -> str:
+    """tr for a text marked elsewhere, with trValue or a tr call, where the code only has it in a variable"""
+    return _lookup(text, context, values)
 
 
 def number(value) -> str:

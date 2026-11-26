@@ -1,5 +1,6 @@
 import adsk.core, adsk.fusion, traceback
 from ...lib import fusion360utils as futil
+from . import dropdowns
 
 class SingleInputState:
     def __init__(self, inputId: str, inputValue: any, inputType: str):
@@ -58,7 +59,8 @@ class CommandUiState:
             else:
                 self.inputState[inputId] = SingleInputState(inputId, input.value, input.objectType)
         elif isinstance(input, adsk.core.DropDownCommandInput):
-            self.inputState[inputId] = SingleInputState(inputId, input.selectedItem.name, input.objectType)
+            # the English value, the item shows it translated (round 60)
+            self.inputState[inputId] = SingleInputState(inputId, dropdowns.value(input), input.objectType)
         elif isinstance(input, adsk.core.GroupCommandInput):
             self.inputState[inputId] = SingleInputState(inputId, input.isExpanded, input.objectType)
         elif isinstance(input, adsk.core.BoolValueCommandInput):
@@ -97,7 +99,7 @@ class CommandUiState:
                 input.value = value
         elif isinstance(input, adsk.core.DropDownCommandInput):
             for i in range(0, input.listItems.count):
-                input.listItems.item(i).isSelected = input.listItems.item(i).name == value
+                input.listItems.item(i).isSelected = dropdowns.valueOf(input, input.listItems.item(i).name) == value
         elif isinstance(input, adsk.core.GroupCommandInput):
             input.isExpanded = value
         elif isinstance(input, adsk.core.BoolValueCommandInput):

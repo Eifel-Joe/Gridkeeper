@@ -1,7 +1,7 @@
 """
 The texts the add-in shows, for keeping lib/i18n/de.json complete (tests/test_i18n_complete.py) and for translators.
 
-Python: every call of tr('English text'[, 'context']) in the add-in's code, read with ast, the text and the context
+Python: every call of tr('English text'[, 'context']) and trValue('value') in the add-in's code, read with ast, the text and the context
 must be string literals. Pages: data-i18n, data-i18n-title and data-i18n-placeholder attributes and calls of
 fusionBridge.t('English text'). The development commands stay English and are left out.
 
@@ -25,10 +25,14 @@ PAGE_ATTRIBUTE = re.compile(r'data-i18n(?:-title|-placeholder)?\s*=\s*"([^"]*)"'
 PAGE_CALL = re.compile(r'fusionBridge\.t\(\s*(?:\'((?:[^\'\\]|\\.)*)\'|"((?:[^"\\]|\\.)*)")')
 
 
+# tr translates a literal, trValue marks a value a dropdown shows translated (lib/ui/dropdowns.py)
+COLLECTED = ('tr', 'trValue')
+
+
 def _isTr(func: ast.expr) -> bool:
     if isinstance(func, ast.Name):
-        return func.id == 'tr'
-    return isinstance(func, ast.Attribute) and func.attr == 'tr' and isinstance(func.value, ast.Name) and func.value.id == 'i18n'
+        return func.id in COLLECTED
+    return isinstance(func, ast.Attribute) and func.attr in COLLECTED and isinstance(func.value, ast.Name) and func.value.id == 'i18n'
 
 
 def _literal(node) -> str | None:
