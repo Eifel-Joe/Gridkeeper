@@ -14,6 +14,7 @@ import io
 import json
 import os
 
+import dialogRecorder
 from dialogPage import DialogPage
 
 # 25 frames a second while the cursor moves
@@ -222,8 +223,10 @@ class Player:
         current = self.dialog.call('id => inputNode(id).querySelector(".field .text").textContent', inputId)
         self.dialog.call('([id, name]) => openDropdown(id, name)', [inputId, current])
         self.frame(400)
-        self.moveTo({'item': spec['item']}, 350)
-        self.dialog.call('name => highlightItem(name)', spec['item'])
+        # the shot names the value, the open dropdown shows the item's name in the add-in's language (round 60)
+        shown = dialogRecorder.shownName(self.dialog.session.input(inputId), spec['item'])
+        self.moveTo({'item': shown}, 350)
+        self.dialog.call('name => highlightItem(name)', shown)
         self.frame(250)
         self.press(False)
         self.dialog.call('() => closeDropdown()')

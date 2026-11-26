@@ -184,7 +184,8 @@ class DialogSession:
             else:
                 input.value = value
         elif isinstance(input, adsk.core.DropDownCommandInput):
-            items = [item for item in input.listItems if item.name == value]
+            # shots name the value, the item shows it in the add-in's language (round 60)
+            items = [item for item in input.listItems if _itemValue(input, item) == value]
             if not items:
                 names = ', '.join(f'"{item.name}"' for item in input.listItems if not item.isSeparator)
                 raise ValueError(f'{inputId} has no item "{value}", it has {names}')
@@ -244,12 +245,23 @@ def _allInputs(inputs):
             yield from _allInputs(nested)
 
 
+def _itemValue(dropdown, item) -> str:
+    """The value an item shows, translated or not, see lib/ui/dropdowns.py"""
+    dropdowns = importlib.import_module(f'{PACKAGE}.lib.ui.dropdowns')
+    return dropdowns.valueOf(dropdown, item.name)
+
+
+def shownName(dropdown, value: str) -> str:
+    """The name of the item of a value, as the dialog shows it"""
+    return next((item.name for item in dropdown.listItems if _itemValue(dropdown, item) == value), value)
+
+
 def _checkDropdowns(inputs, values: dict):
     """A dialog selects its first item for a name it doesn't list, a shot would show it without saying"""
     import adsk.core
     for (inputId, value) in values.items():
         dropdown = inputs.itemById(inputId)
-        if isinstance(dropdown, adsk.core.DropDownCommandInput) and (dropdown.selectedItem is None or dropdown.selectedItem.name != value):
+        if isinstance(dropdown, adsk.core.DropDownCommandInput) and (dropdown.selectedItem is None or _itemValue(dropdown, dropdown.selectedItem) != value):
             names = ', '.join(f'"{item.name}"' for item in dropdown.listItems if not item.isSeparator)
             raise ValueError(f'{inputId} has no item "{value}", it has {names}')
 
