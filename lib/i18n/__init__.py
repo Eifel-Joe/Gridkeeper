@@ -53,7 +53,14 @@ def readTable(language: str) -> dict[str, str]:
         return {}
 
 
-def _readOverride() -> str | None:
+# wins over the override file, for tests and tools that load the add-in's code (tests/conftest.py sets it to 'en')
+ENVIRONMENT_VARIABLE = 'GRIDKEEPER_LANGUAGE'
+
+
+def readOverride() -> str | None:
+    """The language asked for instead of Fusion's: the environment variable, else the override file"""
+    if os.environ.get(ENVIRONMENT_VARIABLE):
+        return os.environ[ENVIRONMENT_VARIABLE]
     try:
         with open(OVERRIDE_FILE, encoding='utf-8') as file:
             return file.read()
@@ -79,7 +86,7 @@ def setLanguage(language: str, table: dict[str, str] | None = None) -> None:
 def language() -> str:
     """Read once: Fusion needs a restart after its language changes"""
     if _language is None:
-        setLanguage(detectLanguage(_fusionPreferences(), _readOverride()))
+        setLanguage(detectLanguage(_fusionPreferences(), readOverride()))
     return _language
 
 

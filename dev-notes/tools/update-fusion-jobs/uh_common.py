@@ -14,8 +14,18 @@ RELEASE_FILES = ['Gridkeeper.manifest', 'Gridkeeper.py', 'config.py', 'LICENSE.m
 
 
 def load(name):
-    spec = importlib.util.spec_from_file_location('uh_' + name, os.path.join(WORKTREE, 'lib', name + '.py'))
+    # a package of lib's folder: since 1.5.0 both modules import lib/i18n relatively
+    import sys
+    import types
+    package = 'uh_lib'
+    if package not in sys.modules:
+        packageModule = types.ModuleType(package)
+        packageModule.__path__ = [os.path.join(WORKTREE, 'lib')]
+        sys.modules[package] = packageModule
+    spec = importlib.util.spec_from_file_location(f'{package}.{name}', os.path.join(WORKTREE, 'lib', name + '.py'))
     module = importlib.util.module_from_spec(spec)
+    module.__package__ = package
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
 

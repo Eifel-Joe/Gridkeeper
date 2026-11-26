@@ -126,3 +126,17 @@ def test_placeholders_may_be_named_text_or_context(german):
     assert i18n.tr("Cullenect: {text}", text="ok") == "Cullenect: ok"
     assert i18n.tr("{context} and {text}", context="a", text="b") == "a and b"
     assert i18n.trKnown("Cullenect: {text}", text="ok") == "Cullenect: ok"
+
+
+def test_the_environment_wins_over_the_override_file(tmp_path, monkeypatch):
+    """GRIDKEEPER_LANGUAGE for tests and tools: pytest stays English whatever languageOverride says"""
+    override = tmp_path / "languageOverride"
+    override.write_text("de", encoding="utf-8")
+    monkeypatch.setattr(i18n, "OVERRIDE_FILE", str(override))
+    monkeypatch.delenv("GRIDKEEPER_LANGUAGE", raising=False)
+    assert i18n.readOverride() == "de"
+    monkeypatch.setenv("GRIDKEEPER_LANGUAGE", "en")
+    assert i18n.readOverride() == "en"
+    override.unlink()
+    monkeypatch.delenv("GRIDKEEPER_LANGUAGE")
+    assert i18n.readOverride() is None

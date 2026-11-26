@@ -20,6 +20,10 @@ tests_dir    = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(tests_dir)
 stubs_dir    = os.path.join(tests_dir, "stubs")
 
+# the tests expect English, also in copies of lib/i18n that tests load on their own, whatever a languageOverride file
+# in the checkout says (review round 60)
+os.environ["GRIDKEEPER_LANGUAGE"] = "en"
+
 for p in (stubs_dir, project_root):
     if p not in sys.path:
         sys.path.insert(0, p)
@@ -86,6 +90,8 @@ def _loadReal(name: str, relativePath: str, package: str, isPackage: bool = Fals
 
 # the texts (round 60), commandUiState shows dropdown values through lib/ui/dropdowns
 _loadReal("FusionGridfinityGenerator.lib.i18n", "lib/i18n/__init__.py", "FusionGridfinityGenerator.lib.i18n", True)
+# the tests expect English, whatever a languageOverride file in the checkout says (review round 60)
+sys.modules["FusionGridfinityGenerator.lib.i18n"].setLanguage("en")
 _loadReal("FusionGridfinityGenerator.lib.ui.dropdowns", "lib/ui/dropdowns.py", "FusionGridfinityGenerator.lib.ui")
 
 _cu_path = os.path.join(project_root, "lib", "ui", "commandUiState.py")

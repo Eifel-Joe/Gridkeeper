@@ -65,3 +65,16 @@ def test_the_bridge_puts_in_the_strings(tmp_path):
     assert output["title"] == "Zellen zusammenfassen"
     assert output["placeholder"] == "Beschriftung"
     assert output["other"] == "Not translated"
+
+
+def test_no_page_hides_one_of_its_functions_behind_a_variable():
+    """Review round 60: compartments.html called scoopWalls() inside a block whose const scoopWalls was a div"""
+    import glob
+    import re
+    pages = glob.glob(os.path.join(ROOT, "commands", "*", "html", "*.html")) + glob.glob(os.path.join(ROOT, "lib", "ui", "html", "*.*"))
+    for page in pages:
+        with open(page, encoding="utf-8") as file:
+            text = file.read()
+        functions = set(re.findall(r"\bfunction\s+(\w+)\s*\(", text))
+        variables = set(re.findall(r"\b(?:const|let|var)\s+(\w+)\s*=", text))
+        assert not functions & variables, f"{os.path.relpath(page, ROOT)}: {sorted(functions & variables)}"

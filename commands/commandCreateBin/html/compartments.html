@@ -741,7 +741,7 @@
         // the compartment's own scoop walls, or the bin's (round 48)
         const scoopRow = htmlElement('div', { class: 'row' });
         scoopRow.appendChild(htmlElement('label', {}, fusionBridge.t('Scoops')));
-        const scoopWalls = htmlElement('div', { class: 'scoop-walls' });
+        const wallsBox = htmlElement('div', { class: 'scoop-walls' });
         const own = Array.isArray(p.scoops);
         const ownLabel = htmlElement('label', {});
         const ownInput = htmlElement('input', { type: 'checkbox' });
@@ -757,7 +757,7 @@
             render();
         });
         ownLabel.append(ownInput, document.createTextNode(fusionBridge.t('Own')));
-        scoopWalls.appendChild(ownLabel);
+        wallsBox.appendChild(ownLabel);
         const shown = effectiveScoops(p);
         for (const [wall, text, wallTitle] of scoopWalls()) {
             const wallLabel = htmlElement('label', {});
@@ -778,9 +778,9 @@
                 renderDrawing();
             });
             wallLabel.append(wallInput, document.createTextNode(text));
-            scoopWalls.appendChild(wallLabel);
+            wallsBox.appendChild(wallLabel);
         }
-        scoopRow.appendChild(scoopWalls);
+        scoopRow.appendChild(wallsBox);
         editor.appendChild(scoopRow);
 
         const depthRow = htmlElement('div', { class: 'row' });
