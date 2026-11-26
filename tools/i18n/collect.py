@@ -127,14 +127,47 @@ def checkTable(texts: set[str], table: dict[str, str]) -> dict[str, list[str]]:
     return {'missing': missing, 'stale': stale, 'placeholders': placeholders}
 
 
+def collectFiles(root: str, paths: list[str]) -> tuple[set[str], list[str]]:
+    """The texts of some files only, Python or pages"""
+    texts = set()
+    errors = []
+    for path in paths:
+        with open(os.path.join(root, path), encoding='utf-8') as file:
+            source = file.read()
+        if path.endswith('.py'):
+            (found, failed) = collectTexts(source, path)
+            (texts, errors) = (texts | found, errors + failed)
+        else:
+            texts |= collectPageTexts(source)
+    return (texts, errors)
+
+
+def _option(arguments: list[str], name: str) -> list[str]:
+    """The values after --name up to the next option"""
+    if name not in arguments:
+        return []
+    values = arguments[arguments.index(name) + 1:]
+    return values[:next((i for (i, value) in enumerate(values) if value.startswith('--')), len(values))]
+
+
 def main(arguments: list[str]) -> int:
-    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    (texts, errors) = collectAll(root)
+    """
+    --files PATH...  only these files' texts (missing only, stale needs all files)
+    --extra JSON...  further German entries beside de.json, such as a translator's part not merged yet
+    """
+    root = ROOT
+    files = _option(arguments, '--files')
+    (texts, errors) = collectFiles(root, files) if files else collectAll(root)
     for error in errors:
         print(error, file=sys.stderr)
     with open(os.path.join(root, 'lib', 'i18n', 'de.json'), encoding='utf-8') as file:
         table = json.load(file)
+    for extra in _option(arguments, '--extra'):
+        with open(extra, encoding='utf-8') as file:
+            table.update(json.load(file))
     report = checkTable(texts, table)
+    if files:
+        report['stale'] = []
     if '--stale' in arguments:
         print(json.dumps(report['stale'], ensure_ascii=False, indent=1))
     elif '--missing' in arguments:
@@ -145,4 +178,5 @@ def main(arguments: list[str]) -> int:
 
 
 if __name__ == '__main__':
+    sys.stdout.reconfigure(encoding="utf-8")
     sys.exit(main(sys.argv[1:]))
