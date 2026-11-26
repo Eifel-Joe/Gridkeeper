@@ -160,3 +160,23 @@ def test_a_bin_in_a_cell_is_built_and_tagged_without_centering():
     source = _source(BIN_BUILDER, "buildBin")
     assert "binCell.storedPosition(state.placement, cell is not None, PLACEMENT_AUTO)" in source
     assert source.index("storedPosition") < source.index("buildWithStructure")
+
+
+def _hasCellParts():
+    from types import SimpleNamespace
+    import adsk.fusion
+    namespace = {"adsk": __import__("adsk"), "tagUtils": SimpleNamespace(TAG_GROUP="g", TAG_BASEPLATE="baseplate", TAG_BOX="box")}
+    exec(compile(ast.Module([_function(BIN_BUILDER, "hasCellParts")], []), BIN_BUILDER, "exec"), namespace)
+    return namespace["hasCellParts"]
+
+
+def test_no_design_has_no_cell_parts():
+    """Without a design (Fusion's Design.cast of another product, the dialog screenshot tool) the dialog offers no cell"""
+    assert _hasCellParts()(None) is False
+
+
+def test_a_design_with_a_baseplate_has_cell_parts():
+    from types import SimpleNamespace
+    design = SimpleNamespace(findAttributes=lambda group, name: ["tag"] if name == "baseplate" else [])
+    assert _hasCellParts()(design) is True
+    assert _hasCellParts()(SimpleNamespace(findAttributes=lambda group, name: [])) is False

@@ -855,7 +855,10 @@ def rebuildBin(
 LID_ROLE = 'Lid'
 
 def hasCellParts(des: adsk.fusion.Design) -> bool:
-    """Whether the design has a baseplate or a box, the bin dialog offers a cell then (round 31)"""
+    """Whether the design has a baseplate or a box, the bin dialog offers a cell then (round 31). None without a design:
+    Design.cast of another product, and the dialog screenshot tool, which has no design open"""
+    if des is None:
+        return False
     return any(len(des.findAttributes(tagUtils.TAG_GROUP, tagName)) > 0 for tagName in (tagUtils.TAG_BASEPLATE, tagUtils.TAG_BOX))
 
 def isCellJointOrigin(jointOrigin: adsk.fusion.JointOrigin | None) -> bool:
