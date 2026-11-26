@@ -96,6 +96,34 @@ def test_the_same_label_in_two_dropdowns_is_fine():
         i18n.setLanguage("en")
 
 
+def test_two_commands_may_use_the_same_dropdown_id():
+    """The baseplate's Grid units and the insert's Base units are both German Rastereinheiten in a dropdown with the
+    id sizing_mode_dropdown: opening one dialog after the other failed, and a value could come from the other
+    command. Fusion has one command dialog open at a time and each fills its dropdowns from empty"""
+    i18n.setLanguage("de", {"Grid units": "Rastereinheiten", "Base units": "Rastereinheiten", "Millimeters": "Millimeter"})
+    try:
+        values = []
+        for value in ("Grid units", "Base units", "Grid units"):
+            dropdown = adsk.core.DropDownCommandInput("sizing_mode_dropdown", [])
+            dropdown.listItems._items = []
+            dropdowns.addItem(dropdown, value, True)
+            dropdowns.addItem(dropdown, "Millimeters", False)
+            values.append(dropdowns.value(dropdown))
+        assert values == ["Grid units", "Base units", "Grid units"]
+    finally:
+        i18n.setLanguage("en")
+
+
+def test_a_dropdown_filled_again_keeps_its_values(german):
+    """The insert dialog fills a hardware dropdown again when the hardware changes"""
+    dropdown = _dropdown("Solid")
+    dropdown.listItems.clear()
+    for value in ("Hollow", "Shelled"):
+        dropdowns.addItem(dropdown, value, value == "Shelled")
+    assert dropdowns.value(dropdown) == "Shelled"
+    assert dropdowns.valueOf(dropdown, "Voll") == "Voll"
+
+
 def test_the_state_keeps_the_value(german):
     dropdown = _dropdown("Solid")
     state = CommandUiState("bin")

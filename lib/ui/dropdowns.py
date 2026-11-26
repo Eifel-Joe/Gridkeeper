@@ -19,6 +19,16 @@ def addItem(dropdown: adsk.core.DropDownCommandInput, value: str, isSelected: bo
     apart a value meaning something else in another dropdown, such as the hardware's Full thread and the lip type Full
     """
     name = trKnown(value, context) if translate else value
+    # Several commands use the same dropdown id (sizing_mode_dropdown in the baseplate and the insert, text_style in
+    # both labels, magnet_size ...), with other values behind the same German name (Grid units, Base units: both
+    # Rastereinheiten). Keyed by id alone, the second dialog failed and a value could come from the other command.
+    # Fusion has one command dialog open at a time and each fills its dropdowns from empty, so a dropdown's first item
+    # starts its values afresh: they are always the open dialog's. Keying by the command instead needs
+    # parentCommand.parentCommandDefinition, which isn't there before the dialog is up nor in the test fakes.
+    # Test: tests/test_dropdown_values.py, test_two_commands_may_use_the_same_dropdown_id
+    if dropdown.listItems.count == 0:
+        for key in [key for key in _values if key[0] == dropdown.id]:
+            del _values[key]
     known = _values.get((dropdown.id, name))
     if known is not None and known != value:
         raise ValueError(f'{dropdown.id}: {value} and {known} are both shown as {name}')

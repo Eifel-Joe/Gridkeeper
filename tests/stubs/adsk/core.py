@@ -130,6 +130,9 @@ class _ListItems:
         self._items.append(item)
         return item
 
+    def clear(self):
+        self._items = []
+
 
 class DropDownCommandInput(CommandInput):
     def __init__(self, input_id: str, options: list, selected: str = None):
