@@ -47,7 +47,7 @@ können:
 
 ![Drei Einleger mit Text und Symbol in Rot: bündig, vertieft (sein Textkörper eingeblendet) und erhaben](../assets/images/insert-surfaces.png)
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="../../../assets/gif/cullenect-insert-text-dark.gif"><img src="../../../assets/gif/cullenect-insert-text-light.gif" alt="Ein Einleger mit einer Textzeile, mit zwei Zeilen, mit vertieftem und mit erhabenem Text"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/cullenect-insert-text-dark.gif"><img src="../../assets/gif/cullenect-insert-text-light.gif" alt="Ein Einleger mit einer Textzeile, mit zwei Zeilen, mit vertieftem und mit erhabenem Text"></picture>
 
 ### Textgröße { #text-size }
 

@@ -33,7 +33,7 @@ was Sie bekommen, bevor Sie sie installieren.
   **Gridkeeper Updates** bietet dann **Gridkeeper neu laden** an, oder starten Sie Fusion neu, oder beenden und starten Sie Gridkeeper unter
   **Dienstprogramme › Zusatzmodule › Skripte und Zusatzmodule**.
 
-  ![Gridkeeper Updates nach einem Update: Gridkeeper 1.1.0 läuft noch, 1.2.0 ist installiert, mit Gridkeeper neu laden und Schließen](../assets/images/updates-dialog-installed.png)
+  ![Gridkeeper Updates nach einem Update: Gridkeeper 0.9.0 läuft noch, 1.5.0 ist installiert, mit Gridkeeper neu laden und Schließen](../assets/images/updates-dialog-installed.png)
 
 - **Später** lässt alles, wie es ist; das Fenster kommt am nächsten Tag wieder.
 

@@ -4,7 +4,7 @@ Jede Grundplatte, jeder Behälter, Einleger, jede Box und jedes Box-Etikett merk
 sie gebaut wurden. Klicken Sie mit der rechten Maustaste darauf, in der Zeichenfläche oder im Browser, für drei
 Befehle:
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="../../../assets/images/context-menu-dark.png"><img src="../../../assets/images/context-menu-light.png" alt="Das Kontextmenü von Fusion auf einer Fläche eines Behälters, mit Gridkeeper Einstellungen, Gridkeeper neu erstellen und Gridkeeper klonen an seinem Ende"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/images/context-menu-dark.png"><img src="../../assets/images/context-menu-light.png" alt="Das Kontextmenü von Fusion auf einer Fläche eines Behälters, mit Gridkeeper Einstellungen, Gridkeeper neu erstellen und Gridkeeper klonen an seinem Ende"></picture>
 
 Ein Buchstabe einer Beschriftung oder eine Fläche des Modells funktioniert genauso wie der Körper: Gridkeeper findet
 den Behälter oder Einleger, zu dem es gehört. Klicken Sie im Browser mit der rechten Maustaste auf den **Körper**,

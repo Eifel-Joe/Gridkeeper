@@ -22,7 +22,7 @@ Lasche.
 
 ![Ein 3 × 2 Behälter mit drei Fächern, deren Beschriftungslaschen und Trennwände 2 mm unter der Oberkante liegen (Versatz der Laschenoberseite 2 mm)](../assets/models/bin-tab-top-offset.png)
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="../../../assets/gif/bin-label-tab-options-dark.gif"><img src="../../../assets/gif/bin-label-tab-options-light.gif" alt="Länge und Position der Beschriftungslasche im Dialog ändern, mit dem Behälter für jede Änderung"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/bin-label-tab-options-dark.gif"><img src="../../assets/gif/bin-label-tab-options-light.gif" alt="Länge und Position der Beschriftungslasche im Dialog ändern, mit dem Behälter für jede Änderung"></picture>
 
 ## Die Beschriftung { #the-label }
 
@@ -45,7 +45,7 @@ Lasche.
 | **Erhaben** | Hebt die Buchstaben von einer abgesenkten Lasche ab |
 | **Cullenect** | Eine Aufnahme für einen austauschbaren [Cullenect](../cullenect/index.md)-Einleger statt einer gedruckten Beschriftung. Die Lasche wird auf mindestens 14 mm verbreitert und bleibt flach; Text, Symbol, Fett, Beschriftungsfarbe und Laschenwinkel oben sind abgeschaltet, behalten aber ihre Werte |
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="../../../assets/gif/bin-label-options-dark.gif"><img src="../../../assets/gif/bin-label-options-light.gif" alt="Beschriftungstext eingeben, ein Symbol wählen und jeden Beschriftungsstil, mit dem Behälter nach jeder Änderung"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/bin-label-options-dark.gif"><img src="../../assets/gif/bin-label-options-light.gif" alt="Beschriftungstext eingeben, ein Symbol wählen und jeden Beschriftungsstil, mit dem Behälter nach jeder Änderung"></picture>
 
 ### Symbole { #icons }
 

@@ -18,7 +18,7 @@ Der Dialog ist lang, seine Abschnitte werden auf diesen Seiten beschrieben:
 | **Änderungen** | [Einstellungen speichern und laden](../working/save-load.md) |
 | **Vorschau** | weiter unten |
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/bin-features-dark.gif"><img src="../../assets/gif/bin-features-light.gif" alt="Größe, Typ und Wandstärke eines Behälters ändern, mit dem Behälter nach jeder Änderung"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="../assets/gif/bin-features-dark.gif"><img src="../assets/gif/bin-features-light.gif" alt="Größe, Typ und Wandstärke eines Behälters ändern, mit dem Behälter nach jeder Änderung"></picture>
 
 ## Platzierung { #placement }
 

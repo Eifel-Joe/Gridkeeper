@@ -43,7 +43,7 @@ Rückseite oder rechten Seite, nur quer zur Reihe halbiert. Mit **Halbraster** i
 Behälter auf einer Grundplatte im Halbraster um eine halbe Zelle versetzt stehen kann. Halbe Füße haben keine Magnet-
 oder Schraubenbohrungen, dafür ist kein Platz.
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="../../../assets/gif/bin-half-grid-dark.gif"><img src="../../../assets/gif/bin-half-grid-light.gif" alt="Halbraster einschalten, dann eine Größe, die auf eine Hälfte endet, mit Behältern auf ganzen, halben und einer Reihe halber Füße"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/bin-half-grid-dark.gif"><img src="../../assets/gif/bin-half-grid-light.gif" alt="Halbraster einschalten, dann eine Größe, die auf eine Hälfte endet, mit Behältern auf ganzen, halben und einer Reihe halber Füße"></picture>
 
 ### Eigene Form { #custom-shape }
 
@@ -51,7 +51,7 @@ Schalten Sie **Eigene Form** ein und klicken Sie in der Zeichnung auf Zellen, um
 Form eines L, eines T oder eines anderen Tetris-Steins. **Alle füllen** setzt jede Zelle wieder ein; schalten Sie
 **Eigene Form** aus, werden ebenfalls alle Zellen wieder gefüllt.
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="../../../assets/gif/bin-custom-shape-dark.gif"><img src="../../../assets/gif/bin-custom-shape-light.gif" alt="Eine Behälterform zeichnen, mit dem Behälter auf allen Zellen, dann mit weggelassenen Zellen"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/bin-custom-shape-dark.gif"><img src="../../assets/gif/bin-custom-shape-light.gif" alt="Eine Behälterform zeichnen, mit dem Behälter auf allen Zellen, dann mit weggelassenen Zellen"></picture>
 
 Fächer, Griffmulde und Beschriftungslasche werden für eigene Formen noch nicht erzeugt, ein Behälter mit eigener Form
 hat daher ein einziges Fach und keine Beschriftungslasche und keine Cullenect-Aufnahme.

@@ -23,7 +23,7 @@ Cullenect: 1U: Aufnahme 36,3 mm, Einleger 36 mm; 2U: Aufnahme 78,3 mm, Einleger 
 Dieselbe Liste, mit der Anzahl der Aufnahmen jeder Größe im Behälter, steht in seinen **Gridkeeper Einstellungen** unter
 *Cullenect*.
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="../../../assets/gif/cullenect-pocket-dark.gif"><img src="../../../assets/gif/cullenect-pocket-light.gif" alt="Ein Behälter mit glatter Beschriftungslasche, dann dieselbe Lasche mit einer Cullenect-Aufnahme, dann die Aufnahme über 2 Einheiten"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/cullenect-pocket-dark.gif"><img src="../../assets/gif/cullenect-pocket-light.gif" alt="Ein Behälter mit glatter Beschriftungslasche, dann dieselbe Lasche mit einer Cullenect-Aufnahme, dann die Aufnahme über 2 Einheiten"></picture>
 
 ## Die Lasche mit Aufnahme { #the-tab-with-a-pocket }
 

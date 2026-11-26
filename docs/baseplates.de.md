@@ -57,7 +57,7 @@ gewählt haben, hier oder im Exportdialog, ist beim nächsten Öffnen des Dialog
 Druckbetts** (5 mm) bleibt an jeder Seite des Druckbetts frei. **Ergebnis** zeichnet die Fläche, das Raster und die
 Aufteilung in Stücke.
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/baseplate-fill-area-dark.gif"><img src="../../assets/gif/baseplate-fill-area-light.gif" alt="Wechsel auf Füllfläche, Eingabe der Länge der Fläche und Wechsel zwischen Prusa-Druckern, jeweils mit den Stücken der Grundplatte"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="../assets/gif/baseplate-fill-area-dark.gif"><img src="../assets/gif/baseplate-fill-area-light.gif" alt="Wechsel auf Füllfläche, Eingabe der Länge der Fläche und Wechsel zwischen Prusa-Druckern, jeweils mit den Stücken der Grundplatte"></picture>
 
 ## Funktionen { #features }
 
@@ -69,7 +69,7 @@ Aufteilung in Stücke.
 | **Skelettiert** | Eine dicke Platte, deren Unterseite zur Gewichtsersparnis ausgespart ist und Platz für Magnete, Schrauben und Verbindungslöcher lässt. |
 | **Voll** | Eine dicke Platte mit Platz für Magnete und Schrauben unter jedem Steckplatz. |
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/baseplate-types-dark.gif"><img src="../../assets/gif/baseplate-types-light.gif" alt="Auswahl jedes Grundplattentyps, mit leichter, skelettierter und voller Grundplatte"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="../assets/gif/baseplate-types-dark.gif"><img src="../assets/gif/baseplate-types-light.gif" alt="Auswahl jedes Grundplattentyps, mit leichter, skelettierter und voller Grundplatte"></picture>
 
 **Gelenkursprünge** setzt in die Mitte des Bodens jedes Steckplatzes einen Gelenkursprung, um Behälter per
 Gelenk in die Platte zu setzen: Der Behälterdialog setzt einen neuen Behälter in einen davon
@@ -115,7 +115,7 @@ siehe [Parameter ändern](working/parameters.md).
 
 ![Eine skelettierte 2 × 2 Grundplatte von unten, links und vorne aufgefüllt: Verbindungslöcher nur auf der rechten und der hinteren Seite](assets/models/baseplate-padding-connection-holes.png)
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/baseplate-connection-holes-dark.gif"><img src="../../assets/gif/baseplate-connection-holes-light.gif" alt="Verbindungslöcher einschalten und ihren Durchmesser ändern, mit einer skelettierten Grundplatte ohne, mit 3,2 mm und mit 5 mm Verbindungslöchern"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="../assets/gif/baseplate-connection-holes-dark.gif"><img src="../assets/gif/baseplate-connection-holes-light.gif" alt="Verbindungslöcher einschalten und ihren Durchmesser ändern, mit einer skelettierten Grundplatte ohne, mit 3,2 mm und mit 5 mm Verbindungslöchern"></picture>
 
 ## Eingaben { #inputs }
 

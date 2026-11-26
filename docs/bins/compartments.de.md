@@ -38,7 +38,7 @@ Gleichmäßige Fächer | Eigene Fächer A | Eigene Fächer B
 ![Optionen für gleichmäßige Fächer](../assets/ui/bin-uniform-compartments-options.png) | ![Optionen für eigene Fächer A](../assets/ui/bin-custom-compartments-variant-a-options.png) | ![Optionen für eigene Fächer B](../assets/ui/bin-custom-compartments-variant-b-options.png)
 ![Behälter mit gleichmäßigen Fächern](../assets/models/bin-uniform-compartments.png) | ![Behälter mit eigenen Fächern A](../assets/models/bin-custom-compartments-variant-a.png) | ![Behälter mit eigenen Fächern B](../assets/models/bin-custom-compartments-variant-b.png)
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="../../../assets/gif/bin-compartments-dark.gif"><img src="../../../assets/gif/bin-compartments-light.gif" alt="Fächer zusammenfassen und eines benennen, mit dem Behälter beim Zusammenfassen und Beschriften der Fächer"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/bin-compartments-dark.gif"><img src="../../assets/gif/bin-compartments-light.gif" alt="Fächer zusammenfassen und eines benennen, mit dem Behälter beim Zusammenfassen und Beschriften der Fächer"></picture>
 
 !!! note "Bilder des ursprünglichen Zusatzmoduls"
     Die Bilder auf dieser Seite stammen aus GridfinityGenerator, die Aufteilung funktioniert in Gridkeeper genauso.

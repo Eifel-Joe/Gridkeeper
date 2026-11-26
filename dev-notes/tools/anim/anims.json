@@ -74,7 +74,11 @@
     216,
     102
    ],
-   "captionDe": "Ohne Verbindungslöcher"
+   "captionDe": "Ohne Verbindungslöcher",
+   "cursorDe": [
+    178,
+    102
+   ]
   },
   {
    "caption": "3.2 mm connection holes",
@@ -82,7 +86,11 @@
     216,
     102
    ],
-   "captionDe": "Verbindungslöcher 3,2 mm"
+   "captionDe": "Verbindungslöcher 3,2 mm",
+   "cursorDe": [
+    178,
+    102
+   ]
   },
   {
    "caption": "5 mm connection holes",
@@ -100,7 +108,11 @@
     194,
     103
    ],
-   "captionDe": "Geschlossener Boden"
+   "captionDe": "Geschlossener Boden",
+   "cursorDe": [
+    188,
+    104
+   ]
   },
   {
    "caption": "With screw holes",
@@ -108,7 +120,11 @@
     194,
     103
    ],
-   "captionDe": "Mit Schraubenbohrungen"
+   "captionDe": "Mit Schraubenbohrungen",
+   "cursorDe": [
+    188,
+    104
+   ]
   },
   {
    "caption": "With magnet cutouts",
@@ -116,7 +132,11 @@
     194,
     164
    ],
-   "captionDe": "Mit Magnetaussparungen"
+   "captionDe": "Mit Magnetaussparungen",
+   "cursorDe": [
+    188,
+    165
+   ]
   },
   {
    "caption": "Combined, with pull tabs",
@@ -124,7 +144,11 @@
     194,
     194
    ],
-   "captionDe": "Kombiniert, mit Zuglaschen"
+   "captionDe": "Kombiniert, mit Zuglaschen",
+   "cursorDe": [
+    188,
+    195
+   ]
   }
  ],
  "bin-compartments": [
@@ -134,7 +158,11 @@
     194,
     76
    ],
-   "captionDe": "3x2 Fächer"
+   "captionDe": "3x2 Fächer",
+   "cursorDe": [
+    188,
+    76
+   ]
   },
   {
    "caption": "Merged",
@@ -142,7 +170,11 @@
     212,
     239
    ],
-   "captionDe": "Zusammengefasst"
+   "captionDe": "Zusammengefasst",
+   "cursorDe": [
+    184,
+    186
+   ]
   },
   {
    "caption": "Labeled",
@@ -150,7 +182,11 @@
     378,
     290
    ],
-   "captionDe": "Beschriftet"
+   "captionDe": "Beschriftet",
+   "cursorDe": [
+    378,
+    235
+   ]
   }
  ],
  "bin-creases": [
@@ -160,7 +196,11 @@
     194,
     15
    ],
-   "captionDe": "Glatte Wände"
+   "captionDe": "Glatte Wände",
+   "cursorDe": [
+    188,
+    14
+   ]
   },
   {
    "caption": "Folded in",
@@ -168,7 +208,11 @@
     194,
     15
    ],
-   "captionDe": "Eingefalzt"
+   "captionDe": "Eingefalzt",
+   "cursorDe": [
+    188,
+    14
+   ]
   },
   {
    "caption": "Panels of 2 units",
@@ -220,7 +264,11 @@
     194,
     103
    ],
-   "captionDe": "Ganze Füße"
+   "captionDe": "Ganze Füße",
+   "cursorDe": [
+    188,
+    103
+   ]
   },
   {
    "caption": "Half grid",
@@ -228,7 +276,11 @@
     194,
     103
    ],
-   "captionDe": "Halbraster"
+   "captionDe": "Halbraster",
+   "cursorDe": [
+    188,
+    103
+   ]
   },
   {
    "caption": "2.5 wide, a row of half bases",
@@ -246,7 +298,11 @@
     194,
     164
    ],
-   "captionDe": "Jede Zelle"
+   "captionDe": "Jede Zelle",
+   "cursorDe": [
+    188,
+    164
+   ]
   },
   {
    "caption": "Cells left out",
@@ -367,7 +423,11 @@
     378,
     73
    ],
-   "captionDe": "Aufnahme über 2 Einheiten"
+   "captionDe": "Aufnahme über 2 Einheiten",
+   "cursorDe": [
+    378,
+    42
+   ]
   }
  ],
  "cullenect-insert-text": [
@@ -411,7 +471,11 @@
     158,
     44
    ],
-   "captionDe": "Kein Symbol"
+   "captionDe": "Kein Symbol",
+   "cursorDe": [
+    160,
+    44
+   ]
   },
   {
    "caption": "Socket head screw",
@@ -419,7 +483,11 @@
     158,
     44
    ],
-   "captionDe": "Zylinderkopfschraube"
+   "captionDe": "Zylinderkopfschraube",
+   "cursorDe": [
+    160,
+    44
+   ]
   },
   {
    "caption": "Nylon nut",

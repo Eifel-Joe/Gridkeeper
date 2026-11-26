@@ -2,28 +2,27 @@
 
 All pictures in this folder are renders and screenshots from the English Fusion with Gridkeeper 1.0.0.
 
-## German versions (round 60, still to be taken)
+## German versions (round 60, Gridkeeper 1.5.0)
 
 The German pages show a German version `name.de.png` (`name-dark.de.gif`) where it exists beside the English
 picture, else the English one; raw HTML `<picture>` paths on a German page point one folder higher for the English
-picture and to `/de/assets/...` once the German one is there (`tests/test_docs_i18n.py`). Pictures of the add-in's
-dialogs and windows get German versions, taken in a German Fusion (or with `languageOverride` = `de`; then Fusion's
-own items around them stay English), same state, size and crop as the English one. Models, hover pictures, Fusion's
-own interface (Scripts and Add-Ins, Change Parameters, browser, joints) and the snapshot test report stay English.
+picture and to `/de/assets/...` where the German one is there (`tests/test_docs_i18n.py`). Pictures of the add-in's
+dialogs and windows have German versions, taken in a German Fusion, same state, size and crop as the English one.
+Models, hover pictures, Fusion's own interface (Scripts and Add-Ins, Change Parameters, browser, joints) and the
+snapshot test report stay English. The dialog screenshot tool (`tools/screenshots/screenshots.py --language de`)
+draws its own style (torn edges, other scale and crop), so the German pictures are Fusion screenshots too.
 
-- [ ] `docs/assets/images`: `bin-lip-dialog`, `context-menu-dark`, `context-menu-light`, `context-menu-export-scene`,
-  `dialog-baseplate`, `dialog-baseplate-connection-holes`, `dialog-baseplate-magnet-size`, `dialog-bin`,
-  `dialog-bin-compartment-scoops`, `dialog-bin-cullenect`, `dialog-bin-magnet-size`, `dialog-bin-placement`,
-  `dialog-bin-placement-cell`, `dialog-bin-scoop-walls`, `dialog-bin-tab-top-offset`, `dialog-box`, `dialog-box-label`,
-  `dialog-insert-pocket`, `dialog-label`, `dialog-settings-buttons`, `settings-window`, `update-dialog-available`,
-  `updates-dialog-git`, `updates-dialog-installed` (24, `.de.png`)
-- [ ] `docs/assets/ui`: the three `bin-*-compartments-*-options` (3, `.de.png`)
-- [ ] `docs/assets/gif`: the dialog part of each state of the 15 animations (`dev-notes/tools/anim/raw/<name>/N-dialog.de.png`),
-  then `compose.py --language de` for `<name>-dark.de.gif` and `-light.de.gif`; the German captions are in
-  `anims.json` (`captionDe`), the model parts are shared
-- All of these are taken in Fusion: the pictures above are Fusion screenshots, and the dialog screenshot tool
-  (`tools/screenshots/screenshots.py --language de`) draws its own style (torn edges, other scale and crop), so it
-  can't make them in the same size and crop
+- [x] `docs/assets/images`: 23 `.de.png` (all dialogs and windows but one, below). `updates-dialog-installed.de.png`
+  is 350 px high instead of 316, so *Beim Start prüfen* stays in; `context-menu-light.de.png` is the dark one, as in
+  English. Typed texts are German (Schrauben, Muttern, M3-Schrauben), symbol names from data stay English. The update
+  windows show the versions there were when they were taken (0.9.0 running, 1.4.1 on GitHub or 1.5.0 installed).
+- [ ] `update-dialog-available.png` (*Jetzt aktualisieren* / *Später*) stays English: that window only comes up in an
+  installation without git, to be taken with the next update of such an installation.
+- [x] `docs/assets/ui`: the three `bin-*-compartments-*-options` (`.de.png`).
+- [x] `docs/assets/gif`: the dialog part of each state of the 15 animations (`dev-notes/tools/anim/raw/<name>/N-dialog.de.png`,
+  `bin-solid-tool` has two, its third state shows the second), put together by `compose.py --language de`; captions
+  `captionDe`, the pointer `cursorDe` where the German field sits elsewhere (`anims.json`), the model parts are shared.
+  The `cullenect-pocket` dialog part starts at the row *Beschriftungslasche*, so *Steckplatzspiel* stays in.
 
 ## Own pictures only
 

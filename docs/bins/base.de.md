@@ -30,4 +30,4 @@ Magnetaussparungen | Zur Seite geöffnete Magnetaussparungen | Magnete und Schra
 :-------------------------:|:-------------------------:|:-------------------------:
 ![Behälter mit Magnetaussparungen](../assets/models/bin-magnet-cutouts.png) | ![Behälter mit zur Seite geöffneten Magnetaussparungen](../assets/models/bin-magnet-cutouts-with-tabs.png) | ![Behälter mit Magnetaussparungen und Schraubenbohrungen, die durch eine Rille verbunden sind](../assets/models/bin-magnet-cutouts-and-screw-holes-with-groove.png)
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="../../../assets/gif/bin-bottom-options-dark.gif"><img src="../../../assets/gif/bin-bottom-options-light.gif" alt="Die Optionen für den Boden im Dialog durchgehen, mit dem Behälter bei jeder Option"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/bin-bottom-options-dark.gif"><img src="../../assets/gif/bin-bottom-options-light.gif" alt="Die Optionen für den Boden im Dialog durchgehen, mit dem Behälter bei jeder Option"></picture>

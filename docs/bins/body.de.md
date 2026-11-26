@@ -27,7 +27,7 @@ Hohler Behälter | Behälter als Schale | Voller Behälter
   Beschriftungslasche eines Behälters als Schale ist standardmäßig hohl.
 - **Voll:** ein massiver Block, ein Ausgangspunkt für Werkzeugbehälter: Schneiden Sie die Form Ihrer Werkzeuge hinein.
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="../../../assets/gif/bin-solid-tool-dark.gif"><img src="../../../assets/gif/bin-solid-tool-light.gif" alt="Ein 2x1-Behälter wird von hohl auf voll umgestellt, dann werden zwei runde Werkzeugaufnahmen in seine Oberseite geschnitten"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/bin-solid-tool-dark.gif"><img src="../../assets/gif/bin-solid-tool-light.gif" alt="Ein 2x1-Behälter wird von hohl auf voll umgestellt, dann werden zwei runde Werkzeugaufnahmen in seine Oberseite geschnitten"></picture>
 
 ## Stapelrandtypen { #lip-types }
 
@@ -71,4 +71,4 @@ Die vier folgenden Eingaben sind gesperrt, solange **Lange Wände falzen** aus i
 | **Max. Falzfeldlänge (u)** | 4,75 | Längstes Feld zwischen Falzen, etwa 200 mm |
 | **Falzen ab Höhe (u)** | 10 | Niedrigere Behälter bleiben flach, 70 mm bei 7-mm-Einheiten |
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="../../../assets/gif/bin-creases-dark.gif"><img src="../../../assets/gif/bin-creases-light.gif" alt="Falze einschalten und die Wände in Felder von 2 Einheiten falten, mit dem Behälter für jede Einstellung"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/bin-creases-dark.gif"><img src="../../assets/gif/bin-creases-light.gif" alt="Falze einschalten und die Wände in Felder von 2 Einheiten falten, mit dem Behälter für jede Einstellung"></picture>

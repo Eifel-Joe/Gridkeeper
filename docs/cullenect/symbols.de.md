@@ -6,7 +6,7 @@ Rundungen sind Kreisbögen statt der Tausenden kurzer Linien, die OpenSCAD schre
 
 ![Einleger mit einem Gewindeeinsatz, einer Gewindestift-Schraube, Senkkopf-, Flachkopf- und Zylinderkopfschrauben, einem Ringkabelschuh, einer Unterlegscheibe und einer Mutter](../assets/images/insert-symbols.png)
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="../../../assets/gif/cullenect-insert-symbol-dark.gif"><img src="../../../assets/gif/cullenect-insert-symbol-light.gif" alt="Ein Einleger ohne Symbol, dann mit einer Zylinderkopfschraube, einer Sicherungsmutter (Nylon) und einer Unterlegscheibe"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="../../assets/gif/cullenect-insert-symbol-dark.gif"><img src="../../assets/gif/cullenect-insert-symbol-light.gif" alt="Ein Einleger ohne Symbol, dann mit einer Zylinderkopfschraube, einer Sicherungsmutter (Nylon) und einer Unterlegscheibe"></picture>
 
 ## Schrauben { #screws }
 
