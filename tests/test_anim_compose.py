@@ -100,3 +100,47 @@ def test_cursor_near_the_bottom_stays_inside_the_untorn_part():
     kept = compose.cursorInside((300, 115), picture.size)
     assert compose.TOOTH <= kept[1] and kept[1] + compose.CURSOR_HEIGHT <= picture.size[1] - compose.TOOTH
     assert kept[0] == 300
+
+
+# Round 60: the animations in German, the same models with German dialog pictures and captions
+
+def _raw(tmp_path, names):
+    folder = tmp_path / 'raw' / 'demo'
+    folder.mkdir(parents=True)
+    for name in names:
+        (model() if 'model' in name else dialog()).save(folder / name)
+    return str(tmp_path / 'raw')
+
+
+def test_german_states_take_the_german_dialog_and_caption(tmp_path):
+    raw = _raw(tmp_path, ['1-model.png', '1-dialog.png', '1-dialog.de.png', '2-model.png', '2-tool.png', '2-tool.de.png'])
+    entries = [{'caption': 'Hollow', 'captionDe': 'Hohl', 'cursor': [1, 2], 'cursorDe': [3, 4]},
+               {'caption': 'Solid', 'captionDe': 'Voll', 'dialog': '2-tool.png'}]
+    states = compose.loadStates('demo', entries, 'de', raw)
+    assert [s.caption for s in states] == ['Hohl', 'Voll']
+    assert [os.path.basename(s.source) for s in states] == ['1-dialog.de.png', '2-tool.de.png']
+    assert [s.cursor for s in states] == [(3, 4), None]
+    english = compose.loadStates('demo', entries, 'en', raw)
+    assert [s.caption for s in english] == ['Hollow', 'Solid']
+    assert [os.path.basename(s.source) for s in english] == ['1-dialog.png', '2-tool.png']
+
+
+def test_a_missing_german_dialog_or_caption_is_named(tmp_path):
+    raw = _raw(tmp_path, ['1-model.png', '1-dialog.png'])
+    with pytest.raises(FileNotFoundError, match='1-dialog.de.png'):
+        compose.loadStates('demo', [{'caption': 'A', 'captionDe': 'B'}], 'de', raw)
+    raw = _raw(tmp_path / 'b', ['1-model.png', '1-dialog.png', '1-dialog.de.png'])
+    with pytest.raises(KeyError, match='captionDe'):
+        compose.loadStates('demo', [{'caption': 'A'}], 'de', raw)
+
+
+def test_german_animations_get_the_language_suffix(tmp_path):
+    states = [compose.State(model(), dialog(), 'A', None, 'x.png'), compose.State(model(), dialog(), 'B', None, 'x.png')]
+    compose.writeAnimation('demo', states, str(tmp_path), 'de')
+    assert sorted(os.listdir(tmp_path)) == ['demo-dark.de.gif', 'demo-light.de.gif']
+
+
+def test_every_state_has_a_german_caption():
+    import json
+    anims = json.load(open(os.path.join(HERE, '..', 'dev-notes', 'tools', 'anim', 'anims.json'), encoding='utf-8'))
+    assert all(entry.get('captionDe') for entries in anims.values() for entry in entries)
