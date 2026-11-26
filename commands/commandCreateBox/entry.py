@@ -23,6 +23,8 @@ from ...lib.ui.defaultsButtons import addDefaultsButtonRow, defaultsButtonsHandl
 from ...lib.ui.buttonRow import addButtonRow
 from ...lib.ui import configButtons
 from ...lib.ui import browserPages
+from ...lib.ui import dropdowns
+from ...lib.i18n import tr, number
 from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
 
 # Dialog of the box command: a storage box after Pred's parametric Gridfinity Storage Box v1.1
@@ -33,9 +35,11 @@ ui = app.userInterface
 
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdBox'
 CMD_NAME = 'Gridkeeper box'
+# what the user reads of the name; CMD_NAME stays English for the log
+CMD_TITLE = tr('Gridkeeper box')
 # the first section of a part's settings names the part, as the settings window does (review round 23)
-SETTINGS_TITLE = 'Gridfinity box'
-CMD_Description = ("Creates a storage box with lid after Pred's parametric Gridfinity Storage Box v1.1.\n\n"
+SETTINGS_TITLE = tr('Gridfinity box')
+CMD_Description = tr("Creates a storage box with lid after Pred's parametric Gridfinity Storage Box v1.1.\n\n"
     'Set its width and length in grid cells and its height in units. Box and lid stack and latch with boxes printed '
     "from Pred's file; latches, hinges, handle and label holder seats are built in.")
 
@@ -78,7 +82,7 @@ CONFIG_BUTTONS_BROWSER = 'config_buttons'
 SHOW_PREVIEW_INPUT = 'show_preview'
 PREVIEW_TIME_INPUT = 'preview_time'
 
-INFO_TEXT = ("<b>Help:</b> every input is explained "
+INFO_TEXT = tr("<b>Help:</b> every input is explained "
              "<a href=\"https://eifel-joe.github.io/Gridkeeper/boxes/\">in the Gridkeeper documentation</a>. "
              "Based on Pred's Gridfinity Storage Box v1.1, "
              "<a href=\"https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric\">Printables 543553</a> (CC BY-NC), "
@@ -95,16 +99,17 @@ DEFAULT_STATE = configJson.stateFromJson(configJson.GENERATOR_BOX, InputState, d
 
 def infoText():
     version = tagUtils.getGeneratorVersion()
-    return f"{INFO_TEXT}<br><span style=\"color:#808080; font-size:small\">Version {version}</span>" if version else INFO_TEXT
+    return f"{INFO_TEXT}<br><span style=\"color:#808080; font-size:small\">{tr('Version {version}', version=version)}</span>" if version else INFO_TEXT
 
 
-def getErrorMessage(text="An unknown error occurred, please validate your inputs and try again"):
+def getErrorMessage(text=None):
+    text = text or tr('An unknown error occurred, please validate your inputs and try again')
     return f"{text}:<br>{traceback.format_exc()}"
 
 
-def showErrorInMessageBox(text="An unknown error occurred, please validate your inputs and try again"):
+def showErrorInMessageBox(text=None):
     if ui:
-        ui.messageBox(getErrorMessage(text), f"{CMD_NAME} Error")
+        ui.messageBox(getErrorMessage(text), tr('{command} error', command=CMD_TITLE))
 
 
 def start():
@@ -113,7 +118,7 @@ def start():
         addinConfig = configUtils.readConfig(CONFIG_FOLDER_PATH)
         cmd_def = ui.commandDefinitions.itemById(CMD_ID)
         if not cmd_def:
-            cmd_def = ui.commandDefinitions.addButtonDefinition(CMD_ID, CMD_NAME, CMD_Description, ICON_FOLDER)
+            cmd_def = ui.commandDefinitions.addButtonDefinition(CMD_ID, CMD_TITLE, CMD_Description, ICON_FOLDER)
             if os.path.isfile(TOOL_CLIP_PATH):
                 cmd_def.toolClipFilename = TOOL_CLIP_PATH
             futil.add_handler(cmd_def.commandCreated, command_created)
@@ -124,7 +129,7 @@ def start():
         initUiState()
     except Exception as err:
         futil.log(f'{CMD_NAME} Error occurred at the start, {err}, {getErrorMessage()}')
-        showErrorInMessageBox(f"{CMD_NAME} Critical error occurred at the start, the command will be unavailable")
+        showErrorInMessageBox(tr('{command} critical error occurred at the start, the command will be unavailable', command=CMD_TITLE))
 
 
 def stop():
@@ -184,52 +189,52 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     pendingRebuildBody = None
     applyPendingConfig()
 
-    infoGroup = addGroup(inputs, INFO_GROUP, 'Info')
+    infoGroup = addGroup(inputs, INFO_GROUP, tr('Info'))
     info = infoText()
     if rebuildName is not None:
-        info = f'<b>Rebuilding {html.escape(rebuildName)}</b> in place, features after it in the timeline are kept.<br>' + info
-    infoGroup.children.addTextBoxCommandInput("info_text", "Info", info, info.count('<br>') + 4, True)
+        info = tr('<b>Rebuilding {name}</b> in place, features after it in the timeline are kept.<br>', name=html.escape(rebuildName)) + info
+    infoGroup.children.addTextBoxCommandInput("info_text", tr('Info'), info, info.count('<br>') + 4, True)
 
-    sizeGroup = addGroup(inputs, SIZE_GROUP, 'Size')
-    addSpinner(sizeGroup.children, GRID_X_INPUT, 'Width (u)', predBoxConfig.MIN_GRID_X, 20, 'Grid cells of 42 mm across, at least 4 like Pred')
-    addSpinner(sizeGroup.children, GRID_Y_INPUT, 'Length (u)', predBoxConfig.MIN_GRID_Y, 20, 'Grid cells of 42 mm front to back, at least 3')
-    addSpinner(sizeGroup.children, HEIGHT_U_INPUT, 'Height (u)', predBoxConfig.MIN_HEIGHT_U, 30, 'Height units of 7 mm, at least 6; the lid adds 10 mm')
-    sizeGroup.children.addTextBoxCommandInput(SIZE_TEXT, 'Box', '', 2, True)
+    sizeGroup = addGroup(inputs, SIZE_GROUP, tr('Size'))
+    addSpinner(sizeGroup.children, GRID_X_INPUT, tr('Width (u)'), predBoxConfig.MIN_GRID_X, 20, tr('Grid cells of 42 mm across, at least 4 like Pred'))
+    addSpinner(sizeGroup.children, GRID_Y_INPUT, tr('Length (u)'), predBoxConfig.MIN_GRID_Y, 20, tr('Grid cells of 42 mm front to back, at least 3'))
+    addSpinner(sizeGroup.children, HEIGHT_U_INPUT, tr('Height (u)'), predBoxConfig.MIN_HEIGHT_U, 30, tr('Height units of 7 mm, at least 6; the lid adds 10 mm'))
+    sizeGroup.children.addTextBoxCommandInput(SIZE_TEXT, tr('Box'), '', 2, True)
 
-    magnetGroup = addGroup(inputs, MAGNET_GROUP, 'Magnet holes')
-    addBool(magnetGroup.children, MAGNETS_INPUT, 'Add magnet holes', 'Holes in the floor pads of every cell, to hold bins with magnets')
-    sizeDropdown = magnetGroup.children.addDropDownCommandInput(MAGNET_SIZE_DROPDOWN, 'Magnet size', adsk.core.DropDownStyles.TextListDropDownStyle)
+    magnetGroup = addGroup(inputs, MAGNET_GROUP, tr('Magnet holes'))
+    addBool(magnetGroup.children, MAGNETS_INPUT, tr('Add magnet holes'), tr('Holes in the floor pads of every cell, to hold bins with magnets'))
+    sizeDropdown = magnetGroup.children.addDropDownCommandInput(MAGNET_SIZE_DROPDOWN, tr('Magnet size'), adsk.core.DropDownStyles.TextListDropDownStyle)
     for name in magnetSizes.BOX_CHOICES:
-        sizeDropdown.listItems.add(name, name == uiState.getState(MAGNET_SIZE_DROPDOWN))
-    sizeDropdown.tooltip = '6×2 mm magnets need 2.4 mm. 6×3 mm magnets would break through the floor of the box'
+        dropdowns.addItem(sizeDropdown, name, name == uiState.getState(MAGNET_SIZE_DROPDOWN))
+    sizeDropdown.tooltip = tr('6×2 mm magnets need 2.4 mm. 6×3 mm magnets would break through the floor of the box')
     uiState.registerCommandInput(sizeDropdown)
-    addLength(magnetGroup.children, MAGNET_DEPTH_INPUT, 'Magnet cutout depth', 'At most 2.6 mm, 0.2 mm of floor stays under the magnet')
-    addLength(magnetGroup.children, MAGNET_DIAMETER_INPUT, 'Magnet cutout diameter', '3 to 8.5 mm, the pad around the hole grows with it')
+    addLength(magnetGroup.children, MAGNET_DEPTH_INPUT, tr('Magnet cutout depth'), tr('At most 2.6 mm, 0.2 mm of floor stays under the magnet'))
+    addLength(magnetGroup.children, MAGNET_DIAMETER_INPUT, tr('Magnet cutout diameter'), tr('3 to 8.5 mm, the pad around the hole grows with it'))
 
     # the lid's top (round 30, p311, 18.11.2026: Grid / Closed, Grid stays the default)
-    lidGroup = addGroup(inputs, LID_GROUP, 'Lid')
-    lidTopDropdown = lidGroup.children.addDropDownCommandInput(LID_TOP_DROPDOWN, 'Lid top', adsk.core.DropDownStyles.TextListDropDownStyle)
+    lidGroup = addGroup(inputs, LID_GROUP, tr('Lid'))
+    lidTopDropdown = lidGroup.children.addDropDownCommandInput(LID_TOP_DROPDOWN, tr('Lid top'), adsk.core.DropDownStyles.TextListDropDownStyle)
     for name in predBoxConfig.LID_TOPS:
-        lidTopDropdown.listItems.add(name, name == uiState.getState(LID_TOP_DROPDOWN))
-    lidTopDropdown.tooltip = ("Grid: a Gridfinity grid on top of the lid to stand bins on, as in Pred's file. "
+        dropdowns.addItem(lidTopDropdown, name, name == uiState.getState(LID_TOP_DROPDOWN))
+    lidTopDropdown.tooltip = tr("Grid: a Gridfinity grid on top of the lid to stand bins on, as in Pred's file. "
                               "Closed: a flat closed top, sturdier; the stacking tabs in its corners stay, boxes still stack")
     uiState.registerCommandInput(lidTopDropdown)
 
     # Pred's three hinges (round 28, 17.11.2026: all three can be picked), the box is the same for all
-    partsGroup = addGroup(inputs, PARTS_GROUP, 'Small parts')
-    hingeDropdown = partsGroup.children.addDropDownCommandInput(HINGE_DROPDOWN, 'Hinge', adsk.core.DropDownStyles.TextListDropDownStyle)
+    partsGroup = addGroup(inputs, PARTS_GROUP, tr('Small parts'))
+    hingeDropdown = partsGroup.children.addDropDownCommandInput(HINGE_DROPDOWN, tr('Hinge'), adsk.core.DropDownStyles.TextListDropDownStyle)
     for name in predBoxParts.HINGES:
-        hingeDropdown.listItems.add(name, name == uiState.getState(HINGE_DROPDOWN))
-    hingeDropdown.tooltip = "Which of Pred's hinges the box comes with: M3x30 for an M3 x 30 mm screw, Pinned with a printed pin, Plain as in Pred's file"
+        dropdowns.addItem(hingeDropdown, name, name == uiState.getState(HINGE_DROPDOWN))
+    hingeDropdown.tooltip = tr("Which of Pred's hinges the box comes with: M3x30 for an M3 x 30 mm screw, Pinned with a printed pin, Plain as in Pred's file")
     uiState.registerCommandInput(hingeDropdown)
 
-    inputChangesGroup = addGroup(inputs, INPUT_CHANGES_GROUP, 'Inputs')
+    inputChangesGroup = addGroup(inputs, INPUT_CHANGES_GROUP, tr('Inputs'))
     addDefaultsButtonRow(inputChangesGroup.children, INPUT_CHANGES_BUTTONS_BROWSER)
     addButtonRow(inputChangesGroup.children, CONFIG_BUTTONS_BROWSER)
 
-    previewGroup = addGroup(inputs, PREVIEW_GROUP, 'Preview')
-    addBool(previewGroup.children, SHOW_PREVIEW_INPUT, 'Show preview (slow)', 'The preview shows box and lid, the small parts (latches, handle, pins, hinges) come with OK')
-    previewGroup.children.addTextBoxCommandInput(PREVIEW_TIME_INPUT, 'Last preview', 'None yet', 1, True)
+    previewGroup = addGroup(inputs, PREVIEW_GROUP, tr('Preview'))
+    addBool(previewGroup.children, SHOW_PREVIEW_INPUT, tr('Show preview (slow)'), tr('The preview shows box and lid, the small parts (latches, handle, pins, hinges) come with OK'))
+    previewGroup.children.addTextBoxCommandInput(PREVIEW_TIME_INPUT, tr('Last preview'), tr('None yet'), 1, True)
 
     updateInputs(inputs)
 
@@ -249,7 +254,7 @@ def updateInputs(inputs: adsk.core.CommandInputs):
     inputs.itemById(MAGNET_DIAMETER_INPUT).isEnabled = state.hasMagnets
     (width, length) = (state.gridX * 42 + 20, state.gridY * 42 + 20)
     height = state.heightU * 7 + 13 + 10
-    text = f'{width} x {length} x {height:g} mm with lid'
+    text = tr('{width} x {length} x {height} mm with lid', width=number(width), length=number(length), height=number(height))
     problem = boxProblem(state)
     inputs.itemById(SIZE_TEXT).formattedText = text if problem is None else f'{text}<br><span style="color:#d04030">{problem}</span>'
 
@@ -261,7 +266,7 @@ def command_execute(args: adsk.core.CommandEventArgs):
     if generateBox(args) is False:
         return
     if wasPart and des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
-        ui.messageBox(designIntent.hybridSwitchMessage('box'), CMD_NAME)
+        ui.messageBox(designIntent.hybridSwitchMessage('box'), CMD_TITLE)
 
 
 def command_preview(args: adsk.core.CommandEventArgs):
@@ -271,10 +276,10 @@ def command_preview(args: adsk.core.CommandEventArgs):
             startTime = time.perf_counter()
             isGenerated = generateBox(args, mayChangeDocument=False) is not False
             seconds = time.perf_counter() - startTime
-            inputs.itemById(PREVIEW_TIME_INPUT).text = f'{seconds:.2f} s' if isGenerated else f'failed after {seconds:.2f} s'
+            inputs.itemById(PREVIEW_TIME_INPUT).text = tr('{seconds} s', seconds=number(f'{seconds:.2f}')) if isGenerated else tr('failed after {seconds} s', seconds=number(f'{seconds:.2f}'))
         else:
             args.executeFailed = True
-            args.executeFailedMessage = "Some inputs are invalid, unable to generate preview"
+            args.executeFailedMessage = tr("Some inputs are invalid, unable to generate preview")
 
 
 def command_input_changed(args: adsk.core.InputChangedEventArgs):
@@ -317,7 +322,7 @@ def command_incoming_from_html(args: adsk.core.HTMLEventArgs):
             command.doExecutePreview()
 
     def onLoadConfig(text: str, fileName: str):
-        state = readConfig(text, f'Loaded "{fileName}"')
+        state = readConfig(text, tr('Loaded "{name}"', name=fileName))
         if state is None:
             return
         applyInputsState(state)
@@ -346,9 +351,9 @@ def command_destroy(args: adsk.core.CommandEventArgs):
     rebuildBodyToken = None
     if args.terminationReason == adsk.core.CommandTerminationReason.CompletedTerminationReason and len(rebuildNotes) > 0:
         ui.messageBox(
-            'The box was rebuilt. These features after it need a look, ones using a face or an edge of the old '
-            'box need them picked again:\n\n' + '\n'.join(rebuildNotes),
-            CMD_NAME,
+            tr('The box was rebuilt. These features after it need a look, ones using a face or an edge of the old '
+               'box need them picked again:\n\n{notes}', notes='\n'.join(rebuildNotes)),
+            CMD_TITLE,
             adsk.core.MessageBoxButtonTypes.OKButtonType,
             adsk.core.MessageBoxIconTypes.WarningIconType,
         )
@@ -377,7 +382,7 @@ def generateBox(args: adsk.core.CommandEventArgs, mayChangeDocument: bool = True
         futil.log(f'{CMD_NAME} {boxName(state)} generated in {time.perf_counter() - startTime:.3f}s')
     except UnsupportedDesignTypeException:
         args.executeFailed = True
-        args.executeFailedMessage = 'Design type is unsupported. Projects with disabled design history are unsupported, please enable timeline feature to proceed.'
+        args.executeFailedMessage = tr('Design type is unsupported. Projects with disabled design history are unsupported, please enable timeline feature to proceed.')
         return False
     except Exception as err:
         args.executeFailed = True
@@ -484,7 +489,7 @@ def applyPendingConfig():
     global pendingConfig
     if pendingConfig is None:
         return
-    state = readConfig(configJson.configText(configJson.GENERATOR_BOX, pendingConfig), 'Rebuilding' if rebuildBodyToken is not None else 'Cloned')
+    state = readConfig(configJson.configText(configJson.GENERATOR_BOX, pendingConfig), tr('Rebuilding') if rebuildBodyToken is not None else tr('Cloned'))
     pendingConfig = None
     if state is not None:
         applyInputsState(state)

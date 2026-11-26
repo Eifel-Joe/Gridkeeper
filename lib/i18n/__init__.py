@@ -98,8 +98,11 @@ def tr(text: str, context: str | None = None, **values) -> str:
     return _lookup(text, context, values)
 
 
-def trValue(text: str) -> str:
-    """Marks a value a dropdown shows translated (tools/i18n/collect.py finds it), the value itself stays English"""
+def trValue(text: str, context: str | None = None) -> str:
+    """
+    Marks a value a dropdown shows translated (tools/i18n/collect.py finds it), the value itself stays English. A
+    context goes with lib/ui/dropdowns.addItem(..., context=)
+    """
     return text
 
 

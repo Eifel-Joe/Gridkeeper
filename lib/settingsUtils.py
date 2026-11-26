@@ -1,11 +1,13 @@
 import html
 import adsk.core
 
+from .i18n import tr
+
 def _displayValue(input: adsk.core.CommandInput) -> str | None:
     """The value as the dialog shows it, none for inputs that only act, like buttons"""
     boolInput = adsk.core.BoolValueCommandInput.cast(input)
     if boolInput is not None:
-        return ('Yes' if boolInput.value else 'No') if boolInput.isCheckBox else None
+        return (tr('Yes') if boolInput.value else tr('No')) if boolInput.isCheckBox else None
     valueInput = adsk.core.ValueCommandInput.cast(input)
     if valueInput is not None:
         return valueInput.expression
@@ -56,7 +58,7 @@ def snapshotInputs(inputs: adsk.core.CommandInputs, ignoreIds: list[str], title:
                 continue
             table = adsk.core.TableCommandInput.cast(input)
             if table is not None:
-                section['items'].extend(_tableRows(table, table.name.rstrip('s') or 'Row'))
+                section['items'].extend(_tableRows(table, table.name.rstrip('s') or tr('Row')))
                 continue
             if not input.isEnabled:
                 continue
@@ -78,20 +80,20 @@ def settingsText(settings: list[dict]) -> str:
 def settingsHtml(tag: dict, parameterExpression=None) -> str:
     """Tag settings for the settings page, with the user parameters the body is tied to
     and their current expressions looked up by name, none when one is gone"""
-    version = tag.get('generatorVersion') or 'unknown'
-    lines = [f'<span style="color:#808080">Generated with version {html.escape(str(version))}</span>']
+    version = tag.get('generatorVersion') or tr('unknown')
+    lines = [f'<span style="color:#808080">{html.escape(tr("Generated with version {version}", version=version), quote=False)}</span>']
     parameters = tag.get('parameters')
     if isinstance(parameters, list) and len(parameters) > 0:
-        lines.append('<br><br><b>Parameters</b>')
+        lines.append(f'<br><br><b>{html.escape(tr("Parameters"), quote=False)}</b>')
         for item in parameters:
             if isinstance(item, list) and len(item) == 2:
                 (label, name) = item
                 expression = parameterExpression(name) if parameterExpression is not None else None
-                current = html.escape(str(expression)) if expression is not None else '<span style="color:#808080">missing, deleted or renamed</span>'
+                current = html.escape(str(expression)) if expression is not None else f'<span style="color:#808080">{html.escape(tr("missing, deleted or renamed"), quote=False)}</span>'
                 lines.append(f'<br>{html.escape(str(label))}: {html.escape(str(name))} = {current}')
     settings = tag.get('settings')
     if not isinstance(settings, list) or len(settings) == 0:
-        lines.append('<br>Settings weren\'t recorded, this was generated before the generator kept them.')
+        lines.append('<br>' + html.escape(tr('Settings weren\'t recorded, this was generated before the generator kept them.'), quote=False))
         return ''.join(lines)
     for section in settings:
         if not isinstance(section, dict):

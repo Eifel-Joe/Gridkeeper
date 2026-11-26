@@ -4,7 +4,7 @@ Pockets are plain dicts, so they go to the dialog drawing and the saved defaults
 """
 
 # a pocket's label icon taken from the label tab section
-DEFAULT_ICON = 'Default'
+DEFAULT_ICON = 'Default'  # tr-value
 # the walls a pocket can have a scoop on, in this order, the names of scoopSides (round 48)
 SCOOP_WALLS = ('front', 'back', 'left', 'right')
 

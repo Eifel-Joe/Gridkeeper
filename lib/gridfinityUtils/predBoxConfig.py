@@ -24,8 +24,8 @@ PRED_MAGNET_DIAMETER = 0.65
 
 # the lid's top (round 30, p311, 18.11.2026): Pred's Gridfinity grid, or closed and flat, sturdier, the stacking
 # tabs in its corners kept so boxes still stack ("Standard bleibt Raster")
-LID_TOP_GRID = 'Grid'
-LID_TOP_CLOSED = 'Closed'
+LID_TOP_GRID = 'Grid'  # tr-value
+LID_TOP_CLOSED = 'Closed'  # tr-value
 LID_TOPS = (LID_TOP_GRID, LID_TOP_CLOSED)
 DEFAULT_LID_TOP = LID_TOP_GRID
 

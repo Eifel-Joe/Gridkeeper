@@ -11,6 +11,8 @@ def _load_settings_utils():
     path = os.path.join(project_root, "lib", "settingsUtils.py")
     spec = importlib.util.spec_from_file_location("settingsUtils", path)
     mod = importlib.util.module_from_spec(spec)
+    # lib modules import the texts (lib/i18n) relatively
+    mod.__package__ = "lib"
     spec.loader.exec_module(mod)
     return mod
 

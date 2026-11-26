@@ -12,9 +12,19 @@ import re
 def _loadLibFile(name: str):
     """A module of lib, when the tests and tools load this file on its own, outside the add-in package"""
     import importlib.util
-    path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'lib', f'{name}.py')
-    spec = importlib.util.spec_from_file_location(name, path)
+    import sys
+    import types
+    lib = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'lib')
+    # a package of lib's folder, so the module's relative imports resolve (configJson's texts come from lib/i18n)
+    package = 'gridkeeperLibStandalone'
+    if package not in sys.modules:
+        packageModule = types.ModuleType(package)
+        packageModule.__path__ = [lib]
+        sys.modules[package] = packageModule
+    spec = importlib.util.spec_from_file_location(f'{package}.{name}', os.path.join(lib, f'{name}.py'))
     module = importlib.util.module_from_spec(spec)
+    module.__package__ = package
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
 

@@ -5,6 +5,7 @@ import webbrowser
 
 from ...lib import fusion360utils as futil
 from ...lib import clipboard, errorReport, tagUtils
+from ...lib.i18n import tr
 from ... import config
 from . import browserPages
 
@@ -16,7 +17,9 @@ app = adsk.core.Application.get()
 ui = app.userInterface
 
 PALETTE_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_errorReport'
-PALETTE_TITLE = 'Gridkeeper error'
+PALETTE_TITLE = tr('Gridkeeper error')
+# the log's name for it, the palette's title is in the add-in's language
+LOG_NAME = 'Gridkeeper error'
 PAGE_URL = browserPages.pageUrl(__file__, 'errorReport.html')
 WIDTH = 520
 HEIGHT = 480
@@ -82,7 +85,7 @@ def show(title: str, err: BaseException, buildConfig: str | None, workflow: str,
         palette.sendInfoToHTML('update', browserPages.encode(currentReport))
     except Exception as err:
         # the error is in the log already, showing it is the extra
-        futil.log(f'{PALETTE_TITLE} not shown, {err}', adsk.core.LogLevels.ErrorLogLevel)
+        futil.log(f'{LOG_NAME} not shown, {err}', adsk.core.LogLevels.ErrorLogLevel)
 
 def copyToClipboard(text: str) -> bool:
     """False when it couldn't, the page then copies it itself"""
@@ -90,7 +93,7 @@ def copyToClipboard(text: str) -> bool:
         clipboard.copyText(text)
         return True
     except (OSError, subprocess.SubprocessError) as err:
-        futil.log(f'{PALETTE_TITLE} report not copied, {err}')
+        futil.log(f'{LOG_NAME} report not copied, {err}')
         return False
 
 def palette_incoming_from_html(args: adsk.core.HTMLEventArgs):
@@ -107,9 +110,9 @@ def palette_incoming_from_html(args: adsk.core.HTMLEventArgs):
             webbrowser.open(currentReport['issueUrl'] if currentReport is not None else errorReport.ISSUES_URL)
             answer = {'copied': copied}
         else:
-            futil.log(f'{PALETTE_TITLE} page sent an unknown action {args.action}')
+            futil.log(f'{LOG_NAME} page sent an unknown action {args.action}')
     except Exception as err:
-        futil.log(f'{PALETTE_TITLE} {args.action} failed, {err}', adsk.core.LogLevels.ErrorLogLevel)
+        futil.log(f'{LOG_NAME} {args.action} failed, {err}', adsk.core.LogLevels.ErrorLogLevel)
     args.returnData = browserPages.NO_ANSWER if answer is None else browserPages.encode(answer)
 
 def stop():

@@ -187,7 +187,7 @@ def test_a_preview_makes_no_joint_origins_ok_makes_them_all():
 
 def test_the_preview_checkbox_says_the_small_parts_come_with_ok():
     entry = open(os.path.join(os.path.dirname(SOURCE), "entry.py"), encoding="utf-8").read()
-    line = next(line for line in entry.splitlines() if "SHOW_PREVIEW_INPUT, 'Show preview" in line)
+    line = next(line for line in entry.splitlines() if "SHOW_PREVIEW_INPUT, tr('Show preview" in line)
     assert "box and lid" in line and "OK" in line, line
 
 

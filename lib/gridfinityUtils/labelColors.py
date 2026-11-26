@@ -6,8 +6,8 @@ No Fusion imports, so it is testable, the appearance itself is made by appearanc
 
 import re
 
-NO_COLOR_CHOICE = 'None'
-CUSTOM_CHOICE = 'Custom'
+NO_COLOR_CHOICE = 'None'  # tr-value
+CUSTOM_CHOICE = 'Custom'  # tr-value
 # named colors, about the filaments one has
 NAMED_COLORS = {
     'Black': '#000000',
@@ -18,7 +18,7 @@ NAMED_COLORS = {
     'Green': '#20A040',
     'Blue': '#2060D0',
     'Gray': '#808080',
-}
+}  # tr-keys
 CHOICES = [NO_COLOR_CHOICE] + list(NAMED_COLORS) + [CUSTOM_CHOICE]
 
 _COLOR = re.compile(r'^#[0-9A-Fa-f]{6}$')

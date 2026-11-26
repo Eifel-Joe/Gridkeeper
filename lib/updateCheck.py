@@ -4,6 +4,8 @@ import json
 import os
 import re
 
+from .i18n import tr
+
 # The update check (p310): once a day at startup Gridkeeper asks GitHub for its newest release and offers it when it's
 # newer than the running add-in. Kept free of Fusion imports so it can be unit tested, the dialogs are in
 # commands/commandUpdates, replacing the add-in folder is in lib/updateInstall.py
@@ -106,26 +108,28 @@ def manifestVersion(addinFolder: str) -> tuple[int, int, int] | None:
 
 # what the dialogs say, see commands/commandUpdates
 
-GIT_CHECKOUT_TEXT = 'This add-in runs from a git checkout, update it with git.'
+GIT_CHECKOUT_TEXT = tr('This add-in runs from a git checkout, update it with git.')
 # How the new version gets loaded, measured in Fusion 2706 (spec E13, 17.11.2026): a restart of Fusion, Stop and Run
 # in Scripts and Add-Ins, or Script.stop/run of the API from a script all load it with every command working.
 # Reloading the add-in's modules in place leaves every command dead, without an error, so it's not offered. The
 # add-in restarting itself through the API works too (measured 18.11.2026, p321): the Reload Gridkeeper button, see
 # lib/selfReload.py. These are the ways by hand, named with the button and when it fails
-RELOAD_WAYS = 'restart Fusion, or stop and run Gridkeeper in Utilities › Add-Ins › Scripts and Add-Ins'
+RELOAD_WAYS = tr('restart Fusion, or stop and run Gridkeeper in Utilities › Add-Ins › Scripts and Add-Ins')
+# the same as a sentence of its own
+RELOAD_WAYS_SENTENCE = tr('Restart Fusion, or stop and run Gridkeeper in Utilities › Add-Ins › Scripts and Add-Ins')
 
 def dialogHtml(release: Release, current: tuple[int, int, int], gitCheckout: bool) -> str:
     """The text of the update dialog: the new version, its short info and the link to its release notes"""
     import html
-    lines = [f'<b>Gridkeeper {release.versionText} is available (you have {versionText(current)}).</b>']
+    lines = [f'<b>{html.escape(tr("Gridkeeper {version} is available (you have {current}).", version=release.versionText, current=versionText(current)), quote=False)}</b>']
     if release.summary:
         lines.append(html.escape(release.summary))
     if release.pageUrl:
-        lines.append(f'<a href="{html.escape(release.pageUrl, quote=True)}">Release notes</a>')
+        lines.append(f'<a href="{html.escape(release.pageUrl, quote=True)}">{html.escape(tr("Release notes"), quote=False)}</a>')
     if gitCheckout:
-        lines.append(GIT_CHECKOUT_TEXT)
+        lines.append(html.escape(GIT_CHECKOUT_TEXT, quote=False))
     elif release.assetUrl is None:
-        lines.append('The release has no ZIP file to install, download it from the release page.')
+        lines.append(html.escape(tr('The release has no ZIP file to install, download it from the release page.'), quote=False))
     return '<br><br>'.join(lines)
 
 def versionLine(running: tuple[int, int, int] | None, installed: tuple[int, int, int] | None,
@@ -134,20 +138,23 @@ def versionLine(running: tuple[int, int, int] | None, installed: tuple[int, int,
     the dialog shows Reload Gridkeeper, named first (p321). reloadPending: the user said Yes to reload in the open
     dialog, the reload waits for it to close (review finding 4)"""
     if running is None:
-        return 'Running Gridkeeper, its version is unknown.'
+        return tr('Running Gridkeeper, its version is unknown.')
     if installed is None or installed == running:
-        return f'Running Gridkeeper {versionText(running)}.'
+        return tr('Running Gridkeeper {running}.', running=versionText(running))
     if reloadPending:
-        return (f'Running Gridkeeper {versionText(running)}, installed {versionText(installed)}. '
-                f'Close this dialog to reload Gridkeeper and use {versionText(installed)}.')
-    ways = f'Click Reload Gridkeeper, or {RELOAD_WAYS}' if reloadButton else f'{RELOAD_WAYS[0].upper()}{RELOAD_WAYS[1:]}'
-    return f'Running Gridkeeper {versionText(running)}, installed {versionText(installed)}. {ways}, to use {versionText(installed)}.'
+        return tr('Running Gridkeeper {running}, installed {installed}. Close this dialog to reload Gridkeeper and use {installed}.',
+                  running=versionText(running), installed=versionText(installed))
+    if reloadButton:
+        return tr('Running Gridkeeper {running}, installed {installed}. Click Reload Gridkeeper, or {ways}, to use {installed}.',
+                  running=versionText(running), installed=versionText(installed), ways=RELOAD_WAYS)
+    return tr('Running Gridkeeper {running}, installed {installed}. {ways}, to use {installed}.',
+              running=versionText(running), installed=versionText(installed), ways=RELOAD_WAYS_SENTENCE)
 
 def successQuestion(release: Release) -> str:
     """Asked right after the update (p321). With No the old code runs with the new files on disk until it's loaded by
     hand, so it says so (spec E11.7, review finding 5)"""
-    return (f'Gridkeeper {release.versionText} is installed. Reload Gridkeeper now to use it?\n\n'
-            f'With No the old version runs until you {RELOAD_WAYS}.')
+    return tr('Gridkeeper {version} is installed. Reload Gridkeeper now to use it?\n\nWith No the old version runs until you {ways}.',
+              version=release.versionText, ways=RELOAD_WAYS)
 
 # settings
 

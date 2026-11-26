@@ -8,6 +8,7 @@ from ...lib import fusion360utils as futil
 from ...lib.ui import browserPages
 from ...lib.ui import configButtons
 from ...lib.ui.buttonRow import Button
+from ...lib.i18n import tr
 from ... import config
 from ..commandCreateBin import entry as binEntry
 from ..commandCreateBaseplate import entry as baseplateEntry
@@ -19,26 +20,27 @@ app = adsk.core.Application.get()
 ui = app.userInterface
 
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdShowSettings'
-CMD_NAME = 'Gridkeeper settings'
-CMD_Description = 'Show the settings this bin, baseplate or label was generated with'
+CMD_NAME = tr('Gridkeeper settings')
+CMD_Description = tr('Show the settings this bin, baseplate or label was generated with')
 # a bin with a cog, shown beside the context menu item
 ICON_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources', '')
 # the context menu item opening the generator's dialog to rebuild the body, as the Rebuild button of the window does
 REBUILD_CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdRebuild'
-REBUILD_CMD_NAME = 'Gridkeeper rebuild'
+REBUILD_CMD_NAME = tr('Gridkeeper rebuild')
 # a bin with a wrench
 REBUILD_ICON_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources', 'rebuild', '')
-REBUILD_CMD_DESCRIPTION = 'Open the generator dialog with the settings of this bin, baseplate or label to build it again in its place, keeping the features after it'
+REBUILD_CMD_DESCRIPTION = tr('Open the generator dialog with the settings of this bin, baseplate or label to build it again in its place, keeping the features after it')
 # the context menu item opening the generator's dialog with these settings for a new body, as the Clone button of the window does
 CLONE_CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdClone'
-CLONE_CMD_NAME = 'Gridkeeper clone'
+CLONE_CMD_NAME = tr('Gridkeeper clone')
 # a bin with two sheets, a copy
 CLONE_ICON_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources', 'clone', '')
-CLONE_CMD_DESCRIPTION = 'Open the generator dialog with the settings of this bin, baseplate, label or box to build a new one'
+CLONE_CMD_DESCRIPTION = tr('Open the generator dialog with the settings of this bin, baseplate, label or box to build a new one')
 
 SETTINGS_TEXT_INPUT = 'settings_text'
 SETTINGS_BROWSER = 'settings'
 SETTINGS_HTML_URL = browserPages.pageUrl(__file__, 'settings.html')
+# English: the name of a saved file starts with one when the generator can't tell, the window shows tagTitle
 TAG_TITLES = {
     tagUtils.TAG_BIN: 'Gridfinity bin',
     tagUtils.TAG_BASEPLATE: 'Gridfinity baseplate',
@@ -46,6 +48,17 @@ TAG_TITLES = {
     tagUtils.TAG_BOX: 'Gridfinity box',
     tagUtils.TAG_BOX_LABEL: 'Box label',
 }
+def tagTitle(tagName: str) -> str:
+    """The window's title for a kind of generated part, in the add-in's language"""
+    titles = {
+        tagUtils.TAG_BIN: tr('Gridfinity bin'),
+        tagUtils.TAG_BASEPLATE: tr('Gridfinity baseplate'),
+        tagUtils.TAG_LABEL: tr('Gridfinity label'),
+        tagUtils.TAG_BOX: tr('Gridfinity box'),
+        tagUtils.TAG_BOX_LABEL: tr('Box label'),
+    }
+    return titles.get(tagName, CMD_NAME)
+
 # the dialog each generator opens with a cloned config, see startWithConfig
 CLONE_COMMANDS = {
     tagUtils.TAG_BIN: binEntry,
@@ -173,15 +186,15 @@ def marking_menu_displaying(args: adsk.core.MarkingMenuEventArgs):
         if canClone(menuTag):
             controls.addCommand(ui.commandDefinitions.itemById(CLONE_CMD_ID))
     except Exception as err:
-        futil.log(f'{CMD_NAME} context menu failed, {err}')
+        futil.log(f'Gridkeeper settings context menu failed, {err}')
 
 def command_created(args: adsk.core.CommandCreatedEventArgs):
     tag = selectedTag() or menuTag
     command = args.command
     command.isOKButtonVisible = False
-    command.cancelButtonText = 'Close'
+    command.cancelButtonText = tr('Close')
     if tag is None:
-        command.commandInputs.addTextBoxCommandInput(SETTINGS_TEXT_INPUT, '', 'Select a generated bin, baseplate or label.', 1, True)
+        command.commandInputs.addTextBoxCommandInput(SETTINGS_TEXT_INPUT, '', tr('Select a generated bin, baseplate or label.'), 1, True)
         return
     (body, tagName, value) = tag
     command.setDialogInitialSize(450, 500)
@@ -196,23 +209,23 @@ def rebuild_command_created(args: adsk.core.CommandCreatedEventArgs):
     tag = selectedTag() or menuTag
     try:
         if not canRebuild(tag):
-            ui.messageBox('Select a generated bin, baseplate or label to rebuild.', REBUILD_CMD_NAME)
+            ui.messageBox(tr('Select a generated bin, baseplate or label to rebuild.'), REBUILD_CMD_NAME)
             return
         startRebuild(tag)
     except Exception as err:
-        futil.handle_error(f'{REBUILD_CMD_NAME} failed, {err}', show_message_box=True)
+        futil.handle_error(f'Gridkeeper rebuild failed, {err}', show_message_box=True)
 
 def clone_command_created(args: adsk.core.CommandCreatedEventArgs):
     """Opens the generator's dialog in place of this command, which has nothing to show"""
     tag = selectedTag() or menuTag
     try:
         if not canClone(tag):
-            ui.messageBox('Select a generated bin, baseplate or label to clone.', CLONE_CMD_NAME)
+            ui.messageBox(tr('Select a generated bin, baseplate or label to clone.'), CLONE_CMD_NAME)
             return
         (_, tagName, value) = tag
         CLONE_COMMANDS[tagName].startWithConfig(value['config'])
     except Exception as err:
-        futil.handle_error(f'{CLONE_CMD_NAME} failed, {err}', show_message_box=True)
+        futil.handle_error(f'Gridkeeper clone failed, {err}', show_message_box=True)
 
 def command_incoming_from_html(args: adsk.core.HTMLEventArgs, body: adsk.fusion.BRepBody, tagName: str, value: dict):
     browserPages.handleMessage(args, pageHandlers(body, tagName, value))
@@ -223,7 +236,7 @@ def pageHandlers(body: adsk.fusion.BRepBody, tagName: str, value: dict) -> dict[
     none, see html/settings.html
     """
     page = {
-        'title': TAG_TITLES.get(tagName, CMD_NAME),
+        'title': tagTitle(tagName),
         'settings': settingsUtils.settingsHtml(value, parameterExpression),
         'buttons': [],
     }
@@ -231,11 +244,11 @@ def pageHandlers(body: adsk.fusion.BRepBody, tagName: str, value: dict) -> dict[
     if tagUtils.buildConfig(tagName, value) is None:
         return {browserPages.READY: lambda _: page}
     # tag names are the generator names of configJson
-    generatorTitle = configJson.GENERATOR_TITLES[tagName]
+    generatorTitle = configJson.generatorTitle(tagName)
     moreButtons = []
     if tagName in REBUILD_COMMANDS:
         moreButtons.append((
-            Button(REBUILD_ACTION, 'Rebuild', f'Open the {generatorTitle} dialog with these settings to build this {generatorTitle} again in its place, keeping the features after it'),
+            Button(REBUILD_ACTION, tr('Rebuild'), tr('Open the {generatorTitle} dialog with these settings to build this {generatorTitle} again in its place, keeping the features after it', generatorTitle=generatorTitle)),
             lambda: startRebuild((body, tagName, value)),
         ))
     configText = configJson.configText(tagName, value['config'], str(value.get('generatorVersion') or ''))
@@ -254,7 +267,7 @@ def configFileName(tagName: str, settings: dict) -> str:
     try:
         return CLONE_COMMANDS[tagName].configFileName(settings)
     except Exception as err:
-        futil.log(f'{CMD_NAME} config file name not made, {err}')
+        futil.log(f'Gridkeeper settings config file name not made, {err}')
         return TAG_TITLES[tagName]
 
 def command_destroy(args: adsk.core.CommandEventArgs):

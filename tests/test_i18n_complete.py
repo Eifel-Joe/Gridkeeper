@@ -47,6 +47,18 @@ def test_values_marked_by_a_comment_are_found():
     assert len(errors) == 1 and "x.py:3" in errors[0]
 
 
+def test_lists_and_dicts_are_marked_with_a_context():
+    source = (
+        "HINGES = ('M3x30', 'Pinned')  # tr-values\n"
+        "NAMES = {\n    'full': 'Full',\n    'none': 'None',\n}  # tr-values hardware\n"
+        "COLORS = {'Black': '#000', 'Red': '#f00'}  # tr-keys\n"
+        "BAD = [name]  # tr-values\n"
+    )
+    (texts, errors) = collect.collectTexts(source, "x.py")
+    assert texts == {"M3x30", "Pinned", "hardware|Full", "hardware|None", "Black", "Red"}
+    assert len(errors) == 1 and "x.py:7" in errors[0]
+
+
 def test_values_are_no_part_of_the_key():
     (texts, errors) = collect.collectTexts("tr('Total {name}', name=n)\n", "x.py")
     assert texts == {"Total {name}"}

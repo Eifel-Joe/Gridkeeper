@@ -6,9 +6,9 @@ slicer left parts of the letters out (15.11.2026). How low a text of each style 
 thinnest stroke, see minTextHeight (round 17). The hint on thin text follows the same limit (round 21, p232).
 """
 
-STYLE_REGULAR = 'Regular'
-STYLE_BOLD = 'Bold'
-STYLE_HEAVY = 'Heavy'
+STYLE_REGULAR = 'Regular'  # tr-value
+STYLE_BOLD = 'Bold'  # tr-value
+STYLE_HEAVY = 'Heavy'  # tr-value
 STYLES = [STYLE_REGULAR, STYLE_BOLD, STYLE_HEAVY]
 DEFAULT_INSERT_STYLE = STYLE_HEAVY
 

@@ -1,6 +1,6 @@
 # p320: the developer commands (snapshot tests, model images) show when the add-in runs from a git checkout, in a clone
 # (.git folder) and in a git worktree (.git file). config.py is loaded the way Fusion loads it, as part of the add-in's
-# package, from a copy of the real config.py and lib/updateInstall.py
+# package, from a copy of the real config.py, lib/updateInstall.py and lib/i18n
 import importlib
 import importlib.util
 import itertools
@@ -18,6 +18,8 @@ def loadConfig(addinFolder):
     (addinFolder / 'lib').mkdir()
     shutil.copy(os.path.join(PROJECT_ROOT, 'config.py'), addinFolder / 'config.py')
     shutil.copy(os.path.join(PROJECT_ROOT, 'lib', 'updateInstall.py'), addinFolder / 'lib' / 'updateInstall.py')
+    # updateInstall shows its errors in the add-in's language
+    shutil.copytree(os.path.join(PROJECT_ROOT, 'lib', 'i18n'), addinFolder / 'lib' / 'i18n', ignore=shutil.ignore_patterns('__pycache__'))
     # lib has no __init__.py in the add-in either, it is a namespace package
     (addinFolder / '__init__.py').write_text('')
     package = f'devtools_addin_{next(counter)}'

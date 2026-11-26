@@ -9,6 +9,7 @@ from ...lib import fusion360utils as futil
 from ...lib import updateCheck
 from ...lib import updateInstall
 from ...lib import selfReload
+from ...lib.i18n import tr
 from ... import config
 
 # The update check (p310, dev-notes/specs/2026-11-17-update-hinweis-design.md): once a day at startup a background
@@ -20,8 +21,8 @@ app = adsk.core.Application.get()
 ui = app.userInterface
 
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdUpdates'
-CMD_NAME = 'Gridkeeper updates'
-CMD_DESCRIPTION = 'Shows the Gridkeeper version, checks for a new one and turns the check at startup on or off'
+CMD_NAME = tr('Gridkeeper updates')
+CMD_DESCRIPTION = tr('Shows the Gridkeeper version, checks for a new one and turns the check at startup on or off')
 ICON_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources', '')
 # Utilities > Add-ins, out of the way of the generator commands, as the test commands
 WORKSPACE_ID = 'FusionSolidEnvironment'
@@ -87,7 +88,7 @@ def start():
         if panel is not None and panel.controls.itemById(CMD_ID) is None:
             panel.controls.addCommand(cmd_def)
     except Exception as err:
-        futil.log(f'{CMD_NAME} button not added, {err}')
+        futil.log(f'Gridkeeper updates button not added, {err}')
     # left over when the add-in wasn't stopped
     app.unregisterCustomEvent(RESULT_EVENT_ID)
     futil.add_handler(app.registerCustomEvent(RESULT_EVENT_ID), result_custom_event, local_handlers=event_handlers)
@@ -257,12 +258,12 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     reloadDialog = okAction == 'reload'
     command.isOKButtonVisible = okAction is not None
     if updateDialog:
-        command.okButtonText = 'Update now'
-        command.cancelButtonText = 'Later'
+        command.okButtonText = tr('Update now')
+        command.cancelButtonText = tr('Later')
     else:
         if reloadDialog:
-            command.okButtonText = 'Reload Gridkeeper'
-        command.cancelButtonText = 'Close'
+            command.okButtonText = tr('Reload Gridkeeper')
+        command.cancelButtonText = tr('Close')
     if okAction is not None:
         futil.add_handler(command.execute, command_execute, local_handlers=local_handlers)
     command.setDialogInitialSize(420, 300)
@@ -270,13 +271,13 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     info = inputs.addTextBoxCommandInput(INFO_INPUT, '', infoHtml(reloadDialog, reloadWaiting), 8, True)
     info.isFullWidth = True
     # in the dialog opened from the menu, after Check now found a release
-    updateNow = inputs.addBoolValueInput(UPDATE_NOW_INPUT, 'Update now', False, '', False)
+    updateNow = inputs.addBoolValueInput(UPDATE_NOW_INPUT, tr('Update now'), False, '', False)
     updateNow.isVisible = canInstall() and not updateDialog
-    releaseNotes = inputs.addBoolValueInput(RELEASE_NOTES_INPUT, 'Release notes', False, '', False)
+    releaseNotes = inputs.addBoolValueInput(RELEASE_NOTES_INPUT, tr('Release notes'), False, '', False)
     releaseNotes.isVisible = pendingRelease is not None and bool(pendingRelease.pageUrl)
-    inputs.addBoolValueInput(CHECK_NOW_INPUT, 'Check now', False, '', False)
+    inputs.addBoolValueInput(CHECK_NOW_INPUT, tr('Check now'), False, '', False)
     settings = updateCheck.readSettings(updateCheck.settingsPath(ADDIN_FOLDER))
-    inputs.addBoolValueInput(CHECK_AT_STARTUP_INPUT, 'Check for updates at startup', True, '', settings['checkAtStartup'])
+    inputs.addBoolValueInput(CHECK_AT_STARTUP_INPUT, tr('Check for updates at startup'), True, '', settings['checkAtStartup'])
     futil.add_handler(command.inputChanged, command_input_changed, local_handlers=local_handlers)
     futil.add_handler(command.destroy, command_destroy, local_handlers=local_handlers)
 
@@ -285,7 +286,7 @@ def hideProgress(progress: adsk.core.ProgressDialog):
         if progress.isShowing:
             progress.hide()
     except Exception as err:
-        futil.log(f'{CMD_NAME}: progress window not closed, {err}')
+        futil.log(f'Gridkeeper updates: progress window not closed, {err}')
 
 def installRelease(release: updateCheck.Release) -> str | None:
     """Installs release with a progress window, tells the user how it went and asks whether to reload. None when it
@@ -297,7 +298,7 @@ def installRelease(release: updateCheck.Release) -> str | None:
     progress = ui.createProgressDialog()
     try:
         progress.isCancelButtonShown = False
-        progress.show(CMD_NAME, f'Downloading Gridkeeper {release.versionText}…', 0, max(release.assetSize or 0, 1))
+        progress.show(CMD_NAME, tr('Downloading Gridkeeper {version}…', version=release.versionText), 0, max(release.assetSize or 0, 1))
         def downloaded(size: int):
             progress.progressValue = min(size, progress.maximumValue)
             adsk.doEvents()
@@ -305,7 +306,7 @@ def installRelease(release: updateCheck.Release) -> str | None:
     except updateInstall.UpdateError as err:
         hideProgress(progress)
         futil.log(f'Gridkeeper update to {release.versionText} failed: {err}')
-        ui.messageBox(f'Gridkeeper {release.versionText} couldn\'t be installed.\n\n{err}', CMD_NAME)
+        ui.messageBox(tr('Gridkeeper {version} couldn\'t be installed.\n\n{err}', version=release.versionText, err=err), CMD_NAME)
         return None
     finally:
         installing = False
@@ -328,7 +329,7 @@ def command_execute(args: adsk.core.CommandEventArgs):
         elif okAction == 'update' and canInstall():
             installRelease(pendingRelease)
     except Exception:
-        futil.handle_error(f'{CMD_NAME} failed', show_message_box=True)
+        futil.handle_error('Gridkeeper updates failed', show_message_box=True)
 
 def command_input_changed(args: adsk.core.InputChangedEventArgs):
     global pendingRelease
@@ -343,25 +344,27 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
             settings = updateCheck.readSettings(path)
             settings['checkAtStartup'] = adsk.core.BoolValueCommandInput.cast(changed).value
             if not updateCheck.writeSettings(path, settings):
-                ui.messageBox(f'The setting couldn\'t be saved to {path}.', CMD_NAME)
+                ui.messageBox(tr('The setting couldn\'t be saved to {path}.', path=path), CMD_NAME)
         elif changed.id == RELEASE_NOTES_INPUT:
             if pendingRelease is not None and pendingRelease.pageUrl:
                 webbrowser.open(pendingRelease.pageUrl)
         elif changed.id == CHECK_NOW_INPUT:
-            info.formattedText = 'Checking GitHub for a new version…'
+            info.formattedText = tr('Checking GitHub for a new version…')
             adsk.doEvents()
             logs = []
             releases = updateCheck.fetchReleases(log=logs.append)
             for line in logs:
                 futil.log(line)
             installed = updateCheck.manifestVersion(ADDIN_FOLDER) or runningVersion
+            versionLine = updateCheck.versionLine(runningVersion, installed, okAction == "reload", reloadWaiting)
             if releases is None:
-                info.formattedText = f'{updateCheck.versionLine(runningVersion, installed, okAction == "reload", reloadWaiting)}<br><br>GitHub couldn\'t be asked: {logs[-1] if logs else "no answer"}'
+                reason = logs[-1] if logs else tr('no answer')
+                info.formattedText = f'{versionLine}<br><br>{tr("GitHub couldn't be asked: {reason}", reason=reason)}'
             elif installed is None:
-                info.formattedText = f'{updateCheck.versionLine(runningVersion, installed, okAction == "reload", reloadWaiting)}<br><br>The installed version is unknown, it can\'t be compared.'
+                info.formattedText = f'{versionLine}<br><br>{tr("The installed version is unknown, it can't be compared.")}'
             else:
                 pendingRelease = updateCheck.newestRelease(releases, installed)
-                info.formattedText = infoHtml(okAction == "reload", reloadWaiting) if pendingRelease is not None else f'{updateCheck.versionLine(runningVersion, installed, okAction == "reload", reloadWaiting)}<br><br>You have the newest version.'
+                info.formattedText = infoHtml(okAction == "reload", reloadWaiting) if pendingRelease is not None else f'{versionLine}<br><br>{tr("You have the newest version.")}'
             inputs.itemById(UPDATE_NOW_INPUT).isVisible = canInstall()
             inputs.itemById(RELEASE_NOTES_INPUT).isVisible = pendingRelease is not None and bool(pendingRelease.pageUrl)
         elif changed.id == UPDATE_NOW_INPUT and canInstall():
@@ -373,7 +376,7 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
                     info.formattedText = infoHtml(okAction == 'reload', reloadWaiting)
                     inputs.itemById(UPDATE_NOW_INPUT).isVisible = False
                 except Exception as err:
-                    futil.log(f'{CMD_NAME}: dialog not updated after the update, {err}')
+                    futil.log(f'Gridkeeper updates: dialog not updated after the update, {err}')
     except Exception:
         futil.handle_error(f'{CMD_NAME} failed', show_message_box=True)
 

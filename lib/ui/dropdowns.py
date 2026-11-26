@@ -13,9 +13,12 @@ _values: dict[tuple[str, str], str] = {}
 
 
 def addItem(dropdown: adsk.core.DropDownCommandInput, value: str, isSelected: bool, icon: str = '',
-            translate: bool = True):
-    """An item showing the value translated, or as it is for names from data (printers, fonts, symbols)"""
-    name = trKnown(value) if translate else value
+            translate: bool = True, context: str | None = None):
+    """
+    An item showing the value translated, or as it is for names from data (printers, fonts, symbols). A context tells
+    apart a value meaning something else in another dropdown, such as the hardware's Full thread and the lip type Full
+    """
+    name = trKnown(value, context) if translate else value
     known = _values.get((dropdown.id, name))
     if known is not None and known != value:
         raise ValueError(f'{dropdown.id}: {value} and {known} are both shown as {name}')

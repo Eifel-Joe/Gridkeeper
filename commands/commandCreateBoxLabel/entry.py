@@ -26,6 +26,8 @@ from ...lib.ui import selectionPrefill
 from ...lib.ui.defaultsButtons import addDefaultsButtonRow, defaultsButtonsHandlers, DEFAULTS_SAVE, DEFAULTS_FACTORY_RESET
 from ...lib.ui import browserPages
 from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
+from ...lib.ui import dropdowns
+from ...lib.i18n import tr, trValue, trKnown, number
 
 # Dialog of the box label command (round 29, p262, dev-notes/r29/boxlabel-plan.md): the label of the storage box after
 # Pred's parametric Gridfinity Storage Box v1.1 (https://www.printables.com/model/543553, CC BY-NC, by Pred), Gridkeeper
@@ -37,7 +39,9 @@ ui = app.userInterface
 
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdBoxLabel'
 CMD_NAME = 'Gridkeeper box label'
-CMD_Description = ("Creates the label for the label holder of a Gridkeeper box after Pred's storage box.\n\n"
+# the name the user reads, CMD_NAME stays for the log
+CMD_TITLE = tr('Gridkeeper box label')
+CMD_Description = tr("Creates the label for the label holder of a Gridkeeper box after Pred's storage box.\n\n"
     'A large text at the left, two lines and up to five Cullenect symbols at the right, raised, set in or flush. Pick '
     'the label joint origin of a box and the label is jointed into its holder.')
 
@@ -81,12 +85,20 @@ PREVIEW_TIME_INPUT = 'preview_time'
 assert len(SYMBOL_DROPDOWNS) == predBoxLabelLayout.MAX_SYMBOLS
 
 SURFACE_NAMES = {
-    predBoxLabel.SURFACE_EMBOSSED: 'Raised',
-    predBoxLabel.SURFACE_DEBOSSED: 'Set in',
-    predBoxLabel.SURFACE_FLUSH: 'Flush',
+    predBoxLabel.SURFACE_EMBOSSED: trValue('Raised'),
+    predBoxLabel.SURFACE_DEBOSSED: trValue('Set in'),
+    predBoxLabel.SURFACE_FLUSH: trValue('Flush'),
 }
 
-INFO_TEXT = ("<b>Help:</b> every input is explained "
+# The label widths are values made by predBoxLabelLayout.widthChoices from the cells and Pred's measures, so they can't
+# be marked there; these are the three it makes now. A change there leaves the item in English until these follow
+WIDTH_CHOICE_VALUES = [
+    trValue('Box 4 cells (28.5 mm)'),
+    trValue('Box 5 cells (70.5 mm)'),
+    trValue('Box 6+ cells (85 mm)'),
+]
+
+INFO_TEXT = tr("<b>Help:</b> every input is explained "
              "<a href=\"https://eifel-joe.github.io/Gridkeeper/boxes/\">in the Gridkeeper documentation</a>. "
              "The label slides into the holder of a box after Pred's Gridfinity Storage Box v1.1, "
              "<a href=\"https://www.printables.com/model/543553-gridfinity-storage-box-by-pred-now-parametric\">Printables 543553</a> (CC BY-NC). "
@@ -122,16 +134,16 @@ DEFAULT_STATE = InputState(
 
 def infoText():
     version = tagUtils.getGeneratorVersion()
-    return f"{INFO_TEXT}<br><span style=\"color:#808080; font-size:small\">Version {version}</span>" if version else INFO_TEXT
+    return f"{INFO_TEXT}<br><span style=\"color:#808080; font-size:small\">{tr('Version {version}', version=version)}</span>" if version else INFO_TEXT
 
 
-def getErrorMessage(text="An unknown error occurred, please validate your inputs and try again"):
-    return f"{text}:<br>{traceback.format_exc()}"
+def getErrorMessage(text=None):
+    return f"{text or tr('An unknown error occurred, please validate your inputs and try again')}:<br>{traceback.format_exc()}"
 
 
-def showErrorInMessageBox(text="An unknown error occurred, please validate your inputs and try again"):
+def showErrorInMessageBox(text=None):
     if ui:
-        ui.messageBox(getErrorMessage(text), f"{CMD_NAME} Error")
+        ui.messageBox(getErrorMessage(text), tr('{command} Error', command=CMD_TITLE))
 
 
 def start():
@@ -140,7 +152,7 @@ def start():
         addinConfig = configUtils.readConfig(CONFIG_FOLDER_PATH)
         cmd_def = ui.commandDefinitions.itemById(CMD_ID)
         if not cmd_def:
-            cmd_def = ui.commandDefinitions.addButtonDefinition(CMD_ID, CMD_NAME, CMD_Description, ICON_FOLDER)
+            cmd_def = ui.commandDefinitions.addButtonDefinition(CMD_ID, CMD_TITLE, CMD_Description, ICON_FOLDER)
             if os.path.isfile(TOOL_CLIP_PATH):
                 cmd_def.toolClipFilename = TOOL_CLIP_PATH
             futil.add_handler(cmd_def.commandCreated, command_created)
@@ -151,7 +163,7 @@ def start():
         initUiState()
     except Exception as err:
         futil.log(f'{CMD_NAME} Error occurred at the start, {err}, {getErrorMessage()}')
-        showErrorInMessageBox(f"{CMD_NAME} Critical error occurred at the start, the command will be unavailable")
+        showErrorInMessageBox(tr('{command} Critical error occurred at the start, the command will be unavailable', command=CMD_TITLE))
 
 
 def stop():
@@ -180,15 +192,16 @@ def addGroup(inputs, groupId, label):
     return group
 
 
-def addDropdown(inputs, inputId, label, names):
-    """The remembered choice, or the first one when it isn't offered any more (saved defaults of an older version)"""
+def addDropdown(inputs, inputId, label, names, dataNames=()):
+    """The remembered choice, or the first one when it isn't offered any more (saved defaults of an older version).
+    The names are English values shown translated, except the dataNames, which come from files (the symbols)"""
     selected = uiState.getState(inputId)
     if selected not in names and len(names) > 0:
         selected = names[0]
         uiState.updateValue(inputId, selected)
     dropdown = inputs.addDropDownCommandInput(inputId, label, adsk.core.DropDownStyles.TextListDropDownStyle)
     for name in names:
-        dropdown.listItems.add(name, name == selected)
+        dropdowns.addItem(dropdown, name, name == selected, translate=name not in dataNames)
     uiState.registerCommandInput(dropdown)
     return dropdown
 
@@ -215,19 +228,19 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     # before the inputs, they take the dialog state
     applyPendingConfig()
 
-    infoGroup = addGroup(inputs, INFO_GROUP, 'Info')
+    infoGroup = addGroup(inputs, INFO_GROUP, tr('Info'))
     info = infoText()
     if rebuildName is not None:
         # as the insert dialog says it
-        info = f'<b>Rebuilding {html.escape(rebuildName)}</b> in place, features after it in the timeline are kept.<br>' + info
-    infoGroup.children.addTextBoxCommandInput("info_text", "Info", info, info.count('<br>') + 4, True)
+        info = tr('<b>Rebuilding {name}</b> in place, features after it in the timeline are kept.<br>', name=html.escape(rebuildName)) + info
+    infoGroup.children.addTextBoxCommandInput("info_text", tr('Info'), info, info.count('<br>') + 4, True)
 
-    boxGroup = addGroup(inputs, BOX_GROUP, 'Box')
-    boxInput = boxGroup.children.addSelectionInput(BOX_INPUT, 'Box', f'The {predBoxSeats.LABEL_JOINT_ORIGIN} of a box, the label is jointed into its holder')
+    boxGroup = addGroup(inputs, BOX_GROUP, tr('Box'))
+    boxInput = boxGroup.children.addSelectionInput(BOX_INPUT, tr('Box'), tr('The {name} of a box, the label is jointed into its holder', name=predBoxSeats.LABEL_JOINT_ORIGIN))
     boxInput.addSelectionFilter(adsk.core.SelectionCommandInput.JointOrigins)
     boxInput.setSelectionLimits(0, 1)
-    boxInput.tooltip = (f'Optional: pick the {predBoxSeats.LABEL_JOINT_ORIGIN} at the front of a box, the label takes '
-                        "the box's width and goes into the holder. Without, it lies beside the parts there are")
+    boxInput.tooltip = tr("Optional: pick the {name} at the front of a box, the label takes "
+                          "the box's width and goes into the holder. Without, it lies beside the parts there are", name=predBoxSeats.LABEL_JOINT_ORIGIN)
     # Decided 17.11.2026: the label has fixed widths, so a choice menu, not a free setting. Works without a box in the document, for a reprint
     # a rebuilt label goes into its box's holder again unless it's picked off, as the insert into its pocket. Fusion may
     # refuse the box (round 20, p220): the input stays empty and the dialog says so
@@ -236,40 +249,42 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
         futil.log(f'{CMD_NAME} box {rebuildBox.name} of the rebuilt label not picked, {note}')
         boxGroup.children.addTextBoxCommandInput(
             BOX_NOTE, '',
-            "The box the label was in couldn't be picked. Pick its label joint origin again, otherwise the label is "
-            'built where it was without a joint.',
+            tr("The box the label was in couldn't be picked. Pick its label joint origin again, otherwise the label is "
+               "built where it was without a joint."),
             3, True,
         )
-    widthDropdown = addDropdown(boxGroup.children, WIDTH_DROPDOWN, 'Label width', [name for name, _ in predBoxLabelLayout.widthChoices()])
-    widthDropdown.tooltip = "Pred's label widths by the width of the box; a picked box sets its own"
-    boxGroup.children.addTextBoxCommandInput(SIZE_TEXT, 'Label', '', 2, True)
+    widthDropdown = addDropdown(boxGroup.children, WIDTH_DROPDOWN, tr('Label width'), [name for name, _ in predBoxLabelLayout.widthChoices()])
+    widthDropdown.tooltip = tr("Pred's label widths by the width of the box; a picked box sets its own")
+    boxGroup.children.addTextBoxCommandInput(SIZE_TEXT, tr('Label', 'box label'), '', 2, True)
 
-    textGroup = addGroup(inputs, TEXT_GROUP, 'Text')
-    addString(textGroup.children, BIG_TEXT_INPUT, 'Large text', 'In large letters at the left, e.g. M3; empty leaves the room to the lines')
-    addString(textGroup.children, LINE_1_INPUT, 'Line 1')
-    addString(textGroup.children, LINE_2_INPUT, 'Line 2')
-    addDropdown(textGroup.children, TEXT_STYLE_DROPDOWN, 'Text style', textStyles.STYLES).tooltip = \
-        'Heavy is Arial Black, its strokes print with a 0.4 mm nozzle. Regular and Bold are Arial, thin when small'
-    addDropdown(textGroup.children, SURFACE_DROPDOWN, 'Text and symbols', list(SURFACE_NAMES.values())).tooltip = \
-        "Raised 0.4 mm like Pred's labels, or set 0.4 mm in, as bodies of their own to print in another colour. Set in keeps them hidden, flush shows them"
-    addDropdown(textGroup.children, TEXT_COLOR_DROPDOWN, 'Text color', labelColors.CHOICES).tooltip = \
-        'Gives the text and symbol bodies this color, for printing them in another filament'
-    addString(textGroup.children, CUSTOM_COLOR_INPUT, 'Custom color', '#rrggbb, e.g. #D02020')
+    textGroup = addGroup(inputs, TEXT_GROUP, tr('Text'))
+    addString(textGroup.children, BIG_TEXT_INPUT, tr('Large text'), tr('In large letters at the left, e.g. M3; empty leaves the room to the lines'))
+    addString(textGroup.children, LINE_1_INPUT, tr('Line 1'))
+    addString(textGroup.children, LINE_2_INPUT, tr('Line 2'))
+    addDropdown(textGroup.children, TEXT_STYLE_DROPDOWN, tr('Text style'), textStyles.STYLES).tooltip = \
+        tr('Heavy is Arial Black, its strokes print with a 0.4 mm nozzle. Regular and Bold are Arial, thin when small')
+    addDropdown(textGroup.children, SURFACE_DROPDOWN, tr('Text and symbols'), list(SURFACE_NAMES.values())).tooltip = \
+        tr("Raised 0.4 mm like Pred's labels, or set 0.4 mm in, as bodies of their own to print in another colour. Set in keeps them hidden, flush shows them")
+    addDropdown(textGroup.children, TEXT_COLOR_DROPDOWN, tr('Text color'), labelColors.CHOICES).tooltip = \
+        tr('Gives the text and symbol bodies this color, for printing them in another filament')
+    addString(textGroup.children, CUSTOM_COLOR_INPUT, tr('Custom color'), tr('#rrggbb, e.g. #D02020'))
 
-    symbolGroup = addGroup(inputs, SYMBOL_GROUP, 'Symbols')
+    symbolGroup = addGroup(inputs, SYMBOL_GROUP, tr('Symbols'))
     names = symbolNames()
     for (index, inputId) in enumerate(SYMBOL_DROPDOWNS):
-        addDropdown(symbolGroup.children, inputId, f'Symbol {index + 1}', names).tooltip = \
-            'Under the lines, from the left; the ones the width has no room for are left out from the right'
-    symbolGroup.children.addTextBoxCommandInput(SYMBOL_TEXT, 'Symbols', '', 1, True)
+        # the symbols are named by their files, only the empty place is a word of the add-in
+        addDropdown(symbolGroup.children, inputId, tr('Symbol {number}', number=index + 1), names,
+                    dataNames=[name for name in names if name != predBoxLabelLayout.NO_SYMBOL]).tooltip = \
+            tr('Under the lines, from the left; the ones the width has no room for are left out from the right')
+    symbolGroup.children.addTextBoxCommandInput(SYMBOL_TEXT, tr('Symbols'), '', 1, True)
 
-    inputChangesGroup = addGroup(inputs, INPUT_CHANGES_GROUP, 'Inputs')
+    inputChangesGroup = addGroup(inputs, INPUT_CHANGES_GROUP, tr('Inputs'))
     addDefaultsButtonRow(inputChangesGroup.children, INPUT_CHANGES_BUTTONS_BROWSER)
 
-    previewGroup = addGroup(inputs, PREVIEW_GROUP, 'Preview')
-    showPreview = previewGroup.children.addBoolValueInput(SHOW_PREVIEW_INPUT, 'Show preview (slow)', True, '', uiState.getState(SHOW_PREVIEW_INPUT))
+    previewGroup = addGroup(inputs, PREVIEW_GROUP, tr('Preview'))
+    showPreview = previewGroup.children.addBoolValueInput(SHOW_PREVIEW_INPUT, tr('Show preview (slow)'), True, '', uiState.getState(SHOW_PREVIEW_INPUT))
     uiState.registerCommandInput(showPreview)
-    previewGroup.children.addTextBoxCommandInput(PREVIEW_TIME_INPUT, 'Last preview', 'None yet', 1, True)
+    previewGroup.children.addTextBoxCommandInput(PREVIEW_TIME_INPUT, tr('Last preview'), tr('None yet'), 1, True)
 
     updateInputs(inputs)
 
@@ -301,10 +316,10 @@ def boxProblem(inputs: adsk.core.CommandInputs, state: InputState) -> str | None
     if box is not None and not isBoxLabelJointOrigin(box):
         # another joint origin of the box came through the pick, the build refused it as an unknown error (click test
         # 17.11.2026); OK stays off with this note
-        return f'Pick the {predBoxSeats.LABEL_JOINT_ORIGIN} at the front of a box'
+        return tr('Pick the {name} at the front of a box', name=predBoxSeats.LABEL_JOINT_ORIGIN)
     cells = boxCells(box) if box is not None else None
     if cells is not None and predBoxLabelLayout.widthChoiceFor(cells) != predBoxLabelLayout.widthChoiceFor(state.cells):
-        return f'The picked box takes the label width {predBoxLabelLayout.widthChoiceFor(cells)}'
+        return tr('The picked box takes the label width {width}', width=trKnown(predBoxLabelLayout.widthChoiceFor(cells)))
     return None
 
 
@@ -313,14 +328,14 @@ def updateInputs(inputs: adsk.core.CommandInputs):
     state = getInputsState(inputs)
     inputs.itemById(CUSTOM_COLOR_INPUT).isVisible = uiState.getState(TEXT_COLOR_DROPDOWN) == labelColors.CUSTOM_CHOICE
     width = predBoxLabelLayout.plateWidth(state.cells) * 10
-    text = f'Plate {width:g} x {predBoxLabelLayout.PLATE_HEIGHT * 10:g} mm'
+    text = tr('Plate {width} x {height} mm', width=number(f'{width:g}'), height=number(f'{predBoxLabelLayout.PLATE_HEIGHT * 10:g}'))
     problem = labelProblem(state) or boxProblem(inputs, state)
     inputs.itemById(SIZE_TEXT).formattedText = text if problem is None else f'{text}<br><span style="color:#d04030">{html.escape(problem)}</span>'
     layout = labelLayout(state)
     chosen = sum(1 for name in state.symbols if name != predBoxLabelLayout.NO_SYMBOL)
-    symbolText = f'{chosen} chosen'
+    symbolText = tr('{chosen} chosen', chosen=chosen)
     if layout is not None and layout.dropped > 0:
-        symbolText += f', {layout.dropped} left out for want of room'
+        symbolText = tr('{chosen} chosen, {dropped} left out for want of room', chosen=chosen, dropped=layout.dropped)
     inputs.itemById(SYMBOL_TEXT).text = symbolText
 
 
@@ -338,11 +353,11 @@ def command_execute(args: adsk.core.CommandEventArgs):
     if generateBoxLabel(args) is False:
         return
     if wasPart and des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
-        ui.messageBox(designIntent.hybridSwitchMessage('box label'), CMD_NAME)
+        ui.messageBox(designIntent.hybridSwitchMessage('box label'), CMD_TITLE)
     # text fitted so small that a 0.4 mm nozzle leaves parts out (p130), as the inserts
     hint = textStyles.hintText(textStyles.notes(), suggestHeavy=getInputsState(args.command.commandInputs).textStyle != textStyles.STYLE_HEAVY)
     if hint is not None:
-        ui.messageBox(hint, CMD_NAME)
+        ui.messageBox(hint, CMD_TITLE)
 
 
 def command_preview(args: adsk.core.CommandEventArgs):
@@ -352,10 +367,10 @@ def command_preview(args: adsk.core.CommandEventArgs):
             startTime = time.perf_counter()
             isGenerated = generateBoxLabel(args, mayChangeDocument=False) is not False
             seconds = time.perf_counter() - startTime
-            inputs.itemById(PREVIEW_TIME_INPUT).text = f'{seconds:.2f} s{textStyles.previewNote(textStyles.notes())}' if isGenerated else f'failed after {seconds:.2f} s'
+            inputs.itemById(PREVIEW_TIME_INPUT).text = f'{number(f"{seconds:.2f}")} s{textStyles.previewNote(textStyles.notes())}' if isGenerated else tr('failed after {seconds} s', seconds=number(f'{seconds:.2f}'))
         else:
             args.executeFailed = True
-            args.executeFailedMessage = "Some inputs are invalid, unable to generate preview"
+            args.executeFailedMessage = tr('Some inputs are invalid, unable to generate preview')
 
 
 def command_input_changed(args: adsk.core.InputChangedEventArgs):
@@ -414,9 +429,9 @@ def command_destroy(args: adsk.core.CommandEventArgs):
     rebuildBodyToken = None
     if args.terminationReason == adsk.core.CommandTerminationReason.CompletedTerminationReason and len(rebuildNotes) > 0:
         ui.messageBox(
-            'The label was rebuilt. These features after it need a look, ones using a face or an edge of the old '
-            'label need them picked again:\n\n' + '\n'.join(rebuildNotes),
-            CMD_NAME,
+            tr('The label was rebuilt. These features after it need a look, ones using a face or an edge of the old '
+               'label need them picked again:') + '\n\n' + '\n'.join(rebuildNotes),
+            CMD_TITLE,
             adsk.core.MessageBoxButtonTypes.OKButtonType,
             adsk.core.MessageBoxIconTypes.WarningIconType,
         )
@@ -449,7 +464,7 @@ def generateBoxLabel(args: adsk.core.CommandEventArgs, mayChangeDocument: bool =
         futil.log(f'{CMD_NAME} {labelName(state)} generated in {time.perf_counter() - startTime:.3f}s')
     except UnsupportedDesignTypeException:
         args.executeFailed = True
-        args.executeFailedMessage = 'Design type is unsupported. Projects with disabled design history are unsupported, please enable timeline feature to proceed.'
+        args.executeFailedMessage = tr('Design type is unsupported. Projects with disabled design history are unsupported, please enable timeline feature to proceed.')
         return False
     except Exception as err:
         args.executeFailed = True
@@ -535,8 +550,8 @@ def readConfig(text: str, source: str) -> InputState | None:
     (state.symbols, unknown) = boxLabelConfig.knownSymbols(state.symbols, symbolNames())
     if len(unknown) > 0:
         futil.log(f'{CMD_NAME} {source} symbols without an svg left out: {unknown}')
-        ui.messageBox(f'{source} with changes:\n\nUnknown symbols, left out:\n' + '\n'.join(f'  • {name}' for name in unknown),
-                      'Gridkeeper config', adsk.core.MessageBoxButtonTypes.OKButtonType, adsk.core.MessageBoxIconTypes.WarningIconType)
+        ui.messageBox(tr('{source} with changes:\n\nUnknown symbols, left out:\n{names}', source=source, names='\n'.join(f'  • {name}' for name in unknown)),
+                      tr('Gridkeeper config'), adsk.core.MessageBoxButtonTypes.OKButtonType, adsk.core.MessageBoxIconTypes.WarningIconType)
     return state
 
 
@@ -580,7 +595,7 @@ def applyPendingConfig():
     global pendingConfig
     if pendingConfig is None:
         return
-    state = readConfig(configJson.configText(configJson.GENERATOR_BOX_LABEL, pendingConfig), 'Rebuilding' if rebuildBodyToken is not None else 'Cloned')
+    state = readConfig(configJson.configText(configJson.GENERATOR_BOX_LABEL, pendingConfig), tr('Rebuilding') if rebuildBodyToken is not None else tr('Cloned'))
     pendingConfig = None
     if state is not None:
         applyInputsState(state)

@@ -39,7 +39,25 @@ i18n = _loadI18n()
 
 # tr translates a literal, trValue marks a value a dropdown shows translated (lib/ui/dropdowns.py)
 COLLECTED = ('tr', 'trValue')
-VALUE_MARK = re.compile(r'#\s*tr-value\b')
+# on the last line of an assignment: '# tr-value' a string, '# tr-values' the strings of a list, a tuple or the values of
+# a dict, '# tr-keys' the keys of a dict; a word after it is the context, as in tr(text, context)
+VALUE_MARK = re.compile(r'#\s*tr-(value|values|keys)\b(?:\s+(\w+))?')
+
+
+def _markedValues(node: ast.expr, kind: str) -> list[str] | None:
+    """The strings a mark names, none when the assignment isn't what the mark needs"""
+    if kind == 'value':
+        items = [node]
+    elif kind == 'values' and isinstance(node, (ast.List, ast.Tuple)):
+        items = node.elts
+    elif kind == 'values' and isinstance(node, ast.Dict):
+        items = node.values
+    elif kind == 'keys' and isinstance(node, ast.Dict):
+        items = node.keys
+    else:
+        return None
+    values = [_literal(item) for item in items]
+    return None if None in values else values
 
 
 def _isTr(func: ast.expr) -> bool:
@@ -58,13 +76,15 @@ def collectTexts(source: str, fileName: str) -> tuple[set[str], list[str]]:
     errors = []
     lines = source.splitlines()
     for node in ast.walk(ast.parse(source, fileName)):
-        # a value in a module that can't import lib/i18n (Fusion-free ones): NAME = 'Value'  # tr-value
-        if isinstance(node, ast.Assign) and VALUE_MARK.search(lines[node.end_lineno - 1]):
-            value = _literal(node.value)
-            if value is None:
-                errors.append(f'{fileName}:{node.lineno} {VALUE_MARK.pattern} needs a string literal')
+        # values in a module that can't import lib/i18n (Fusion-free ones): NAME = 'Value'  # tr-value
+        mark = VALUE_MARK.search(lines[node.end_lineno - 1]) if isinstance(node, ast.Assign) else None
+        if mark:
+            values = _markedValues(node.value, mark.group(1))
+            if values is None:
+                errors.append(f'{fileName}:{node.lineno} # tr-{mark.group(1)} needs string literals')
             else:
-                texts.add(value)
+                context = mark.group(2)
+                texts |= {f'{context}{CONTEXT_SEPARATOR}{value}' if context else value for value in values}
             continue
         if not (isinstance(node, ast.Call) and _isTr(node.func)):
             continue

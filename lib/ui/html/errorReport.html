@@ -116,20 +116,20 @@
 <div class="message" id="message"></div>
 <div class="muted" id="environment"></div>
 <div class="actions">
-    <button id="copy">Copy report</button>
-    <button id="openIssue">Copy and open an issue</button>
+    <button id="copy" data-i18n="Copy report">Copy report</button>
+    <button id="openIssue" data-i18n="Copy and open an issue">Copy and open an issue</button>
     <span id="status" class="muted"></span>
 </div>
 <details open>
-    <summary>Stack trace</summary>
+    <summary data-i18n="Stack trace">Stack trace</summary>
     <pre id="trace"></pre>
 </details>
 <details id="configSection">
-    <summary>Config</summary>
+    <summary data-i18n="Config">Config</summary>
     <pre id="config"></pre>
 </details>
 <details id="previousConfigSection">
-    <summary>Config before the rebuild</summary>
+    <summary data-i18n="Config before the rebuild">Config before the rebuild</summary>
     <pre id="previousConfig"></pre>
 </details>
 <textarea id="reportText" readonly></textarea>
@@ -179,12 +179,12 @@
         }
         fusionBridge.send(action).then((answer) => {
             if ((answer && answer.copied) || copyHere()) {
-                showStatus(action === 'openIssue' ? 'Copied, the issue has what fit in its link' : 'Copied, paste it into the issue', 'ok');
+                showStatus(action === 'openIssue' ? fusionBridge.t('Copied, the issue has what fit in its link') : fusionBridge.t('Copied, paste it into the issue'), 'ok');
             } else {
                 // the whole report shown selected, to copy by hand
                 document.getElementById('reportText').classList.add('shown');
                 document.getElementById('reportText').select();
-                showStatus('Couldn\'t copy, the report below is selected to copy it', 'failed');
+                showStatus(fusionBridge.t('Couldn\'t copy, the report below is selected to copy it'), 'failed');
             }
         });
     }

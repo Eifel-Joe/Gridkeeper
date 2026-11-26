@@ -13,6 +13,8 @@ def _load(name):
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     spec = importlib.util.spec_from_file_location(name, os.path.join(project_root, "lib", f"{name}.py"))
     mod = importlib.util.module_from_spec(spec)
+    # lib modules import the texts (lib/i18n) relatively
+    mod.__package__ = "lib"
     spec.loader.exec_module(mod)
     return mod
 

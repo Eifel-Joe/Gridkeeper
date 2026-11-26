@@ -9,6 +9,8 @@ import dataclasses
 import os
 import re
 
+from .i18n import tr
+
 # The tags of the bodies the export takes, as tagUtils writes them (tags are literals, they're stored in documents).
 # 'box' is the box and the lid of round 27, there from its merge on. A new part, the small parts of round 28 or the box
 # label (p262), is one more entry here and in tests/test_export_parts.py
@@ -122,11 +124,11 @@ def withMarkings(part, markings: list):
 # common printer (round 55: one entry per printer, until then the shared P1 and X1 entry)
 DEFAULT_BED = 'Bambu Lab X1 Carbon (256 x 256 mm)'
 DEFAULT_BED_SIZE = 256.0
-CUSTOM_BED = 'Custom'
+CUSTOM_BED = 'Custom'  # tr-value
 # Round 55 (p680): for a Bambu Lab printer the 3MF is one Bambu Studio project with all plates or a file per plate,
 # the names as upstream 1ac1579 has them; other printers always get a file per plate
-FILES_ONE = 'One Bambu Studio project with all plates'
-FILES_PER_PLATE = 'A file per plate'
+FILES_ONE = 'One Bambu Studio project with all plates'  # tr-value
+FILES_PER_PLATE = 'A file per plate'  # tr-value
 FILES_CHOICES = [FILES_ONE, FILES_PER_PLATE]
 # the project's filament colors: the parts' filament 1 and a filament no label color has grey, text without a color
 # black (spec round 55)
@@ -210,13 +212,14 @@ def replaceQuestion(replaced: list[str], removed: list[str], folder: str, listed
     """
     parts = []
     if replaced:
-        parts.append(f'replace {"the existing file" if len(replaced) == 1 else f"{len(replaced)} existing files"}')
+        parts.append(tr('replace the existing file') if len(replaced) == 1 else tr('replace {count} existing files', count=len(replaced)))
     if removed:
-        parts.append(f'remove {len(removed)} plate file{"" if len(removed) == 1 else "s"} of an earlier export')
-    question = ' and '.join(parts)
+        parts.append(tr('remove 1 plate file of an earlier export') if len(removed) == 1
+                     else tr('remove {count} plate files of an earlier export', count=len(removed)))
+    question = parts[0] if len(parts) == 1 else tr('{first} and {second}', first=parts[0], second=parts[1])
     names = replaced + removed
-    shown = names[:listed] + ([f'and {len(names) - listed} more'] if len(names) > listed else [])
-    return f'{question[0].upper()}{question[1:]} in {folder}?\n\n' + '\n'.join(shown)
+    shown = names[:listed] + ([tr('and {count} more', count=len(names) - listed)] if len(names) > listed else [])
+    return tr('{question} in {folder}?', question=f'{question[0].upper()}{question[1:]}', folder=folder) + '\n\n' + '\n'.join(shown)
 
 
 def plateKind(role: str | None, tagName: str | None, bodyName: str, setName: str | None) -> tuple | None:
@@ -376,19 +379,21 @@ def bambuNotice(profiles, plates: int) -> str:
     on them, see threeMf.flushSettings. Round 57: every Bambu printer's project brings purging volumes, the sentence on
     them is for all, the one on the nozzles for two
     """
-    which = 'its plate' if plates == 1 else f'all {plates} plates'
+    which = tr('its plate') if plates == 1 else tr('all {count} plates', count=plates)
     nozzles = (
-        " Bambu Studio puts the filaments on the nozzles so it purges least; change that and the volumes there if you want."
+        ' ' + tr("Bambu Studio puts the filaments on the nozzles so it purges least; change that and the volumes there if you want.")
     ) if profiles.extruders > 1 else ''
-    purging = (
+    purging = tr(
         "The purging volumes come from Bambu Studio's color formula; for its own filament colors Bambu Studio has its "
-        f"own values, Re-calculate under Purging volumes takes them.{nozzles}\n\n"
+        "own values, Re-calculate under Purging volumes takes them.{nozzles}\n\n",
+        nozzles=nozzles,
     )
-    return (
-        f"This file is a Bambu Studio project with {which}. It comes with Bambu Studio's standard profiles: "
-        f"{profiles.printer}, {profiles.process}, Bambu PLA Basic for every filament and the Textured PEI Plate. "
+    return tr(
+        "This file is a Bambu Studio project with {which}. It comes with Bambu Studio's standard profiles: "
+        "{printer}, {process}, Bambu PLA Basic for every filament and the Textured PEI Plate. "
         "Change them in Bambu Studio to your printer, nozzle, filament and plate where they differ.\n\n"
-        f"{purging}OK saves the project, Cancel saves nothing."
+        "{purging}OK saves the project, Cancel saves nothing.",
+        which=which, printer=profiles.printer, process=profiles.process, purging=purging,
     )
 
 

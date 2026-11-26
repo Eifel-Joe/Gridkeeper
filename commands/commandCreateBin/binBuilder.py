@@ -4,6 +4,7 @@ import dataclasses
 from dataclasses import dataclass
 
 from ...lib import tagUtils
+from ...lib.i18n import tr, trValue
 from ...lib import configJson
 from ...lib import placementUtils
 from ...lib import rebuildUtils
@@ -46,9 +47,9 @@ from .inputState import InputState
 
 LOG_PREFIX = 'Gridfinity bin'
 
-BIN_TYPE_HOLLOW = 'Hollow'
-BIN_TYPE_SHELLED = 'Shelled'
-BIN_TYPE_SOLID = 'Solid'
+BIN_TYPE_HOLLOW = trValue('Hollow')
+BIN_TYPE_SHELLED = trValue('Shelled')
+BIN_TYPE_SOLID = trValue('Solid')
 
 # default name of bins generated before tagging, keep as is even if the naming changes
 BIN_LEGACY_NAME_PREFIX = 'Gridfinity bin '
@@ -83,8 +84,8 @@ BIN_PLACEMENT_FEATURE = 'Bin placement'
 # the same move of the colored labels in the bin's Text component (round 13)
 
 # where a bin goes, stored in configs, keep these literal
-PLACEMENT_AUTO = 'Snap to free spot'
-PLACEMENT_CENTER = 'Center on origin'
+PLACEMENT_AUTO = trValue('Snap to free spot')
+PLACEMENT_CENTER = trValue('Center on origin')
 PLACEMENT_OPTIONS = [PLACEMENT_AUTO, PLACEMENT_CENTER]
 
 def binDisplayName(state: InputState) -> str:
@@ -828,11 +829,11 @@ def rebuildBin(
     cell = found.cell
     notes = []
     if cell is not None and rebuildUtils.comesAfter(target, cell):
-        notes.append(f'{target.group.name}: the part of {cell.name} comes after the bin in the timeline, the new bin stays where it was without a joint into the cell')
+        notes.append(tr('{name}: the part of {cell} comes after the bin in the timeline, the new bin stays where it was without a joint into the cell', name=target.group.name, cell=cell.name))
         cell = None
     elif cell is None and found.wasInCell:
         # its cell was deleted, or a rebuilt baseplate or box no longer has it (spec decision 4, review)
-        notes.append(f'{target.group.name}: the cell it was jointed into is gone, the new bin stays where it was without a joint')
+        notes.append(tr('{name}: the cell it was jointed into is gone, the new bin stays where it was without a joint', name=target.group.name))
     (bodies, rebuildNotes) = rebuildUtils.rebuild(
         des,
         target,

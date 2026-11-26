@@ -29,6 +29,8 @@ from ...lib.ui import configButtons
 from ...lib.ui import selectionPrefill
 from ...lib.ui import browserPages
 from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
+from ...lib.ui import dropdowns
+from ...lib.i18n import tr, trValue, number
 
 # Dialog of the label command, Cullenect inserts by CullenJWebb (MIT), https://github.com/CullenJWebb/Cullenect-Labels
 
@@ -37,10 +39,12 @@ ui = app.userInterface
 
 CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdLabel'
 CMD_NAME = 'Gridkeeper label'
+# the name the user reads, CMD_NAME stays for the log
+CMD_TITLE = tr('Gridkeeper label')
 # the first section of a part's settings names the part, as the settings window does (review round 23)
 SETTINGS_TITLE = 'Gridfinity label'
 # shown on hover over the button, the first paragraph says what it makes, the second how
-CMD_Description = ('Creates a Cullenect label insert for the label sockets of bins.\n\n'
+CMD_Description = tr('Creates a Cullenect label insert for the label sockets of bins.\n\n'
     'Set its width in base units or in mm, up to two lines of text and a screw or hardware symbol. The text and symbol '
     'are bodies of their own, raised, set in or flush, to print them in another colour.')
 
@@ -98,17 +102,22 @@ POCKET_INPUT = 'pocket'
 POCKET_NOTE = 'pocket_note'
 PREVIEW_TIME_INPUT = 'preview_time'
 
-SIZING_MODE_UNITS = 'Base units'
-SIZING_MODE_FREE = 'Width in mm'
+SIZING_MODE_UNITS = trValue('Base units')
+SIZING_MODE_FREE = trValue('Width in mm')
 SURFACE_NAMES = {
-    cullenectLabelGenerator.SURFACE_EMBOSSED: 'Raised',
-    cullenectLabelGenerator.SURFACE_DEBOSSED: 'Set in',
-    cullenectLabelGenerator.SURFACE_FLUSH: 'Flush',
+    cullenectLabelGenerator.SURFACE_EMBOSSED: trValue('Raised'),
+    cullenectLabelGenerator.SURFACE_DEBOSSED: trValue('Set in'),
+    cullenectLabelGenerator.SURFACE_FLUSH: trValue('Flush'),
 }
+# the hardware choice for no hardware, NO_HARDWARE is the config's value
+HARDWARE_NONE = trValue('None', 'hardware')
 SCREW_DROPDOWNS = {HEAD_DROPDOWN: 'head', SHAFT_DROPDOWN: 'shaft', THREADS_DROPDOWN: 'threads', DRIVER_DROPDOWN: 'driver'}
+# the screw blocks and hardware names of cullenectCatalog.CULLENECT_NAMES are translated in their own context: 'Full'
+# is a thread there and 'None' no hardware, the lip type Full and a label without icon read otherwise
+HARDWARE_CONTEXT = 'hardware'
 SCREW_INPUTS = list(SCREW_DROPDOWNS.keys()) + [FLANGE_INPUT, SECURITY_INPUT]
 
-INFO_TEXT = ("<b>Help:</b> every input is explained "
+INFO_TEXT = tr("<b>Help:</b> every input is explained "
              "<a href=\"https://eifel-joe.github.io/Gridkeeper/cullenect/inserts/\">in the Gridkeeper documentation</a>. "
              "The insert clicks into the Cullenect pockets of bin label tabs, label style Cullenect. "
              "Cullenect labels by CullenJWebb, "
@@ -132,14 +141,14 @@ DEFAULT_STATE = configJson.stateFromJson(configJson.GENERATOR_LABEL, InputState,
 
 def infoText():
     version = tagUtils.getGeneratorVersion()
-    return f"{INFO_TEXT}<br><span style=\"color:#808080; font-size:small\">Version {version}</span>" if version else INFO_TEXT
+    return f"{INFO_TEXT}<br><span style=\"color:#808080; font-size:small\">{tr('Version {version}', version=version)}</span>" if version else INFO_TEXT
 
-def getErrorMessage(text = "An unknown error occurred, please validate your inputs and try again"):
-    return f"{text}:<br>{traceback.format_exc()}"
+def getErrorMessage(text = None):
+    return f"{text or tr('An unknown error occurred, please validate your inputs and try again')}:<br>{traceback.format_exc()}"
 
-def showErrorInMessageBox(text = "An unknown error occurred, please validate your inputs and try again"):
+def showErrorInMessageBox(text = None):
     if ui:
-        ui.messageBox(getErrorMessage(text), f"{CMD_NAME} Error")
+        ui.messageBox(getErrorMessage(text), tr('{command} Error', command=CMD_TITLE))
 
 def start():
     futil.log(f'{CMD_NAME} Command Start Event')
@@ -147,7 +156,7 @@ def start():
         addinConfig = configUtils.readConfig(CONFIG_FOLDER_PATH)
         cmd_def = ui.commandDefinitions.itemById(CMD_ID)
         if not cmd_def:
-            cmd_def = ui.commandDefinitions.addButtonDefinition(CMD_ID, CMD_NAME, CMD_Description, ICON_FOLDER)
+            cmd_def = ui.commandDefinitions.addButtonDefinition(CMD_ID, CMD_TITLE, CMD_Description, ICON_FOLDER)
             if os.path.isfile(TOOL_CLIP_PATH):
                 cmd_def.toolClipFilename = TOOL_CLIP_PATH
             futil.add_handler(cmd_def.commandCreated, command_created)
@@ -158,7 +167,7 @@ def start():
         initUiState()
     except Exception as err:
         futil.log(f'{CMD_NAME} Error occurred at the start, {err}, {getErrorMessage()}')
-        showErrorInMessageBox(f"{CMD_NAME} Critical error occurred at the start, the command will be unavailable")
+        showErrorInMessageBox(tr('{command} Critical error occurred at the start, the command will be unavailable', command=CMD_TITLE))
 
 def stop():
     futil.log(f'{CMD_NAME} Command Stop Event')
@@ -181,7 +190,7 @@ def dropdownNames() -> dict[str, list[str]]:
     """The names each dropdown offers, the screw building blocks and hardware read from the symbol folders"""
     options = screwOptions()
     names = {inputId: [cullenectCatalog.displayName(key) for key in options[field]] for (inputId, field) in SCREW_DROPDOWNS.items()}
-    names[HARDWARE_DROPDOWN] = ['None'] + [name for (name, _) in cullenectCatalog.listHardwareIcons(ICONS_FOLDER)]
+    names[HARDWARE_DROPDOWN] = [HARDWARE_NONE] + [name for (name, _) in cullenectCatalog.listHardwareIcons(ICONS_FOLDER)]
     names[SIZING_MODE_DROPDOWN] = [SIZING_MODE_UNITS, SIZING_MODE_FREE]
     names[SURFACE_DROPDOWN] = list(SURFACE_NAMES.values())
     names[TEXT_COLOR_DROPDOWN] = labelColors.CHOICES
@@ -206,7 +215,8 @@ def addDropdown(inputs: adsk.core.CommandInputs, inputId: str, label: str, names
     dropdown = inputs.addDropDownCommandInput(inputId, label, adsk.core.DropDownStyles.TextListDropDownStyle)
     selected = selectableName(inputId, names)
     for name in names:
-        dropdown.listItems.add(name, name == selected)
+        # the values are English, the items show them translated; names the catalog doesn't know show as they are
+        dropdowns.addItem(dropdown, name, name == selected, context=HARDWARE_CONTEXT if inputId in SCREW_DROPDOWNS or inputId == HARDWARE_DROPDOWN else None)
     uiState.registerCommandInput(dropdown)
     return dropdown
 
@@ -237,70 +247,71 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     # before the inputs, they take the dialog state
     applyPendingConfig()
 
-    infoGroup = inputs.addGroupCommandInput(INFO_GROUP, 'Info')
+    infoGroup = inputs.addGroupCommandInput(INFO_GROUP, tr('Info'))
     infoGroup.isExpanded = uiState.getState(INFO_GROUP)
     uiState.registerCommandInput(infoGroup)
     info = infoText()
     if rebuildName is not None:
         # as the bin and baseplate dialogs say it (review round 18)
-        info = f'<b>Rebuilding {html.escape(rebuildName)}</b> in place, features after it in the timeline are kept.<br>' + info
-    infoGroup.children.addTextBoxCommandInput("info_text", "Info", info, info.count('<br>') + 3, True)
+        info = tr('<b>Rebuilding {name}</b> in place, features after it in the timeline are kept.<br>', name=html.escape(rebuildName)) + info
+    infoGroup.children.addTextBoxCommandInput("info_text", tr('Info'), info, info.count('<br>') + 3, True)
 
-    sizeGroup = inputs.addGroupCommandInput(SIZE_GROUP, 'Size')
+    sizeGroup = inputs.addGroupCommandInput(SIZE_GROUP, tr('Size'))
     sizeGroup.isExpanded = uiState.getState(SIZE_GROUP)
     uiState.registerCommandInput(sizeGroup)
     names = dropdownNames()
-    addDropdown(sizeGroup.children, SIZING_MODE_DROPDOWN, 'Width', names[SIZING_MODE_DROPDOWN])
-    unitsInput = sizeGroup.children.addFloatSpinnerCommandInput(WIDTH_UNITS_INPUT, 'Width (u)', '', 0.5, 7, 0.5, uiState.getState(WIDTH_UNITS_INPUT))
-    unitsInput.tooltip = 'Width of the bin label pocket it goes into, in base units, 1u = 36 mm with 42 mm units like Cullenect'
+    addDropdown(sizeGroup.children, SIZING_MODE_DROPDOWN, tr('Width'), names[SIZING_MODE_DROPDOWN])
+    unitsInput = sizeGroup.children.addFloatSpinnerCommandInput(WIDTH_UNITS_INPUT, tr('Width (u)'), '', 0.5, 7, 0.5, uiState.getState(WIDTH_UNITS_INPUT))
+    unitsInput.tooltip = tr('Width of the bin label pocket it goes into, in base units, 1u = 36 mm with 42 mm units like Cullenect')
     uiState.registerCommandInput(unitsInput)
-    addLength(sizeGroup.children, FREE_WIDTH_INPUT, 'Width', 'Free width, e.g. for the pocket of a compartment tab, the bin dialog shows its insert width')
-    baseWidthInput = addLength(sizeGroup.children, BASE_WIDTH_INPUT, 'Base width unit (mm)', 'Grid of the bins, the width in base units is counted in it')
+    addLength(sizeGroup.children, FREE_WIDTH_INPUT, tr('Width'), tr('Free width, e.g. for the pocket of a compartment tab, the bin dialog shows its insert width'))
+    baseWidthInput = addLength(sizeGroup.children, BASE_WIDTH_INPUT, tr('Base width unit (mm)'), tr('Grid of the bins, the width in base units is counted in it'))
     baseWidthInput.minimumValue = BASE_UNIT_MIN
     baseWidthInput.isMinimumInclusive = True
     for (inputId, label, tooltip) in [
-        (OFFSET_X_INPUT, 'Correction width', "Added to the width, for printers printing too wide or too narrow, Cullenect's offset_xy, at most 1 mm either way"),
-        (OFFSET_Y_INPUT, 'Correction height', 'Added to the height of 11 mm, at most 1 mm either way'),
+        (OFFSET_X_INPUT, tr('Correction width'), tr("Added to the width, for printers printing too wide or too narrow, Cullenect's offset_xy, at most 1 mm either way")),
+        (OFFSET_Y_INPUT, tr('Correction height'), tr('Added to the height of 11 mm, at most 1 mm either way')),
     ]:
         offsetInput = addLength(sizeGroup.children, inputId, label, tooltip)
         offsetInput.minimumValue = -cullenectLabelLayout.MAX_OFFSET
         offsetInput.maximumValue = cullenectLabelLayout.MAX_OFFSET
         offsetInput.isMinimumInclusive = True
         offsetInput.isMaximumInclusive = True
-    sizeGroup.children.addTextBoxCommandInput(SIZE_TEXT, 'Insert', '', 2, True)
+    sizeGroup.children.addTextBoxCommandInput(SIZE_TEXT, tr('Insert', 'label insert'), '', 2, True)
 
-    textGroup = inputs.addGroupCommandInput(TEXT_GROUP, 'Text')
+    textGroup = inputs.addGroupCommandInput(TEXT_GROUP, tr('Text'))
     textGroup.isExpanded = uiState.getState(TEXT_GROUP)
     uiState.registerCommandInput(textGroup)
-    for (inputId, label) in [(LINE_1_INPUT, 'Line 1'), (LINE_2_INPUT, 'Line 2')]:
+    for (inputId, label) in [(LINE_1_INPUT, tr('Line 1')), (LINE_2_INPUT, tr('Line 2'))]:
         stringInput = textGroup.children.addStringValueInput(inputId, label, uiState.getState(inputId))
         uiState.registerCommandInput(stringInput)
-    addDropdown(textGroup.children, TEXT_STYLE_DROPDOWN, 'Text style', names[TEXT_STYLE_DROPDOWN]).tooltip =         'Heavy is Arial Black, its strokes print with a 0.4 mm nozzle. Regular and Bold are Arial, thin when small'
-    addDropdown(textGroup.children, SURFACE_DROPDOWN, 'Text and symbol', names[SURFACE_DROPDOWN]).tooltip = \
-        'Raised 0.4 mm, or set 0.4 mm in, as a body of its own to print in another colour. Set in keeps that body hidden, flush shows it'
-    addDropdown(textGroup.children, TEXT_COLOR_DROPDOWN, 'Text color', names[TEXT_COLOR_DROPDOWN]).tooltip = \
-        'Gives the text and symbol bodies this color, for printing them in another filament. None keeps the look of the insert'
-    customColorInput = textGroup.children.addStringValueInput(CUSTOM_COLOR_INPUT, 'Custom color', uiState.getState(CUSTOM_COLOR_INPUT))
-    customColorInput.tooltip = '#rrggbb, e.g. #D02020'
+    addDropdown(textGroup.children, TEXT_STYLE_DROPDOWN, tr('Text style'), names[TEXT_STYLE_DROPDOWN]).tooltip = \
+        tr('Heavy is Arial Black, its strokes print with a 0.4 mm nozzle. Regular and Bold are Arial, thin when small')
+    addDropdown(textGroup.children, SURFACE_DROPDOWN, tr('Text and symbol'), names[SURFACE_DROPDOWN]).tooltip = \
+        tr('Raised 0.4 mm, or set 0.4 mm in, as a body of its own to print in another colour. Set in keeps that body hidden, flush shows it')
+    addDropdown(textGroup.children, TEXT_COLOR_DROPDOWN, tr('Text color'), names[TEXT_COLOR_DROPDOWN]).tooltip = \
+        tr('Gives the text and symbol bodies this color, for printing them in another filament. None keeps the look of the insert')
+    customColorInput = textGroup.children.addStringValueInput(CUSTOM_COLOR_INPUT, tr('Custom color'), uiState.getState(CUSTOM_COLOR_INPUT))
+    customColorInput.tooltip = tr('#rrggbb, e.g. #D02020')
     uiState.registerCommandInput(customColorInput)
 
-    symbolGroup = inputs.addGroupCommandInput(SYMBOL_GROUP, 'Symbol')
+    symbolGroup = inputs.addGroupCommandInput(SYMBOL_GROUP, tr('Symbol'))
     symbolGroup.isExpanded = uiState.getState(SYMBOL_GROUP)
     uiState.registerCommandInput(symbolGroup)
-    addBool(symbolGroup.children, SHOW_SCREW_INPUT, 'Screw', 'A screw put together from head, shaft, threads and driver, at the right edge')
-    for (inputId, label) in [(HEAD_DROPDOWN, 'Head'), (SHAFT_DROPDOWN, 'Shaft'), (THREADS_DROPDOWN, 'Threads'), (DRIVER_DROPDOWN, 'Driver')]:
+    addBool(symbolGroup.children, SHOW_SCREW_INPUT, tr('Screw'), tr('A screw put together from head, shaft, threads and driver, at the right edge'))
+    for (inputId, label) in [(HEAD_DROPDOWN, tr('Head')), (SHAFT_DROPDOWN, tr('Shaft')), (THREADS_DROPDOWN, tr('Threads')), (DRIVER_DROPDOWN, tr('Driver'))]:
         addDropdown(symbolGroup.children, inputId, label, names[inputId])
-    addBool(symbolGroup.children, FLANGE_INPUT, 'Flange')
-    addBool(symbolGroup.children, SECURITY_INPUT, 'Security pin')
-    addDropdown(symbolGroup.children, HARDWARE_DROPDOWN, 'Hardware', names[HARDWARE_DROPDOWN]).tooltip = 'Instead of a screw, new svg files in cullenectIcons/hardware show up here'
-    symbolGroup.children.addTextBoxCommandInput(SYMBOL_TEXT, 'Symbol', '', 1, True)
+    addBool(symbolGroup.children, FLANGE_INPUT, tr('Flange'))
+    addBool(symbolGroup.children, SECURITY_INPUT, tr('Security pin'))
+    addDropdown(symbolGroup.children, HARDWARE_DROPDOWN, tr('Hardware'), names[HARDWARE_DROPDOWN]).tooltip = tr('Instead of a screw, new svg files in cullenectIcons/hardware show up here')
+    symbolGroup.children.addTextBoxCommandInput(SYMBOL_TEXT, tr('Symbol'), '', 1, True)
 
-    pocketGroup = inputs.addGroupCommandInput(POCKET_GROUP, 'Pocket')
+    pocketGroup = inputs.addGroupCommandInput(POCKET_GROUP, tr('Pocket'))
     pocketGroup.isExpanded = True
-    pocketInput = pocketGroup.children.addSelectionInput(POCKET_INPUT, 'Pocket', 'A pocket joint origin of a bin, the insert is jointed into it')
+    pocketInput = pocketGroup.children.addSelectionInput(POCKET_INPUT, tr('Pocket'), tr('A pocket joint origin of a bin, the insert is jointed into it'))
     pocketInput.addSelectionFilter(adsk.core.SelectionCommandInput.JointOrigins)
     pocketInput.setSelectionLimits(0, 1)
-    pocketInput.tooltip = 'Optional: pick the joint origin of a Cullenect pocket of a bin, the insert goes into it. Without, it goes beside the bins, baseplates and inserts there are'
+    pocketInput.tooltip = tr('Optional: pick the joint origin of a Cullenect pocket of a bin, the insert goes into it. Without, it goes beside the bins, baseplates and inserts there are')
     # a rebuilt insert goes into its pocket again unless it's picked off (Hauptsitzung 15.11.2026). Fusion may refuse
     # the pocket, the dialog stopped half built then (round 20, p220): the input stays empty and the dialog says so
     note = selectionPrefill.prefillSelection(pocketInput, rebuildPocket)
@@ -308,22 +319,22 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
         futil.log(f'{CMD_NAME} pocket {rebuildPocket.name} of the rebuilt insert not picked, {note}')
         pocketGroup.children.addTextBoxCommandInput(
             POCKET_NOTE, '',
-            f'The pocket the insert was in, {html.escape(rebuildPocket.name)}, couldn\'t be picked. Pick it again, '
-            'otherwise the insert is built where it was without a joint.',
+            tr("The pocket the insert was in, {name}, couldn't be picked. Pick it again, "
+               "otherwise the insert is built where it was without a joint.", name=html.escape(rebuildPocket.name)),
             3, True,
         )
 
-    inputChangesGroup = inputs.addGroupCommandInput(INPUT_CHANGES_GROUP, 'Inputs')
+    inputChangesGroup = inputs.addGroupCommandInput(INPUT_CHANGES_GROUP, tr('Inputs'))
     inputChangesGroup.isExpanded = uiState.getState(INPUT_CHANGES_GROUP)
     uiState.registerCommandInput(inputChangesGroup)
     addDefaultsButtonRow(inputChangesGroup.children, INPUT_CHANGES_BUTTONS_BROWSER)
     addButtonRow(inputChangesGroup.children, CONFIG_BUTTONS_BROWSER)
 
-    previewGroup = inputs.addGroupCommandInput(PREVIEW_GROUP, 'Preview')
+    previewGroup = inputs.addGroupCommandInput(PREVIEW_GROUP, tr('Preview'))
     previewGroup.isExpanded = uiState.getState(PREVIEW_GROUP)
     uiState.registerCommandInput(previewGroup)
-    addBool(previewGroup.children, SHOW_PREVIEW_INPUT, 'Show preview (slow)')
-    previewGroup.children.addTextBoxCommandInput(PREVIEW_TIME_INPUT, 'Last preview', 'None yet', 1, True)
+    addBool(previewGroup.children, SHOW_PREVIEW_INPUT, tr('Show preview (slow)'))
+    previewGroup.children.addTextBoxCommandInput(PREVIEW_TIME_INPUT, tr('Last preview'), tr('None yet'), 1, True)
 
     updateInputs(inputs)
 
@@ -350,10 +361,10 @@ def offerScrewChoices(inputs: adsk.core.CommandInputs) -> dict[str, list]:
         names = [cullenectCatalog.displayName(key) for key in choices[field]]
         selected = cullenectCatalog.displayName(corrected[field])
         dropdown = adsk.core.DropDownCommandInput.cast(inputs.itemById(inputId))
-        if [dropdown.listItems.item(index).name for index in range(dropdown.listItems.count)] != names:
+        if [dropdowns.valueOf(dropdown, dropdown.listItems.item(index).name) for index in range(dropdown.listItems.count)] != names:
             dropdown.listItems.clear()
             for name in names:
-                dropdown.listItems.add(name, name == selected)
+                dropdowns.addItem(dropdown, name, name == selected, context=HARDWARE_CONTEXT)
         uiState.updateValue(inputId, selected)
     uiState.updateValue(FLANGE_INPUT, corrected['flange'])
     uiState.updateValue(SECURITY_INPUT, corrected['security'])
@@ -392,13 +403,13 @@ def sizeText(state: InputState, pocket: adsk.fusion.JointOrigin | None = None) -
     """The size the insert comes out, or why it can't be built"""
     (width, height) = labelSize(state)
     problem = labelProblem(state) or pocketProblem(state, pocket)
-    text = f'{width * 10:.2f} x {height * 10:.2f} mm'
+    text = tr('{width} x {height} mm', width=number(f'{width * 10:.2f}'), height=number(f'{height * 10:.2f}'))
     return text if problem is None else f'{text}<br><span style="color:#d04030">{problem}</span>'
 
 def symbolText(state: InputState) -> str:
     (path, isScrew) = labelSymbol(state)
     if path is None:
-        return 'None' if not state.showScrew and state.hardware == NO_HARDWARE else 'No svg for this symbol'
+        return tr('None') if not state.showScrew and state.hardware == NO_HARDWARE else tr('No svg for this symbol')
     return os.path.basename(path)
 
 # the small notice after a part design was switched to hybrid for the insert, see designIntent.structurePlan
@@ -411,11 +422,11 @@ def command_execute(args: adsk.core.CommandEventArgs):
     if generateLabel(args) is False:
         return
     if wasPart and des.designIntent == adsk.fusion.DesignIntentTypes.HybridDesignIntentType:
-        ui.messageBox(HYBRID_SWITCH_MESSAGE, CMD_NAME)
+        ui.messageBox(HYBRID_SWITCH_MESSAGE, CMD_TITLE)
     # text fitted so small that a 0.4 mm nozzle leaves parts out (p130)
     hint = textStyles.hintText(textStyles.notes(), suggestHeavy=getInputsState().textStyle != textStyles.STYLE_HEAVY)
     if hint is not None:
-        ui.messageBox(hint, CMD_NAME)
+        ui.messageBox(hint, CMD_TITLE)
 
 def command_preview(args: adsk.core.CommandEventArgs):
     futil.log(f'{CMD_NAME} Command Preview Event')
@@ -426,10 +437,10 @@ def command_preview(args: adsk.core.CommandEventArgs):
             # a preview leaves a part design as it is, only OK switches it to hybrid
             isGenerated = generateLabel(args, mayChangeDocument=False) is not False
             seconds = time.perf_counter() - startTime
-            inputs.itemById(PREVIEW_TIME_INPUT).text = f'{seconds:.2f} s{textStyles.previewNote(textStyles.notes())}' if isGenerated else f'failed after {seconds:.2f} s'
+            inputs.itemById(PREVIEW_TIME_INPUT).text = f'{number(f"{seconds:.2f}")} s{textStyles.previewNote(textStyles.notes())}' if isGenerated else tr('failed after {seconds} s', seconds=number(f'{seconds:.2f}'))
         else:
             args.executeFailed = True
-            args.executeFailedMessage = "Some inputs are invalid, unable to generate preview"
+            args.executeFailedMessage = tr('Some inputs are invalid, unable to generate preview')
 
 def command_input_changed(args: adsk.core.InputChangedEventArgs):
     changed_input = args.input
@@ -471,7 +482,7 @@ def command_incoming_from_html(args: adsk.core.HTMLEventArgs):
             command.doExecutePreview()
 
     def onLoadConfig(text: str, fileName: str):
-        state = readConfig(text, f'Loaded "{fileName}"')
+        state = readConfig(text, tr('Loading "{fileName}"', fileName=fileName))
         if state is None:
             return
         applyInputsState(state)
@@ -499,9 +510,9 @@ def command_destroy(args: adsk.core.CommandEventArgs):
     rebuildBodyToken = None
     if args.terminationReason == adsk.core.CommandTerminationReason.CompletedTerminationReason and len(rebuildNotes) > 0:
         ui.messageBox(
-            'The insert was rebuilt. These features after it need a look, ones using a face or an edge of the old '
-            'insert need them picked again:\n\n' + '\n'.join(rebuildNotes),
-            CMD_NAME,
+            tr('The insert was rebuilt. These features after it need a look, ones using a face or an edge of the old '
+               'insert need them picked again:') + '\n\n' + '\n'.join(rebuildNotes),
+            CMD_TITLE,
             adsk.core.MessageBoxButtonTypes.OKButtonType,
             adsk.core.MessageBoxIconTypes.WarningIconType,
         )
@@ -531,7 +542,7 @@ def generateLabel(args: adsk.core.CommandEventArgs, mayChangeDocument: bool = Tr
         futil.log(f'{CMD_NAME} {labelName(state)} generated in {time.perf_counter() - startTime:.3f}s')
     except UnsupportedDesignTypeException:
         args.executeFailed = True
-        args.executeFailedMessage = 'Design type is unsupported. Projects with disabled design history are unsupported, please enable timeline feature to proceed.'
+        args.executeFailedMessage = tr('Design type is unsupported. Projects with disabled design history are unsupported, please enable timeline feature to proceed.')
         return False
     except Exception as err:
         args.executeFailed = True
@@ -565,7 +576,7 @@ def initUiState():
     uiState.initValue(DRIVER_DROPDOWN, cullenectCatalog.displayName('hex'), dropdown)
     uiState.initValue(FLANGE_INPUT, False, boolean)
     uiState.initValue(SECURITY_INPUT, False, boolean)
-    uiState.initValue(HARDWARE_DROPDOWN, 'None', dropdown)
+    uiState.initValue(HARDWARE_DROPDOWN, HARDWARE_NONE, dropdown)
     uiState.initValue(SHOW_PREVIEW_INPUT, False, boolean)
 
     recordedDefaults = configUtils.readJsonConfig(UI_INPUT_DEFAULTS_CONFIG_PATH)
@@ -606,7 +617,7 @@ def getInputsState() -> InputState:
         driver=keyOf(uiState.getState(DRIVER_DROPDOWN), options['driver']),
         flange=uiState.getState(FLANGE_INPUT),
         security=uiState.getState(SECURITY_INPUT),
-        hardware=NO_HARDWARE if hardwareName == 'None' else keyOf(hardwareName, hardwareKeys),
+        hardware=NO_HARDWARE if hardwareName == HARDWARE_NONE else keyOf(hardwareName, hardwareKeys),
         surface=next((key for (key, name) in SURFACE_NAMES.items() if name == surfaceName), cullenectLabelGenerator.SURFACE_EMBOSSED),
         textColor=labelColors.dialogColor(uiState.getState(TEXT_COLOR_DROPDOWN), uiState.getState(CUSTOM_COLOR_INPUT)),
     )
@@ -687,7 +698,7 @@ def applyPendingConfig():
     global pendingConfig
     if pendingConfig is None:
         return
-    state = readConfig(configJson.configText(configJson.GENERATOR_LABEL, pendingConfig), 'Rebuilding' if rebuildBodyToken is not None else 'Cloned')
+    state = readConfig(configJson.configText(configJson.GENERATOR_LABEL, pendingConfig), tr('Rebuilding') if rebuildBodyToken is not None else tr('Cloned'))
     pendingConfig = None
     if state is not None:
         applyInputsState(state)

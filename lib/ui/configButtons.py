@@ -5,6 +5,7 @@ from typing import Callable
 from ...lib import clipboard
 from ...lib import configJson
 from ...lib import fusion360utils as futil
+from ...lib.i18n import tr
 from . import browserPages
 from .buttonRow import Button, buttonRowHandlers
 
@@ -13,8 +14,6 @@ CONFIG_SAVE = 'saveConfig'
 CONFIG_LOAD = 'loadConfig'
 CONFIG_COPY = 'copyConfig'
 CONFIG_CLONE = 'cloneConfig'
-FILE_FILTER = 'Gridkeeper config (*.json);;All files (*.*)'
-COPIED = 'Copied'
 
 app = adsk.core.Application.get()
 ui = app.userInterface
@@ -22,13 +21,18 @@ ui = app.userInterface
 # the folder last saved to or opened from, so the next file dialog starts there
 _lastFolder = ''
 
+def fileFilter() -> str:
+    return tr('Gridkeeper config (*.json);;All files (*.*)')
+
 def configButtons(generatorTitle: str, canLoad: bool, canClone: bool) -> list[Button]:
-    buttons = [Button(CONFIG_SAVE, 'Save to file', f'Save these {generatorTitle} settings to a JSON file')]
+    # callers pass the English title, configJson.GENERATOR_TITLES, the buttons show it in the add-in's language
+    generatorTitle = configJson.translatedTitle(generatorTitle)
+    buttons = [Button(CONFIG_SAVE, tr('Save to file'), tr('Save these {generatorTitle} settings to a JSON file', generatorTitle=generatorTitle))]
     if canLoad:
-        buttons.append(Button(CONFIG_LOAD, 'Load from file', f'Set the inputs from {generatorTitle} settings saved to a file'))
-    buttons.append(Button(CONFIG_COPY, 'Copy', f'Copy these {generatorTitle} settings to the clipboard as JSON'))
+        buttons.append(Button(CONFIG_LOAD, tr('Load from file'), tr('Set the inputs from {generatorTitle} settings saved to a file', generatorTitle=generatorTitle)))
+    buttons.append(Button(CONFIG_COPY, tr('Copy'), tr('Copy these {generatorTitle} settings to the clipboard as JSON', generatorTitle=generatorTitle)))
     if canClone:
-        buttons.append(Button(CONFIG_CLONE, f'Clone into new {generatorTitle}', f'Open the {generatorTitle} dialog with these settings'))
+        buttons.append(Button(CONFIG_CLONE, tr('Clone into new {generatorTitle}', generatorTitle=generatorTitle), tr('Open the {generatorTitle} dialog with these settings', generatorTitle=generatorTitle)))
     return buttons
 
 def configButtonsHandlers(
@@ -67,8 +71,8 @@ def configButtonsHandlers(
 def saveConfigFile(text: str, fileName: str) -> None:
     global _lastFolder
     dialog = ui.createFileDialog()
-    dialog.title = 'Save Gridkeeper config'
-    dialog.filter = FILE_FILTER
+    dialog.title = tr('Save Gridkeeper config')
+    dialog.filter = fileFilter()
     dialog.initialFilename = f'{fileName}.json'
     if _lastFolder:
         dialog.initialDirectory = _lastFolder
@@ -80,14 +84,14 @@ def saveConfigFile(text: str, fileName: str) -> None:
             file.write(text)
         futil.log(f'Saved config to {dialog.filename}')
     except OSError as err:
-        ui.messageBox(f'Couldn\'t save the config to {dialog.filename}:\n{err}', 'Gridkeeper config')
+        ui.messageBox(tr('Couldn\'t save the config to {fileName}:\n{err}', fileName=dialog.filename, err=err), tr('Gridkeeper config'))
 
 def openConfigFile() -> tuple[str, str] | None:
     """Text and name of the file picked, none when the dialog was cancelled or the file can't be read"""
     global _lastFolder
     dialog = ui.createFileDialog()
-    dialog.title = 'Load Gridkeeper config'
-    dialog.filter = FILE_FILTER
+    dialog.title = tr('Load Gridkeeper config')
+    dialog.filter = fileFilter()
     dialog.isMultiSelectEnabled = False
     if _lastFolder:
         dialog.initialDirectory = _lastFolder
@@ -98,17 +102,17 @@ def openConfigFile() -> tuple[str, str] | None:
         with open(dialog.filename, encoding='utf-8') as file:
             return (file.read(), os.path.basename(dialog.filename))
     except (OSError, UnicodeDecodeError) as err:
-        ui.messageBox(f'Couldn\'t read {dialog.filename}:\n{err}', 'Gridkeeper config')
+        ui.messageBox(tr('Couldn\'t read {fileName}:\n{err}', fileName=dialog.filename, err=err), tr('Gridkeeper config'))
         return None
 
 def copyConfig(text: str) -> str | None:
     """What the button shows once it's copied"""
     try:
         clipboard.copyText(text)
-        return COPIED
+        return tr('Copied')
     except Exception as err:
         futil.log(f'Couldn\'t copy the config, {err}')
-        ui.messageBox(f'Couldn\'t copy to the clipboard:\n{err}', 'Gridkeeper config')
+        ui.messageBox(tr('Couldn\'t copy to the clipboard:\n{err}', err=err), tr('Gridkeeper config'))
         return None
 
 def readConfig(
@@ -127,10 +131,10 @@ def readConfig(
     try:
         (state, notes) = configJson.readConfig(text, generator, stateClass, current, choices, isFromTag)
     except configJson.ConfigError as err:
-        ui.messageBox(f'Couldn\'t read the config. {err}', 'Gridkeeper config')
+        ui.messageBox(tr('Couldn\'t read the config. {err}', err=err), tr('Gridkeeper config'))
         return None
     if not notes.isEmpty():
         details = configJson.notesText(generator, notes)
         futil.log(f'{source} config with changes:\n{details}')
-        ui.messageBox(f'{source} with changes:\n\n{details}', 'Gridkeeper config', adsk.core.MessageBoxButtonTypes.OKButtonType, adsk.core.MessageBoxIconTypes.WarningIconType)
+        ui.messageBox(tr('{source} with changes:\n\n{details}', source=source, details=details), tr('Gridkeeper config'), adsk.core.MessageBoxButtonTypes.OKButtonType, adsk.core.MessageBoxIconTypes.WarningIconType)
     return state

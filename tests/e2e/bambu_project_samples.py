@@ -23,8 +23,17 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 
 
 def _load(name):
-    spec = importlib.util.spec_from_file_location(name, os.path.join(ROOT, "lib", f"{name}.py"))
+    # a package of lib's folder, so relative imports resolve (exportParts' texts come from lib/i18n)
+    import types
+    package = "gridkeeperLibSamples"
+    if package not in sys.modules:
+        packageModule = types.ModuleType(package)
+        packageModule.__path__ = [os.path.join(ROOT, "lib")]
+        sys.modules[package] = packageModule
+    spec = importlib.util.spec_from_file_location(f"{package}.{name}", os.path.join(ROOT, "lib", f"{name}.py"))
     module = importlib.util.module_from_spec(spec)
+    module.__package__ = package
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
 

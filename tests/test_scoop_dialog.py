@@ -32,7 +32,7 @@ def test_every_scoop_wall_has_its_input():
     ]:
         assert f"'{field}': {inputId}," in source
         assert f"commandUIState.initValue({inputId}, DEFAULT_STATE.{field}," in source
-        assert f"({inputId}, '" in source  # its row in the scoop group, see the loop adding the checkboxes
+        assert f"({inputId}, tr('" in source  # its row in the scoop group, see the loop adding the checkboxes
 
 
 def test_the_front_input_keeps_its_id():
@@ -66,7 +66,7 @@ PAGE = os.path.join(PROJECT_ROOT, "commands", "commandCreateBin", "html", "compa
 
 def test_editor_has_a_scoops_row_for_the_selected_compartment():
     page = _source(PAGE)
-    assert "htmlElement('label', {}, 'Scoops')" in page
+    assert "htmlElement('label', {}, fusionBridge.t('Scoops'))" in page
     for wall in ["front", "back", "left", "right"]:
         assert f"'{wall}'" in page
 
