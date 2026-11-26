@@ -1181,7 +1181,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     magnetHeightInput.isMinimumInclusive = True
     commandUIState.registerCommandInput(magnetHeightInput)
 
-    userChangesGroup = inputs.addGroupCommandInput(USER_CHANGES_GROUP_ID, tr('Changes'))
+    userChangesGroup = inputs.addGroupCommandInput(USER_CHANGES_GROUP_ID, tr('Inputs'))
     userChangesGroup.isExpanded = commandUIState.getState(USER_CHANGES_GROUP_ID)
     commandUIState.registerCommandInput(userChangesGroup)
     addDefaultsButtonRow(userChangesGroup.children, INPUT_CHANGES_BUTTONS_BROWSER)

@@ -1,9 +1,8 @@
 # Einstellungen speichern und laden { #saving-and-loading-settings }
 
-Jeder Gridkeeper-Dialog hat einen Abschnitt mit Schaltflächen für seine Einstellungen: **Eingaben** in den Dialogen für
-Grundplatten und Einleger, **Änderungen** im Behälter-Dialog.
+Jeder Gridkeeper-Dialog hat einen Abschnitt mit Schaltflächen für seine Einstellungen, **Eingaben**.
 
-![Der Abschnitt Änderungen des Behälter-Dialogs mit seinen Schaltflächen für Vorgaben und Einstellungsdateien](../assets/images/dialog-settings-buttons.png)
+![Der Abschnitt Eingaben des Behälter-Dialogs mit seinen Schaltflächen für Vorgaben und Einstellungsdateien](../assets/images/dialog-settings-buttons.png)
 
 ## Vorgaben des Dialogs { #dialog-defaults }
 

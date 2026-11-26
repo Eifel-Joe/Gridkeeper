@@ -15,7 +15,7 @@ The dialog is long, its sections are described on these pages:
 | **Bin compartments**: layout, dividers, **Scoop** | [Compartments and scoop](compartments.md) |
 | **Bin compartments › Label tab** | [Label tab and labels](labels.md), for the Cullenect style also [Pockets in bins](../cullenect/pockets.md) |
 | **Base interface features** | [Base, magnets and screws](base.md) |
-| **Changes** | [Saving and loading settings](../working/save-load.md) |
+| **Inputs** | [Saving and loading settings](../working/save-load.md) |
 | **Preview** | below |
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../assets/gif/bin-features-dark.gif"><img src="../assets/gif/bin-features-light.gif" alt="Changing the size, type and wall thickness of a bin, with the bin at each change"></picture>

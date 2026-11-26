@@ -98,6 +98,22 @@ def test_the_german_defaults_buttons_fit_where_the_english_ones_do():
     assert max(map(len, german)) <= max(map(len, english)), german
 
 
+def test_the_group_of_defaults_and_files_has_one_name_in_every_dialog():
+    """It was Changes in the bin dialog and Inputs in the four others (round 60: Inputs everywhere); its id and saved
+    state stay as they were"""
+    titles = {}
+    for path in sorted(glob.glob(os.path.join(ROOT, "commands", "*", "entry.py"))):
+        for node in ast.walk(ast.parse(open(path, encoding="utf-8").read())):
+            if not (isinstance(node, ast.Call) and _name(node.func) in ("addGroupCommandInput", "addGroup")):
+                continue
+            groupId = next((argument.id for argument in node.args if isinstance(argument, ast.Name)
+                            and argument.id in ("INPUT_CHANGES_GROUP", "USER_CHANGES_GROUP_ID")), None)
+            if groupId is not None:
+                titles[os.path.basename(os.path.dirname(path))] = next(_key(argument) for argument in node.args if _key(argument))
+    assert len(titles) == 5, titles
+    assert set(titles.values()) == {"Inputs"}, titles
+
+
 def test_german_rebuild_notes_are_no_longer_than_the_english_ones():
     """Click test round 60: the info area of a dialog shows two lines, the German rebuild note was cut off. Until it
     grows with its text the German note keeps to the English one's length"""

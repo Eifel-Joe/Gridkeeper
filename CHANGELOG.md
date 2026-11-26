@@ -23,9 +23,10 @@ Gridkeeper counts its own versions from 1.0.0; its tags are `gridkeeper-vX.Y.Z`,
 - **For testing:** a file `languageOverride` in the add-in folder with `de` or `en` sets the language, whatever Fusion's
   is. The development commands (snapshot tests, model pictures) stay English.
 - **German docs:** the documentation site has every page in German too, under `/de/`, with a language switch in the
-  header (mkdocs-static-i18n). Pictures of the add-in's dialogs and windows get German versions where they are taken
-  (`tools/screenshots/screenshots.py --language de` for the dialog screenshots); pictures of Fusion's own interface stay
-  English for now.
+  header (mkdocs-static-i18n). The pictures of the add-in's dialogs and windows and the animations are German there;
+  models and pictures of Fusion's own interface stay English.
+- **One name for the settings buttons' group:** the bin dialog's group with the buttons for defaults and settings
+  files is called *Inputs* like in the other dialogs (it was *Changes*); its id and saved state stay the same.
 - **How it works:** English is the source, `tr('English text')` in the code; the German is in `lib/i18n/de.json`. A test
   finds every text the add-in shows and fails on a missing or stale German entry or different placeholders; pages get
   their texts with their data (`data-i18n` attributes).

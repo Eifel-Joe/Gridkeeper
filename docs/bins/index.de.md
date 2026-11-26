@@ -15,7 +15,7 @@ Der Dialog ist lang, seine Abschnitte werden auf diesen Seiten beschrieben:
 | **Fächer des Behälters**: Aufteilung, Trennwände, **Griffmulde** | [Fächer und Griffmulde](compartments.md) |
 | **Fächer des Behälters › Beschriftungslasche** | [Beschriftungslasche und Beschriftungen](labels.md), für den Cullenect-Stil auch [Aufnahmen in Behältern](../cullenect/pockets.md) |
 | **Füße** | [Füße, Magnete und Schrauben](base.md) |
-| **Änderungen** | [Einstellungen speichern und laden](../working/save-load.md) |
+| **Eingaben** | [Einstellungen speichern und laden](../working/save-load.md) |
 | **Vorschau** | weiter unten |
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../assets/gif/bin-features-dark.gif"><img src="../assets/gif/bin-features-light.gif" alt="Größe, Typ und Wandstärke eines Behälters ändern, mit dem Behälter nach jeder Änderung"></picture>
