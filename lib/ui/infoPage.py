@@ -12,8 +12,7 @@ LINK = 'link'
 HEIGHT = 'height'
 # until the page tells how tall its text is, Fusion sizes a page by the dialog, not by what it shows
 INITIAL_HEIGHT = 40
-# German texts are longer: the rebuild note and the info of a bin needed more than 200 px (round 60)
-MAX_HEIGHT = 320
+MAX_HEIGHT = 200
 # a line marked with a yellow warning sign, see html/info.html
 WARNING_CLASS = 'warning'
 

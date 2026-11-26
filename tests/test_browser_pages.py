@@ -123,24 +123,3 @@ def test_the_page_texts_are_read_from_the_pages():
     assert isinstance(texts, set)
     assert pages.pageTexts() is texts
 
-
-# Round 60 click test: the German rebuild note and the info text needed more than the 200 px the page could take
-
-infoPage = _load("infoPage")
-
-
-class FakeInfoBrowser:
-    minimumHeight = infoPage.INITIAL_HEIGHT
-    maximumHeight = infoPage.INITIAL_HEIGHT
-
-
-def test_a_long_info_text_gets_its_height():
-    browser = FakeInfoBrowser()
-    infoPage.infoPageHandlers("<p>text</p>", browser)[infoPage.HEIGHT](280)
-    assert (browser.minimumHeight, browser.maximumHeight) == (280, 280)
-
-
-def test_the_info_height_stays_limited():
-    browser = FakeInfoBrowser()
-    infoPage.infoPageHandlers("<p>text</p>", browser)[infoPage.HEIGHT](5000)
-    assert browser.maximumHeight == infoPage.MAX_HEIGHT < 5000

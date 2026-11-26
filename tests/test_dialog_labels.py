@@ -83,3 +83,11 @@ def test_the_scan_finds_names_of_helpers_too():
         assert [key for (_, key) in inputNames(path)] == ["Show preview (slow)", "Lid"]
     finally:
         os.remove(path)
+
+
+def test_german_rebuild_notes_are_no_longer_than_the_english_ones():
+    """Click test round 60: the info area of a dialog shows two lines, the German rebuild note was cut off. Until it
+    grows with its text the German note keeps to the English one's length"""
+    notes = {key: value for (key, value) in GERMAN.items() if key.startswith("<b>Rebuilding {name}</b>")}
+    assert len(notes) == 3
+    assert {key: len(value) for (key, value) in notes.items() if len(value) > len(key)} == {}
