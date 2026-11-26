@@ -11,7 +11,6 @@ from ...lib import updateCheck
 from ...lib import updateInstall
 from ...lib import selfReload
 from ...lib.i18n import tr
-from ...lib.ui import dialogSize
 from ... import config
 
 # The update check (p310, dev-notes/specs/2026-11-17-update-hinweis-design.md): once a day at startup a background
@@ -274,7 +273,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
         command.cancelButtonText = tr('Close')
     if okAction is not None:
         futil.add_handler(command.execute, command_execute, local_handlers=local_handlers)
-    dialogSize.setDialogSize(command, 420, 300)
+    command.setDialogInitialSize(420, 300)
     inputs = command.commandInputs
     info = inputs.addTextBoxCommandInput(INFO_INPUT, '', infoHtml(reloadDialog, reloadWaiting), 8, True)
     info.isFullWidth = True

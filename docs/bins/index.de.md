@@ -39,7 +39,7 @@ wurden. Die Positionsoption stammt aus GridfinityGenerator 2.5 von Le0Michine.
 
 Einen Behälter zu erzeugen dauert einige Sekunden, deshalb ist die Vorschau standardmäßig aus.
 
-- **Vorschau laufend (langsam)** erzeugt den Behälter nach jeder Änderung neu.
+- **Vorschau laufend** erzeugt den Behälter nach jeder Änderung neu.
 - **Vorschau aktualisieren** erzeugt ihn einmal mit den aktuellen Eingaben; die Schaltfläche ist ausgeblendet,
   solange die automatische Aktualisierung an ist.
 - **Letzte Vorschau** zeigt, wie lange die letzte Vorschau gedauert hat, und weist auf Text hin, der zu dünn zum

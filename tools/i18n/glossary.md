@@ -9,7 +9,7 @@ were decided with the spec `dev-notes/specs/2026-11-26-r60-german.md`.
 - Address the user formally with *Sie*, as Fusion's German interface does ("Möchten Sie …?", "Wählen Sie … aus.").
 - Input names are short, about 24 characters at most (Fusion cuts longer ones off), the tooltip explains: "Wandstärke",
   "Höhe, Z (u)", "Ø Schraubenbohrung"; checkboxes name the feature, a verb only where it says what happens
-  ("Stapelrand erzeugen", "Magnetaussparungen"). German dialogs are 150 px wider than English ones (lib/ui/dialogSize.py).
+  ("Stapelrand erzeugen", "Magnetaussparungen"). The dialogs keep their English widths (the API can't place a dialog, a wider one ran off the screen), tests/test_dialog_labels.py checks the length.
 - Units and symbols stay: mm, u, °, ×. Numbers in texts get a decimal comma (`i18n.number`), a space before mm in
   running text ("83,5 mm").
 - Keep product and format names: Gridkeeper, Gridfinity, Cullenect, Fusion, 3MF, STL, STEP, Bambu Studio, OrcaSlicer,
@@ -62,7 +62,7 @@ were decided with the spec `dev-notes/specs/2026-11-26-r60-german.md`.
 | scoop | Griffmulde |
 | compartment / divider / compartment layout | Fach / Trennwand / Fachaufteilung |
 | hollow / shelled / solid (bin type) | Hohl / Schale / Voll |
-| magnet cutout / magnet hole / screw hole | Magnetaussparung / Magnetloch / Schraubenbohrung |
+| magnet cutout / magnet hole / screw hole | Magnetaussparung (both) / Schraubenbohrung |
 | fold walls, creases | Wände falzen, Falze |
 | custom shape (of a bin) | Eigene Form |
 | Cullenect label insert / insert / pocket / socket | Cullenect-Einleger / Einleger / Aufnahme / Steckplatz |

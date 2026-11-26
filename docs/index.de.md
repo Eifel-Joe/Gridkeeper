@@ -15,7 +15,7 @@ Slicer sowie eine Reihe von Korrekturen und kleineren Funktionen, siehe [Neuerun
 | Modell | Was es ist |
 |---|---|
 | **[Grundplatten](baseplates.md)** | Platten aus Steckplätzen für die Behälter, leicht, voll oder skelettiert, mit Magneten und Schrauben, oder eine ganze Schublade, gefüllt und in Stücke geteilt, die auf Ihr Druckbett passen. |
-| **[Behälter](bins/index.md)** | Behälter vom Typ Hohl, Schale oder Voll in beliebiger Größe in ganzen oder halben Rastereinheiten, Eigene Formen, Fächer, eine Griffmulde, eine Beschriftungslasche mit Text und Symbol, Magnet- und Schraubenlöcher im Boden. |
+| **[Behälter](bins/index.md)** | Behälter vom Typ Hohl, Schale oder Voll in beliebiger Größe in ganzen oder halben Rastereinheiten, Eigene Formen, Fächer, eine Griffmulde, eine Beschriftungslasche mit Text und Symbol, Magnet- und Schraubenbohrungen im Boden. |
 | **[Cullenect-Beschriftungen](cullenect/index.md)** | Aufnahmen in der Beschriftungslasche eines Behälters und die Einleger, die dort einrasten, mit Text und einem Schrauben- oder Hardwaresymbol, zweifarbig gedruckt und ausgetauscht, wenn sich der Inhalt ändert. |
 | **[Aufbewahrungsboxen](boxes.md)** | Eine Box mit Deckel nach Preds parametrischer Gridfinity Storage Box: Behälter sitzen in ihrem Boden, ihr Deckel trägt ein Raster oder eine geschlossene Oberseite, mit Verschlüssen, Griff und Scharnieren sowie einem Etikett für den Halter an der Vorderseite. Stapelbar und verriegelbar mit Boxen, die nach Preds eigener Datei gedruckt wurden. |
 

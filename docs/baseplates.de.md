@@ -20,7 +20,7 @@ steht hier, welche Grundplatte an Ort und Stelle neu erstellt wird.
 | **Rastereinheit X (mm)** | 42 mm | Größe einer Rasterzelle entlang X |
 | **Rastereinheit Y (mm)** | 42 mm | Größe einer Rasterzelle entlang Y |
 | **Spiel XY (mm)** | 0,25 mm | Abstand auf jeder Seite zwischen einem Behälter und seiner Zelle, die Steckplätze werden um diesen Betrag größer. Wählen Sie denselben Wert wie beim Spiel XY der Behälter. 0,1 bis 0,5 mm |
-| **Spiel am Plattenrand (mm)** | 0,05 mm | Wie weit der Rand einer Platte vor der Rasterlinie endet, an der sie auf eine andere Platte trifft; nebeneinander geklebte Platten lassen das Doppelte davon zwischen sich. 0,025 bis 0,25 mm. Vor dem 17.11.2026 gespeicherte Einstellungen hatten den ganzen Spalt, *Clearance between plates*, und werden als die Hälfte davon gelesen |
+| **Spiel Plattenrand (mm)** | 0,05 mm | Wie weit der Rand einer Platte vor der Rasterlinie endet, an der sie auf eine andere Platte trifft; nebeneinander geklebte Platten lassen das Doppelte davon zwischen sich. 0,025 bis 0,25 mm. Vor dem 17.11.2026 gespeicherte Einstellungen hatten den ganzen Spalt, *Clearance between plates*, und werden als die Hälfte davon gelesen |
 
 ## Hauptmaße { #main-dimensions }
 
@@ -81,7 +81,7 @@ gesetzten Behälter, solange sie diese Steckplätze und deren Gelenkursprünge n
 
 Nur für volle und skelettierte Platten. **Magnetaussparungen** (an), **Ø Magnetaussparung**
 (6,5 mm, bis 10 mm), **Magnetgröße** (Magnete 6×2 mm brauchen 2,4 mm, Magnete 6×3 mm 3,4 mm, oder *Benutzerdefiniert*)
-und **Tiefe Magnetaussparung** (2,4 mm, mehr als 0, mit *Benutzerdefiniert* einzugeben). Gespeichert wird nur die
+und **Magnettiefe** (2,4 mm, mehr als 0, mit *Benutzerdefiniert* einzugeben). Gespeichert wird nur die
 Tiefe; Einstellungsdateien mit anderen Tiefen werden als *Benutzerdefiniert* geladen. Jeder Magnetsteckplatz hat rund
 um seine Öffnung eine Fase von 0,5 mm, damit die Magnete leichter hineingehen; sie ist immer vorhanden (aus
 GridfinityGenerator 2.5 von Le0Michine).
@@ -124,7 +124,7 @@ Schaltflächen für die Vorgaben des Dialogs und für Einstellungsdateien, in je
 
 ## Vorschau { #preview }
 
-**Vorschau anzeigen (langsam)** erzeugt die Platte, während Sie die Eingaben ändern; **Letzte Vorschau** zeigt, wie
+**Vorschau (langsam)** erzeugt die Platte, während Sie die Eingaben ändern; **Letzte Vorschau** zeigt, wie
 lange die letzte gedauert hat.
 
 Die Platte wird nach ihrer Größe benannt, *Gridfinity baseplate 3x2* oder *Gridfinity baseplate fill 400x300 mm*.

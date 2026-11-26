@@ -7,7 +7,7 @@ Ein kurzer Rundgang: eine Grundplatte, ein Behälter darauf mit einer Cullenect-
 2. **Grundplatte.** Öffnen Sie **Volumenkörper › Erstellen › Gridkeeper Grundplatte**. Setzen Sie *Größenmodus* auf *Rastereinheiten*, *Plattenbreite, X (u)* auf 3
    und *Plattenlänge, Y (u)* auf 2, klicken Sie auf **OK**. Die Platte landet in der Komponente *Grid*.
 3. **Behälter.** Öffnen Sie **Volumenkörper › Erstellen › Gridkeeper Behälter**. Setzen Sie *Breite, X (u)* auf 2, *Länge, Y (u)* auf 1 und *Höhe, Z (u)* auf 4. Aktivieren Sie unter
-   *Fächer des Behälters › Beschriftungslasche* die Option *Lasche entlang der Breite*, setzen Sie *Länge der Lasche (u)* auf 2 u und wählen Sie als *Beschriftungsstil* **Cullenect**. Die zweite Zeile der
+   *Fächer des Behälters › Beschriftungslasche* die Option *Beschriftungslasche*, setzen Sie *Länge der Lasche (u)* auf 2 u und wählen Sie als *Beschriftungsstil* **Cullenect**. Die zweite Zeile der
    Tabelle *Tatsächliche Maße* zeigt die Größe der Aufnahme, „Cullenect: 2U: Aufnahme 78,3 mm, Einleger 78 mm“. Klicken Sie auf **OK**. Der Behälter landet in
    *Bins*.
 4. **Einleger.** Öffnen Sie **Volumenkörper › Erstellen › Gridkeeper Einleger**. Lassen Sie *Breite* auf *Rastereinheiten*, setzen Sie *Breite (u)* auf 2, tippen Sie `M3x10` in *Zeile 1* und behalten Sie die

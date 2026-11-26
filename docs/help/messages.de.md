@@ -11,8 +11,8 @@ Hinweise nach einem Neuerstellen. Diese Seite führt alle auf, mit dem, was Sie 
 | Behälter | **Cullenect: Cullenect-Steckplätze brauchen Wände von mindestens 1,2 mm** (in der Tabelle Tatsächliche Maße) | Stellen Sie **Wandstärke** auf 1,2 mm oder mehr, oder wählen Sie einen anderen Beschriftungsstil |
 | Behälter | **Wählen Sie mindestens eine Zelle aus** (Zeichnung der eigenen Form) | Klicken Sie mindestens eine Zelle an, oder schalten Sie **Eigene Form** ab |
 | Behälter | **Alle Zellen müssen ein zusammenhängendes Teil bilden, verbunden entlang ihrer Seiten** | Zellen, die sich nur an einer Ecke berühren, zählen nicht; verbinden Sie sie |
-| Behälter | Eine **Benutzerdefinierte Farbe**, die nicht `#rrggbb` ist | Geben Sie eine Farbe wie `#D02020` ein |
-| Behälter | Ein Wert außerhalb seines Bereichs: Rastereinheit über 10 mm, Höheneinheit über 5 mm, Spiel XY 0,1 bis 0,5 mm, Breite und Länge in halben Einheiten, Höhe mindestens 1, Wand 0,4 bis 2 mm, Überhangwinkel Lasche 30° bis 65°, Winkel Laschenoberseite 0° bis 45°, Spiel des Steckplatzes 0 bis 1 mm, eine Schraubenbohrung über 1 mm und kleiner als die Magnetaussparung | Korrigieren Sie den Wert; Fusion zeigt ihn rot an |
+| Behälter | Eine **Eigene Farbe**, die nicht `#rrggbb` ist | Geben Sie eine Farbe wie `#D02020` ein |
+| Behälter | Ein Wert außerhalb seines Bereichs: Rastereinheit über 10 mm, Höheneinheit über 5 mm, Spiel XY 0,1 bis 0,5 mm, Breite und Länge in halben Einheiten, Höhe mindestens 1, Wand 0,4 bis 2 mm, Überhangwinkel Lasche 30° bis 65°, Laschenwinkel oben 0° bis 45°, Spiel des Steckplatzes 0 bis 1 mm, eine Schraubenbohrung über 1 mm und kleiner als die Magnetaussparung | Korrigieren Sie den Wert; Fusion zeigt ihn rot an |
 | Grundplatte | **Die Rastereinheiten müssen größer als 0 sein**, **Die Plattengröße muss mindestens 1 x 1 u betragen** (unter Ergebnis) | Korrigieren Sie die Größe |
 | Grundplatte | **Die Fläche ist zu klein für eine einzelne Zelle** | Machen Sie die Fläche größer als eine Zelle plus Spiel |
 | Grundplatte | **Das Druckbett ist zu klein für eine einzelne Zelle mit der Seitliche Auffüllung** | Wählen Sie ein größeres Druckbett, einen kleineren Rand des Druckbetts oder weniger Auffüllung |
@@ -20,13 +20,13 @@ Hinweise nach einem Neuerstellen. Diese Seite führt alle auf, mit dem, was Sie 
 | Einleger | **Ein Einleger ist 10 bis 300 mm breit** | Ändern Sie die Breite oder die Korrektur |
 | Einleger | **Ein Einleger ist mindestens 5 mm hoch** | Wählen Sie die Höhenkorrektur kleiner |
 | Einleger | **Korrekturen betragen höchstens 1 mm in jede Richtung** | Halten Sie beide Korrekturen zwischen −1 und 1 mm |
-| Einleger | **Die Rastereinheit Breite beträgt mindestens 10 mm** | Korrigieren Sie **Rastereinheit Breite (mm)** |
+| Einleger | **Die Rastereinheit Breite beträgt mindestens 10 mm** | Korrigieren Sie **Rastereinheit X (mm)** |
 | Einleger | **Kein Platz für das Symbol, machen Sie den Einleger breiter** | Breiterer Einleger oder kein Symbol |
 | Einleger | **Kein Platz für Text neben dem Symbol, machen Sie den Einleger breiter** | Breiterer Einleger oder kein Symbol |
 | Einleger | **Zwei Zeilen passen nicht in diese Höhe: Ihre Unterlängen würden über den Rand reichen, und die Buchstaben können nicht kleiner werden, ohne zu dünn zum Drucken zu sein. Verkleinern Sie die Höhenkorrektur, verwenden Sie eine Zeile oder den Stil Extrafett** | Wie in der Meldung beschrieben |
 | Einleger | **Keine SVG-Datei für dieses Symbol** | Die gewählte Kombination hat keine Symboldatei; wählen Sie eine andere (tritt nur bei von Hand geänderten Symbolordnern auf) |
 | Einleger | **Diese Aufnahme ist zu klein für den Einleger, wählen Sie eine passende aus** | Wählen Sie eine größere Aufnahme oder machen Sie den Einleger schmaler |
-| Einleger | Eine **Benutzerdefinierte Farbe**, die nicht `#rrggbb` ist | Geben Sie eine Farbe wie `#D02020` ein |
+| Einleger | Eine **Eigene Farbe**, die nicht `#rrggbb` ist | Geben Sie eine Farbe wie `#D02020` ein |
 
 ## Meldungen nach dem Erstellen { #messages-after-building }
 

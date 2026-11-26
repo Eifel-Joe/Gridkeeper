@@ -25,7 +25,7 @@ Nein. Der App Store enthält das ursprüngliche Zusatzmodul von Le0Michine. Grid
 ## Erstellen { #building }
 
 **Der Dialog reagiert langsam.**
-Schalten Sie die Vorschau ab (**Vorschau laufend (langsam)**, **Vorschau anzeigen (langsam)**); im
+Schalten Sie die Vorschau ab (**Vorschau laufend**, **Vorschau (langsam)**); im
 Dialog Behälter zeigt **Vorschau aktualisieren** das Ergebnis jeweils bei Bedarf. Große Grundplatten mit
 Gelenkursprüngen und Einleger mit Symbolen aus vielen Punkten brauchen einige Sekunden.
 
@@ -56,7 +56,7 @@ Der Beschriftungsstil ist *Cullenect*: Der Text kommt auf den Einleger. Wählen 
 zurückzuerhalten; ihre Werte sind erhalten geblieben.
 
 **Löcher im Boden sind ausgegraut.**
-Der Behälter steht auf dem **Halbraster**: Halbe Füße haben keinen Platz für Magnet- oder Schraubenlöcher. Oder
+Der Behälter steht auf dem **Halbraster**: Halbe Füße haben keinen Platz für Magnet- oder Schraubenbohrungen. Oder
 **Füße erzeugen** ist abgeschaltet.
 
 ## Beschriftungen und Text { #labels-and-text }

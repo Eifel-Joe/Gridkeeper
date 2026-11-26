@@ -13,12 +13,12 @@ geschlossen auf die Box gesetzt, siehe [Komponenten und Gelenke](working/compone
 
 ![Eine Box 5 × 4 × 6 mit Deckel, ihren orangefarbenen Kleinteilen und einem Etikett im Halter, und ihr Satz Box 5×4×6 im Browser: Box, Lid, vier Verschlüsse, der Griff, zwei Griffstifte und zwei Scharniere](assets/images/box-5x4x6.png)
 
-!!! note "Magnetlöcher"
-    Magnetlöcher sind nur für Magnete 6 × 2 mm gedacht: Magnete 6 × 3 mm würden den Boden durchbrechen.
+!!! note "Magnetaussparungen"
+    Magnetaussparungen sind nur für Magnete 6 × 2 mm gedacht: Magnete 6 × 3 mm würden den Boden durchbrechen.
 
 ## Informationen { #info }
 
-![Der Dialog Gridkeeper Box: Informationen, Größe 5 × 4 × 6 mit dem Außenmaß 230 × 188 × 65 mm mit Deckel, Magnetlöcher, Deckel mit der Auswahl Deckeloberseite, Kleinteile mit der Auswahl Scharnier, Eingaben und Vorschau](assets/images/dialog-box.png)
+![Der Dialog Gridkeeper Box: Informationen, Größe 5 × 4 × 6 mit dem Außenmaß 230 × 188 × 65 mm mit Deckel, Magnetaussparungen, Deckel mit der Auswahl Deckeloberseite, Kleinteile mit der Auswahl Scharnier, Eingaben und Vorschau](assets/images/dialog-box.png)
 
 Ein Link zu dieser Seite, der Hinweis auf Pred und die Version des Add-ins. Wurde der Dialog über
 **Gridkeeper neu erstellen** geöffnet, steht hier, welche Box an Ort und Stelle neu erstellt wird.
@@ -36,13 +36,13 @@ Die Zeile darunter zeigt das Außenmaß: Breite und Länge sind die Zellen plus 
 
 ![Eine Box 5 × 4 × 6, 230 × 188 mm, mit ihrem Deckel](assets/models/box.png)
 
-## Magnetlöcher { #magnet-holes }
+## Magnetaussparungen { #magnet-holes }
 
 | Eingabe | Vorgabe | Was sie bewirkt |
 |---|---|---|
-| **Magnetlöcher hinzufügen** | aus | Ein Loch im Sockel an jeder Ecke jeder Zelle |
+| **Magnetaussparungen** | aus | Ein Loch im Sockel an jeder Ecke jeder Zelle |
 | **Magnetgröße** | 6×2 mm (2,4 mm tief) | Setzt die Tiefe für Magnete 6 × 2 mm, oder *Benutzerdefiniert*, um sie einzugeben |
-| **Tiefe Magnetaussparung** | 2,4 mm | Bis 2,6 mm: Der Sockel unter dem Loch ist 2,8 mm dick, Magnete 6 × 3 mm gingen durch den Boden |
+| **Magnettiefe** | 2,4 mm | Bis 2,6 mm: Der Sockel unter dem Loch ist 2,8 mm dick, Magnete 6 × 3 mm gingen durch den Boden |
 | **Ø Magnetaussparung** | 6,5 mm | 3 bis 8,5 mm, der Sockel um das Loch wächst mit |
 
 ## Gelenkursprünge { #joint-origins }
@@ -100,7 +100,7 @@ Platz der Etikett-Halter zulässt: die Etikettbreite plus 28,5 mm, also 57 mm be
 höchstens 113,5 mm ab einer Breite von 6. Die Scharniere behalten bei jeder Größe ihren Platz neben der Box, das zweite
 5 mm neben dem ersten.
 
-Die Vorschau (**Vorschau anzeigen (langsam)**) zeigt nur Box und Deckel, die Kleinteile und die Gelenkursprünge kommen mit
+Die Vorschau (**Vorschau (langsam)**) zeigt nur Box und Deckel, die Kleinteile und die Gelenkursprünge kommen mit
 **OK** dazu: Sie zu erzeugen machte jede Vorschau langsam. Ein Gelenk von Ihnen an einem der Teile, etwa am vorderen
 linken Verschluss, bleibt beim Neuerstellen der Box an diesem Teil; das Neuerstellen unterscheidet die vier Verschlüsse,
 die zwei Stifte und die zwei Scharniere nach ihrem Sitz.
@@ -194,7 +194,7 @@ darin.
 
 Preds Gridfinity Storage Box v1.1 steht unter der Lizenz CC BY-NC. Die Kleinteile sind Preds, nach Preds Datei im Code
 gezeichnet, dieselbe Form. Gridkeeper baut seine Box und den Deckel im Code mit vollständig bestimmten Skizzen und
-Parametern neu und ändert sie dort, wo es auf dieser Seite vermerkt ist (die Magnetlöcher, die Bodensockel, der aus
+Parametern neu und ändert sie dort, wo es auf dieser Seite vermerkt ist (die Magnetaussparungen, die Bodensockel, der aus
 Kreisen gezeichnete Stapelrand, die Gelenkursprünge). Die Zeitachse folgt Preds Schritten, nur dass die rechten Griff-
 und Etikett-Halter direkt gebaut statt von den linken gespiegelt werden; die Form bleibt die von Pred.
 Das Etikett ist Preds Platte mit Gridkeeper-Text und den Cullenect-Symbolen von CullenJWebb

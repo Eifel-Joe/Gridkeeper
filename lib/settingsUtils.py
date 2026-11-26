@@ -1,7 +1,7 @@
 import html
 import adsk.core
 
-from .i18n import tr
+from .i18n import tr, trKnown
 
 def _displayValue(input: adsk.core.CommandInput) -> str | None:
     """The value as the dialog shows it, none for inputs that only act, like buttons"""
@@ -90,7 +90,8 @@ def settingsHtml(tag: dict, parameterExpression=None) -> str:
                 (label, name) = item
                 expression = parameterExpression(name) if parameterExpression is not None else None
                 current = html.escape(str(expression)) if expression is not None else f'<span style="color:#808080">{html.escape(tr("missing, deleted or renamed"), quote=False)}</span>'
-                lines.append(f'<br>{html.escape(str(label))}: {html.escape(str(name))} = {current}')
+                # the tag keeps the English label, a rebuild looks the parameter up by it (round 60)
+                lines.append(f'<br>{html.escape(trKnown(str(label)))}: {html.escape(str(name))} = {current}')
     settings = tag.get('settings')
     if not isinstance(settings, list) or len(settings) == 0:
         lines.append('<br>' + html.escape(tr('Settings weren\'t recorded, this was generated before the generator kept them.'), quote=False))

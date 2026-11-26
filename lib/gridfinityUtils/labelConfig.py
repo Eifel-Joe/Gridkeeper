@@ -21,7 +21,7 @@ PARAMETER_FIELDS = {
     'Base width unit': 'baseWidth',
     'Text line 1': 'line1',
     'Text line 2': 'line2',
-}
+}  # tr-keys
 
 
 # the joint the label command makes into a pocket, "<insert> in pocket"; Fusion numbers a name still taken, a rebuild

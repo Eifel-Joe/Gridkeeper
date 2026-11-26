@@ -20,7 +20,7 @@ erstellen** geöffnet, steht dort, welcher Einleger an Ort und Stelle neu erstel
 | **Breite** | Rastereinheiten | *Rastereinheiten* oder *Breite in mm* |
 | **Breite (u)** | 1 | Wird bei *Rastereinheiten* angezeigt: Breite der Aufnahme, in die er passt, 0,5 bis 7 Rastereinheiten in halben Schritten; 1u sind 36 mm bei 42-mm-Einheiten, wie bei Cullenect |
 | **Breite** (in mm) | 25 mm | Wird bei *Breite in mm* angezeigt: eine freie Breite von 10 bis 300 mm, z. B. für die Aufnahme einer Fachlasche; der Behälter-Dialog zeigt die Breite seines Einlegers |
-| **Rastereinheit Breite (mm)** | 42 mm | Das Raster der Behälter, in dem die Breite in Rastereinheiten gezählt wird; nur bei *Rastereinheiten* |
+| **Rastereinheit X (mm)** | 42 mm | Das Raster der Behälter, in dem die Breite in Rastereinheiten gezählt wird; nur bei *Rastereinheiten* |
 | **Korrektur Breite** | 0 mm | Wird zur Breite addiert, für Drucker, die zu breit oder zu schmal drucken, Cullenects `offset_xy`, höchstens 1 mm in jede Richtung |
 | **Korrektur Höhe** | 0 mm | Wird zur Höhe von 11 mm addiert, höchstens 1 mm in jede Richtung |
 | **Einleger** | | Zeigt die Größe, die der Einleger haben wird, z. B. `36.00 x 11.00 mm`, und in Rot, warum er nicht erstellt werden kann |
@@ -34,7 +34,7 @@ erstellen** geöffnet, steht dort, welcher Einleger an Ort und Stelle neu erstel
 | **Textstil** | Extrafett | *Normal*, *Fett* oder *Extrafett*. Extrafett ist Arial Black, seine Striche lassen sich mit einer 0,4-mm-Düse drucken. Normal und Fett sind Arial, bei kleiner Schrift dünn |
 | **Text und Symbol** | Erhaben | *Erhaben* 0,4 mm, *Vertieft* 0,4 mm oder *Bündig*, siehe unten |
 | **Textfarbe** | Ohne | Eine Farbe für Text und Symbol, siehe [Farben und Mehrfarbdruck](../working/colors.md) |
-| **Benutzerdefinierte Farbe** | | Wird bei *Textfarbe* *Benutzerdefiniert* angezeigt: `#rrggbb`, z. B. `#D02020` |
+| **Eigene Farbe** | | Wird bei *Textfarbe* *Benutzerdefiniert* angezeigt: `#rrggbb`, z. B. `#D02020` |
 
 Text und Symbol sind immer eigene Körper, zwei Schichten (0,4 mm) dick, damit sie in einer anderen Farbe gedruckt werden
 können:
@@ -92,7 +92,7 @@ Die richtige Aufnahme finden und auswählen und das Gelenk rückgängig machen, 
 ## Eingaben und Vorschau { #inputs-and-preview }
 
 **Eingaben** enthält die Schaltflächen für Vorgaben und Einstellungsdateien, siehe
-[Einstellungen speichern und laden](../working/save-load.md). **Vorschau anzeigen (langsam)** erstellt den Einleger,
+[Einstellungen speichern und laden](../working/save-load.md). **Vorschau (langsam)** erstellt den Einleger,
 während Sie die Eingaben ändern; **Letzte Vorschau** zeigt, wie lange es gedauert hat.
 
 ## Nach dem Erstellen { #after-building }

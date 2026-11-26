@@ -26,7 +26,6 @@ from ...lib.ui.commandUiState import CommandUiState
 from ...lib.ui.defaultsButtons import addDefaultsButtonRow, defaultsButtonsHandlers, DEFAULTS_SAVE, DEFAULTS_FACTORY_RESET
 from ...lib.ui.buttonRow import addButtonRow
 from ...lib.ui import configButtons
-from ...lib.ui import dialogSize
 from ...lib.ui import selectionPrefill
 from ...lib.ui import browserPages
 from ...lib.ui.unsupportedDesignTypeException import UnsupportedDesignTypeException
@@ -235,7 +234,7 @@ def addBool(inputs: adsk.core.CommandInputs, inputId: str, label: str, tooltip: 
 
 def command_created(args: adsk.core.CommandCreatedEventArgs):
     futil.log(f'{CMD_NAME} Command Created Event')
-    dialogSize.setDialogSize(args.command, 400, 500)
+    args.command.setDialogInitialSize(400, 500)
     inputs = args.command.commandInputs
     global rebuildBodyToken
     global pendingRebuildBody

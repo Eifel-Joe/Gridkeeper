@@ -51,7 +51,7 @@ PARAMETER_FIELDS = {
     'Padding top': 'paddingTop',
     'Padding right': 'paddingRight',
     'Padding bottom': 'paddingBottom',
-}
+}  # tr-keys
 # the move placing the baseplate, rebuilding in place reads the spot from it, see rebuildUtils
 BASEPLATE_PLACEMENT_FEATURE = 'Baseplate placement'
 

@@ -9,7 +9,7 @@ Das kleine Raster oben legt fest, wie viele Fächer der Behälter hat: **X**, di
 
 ## Fachaufteilung { #compartment-layout }
 
-Schalten Sie **Fachaufteilung bearbeiten** ein, um eine Zeichnung des Rasters zu erhalten:
+Schalten Sie **Fächer bearbeiten** ein, um eine Zeichnung des Rasters zu erhalten:
 
 - **Ziehen Sie über Zellen**, um sie zu einem größeren Fach zusammenzufassen. **Teilen** macht aus einem Fach wieder
   einzelne Zellen.
@@ -28,7 +28,7 @@ Schalten Sie **Fachaufteilung bearbeiten** ein, um eine Zeichnung des Rasters zu
 
 ![Ein 3 × 2 × 4 Behälter mit drei Fächern, jedes mit einer Griffmulde vorne, und einer Beschriftungslasche entlang der Rückseite](../assets/models/bin-compartments-scoops.png)
 
-Schalten Sie **Fachaufteilung bearbeiten** aus, werden die Fächer auf das gleichmäßige Raster zurückgesetzt. Behälter
+Schalten Sie **Fächer bearbeiten** aus, werden die Fächer auf das gleichmäßige Raster zurückgesetzt. Behälter
 mit [eigener Form](size.md#custom-shape) oder [gefalzten Wänden](body.md#creased-walls) haben ein einziges Fach: das
 Raster und die Aufteilung sind ausgeblendet und behalten ihre Werte für später. Zellen unter der Größe, die die
 Fachecken brauchen, werden gemeldet.

@@ -13,13 +13,13 @@ Grundplatte sitzen.
 | **Laschen an Magneten** | aus | Öffnet jede Magnetaussparung zur Seite, damit sich der Magnet herausdrücken lässt |
 | **Ø Magnetaussparung** | 6,5 mm | 1 bis 10 mm |
 | **Magnetgröße** | 6×2 mm (2,4 mm tief) | Legt die Tiefe für Magnete von 6 × 2 mm oder 6 × 3 mm (3,4 mm) fest; *Benutzerdefiniert*, um die Tiefe selbst einzugeben |
-| **Tiefe Magnetaussparung** | 2,4 mm | Mindestens 1 mm, bei *Benutzerdefiniert* einzugeben |
+| **Magnettiefe** | 2,4 mm | Mindestens 1 mm, bei *Benutzerdefiniert* einzugeben |
 
 ![Die Magneteinstellungen des Behälter-Dialogs: Magnetgröße 6×3 mm setzt die Tiefe der Aussparung auf 3,4 mm](../assets/images/dialog-bin-magnet-size.png)
 
 Bei Magnetaussparungen und Schraubenbohrungen zusammen verbindet eine Rille jede Magnetaussparung mit ihrer
 Schraubenbohrung, damit sich das Teil drucken lässt; sie entfällt, wo die Aussparungen dafür zu tief sind. Halbe Füße
-haben keine Magnet- oder Schraubenlöcher: beim **Halbraster** sind die Eingaben für die Löcher gesperrt, ebenso wie
+haben keine Magnet- oder Schraubenbohrungen: beim **Halbraster** sind die Eingaben für die Löcher gesperrt, ebenso wie
 ohne **Füße erzeugen**.
 
 Jede Magnetaussparung hat eine 0,5 mm große Fase rund um ihre Öffnung an der Unterseite des Behälters, damit die Magnete

@@ -65,11 +65,11 @@ BIN_BASE_LENGTH_PARAMETER = 'baseLength'
 BIN_PARAMETERS = [BIN_HEIGHT_PARAMETER, BIN_HEIGHT_UNIT_PARAMETER, BIN_BASE_WIDTH_PARAMETER, BIN_BASE_LENGTH_PARAMETER]
 
 # Labels of the parameters in the tag are stored in user documents, keep these literal
-PARAMETER_LABEL_BASE_WIDTH = 'Base width unit'
-PARAMETER_LABEL_BASE_LENGTH = 'Base length unit'
-PARAMETER_LABEL_BIN_HEIGHT = 'Bin height (u)'
-PARAMETER_LABEL_HEIGHT_UNIT = 'Height unit'
-PARAMETER_LABEL_LABEL = 'Label'
+PARAMETER_LABEL_BASE_WIDTH = 'Base width unit'  # tr-value
+PARAMETER_LABEL_BASE_LENGTH = 'Base length unit'  # tr-value
+PARAMETER_LABEL_BIN_HEIGHT = 'Bin height (u)'  # tr-value
+PARAMETER_LABEL_HEIGHT_UNIT = 'Height unit'  # tr-value
+PARAMETER_LABEL_LABEL = 'Label'  # tr-value
 # config fields the parameters stand for, lengths in mm like the config, see configJson
 PARAMETER_FIELDS = {
     PARAMETER_LABEL_BASE_WIDTH: 'baseWidth',

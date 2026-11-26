@@ -68,7 +68,7 @@ selbst: Hat sich die Version in `Gridkeeper.manifest` geändert, bietet **Gridke
 ### Nach Updates suchen und Ihre Privatsphäre { #checking-for-updates-and-your-privacy }
 
 Öffnen Sie **Dienstprogramme › Zusatzmodule › Gridkeeper Updates**, um die laufende und die installierte Version zu sehen (sie unterscheiden sich
-nach einem Update, bis Gridkeeper neu geladen wird), um **Jetzt suchen** zu klicken und um **Beim Start nach Updates suchen** aus- oder einzuschalten.
+nach einem Update, bis Gridkeeper neu geladen wird), um **Jetzt suchen** zu klicken und um **Beim Start prüfen** aus- oder einzuschalten.
 Die Einstellung wird im Zusatzmodul-Ordner gespeichert (`updateConfig\update.json`).
 
 Die Suche fragt die öffentliche API von GitHub nach den Releases von

@@ -10,7 +10,6 @@ import time
 from ...lib.gridfinityUtils import designIntent
 from ...lib.gridfinityUtils import magnetSizes
 from ...lib.ui import magnetSizeInput
-from ...lib.ui import dialogSize
 from ...lib import configUtils
 from ...lib import tagUtils
 from ...lib import settingsUtils
@@ -312,7 +311,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     futil.log(f'{CMD_NAME} Command Created Event')
     global uiState
 
-    dialogSize.setDialogSize(args.command, 450, 500)
+    args.command.setDialogInitialSize(450, 500)
     global dialogWorkflow
     global rebuildBodyToken
     global pendingRebuildBody

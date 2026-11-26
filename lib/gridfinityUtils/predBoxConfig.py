@@ -61,7 +61,7 @@ class LidTopFeatures(NamedTuple):
 # user parameter names after the numbered prefix, stored in user documents, keep them literal
 PARAMETERS = ['baseWidth', 'baseLength', 'heightU']
 # the label each parameter has in the settings window, the config field it is, see rebuildUtils.configWithParameters
-PARAMETER_FIELDS = {'Width (units)': 'gridX', 'Length (units)': 'gridY', 'Height (units)': 'heightU'}
+PARAMETER_FIELDS = {'Width (units)': 'gridX', 'Length (units)': 'gridY', 'Height (units)': 'heightU'}  # tr-keys
 
 # the top of Pred's socket profile over the floor plane (z = 0), a bin's base reaches that far down from it, as the
 # baseplate's sockets, see baseplateBuilder

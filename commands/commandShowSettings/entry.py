@@ -7,7 +7,6 @@ from ...lib import settingsUtils
 from ...lib import configJson
 from ...lib import fusion360utils as futil
 from ...lib.ui import browserPages
-from ...lib.ui import dialogSize
 from ...lib.ui import configButtons
 from ...lib.ui.buttonRow import Button
 from ...lib.i18n import tr
@@ -205,7 +204,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
         command.commandInputs.addTextBoxCommandInput(SETTINGS_TEXT_INPUT, '', tr('Select a generated bin, baseplate or label.'), 1, True)
         return
     (body, tagName, value) = tag
-    dialogSize.setDialogSize(command, 450, 500)
+    command.setDialogInitialSize(450, 500)
     # the settings and their buttons in one page, the buttons stay above the settings as they scroll
     browser = command.commandInputs.addBrowserCommandInput(SETTINGS_BROWSER, '', SETTINGS_HTML_URL, PAGE_HEIGHT, PAGE_HEIGHT)
     browser.isFullWidth = True

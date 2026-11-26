@@ -56,3 +56,18 @@ def test_settings_text_lists_items_under_their_sections():
         {"title": "Label tab", "items": [["Hollow tab", "Yes"]]},
     ])
     assert text == "[Basic sizes]\n  Bin width (u): 2\n  Bin height unit (mm): 7 mm\n[Label tab]\n  Hollow tab: Yes"
+
+
+def test_parameter_labels_are_shown_in_the_add_ins_language():
+    """Click test round 60: the tag keeps the English label (a rebuild looks the parameter up by it), the settings
+    window shows it translated; the expression stays Fusion's"""
+    import sys
+    i18n = sys.modules[settingsUtils.tr.__module__]
+    i18n.setLanguage("de", {"Bin height (u)": "Höhe des Behälters (u)", "Parameters": "Parameter"})
+    try:
+        tag = {"settings": [], "parameters": [["Bin height (u)", "gfBin1_heightU"], ["Unknown label", "gfBin1_x"]]}
+        text = settingsUtils.settingsHtml(tag, {"gfBin1_heightU": "6", "gfBin1_x": "42.00 mm"}.get)
+        assert "Höhe des Behälters (u): gfBin1_heightU = 6" in text
+        assert "Unknown label: gfBin1_x = 42.00 mm" in text
+    finally:
+        i18n.setLanguage("en")

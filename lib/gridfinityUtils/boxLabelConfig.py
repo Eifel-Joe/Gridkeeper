@@ -24,7 +24,11 @@ except ImportError:
 # the config field each holds and the label the tag gives it; a rebuild takes their values back into the settings, see
 # rebuildUtils.configWithParameters. One table: the names and the fields differ, a lookup of a name among the fields
 # failed every build (click test 17.11.2026, KeyError 'text1')
-TEXT_PARAMETERS = [('bigText', 'bigText', 'Large text'), ('text1', 'line1', 'Line 1'), ('text2', 'line2', 'Line 2')]
+# the labels, the settings window shows them translated (round 60)
+LABEL_BIG_TEXT = 'Large text'  # tr-value
+LABEL_LINE_1 = 'Line 1'  # tr-value
+LABEL_LINE_2 = 'Line 2'  # tr-value
+TEXT_PARAMETERS = [('bigText', 'bigText', LABEL_BIG_TEXT), ('text1', 'line1', LABEL_LINE_1), ('text2', 'line2', LABEL_LINE_2)]
 TEXT_PARAMETER_NAMES = [name for (name, _, _) in TEXT_PARAMETERS]
 PARAMETER_FIELDS = {label: field for (_, field, label) in TEXT_PARAMETERS}
 

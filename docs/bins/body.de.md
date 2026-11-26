@@ -58,7 +58,7 @@ Lange Wände hoher hohler Behälter und Behälter als Schale werden im Origami-S
 gefaltet, damit sie sich weniger durchbiegen. Behälter ab der Mindesthöhe mit einer Wand ab der Mindestlänge bekommen
 sie; die Wände werden in gleichmäßige Felder bis zur maximalen Feldlänge geteilt, Wände, die kürzer sind als ein Feld
 der längsten Wand, bleiben flach. Die Wand der Griffmulde bleibt flach, die Griffmulde stützt sie. Ein gefalzter
-Behälter hat ein einziges Fach und eine massive Beschriftungslasche: **Fachaufteilung bearbeiten** und **Hohle
+Behälter hat ein einziges Fach und eine massive Beschriftungslasche: **Fächer bearbeiten** und **Hohle
 Lasche** sind für ihn gesperrt, die Fachaufteilung bleibt erhalten, für den Fall, dass der Behälter keine Falze mehr
 bekommt.
 

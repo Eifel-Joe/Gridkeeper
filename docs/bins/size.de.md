@@ -9,8 +9,8 @@ Dialog über **Gridkeeper neu erstellen** geöffnet, steht dort, welcher Behält
 
 | Eingabe | Vorgabe | Wirkung |
 |---|---|---|
-| **Rastereinheit Breite (mm)** | 42 mm | Größe einer Rasterzelle entlang X, mindestens 10 mm |
-| **Rastereinheit Länge (mm)** | 42 mm | Größe einer Rasterzelle entlang Y, mindestens 10 mm |
+| **Rastereinheit X (mm)** | 42 mm | Größe einer Rasterzelle entlang X, mindestens 10 mm |
+| **Rastereinheit Y (mm)** | 42 mm | Größe einer Rasterzelle entlang Y, mindestens 10 mm |
 | **Höheneinheit (mm)** | 7 mm | Eine Höheneinheit, mindestens 5 mm |
 | **Spiel XY (mm)** | 0,25 mm | Spalt auf jeder Seite zwischen dem Behälter und seiner Zelle, 0,1 bis 0,5 mm. Wählen Sie denselben Wert wie bei der Grundplatte |
 
@@ -41,7 +41,7 @@ jeweils passenden Einlegers, z. B. `Cullenect: 2U: Aufnahme 78,3 mm, Einleger 78
 Eine Größe, die auf eine Hälfte endet, bekommt ohne **Halbraster** ganze Füße und eine Reihe halber Füße an der
 Rückseite oder rechten Seite, nur quer zur Reihe halbiert. Mit **Halbraster** ist jeder Fuß ein halber, sodass der
 Behälter auf einer Grundplatte im Halbraster um eine halbe Zelle versetzt stehen kann. Halbe Füße haben keine Magnet-
-oder Schraubenlöcher, dafür ist kein Platz.
+oder Schraubenbohrungen, dafür ist kein Platz.
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../../../assets/gif/bin-half-grid-dark.gif"><img src="../../../assets/gif/bin-half-grid-light.gif" alt="Halbraster einschalten, dann eine Größe, die auf eine Hälfte endet, mit Behältern auf ganzen, halben und einer Reihe halber Füße"></picture>
 

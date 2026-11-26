@@ -4,7 +4,7 @@ Im Behälter-Dialog unter **Fächer des Behälters › Beschriftungslasche**: Sc
 (entlang der Behälterbreite)** ein und wählen Sie als **Beschriftungsstil** **Cullenect**. Jede Beschriftungslasche
 erhält statt einer gedruckten Beschriftung eine Aufnahme, bei mehreren Fächern jede Fachlasche.
 
-![Der Abschnitt Beschriftungslasche des Behälter-Dialogs mit dem Beschriftungsstil Cullenect: Text, Symbol, Fett, Farbe und Winkel Laschenoberseite ausgegraut, Spiel des Steckplatzes eingeblendet](../assets/images/dialog-bin-cullenect.png)
+![Der Abschnitt Beschriftungslasche des Behälter-Dialogs mit dem Beschriftungsstil Cullenect: Text, Symbol, Fett, Farbe und Laschenwinkel oben ausgegraut, Spiel des Steckplatzes eingeblendet](../assets/images/dialog-bin-cullenect.png)
 
 ## Größe der Aufnahme { #pocket-size }
 
