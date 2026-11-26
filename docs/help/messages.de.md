@@ -57,7 +57,7 @@ Fehler, die Sie selbst beheben können:
 
 | Meldung | Bedeutung |
 |---|---|
-| **Der Behälter wurde neu erstellt. Diese Funktionen danach brauchen einen Blick, solche, die eine Fläche oder Kante des alten Behälters verwenden, müssen neu ausgewählt werden:** und eine Liste | Öffnen Sie jede aufgeführte Funktion in der Zeitachse und wählen Sie ihre Flächen oder Kanten neu aus. Ebenso bei Grundplatten und Einlegern. |
+| **Der Behälter wurde neu erstellt. Diese Elemente danach müssen geprüft werden, solche, die eine Fläche oder Kante des alten Behälters verwenden, müssen neu ausgewählt werden:** und eine Liste | Öffnen Sie jedes aufgeführte Element in der Zeitachse und wählen Sie ihre Flächen oder Kanten neu aus. Ebenso bei Grundplatten und Einlegern. |
 | **…: Der Einleger passt nicht mehr in die neu erstellte Aufnahme …, … x … mm in … x … mm** (in dieser Liste) | Eine Aufnahme des neu erstellten Behälters ist kleiner geworden als der Einleger, der per Gelenk darin sitzt. Erstellen Sie den Einleger schmaler neu. |
 | **Die Aufnahme, in der der Einleger saß, …, konnte nicht ausgewählt werden. Wählen Sie sie erneut aus, sonst wird der Einleger ohne Gelenk an der alten Stelle erstellt.** (Dialog Einleger) | Wählen Sie den Gelenkursprung der Aufnahme unter **Aufnahme** erneut aus. |
 | **Der Behälter dieser Aufnahme liegt in der Zeitachse hinter dem Einleger, der Einleger kann nicht an Ort und Stelle in dieser Aufnahme neu erstellt werden** | Der Einleger ist älter als der Behälter; erstellen Sie stattdessen einen neuen Einleger in der Aufnahme. |
