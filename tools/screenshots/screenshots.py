@@ -72,10 +72,18 @@ def serve(fonts: dict[str, str]) -> str:
     return f'http://127.0.0.1:{server.server_port}'
 
 
-def outputPath(outputDir: str, shot: dict, theme: str, themes: list[str]) -> str:
+def outputPath(outputDir: str, shot: dict, theme: str, themes: list[str], language: str = 'en') -> str:
     name = shot['name'] if len(themes) == 1 else f'{shot["name"]}-{theme}'
     extension = shot.get('format', 'gif') if shot.get('steps') else 'png'
-    return os.path.join(outputDir, f'{name}.{extension}')
+    # a German picture beside the English one, as the German docs pages find it (mkdocs-static-i18n, round 60)
+    suffix = '' if language == 'en' else f'.{language}'
+    return os.path.join(outputDir, f'{name}{suffix}.{extension}')
+
+
+def translateMenu(shot: dict, translate) -> dict:
+    """A copy of a menu shot with its items' labels translated, Fusion's own items stay as the table has none"""
+    items = [dict(item, label=translate(item['label'])) if 'label' in item else item for item in shot['menu']['items']]
+    return dict(shot, menu=dict(shot['menu'], items=items))
 
 
 def launch(playwright):
@@ -99,8 +107,12 @@ def takeMenuShot(browser, origin: str, shot: dict, theme: str, scale: float, pat
     page.close()
 
 
-def takeShots(shotsFile: str, only: list[str], outputDir: str | None, themes: list[str] | None, scale: float | None, fontDir: str | None):
+def takeShots(shotsFile: str, only: list[str], outputDir: str | None, themes: list[str] | None, scale: float | None, fontDir: str | None,
+              language: str = 'en'):
     from playwright.sync_api import sync_playwright
+
+    # the add-in's texts in this language, before a command is loaded (round 60)
+    i18n = dialogRecorder.setLanguage(language)
 
     with open(shotsFile, 'r') as file:
         config = json.load(file)
@@ -122,11 +134,11 @@ def takeShots(shotsFile: str, only: list[str], outputDir: str | None, themes: li
             for theme in shotThemes:
                 # paths in the shots file are from the add-in folder
                 folder = os.path.join(ROOT_DIR, outputDir or shot.get('output') or config.get('output', 'tools/screenshots/out/ui'))
-                path = outputPath(folder, shot, theme, shotThemes)
+                path = outputPath(folder, shot, theme, shotThemes, language)
                 os.makedirs(os.path.dirname(path), exist_ok=True)
                 shotScale = scale or shot.get('scale') or config.get('scale', 2)
                 if shot.get('menu'):
-                    takeMenuShot(browser, origin, shot, theme, shotScale, path)
+                    takeMenuShot(browser, origin, translateMenu(shot, i18n.trKnown), theme, shotScale, path)
                 elif shot.get('steps'):
                     animation.record(browser, origin, shot, theme, shotScale, path)
                 else:
@@ -145,9 +157,10 @@ def main():
     parser.add_argument('--out', help='folder for all images, from the add-in folder, instead of what the shots set')
     parser.add_argument('--themes', help='dark, light or both comma separated, instead of what the shots set')
     parser.add_argument('--scale', type=float, help='pixels per dialog pixel, 2 by default for sharp images on high density screens')
+    parser.add_argument('--language', choices=['en', 'de'], default='en', help="the add-in's language, German pictures are named name.de.png")
     parser.add_argument('--font-dir', help='a folder with the ArtifaktElement*.woff2 fonts, found in the Fusion install by default')
     args = parser.parse_args()
-    takeShots(args.shots, args.only, args.out, args.themes.split(',') if args.themes else None, args.scale, args.font_dir)
+    takeShots(args.shots, args.only, args.out, args.themes.split(',') if args.themes else None, args.scale, args.font_dir, args.language)
 
 
 if __name__ == '__main__':

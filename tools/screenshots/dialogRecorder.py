@@ -51,12 +51,8 @@ def _package(name: str, path: str) -> types.ModuleType:
     return module
 
 
-def loadCommand(command: str) -> types.ModuleType:
-    """A fresh copy of a command's entry, the entries keep their state in module globals"""
+def _addinPackage():
     _installFakeApi()
-    folder = COMMANDS.get(command, command)
-    for name in [name for name in sys.modules if name.startswith(f'{PACKAGE}.commands.')]:
-        del sys.modules[name]
     if PACKAGE not in sys.modules:
         _package(PACKAGE, ROOT_DIR)
         _package(f'{PACKAGE}.commands', os.path.join(ROOT_DIR, 'commands'))
@@ -64,6 +60,22 @@ def loadCommand(command: str) -> types.ModuleType:
         # quiet, and nothing fires the events
         futil.log = lambda *args, **kwargs: None
         futil.add_handler = lambda *args, **kwargs: None
+
+
+def setLanguage(language: str) -> types.ModuleType:
+    """The add-in's texts in this language (lib/i18n), for the commands loaded after"""
+    _addinPackage()
+    i18n = importlib.import_module(f'{PACKAGE}.lib.i18n')
+    i18n.setLanguage(language)
+    return i18n
+
+
+def loadCommand(command: str) -> types.ModuleType:
+    """A fresh copy of a command's entry, the entries keep their state in module globals"""
+    _addinPackage()
+    folder = COMMANDS.get(command, command)
+    for name in [name for name in sys.modules if name.startswith(f'{PACKAGE}.commands.')]:
+        del sys.modules[name]
     return importlib.import_module(f'{PACKAGE}.commands.{folder}.entry')
 
 

@@ -35,7 +35,11 @@ The dialog font, Artifakt Element, is taken from the Fusion install. Use `--font
 tools/screenshots/.venv/bin/python tools/screenshots/screenshots.py                  # every shot in shots.json
 tools/screenshots/.venv/bin/python tools/screenshots/screenshots.py --only bin-custom-shape-drawing --themes dark
 tools/screenshots/.venv/bin/python tools/screenshots/dialogRecorder.py bin           # the inputs a shot can set
+tools/screenshots/.venv/bin/python tools/screenshots/screenshots.py --language de    # German, name.de.png beside the English
 ```
+
+With `--language de` the add-in's texts are German (`lib/i18n/de.json`), also the add-in's items of a right-click menu;
+the pictures are named `name.de.png` (`name-dark.de.png`), as the German docs pages find them.
 
 A shot in `shots.json`:
 
