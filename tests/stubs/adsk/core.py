@@ -17,6 +17,25 @@ class LogTypes:
     ConsoleLogType = 1
 
 
+class UserLanguages:
+    """Fusion's interface languages, values as in the API reference (core_UserLanguages)"""
+    ChinesePRCLanguage = 0
+    ChineseTaiwanLanguage = 1
+    CzechLanguage = 2
+    EnglishLanguage = 3
+    FrenchLanguage = 4
+    GermanLanguage = 5
+    HungarianLanguage = 6
+    ItalianLanguage = 7
+    JapaneseLanguage = 8
+    KoreanLanguage = 9
+    PolishLanguage = 10
+    PortugueseBrazilianLanguage = 11
+    RussianLanguage = 12
+    SpanishLanguage = 13
+    TurkishLanguage = 14
+
+
 # ---------------------------------------------------------------------------
 # Base command-input stub
 # ---------------------------------------------------------------------------

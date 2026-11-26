@@ -15,3 +15,5 @@ tools/screenshots/dialogs
 /site
 tools/screenshots/out
 
+# the add-in language for testing, see lib/i18n.OVERRIDE_FILE
+languageOverride
