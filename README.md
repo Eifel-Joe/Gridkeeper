@@ -10,6 +10,9 @@ colored labels for multicolor printing, an assembly of components with joints, a
 
 **Documentation: [eifel-joe.github.io/Gridkeeper](https://eifel-joe.github.io/Gridkeeper/)**
 
+German documentation: [eifel-joe.github.io/Gridkeeper/de](https://eifel-joe.github.io/Gridkeeper/de/); with Fusion set to
+German, the add-in speaks German too.
+
 ![Three Gridkeeper bins on a baseplate, with labels and symbols in red and blue](docs/assets/images/home-hero.png)
 
 ## Features

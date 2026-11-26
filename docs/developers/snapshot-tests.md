@@ -36,6 +36,14 @@ and remove before it writes.
 
 ![The test palette after running one case: the case passed, its document is left open for Diff, Built and Snapshot](../assets/images/snapshot-test-report.png)
 
+### Language for testing
+
+The development commands (*Gridkeeper tests: run*, *Gridkeeper docs: render models*), their windows and the report
+stay English. A file `languageOverride` in the add-in's folder, holding `de` or `en`, sets the add-in's language for
+testing, whatever Fusion's language is; it is read when the add-in starts. Every text the add-in shows is looked up in
+`lib/i18n/de.json` (`tr('English text')` in the code, `data-i18n` on pages); `tests/test_i18n_complete.py` fails on a
+missing or stale entry, `python tools/i18n/collect.py --missing` lists the texts without German.
+
 ### What a case can check
 
 - **Parameters:** a case can set user parameters once built; the run compares the recomputed bodies with the case
