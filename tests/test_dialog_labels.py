@@ -85,6 +85,19 @@ def test_the_scan_finds_names_of_helpers_too():
         os.remove(path)
 
 
+def test_the_german_defaults_buttons_fit_where_the_english_ones_do():
+    """Click test round 60: in the box dialog (400 px) the German buttons Als Vorgabe speichern, Vorgabe laden and
+    Vorgabe löschen were cut off. The row shares its width among the buttons, the English one fits in every dialog,
+    so the German row is no longer than it in all and in its longest button; the tooltips say the rest"""
+    import re
+    page = open(os.path.join(ROOT, "lib", "ui", "html", "defaultsButtons.html"), encoding="utf-8").read()
+    english = re.findall(r'data-i18n="([^"]+)"', page)
+    german = [GERMAN[text] for text in english]
+    assert len(english) == 3
+    assert sum(map(len, german)) <= sum(map(len, english)), german
+    assert max(map(len, german)) <= max(map(len, english)), german
+
+
 def test_german_rebuild_notes_are_no_longer_than_the_english_ones():
     """Click test round 60: the info area of a dialog shows two lines, the German rebuild note was cut off. Until it
     grows with its text the German note keeps to the English one's length"""

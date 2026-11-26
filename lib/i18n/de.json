@@ -493,7 +493,7 @@
  "Running Gridkeeper {running}, installed {installed}. {ways}, to use {installed}.": "Gridkeeper {running} läuft, installiert ist {installed}. {ways}, um {installed} zu verwenden.",
  "Running Gridkeeper {running}.": "Gridkeeper {running} läuft.",
  "Running Gridkeeper, its version is unknown.": "Gridkeeper läuft, seine Version ist unbekannt.",
- "Save as defaults": "Als Vorgabe speichern",
+ "Save as defaults": "Vorgabe setzen",
  "Save Gridkeeper config": "Gridkeeper-Konfiguration speichern",
  "Save the current inputs as new defaults for this dialog": "Die aktuellen Eingaben als neue Vorgaben für diesen Dialog speichern",
  "Save these {generatorTitle} settings to a JSON file": "Diese Einstellungen ({generatorTitle}) in einer JSON-Datei speichern",

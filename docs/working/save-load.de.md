@@ -9,7 +9,7 @@ Grundplatten und Einleger, **Änderungen** im Behälter-Dialog.
 
 | Schaltfläche | Was sie bewirkt |
 |---|---|
-| **Als Vorgabe speichern** | Der Dialog öffnet sich ab jetzt mit den aktuellen Eingaben |
+| **Vorgabe setzen** | Der Dialog öffnet sich ab jetzt mit den aktuellen Eingaben |
 | **Vorgabe laden** | Setzt die Eingaben auf die gespeicherten Vorgaben zurück |
 | **Vorgabe löschen** | Löscht die gespeicherten Vorgaben und setzt die Eingaben auf die ursprünglichen zurück |
 
